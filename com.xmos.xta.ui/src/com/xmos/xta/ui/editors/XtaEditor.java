@@ -3,10 +3,8 @@ package com.xmos.xta.ui.editors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.jface.action.Action;
@@ -21,7 +19,6 @@ import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
-import org.eclipse.jface.text.source.IVerticalRulerColumn;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
@@ -41,8 +38,6 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.sections.CodePointTableInfo;
-import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.dialogs.InstructionTime;
@@ -86,20 +81,26 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     private Annotation[] m_previousUnknownAnnotations;
     protected List<Node> m_selectedNodes;    
     private final String m_type;
-    private InputLine m_startPointLine;
-    private InputLine m_endPointLine;
-    private Map<Long, InputLine> m_endPointLineIndexes;
+    private long m_startPointLineIndex;
+    private long m_endPointLineIndex;
     private TreeSet<Long> m_excludedIndexes;
 	protected TreeSet<XtaInstruction> m_previousFnops;
 
     protected String m_fileName;
-	
+
+    // Abstract methods
 	public abstract void propertyChange(PropertyChangeEvent event);
+	public abstract boolean isValidEndPoint(long lineNumber);
+
 	abstract boolean showCodePoint(long pc);
     abstract void updateAll();
-
+	abstract long findIndexForPc(long pc);
     abstract boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections);
+	abstract String getLineDescription(long clickLineIndex);
+	abstract String lineIndexToString(long index);
+	abstract Collection<Long> getPcsForLine(long lineNumber);
+
 
     public XtaEditor(final String type) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -111,10 +112,11 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 
     	m_selectedNodes = new ArrayList<Node>();
         
-        m_endPointLineIndexes = new TreeMap<Long, InputLine>();
         m_excludedIndexes = new TreeSet<Long>();
-        
         m_previousFnops = new TreeSet<XtaInstruction>();
+
+        m_startPointLineIndex = -1;
+        m_endPointLineIndex = -1;
     }
 
     public void createPartControl(Composite parent) {
@@ -142,11 +144,9 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     
     public void dispose() {
 		if (DEBUG) System.out.printf("XtaEditor: dispose\n");	
-    	
 		GuiEngine.removeBroadcastListener(this);
 		super.dispose();
     }
-    
 
 	public String getType() {
 		return m_type;
@@ -155,7 +155,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 	public void updateSelection(List<Node> selection) {
 		if (DEBUG) System.out.printf("XtaEditor: selectionChanged\n");
 		m_selectedNodes = selection;
-		
 		updateAll();
     }
 
@@ -164,8 +163,7 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 	    if (DEBUG) System.out.printf("XtaEditor: getUnknownsForLine\n"); 
 
     	TreeSet<Node> nodes = new TreeSet<Node>();
-    	
-    	TreeSet<Long> linePcs = getPcsForLine(lineNumber);
+    	Collection<Long> linePcs = getPcsForLine(lineNumber);
 		for (Node node : getSelectedRouteUnknowns()) {
 			if (linePcs.contains(node.getStartPc())) {
 				nodes.add(node);
@@ -195,27 +193,11 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     }
 
 	public long getStartPointIndex() {
-	    if (DEBUG) System.out.printf("XtaEditor: getStartPointIndex\n"); 
-
-		if (m_startPointLine != null)
-        	return m_startPointLine.getIndex();
-		return -1;
+		return m_startPointLineIndex;
 	}
 
     public long getEndPointIndex() {
-	    if (DEBUG) System.out.printf("XtaEditor: getEndPointIndex\n"); 
-    	if (m_endPointLine != null) {
-        	return m_endPointLine.getIndex();
-        }
-		return -1;
-	}
-	
-	public boolean isValidEndPoint(long lineNumber) {
-	    if (DEBUG) System.out.printf("XtaEditor: isValidEndPoint\n"); 
-		if (m_endPointLineIndexes.containsKey(lineNumber)) {
-			return true;
-		}
-		return false;
+		return m_endPointLineIndex;
 	}
 	
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
@@ -228,14 +210,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
         return viewer;
     }
     
-	protected IVerticalRulerColumn createLineNumberRulerColumn() {
-    	if (DEBUG) System.out.printf("XtaEditor: createLineNumberRulerColumn\n"); 
-
-		fLineNumberRulerColumn= new XtaLineNumberRulerColumn(getInput());
-		initializeLineNumberRulerColumn(fLineNumberRulerColumn);
-		return fLineNumberRulerColumn;
-	}
-		
     protected void createActions() {
 		if (DEBUG) System.out.printf("XtaEditor: createActions\n"); 
      	super.createActions();
@@ -334,21 +308,17 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		
 		m_clickCodeRefString = getLineDescription(clickLineIndex);				
 		if (m_clickCodeRefString != null) {	
-			
-			if (m_endPointLineIndexes.containsKey(clickLineIndex) ||
-				isAssembly(m_clickCodeRefString)) {
-				if (isStartPointSet(m_clickCodeRefString)) {
-				    addAction(menu, RemoveStartPointID);
-				} else {
-				    addAction(menu, SetStartPointID);				
-				}
-				if (isEndPointSet(m_clickCodeRefString)) {						
-				    addAction(menu, RemoveEndPointID);
-				} else {
-				    addAction(menu, SetEndPointID);				
-				}
-				menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+			if (isStartPointSetForIndex(clickLineIndex)) {
+			    addAction(menu, RemoveStartPointID);
+			} else {
+			    addAction(menu, SetStartPointID);				
 			}
+			if (isEndPointSetForIndex(clickLineIndex)) {						
+			    addAction(menu, RemoveEndPointID);
+			} else {
+			    addAction(menu, SetEndPointID);				
+			}
+			menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
 			
 			if (m_excludedIndexes.contains(clickLineIndex)) {
 				addAction(menu, RemoveExclusionID);				
@@ -371,26 +341,14 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
      	super.editorContextMenuAboutToShow(menu);
     }
 	
-	private boolean isAssembly(String codeRefString) {
-		if (codeRefString.length() < 3) {
-			return false;
-		}
-		
-		if (codeRefString.charAt(0) == '0' &&
-			codeRefString.charAt(1) == 'x') {
-			return true;
-		}
-		return false;
-	}
-
 	protected void updateStartPoint() {
 		Reference startPoint = GuiEngine.getStartPoint();
-		m_startPointLine = findCodeRefLineNum(startPoint);
+		m_startPointLineIndex = findIndexForRef(startPoint);
 	}
 
 	protected void updateEndPoint() {
 		Reference endPoint = GuiEngine.getEndPoint();
-		m_endPointLine = findCodeRefLineNum(endPoint);
+		m_endPointLineIndex = findIndexForRef(endPoint);
 	}
 	    	
     protected void updateHighlighting() {
@@ -406,7 +364,7 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
         		hasHighlightedLines |= updateAnnotations(
         				instruction.getPc(), HighlightAnnotationID, 
         				annotations, annotationPositions,
-						false, false, getInput().getPcsToLines());
+						false, false);
 			}
         }
 		updateAnnotations(annotations, annotationPositions);		
@@ -418,7 +376,7 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		}
     }
 
-	private void updateAnnotations(List<Annotation> annotations,
+	void updateAnnotations(List<Annotation> annotations,
 			HashMap<Annotation, Position> annotationPositions) {
 
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
@@ -427,31 +385,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		
         long startPointIndex = getStartPointIndex();
         long endPointIndex = getEndPointIndex();
-
-        m_endPointLineIndexes.clear();
-        for (CodePointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
-        	if (info.getFileName().equals(m_fileName)) {
-        		InputLine line = findCodeLine(info.getLineNumber());
-        		if (line != null) {
-        			long index = line.getIndex();
-	        		if (index != endPointIndex && index != startPointIndex)
-	        			addAnnotation(index, EndpointID, allAnnotations, allAnnotationPositions);
-	        		m_endPointLineIndexes.put(index, line);
-        		}
-        	}
-        } 
-
-        for (CodePointTableInfo info : GuiEngine.getEngine().getCallTable().values()) {
-        	if (info.getFileName().equals(m_fileName)) {
-        		InputLine line = findCodeLine(info.getLineNumber());
-        		if (line != null) {
-        			long index = line.getIndex();
-	        		if (index != endPointIndex && index != startPointIndex)
-	        			addAnnotation(index, EndpointID, allAnnotations, allAnnotationPositions);
-	        		m_endPointLineIndexes.put(index, line);
-        		}
-        	}
-        } 
 
         if ((startPointIndex != -1) && (startPointIndex == endPointIndex)) {
         	addAnnotation(startPointIndex, StartStopAnnotationID, allAnnotations, allAnnotationPositions);
@@ -481,32 +414,11 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		if (exclusions.size() == 0) {
 			return;
 		}
-		
-		for (InputSection inputSection : getSections()) {
-			if (m_type.equals(XtaDocumentPartitioner.SOURCE)) {
-				checkLineForExclusion(exclusions, inputSection.getHeader().getCodeReference(),
-						inputSection.getIndex());
-			}
-			for (InputLine line : inputSection.getLines()) {
-				long linePc = line.getPc();
-				for (Reference exclusion : exclusions) {
-					if (linePc == exclusion.getPc()) {
-						m_excludedIndexes.add(line.getIndex());
-						m_excludedIndexes.add(inputSection.getIndex());
-					}
-				}
-			}
-    	}
-	}
 
-    private void checkLineForExclusion(Collection<Reference> exclusions, String refStr, long index) {
-		Engine engine = GuiEngine.getEngine();
-		Reference ref = ReferenceFactory.createReference(refStr, ReferenceClass.ANY_REF);
-		if (ref.resolve(engine, engine.getNodeId(), engine.getCoreId())) {			
-			for (Reference exclusion : exclusions) {
-				if (ref.getPc() == exclusion.getPc()) {
-					m_excludedIndexes.add(index);
-				}				
+		for (Reference exclusion : exclusions) {
+			long excludedIndex = findIndexForPc(exclusion.getPc());
+			if (excludedIndex != -1) {
+				m_excludedIndexes.add(excludedIndex);
 			}
 		}
 	}
@@ -519,28 +431,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		} else {
 			return new TreeSet<Node>();
 		}
-	}
-
-	private TreeSet<Long> getPcsForLine(long lineNumber) {
-		TreeSet<Long> pcs = new TreeSet<Long>();
-		HashMap<Long, InputLine> lineMap = getInput().getPcsToLines();
-		Iterator<Map.Entry<Long, InputLine>> lineIter = lineMap.entrySet().iterator();
-		while (lineIter.hasNext()) {
-    	    Map.Entry<Long, InputLine> pair = lineIter.next();
-    	    if (pair.getValue().getIndex() == lineNumber) {
-    	    	pcs.add(pair.getKey());
-    	    }                           
-    	}      
-
-		HashMap<Long, InputSection> sectionMap = getInput().getPcsToSection();
-		Iterator<Map.Entry<Long, InputSection>> sectionIter = sectionMap.entrySet().iterator();
-		while (sectionIter.hasNext()) {
-    	    Map.Entry<Long, InputSection> pair = sectionIter.next();
-    	    if (pair.getValue().getIndex() == lineNumber) {
-    	    	pcs.add(pair.getKey());
-    	    }                           
-    	}      
-		return pcs;
 	}
 
 	protected void updateUnknowns() {
@@ -556,7 +446,7 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		boolean excludeSections = m_type.equals(XtaDocumentPartitioner.SOURCE);
 		for (long pc : unknownsSet) {
 			updateAnnotations(pc, UnknownAnnotationID, annotations, annotationPositions,
-					true, excludeSections, getInput().getPcsToLines());
+					true, excludeSections);
 		}
 
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
@@ -565,41 +455,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 			}
 		});
 		m_previousUnknownAnnotations = createArray(annotations);
-    }
-
-    private boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
-    		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections,
-    		HashMap<Long, InputLine> pcToLine) {
-    	
-    	boolean hitSection = false;
-    	
-    	InputLine line = pcToLine.get(pc);
-    	if (line == null) 
-    		return hitSection;
-    	
-    	if (!excludeSections) {
-			InputSection inputSection = getInput().getPcsToSection().get(pc);
-			if (inputSection != null) {
-				addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
-				hitSection = true;
-			}
-    	}
-    	
-		InputLine inputLine = getInput().getPcsToLines().get(pc);
-		if (inputLine != null) {
-			addAnnotation(line.getIndex(), type, annotations, annotationPositions);
-		}
-		
-		if (!excludeFnops){
-			for (InputSection section : getSections()){
-				for (InputLine fnop : section.getFnops()){
-					if (fnop.getPc() == pc) { 
-						addAnnotation(fnop.getIndex(), type, annotations, annotationPositions);
-					}
-				}
-			}
-		}
-		return hitSection;
     }
 
     protected void addAnnotation(long index, String type, List<Annotation> annotations,
@@ -627,64 +482,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     	return annotationList.toArray(annotationArray);    	
     }
 
-	private String getLineDescription(long clickLineIndex) {
-		if (m_endPointLineIndexes.containsKey(clickLineIndex)) {
-			InputLine line = m_endPointLineIndexes.get(clickLineIndex);
-			return line.getCodeReference();
-		}
-		
-		String srcLabel = getSrcLabel(clickLineIndex);
-		if (srcLabel != null)
-			return srcLabel;
-		
-		return getLineReference(clickLineIndex, false);
-	}
-
-	private String getSrcLabel(long clickLineIndex) {
-        Map<Long, SrcLabelTableInfo> srcLabelTable = GuiEngine.getEngine().getSrcLabelTable();
-		for (SrcLabelTableInfo info : srcLabelTable.values()) {
-        	if (info.getFileName().equals(m_fileName)) {
-        		InputLine startLine = findCodeLine(info.getLineNumberStart());
-        		InputLine endLine = findCodeLine(info.getLineNumberEnd());
-        		if ((startLine != null) && (endLine != null)) {
-        			
-        			if (clickLineIndex >= startLine.getIndex() && clickLineIndex <= endLine.getIndex()) {
-        				String lineRef = getLineReference(clickLineIndex, true);
-        				if (lineRef != null)
-            				return lineRef;
-            			else
-        					return "0x" + Long.toHexString(info.getPc());
-        			}
-        		}
-        	}
-        } 
-		return null;
-	}
-
-    private String getLineReference(long index, boolean findHeader) {
-    	for (InputSection inputSection : getSections()) {
-    		long startLine = inputSection.getIndex();
-    		long endLine = startLine + inputSection.getLines().size();
-    		long offset = index - startLine;
-
-    		if (findHeader) {
-        		if (index == startLine) {
-    				return inputSection.getHeader().getCodeReference();
-    			}
-    		} else {
-	    		// Don't map to the header
-	    		if ((index > startLine) && (index <= endLine)) {
-	    			if (!inputSection.isFnop(offset - 1)) {
-	    				return inputSection.getLine(offset - 1).getCodeReference();
-	    			} else {
-	    				return null;
-	    			}
-				}
-    		}
-    	}
-		return null;
-	}
-
 	protected void showLocation(int charOffset, long index, boolean expand) {
 		ISourceViewer viewer = getSourceViewer();
 		if (viewer == null)
@@ -699,42 +496,14 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		viewer.setTopIndex((int)topIndex);
 	}
 
-	private InputLine findCodeRefLineNum(Reference codeRef) {
-		if (codeRef != null) {
-			if (codeRef.getResolved()) {
-			    long pc = codeRef.getPc();
-	    	    if (m_type.equals(XtaDocumentPartitioner.DISASSEMBLY)) {
-	    		    return findPcLine(pc);
-	    	    } else {
-	    	    	if (m_fileName.equals(codeRef.getFileName()))
-	    	    		return findCodeLine(codeRef.getLineNum());
-	    	    	else
-	    	    		return findPcLine(pc);
-	    	    }
+	private long findIndexForRef(Reference ref) {
+		if (ref != null) {
+			if (ref.getResolved()) {
+			    long pc = ref.getPc();
+			    return findIndexForPc(pc);
 			}			
 		}
-		return null;
-	}
-
-	private InputLine findPcLine(long pc) {
-		for (InputSection inputSection : getSections()) {
-			for (InputLine line : inputSection.getLines()) {
-				if ((line.getPc() == pc) && !inputSection.isFnop(line.getOffset())) {	
-					return line;
-				}
-			}
-    	}
-		return null;
-	}
-
-	private InputLine findCodeLine(long lineNum) {
-		for (InputSection inputSection : getSections()) {
-			InputLine header = inputSection.getHeader();
-			if (header.getPc() == lineNum) {
-				return header;
-			}
-    	}
-		return null;
+		return -1;
 	}
 
 	IDocument getDocument() {
@@ -745,43 +514,16 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		return viewer.getDocument();
 	}
 
-	protected Input getInput() {
-		IDocument document = getDocument();
-		if (document == null) {
-			return null;
-		}
-		
-		XtaDocumentPartitioner xtaDocumentPartitioner =
-			(XtaDocumentPartitioner)document.getDocumentPartitioner();
-
-		return xtaDocumentPartitioner.getInput();		
-	}
-	
-	protected ArrayList<InputSection> getSections() {
-		IDocument document = getDocument();
-		if (document == null)
-			return new ArrayList<InputSection>();
-		
-		XtaDocumentPartitioner xtaDocumentPartitioner =
-			(XtaDocumentPartitioner)document.getDocumentPartitioner();
-
-		return xtaDocumentPartitioner.getInput().getSections();
-	}
-	
-	private boolean isStartPointSet(String codeReference) {
-		if (m_startPointLine != null) {
-			if (m_startPointLine.getCodeReference().equals(codeReference)) {
-				return true;
-			}
+	private boolean isStartPointSetForIndex(long index) {
+		if ((m_startPointLineIndex != -1) && (m_startPointLineIndex == index)) {
+			return true;
 		}
 	    return false;	
 	}
 
-	private boolean isEndPointSet(String codeReference) {
-		if (m_endPointLine != null) {
-			if (m_endPointLine.getCodeReference().equals(codeReference)) {
-				return true;
-			}
+	private boolean isEndPointSetForIndex(long index) {
+		if ((m_endPointLineIndex != -1) && (m_endPointLineIndex == index)) {
+			return true;
 		}
 	    return false;	
 	}

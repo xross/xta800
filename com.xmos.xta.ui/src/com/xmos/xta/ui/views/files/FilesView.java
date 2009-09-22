@@ -26,6 +26,7 @@ import com.xmos.dwarfhandler.DebugFile;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.sourcemapper.SourceFile;
 import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.editors.InputDisassembly;
 import com.xmos.xta.ui.editors.InputSource;
@@ -35,7 +36,7 @@ import com.xmos.xta.ui.editors.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.gui.views.files.Files";
+    public static final String ID = "com.xmos.xta.ui.views.files.Files";
     
     private FilteredTree m_filesViewer;
     
@@ -101,6 +102,8 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 	        	editor.setNames(debugFile.getShortFileName(), debugFile.getFileName());
 
         	}
+			// Cause an update in the new editor which will do the highlighting
+			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECTION_CHANGED, "");
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

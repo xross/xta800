@@ -5,7 +5,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 
-//import com.xmos.xta.gui.views.timedistribution.TimeDistributionView;
+//import com.xmos.xta.ui.views.timedistribution.TimeDistributionView;
 
 public class TimeDistributionExportJpgHandler extends AbstractHandler implements IHandler {
     public static final boolean DEBUG = false;

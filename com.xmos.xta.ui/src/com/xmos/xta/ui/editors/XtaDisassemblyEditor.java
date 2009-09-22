@@ -1,6 +1,9 @@
 package com.xmos.xta.ui.editors;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -15,12 +18,14 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.IVerticalRulerColumn;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.core.engine.Notifier;
@@ -34,11 +39,11 @@ import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 
 public class XtaDisassemblyEditor extends XtaEditor {
-    public static final String ID = "com.xmos.xta.gui.editors.XtaDisassemblyEditor";
+    public static final String ID = "com.xmos.xta.ui.editors.XtaDisassemblyEditor";
     public static final String EDITORNAME = "Disassembly";
 
-    public static final String ExpandAllID           = "com.xmos.xta.gui.action.ExpandAll";
-    public static final String CollapseAllID         = "com.xmos.xta.gui.action.CollapseAll";
+    public static final String ExpandAllID           = "com.xmos.xta.ui.action.ExpandAll";
+    public static final String CollapseAllID         = "com.xmos.xta.ui.action.CollapseAll";
     
     protected static final String fnopString = AssemblyLine.getLeadingWhiteSpace() + " FNOP\n";
     
@@ -76,7 +81,7 @@ public class XtaDisassemblyEditor extends XtaEditor {
     }
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
+		if (DEBUG) System.out.printf("XtaDisassemblyEditor: propertyChange: %s\n", event.getProperty());	
 
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			updateAll();
@@ -111,13 +116,10 @@ public class XtaDisassemblyEditor extends XtaEditor {
 			updateHighlighting();
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+			refreshInput();
 	        updateStartPoint();
 	        updateEndPoint();
 	        
-			Input input = getInput();
-	    	if (input == null)
-	    		return;	        
-
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
 			updateSelection(GuiEngine.getSelectedNodes());
 			
@@ -135,6 +137,18 @@ public class XtaDisassemblyEditor extends XtaEditor {
 		}
 	}
 
+	private void refreshInput() {
+		setInput(new InputDisassembly());
+	}
+
+	protected IVerticalRulerColumn createLineNumberRulerColumn() {
+    	if (DEBUG) System.out.printf("XtaDisassemblyEditor: createLineNumberRulerColumn\n"); 
+
+		fLineNumberRulerColumn= new XtaLineNumberRulerColumn(getInput());
+		initializeLineNumberRulerColumn(fLineNumberRulerColumn);
+		return fLineNumberRulerColumn;
+	}
+		
 	void updateAll() {
 		updateFnops();
 		updateExcluded();
@@ -162,7 +176,7 @@ public class XtaDisassemblyEditor extends XtaEditor {
     }    
 
     private void updateFnops() {
-		if (DEBUG) System.out.printf("XtaEditor: updateFnops\n"); 
+		if (DEBUG) System.out.printf("XtaDisassemblyEditor: updateFnops\n"); 
 		
     	TreeSet<XtaInstruction> toAdd = new TreeSet<XtaInstruction>();
     	TreeSet<XtaInstruction> toRemove;
@@ -286,24 +300,18 @@ public class XtaDisassemblyEditor extends XtaEditor {
     boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections) {
     	
-    	boolean hitSection = false;
-    	
     	InputLine line = getInput().getPcsToLines().get(pc);
     	if (line == null) 
-    		return hitSection;
+    		return false;
     	
     	if (!excludeSections) {
 			InputSection inputSection = getInput().getPcsToSection().get(pc);
 			if (inputSection != null) {
 				addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
-				hitSection = true;
 			}
     	}
     	
-		InputLine inputLine = getInput().getPcsToLines().get(pc);
-		if (inputLine != null) {
-			addAnnotation(line.getIndex(), type, annotations, annotationPositions);
-		}
+		addAnnotation(line.getIndex(), type, annotations, annotationPositions);
 		
 		if (!excludeFnops){
 			for (InputSection section : getSections()){
@@ -314,6 +322,88 @@ public class XtaDisassemblyEditor extends XtaEditor {
 				}
 			}
 		}
-		return hitSection;
+		return true;
     }
+    
+    long findIndexForPc(long pc) {
+		for (InputSection inputSection : getSections()) {
+			for (InputLine line : inputSection.getLines()) {
+				if ((line.getPc() == pc) && !inputSection.isFnop(line.getOffset())) {	
+					return line.getIndex();
+				}
+			}
+    	}
+		return -1;
+	}
+
+	String getLineDescription(long index) {
+		return lineIndexToString(index);
+	}
+
+    String lineIndexToString(long index) {
+    	for (InputSection inputSection : getSections()) {
+    		long startLine = inputSection.getIndex();
+    		long endLine = startLine + inputSection.getLines().size();
+    		long offset = index - startLine;
+
+    		// Don't map to the header
+    		if ((index > startLine) && (index <= endLine)) {
+    			if (!inputSection.isFnop(offset - 1)) {
+    				return inputSection.getLine(offset - 1).getCodeReference();
+    			} else {
+    				return null;
+    			}
+			}
+    	}
+		return null;
+	}
+
+	Collection<Long> getPcsForLine(long lineNumber) {
+		TreeSet<Long> pcs = new TreeSet<Long>();
+		HashMap<Long, InputLine> lineMap = getInput().getPcsToLines();
+		Iterator<Map.Entry<Long, InputLine>> lineIter = lineMap.entrySet().iterator();
+		while (lineIter.hasNext()) {
+    	    Map.Entry<Long, InputLine> pair = lineIter.next();
+    	    if (pair.getValue().getIndex() == lineNumber) {
+    	    	pcs.add(pair.getKey());
+    	    }                           
+    	}      
+
+		HashMap<Long, InputSection> sectionMap = getInput().getPcsToSection();
+		Iterator<Map.Entry<Long, InputSection>> sectionIter = sectionMap.entrySet().iterator();
+		while (sectionIter.hasNext()) {
+    	    Map.Entry<Long, InputSection> pair = sectionIter.next();
+    	    if (pair.getValue().getIndex() == lineNumber) {
+    	    	pcs.add(pair.getKey());
+    	    }                           
+    	}      
+		return pcs;
+	}
+
+	private Input getInput() {
+		IDocument document = getDocument();
+		if (document == null) {
+			return null;
+		}
+		
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
+
+		return xtaDocumentPartitioner.getInput();		
+	}
+	
+	private ArrayList<InputSection> getSections() {
+		IDocument document = getDocument();
+		if (document == null)
+			return new ArrayList<InputSection>();
+		
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
+
+		return xtaDocumentPartitioner.getInput().getSections();
+	}
+
+	public boolean isValidEndPoint(long lineNumber) {
+		return false;
+	}
 }

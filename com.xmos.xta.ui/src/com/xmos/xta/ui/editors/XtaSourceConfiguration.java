@@ -4,8 +4,6 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.reconciler.IReconciler;
-import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -21,15 +19,6 @@ public class XtaSourceConfiguration extends SourceViewerConfiguration {
 		m_editor = editor;
     }
 
-    public IReconciler getReconciler(ISourceViewer sourceViewer) {
-		if (DEBUG) System.out.printf("XtaSourceConfiguration: getReconciler\n");			                    
-        XtaReconcilingStrategy strategy = new XtaReconcilingStrategy();
-        strategy.setEditor(m_editor);
-        
-        MonoReconciler reconciler = new MonoReconciler(strategy, false);        
-        return reconciler;
-    }
-   
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
     	if (DEBUG) System.out.printf("XtaSourceConfiguration: getPresentationReconciler\n");	
         PresentationReconciler reconciler = new PresentationReconciler();

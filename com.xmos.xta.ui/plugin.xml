@@ -30,11 +30,11 @@
             name="XtaDisassemblyEditor">
       </editor>
       <editor
-            class="com.xmos.xta.ui.editors.XtaSourcesEditor"
+            class="com.xmos.xta.ui.editors.XtaSourceEditor"
             default="false"
             icon="icons/xta16x16.png"
-            id="com.xmos.xta.ui.editors.XtaSourcesEditor"
-            name="XtaSourcesEditor">
+            id="com.xmos.xta.ui.editors.XtaSourceEditor"
+            name="XtaSourceEditor">
       </editor>
       <editor
             class="com.xmos.xta.ui.editors.XtaEditor"
