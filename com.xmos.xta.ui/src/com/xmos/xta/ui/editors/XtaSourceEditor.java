@@ -18,9 +18,9 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
-import com.xmos.xta.core.sourcemapper.SourceFile;
-import com.xmos.xta.core.sourcemapper.SourceLine;
-import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.sourcemapper.SourceFile;
+import com.xmos.xta.core.engine.sourcemapper.SourceLine;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 

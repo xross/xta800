@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.instructions;
 
-import com.xmos.isa.Instruction;
-import com.xmos.xeloader.XeLoader.Architecture;
+import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.xeloader.XeLoader.Architecture;
 
 public class InstructionMnemonics {
 	private Architecture m_arch;

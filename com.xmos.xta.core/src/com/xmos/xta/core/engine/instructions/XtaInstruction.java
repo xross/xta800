@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.instructions;
 
-import com.xmos.isa.Instruction;
+import com.xmos.libs.isa.Instruction;
 
 public abstract class XtaInstruction extends Instruction {
 	private String m_functionName;

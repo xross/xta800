@@ -3,10 +3,10 @@ package com.xmos.xta.core.engine.sections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.xmos.elfhandler.ElfHandler;
-import com.xmos.elfhandler.Symbol;
-import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeloader.XeLoader;
+import com.xmos.libs.elfhandler.ElfHandler;
+import com.xmos.libs.elfhandler.Symbol;
+import com.xmos.libs.xeloader.SymbolTable;
+import com.xmos.libs.xeloader.XeLoader;
 
 public class LabelMap {	
 	private int m_nodeId;

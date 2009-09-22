@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.PatternSyntaxException;
 
-import com.xmos.util.ByteArrayManipulation;
-import com.xmos.xeloader.XeLoader;
+import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 

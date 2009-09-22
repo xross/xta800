@@ -34,9 +34,9 @@
 
    <plugins>
       <plugin id="com.ibm.icu"/>
+      <plugin id="com.xmos.libs"/>
       <plugin id="com.xmos.xta.core"/>
       <plugin id="com.xmos.xta.ui"/>
-      <plugin id="infr_libs_java"/>
       <plugin id="javax.servlet"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.core.commands"/>

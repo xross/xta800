@@ -7,8 +7,8 @@ import java.util.Collection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.xmos.dwarfhandler.DebugFile;
-import com.xmos.xeloader.DebugInfo;
+import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.editors.XtaDisassemblyEditor;

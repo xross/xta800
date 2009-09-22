@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.instructions;
 
-import com.xmos.xeloader.XeLoader;
+import com.xmos.libs.xeloader.XeLoader;
 
 public abstract class XtaInstructionDecoder {
     public abstract XtaInstruction decode(int opcode, long pc);

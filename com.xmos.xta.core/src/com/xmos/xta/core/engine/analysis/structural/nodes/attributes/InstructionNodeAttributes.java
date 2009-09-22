@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
-import com.xmos.xeloader.XeLoader.Architecture;
+import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

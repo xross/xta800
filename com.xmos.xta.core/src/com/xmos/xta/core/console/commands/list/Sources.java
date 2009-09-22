@@ -1,7 +1,7 @@
 package com.xmos.xta.core.console.commands.list;
 
-import com.xmos.dwarfhandler.DebugFile;
-import com.xmos.xeloader.DebugInfo;
+import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;

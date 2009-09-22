@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeSet;
 
-import com.xmos.isa.Instruction;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.XeLoader;
+import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.xeloader.MemoryImage;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;

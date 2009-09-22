@@ -3,7 +3,7 @@ package com.xmos.xta.ui.views.files;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 
-import com.xmos.dwarfhandler.DebugFile;
+import com.xmos.libs.dwarfhandler.DebugFile;
 
 public class FilesViewLabelProvider extends CellLabelProvider {
 

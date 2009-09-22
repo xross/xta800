@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import com.xmos.xeloader.XeLoader.Architecture;
+import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;

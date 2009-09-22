@@ -8,7 +8,7 @@
 
 package com.xmos.xta.core.engine.instructions;
 
-import com.xmos.isa.Instruction;
+import com.xmos.libs.isa.Instruction;
 
 public class RevbXtaInstructionDecoder extends XtaInstructionDecoder {
     public XtaInstruction decode(int opcode, long pc) {

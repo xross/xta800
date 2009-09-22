@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.xmos.elfhandler.ElfSection;
-import com.xmos.xeloader.MemoryImage;
-import com.xmos.xeloader.SymbolTable;
-import com.xmos.xeloader.XeLoader;
+import com.xmos.libs.elfhandler.ElfSection;
+import com.xmos.libs.xeloader.MemoryImage;
+import com.xmos.libs.xeloader.SymbolTable;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

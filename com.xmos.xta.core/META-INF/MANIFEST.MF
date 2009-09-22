@@ -4,9 +4,9 @@ Bundle-Name: Core Plug-in
 Bundle-SymbolicName: com.xmos.xta.core
 Bundle-Version: 1.0.0
 Bundle-Vendor: XMOS
-Import-Package: com.xmos.xeloader,
+Import-Package: com.xmos.libs.xeloader,
  jline
-Require-Bundle: infr_libs_java
+Require-Bundle: com.xmos.libs
 Export-Package: com.xmos.xta.core.console,
  com.xmos.xta.core.console.commands,
  com.xmos.xta.core.console.completors,
@@ -19,5 +19,5 @@ Export-Package: com.xmos.xta.core.console,
  com.xmos.xta.core.engine.references,
  com.xmos.xta.core.engine.references.types,
  com.xmos.xta.core.engine.sections,
- com.xmos.xta.core.sourcemapper
+ com.xmos.xta.core.engine.sourcemapper
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
