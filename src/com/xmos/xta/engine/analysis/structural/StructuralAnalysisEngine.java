@@ -118,6 +118,8 @@ public class StructuralAnalysisEngine {
 				if(node.isEndNode()){
 					assert(node.getPrevNodesSize() == 1);
 					if(node.getPrevNode().getNextNodesSize() == 1){
+						
+						assert(node.getNextNodesSize() == 0);
 						CommonMethods.disconnect(node, node.getPrevNode());
 						workingSet.remove(node);
 						done = false;
@@ -295,17 +297,6 @@ public class StructuralAnalysisEngine {
 					}
 					return true;
 				}
-				/*
-				public boolean foundEndNode(Node node, int depth) {
-					assert(node.getParent() != null);
-					Node previousNodes = node.getParent();
-					System.out.println("the parent of the node to remove is:" + previousNodes);
-					System.out.println("its children are: " + previousNodes.getChildren());
-					previousNodes.getChildren().remove(node);
-
-					return true;
-				}
-				*/
 		    });
 			setParent(fn);
 		}
@@ -814,8 +805,10 @@ public class StructuralAnalysisEngine {
 						sb.append(node + " -> " + next + ";");
 					}
 				}
-				if(node.isBlockNode() || node.isInstructionNode()){
+				if(node.isBlockNode()){
 					sb.append(node + " [label=\""+node.getInstructions() +"\"];");
+				} if(node.isFunctionNode()){
+					sb.append(node + " [label=\""+((FunctionNode)node).getFunctionName() +"\"];");
 				}
 			}
 			sb.append("}\n");

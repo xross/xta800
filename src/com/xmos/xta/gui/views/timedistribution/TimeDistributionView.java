@@ -29,8 +29,6 @@ import com.xmos.xta.engine.Notifier;
 import com.xmos.xta.engine.analysis.routes.Route;
 import com.xmos.xta.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.engine.analysis.structural.nodes.TimeDistributionBuckets;
-import com.xmos.xta.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.gui.Broadcaster;
 import com.xmos.xta.gui.GuiEngine;
 import com.xmos.xta.gui.views.Views;
