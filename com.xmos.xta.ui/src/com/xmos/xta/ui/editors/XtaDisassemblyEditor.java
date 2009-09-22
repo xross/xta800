@@ -1,7 +1,6 @@
-package com.xmos.xta.gui.editors;
+package com.xmos.xta.ui.editors;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -24,15 +23,15 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
-import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
-import com.xmos.xta.engine.instructions.XtaInstruction;
-import com.xmos.xta.engine.references.Reference;
-import com.xmos.xta.gui.Broadcaster;
-import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.sourcemapper.AssemblyLine;
+import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.sourcemapper.AssemblyLine;
+import com.xmos.xta.ui.Broadcaster;
+import com.xmos.xta.ui.GuiEngine;
 
 public class XtaDisassemblyEditor extends XtaEditor {
     public static final String ID = "com.xmos.xta.gui.editors.XtaDisassemblyEditor";

@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.files;
+package com.xmos.xta.ui.views.files;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;

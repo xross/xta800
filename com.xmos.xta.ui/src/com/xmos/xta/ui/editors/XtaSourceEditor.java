@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.editors;
+package com.xmos.xta.ui.editors;
 
 import java.util.List;
 import java.util.Map;
@@ -9,14 +9,14 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.engine.instructions.XtaInstruction;
-import com.xmos.xta.gui.Broadcaster;
-import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.sourcemapper.SourceFile;
-import com.xmos.xta.sourcemapper.SourceLine;
-import com.xmos.xta.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.sourcemapper.SourceFile;
+import com.xmos.xta.core.sourcemapper.SourceLine;
+import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.ui.Broadcaster;
+import com.xmos.xta.ui.GuiEngine;
 
 public class XtaSourceEditor extends XtaEditor {
     public static final String ID = "com.xmos.xta.gui.editors.XtaSourceEditor";

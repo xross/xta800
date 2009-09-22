@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.files;
+package com.xmos.xta.ui.views.files;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,15 +23,15 @@ import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.dwarfhandler.DebugFile;
-import com.xmos.xta.engine.Notifier;
-import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.editors.InputDisassembly;
-import com.xmos.xta.gui.editors.InputSource;
-import com.xmos.xta.gui.editors.XtaDisassemblyEditor;
-import com.xmos.xta.gui.editors.XtaEditor;
-import com.xmos.xta.gui.editors.XtaSourceEditor;
-import com.xmos.xta.sourcemapper.SourceFile;
-import com.xmos.xta.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.sourcemapper.SourceFile;
+import com.xmos.xta.core.sourcemapper.SourceMapper;
+import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.editors.InputDisassembly;
+import com.xmos.xta.ui.editors.InputSource;
+import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.XtaEditor;
+import com.xmos.xta.ui.editors.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;

@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.editors;
+package com.xmos.xta.ui.editors;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;

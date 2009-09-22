@@ -3,7 +3,7 @@ package com.xmos.xta.ui.dialogs;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.core.engine.Engine;
 
 public class FunctionsContentProvider implements ITreeContentProvider  {
 	private static Object[] EMPTY_ARRAY = new Object[]{};

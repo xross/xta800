@@ -1,4 +1,4 @@
-package com.xmos.xta.gui.views.files;
+package com.xmos.xta.ui.views.files;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.dwarfhandler.DebugFile;
 import com.xmos.xeloader.DebugInfo;
-import com.xmos.xta.engine.Engine;
-import com.xmos.xta.gui.GuiEngine;
-import com.xmos.xta.gui.editors.XtaDisassemblyEditor;
+import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
 
 public class FilesViewContentProvider implements ITreeContentProvider  {
 	private static Object[] EMPTY_ARRAY = new Object[]{};

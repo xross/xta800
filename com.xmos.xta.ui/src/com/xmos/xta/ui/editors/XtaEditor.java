@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -33,6 +32,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
+
+import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.routes.Route;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.sections.CodePointTableInfo;
+import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
+import com.xmos.xta.ui.Broadcaster;
+import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.dialogs.InstructionTime;
+import com.xmos.xta.ui.icons.Icons;
 
 public abstract class XtaEditor extends TextEditor implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
