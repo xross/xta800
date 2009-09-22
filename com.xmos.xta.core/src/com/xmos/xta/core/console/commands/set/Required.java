@@ -86,8 +86,11 @@ public class Required extends Command {
     public Command clone(String[] args, int index) {
     	if ((index + numArgs()) >= args.length) 
 			return null;
-    	
-    	int routeId = getRouteId(args[index + 1]);    	
+    	int routeId;
+    	try {routeId  = getRouteId(args[index + 1]);    	}
+    	catch (NumberFormatException e) {
+	        return null;
+	    }
    		String value = args[index + 2];
     	String mode = args[index + 3];
 

@@ -143,9 +143,15 @@ public class SequenceNode extends Node {
 		return m_nodes;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.addAll(m_nodes.get(m_nodes.size()-1).getEndNodes());
+		set.addAll(m_nodes.get(m_nodes.size()-1).getEndInstructions());
+		return set;
+	}
+	
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.addAll(m_nodes.get(0).getStartInstructions());
 		return set;
 	}
 	
@@ -154,5 +160,7 @@ public class SequenceNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
 		}
 		return false;
-	}		
+	}
+
+			
 }

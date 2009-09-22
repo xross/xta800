@@ -14,6 +14,7 @@ public class Print extends CommandContainer {
 		new RouteInfo(), 
 		new NodeInfo(),
 		new Warnings(),
+		new TimeDistribution(),
 	};
 	
 	public Print() { super("print"); }

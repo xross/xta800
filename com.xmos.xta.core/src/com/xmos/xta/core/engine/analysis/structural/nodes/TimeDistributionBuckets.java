@@ -4,25 +4,46 @@ import java.util.Collection;
 import java.util.List;
 
 public class TimeDistributionBuckets {
-	private static final int BUCKET_COUNT = 200;
+	public static final int BUCKET_COUNT = 80;
 	
-	private long m_buckets [];
+	private double m_buckets [];
 	private double m_lowest;
 	private double m_highest;
 	private boolean m_isInfinite;
 	
 	public TimeDistributionBuckets(){
-		m_buckets = new long [BUCKET_COUNT];
+		m_buckets = new double [BUCKET_COUNT];
 		m_isInfinite = false;
 	}
+	public TimeDistributionBuckets(TimeDistributionBuckets b){
+		m_buckets = new double [BUCKET_COUNT];
+		
+		for(int i =0;i< BUCKET_COUNT; i++) {
+			m_buckets[i] = b.m_buckets[i];
+		}
+		m_isInfinite = b.m_isInfinite;
+		m_lowest = b.m_lowest;
+		m_highest = b.m_highest;
+	}
 	
-	public TimeDistributionBuckets(int time){
-		m_buckets = new long [BUCKET_COUNT];
+	public TimeDistributionBuckets(long time){
+		m_buckets = new double [BUCKET_COUNT];
 		m_lowest = time;
 		m_highest = time;
 		m_buckets[timeToBucket(time)] = 1;
 		m_isInfinite = false;
 	}
+	
+	private void normalise(){
+		double total = 0;
+		for(int i=0;i<BUCKET_COUNT;i++){
+			total += m_buckets[i];
+		}
+		for(int i=0;i<BUCKET_COUNT;i++){
+			m_buckets[i] = m_buckets[i]/total;
+		}
+	}
+	
 	
 	/**
 	 * this is used for adding two buckets together that are in series.
@@ -45,6 +66,7 @@ public class TimeDistributionBuckets {
 			m_highest = time.m_highest;
 			m_isInfinite = time.m_isInfinite;
 		}
+		normalise();
 	}
 	
 	
@@ -68,6 +90,7 @@ public class TimeDistributionBuckets {
 				m_buckets[b] += b0.m_buckets[i] * b1.m_buckets[j];
 			}
 		}
+		normalise();
 	}
 	
 	/**
@@ -95,6 +118,7 @@ public class TimeDistributionBuckets {
 				m_buckets[timeToBucket(t.bucketToTime(i))] += t.m_buckets[i] ;
 			}
 		}
+		normalise();
 	}
 	
 	private double bucketToTime(long i){
@@ -121,17 +145,82 @@ public class TimeDistributionBuckets {
 	public boolean isInfinite(){
 		return m_isInfinite;
 	}
-
+	/*
 	public void repeat(long count) {
-		m_lowest = m_lowest * count;
-		m_highest = m_highest * count;
+		TimeDistributionBuckets n = new TimeDistributionBuckets(this);
+		List<TimeDistributionBuckets> list = new LinkedList<TimeDistributionBuckets>();
+		for(int i=0;i<count;i++){
+			list.add(n);
+		}
+		TimeDistributionBuckets p = new TimeDistributionBuckets();
+		
+		p.add(list);
+		
+		m_buckets = p.m_buckets;
+		m_highest = p.m_highest;
+		m_isInfinite = p.m_isInfinite;
+		m_lowest = p.m_lowest;
+		normalise();
+	}
+	*/
+	public void repeat(long count) {
+		TimeDistributionBuckets n = new TimeDistributionBuckets(this);
+		TimeDistributionBuckets res = null;
+		
+		while(count > 0){
+			if((count %2 ) != 0){
+				TimeDistributionBuckets s = new TimeDistributionBuckets();
+				if(res == null){
+					s = n;
+				} else {
+					s.add(res, n);
+				}
+				
+				res = s;
+			}
+			TimeDistributionBuckets t = new TimeDistributionBuckets();
+			t.add(n, n);
+			n = t;
+			count = count >> 1;
+		}
+		
+		m_buckets = res.m_buckets;
+		m_highest = res.m_highest;
+		m_isInfinite = res.m_isInfinite;
+		m_lowest = res.m_lowest;
+		normalise();
 	}
 
+	
 	public void print(){
-		for(long i : m_buckets){
-			System.out.println(i);
+		
+		System.out.println(m_lowest + " "+ m_highest);
+		double current = m_lowest;
+		double inc = (m_highest - m_lowest) / BUCKET_COUNT;
+		
+		for(double i : m_buckets){
+			System.out.println(current + "\t" + i);
+			current += inc;
 		}
 
+	}
+	public double getBucket(int i) {
+		return m_buckets[i];
+	}
+	
+	public double getMaxBucket() {
+		double max = 0.0;
+		for(double i : m_buckets){
+			max = Math.max(max, i);
+		}
+		return max;
+	}
+	
+	public long getLowestBucketCycles(){
+		return (long)m_lowest;
+	}
+	public long getHighestBucketCycles(){
+		return (long)m_highest;
 	}
 	
 	

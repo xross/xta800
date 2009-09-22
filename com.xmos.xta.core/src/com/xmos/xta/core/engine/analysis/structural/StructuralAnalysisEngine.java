@@ -80,7 +80,7 @@ public class StructuralAnalysisEngine {
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
 			working = false;
-
+			removeEndNodes(workingSet);
 			for (PatternMatcher pm : m_patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
 					buildDominatorTree(workingSet, treeStart);
@@ -108,6 +108,28 @@ public class StructuralAnalysisEngine {
 		}
 		
 		return true;
+	}
+
+	private void removeEndNodes(Collection<Node> workingSet) {
+		
+		//System.out.println(StructuralAnalysisEngine.dumpTree("dump", workingSet));
+		boolean done = false;
+		while(!done){
+			done = true;
+			for(Node node : workingSet){
+				if(node.isEndNode()){
+					assert(node.getPrevNodesSize() == 1);
+					if(node.getPrevNode().getNextNodesSize() == 1 && node.getNextNodesSize() == 0){
+						
+						//assert(node.getNextNodesSize() == 0);
+						CommonMethods.disconnect(node, node.getPrevNode());
+						workingSet.remove(node);
+						done = false;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	private boolean buildStructureGraphs(CommandSource src, Engine engine, TreeMap<String,
@@ -227,7 +249,7 @@ public class StructuralAnalysisEngine {
 
 			graphs.add(fn);
 			
-			setParent(fn);
+			//setParent(fn);
 			
 			normaliseGraph(fn);
 			
@@ -240,6 +262,9 @@ public class StructuralAnalysisEngine {
 
 	private boolean done;
 	public void normaliseGraph(Node fn) {
+		
+		setParent(fn);
+		
 		done = false;
 		//this bit removes the path within paths 
 		while(!done){
@@ -781,6 +806,12 @@ public class StructuralAnalysisEngine {
 					} else {
 						sb.append(node + " -> " + next + ";");
 					}
+				}
+				//if(node.isBlockNode()){
+				//	sb.append(node + " [label=\""+node.getInstructions() +"\"];");
+				//} 
+			if(node.isFunctionNode()){
+					sb.append(node + " [label=\""+((FunctionNode)node).getFunctionName() +"\"];");
 				}
 			}
 			sb.append("}\n");

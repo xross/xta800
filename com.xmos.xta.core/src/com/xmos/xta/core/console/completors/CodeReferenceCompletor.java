@@ -37,11 +37,6 @@ public class CodeReferenceCompletor implements Completor {
             	srcLabelInfos.addAll(m_engine.getCalls().values());
             	break;
             	
-            case SRCLABEL: 
-            	srcLabelInfos.addAll(m_engine.getSrcLabels().values());
-            	srcLabelInfos.addAll(m_engine.getCalls().values());
-            	break;
-            	
             case LABEL:
             	break;
             	

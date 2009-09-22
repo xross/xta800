@@ -122,7 +122,7 @@ public class InstructionNode extends Node {
 		return null;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
 		set.add(this);
 		return set;
@@ -136,5 +136,11 @@ public class InstructionNode extends Node {
 			}
 		}
 		return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+	}
+
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.add(this);
+		return set;
 	}	
 }

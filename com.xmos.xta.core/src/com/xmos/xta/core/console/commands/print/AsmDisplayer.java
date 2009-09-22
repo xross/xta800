@@ -50,6 +50,7 @@ public class AsmDisplayer {
 	            long functionAddress = symbolTable.functionAddress(functionLinesCovered.first());
 	            long functionSize = symbolTable.functionSize(functionAddress);  
 	            
+	            //TODO figure out if this can actually happen
 	            if ((functionAddress == 0) && (functionSize == 0)) {
 	            	// We can't seem to find the actual address + size (maybe the information
 	            	// is missing from the symbol table, so just use the highest and lowest 

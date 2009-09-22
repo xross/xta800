@@ -153,24 +153,30 @@ public class LoopNode extends Node {
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> loopList = new LinkedList<TimeDistributionBuckets>();
+		TimeDistributionBuckets loopHeaderBucket = m_loopHeader.getTimeSpread();
+		loopHeaderBucket.repeat(m_attributes.getLoopIterations()+1);
+		loopList.add(loopHeaderBucket);
 		for(Node loop : m_loops){
-			//if(loop.getAttributes().getLoopIterations() > 0){
-				TimeDistributionBuckets loopBucket = new TimeDistributionBuckets();
-				loopBucket.add(m_loopHeader.getTimeSpread(), loop.getTimeSpread());
-				//loopBucket.repeat(1);
-				loopList.add(loopBucket);
-			//}
+			if(m_attributes.getLoopIterations() > 0){
+				TimeDistributionBuckets b = loop.getTimeSpread();
+				b.repeat(m_attributes.getLoopIterations());
+				loopList.add(b);
+			}
 		}
 		tdb.add(loopList);
 		return tdb;
 	}
 	
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		//for(Node loop : m_loops){
-		//	set.addAll(loop.getEndNodes());
-		//}
-		set.addAll(m_loopHeader.getEndNodes());
+		
+		//i think this is correct
+		set.addAll(m_loopHeader.getEndInstructions());
+		
+		//maybe this should be included too however
+		for(Node loop : m_loops){
+			set.addAll(loop.getEndInstructions());
+		}
 		return set;
 	}
 	
@@ -179,5 +185,18 @@ public class LoopNode extends Node {
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
 		}
 		return false;
+	}
+
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		
+		//i think this is correct
+		set.addAll(m_loopHeader.getStartInstructions());
+		
+		//maybe this should be included too however
+		for(Node loop : m_loops){
+			set.addAll(loop.getStartInstructions());
+		}
+		return set;
 	}	
 }

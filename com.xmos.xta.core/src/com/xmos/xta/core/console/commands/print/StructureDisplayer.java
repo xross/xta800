@@ -9,10 +9,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureDisplayer {
-	private final static boolean DEBUG_NEXT = false;
-	private final static boolean DEBUG_BEFORE = false;
-	private final static boolean DEBUG_CHILDREN = false;
-	private final static boolean DEBUG_ATTRIBUTES = false;
 
 	private Console m_console;
 	private int m_verbosity;
@@ -48,9 +44,6 @@ public class StructureDisplayer {
 		displayNumPaths(node, sb);
 		displayDescription(node, sb);
 		displayAttributes(node, sb);
-		if (DEBUG_NEXT) displayWhatsNext(node, sb);
-		if (DEBUG_BEFORE) displayWhatsBefore(node, sb);
-		if (DEBUG_CHILDREN) displayChildren(node, sb);
 		sb.append("\n");	
 	}
 	
@@ -89,7 +82,7 @@ public class StructureDisplayer {
 	}
 	
 	private void displayAttributes(Node node, StringBuffer sb) {		
-		if ((m_verbosity >= 50) || (DEBUG_ATTRIBUTES == true)) {			
+		if (m_verbosity >= 50) {			
 			NodeAttributes nodeAttributes = node.getAttributes();
 			
 			if (node.isUnresolved())
@@ -123,27 +116,4 @@ public class StructureDisplayer {
 		}
 	}
 	
-	private void displayWhatsNext(Node node, StringBuffer sb) {
-		if (node.getParent()!= null && node.getParent().whatsNext(node) != null){
-			sb.append(" ---next: ");
-			sb.append(node.getParent().whatsNext(node).toString());
-			sb.append("---");
-		}		
-	}
-	
-	private void displayWhatsBefore(Node node, StringBuffer sb) {
-		if (node.getParent()!= null && node.getParent().whatsBefore(node) != null){
-			sb.append(" ---before: ");
-			sb.append(node.getParent().whatsBefore(node).toString());
-			sb.append("---");
-		}		
-	}
-	
-	private void displayChildren(Node node, StringBuffer sb) {
-		if (node.getChildren() != null){
-			sb.append(" ---children: ");
-			sb.append(node.getChildren().toString());
-			sb.append("---");
-		}		
-	}
 }

@@ -38,4 +38,8 @@ public class DefaultNodeTraverser implements NodeTraverser {
 	public boolean foundInfiniteSelfLoopNode(Node node, int depth) {
 		return true;
 	}
+	
+	public boolean foundEndNode(Node node, int depth) {
+		return true;
+	}
 }

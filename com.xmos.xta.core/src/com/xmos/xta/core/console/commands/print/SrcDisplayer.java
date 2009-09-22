@@ -1,9 +1,7 @@
 package com.xmos.xta.core.console.commands.print;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
@@ -15,7 +13,6 @@ import com.xmos.xta.core.sourcemapper.SourceLine;
 import com.xmos.xta.core.sourcemapper.SourceMapper;
 
 public class SrcDisplayer {
-	private static final boolean DEBUG = false;
 
 	private Engine m_engine;
 	private Console m_console;
@@ -32,9 +29,6 @@ public class SrcDisplayer {
 		SourceMapper sourceMapper = m_engine.getSourceMapper();
         HashMap<String, TreeSet<Long>> linesCovered = 
         	createSrcLinesCovered(instructions, sourceMapper);                                                                   
-        
-        if (DEBUG) 
-        	displaySrcLinesCovered(linesCovered);
         
 		for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {									
 	        TreeSet<Long> fileLines = linesCovered.get(sourceFile.getFullFileName());    
@@ -92,20 +86,4 @@ public class SrcDisplayer {
 		return linesCovered;
 	}
 	
-	private void displaySrcLinesCovered(Map<String, TreeSet<Long>> linesCovered) {
-        Iterator<Map.Entry<String, TreeSet<Long>>> iter =
-        	linesCovered.entrySet().iterator();
-
-        while (iter.hasNext()) {
-        	Map.Entry<String, TreeSet<Long>> pair = iter.next();
-            String fileName = pair.getKey();
-            TreeSet<Long> lineNumbers = pair.getValue();
-		
-            System.out.printf("SrcLinesCovered: %s: ", fileName);
-            for (long lineNumber : lineNumbers) {
-                System.out.print(lineNumber + " ");            	
-            }
-            System.out.print("\n");
-        }
-	}
 }

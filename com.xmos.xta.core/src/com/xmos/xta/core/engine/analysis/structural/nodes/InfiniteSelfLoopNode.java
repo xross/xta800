@@ -111,9 +111,9 @@ public class InfiniteSelfLoopNode extends Node{
 		tdb.setInfinite();
 		return tdb;
 	}
-	public Set<InstructionNode> getEndNodes() {
+	public Set<InstructionNode> getEndInstructions() {
 		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.addAll(m_loop.getEndNodes());
+		set.addAll(m_loop.getEndInstructions());
 		return set;
 	}
 	
@@ -122,5 +122,11 @@ public class InfiniteSelfLoopNode extends Node{
 		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
 		}
 		return false;
+	}
+
+	public Set<InstructionNode> getStartInstructions() {
+		Set<InstructionNode> set = new TreeSet<InstructionNode>();
+		set.addAll(m_loop.getStartInstructions());
+		return set;
 	}	
 }
