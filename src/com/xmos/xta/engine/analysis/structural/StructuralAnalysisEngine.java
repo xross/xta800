@@ -112,7 +112,7 @@ public class StructuralAnalysisEngine {
 
 	private void removeEndNodes(Collection<Node> workingSet) {
 		
-		System.out.println(StructuralAnalysisEngine.dumpTree("dump", workingSet));
+		//System.out.println(StructuralAnalysisEngine.dumpTree("dump", workingSet));
 		boolean done = false;
 		while(!done){
 			done = true;
