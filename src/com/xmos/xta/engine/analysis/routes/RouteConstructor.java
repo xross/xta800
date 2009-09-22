@@ -268,7 +268,6 @@ public class RouteConstructor {
 					//this doesn't allow excluded nodes to form a loop with the start node! --check
 					//maybe it should also contain 'endNodes.contains(start) &&'
 					makeConnection(currentNode, parent);
-					
 					m_excludedRouteNodes.add(currentNode);
 					
 				} else {
@@ -291,8 +290,6 @@ public class RouteConstructor {
 	private boolean exploreWhatsNext(InstructionNode startInstruction, Collection<Node> workingSet, 
 			Collection<InstructionNode> endInstructions, Node currentNode, Node originalParent, 
 			Node replacementNode, boolean isFunction, Collection<Node> realEndNodes) {
-		//System.out.println("\tgoing to whats next");
-		
 		boolean seenEndPoint = false;
 		makeConnection(replacementNode, originalParent);
 		if(workingSet.contains(currentNode)){
@@ -313,7 +310,6 @@ public class RouteConstructor {
 	private boolean exploreIntoCurrentNode(InstructionNode startInstruction, Collection<Node> workingSet, 
 			Collection<InstructionNode> endInstructions, Node currentNode, NodeWrapper node, Node parent, 
 			Collection<Node> currentNodesExclusions, Set<Node> containedEndPoints, boolean isFunction, Collection<Node> realEndNodes ) {
-		//System.out.println("\tlooking into");
 		boolean seenEndPoint = false;
 		assert (!currentNode.getImmediateChildren().isEmpty());
 		
@@ -411,7 +407,6 @@ public class RouteConstructor {
 				}
 			}
 		}
-
 		return seenEndPoint;
 	}
 
