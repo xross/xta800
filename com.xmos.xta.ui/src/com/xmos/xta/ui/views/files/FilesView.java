@@ -35,7 +35,7 @@ import com.xmos.xta.ui.editors.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.gui.views.files.Files";
+    public static final String ID = "com.xmos.xta.ui.views.files.Files";
     
     private FilteredTree m_filesViewer;
     

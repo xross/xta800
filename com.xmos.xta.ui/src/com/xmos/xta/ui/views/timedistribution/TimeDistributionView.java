@@ -36,7 +36,7 @@ import com.xmos.xta.ui.views.Views;
 
 public class TimeDistributionView extends ViewPart implements IPropertyChangeListener,
                                                        IMenuListener {
-    public static final String ID = "com.xmos.xta.gui.views.timedistribution.TimeDistribution";
+    public static final String ID = "com.xmos.xta.ui.views.timedistribution.TimeDistribution";
     public static final boolean DEBUG = false;
 
     private static final int TIMELINE_Y = 30;
