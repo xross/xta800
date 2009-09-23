@@ -4,8 +4,7 @@ Bundle-Name: Core Plug-in
 Bundle-SymbolicName: com.xmos.xta.core
 Bundle-Version: 1.0.0
 Bundle-Vendor: XMOS
-Import-Package: com.xmos.libs.xeloader,
- jline
+Import-Package: jline
 Require-Bundle: com.xmos.libs
 Export-Package: com.xmos.xta.core.console,
  com.xmos.xta.core.console.commands,

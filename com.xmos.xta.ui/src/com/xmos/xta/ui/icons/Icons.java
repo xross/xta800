@@ -28,7 +28,7 @@ public class Icons {
 	
 	public static ImageDescriptor getIconDescriptor(String iconName) {
 		ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-				"tools_xta", "icons/" + iconName + ".png");
+				"com.xmos.xta.ui", "icons/" + iconName + ".png");
 
 		return imageDescriptor;
 	}
