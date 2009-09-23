@@ -14,24 +14,17 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
 public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
     public static final boolean DEBUG = false;
 	
-	private XtaEditor m_editor;
+	private XtaDisassemblyEditor m_editor;
 	private IDocument m_document;
 	
 	public void reconcile(IRegion partition) {
 		if (DEBUG) System.out.printf("XtaReconcilingStrategy: reconcile\n");
+		updateFolding();
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
 		if (DEBUG) System.out.printf("XtaReconcilingStrategy: reconcile\n");
-		ArrayList<Position> positions = new ArrayList<Position>();
-		try {
-			for (Position position : m_document.getPositions(XtaDocumentPartitioner.SECTION)) {
-				positions.add(position);
-			}
-		} catch (BadPositionCategoryException e) {
-			e.printStackTrace();
-		}
-		m_editor.updateFoldingStructure(positions, m_document);
+		updateFolding();
 	}
 
 	public void setDocument(IDocument document) {
@@ -41,15 +34,7 @@ public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 
 	public void initialReconcile() {
 		if (DEBUG) System.out.printf("XtaReconcilingStrategy: initialReconcile\n");
-		ArrayList<Position> positions = new ArrayList<Position>();
-		try {
-			for (Position position : m_document.getPositions(XtaDocumentPartitioner.SECTION)) {
-				positions.add(position);
-			}
-		} catch (BadPositionCategoryException e) {
-			e.printStackTrace();
-		}
-		m_editor.updateFoldingStructure(positions, m_document);
+		updateFolding();
 	}
 
 	public void setProgressMonitor(IProgressMonitor monitor) {
@@ -61,8 +46,20 @@ public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilin
         return m_editor;
     }
 
-    public void setEditor(XtaEditor editor) {
+    public void setEditor(XtaDisassemblyEditor editor) {
 		if (DEBUG) System.out.printf("XtaReconcilingStrategy: setEditor\n");		
     	m_editor = editor;
     }	
+
+	private void updateFolding() {
+		ArrayList<Position> positions = new ArrayList<Position>();
+		try {
+			for (Position position : m_document.getPositions(XtaDocumentPartitioner.SECTION)) {
+				positions.add(position);
+			}
+		} catch (BadPositionCategoryException e) {
+			e.printStackTrace();
+		}
+		m_editor.updateFoldingStructure(positions, m_document);
+	}
 }

@@ -7,21 +7,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.util.PropertyChangeEvent;
-
-import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceLine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
-import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 
 public class XtaSourceEditor extends XtaEditor {
@@ -36,68 +28,16 @@ public class XtaSourceEditor extends XtaEditor {
         m_endPointLineIndexes = new HashSet<Long>();
     }
 
-	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
-
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			updateAll();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-	        updateStartPoint();
-	        updateEndPoint();
-			updateAll();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
-				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
-			updateStartPoint();
-			updateHighlighting();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
-				   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
-			updateEndPoint();
-			updateHighlighting();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
-			updateUnknowns();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
-			updateExcluded();
-			updateHighlighting();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
-	        updateStartPoint();
-	        updateEndPoint();
-			updateHighlighting();
-
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
-			updateSelection(GuiEngine.getSelectedNodes());
-			
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
-			Node focusNode = GuiEngine.getFocus();
-			if (focusNode != null) {
-				for (XtaInstruction instruction : focusNode.getInstructions()) {
-					boolean hit = showCodePoint(instruction.getPc());
-					if (hit) {
-						return;
-					}
-				}
-			}
-
-		}
-	}
-
     void updateAll() {
 		updateExcluded();
 		updateUnknowns();
 		updateHighlighting();
 	}
 
-	void updateAnnotations(List<Annotation> annotations,
-			HashMap<Annotation, Position> annotationPositions) {
+	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
 
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
-		final HashMap<Annotation, Position> allAnnotationPositions =
-			new HashMap<Annotation, Position>(annotationPositions);
+		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
 		
         long startPointIndex = getStartPointIndex();
         long endPointIndex = getEndPointIndex();
@@ -108,7 +48,7 @@ public class XtaSourceEditor extends XtaEditor {
         		long index = info.getLineNumber() + 1;
         		m_endPointLineIndexes.add(index);
         		if (index != endPointIndex && index != startPointIndex) {
-        			addAnnotation(index, EndpointID, allAnnotations, allAnnotationPositions);
+        			addAnnotation(index, EndpointID, allAnnotations, allPositions);
         		}
         	}
         } 
@@ -118,12 +58,12 @@ public class XtaSourceEditor extends XtaEditor {
         		long index = info.getLineNumber() + 1;
         		m_endPointLineIndexes.add(index);
         		if (index != endPointIndex && index != startPointIndex) {
-        			addAnnotation(index, EndpointID, allAnnotations, allAnnotationPositions);
+        			addAnnotation(index, EndpointID, allAnnotations, allPositions);
         		}
         	}
         } 
 
-        super.updateAnnotations(annotations, annotationPositions);
+        super.updateAnnotations(annotations, positions);
 	}
 
     boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
@@ -137,19 +77,6 @@ public class XtaSourceEditor extends XtaEditor {
     		return false;
     	}
     }
-
-	boolean showCodePoint(long pc) {
-    	long index = findIndexForPc(pc);
-    	if (index >= 0) { 
-			try {
-				IDocument document = getDocument();
-				int charOffset = document.getLineOffset((int)index);
-				showLocation(charOffset, index, false);
-				return true;
-			} catch (BadLocationException e) {}
-		}
-		return false;
-	}
 
 	long findIndexForPc(long pc) {
 		SourceLine sourceLine = getLineForPc(pc);

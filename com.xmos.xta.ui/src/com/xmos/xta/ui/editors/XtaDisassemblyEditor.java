@@ -19,13 +19,14 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IVerticalRulerColumn;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
+import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.core.engine.Notifier;
@@ -46,6 +47,7 @@ public class XtaDisassemblyEditor extends XtaEditor {
     public static final String CollapseAllID         = "com.xmos.xta.ui.action.CollapseAll";
     
     protected static final String fnopString = AssemblyLine.getLeadingWhiteSpace() + " FNOP\n";
+    private Annotation[] m_previousProjectionAnnotations;
     
     public XtaDisassemblyEditor() {
     	super(XtaDocumentPartitioner.DISASSEMBLY);
@@ -83,62 +85,29 @@ public class XtaDisassemblyEditor extends XtaEditor {
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditor: propertyChange: %s\n", event.getProperty());	
 
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			updateAll();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
-	        updateStartPoint();
-	        updateEndPoint();
-			updateAll();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
-				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
-			updateStartPoint();
-			updateHighlighting();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
-				   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
-			updateEndPoint();
-			updateHighlighting();
-
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
+		if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
 			Reference codePoint = GuiEngine.getCodePoint();
 	    	if (codePoint == null || !codePoint.getResolved()) {
 	    		return;
 	    	}
 			showCodePoint(codePoint.getPc());
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
-			updateUnknowns();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
-			updateExcluded();
-			updateHighlighting();
-
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+		}  else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			refreshInput();
-	        updateStartPoint();
-	        updateEndPoint();
-	        
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
-			updateSelection(GuiEngine.getSelectedNodes());
-			
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
-			Node focusNode = GuiEngine.getFocus();
-			if (focusNode != null) {
-				for (XtaInstruction instruction : focusNode.getInstructions()) {
-					boolean hit = showCodePoint(instruction.getPc());
-					if (hit) {
-						return;
-					}
-				}
-			}
 
 		}
+		
+		super.propertyChange(event);
 	}
 
 	private void refreshInput() {
 		setInput(new InputDisassembly());
+
+		ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
+        m_projectionAnnotationModel = viewer.getProjectionAnnotationModel();
+
+		setPartName(m_partName);
+		m_projectionAnnotationModel.removeAllAnnotations();
+        m_previousProjectionAnnotations = new Annotation[0];       
 	}
 
 	protected IVerticalRulerColumn createLineNumberRulerColumn() {
@@ -284,19 +253,6 @@ public class XtaDisassemblyEditor extends XtaEditor {
     	addAction(menu, CollapseAllID);
     }
 	
-	boolean showCodePoint(long pc) {
-		IDocument document = getDocument();
-		InputLine line = getInput().getPcsToLines().get(pc);
-		if (line != null) {
-			try {
-				int charOffset = document.getLineOffset((int)line.getIndex());
-				showLocation(charOffset, line.getIndex(), true);
-				return true;
-			} catch (BadLocationException e) {}
-		}
-		return false;
-	}
-
     boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections) {
     	
@@ -326,13 +282,10 @@ public class XtaDisassemblyEditor extends XtaEditor {
     }
     
     long findIndexForPc(long pc) {
-		for (InputSection inputSection : getSections()) {
-			for (InputLine line : inputSection.getLines()) {
-				if ((line.getPc() == pc) && !inputSection.isFnop(line.getOffset())) {	
-					return line.getIndex();
-				}
-			}
-    	}
+		InputLine line = getInput().getPcsToLines().get(pc);
+		if (line != null) {
+			return line.getIndex();
+		}
 		return -1;
 	}
 
@@ -406,4 +359,35 @@ public class XtaDisassemblyEditor extends XtaEditor {
 	public boolean isValidEndPoint(long lineNumber) {
 		return false;
 	}
+
+	public boolean isDirty() {
+		// Keep the editor pages from showing a '*' when FNOPs are inserted and removed
+		return false;
+	}
+
+	public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
+	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
+
+	    Annotation[] annotations = new Annotation[positions.size()];
+        HashMap<ProjectionAnnotation, Position> annotationPositions = 
+    	    new HashMap<ProjectionAnnotation, Position>();
+
+        for (int i = 0; i < positions.size();i++) {
+            ProjectionAnnotation annotation = new ProjectionAnnotation();
+            annotationPositions.put(annotation, positions.get(i));
+            annotations[i] = annotation;
+        }
+       
+        m_projectionAnnotationModel.modifyAnnotations(
+        		m_previousProjectionAnnotations, annotationPositions, null);
+        
+        m_projectionAnnotationModel.collapseAll(0, document.getLength());
+        m_previousProjectionAnnotations = annotations;   
+        
+/*        Iterator iter = m_projectionAnnotationModel.getAnnotationIterator();
+        while (iter.hasNext()) {
+        	Annotation a = (Annotation) iter.next();
+        	a.
+        }*/
+    }
 }

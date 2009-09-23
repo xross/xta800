@@ -19,7 +19,6 @@ import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
-import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
@@ -31,6 +30,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
@@ -72,11 +72,9 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     private Action m_showEndPointAction;
     private Action m_setInstructionTimeAction;
     private String m_clickCodeRefString;
-    private ProjectionSupport m_projectionSupport;    
     protected ProjectionAnnotationModel m_projectionAnnotationModel;
-    private IAnnotationModelExtension m_annotationModel;
+    protected IAnnotationModelExtension m_annotationModel;
     private AnnotationPainter m_painter;
-    private Annotation[] m_previousProjectionAnnotations;
     private Annotation[] m_previousHighlightAnnotations;
     private Annotation[] m_previousUnknownAnnotations;
     protected List<Node> m_selectedNodes;    
@@ -87,12 +85,11 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 	protected TreeSet<XtaInstruction> m_previousFnops;
 
     protected String m_fileName;
+    protected String m_partName;
 
     // Abstract methods
-	public abstract void propertyChange(PropertyChangeEvent event);
 	public abstract boolean isValidEndPoint(long lineNumber);
 
-	abstract boolean showCodePoint(long pc);
     abstract void updateAll();
 	abstract long findIndexForPc(long pc);
     abstract boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
@@ -126,8 +123,8 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     	
 		ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
     	   	
-        m_projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-        m_projectionSupport.install();
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
+        projectionSupport.install();
 
         viewer.doOperation(ProjectionViewer.TOGGLE);
 
@@ -147,6 +144,65 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		GuiEngine.removeBroadcastListener(this);
 		super.dispose();
     }
+
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+    	if (DEBUG) System.out.printf("XtaEditor: createSourceViewer\n"); 
+
+        ISourceViewer viewer = new ProjectionViewer(parent, ruler,
+		    getOverviewRuler(), isOverviewRulerVisible(), styles);
+
+        getSourceViewerDecorationSupport(viewer);
+        return viewer;
+    }
+    
+	public void propertyChange(PropertyChangeEvent event) {
+		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
+
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+			updateAll();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
+	        updateStartPoint();
+	        updateEndPoint();
+			updateAll();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
+				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
+			updateStartPoint();
+			updateHighlighting();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
+				   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
+			updateEndPoint();
+			updateHighlighting();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
+			updateUnknowns();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
+			updateExcluded();
+			updateHighlighting();
+
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+	        updateStartPoint();
+	        updateEndPoint();
+			updateHighlighting();
+
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
+			updateSelection(GuiEngine.getSelectedNodes());
+			
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
+			Node focusNode = GuiEngine.getFocus();
+			if (focusNode != null) {
+				for (XtaInstruction instruction : focusNode.getInstructions()) {
+					boolean hit = showCodePoint(instruction.getPc());
+					if (hit) {
+						return;
+					}
+				}
+			}
+		}
+	}
 
 	public String getType() {
 		return m_type;
@@ -172,26 +228,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     	return nodes;
     }
 	
-	public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
-	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
-
-	    Annotation[] annotations = new Annotation[positions.size()];
-        HashMap<ProjectionAnnotation, Position> annotationPositions = 
-    	    new HashMap<ProjectionAnnotation, Position>();
-
-        for (int i = 0; i < positions.size();i++) {
-            ProjectionAnnotation annotation = new ProjectionAnnotation();
-            annotationPositions.put(annotation, positions.get(i));
-            annotations[i] = annotation;
-        }
-       
-        m_projectionAnnotationModel.modifyAnnotations(
-        		m_previousProjectionAnnotations, annotationPositions, null);
-        
-        m_projectionAnnotationModel.collapseAll(0, document.getLength());
-        m_previousProjectionAnnotations = annotations;       
-    }
-
 	public long getStartPointIndex() {
 		return m_startPointLineIndex;
 	}
@@ -200,16 +236,6 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		return m_endPointLineIndex;
 	}
 	
-	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-    	if (DEBUG) System.out.printf("XtaEditor: createSourceViewer\n"); 
-
-        ISourceViewer viewer = new ProjectionViewer(parent, ruler,
-		    getOverviewRuler(), isOverviewRulerVisible(), styles);
-
-        getSourceViewerDecorationSupport(viewer);
-        return viewer;
-    }
-    
     protected void createActions() {
 		if (DEBUG) System.out.printf("XtaEditor: createActions\n"); 
      	super.createActions();
@@ -376,33 +402,32 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 		}
     }
 
-	void updateAnnotations(List<Annotation> annotations,
-			HashMap<Annotation, Position> annotationPositions) {
+	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
 
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
-		final HashMap<Annotation, Position> allAnnotationPositions =
-			new HashMap<Annotation, Position>(annotationPositions);
+		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
 		
         long startPointIndex = getStartPointIndex();
         long endPointIndex = getEndPointIndex();
 
         if ((startPointIndex != -1) && (startPointIndex == endPointIndex)) {
-        	addAnnotation(startPointIndex, StartStopAnnotationID, allAnnotations, allAnnotationPositions);
+        	addAnnotation(startPointIndex, StartStopAnnotationID, allAnnotations, allPositions);
         } else {
-        	if (startPointIndex != -1)
-            	addAnnotation(startPointIndex, StartAnnotationID, allAnnotations, allAnnotationPositions);
-        	
-        	if (endPointIndex != -1)
-            	addAnnotation(endPointIndex, StopAnnotationID, allAnnotations, allAnnotationPositions);
+        	if (startPointIndex != -1) {
+            	addAnnotation(startPointIndex, StartAnnotationID, allAnnotations, allPositions);
+        	}
+        	if (endPointIndex != -1) {
+            	addAnnotation(endPointIndex, StopAnnotationID, allAnnotations, allPositions);
+        	}
         }
 
     	for (Long excludedIndex : m_excludedIndexes) {
-    		addAnnotation(excludedIndex, ExcludedAnnotationID, allAnnotations, allAnnotationPositions);
+    		addAnnotation(excludedIndex, ExcludedAnnotationID, allAnnotations, allPositions);
 		}
     	
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {      
-				m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, allAnnotationPositions);
+				m_annotationModel.replaceAnnotations(m_previousHighlightAnnotations, allPositions);
 			}});
 		m_previousHighlightAnnotations = createArray(allAnnotations);
 	}
@@ -528,13 +553,22 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
 	    return false;	
 	}
 
-	public boolean isDirty() {
-		// Keep the editor pages from showing a '*' when FNOPs are inserted and removed
-		return false;
-	}
-
 	public void setNames(String partName, String fileName) {
+		m_partName = partName;
 		setPartName(partName);
 		m_fileName = fileName;
+	}
+
+	boolean showCodePoint(long pc) {
+    	long index = findIndexForPc(pc);
+    	if (index >= 0) { 
+			try {
+				IDocument document = getDocument();
+				int charOffset = document.getLineOffset((int)index);
+				showLocation(charOffset, index, false);
+				return true;
+			} catch (BadLocationException e) {}
+		}
+		return false;
 	}
 }

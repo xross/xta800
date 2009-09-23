@@ -14,9 +14,9 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 public class XtaDisassemblyConfiguration extends SourceViewerConfiguration {
     public static final boolean DEBUG = false;
 
-	private XtaEditor m_editor;    
+	private XtaDisassemblyEditor m_editor;    
 	
-    XtaDisassemblyConfiguration(XtaEditor editor) {
+    XtaDisassemblyConfiguration(XtaDisassemblyEditor editor) {
 		if (DEBUG) System.out.printf("XtaDisassemblyConfiguration()\n");		
 		m_editor = editor;
     }
