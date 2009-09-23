@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="com.xmos.xta.ui.extn.views.files.FilesView"
+            icon="icons/files_view.png"
+            id="com.xmos.xta.ui.extn.views.files.Files"
+            name="Files"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="com.xmos.xta.ui.XtaPerspective">
+         <view
+               id="com.xmos.xta.ui.extn.views.files.Files"
+               minimized="false"
+               relationship="stack"
+               relative="com.xmos.xta.ui.views.routes.Routes">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>

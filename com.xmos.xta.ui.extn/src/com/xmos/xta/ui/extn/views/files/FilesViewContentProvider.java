@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.files;
+package com.xmos.xta.ui.extn.views.files;
 
 import java.io.File;
 import java.util.ArrayList;

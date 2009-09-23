@@ -81,12 +81,6 @@
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.ui.views.files.FilesView"
-            icon="icons/files_view.png"
-            id="com.xmos.xta.ui.views.files.Files"
-            name="Files">
-      </view>
-      <view
             class="com.xmos.xta.ui.views.timedistribution.TimeDistributionView"
             icon="icons/structure.png"
             id="com.xmos.xta.ui.views.timedistribution.TimeDistribution"

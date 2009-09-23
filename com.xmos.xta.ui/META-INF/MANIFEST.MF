@@ -4,7 +4,8 @@ Bundle-Name: com.xmos.xta.ui plugin
 Bundle-SymbolicName: com.xmos.xta.ui;singleton:=true
 Bundle-Version: 1.0.0
 Export-Package: com.xmos.xta.ui,
- com.xmos.xta.ui.actions
+ com.xmos.xta.ui.actions,
+ com.xmos.xta.ui.editors
 Require-Bundle: com.xmos.libs;bundle-version="1.0.0",
  com.xmos.xta.core;bundle-version="1.0.0",
  org.eclipse.core.runtime;bundle-version="3.4.0",
@@ -14,7 +15,6 @@ Require-Bundle: com.xmos.libs;bundle-version="1.0.0",
  org.eclipse.core.expressions
 Bundle-Activator: com.xmos.xta.ui.XtaPlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: com.xmos.xta.core.engine
 Bundle-Vendor: XMOS
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 
