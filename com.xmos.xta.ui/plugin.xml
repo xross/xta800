@@ -82,10 +82,14 @@
       </view>
       <view
             class="com.xmos.xta.ui.views.timedistribution.TimeDistributionView"
-            icon="icons/structure.png"
+            icon="icons/time_distribution.png"
             id="com.xmos.xta.ui.views.timedistribution.TimeDistribution"
             name="TimeDistribution">
       </view>
+      <category
+            id="com.xmos.xta.ui.category1"
+            name="name">
+      </category>
    </extension>
   
    <extension

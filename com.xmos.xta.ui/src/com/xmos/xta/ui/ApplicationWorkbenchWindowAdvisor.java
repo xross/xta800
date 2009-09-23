@@ -45,6 +45,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         	if (contributionItem.getId().equals("file")) {
         		removeAllSubItems(contributionItem, new String[] {"quit", "open"});
 
+        	} else if (contributionItem.getId().equals("window")) {
+        		removeAllSubItems(contributionItem, new String[] {"showView"});
+        		
         	} else if (contributionItem.getId().equals("help")) {
         		removeAllSubItems(contributionItem, new String[] {"about"});
         		
