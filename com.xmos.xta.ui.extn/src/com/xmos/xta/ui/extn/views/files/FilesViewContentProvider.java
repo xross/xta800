@@ -1,8 +1,8 @@
 package com.xmos.xta.ui.extn.views.files;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -37,8 +37,9 @@ public class FilesViewContentProvider implements ITreeContentProvider  {
     	}
 
 	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeId(), engine.getCoreId());
-	    Collection<DebugFile> files = new ArrayList<DebugFile>(debugInfo.getDebugEngine().getDebugFiles());
-	    files.add(new DebugFile("", XtaDisassemblyEditor.EDITORNAME, XtaDisassemblyEditor.EDITORNAME));
+	    LinkedList<DebugFile> files = new LinkedList<DebugFile>(debugInfo.getDebugEngine().getDebugFiles());
+	    Collections.sort(files);
+	    files.addFirst(new DebugFile("", XtaDisassemblyEditor.EDITORNAME, XtaDisassemblyEditor.EDITORNAME));
 	    return files.toArray();
 	}
 

@@ -28,7 +28,6 @@ import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.editors.InputDisassembly;
 import com.xmos.xta.ui.editors.InputSource;
 import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
 import com.xmos.xta.ui.editors.XtaEditor;
@@ -36,7 +35,7 @@ import com.xmos.xta.ui.editors.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
-    public static final String ID = "com.xmos.xta.ui.views.files.Files";
+    public static final String ID = "com.xmos.xta.ui.extn.views.files.Files";
     
     private FilteredTree m_filesViewer;
     
@@ -60,7 +59,7 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 	    viewer.setLabelProvider(new FilesViewLabelProvider());
 		ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 
-	    m_filesViewer.getViewer().addDoubleClickListener(new IDoubleClickListener() {
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				for (Object object : ((IStructuredSelection)viewer.getSelection()).toArray()) {
 					if (object instanceof DebugFile) {
@@ -85,6 +84,11 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_editorInputs.clear();
 			m_filesViewer.getViewer().refresh();
+			
+			try {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().showView(FilesView.ID);
+			} catch (PartInitException e) {}
 		}
 	}
 
@@ -110,17 +114,17 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 	}
 
 	private IEditorInput getInput(String fileName) {
-		if (m_editorInputs.containsKey(fileName)) {
-			return m_editorInputs.get(fileName);
+		if (fileName.equals(XtaDisassemblyEditor.EDITORNAME)) {
+			return GuiEngine.getDisassemblyInput();
+			
 		} else {
-			IEditorInput input;
-			if (fileName.equals(XtaDisassemblyEditor.EDITORNAME)) {
-	        	input = new InputDisassembly();
+			if (m_editorInputs.containsKey(fileName)) {
+				return m_editorInputs.get(fileName);
 			} else {
-				input = new InputSource(getSourceFile(fileName)); 
+				IEditorInput input = new InputSource(getSourceFile(fileName)); 
+				m_editorInputs.put(fileName, input);
+				return input;
 			}
-	        m_editorInputs.put(fileName, input);
-	        return input;
 		}
 	}
 

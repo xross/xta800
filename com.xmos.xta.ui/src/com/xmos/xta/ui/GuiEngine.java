@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.ui.IEditorInput;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
@@ -20,6 +21,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.ui.editors.InputDisassembly;
 
 public class GuiEngine {
 	private static Engine s_engine;
@@ -35,6 +37,9 @@ public class GuiEngine {
 	private static Node s_focusNodes;
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
 	private static String s_commandLineXeFile;
+	
+	/* Ensure there is only one disassembly editor at once */
+	private static Map<String, IEditorInput> s_disassemblyInputs;
 
 	public static final CommandSource s_guiCommandSrc = new CommandSource(Type.GUI);  
 
@@ -49,6 +54,8 @@ public class GuiEngine {
 
         s_engine.setNotifier(s_notifier);
         s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();
+        
+        s_disassemblyInputs = new HashMap<String, IEditorInput>();
 	}
 	
 	public static Engine getEngine() {
@@ -201,6 +208,7 @@ public class GuiEngine {
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			resetGuiState();
 			refreshGuiRouteProperties();
+			s_disassemblyInputs.clear();
 			
 		} else if (message.equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			resetGuiState();
@@ -257,6 +265,7 @@ public class GuiEngine {
 		s_endPoint = null;
 		s_focusNodes = null;
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
+		setSelectedNodes(new ArrayList<Node>());
 	}
 
 	public static void setFocus(Node node) {
@@ -266,5 +275,15 @@ public class GuiEngine {
 
 	public static Node getFocus() {
 		return s_focusNodes;
+	}
+
+	public static IEditorInput getDisassemblyInput() {
+		String nodeCoreId = String.format("%d:%d", s_engine.getNodeId(), s_engine.getCoreId());
+		IEditorInput input = s_disassemblyInputs.get(nodeCoreId);
+		if (input == null) {
+			input = new InputDisassembly();
+			s_disassemblyInputs.put(nodeCoreId, input);
+		}
+		return input;
 	}
 }

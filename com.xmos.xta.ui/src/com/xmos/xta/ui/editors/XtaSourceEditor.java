@@ -6,9 +6,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.util.PropertyChangeEvent;
+
+import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
@@ -19,17 +27,55 @@ import com.xmos.xta.ui.GuiEngine;
 public class XtaSourceEditor extends XtaEditor {
     public static final String ID = "com.xmos.xta.ui.editors.XtaSourceEditor";
 
-    protected Collection<Long> m_endPointLineIndexes;
+    private Collection<Long> m_endPointLineIndexes;
+    private Map<Long, Set<Long>> m_pcToSourceLineIndex;
 
     public XtaSourceEditor() {
-    	super(XtaDocumentPartitioner.SOURCE);
     	setSourceViewerConfiguration(new XtaSourceConfiguration(this));
-
         m_endPointLineIndexes = new HashSet<Long>();
+        m_pcToSourceLineIndex = new HashMap<Long, Set<Long>>();
     }
 
-    void updateAll() {
-		updateExcluded();
+	public void propertyChange(PropertyChangeEvent event) {
+		if (DEBUG) System.out.printf("XtaDisassemblyEditor: propertyChange: %s\n", event.getProperty());	
+
+		if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) ||
+			event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+			updateLineMap();
+
+		}
+		
+		super.propertyChange(event);
+	}
+
+    private void updateLineMap() {
+		Engine engine = GuiEngine.getEngine();
+		int nodeId = engine.getNodeId();
+		int coreId = engine.getCoreId();
+
+		m_pcToSourceLineIndex.clear();
+
+		for (long lineNumber = 1; lineNumber < getDocument().getNumberOfLines(); lineNumber++) {
+    		String refString = String.format("%s:%d", m_fileName, lineNumber);
+    		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
+
+			if (ref.resolve(engine, nodeId, coreId)) {
+    			long linePc = ref.getPc();
+    			addPcToLineEntry(linePc, lineNumber);
+    		}
+    	}
+	}
+
+	private void addPcToLineEntry(long pc, long lineNumber) {
+		Set<Long> indexes = m_pcToSourceLineIndex.get(pc);
+		if (indexes == null) {
+			indexes = new HashSet<Long>();
+			m_pcToSourceLineIndex.put(pc, indexes);
+		}
+		indexes.add(lineNumber - 1);
+	}
+
+	void updateAll() {
 		updateUnknowns();
 		updateHighlighting();
 	}
@@ -45,40 +91,64 @@ public class XtaSourceEditor extends XtaEditor {
         m_endPointLineIndexes.clear();
         for (CodePointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
-        		long index = info.getLineNumber() + 1;
+        		long index = info.getLineNumber() - 1;
         		m_endPointLineIndexes.add(index);
         		if (index != endPointIndex && index != startPointIndex) {
-        			addAnnotation(index, EndpointID, allAnnotations, allPositions);
+        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
         		}
         	}
         } 
 
         for (CodePointTableInfo info : GuiEngine.getEngine().getCallTable().values()) {
         	if (info.getFileName().equals(m_fileName)) {
-        		long index = info.getLineNumber() + 1;
+        		long index = info.getLineNumber() - 1;
         		m_endPointLineIndexes.add(index);
         		if (index != endPointIndex && index != startPointIndex) {
-        			addAnnotation(index, EndpointID, allAnnotations, allPositions);
+        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
         		}
         	}
         } 
 
-        super.updateAnnotations(annotations, positions);
+        super.updateAnnotations(allAnnotations, allPositions);
 	}
 
-    boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
-    		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections) {
+    boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+    		Map<Annotation, Position> annotationPositions) {
     	
-    	long index = findIndexForPc(pc);
-    	if (index >= 0) { 
-    		addAnnotation(index, type, annotations, annotationPositions);
-    		return true;
-    	} else {
-    		return false;
+    	boolean hit = false;
+    	for (long index : getIndexesForPc(pc)) {
+	    	if (index >= 0) { 
+	    		addAnnotationForIndex(index, type, annotations, annotationPositions);
+	    		hit = true;
+	    	}
     	}
+    	return hit;
     }
 
-	long findIndexForPc(long pc) {
+	long getIndexForRef(Reference ref) {
+		if (ref != null) {
+			if (ref.getResolved()) {
+				if (ref.getFileName().equals(m_fileName)) {
+					return ref.getLineNum() - 1;
+				} else {
+					long pc = ref.getPc();
+					return getIndexForPc(pc);
+				}
+			}			
+		}
+		return -1;
+	}
+
+	Collection<Long> getIndexesForPc(long pc) {
+		Set<Long> indexes = m_pcToSourceLineIndex.get(pc);
+		if (indexes == null) {
+			return new HashSet<Long>();
+		} else {
+			return indexes;
+		}
+	}
+
+	long getIndexForPc(long pc) {
 		SourceLine sourceLine = getLineForPc(pc);
 		if (sourceLine != null) {
 			return sourceLine.getLineNumber() - 1;
@@ -101,7 +171,7 @@ public class XtaSourceEditor extends XtaEditor {
 		if (srcLabel != null)
 			return srcLabel;
 		
-		return lineIndexToString(index);
+		return null;
 	}
 	
 	String lineIndexToString(long index) {

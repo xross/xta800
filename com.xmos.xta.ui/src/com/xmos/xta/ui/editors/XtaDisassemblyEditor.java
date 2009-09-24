@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -13,6 +14,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
@@ -20,6 +22,8 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IVerticalRulerColumn;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
+import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -27,6 +31,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import com.xmos.xta.core.engine.Notifier;
@@ -47,18 +52,22 @@ public class XtaDisassemblyEditor extends XtaEditor {
     public static final String CollapseAllID         = "com.xmos.xta.ui.action.CollapseAll";
     
     protected static final String fnopString = AssemblyLine.getLeadingWhiteSpace() + " FNOP\n";
+
     private Annotation[] m_previousProjectionAnnotations;
+	protected Set<XtaInstruction> m_previousFnops;
     
     public XtaDisassemblyEditor() {
-    	super(XtaDocumentPartitioner.DISASSEMBLY);
     	setSourceViewerConfiguration(new XtaDisassemblyConfiguration(this));
+        m_previousFnops = new TreeSet<XtaInstruction>();
     }
 
     public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditor: createPartControl\n"); 
     	super.createPartControl(parent);
     
-        getSourceViewer().getTextWidget().addVerifyKeyListener(new VerifyKeyListener() {
+		ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
+
+		viewer.getTextWidget().addVerifyKeyListener(new VerifyKeyListener() {
 			public void verifyKey(VerifyEvent event) {
 				ISelection selection = getSelectionProvider().getSelection();
 
@@ -68,18 +77,23 @@ public class XtaDisassemblyEditor extends XtaEditor {
 					if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
 						try {
 							IRegion line = getDocument().getLineInformationOfOffset(textSelection.getOffset());
-							m_projectionAnnotationModel.expandAll(line.getOffset() + line.getLength(), 1);
+							getProjectionAnnotationModel().expandAll(line.getOffset() + line.getLength(), 1);
 						} catch (BadLocationException e) {}
 	
 					} else if (event.keyCode == SWT.BS) {
 						try {
 							IRegion line = getDocument().getLineInformationOfOffset(textSelection.getOffset());
-							m_projectionAnnotationModel.collapseAll(line.getOffset() + line.getLength(), 1);
+							getProjectionAnnotationModel().collapseAll(line.getOffset() + line.getLength(), 1);
 						} catch (BadLocationException e) {}
 					}
 				}
 			}
         });
+	   	
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
+        projectionSupport.install();
+
+        viewer.doOperation(ProjectionViewer.TOGGLE);
     }
 
 	public void propertyChange(PropertyChangeEvent event) {
@@ -100,14 +114,13 @@ public class XtaDisassemblyEditor extends XtaEditor {
 	}
 
 	private void refreshInput() {
-		setInput(new InputDisassembly());
-
-		ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
-        m_projectionAnnotationModel = viewer.getProjectionAnnotationModel();
-
+		if (DEBUG) System.out.printf("XtaDisassemblyEditor: refreshInput\n");
+		IEditorInput input = GuiEngine.getDisassemblyInput();
+		setInput(input);
 		setPartName(m_partName);
-		m_projectionAnnotationModel.removeAllAnnotations();
-        m_previousProjectionAnnotations = new Annotation[0];       
+        m_previousProjectionAnnotations = new Annotation[0];
+        ProjectionAnnotationModel model = updateFoldingStructure();
+        collapseFolding(model);
 	}
 
 	protected IVerticalRulerColumn createLineNumberRulerColumn() {
@@ -120,7 +133,6 @@ public class XtaDisassemblyEditor extends XtaEditor {
 		
 	void updateAll() {
 		updateFnops();
-		updateExcluded();
 		updateUnknowns();
 		updateHighlighting();
 	}
@@ -132,14 +144,14 @@ public class XtaDisassemblyEditor extends XtaEditor {
      	setAction(ExpandAllID, new Action("Expand All") {
      		public void run() {
      			IDocument document = getSourceViewer().getDocument();
-     			m_projectionAnnotationModel.expandAll(0, document.getLength());
+     			getProjectionAnnotationModel().expandAll(0, document.getLength());
      		}
      	});
      	
      	setAction(CollapseAllID, new Action("Collapse All") {
      		public void run() {
      			IDocument document = getSourceViewer().getDocument();
-     			m_projectionAnnotationModel.collapseAll(0, document.getLength());
+     			getProjectionAnnotationModel().collapseAll(0, document.getLength());
      		}
      	});
     }    
@@ -147,9 +159,9 @@ public class XtaDisassemblyEditor extends XtaEditor {
     private void updateFnops() {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditor: updateFnops\n"); 
 		
-    	TreeSet<XtaInstruction> toAdd = new TreeSet<XtaInstruction>();
-    	TreeSet<XtaInstruction> toRemove;
-    	TreeSet<XtaInstruction> toKeep  = new TreeSet<XtaInstruction>();
+    	Set<XtaInstruction> toAdd = new TreeSet<XtaInstruction>();
+    	Set<XtaInstruction> toRemove;
+    	Set<XtaInstruction> toKeep  = new TreeSet<XtaInstruction>();
     	
    		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
    		for (Node node : m_selectedNodes) {
@@ -253,27 +265,26 @@ public class XtaDisassemblyEditor extends XtaEditor {
     	addAction(menu, CollapseAllID);
     }
 	
-    boolean updateAnnotations(long pc, String type, List<Annotation> annotations, 
-    		Map<Annotation, Position> annotationPositions, boolean excludeFnops, boolean excludeSections) {
+    boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+    		Map<Annotation, Position> annotationPositions) {
     	
     	InputLine line = getInput().getPcsToLines().get(pc);
     	if (line == null) 
     		return false;
     	
-    	if (!excludeSections) {
-			InputSection inputSection = getInput().getPcsToSection().get(pc);
-			if (inputSection != null) {
-				addAnnotation(inputSection.getIndex(), type, annotations, annotationPositions);
-			}
-    	}
-    	
-		addAnnotation(line.getIndex(), type, annotations, annotationPositions);
+		addAnnotationForIndex(line.getIndex(), type, annotations, annotationPositions);
 		
-		if (!excludeFnops){
-			for (InputSection section : getSections()){
-				for (InputLine fnop : section.getFnops()){
+		InputSection inputSection = getInput().getPcsToSection().get(pc);
+		if (inputSection != null) {
+			addAnnotationForIndex(inputSection.getIndex(), type, annotations, annotationPositions);
+		}
+    	
+		// Only annotate FNOPs with highlights
+		if (type.equals(HighlightAnnotationID)) {
+			for (InputSection section : getSections()) {
+				for (InputLine fnop : section.getFnops()) {
 					if (fnop.getPc() == pc) { 
-						addAnnotation(fnop.getIndex(), type, annotations, annotationPositions);
+						addAnnotationForIndex(fnop.getIndex(), type, annotations, annotationPositions);
 					}
 				}
 			}
@@ -281,7 +292,17 @@ public class XtaDisassemblyEditor extends XtaEditor {
 		return true;
     }
     
-    long findIndexForPc(long pc) {
+	long getIndexForRef(Reference ref) {
+		if (ref != null) {
+			if (ref.getResolved()) {
+			    long pc = ref.getPc();
+			    return getIndexForPc(pc);
+			}			
+		}
+		return -1;
+	}
+
+    long getIndexForPc(long pc) {
 		InputLine line = getInput().getPcsToLines().get(pc);
 		if (line != null) {
 			return line.getIndex();
@@ -365,29 +386,36 @@ public class XtaDisassemblyEditor extends XtaEditor {
 		return false;
 	}
 
-	public void updateFoldingStructure(ArrayList<Position> positions, IDocument document) {
+	public ProjectionAnnotationModel updateFoldingStructure() {
 	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
+
+	    IDocument document = getDocument();
+	    ArrayList<Position> positions = new ArrayList<Position>();
+		try {
+			for (Position position : document.getPositions(XtaDocumentPartitioner.SECTION)) {
+				positions.add(position);
+			}
+		} catch (BadPositionCategoryException e) {
+			e.printStackTrace();
+		}
 
 	    Annotation[] annotations = new Annotation[positions.size()];
         HashMap<ProjectionAnnotation, Position> annotationPositions = 
     	    new HashMap<ProjectionAnnotation, Position>();
 
-        for (int i = 0; i < positions.size();i++) {
+        for (int i = 0; i < positions.size(); i++) {
             ProjectionAnnotation annotation = new ProjectionAnnotation();
             annotationPositions.put(annotation, positions.get(i));
             annotations[i] = annotation;
         }
        
-        m_projectionAnnotationModel.modifyAnnotations(
-        		m_previousProjectionAnnotations, annotationPositions, null);
-        
-        m_projectionAnnotationModel.collapseAll(0, document.getLength());
-        m_previousProjectionAnnotations = annotations;   
-        
-/*        Iterator iter = m_projectionAnnotationModel.getAnnotationIterator();
-        while (iter.hasNext()) {
-        	Annotation a = (Annotation) iter.next();
-        	a.
-        }*/
+        ProjectionAnnotationModel model = getProjectionAnnotationModel();
+        model.modifyAnnotations(m_previousProjectionAnnotations, annotationPositions, null);
+        m_previousProjectionAnnotations = annotations;
+        return model;
     }
+
+	public void collapseFolding(ProjectionAnnotationModel model) {
+        model.collapseAll(0, getDocument().getLength());
+	}
 }
