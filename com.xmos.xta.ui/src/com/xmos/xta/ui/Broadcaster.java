@@ -15,6 +15,7 @@ public class Broadcaster {
 	public static final String BROADCAST_UPDATE_FOLDING     = "UpdateFolding";
 	public static final String BROADCAST_SELECTION_CHANGED  = "SelectionChanged";
 	public static final String BROADCAST_SET_FOCUS          = "SetFocus";
+	public static final String BROADCAST_SET_SOURCE_PCS     = "SetSourcePcs";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
 

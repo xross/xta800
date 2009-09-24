@@ -48,6 +48,7 @@ public abstract class XtaEditor extends TextEditor implements IPropertyChangeLis
     public static final String ID = "com.xmos.xta.ui.editors.XtaEditor.Test";
     
     public static final String HighlightAnnotationID = "com.xmos.xta.ui.highlight";
+    public static final String SourcePcsAnnotationID = "com.xmos.xta.ui.source";
     public static final String UnknownAnnotationID   = "com.xmos.xta.ui.unknown";
     public static final String StartAnnotationID     = "com.xmos.xta.ui.start";
     public static final String StopAnnotationID      = "com.xmos.xta.ui.stop";

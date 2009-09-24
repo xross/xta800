@@ -108,6 +108,15 @@ public class XtaDisassemblyEditor extends XtaEditor {
 		}  else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			refreshInput();
 
+		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_SOURCE_PCS)) {
+			updateHighlighting();
+			if (GuiEngine.showSourcePcsPosition()) {
+				List<Long> pcs = GuiEngine.getSourcePcs();
+				if (pcs.size() > 0) {
+					showCodePoint(pcs.get(0));
+				}
+			}
+
 		}
 		
 		super.propertyChange(event);
@@ -265,6 +274,19 @@ public class XtaDisassemblyEditor extends XtaEditor {
     	addAction(menu, CollapseAllID);
     }
 	
+	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
+
+		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
+		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
+		
+		Collection<Long> pcs = GuiEngine.getSourcePcs();
+        for (long pc : pcs) {
+        	addAnnotationsForPc(pc, SourcePcsAnnotationID, allAnnotations, allPositions);
+        } 
+
+        super.updateAnnotations(allAnnotations, allPositions);
+	}
+
     boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions) {
     	
@@ -274,9 +296,12 @@ public class XtaDisassemblyEditor extends XtaEditor {
     	
 		addAnnotationForIndex(line.getIndex(), type, annotations, annotationPositions);
 		
-		InputSection inputSection = getInput().getPcsToSection().get(pc);
-		if (inputSection != null) {
-			addAnnotationForIndex(inputSection.getIndex(), type, annotations, annotationPositions);
+		// Don't apply source highlighting to sections
+		if (!type.equals(SourcePcsAnnotationID)) {
+			InputSection inputSection = getInput().getPcsToSection().get(pc);
+			if (inputSection != null) {
+				addAnnotationForIndex(inputSection.getIndex(), type, annotations, annotationPositions);
+			}
 		}
     	
 		// Only annotate FNOPs with highlights

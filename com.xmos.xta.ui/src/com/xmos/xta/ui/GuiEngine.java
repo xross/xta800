@@ -40,6 +40,8 @@ public class GuiEngine {
 	
 	/* Ensure there is only one disassembly editor at once */
 	private static Map<String, IEditorInput> s_disassemblyInputs;
+	private static List<Long> s_sourcePcs;
+	private static boolean s_showPcPosition;
 
 	public static final CommandSource s_guiCommandSrc = new CommandSource(Type.GUI);  
 
@@ -49,6 +51,8 @@ public class GuiEngine {
         s_broadcaster = new Broadcaster();        
         s_log = new GuiLog();
         s_selectedNodes = new ArrayList<Node>();
+        s_sourcePcs = new ArrayList<Long>();
+        s_showPcPosition = false;
         s_focusNodes = null;
         s_commandLineXeFile = null;
 
@@ -285,5 +289,21 @@ public class GuiEngine {
 			s_disassemblyInputs.put(nodeCoreId, input);
 		}
 		return input;
+	}
+
+	public static void setSourcePcs(List<Long> pcs, boolean showPosition) {
+		if (!pcs.equals(s_sourcePcs) || showPosition) {
+			s_sourcePcs = pcs;
+			s_showPcPosition = showPosition;
+			broadcast(Broadcaster.BROADCAST_SET_SOURCE_PCS, "");
+		}
+	}
+
+	public static List<Long> getSourcePcs() {
+		return s_sourcePcs;
+	}
+
+	public static boolean showSourcePcsPosition() {
+		return s_showPcPosition;
 	}
 }

@@ -8,9 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.VerifyKeyListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.widgets.Composite;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -36,7 +45,50 @@ public class XtaSourceEditor extends XtaEditor {
         m_pcToSourceLineIndex = new HashMap<Long, Set<Long>>();
     }
 
-	public void propertyChange(PropertyChangeEvent event) {
+    public void createPartControl(Composite parent) {
+		if (DEBUG) System.out.printf("XtaDisassemblyEditor: createPartControl\n"); 
+    	super.createPartControl(parent);
+
+    	StyledText text = getSourceViewer().getTextWidget();
+    	text.addMouseListener(new MouseListener() {
+
+			public void mouseDoubleClick(MouseEvent e) {
+				updateSourcePcs(true);
+			}
+
+			public void mouseDown(MouseEvent e) {
+			}
+
+			public void mouseUp(MouseEvent e) {
+				updateSourcePcs(false);
+			}
+    	});
+
+		text.addKeyListener(new KeyListener() {
+
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void keyReleased(KeyEvent e) {
+				updateSourcePcs(false);
+			}
+		});
+    }
+    
+	private void updateSourcePcs(boolean showPosition) {
+		StyledText text = getSourceViewer().getTextWidget();
+		int charOffset = text.getCaretOffset();
+		try {
+			long lineNumber = getDocument().getLineOfOffset(charOffset) + 1;
+			List<Long> pcs = new ArrayList<Long>(getPcsForLine(lineNumber));
+			GuiEngine.setSourcePcs(pcs, showPosition);
+		} catch (BadLocationException ex) {
+		}
+	}
+    
+    public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditor: propertyChange: %s\n", event.getProperty());	
 
 		if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) ||
