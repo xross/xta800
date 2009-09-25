@@ -16,7 +16,6 @@ import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
-import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;

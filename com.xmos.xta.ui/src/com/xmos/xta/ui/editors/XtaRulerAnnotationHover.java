@@ -37,7 +37,7 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 			return "End point set.";
 		}
 		
-		if (m_editor.isValidEndPoint(lineNumber)) {
+		if (m_editor.getAnnotations().isValidEndPoint(lineNumber)) {
 			return "A valid start/end point for timing.";
 		}
 		
@@ -46,21 +46,21 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 
 	private String getWarningString(long lineNumber) {
 		String warning = "";
-		for (Node nodes : m_editor.getUnknownsForLine(lineNumber)) {
+		for (Node nodes : m_editor.getAnnotations().getUnknownsForLine(lineNumber)) {
 			warning += nodes.getAttributes().getUnknownDescription() + "\n";
 		}
 		return warning;
 	}
 
 	private boolean isStartPoint(long lineNum) {
-		if (lineNum == m_editor.getStartPointIndex())
+		if (lineNum == m_editor.getAnnotations().getStartPointIndex())
 			return true;
 
 		return false;
 	}
 
 	private boolean isEndPoint(long lineNum) {
-		if (lineNum == m_editor.getEndPointIndex())
+		if (lineNum == m_editor.getAnnotations().getEndPointIndex())
 			return true;
 
 		return false;

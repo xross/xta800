@@ -6,7 +6,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
-import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 
 public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
     public static final boolean DEBUG = false;
@@ -27,8 +26,7 @@ public class XtaReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 
 	public void initialReconcile() {
 		if (DEBUG) System.out.printf("XtaReconcilingStrategy: initialReconcile\n");
-		ProjectionAnnotationModel model = m_editor.updateFoldingStructure();
-		m_editor.collapseFolding(model);
+		m_editor.updateFoldingStructure();
 	}
 
 	public void setProgressMonitor(IProgressMonitor monitor) {
