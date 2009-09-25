@@ -1,5 +1,6 @@
 package com.xmos.xta.ui.extn.views.files;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,10 @@ import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
@@ -97,6 +101,9 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
     		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
 			IEditorInput input = getInput(debugFile.getFileName());
+			if (input == null)
+				return;
+			
 			if (debugFile.getFileName().equals(XtaDisassemblyEditor.EDITORNAME)) {
 	        	XtaEditor editor = (XtaEditor)page.openEditor(input, XtaDisassemblyEditor.ID);
 	        	editor.setNames(XtaDisassemblyEditor.EDITORNAME, XtaDisassemblyEditor.EDITORNAME);
@@ -121,21 +128,39 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 			if (m_editorInputs.containsKey(fileName)) {
 				return m_editorInputs.get(fileName);
 			} else {
-				IEditorInput input = new InputSource(getSourceFile(fileName)); 
-				m_editorInputs.put(fileName, input);
-				return input;
+				SourceFile sourceFile = getSourceFile(fileName);
+				if (sourceFile != null) {
+					IEditorInput input = new InputSource(sourceFile); 
+					m_editorInputs.put(fileName, input);
+					return input;
+				} else {
+					return null;
+				}
 			}
 		}
 	}
 
 	private SourceFile getSourceFile(String fileName) {
-		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
-	    for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
-	    	if (sourceFile.getFileName().equals(fileName)) {
-	    		return sourceFile;
-	    	}
-	    }
-	    assert(false);
-		return null;
+		Engine engine = GuiEngine.getEngine();
+		SourceMapper sourceMapper = engine.getSourceMapper();
+		SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
+		if (sourceFile.getDebugFile().getFile() == null) {
+			File file = sourceMapper.findFileForSourceFile(sourceFile);
+			if (file == null)
+				return null;
+			
+			// Ensure the debug information is up to date for all nodes/cores
+			XeLoader xeLoader = engine.getXeLoader();
+			for (int nodeId : xeLoader.getNodeIds()){
+				for (int coreId : xeLoader.getCoreIds(nodeId)) {
+					DebugEngine de = xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();
+					SourceMapper sm = engine.getSourceMapper(nodeId, coreId);
+					SourceFile sf = sm.getSourceFile(fileName);
+					sm.setFile(de, sf, file);
+				}
+			}
+			m_filesViewer.getViewer().refresh();
+		}
+		return sourceFile;
 	}
 }

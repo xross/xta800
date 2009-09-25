@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
 
 public class FilesViewLabelProvider extends CellLabelProvider implements ILabelProvider {
 
@@ -27,9 +28,14 @@ public class FilesViewLabelProvider extends CellLabelProvider implements ILabelP
 
 	public String getText(DebugFile element) {
 		DebugFile debugFile = (DebugFile)element;
+		
+		String fileName = debugFile.getFileName();
+		if (fileName.equals(XtaDisassemblyEditor.EDITORNAME))
+			return fileName;
+		
 		if (debugFile.getFile() != null)
 			return debugFile.getShortFileName();
 		else
-			return debugFile.getFileName();
+			return fileName + " (File not found)"; 	    		
 	}
 }

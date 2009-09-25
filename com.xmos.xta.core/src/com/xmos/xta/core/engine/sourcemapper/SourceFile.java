@@ -20,11 +20,6 @@ public class SourceFile {
 		m_debugFile = debugFile;
 		m_sourceLines = new ArrayList<SourceLine>();
 		m_pcToLine = new HashMap<Long, SourceLine>();
-		try {
-			readFile(m_debugFile.getFile());
-		} catch (IOException e) {
-			// Do nothing
-		}
 	}
 
 	public String getBaseDir() {
@@ -43,7 +38,18 @@ public class SourceFile {
 		return m_debugFile.getFullFileName();
 	}
 	
+	public void readFile() {
+		try {
+			readFile(m_debugFile.getFile());
+		} catch (IOException e) {
+			// Do nothing
+		}
+	}
+	
 	private void readFile(File file) throws IOException {
+		if (file == null)
+			return;
+		
 		int lineNo = 1;
 		BufferedReader inputFp = new BufferedReader(new FileReader(file));
 		String line = null;
@@ -71,5 +77,9 @@ public class SourceFile {
 
 	public SourceLine getLineForPc(long pc) {
 		return m_pcToLine.get(pc);
+	}
+
+	public DebugFile getDebugFile() {
+		return m_debugFile;
 	}
 }

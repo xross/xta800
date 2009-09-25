@@ -18,10 +18,6 @@ public class GuiFileFinder extends FileFinder {
 	}
 	
 	public File openFileFinder(String compilationDir, String fileName) {		
-		if (findFileInCancelCache(compilationDir, fileName)) {
-			return null;
-		}
-		
 		File cachedFile = findFileInCache(compilationDir, fileName);
 		if (cachedFile != null) {
 			return cachedFile;
@@ -58,7 +54,6 @@ public class GuiFileFinder extends FileFinder {
         	addToFileCache(compilationDir, fileName, file);
 		    return file;
         } else {
-        	addToCancelCache(compilationDir, fileName);
         	return null;
         }
 	}		

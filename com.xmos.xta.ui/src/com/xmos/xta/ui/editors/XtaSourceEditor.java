@@ -13,12 +13,10 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import com.xmos.xta.core.engine.Engine;
@@ -56,8 +54,7 @@ public class XtaSourceEditor extends XtaEditor {
 				updateSourcePcs(true);
 			}
 
-			public void mouseDown(MouseEvent e) {
-			}
+			public void mouseDown(MouseEvent e) {}
 
 			public void mouseUp(MouseEvent e) {
 				updateSourcePcs(false);
@@ -66,10 +63,7 @@ public class XtaSourceEditor extends XtaEditor {
 
 		text.addKeyListener(new KeyListener() {
 
-			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void keyPressed(KeyEvent e) {}
 
 			public void keyReleased(KeyEvent e) {
 				updateSourcePcs(false);
