@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -93,8 +94,8 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     	
    		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
    		for (Node node : m_selectedNodes) {
-       		node.traverse(0, new DefaultNodeTraverser() {
-       		    public boolean foundInstructionNode(Node node, int depth) {
+       		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+       		    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
     				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
        		    	if (instruction.isFnop()) {   		    		
        	   		    	fnops.add(instruction);

@@ -74,18 +74,7 @@ public class Route {
 	public String getEndpointsPcsString() {
 		return "";
 	}
-/*
-	public Set<Long> getPcsHit() {
-		final Set<Long> pcs = new TreeSet<Long>();
-		m_node.traverse(0, new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, int depth) {
-				pcs.add(node.getStartPc());
-				return true;
-			}
-		});
-		return pcs;
-	}
-	*/
+
     public Node getNode(final int nodeId) {
     	if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
     		return m_node;
