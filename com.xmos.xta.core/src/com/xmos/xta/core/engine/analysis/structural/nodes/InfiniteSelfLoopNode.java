@@ -1,11 +1,11 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteSelfLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -63,12 +63,13 @@ public class InfiniteSelfLoopNode extends Node{
 		return m_loop.getStartPc();
 	}
 
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundInfiniteSelfLoopNode(this, depth))
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundInfiniteSelfLoopNode(this, ancestors))
 			return;
 
-		m_loop.traverse(depth + 1, nodeTraverser);			
-
+		ancestors.push(this);
+		m_loop.traverse(ancestors, nodeTraverser);			
+		ancestors.pop();
 	}
 
 	public List<Node> getChildren() {
@@ -77,27 +78,35 @@ public class InfiniteSelfLoopNode extends Node{
 		return children;
 	}
 
-	public Collection<Node> whatsNext(Node node) {
-		Collection<Node> next = new TreeSet<Node>();		
-		next.add(m_loop);
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();		
+		next.add(new NodeDescriptor(m_loop, nodeDescriptor.getAncestors()));
 		return next;
 	}
 
-	public Collection<Node> whatsBefore(Node node) {
-		assert(m_loop == node);
-		Collection<Node> before = new TreeSet<Node>();
-		before.add(m_loop);
-		if(getParent() != null){
-			before.addAll(getParent().whatsBefore(this));
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
+		assert(m_loop == nodeDescriptor.getNode());
+		
+		Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
+		before.add(new NodeDescriptor(m_loop, nodeDescriptor.getAncestors()));
+			
+		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+		thisNodeDescriptor.getAncestors().pop();
+
+		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+			before.addAll(thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor));
 		}
 		return before;
 	}
-	public List<Node> getImmediateChildren() {
-		List<Node> list = new LinkedList<Node>();
-		list.add(m_loop);
+	
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
+		ancestors.push(this);
+	    list.add(new NodeDescriptor(m_loop, ancestors));
+		ancestors.pop();
 		return list;
 	}
-
+	
 	public boolean isInfiniteSelfLoopNode() {
 		return true;
 	}
@@ -106,27 +115,26 @@ public class InfiniteSelfLoopNode extends Node{
 		return m_loop;
 	}
 
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
+		ancestors.push(this);
+		set.addAll(m_loop.getEndInstructions(ancestors));
+		ancestors.pop();
+		return set;
+	}
+
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		tdb.setInfinite();
 		return tdb;
 	}
-	public Set<InstructionNode> getEndInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.addAll(m_loop.getEndInstructions());
-		return set;
-	}
 	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
+			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
+		
 		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
 	}
-
-	public Set<InstructionNode> getStartInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.addAll(m_loop.getStartInstructions());
-		return set;
-	}	
 }

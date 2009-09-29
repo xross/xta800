@@ -99,14 +99,16 @@ public class InfiniteLoopNode extends Node {
 		return m_loopHeader.getStartPc();
 	}
 
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundInfiniteLoopNode(this, depth))
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundInfiniteLoopNode(this, ancestors))
 			return;
 
-		m_loopHeader.traverse(depth + 1, nodeTraverser);			
+		ancestors.push(this);			
+		m_loopHeader.traverse(ancestors, nodeTraverser);			
 		for (Node node : m_loops) {
-			node.traverse(depth + 1, nodeTraverser);
+			node.traverse(ancestors, nodeTraverser);
 		}
+		ancestors.pop();
 	}
 
 	public List<Node> getChildren() {
@@ -118,69 +120,73 @@ public class InfiniteLoopNode extends Node {
 		return children;
 	}
 
-	public Collection<Node> whatsNext(Node node) {
-		Collection<Node> next = new TreeSet<Node>();
-		if (m_loopHeader == node) {
-			next.addAll(m_loops);
-		} else {
-			next.add(this);
-		}
-		return next;
-	}
-		
 	public boolean isInfiniteLoopNode() {
 		return true;
 	}
-		
-	public Collection<Node> whatsBefore(Node node) {
-		Collection<Node> before = new TreeSet<Node>();
-		if(node == m_loopHeader){
-			before.addAll(m_loops);
-			if(getParent()!= null){
-				before.addAll(getParent().whatsBefore(this));
+	
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
+		if (m_loopHeader == nodeDescriptor.getNode()) {
+			for (Node loop : m_loops) {
+			    next.add(new NodeDescriptor(loop, nodeDescriptor.getAncestors()));
 			}
-		} else if(m_loops.contains(node)){
-			before.add(m_loopHeader);
+			
+		} else {
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+			thisNodeDescriptor.getAncestors().pop();			
+			next.add(thisNodeDescriptor);
+		}
+		return next;
+	}
+
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
+		Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
+		if (m_loopHeader == nodeDescriptor.getNode()) {
+			for (Node loop : m_loops) {
+				before.add(new NodeDescriptor(loop, nodeDescriptor.getAncestors()));
+			}
+			
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+			thisNodeDescriptor.getAncestors().pop();
+
+			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+				before.addAll(thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor));
+			}			
+			
+		} else if (m_loops.contains(nodeDescriptor.getNode())) {
+			before.add(new NodeDescriptor(m_loopHeader, nodeDescriptor.getAncestors()));
 		}
 		return before;
 	}
-	public List<Node> getImmediateChildren() {
-		List<Node> list = new LinkedList<Node>();
-		list.add(m_loopHeader);
+	
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
+		ancestors.push(this);
+	    list.add(new NodeDescriptor(m_loopHeader, ancestors));
+		ancestors.pop();
 		return list;
 	}
-
+	
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();	
+		ancestors.push(this);
+		set.addAll(m_loopHeader.getEndInstructions(ancestors));
+		ancestors.pop();
+		return set;
+	}
 
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		tdb.setInfinite();
 		return tdb;
 	}
-	
-	public Set<InstructionNode> getEndInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
 		
-		//TODO this need verifying as does it for loop and getStartInstructions()
-		//for(Node loop : m_loops){
-		//	set.addAll(loop.getEndNodes());
-		//}
-		set.addAll(m_loopHeader.getEndInstructions());
-		return set;
-	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
+			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
+		
 		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
 	}
-
-	public Set<InstructionNode> getStartInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		//for(Node loop : m_loops){
-		//	set.addAll(getStartInstructions());
-		//}
-		set.addAll(m_loopHeader.getStartInstructions());
-		return set;
-	}	
 }

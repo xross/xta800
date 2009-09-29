@@ -75,60 +75,86 @@ public class SequenceNode extends Node {
 		return m_nodes.get(0).getStartPc();
 	}
 
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundSequenceNode(this, depth))
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundSequenceNode(this, ancestors))
 			return;
 
+		ancestors.push(this);
 		for (Node node : m_nodes) {
-			node.traverse(depth + 1, nodeTraverser);
+			node.traverse(ancestors, nodeTraverser);
 		}
+		ancestors.pop();
 	}
 
 	public List<Node> getChildren() {
 		return m_nodes;
 	}
 
-	public Collection<Node> whatsNext(Node node) {
-		assert (m_nodes.contains(node));
-		int index = m_nodes.indexOf(node);
-		if (index < m_nodes.size() - 1) {
-			Collection<Node> next = new TreeSet<Node>();
-			next.add(m_nodes.get(index + 1));
-			return next;
-		}  else if(node.isInfiniteLoopNode() || node.isInfiniteSelfLoopNode()){
-			Collection<Node> next = new TreeSet<Node>();
-			next.add(node);
-			return next;
-		} else {
-			if (getParent() != null){
-				return getParent().whatsNext(this);
-			}
-			return new TreeSet<Node>();
-		}
-	}
-
-	public Collection<Node> whatsBefore(Node node) {
-		assert(m_nodes.contains(node));
-		int index = m_nodes.indexOf(node);
-		if(index > 0){
-			Collection<Node> before = new TreeSet<Node>();
-			before.add(m_nodes.get(index-1));
-			return before;
-		} else {
-			if(getParent()!= null){
-				return getParent().whatsBefore(this);
-			} else {
-				return new TreeSet<Node>();
-			}
-		}
-	}
-
-	public List<Node> getImmediateChildren() {
-		List<Node> list = new LinkedList<Node>();
-		list.add(m_nodes.get(0));
-		return list;
-	}
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		assert (m_nodes.contains(nodeDescriptor.getNode()));
 		
+		int index = m_nodes.indexOf(nodeDescriptor.getNode());
+		if (index < m_nodes.size() - 1) {
+			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
+			next.add(new NodeDescriptor(m_nodes.get(index + 1), nodeDescriptor.getAncestors()));
+			return next;
+			
+		}  else if (nodeDescriptor.getNode().isInfiniteLoopNode() || 
+				    nodeDescriptor.getNode().isInfiniteSelfLoopNode()) {
+			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
+			next.add(new NodeDescriptor(nodeDescriptor.getNode(), nodeDescriptor.getAncestors()));
+			return next;
+			
+		} else {		
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+		    thisNodeDescriptor.getAncestors().pop();
+
+		    if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+			    return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
+		    }
+		    return new TreeSet<NodeDescriptor>();
+		}
+	}
+
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
+		assert(m_nodes.contains(nodeDescriptor.getNode()));
+		
+		int index = m_nodes.indexOf(nodeDescriptor.getNode());
+		if (index > 0) {
+			
+			Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
+			before.add(new NodeDescriptor(m_nodes.get(index - 1), nodeDescriptor.getAncestors()));
+			return before;
+			
+		} else {
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+		    thisNodeDescriptor.getAncestors().pop();
+
+		    if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+			    return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
+		    }
+		    return new TreeSet<NodeDescriptor>();
+		}
+	}
+
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
+		ancestors.push(this);
+	    list.add(new NodeDescriptor(m_nodes.get(0), ancestors));
+		ancestors.pop();
+		return list;
+	}			
+	
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
+		
+		ancestors.push(this);
+		set.addAll(m_nodes.get(m_nodes.size()-1).getEndInstructions(ancestors));
+		ancestors.pop();
+		
+		return set;
+	}
+	
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
@@ -142,25 +168,13 @@ public class SequenceNode extends Node {
 	public List<Node> getPath() {
 		return m_nodes;
 	}
-	
-	public Set<InstructionNode> getEndInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.addAll(m_nodes.get(m_nodes.size()-1).getEndInstructions());
-		return set;
-	}
-	
-	public Set<InstructionNode> getStartInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.addAll(m_nodes.get(0).getStartInstructions());
-		return set;
-	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
+			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
+		
 		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
-	}
-
-			
+	}	
 }

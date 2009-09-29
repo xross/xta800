@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -27,12 +28,8 @@ public class NullNode extends IBufferNode {
 		return new LinkedList<Node>();
 	}
 
-	public Collection<InstructionNode> getContainedNodes() {
-		return new LinkedList<InstructionNode>();
-	}
-
-	public List<Node> getImmediateChildren() {
-		return new LinkedList<Node>();
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+		return new LinkedList<NodeDescriptor>();
 	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
@@ -55,44 +52,43 @@ public class NullNode extends IBufferNode {
 		return new NullNode();
 	}
 
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
 		return;
 	}
 	
-	public Collection<Node> whatsBefore(Node node) {
-		if(getParent() != null){
-			return getParent().whatsBefore(this);
-		} else {
-			return new TreeSet<Node>();
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+		thisNodeDescriptor.getAncestors().pop();
+
+		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+			return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
 		}
+		return new TreeSet<NodeDescriptor>();
 	}
 
-	public Collection<Node> whatsNext(Node node) {
-		if (getParent() != null){
-			return getParent().whatsNext(this);
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
+		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+		thisNodeDescriptor.getAncestors().pop();
+
+		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+			return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
 		}
-		return new TreeSet<Node>();
+		return new TreeSet<NodeDescriptor>();
 	}
 
-
-	public void insertFnops() {
-		
+	public void insertFnops() {		
 	}
 
 	public boolean isNullNode() {
 		return true;
 	}
 	
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
+		return set;
+	}
+	
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(0);
-	}
-	public Set<InstructionNode> getEndInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		return set;
-	}
-
-	public Set<InstructionNode> getStartInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		return set;
 	}
 }

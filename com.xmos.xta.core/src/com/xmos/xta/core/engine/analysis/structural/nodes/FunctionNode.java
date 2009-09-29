@@ -1,11 +1,12 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -54,8 +55,8 @@ public class FunctionNode extends IBufferNode {
 		m_functionName = fn.m_functionName;
 		m_functionSequence = fn.m_functionSequence;
 		m_branchTarget = fn.m_branchTarget;
-		m_unresolved = fn.m_unresolved;
 		m_attributes = new NodeAttributes(this);
+		setUnresolved(fn.isUnresolved());
 	}
 	
 	public Node shallowCopy() {
@@ -67,7 +68,7 @@ public class FunctionNode extends IBufferNode {
 		fn.m_functionName = m_functionName;
 		fn.m_branchTarget = m_branchTarget;
 		fn.m_attributes = new NodeAttributes(fn);
-		fn.m_unresolved = m_unresolved;
+		fn.setUnresolved(isUnresolved());
 		if(m_functionSequence!= null){
 			List<Node> nodes = new LinkedList<Node>();
 			for(Node node : m_functionSequence){
@@ -136,14 +137,16 @@ public class FunctionNode extends IBufferNode {
 		return 0;
 	}
 
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundFunctionNode(this, depth))
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundFunctionNode(this, ancestors))
 			return;
 		
 		if (m_functionSequence != null) {
+			ancestors.add(this);
 			for (Node node : m_functionSequence) {
-				node.traverse(depth + 1, nodeTraverser);
+				node.traverse(ancestors, nodeTraverser);
 			}
+			ancestors.remove(this);
 		}
 	}
 
@@ -157,22 +160,50 @@ public class FunctionNode extends IBufferNode {
 		return children;
 	}
 	
-	public Collection<Node> whatsNext(Node node) {
-		assert (m_functionSequence.contains(node));
-		int index = m_functionSequence.indexOf(node);
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		assert (m_functionSequence.contains(nodeDescriptor.getNode()));
+		
+		int index = m_functionSequence.indexOf(nodeDescriptor.getNode());
 		if (index < m_functionSequence.size() - 1) {
-			Collection<Node> next = new TreeSet<Node>();
-			next.add(m_functionSequence.get(index + 1));
+			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
+			next.add(new NodeDescriptor(m_functionSequence.get(index + 1), nodeDescriptor.getAncestors()));
 			return next;
-		} else if(node.isInfiniteLoopNode() || node.isInfiniteSelfLoopNode()){
-			Collection<Node> next = new TreeSet<Node>();
-			next.add(node);
+			
+		} else if (nodeDescriptor.getNode().isInfiniteLoopNode() || 
+    			   nodeDescriptor.getNode().isInfiniteSelfLoopNode()) {
+			
+			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
+			next.add(new NodeDescriptor(nodeDescriptor.getNode(), nodeDescriptor.getAncestors()));
 			return next;
+			
 		} else {
-			if (getParent() != null){
-				return getParent().whatsNext(this);
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+			thisNodeDescriptor.getAncestors().pop();
+
+			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+				return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
 			}
-			return new TreeSet<Node>();
+			return new TreeSet<NodeDescriptor>();
+		}
+	}
+
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
+		assert (m_functionSequence.contains(nodeDescriptor.getNode()));
+		
+		int index = m_functionSequence.indexOf(nodeDescriptor.getNode());
+		if (index > 0){
+			Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
+			before.add(new NodeDescriptor(m_functionSequence.get(index - 1), nodeDescriptor.getAncestors()));
+			return before;
+			
+		} else {
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+			thisNodeDescriptor.getAncestors().pop();
+
+			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+				return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
+			}
+			return new TreeSet<NodeDescriptor>();
 		}
 	}
 
@@ -183,33 +214,29 @@ public class FunctionNode extends IBufferNode {
 	public String getBackTrace(String backTrace) {
 		return super.getBackTrace(m_functionName + ":" + backTrace); 
 	}
-
-	public Collection<Node> whatsBefore(Node node) {
-		assert(m_functionSequence.contains(node));
-		int index = m_functionSequence.indexOf(node);
-		if(index > 0){
-			Collection<Node> before = new TreeSet<Node>();
-			before.add(m_functionSequence.get(index-1));
-			return before;
-		} else {
-			if(getParent()!= null){
-				return getParent().whatsBefore(this);
-			} else {
-				return new TreeSet<Node>();
-			}
-		}
-	}
-
-
-	public List<Node> getImmediateChildren() {
-		List<Node> list = new LinkedList<Node>();
-		list.add(m_functionSequence.get(0));
+	
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
+		ancestors.push(this);
+	    list.add(new NodeDescriptor(m_functionSequence.get(0), ancestors));
+		ancestors.pop();
 		return list;
 	}
-
+	
 	public void insertFnops() {
 	}
 
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		if (m_functionSequence != null) {
+			ancestors.push(this);
+			Set<NodeDescriptor> ends = m_functionSequence.get(m_functionSequence.size() - 1).getEndInstructions(ancestors);
+			ancestors.pop();
+			return ends;
+
+		}
+		return new TreeSet<NodeDescriptor>();
+	}
+	
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbSequence = new LinkedList<TimeDistributionBuckets>();
@@ -222,20 +249,14 @@ public class FunctionNode extends IBufferNode {
 		return tdb;
 	}
 	
-	public Set<InstructionNode> getEndInstructions() {
-		if (m_functionSequence != null) {
-			return m_functionSequence.get(m_functionSequence.size()-1).getEndInstructions();
-		} else {
-			return new TreeSet<InstructionNode>();
-		}
-	}
-
 	public void setFunctionName(String string) {
 		m_functionName = string;
 	}
 	
 	private Node m_callNode;
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
+			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
+		
 		if (!calledFromAbove) {
 			ReferenceType referenceType = referenceTypes.peek();
 			
@@ -243,11 +264,13 @@ public class FunctionNode extends IBufferNode {
 			// a call reference, then we need to find the calling 
 			// (instruction) node and check for a match here...
 			if (referenceType.getType() == ReferenceType.Type.CALL) {
-				if (m_parent != null) {
+				
+				if (!ancestors.isEmpty()) {					
+    				Node parent = ancestors.peek();
 
 					// Finds the node previous to this one...
 					Node previousNode = null;
-					for (Node child : m_parent.getChildren()) {
+					for (Node child : parent.getChildren()) {
 						if (child == this)
 							break;
 						
@@ -257,8 +280,8 @@ public class FunctionNode extends IBufferNode {
 						// Finds the final instruction in the previous node
 						// (which must be the calling instruction..)
 						m_callNode = null;
-						previousNode.traverse(0, new DefaultNodeTraverser() {
-							public boolean foundInstructionNode(Node node, int depth) {
+						previousNode.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+							public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
 								m_callNode = node;
 								return true;
 							}
@@ -274,17 +297,9 @@ public class FunctionNode extends IBufferNode {
 						}
 					}					
 				}
-			}			
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+			}
+		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
 	}
-
-	public Set<InstructionNode> getStartInstructions() {
-		if (m_functionSequence != null) {
-			return m_functionSequence.get(m_functionSequence.size()-1).getStartInstructions();
-		} else {
-			return new TreeSet<InstructionNode>();
-		}
-	}	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -98,8 +99,8 @@ public class SelectedRouteViewer {
 			// Add the nodes hitting the pc
 			Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 			if (selectedRoute != null) {								
-				selectedRoute.getNode().traverse(0, new UntypedNodeTraverser() {
-					public boolean foundNode(Node node, int depth) {
+				selectedRoute.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+					public boolean foundNode(Node node, Stack<Node> ancestors) {
 						if (node.isBlockNode()) {
 							Collection<XtaInstruction> instructionsCovered = node.getInstructions();
 							for (XtaInstruction instruction : instructionsCovered) {
@@ -164,8 +165,8 @@ public class SelectedRouteViewer {
 	private Collection<Node> getNonBlockNodes() {
 	    final Collection<Node> nonBlockNodes = new ArrayList<Node>();
 	    if (m_rootNode != null) {
-	    	m_rootNode.traverse(0, new UntypedNodeTraverser() {
-		    	public boolean foundNode(Node node, int depth) {
+	    	m_rootNode.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+		    	public boolean foundNode(Node node, Stack<Node> ancestors) {
 		    		if (!node.isBlockNode()) {
 		    			nonBlockNodes.add(node);
 		    		}

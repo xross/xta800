@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Stack;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -22,8 +23,8 @@ public class RouteUnknowns {
 
 	public Collection<Node> getUnknowns(final UnknownState unknownState) {
 	    final Collection<Node> unknowns = new ArrayList<Node>();
-	    m_route.getNode().traverse(0, new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, int depth) {
+	    m_route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
 	    		NodeAttributes nodeAttributes = node.getAttributes();		    		
 	    		if (nodeAttributes.isUnknown() &&
 	    			(nodeAttributes.getUnknownState() == unknownState)) {
@@ -305,16 +306,16 @@ public class RouteUnknowns {
 	
 	private void refreshDisplayedUnknowns(Node node) {	
 		// Clears the display unknown flags on all nodes..
-	    node.traverse(0, new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, int depth) {
+	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().setDisplayUnknown(false);
 	        	return true;
 	    	}
 	    });
 
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
-	    node.traverse(0, new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, int depth) {
+	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
 	    		if (node.getAttributes().isUnknown() &&
 	    			node.getAttributes().getUnknownState() == UnknownState.UNKNOWN) {
 	    			setDisplayUnknownOnParentNodes(node);
@@ -333,8 +334,8 @@ public class RouteUnknowns {
 	}
 	
 	private void clearPathIterations(Node node) {
-	    node.traverse(0, new DefaultNodeTraverser() {
-	    	public boolean foundConditionalNode(Node node, int depth) {
+	    node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+	    	public boolean foundConditionalNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().resetPathIterations();
 	        	return true;
 	    	}
@@ -342,8 +343,8 @@ public class RouteUnknowns {
 	}
 	
 	private void invalidateCachedStats() {
-		m_route.getNode().traverse(0, new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, int depth) {
+		m_route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().invalidateCachedStats();
 	        	return true;
 	    	}

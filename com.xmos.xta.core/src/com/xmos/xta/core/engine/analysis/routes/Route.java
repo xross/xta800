@@ -2,13 +2,16 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Stack;
+
 import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
-import com.xmos.xta.core.engine.analysis.structural.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.NodeDescriptor;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
@@ -89,8 +92,8 @@ public class Route {
     		
     	} else {
         	m_searchNode = null;			
-        	m_node.traverse(0, new UntypedNodeTraverser() {
-    			public boolean foundNode(Node node, int depth) {
+        	m_node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+    			public boolean foundNode(Node node, Stack<Node> ancestors) {
     				if (node.getId() == nodeId) {
     					m_searchNode = node;
     					return false;
@@ -105,13 +108,16 @@ public class Route {
 	public Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
-		referencedNodes.addAll(referenceMatcher.getNodes(m_node, reference));
+		
+		for (NodeDescriptor nodeDescriptor : referenceMatcher.getNodeDescriptors(m_node, reference)) {
+			referencedNodes.add(nodeDescriptor.getNode());
+		}				
 		return referencedNodes;		
 	} 
 
 	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
-		m_node.traverse(0, new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, int depth) {
+		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
 				((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);				
 				return true;
 			}

@@ -2,14 +2,15 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import java.util.TreeSet;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.ConditionalNodeAttributes;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
@@ -80,26 +81,45 @@ public class ConditionalNode extends Node {
 		return m_options;
 	}
 	
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundConditionalNode(this, depth))
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundConditionalNode(this, ancestors))
 			return;
 		
+		ancestors.push(this);
 		for (Node node : m_options) {
-			node.traverse(depth + 1, nodeTraverser);			
+			node.traverse(ancestors, nodeTraverser);			
 		}		
+		ancestors.pop();
 	}
 
 	public List<Node> getChildren() {
 		return new LinkedList<Node>(m_options);
 	}
 
-	public Collection<Node> whatsNext(Node node) {
-		if (getParent() != null){
-			return getParent().whatsNext(this);
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		assert(m_options.contains(nodeDescriptor.getNode()));
+
+		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+		thisNodeDescriptor.getAncestors().pop();
+
+		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+			return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
 		}
-		return new TreeSet<Node>();		
+		return new TreeSet<NodeDescriptor>();
 	}
 
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
+		assert(m_options.contains(nodeDescriptor.getNode()));
+
+		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+		thisNodeDescriptor.getAncestors().pop();
+
+		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+			return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
+		}
+		return new TreeSet<NodeDescriptor>();
+    }
+	
 	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
 		// Returns the best/worst case option of this conditional.
 		Node option = getOption(c, ignoreIterationsAboveCond, m_options);
@@ -150,22 +170,21 @@ public class ConditionalNode extends Node {
 		return setOptions;
 	}
 	
-	public Collection<Node> whatsBefore(Node node) {
-		assert(m_options.contains(node));
-		if(getParent() != null){
-			return getParent().whatsBefore(this);
-		} else {
-			return new TreeSet<Node>();
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
+		ancestors.push(this);
+		for (Node option : m_options) {
+		    list.add(new NodeDescriptor(option, ancestors));
 		}
+		ancestors.pop();
+		return list;
 	}
 
-	public List<Node> getImmediateChildren() {
-		return new LinkedList<Node> (m_options);
-	}
-
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
+			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
+		
 		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
 	}	
@@ -208,6 +227,17 @@ public class ConditionalNode extends Node {
 		return caseNode;		
 	}
 
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
+		
+		ancestors.push(this);
+		for (Node options : m_options) {
+			set.addAll(options.getEndInstructions(ancestors));
+		}
+		ancestors.pop();
+		
+		return set;
+	}
 
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
@@ -220,22 +250,5 @@ public class ConditionalNode extends Node {
 		}
 		tdb.merge(tdbs);
 		return tdb;
-	}
-	
-	public Set<InstructionNode> getEndInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		for(Node options : m_options){
-			set.addAll(options.getEndInstructions());
-		}
-		return set;
-	}
-
-
-	public Set<InstructionNode> getStartInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		for(Node options : m_options){
-			set.addAll(options.getStartInstructions());
-		}
-		return set;
-	}
+	}	
 }

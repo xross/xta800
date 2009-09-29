@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
@@ -26,12 +27,12 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
-import com.xmos.xta.core.engine.analysis.structural.patterns.LoopPatternMatcher;
-import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatcher;
-import com.xmos.xta.core.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalPatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalTransformer;
+import com.xmos.xta.core.engine.analysis.structural.patterns.LoopPatternMatcher;
+import com.xmos.xta.core.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SelfLoopPattern;
+import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatcher;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sections.Sections;
@@ -39,7 +40,7 @@ import com.xmos.xta.core.engine.sections.SrcStringInfo;
 
 public class StructuralAnalysisEngine {
 	
-	private static final boolean SYMBOLIC_LINK = false;
+	private static final boolean SYMBOLIC_LINK = true;
 	
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Long, FunctionNode> m_functionStartPcs;
@@ -236,8 +237,8 @@ public class StructuralAnalysisEngine {
 			
 			final TreeSet<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>();
 			
-			fn.traverse(0, new DefaultNodeTraverser() {
-	   		    public boolean foundFunctionNode(Node node, int depth) {
+			fn.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+	   		    public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
 	   		    	if(node != fn){
 	   		    		unlinkedFunctions.add((FunctionNode)node);
 	   		    	}
@@ -269,8 +270,8 @@ public class StructuralAnalysisEngine {
 		//this bit removes the path within paths 
 		while(!done){
 			done =true;
-			fn.traverse(0,  new DefaultNodeTraverser() {
-				public boolean foundSequenceNode(Node node, int depth) {
+			fn.traverse(new Stack<Node>(),  new DefaultNodeTraverser() {
+				public boolean foundSequenceNode(Node node, Stack<Node> ancestors) {
 					for(Node child : node.getChildren()){
 						if(child.isSequenceNode()){
 							int insertPathAt =node.getChildren().indexOf(child);
@@ -285,7 +286,7 @@ public class StructuralAnalysisEngine {
 					return true;
 				}
 				
-				public boolean foundFunctionNode(Node node, int depth) {
+				public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
 					for(Node child : node.getChildren()){
 						if(child.isSequenceNode()){
 							int insertPathAt =node.getChildren().indexOf(child);
@@ -330,7 +331,7 @@ public class StructuralAnalysisEngine {
 				if (node.isInstructionNode()) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
 					if (bbpm.match(node, treeStart, currentGraph)) {
-						seen.addAll(bbpm.getBlock().getContainedNodes());
+						seen.addAll(getContainedNodes(bbpm.getBlock()));
 						BlockNode basicBlock = bbpm.getBlock();
 						basicBlocks.add(basicBlock);
 						treeStart = bbpm.getTreeStart();
@@ -786,8 +787,8 @@ public class StructuralAnalysisEngine {
 
 	private void setConfig(final Config config, final Architecture architecture, Collection<FunctionNode> nodes) {
 		for (Node node : nodes) {
-			node.traverse(0, new DefaultNodeTraverser() {
-				public boolean foundInstructionNode(Node node, int depth) {
+			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+				public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
 					((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);				
 					return true;
 				}
@@ -839,4 +840,16 @@ public class StructuralAnalysisEngine {
 		}
 		return 0;
 	}
+	
+	private Collection<Node> getContainedNodes(Node node) {
+		final Collection<Node> nodes = new ArrayList<Node>();
+		
+		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
+			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {		
+				nodes.add(node);
+				return true;
+			}
+	    });
+		return nodes;
+	}	
 }

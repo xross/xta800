@@ -1,8 +1,9 @@
 package com.xmos.xta.ui.views.info.unknowns;
 
-import java.util.TreeSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -38,8 +39,8 @@ public class UnknownsViewer extends InfoViewer {
 	public void updateHighlighting(List<Node> selectedNodes) {
 		final Set<Node> allInstructionNodes = new TreeSet<Node>();
    		for (Node node : selectedNodes) {
-       		node.traverse(0, new DefaultNodeTraverser() {
-       		    public boolean foundInstructionNode(Node node, int depth) {
+       		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+       		    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
        		    	allInstructionNodes.add(node);
        		    	return true;
        		    }

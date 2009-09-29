@@ -3,6 +3,7 @@ package com.xmos.xta.core.engine.analysis.structural;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -43,16 +44,16 @@ public class StructureGraph {
 	
 	public void removeLinks() {	
 		for (Node node : getThreads()) {
-		    node.traverse(0, new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, int depth) {
+		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, Stack<Node> ancestors) {
 					node.freeMemory();
 					return true;
 				}
 		    });
 		}	
 		for (Node node : getUnlinkedFunctions()) {
-		    node.traverse(0, new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, int depth) {
+		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, Stack<Node> ancestors) {
 					node.freeMemory();
 					return true;
 				}
@@ -63,8 +64,8 @@ public class StructureGraph {
     public Node getNode(final int nodeId) {
     	m_searchNode = null;
 		for (Node node : getThreads()) {					
-		    node.traverse(0, new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, int depth) {
+		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, Stack<Node> ancestors) {
 					if (node.getId() == nodeId) {
 						m_searchNode = node;
 						return false;
@@ -78,8 +79,8 @@ public class StructureGraph {
 		}
         
         for (Node node : getUnlinkedFunctions()) {					
-		    node.traverse(0, new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, int depth) {
+		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, Stack<Node> ancestors) {
 					if (node.getId() == nodeId) {
 						m_searchNode = node;
 						return false;

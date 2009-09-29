@@ -76,16 +76,12 @@ public class InstructionNode extends Node {
 		return false;
 	}
 
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundInstructionNode(this, depth);
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		nodeTraverser.foundInstructionNode(this, ancestors);
 	}
 
 	public List<Node> getChildren() {
 		return new LinkedList<Node>();
-	}
-
-	public Collection<Node> whatsNext(Node node) {
-		return null;
 	}
 
 	public boolean isInstructionNode() {
@@ -107,40 +103,40 @@ public class InstructionNode extends Node {
 		return 0;
 	}
 
-	public Collection<Node> whatsBefore(Node node) {
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		return null;
+	}
+
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
 		assert(false);
 		return null;
 	}
 
-	public List<Node> getImmediateChildren() {
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
 		assert(false);
 		return null;
+	}
+
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
+		set.add(new NodeDescriptor(this, ancestors));
+		return set;
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
 		assert(false);
 		return null;
 	}
-	
-	public Set<InstructionNode> getEndInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.add(this);
-		return set;
-	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {
+		
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
+			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
+		
 		if (referenceTypes.peek().getPc() == m_inst.getPc()) {
 			referenceTypes.pop();
 			if (referenceTypes.empty()) {
 				return true;
 			}
 		}
-		return super.checkBackTrail(referenceTypes, node, calledFromAbove);
+		return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 	}
-
-	public Set<InstructionNode> getStartInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		set.add(this);
-		return set;
-	}	
 }

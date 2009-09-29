@@ -1,16 +1,18 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.traversers;
 
+import java.util.Stack;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public interface NodeTraverser {
-    boolean foundBlockNode(Node node, int depth);
-    boolean foundFunctionNode(Node node, int depth);
-    boolean foundInstructionNode(Node node, int depth);
-    boolean foundSequenceNode(Node node, int depth);
-    boolean foundLoopNode(Node node, int depth);
-    boolean foundInfiniteLoopNode(Node node, int depth);
-    boolean foundSelfLoopNode(Node node, int depth);
-    boolean foundConditionalNode(Node node, int depth);
-    boolean foundInfiniteSelfLoopNode(Node node, int depth);
-    boolean foundEndNode(Node node, int depth);
+    boolean foundBlockNode(Node node, Stack<Node> ancestors);
+    boolean foundFunctionNode(Node node, Stack<Node> ancestors);
+    boolean foundInstructionNode(Node node, Stack<Node> ancestors);
+    boolean foundSequenceNode(Node node, Stack<Node> ancestors);
+    boolean foundLoopNode(Node node, Stack<Node> ancestors);
+    boolean foundInfiniteLoopNode(Node node, Stack<Node> ancestors);
+    boolean foundSelfLoopNode(Node node, Stack<Node> ancestors);
+    boolean foundConditionalNode(Node node, Stack<Node> ancestors);
+    boolean foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors);
+    boolean foundEndNode(Node node, Stack<Node> ancestors);
 }

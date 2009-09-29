@@ -1,6 +1,7 @@
 package com.xmos.xta.core.console.commands.print;
 
 import java.util.Collection;
+import java.util.Stack;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -21,9 +22,9 @@ public class StructureDisplayer {
 	public void display(Collection<Node> nodes) {
 		final StringBuffer sb = new StringBuffer();
 		for (Node node : nodes) {					
-		    node.traverse(0, new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, int depth) {
-					displayNodeInfo(node, depth, sb);
+		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+				public boolean foundNode(Node node, Stack<Node> ancestors) {
+					displayNodeInfo(node, ancestors, sb);
 					return true;						
 				}
 		    });
@@ -32,18 +33,19 @@ public class StructureDisplayer {
 		m_console.display(sb.toString());
     }
 	
-	private void displayNodeInfo(Node node, int depth, StringBuffer sb) {
+	private void displayNodeInfo(Node node, Stack<Node> ancestors, StringBuffer sb) {
 		if (node.isInstructionNode() && (m_verbosity <= 0))
 			return;
 		if (node.isNullNode() && (m_verbosity <= 50))
 			return;
-		printIndent(depth, sb);
-		printModifiers(node, depth, sb);
+		printIndent(ancestors.size(), sb);
+		printModifiers(node, ancestors.size(), sb);
 		displayNodeName(node, sb);
 		displayTimeTaken(node, sb);
 		displayNumPaths(node, sb);
 		displayDescription(node, sb);
 		displayAttributes(node, sb);
+		displayAncestors(node, ancestors, sb);
 		sb.append("\n");	
 	}
 	
@@ -116,4 +118,13 @@ public class StructureDisplayer {
 		}
 	}
 	
+	private void displayAncestors(Node node, Stack<Node> ancestors, StringBuffer sb) {	
+		if (m_verbosity >= 50) {
+			sb.append(" [ANCESTORS: ");
+			for (Node ancestor : ancestors) {
+				sb.append(String.format("%d ", ancestor.getId()));				
+			}
+			sb.append("]");
+		}
+	}
 }

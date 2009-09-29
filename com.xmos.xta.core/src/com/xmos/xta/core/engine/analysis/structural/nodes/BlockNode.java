@@ -1,10 +1,12 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -69,54 +71,67 @@ public class BlockNode extends IBufferNode {
 		return getInstructions().getFirst().getPc();
 	}	
 		
-	public void traverse(int depth, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundBlockNode(this, depth)) 
+	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		if (!nodeTraverser.foundBlockNode(this, ancestors)) 
 			return;
 			
+		ancestors.push(this);
 		for (Node instruction : m_insts) {
-			instruction.traverse(depth + 1, nodeTraverser);
+			instruction.traverse(ancestors, nodeTraverser);
 		}		
+		ancestors.pop();
 	}
 
 	public List<Node> getChildren() {
 		return new LinkedList<Node>(m_insts);
 	}
 
-	public Collection<InstructionNode> getContainedNodes(){
-		return new TreeSet<InstructionNode>(m_insts);
-	}
-	
-	public Collection<Node> whatsNext(Node node) {
-		int index = m_insts.indexOf(node);
-		if(index < m_insts.size()-1){
-			Collection<Node> next = new TreeSet<Node>();
-			next.add(m_insts.get(index+1));
+	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+		assert(m_insts.contains(nodeDescriptor.getNode()));
+		
+		int index = m_insts.indexOf(nodeDescriptor.getNode());
+		if (index < m_insts.size() - 1) {
+			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
+			next.add(new NodeDescriptor(m_insts.get(index + 1), nodeDescriptor.getAncestors()));
 			return next;
+			
 		} else {
-			if (getParent() != null){
-				return getParent().whatsNext(this);
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+			thisNodeDescriptor.getAncestors().pop();
+			
+			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+				return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
 			}
-			return new TreeSet<Node>();
-		}
-	}
-	
-	public Collection<Node> whatsBefore(Node node) {
-		assert(m_insts.contains(node));
-		int index = m_insts.indexOf(node);
-		if(index > 0 ){
-			Collection<Node> next = new TreeSet<Node>();
-			next.add(m_insts.get(index-1));
-			return next;
-		} else {
-			if (getParent() != null){
-				return getParent().whatsBefore(this);
-			}
-			return new TreeSet<Node>();
+			return new TreeSet<NodeDescriptor>();
 		}
 	}
 
-	public List<Node> getImmediateChildren() {
-		return new LinkedList<Node>(m_insts.subList(0, 1));
+	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
+		assert(m_insts.contains(nodeDescriptor.getNode()));
+		
+		int index = m_insts.indexOf(nodeDescriptor.getNode());
+		if (index > 0) {
+			Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
+			before.add(new NodeDescriptor(m_insts.get(index - 1), nodeDescriptor.getAncestors()));
+			return before;
+			
+		} else {
+			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
+			thisNodeDescriptor.getAncestors().pop();
+
+			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
+				return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
+			}
+			return new TreeSet<NodeDescriptor>();
+		}
+	}
+
+	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
+		ancestors.push(this);
+		list.add(new NodeDescriptor(m_insts.get(0), ancestors));
+		ancestors.pop();
+		return list;
 	}
 
 	public void insertFnops() {
@@ -136,30 +151,22 @@ public class BlockNode extends IBufferNode {
 		m_insts = insts;
 	}
 
+	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
+		
+		ancestors.push(this);
+		if (m_insts.get(m_insts.size() - 1).getXtaInstruction().isFnop()) {
+			set.add(new NodeDescriptor(m_insts.get(m_insts.size() - 2), ancestors));
+			
+		} else {
+			set.add(new NodeDescriptor(m_insts.get(m_insts.size() - 1), ancestors));
+		}
+		ancestors.pop();
+
+		return set;
+	}
+	
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(m_insts.size());
 	}
-
-	public Set<InstructionNode> getEndInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		
-		if(m_insts.get(m_insts.size()-1).getXtaInstruction().isFnop()){
-			set.add(m_insts.get(m_insts.size()-2));
-		} else {
-			set.add(m_insts.get(m_insts.size()-1));
-		}
-		
-		return set;
-	}
-
-	public Set<InstructionNode> getStartInstructions() {
-		Set<InstructionNode> set = new TreeSet<InstructionNode>();
-		if(m_insts.get(0).getXtaInstruction().isFnop()){
-			set.add(m_insts.get(1));
-		} else {
-			set.add(m_insts.get(0));
-		}
-		return set;
-	}
-
 }

@@ -1,5 +1,7 @@
 package com.xmos.xta.ui.views.viewnode;
 
+import java.util.Stack;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -115,8 +117,8 @@ public abstract class StructureNode extends ViewNode {
 	private boolean found;
 	protected boolean hasUnknowns() {
 	    found = false;
-	    m_treeNode.traverse(0, new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, int depth) {
+	    m_treeNode.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
 	    		NodeAttributes nodeAttributes = node.getAttributes();		    		
 	    		if (nodeAttributes.isUnknown() &&
 	    			(nodeAttributes.getUnknownState() == UnknownState.UNKNOWN)) {

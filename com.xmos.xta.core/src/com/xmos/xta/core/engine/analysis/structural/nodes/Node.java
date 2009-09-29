@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -15,15 +15,13 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 public abstract class Node implements Comparable<Node>{
 	public static int s_numNodes;
 	
-	int m_id;
-	Node m_parent;
-	boolean m_dominatorSetIsCompleteSet;
-	Edges m_edges;
-	Node m_branchLinkReturn;
-	
-	boolean m_unresolved;
-	boolean m_infinite;
-	
+	private int m_id;
+	private Node m_parent;
+	private boolean m_dominatorSetIsCompleteSet;
+	private Edges m_edges;
+	private Node m_branchLinkReturn;
+	private boolean m_unresolved;
+	private boolean m_infinite;
 	private boolean m_isFolded;
 
 	public enum Case {
@@ -36,20 +34,15 @@ public abstract class Node implements Comparable<Node>{
 	public abstract Node shallowCopy();
 	public abstract Node deepCopy();			
 	public abstract List<Node> getChildren();
-	public abstract List<Node> getImmediateChildren();
-	public abstract Collection<Node> whatsNext(Node node);
-	public abstract Collection<Node> whatsBefore(Node node);
-	public abstract void traverse(int depth, NodeTraverser nodeTraverser);
+	public abstract List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors);
+	public abstract Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor);
+	public abstract Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor);
+	public abstract void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser);
+	public abstract Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors);
 	public abstract LinkedList<XtaInstruction> getInstructions();	
-	public abstract TimeDistributionBuckets getTimeSpread();
-	
-	/**
-	 * This returns all the instruction nodes that could possible be contained within this node
-	 */
-	
+	public abstract TimeDistributionBuckets getTimeSpread();	
 	public abstract long getStartPc();
-	public abstract Set<InstructionNode> getEndInstructions();
-	public abstract Set<InstructionNode> getStartInstructions();
+
 	public Node() {
 		m_id = s_numNodes++;
 		m_edges = new Edges();
@@ -67,20 +60,12 @@ public abstract class Node implements Comparable<Node>{
 	public String toString() {
 		return getTypeName() + m_id;
 	}
-	
-	public Collection<InstructionNode> getContainedNodes(){
-		Collection<InstructionNode> containedNodes = new TreeSet<InstructionNode>();
-		for(Node child : getChildren()){
-			containedNodes.addAll(child.getContainedNodes());
-		}
-		return containedNodes;
-	}
-	
-	public void setUnresolved(boolean unresolved){
+		
+	public void setUnresolved(boolean unresolved) {
 		m_unresolved = unresolved;
 	}
 	
-	public boolean isUnresolved(){
+	public boolean isUnresolved() {
 		return m_unresolved;
 	}
 	public void setInfinite(boolean infinite){
@@ -258,11 +243,7 @@ public abstract class Node implements Comparable<Node>{
 		}
 		return node;
 	}
-	
-	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
-		return checkBackTrail(referenceTypes, null, false);
-	}
-		
+			
 	public String getBackTrace(String backTrace) {
 		if (m_parent != null) {
 			return m_parent.getBackTrace(backTrace);
@@ -326,7 +307,9 @@ public abstract class Node implements Comparable<Node>{
 		return false;
 	}
 	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, Node node, boolean calledFromAbove) {		
+	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
+			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
+		
 		if (referenceTypes.peek().getType() != ReferenceType.Type.CALL) {
 			// Builds up a stack of all the children up to the calling node...
 			Stack<Node> children = new Stack<Node>();
@@ -342,24 +325,26 @@ public abstract class Node implements Comparable<Node>{
 			// them to be called in reverse order.
 			while (!children.empty()) {
 				Node child = children.pop();			
-				if (child.checkBackTrail(referenceTypes, this, true))
+				if (child.checkBackTrail(referenceTypes, ancestors, this, true))
 					return true;
 			}
 		}
 		
 		// Now if we are on are way up, then call the parent...
 		if (!calledFromAbove) {
-			if (m_parent == null) {
+			if (!ancestors.isEmpty()) {
+				Node parent = ancestors.pop();
+		        if (parent.checkBackTrail(referenceTypes, ancestors, this, false))
+		    	    return true;
+
+			} else {
 				// We have reached the top of the tree...
 				return false;
-				
-			} else {		
-		        if (m_parent.checkBackTrail(referenceTypes, this, false))
-		    	    return true;
 			}
 		}			
 		return false;
 	}
+	
 	public boolean isEndNode() {
 		return false;
 	}	
