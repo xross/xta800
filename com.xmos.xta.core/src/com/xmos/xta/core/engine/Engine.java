@@ -137,6 +137,10 @@ public class Engine implements Notifier {
 		return m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 	}
 	
+	public SourceMapper getSourceMapper(int nodeId, int coreId) {
+		return m_sourceMapper.get(nodeId, coreId);
+	}
+	
 	public SourceMapper getSourceMapper() {
 		return m_sourceMapper.get(m_nodeId, m_coreId);
 	}

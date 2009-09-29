@@ -413,6 +413,29 @@
             verticalRulerPreferenceKey="highlight.excluded.rulers.vertical"
             verticalRulerPreferenceValue="true">
       </specification>
+      <specification
+            annotationType="com.xmos.xta.ui.source"
+            colorPreferenceKey="highlight.source.color"
+            colorPreferenceValue="180,240,100"
+            contributesToHeader="true"
+            highlightPreferenceKey="highlight.source"
+            highlightPreferenceValue="true"
+            isGoToNextNavigationTarget="true"
+            isGoToNextNavigationTargetKey="isErrorGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="true"
+            isGoToPreviousNavigationTargetKey="isErrorGoToPreviousNavigationTarget"
+            label="Source"
+            overviewRulerPreferenceKey="highlight.source.rulers.overview"
+            overviewRulerPreferenceValue="true"
+            presentationLayer="8"
+            showInNextPrevDropdownToolbarAction="true"
+            showInNextPrevDropdownToolbarActionKey="showErrorInNextPrevDropdownToolbarAction"
+            textPreferenceKey="highlight.source.text"
+            textPreferenceValue="false"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="highlight.source.rulers.vertical"
+            verticalRulerPreferenceValue="false">
+      </specification>
    </extension>
  
    <extension
@@ -445,6 +468,10 @@
       <type
             markerSeverity="0"
             name="com.xmos.xta.ui.excluded">
+      </type>
+      <type
+            markerSeverity="2"
+            name="com.xmos.xta.ui.source">
       </type>
    </extension>
    <extension

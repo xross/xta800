@@ -16,7 +16,6 @@ import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
-import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -61,20 +60,14 @@ public class SourceMapper {
         m_sourceFiles = createSourceFiles(xeLoader, nodeId, coreId);
     }   
 
-    private boolean containsSourceFile(File file, List<SourceFile> sourceFiles){    	
+    private SourceFile getSourceFile(DebugFile debugFile, List<SourceFile> sourceFiles){    	
     	// Every source file added should have been canonicalised as should have the file
         for (SourceFile sourceFile : sourceFiles){
-            File srcFile = sourceFile.getFile();
-            
-            if (srcFile == null){
-                continue;
-            }
-            
-            if (srcFile.equals(file)){
-                return true;
+            if (debugFile == sourceFile.getDebugFile()){
+                return sourceFile;
             }
         }
-        return false;
+        return null;
     }
   
     private List<SourceFile> createSourceFiles(XeLoader xeLoader, int nodeId, int coreId) {    
@@ -85,88 +78,112 @@ public class SourceMapper {
         if (DEBUG) System.out.printf("createSourceFiles: node: %d, core: %d\n", nodeId, coreId);            
             
       	for (DebugFile debugFile : de.getDebugFiles()) {
-      		
-			File source = new File(debugFile.getFullFileName());
+			File file = new File(debugFile.getFullFileName());
 			boolean done = false;
 			while (!done) {
-				if (source.exists()) {
+				if (file.exists()) {
 
-					// convert it to its canonical form
 					try {
-						source = source.getCanonicalFile();
+						file = file.getCanonicalFile();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 
-					// sourceFiles doesn't already contain this file
-					if (!containsSourceFile(source, sourceFiles)) {
-						// add it to the sourceFiles
-						debugFile.setFile(source);
-						SourceFile sf = new SourceFile(debugFile);
-						sourceFiles.add(sf);
-						done = true;
-					} else {
-						done = true;
-					}
+					addSourceFile(de, debugFile, file, sourceFiles);
+					done = true;
 				} else {
-					if (m_fileFinder != null) {
-						source = m_fileFinder.openFileFinder(debugFile.getBaseDir(),
-								debugFile.getFileName());
-
-						if (source == null)
-							done = true;
-
-					} else {
-						done = true;
-					}
+					addSourceFile(de, debugFile, null, sourceFiles);
+					done = true;
 				}
 			}
 		}
 
-        SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
-        DebugInfo debugInfo = xeLoader.getDebugInfo(nodeId, coreId);
-        DebugEngine debugEngine = debugInfo.getDebugEngine();
-
-        assert debugEngine != null;
-        assert symbolTable != null;
-
-        for (SourceFile sourceFile : sourceFiles){    
-        	for (SourceLine sourceLine : sourceFile.getSourceLines()) {        		
-        		long lineNumber = sourceLine.getLineNumber();
-				Collection<Pair<Long,Long>> addressRanges = debugEngine.getAddressRangesMatchingPath(
-            			sourceFile.getFullFileName(), lineNumber);
-            	Collection<Long> addresses = rangesToAddresses(addressRanges);
-            	
-                for (long pc : addresses) {
-                	if (m_pcToAsm.containsKey(pc)) {
-                        AssemblyLine assemblyLine = m_pcToAsm.get(pc);
-                        Function fn = m_pcToFunction.get(pc);
-                        m_functionToFile.put(fn.getText(), sourceFile.getFileName());
-                        sourceLine.addAssembly(assemblyLine);
-                        
-                	} else {
-                		System.err.println("Could not find assembly line correspinding to 0x" + 
-                				Long.toHexString(pc) + " in debug information. ");
-                		assert(false);
-                	}
-
-                	m_pcToFile.put(pc, sourceFile);
-                }
-                
-            	Collection<Long> statementPcs = debugEngine.getStatementPcsMatchingPath(
-            			sourceFile.getFullFileName(), lineNumber);
-            	sourceLine.addStatementPcs(statementPcs);
-
-            	for (long statementPc : statementPcs) {
-            		sourceFile.addPcToLine(statementPc, sourceLine);
-            	}
-            }            
-        }
-        assert(sourceFiles != null);
         return sourceFiles;
     }
 
-    private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
+	private void addSourceFile(DebugEngine debugEngine, DebugFile debugFile,
+			File file, List<SourceFile> sourceFiles) {
+    	SourceFile sourceFile = getSourceFile(debugFile, sourceFiles);
+    	if (sourceFile == null) {
+    		sourceFile = new SourceFile(debugFile);
+    	}
+		sourceFiles.add(sourceFile);
+    	setFile(debugEngine, sourceFile, file);
+	}
+
+    public File findFileForSourceFile(SourceFile sourceFile) {
+    	if (m_fileFinder == null) {
+    		return null;
+    	}
+
+    	File file = null;
+    	DebugFile debugFile = sourceFile.getDebugFile();
+    	boolean done = false;
+		while (!done) {
+			file = m_fileFinder.openFileFinder(debugFile.getBaseDir(),
+					debugFile.getFileName());
+
+			if (file == null) {
+				done = true;
+				
+			} else {
+				if (file.exists()) {
+					try {
+						file = file.getCanonicalFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					done = true;
+				}
+			}
+		}
+		return file;
+    }
+    
+    public void setFile(DebugEngine debugEngine, SourceFile sourceFile, File file) {
+    	if (file == null)
+    		return;
+
+    	DebugFile debugFile = sourceFile.getDebugFile();
+		debugFile.setFile(file);
+		sourceFile.readFile();
+		mapSourceFileLines(debugEngine, sourceFile);
+    }
+    
+    private void mapSourceFileLines(DebugEngine debugEngine, SourceFile sourceFile) {
+    	for (SourceLine sourceLine : sourceFile.getSourceLines()) {
+    		long lineNumber = sourceLine.getLineNumber();
+			Collection<Pair<Long,Long>> addressRanges = debugEngine.getAddressRangesMatchingPath(
+        			sourceFile.getFullFileName(), lineNumber);
+        	Collection<Long> addresses = rangesToAddresses(addressRanges);
+        	
+            for (long pc : addresses) {
+            	if (m_pcToAsm.containsKey(pc)) {
+                    AssemblyLine assemblyLine = m_pcToAsm.get(pc);
+                    Function fn = m_pcToFunction.get(pc);
+                    m_functionToFile.put(fn.getText(), sourceFile.getFileName());
+                    sourceLine.addAssembly(assemblyLine);
+                    
+            	} else {
+            		System.err.println("Could not find assembly line correspinding to 0x" + 
+            				Long.toHexString(pc) + " in debug information. ");
+            		assert(false);
+            	}
+
+            	m_pcToFile.put(pc, sourceFile);
+            }
+            
+        	Collection<Long> statementPcs = debugEngine.getStatementPcsMatchingPath(
+        			sourceFile.getFullFileName(), lineNumber);
+        	sourceLine.addStatementPcs(statementPcs);
+
+        	for (long statementPc : statementPcs) {
+        		sourceFile.addPcToLine(statementPc, sourceLine);
+        	}
+        }            
+	}
+
+	private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
     	Set<Long> addresses = new TreeSet<Long>();
 		for (Pair<Long, Long> range : addressRanges) {
 			int asmLineNum = 0;
