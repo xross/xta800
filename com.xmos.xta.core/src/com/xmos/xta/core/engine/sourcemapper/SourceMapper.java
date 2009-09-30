@@ -17,6 +17,7 @@ import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 
@@ -39,7 +40,7 @@ public class SourceMapper {
 	
 	private Map<String, Long> m_labels;
 	
-    public SourceMapper(XeLoader xeLoader, int nodeId, int coreId,
+    public SourceMapper(Engine engine, XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, FileFinder fileFinder, InstructionDecoder instructionDecoder, 
 			TreeMap<String, LinkedList<InstructionNode>> treeMap, Map<String, Long> labels) {
     	m_labels = labels;
@@ -50,14 +51,14 @@ public class SourceMapper {
         m_pcToAsm = new TreeMap<Long, AssemblyLine>();
         m_pcToFunction = new TreeMap<Long, Function>();
         m_functionToFile = new TreeMap<String, String>();
-        initialise(xeLoader, nodeId, coreId);
+        initialise(engine, xeLoader, nodeId, coreId);
 	}
 
-    public void initialise(XeLoader xeLoader, int nodeId, int coreId) {
+    public void initialise(Engine engine, XeLoader xeLoader, int nodeId, int coreId) {
         m_pcToFile = new TreeMap <Long, SourceFile>();
         m_instructions = createAssemblyLines();
         m_functions = createFunctions();
-        m_sourceFiles = createSourceFiles(xeLoader, nodeId, coreId);
+        m_sourceFiles = createSourceFiles(engine, xeLoader, nodeId, coreId);
     }   
 
     private SourceFile getSourceFile(DebugFile debugFile, List<SourceFile> sourceFiles){    	
@@ -70,8 +71,9 @@ public class SourceMapper {
         return null;
     }
   
-    private List<SourceFile> createSourceFiles(XeLoader xeLoader, int nodeId, int coreId) {    
+    private List<SourceFile> createSourceFiles(Engine engine, XeLoader xeLoader, int nodeId, int coreId) {
     	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
+
     	DebugInfo di = xeLoader.getDebugInfo(nodeId, coreId);     	
         DebugEngine de = di.getDebugEngine();
             
@@ -92,7 +94,8 @@ public class SourceMapper {
 					addSourceFile(de, debugFile, file, sourceFiles);
 					done = true;
 				} else {
-					addSourceFile(de, debugFile, null, sourceFiles);
+					file = findFileInSrcPaths(engine.getSrcPaths(), debugFile.getFileName());
+					addSourceFile(de, debugFile, file, sourceFiles);
 					done = true;
 				}
 			}
@@ -101,6 +104,17 @@ public class SourceMapper {
         return sourceFiles;
     }
 
+	private File findFileInSrcPaths(String srcPathsString, String fileName) {
+		String[] srcPaths = srcPathsString.split(";");
+		for (String srcPath : srcPaths) {
+		    File file = new File(srcPath + File.separator + fileName); 		
+	        if (file.exists()) {
+	    	    return file;
+	        }
+		}
+		return null;
+	}		
+	
 	private void addSourceFile(DebugEngine debugEngine, DebugFile debugFile,
 			File file, List<SourceFile> sourceFiles) {
     	SourceFile sourceFile = getSourceFile(debugFile, sourceFiles);
@@ -120,8 +134,7 @@ public class SourceMapper {
     	DebugFile debugFile = sourceFile.getDebugFile();
     	boolean done = false;
 		while (!done) {
-			file = m_fileFinder.openFileFinder(debugFile.getBaseDir(),
-					debugFile.getFileName());
+			file = m_fileFinder.openFileFinder(debugFile.getBaseDir(), debugFile.getFileName());
 
 			if (file == null) {
 				done = true;

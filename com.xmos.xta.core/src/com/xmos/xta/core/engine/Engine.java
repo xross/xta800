@@ -1079,7 +1079,7 @@ public class Engine implements Notifier {
 				setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
 
 				provideFeedback(String.format("Processing sources..."));				
-				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
+				SourceMapper sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);
