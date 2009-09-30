@@ -26,7 +26,7 @@ public class XtaPerspective implements IPerspectiveFactory {
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, treeFolder, RoutesView.ID);
 
-        layout.setEditorAreaVisible(true);        
+        layout.setEditorAreaVisible(true);
 	}
 	
 	private void addView(IPageLayout pageLayout, IFolderLayout folderLayout, String viewId) {
