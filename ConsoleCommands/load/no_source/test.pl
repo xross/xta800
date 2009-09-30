@@ -12,5 +12,6 @@ system("xcc -target=$target -march=$arch -g test.s -o $genDir/test.xe > $genDir/
 }
 system("@ARGV load $genDir/test.xe " .
        "status " .
+       "list sources " .
        "exit > $genDir/no_source.txt 2>&1");
 

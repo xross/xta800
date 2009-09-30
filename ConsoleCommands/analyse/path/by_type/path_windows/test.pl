@@ -18,6 +18,7 @@ if (!$noBuild) {
 
 system("@ARGV " .
        "-load $genDir/test.xe " .
+       "-list sources " .
        "-analyse path LABEL:main LABEL:add " .
        "-print structure - " .
        "-analyse path ENDPOINT:main ENDPOINT:add " .
@@ -25,4 +26,5 @@ system("@ARGV " .
        "-analyse path ENDPOINT:C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/analyse/path/by_type/path_windows/test.xc:19 " .
          "ENDPOINT:C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/analyse/path/by_type/path_windows/test.xc:23 " .
        "-print structure - " .
+       "-print src - " .
        "-exit  > $genDir/path_windows.txt 2>&1");
