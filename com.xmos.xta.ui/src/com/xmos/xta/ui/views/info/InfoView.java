@@ -59,6 +59,11 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 		GuiEngine.addBroadcastListener(this);
 	}
 
+	public void dispose() {
+		GuiEngine.removeBroadcastListener(this);
+		super.dispose();
+	}
+
 	public void createPartControl(Composite parent) {
 		TabFolder folders = new TabFolder(parent, SWT.BORDER);		
 		m_log = new LogViewer(parent.getDisplay(), parent, getSite(), 

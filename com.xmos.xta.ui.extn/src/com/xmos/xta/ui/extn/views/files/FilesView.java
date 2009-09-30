@@ -100,19 +100,18 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
         try {
     		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
-			IEditorInput input = getInput(debugFile.getFileName());
+    		if (debugFile.getFileName().equals(XtaDisassemblyEditor.EDITORNAME)) {
+    			GuiEngine.openDisassembly();
+    			return;
+    		}
+    			
+			IEditorInput input = getInput(debugFile.getFullFileName());
 			if (input == null)
 				return;
 			
-			if (debugFile.getFileName().equals(XtaDisassemblyEditor.EDITORNAME)) {
-	        	XtaEditor editor = (XtaEditor)page.openEditor(input, XtaDisassemblyEditor.ID);
-	        	editor.setNames(XtaDisassemblyEditor.EDITORNAME, XtaDisassemblyEditor.EDITORNAME);
+        	XtaEditor editor = (XtaEditor)page.openEditor(input, XtaSourceEditor.ID);
+        	editor.setName(debugFile.getShortFileName());
 
-        	} else {
-	        	XtaEditor editor = (XtaEditor)page.openEditor(input, XtaSourceEditor.ID);
-	        	editor.setNames(debugFile.getShortFileName(), debugFile.getFileName());
-
-        	}
 			// Cause an update in the new editor which will do the highlighting
 			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECTION_CHANGED, "");
 		} catch (PartInitException e) {
@@ -121,21 +120,16 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 	}
 
 	private IEditorInput getInput(String fileName) {
-		if (fileName.equals(XtaDisassemblyEditor.EDITORNAME)) {
-			return GuiEngine.getDisassemblyInput();
-			
+		if (m_editorInputs.containsKey(fileName)) {
+			return m_editorInputs.get(fileName);
 		} else {
-			if (m_editorInputs.containsKey(fileName)) {
-				return m_editorInputs.get(fileName);
+			SourceFile sourceFile = getSourceFile(fileName);
+			if (sourceFile != null) {
+				IEditorInput input = new InputSource(sourceFile); 
+				m_editorInputs.put(fileName, input);
+				return input;
 			} else {
-				SourceFile sourceFile = getSourceFile(fileName);
-				if (sourceFile != null) {
-					IEditorInput input = new InputSource(sourceFile); 
-					m_editorInputs.put(fileName, input);
-					return input;
-				} else {
-					return null;
-				}
+				return null;
 			}
 		}
 	}

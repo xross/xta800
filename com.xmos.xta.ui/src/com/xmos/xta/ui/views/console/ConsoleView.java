@@ -16,6 +16,11 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener {
 		GuiEngine.addBroadcastListener(this);
 	}
 
+	public void dispose() {
+		GuiEngine.removeBroadcastListener(this);
+		super.dispose();
+	}
+	
 	public void createPartControl(Composite parent) {
 		m_guiConsole = new GuiConsole(parent);
 

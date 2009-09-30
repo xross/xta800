@@ -360,15 +360,15 @@ public class RouteConstructor {
 				if(!newWorkingSet.isEmpty()){
 
 					Node newStart = makeBasicBlocks(functionStartNode, realEndNodes, newWorkingSet);
-					System.out.println(realEndNodes);
+					//System.out.println(realEndNodes);
 					//check that there are no instruction nodes in the graph.
-					for(Node graphNode : newWorkingSet){
+/*					for(Node graphNode : newWorkingSet){
 						if(graphNode.isInstructionNode()){
 							System.out.println(StructuralAnalysisEngine.dumpTree("broken", newWorkingSet));
 						}
 						
 						assert(!graphNode.isInstructionNode());
-					}
+					}*/
 					
 					StructuralAnalysisEngine sae = new StructuralAnalysisEngine();	
 					

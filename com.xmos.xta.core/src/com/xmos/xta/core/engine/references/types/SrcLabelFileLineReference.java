@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.references.types;
 
+import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 
@@ -23,7 +24,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
         long lineNumber = getLineNumber(ref);
 
 		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
-            if (fileNameMatches(info.getCompilationDir(), info.getFileName(), fileName) &&
+            if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName) &&
             	((lineNumber >= info.getLineNumberStart()) &&
             	 (lineNumber <= info.getLineNumberEnd()))) {
             	

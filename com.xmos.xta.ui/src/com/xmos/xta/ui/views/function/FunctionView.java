@@ -3,6 +3,7 @@ package com.xmos.xta.ui.views.function;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 
+import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.views.Renderer;
 import com.xmos.xta.ui.views.RendererControl;
 import com.xmos.xta.ui.views.ZoomedCanvasProperties;
@@ -25,6 +26,11 @@ public class FunctionView extends ZoomedCanvasView {
 
 	public FunctionView() {
 		super("Function");
+	}
+
+	public void dispose() {
+		GuiEngine.removeBroadcastListener(this);
+		super.dispose();
 	}
 
 	protected ViewNode buildViewNode(Node node, int depth) {

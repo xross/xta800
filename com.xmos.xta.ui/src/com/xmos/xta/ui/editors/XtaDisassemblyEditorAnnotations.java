@@ -42,9 +42,15 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
         m_previousFnops = new TreeSet<XtaInstruction>();
     }
 
-
+    public void dispose() {
+	    GuiEngine.closeDisassembly();
+    	super.dispose();
+    }
+    
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditor: propertyChange: %s\n", event.getProperty());	
+		if (m_isDisposed)
+			return;
 
 		if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
 			Reference codePoint = GuiEngine.getCodePoint();
@@ -78,7 +84,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
         collapseFolding(model);
 	}
 
-	void updateAll() {
+	public void updateAll() {
 		updateFnops();
 		updateUnknowns();
 		updateHighlighting();
@@ -245,7 +251,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return -1;
 	}
 
-	String getLineDescription(long index) {
+	public String getLineDescription(long index) {
 		return lineIndexToString(index);
 	}
 
@@ -330,10 +336,6 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     	}
 		return false;
 	}
-	public boolean isDirty() {
-		// Keep the editor pages from showing a '*' when FNOPs are inserted and removed
-		return false;
-	}
 
 	public ProjectionAnnotationModel updateFoldingStructure() {
 	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
@@ -366,5 +368,9 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 
 	public void collapseFolding(ProjectionAnnotationModel model) {
         model.collapseAll(0, m_editor.getDocument().getLength());
+	}
+
+    boolean canAnnotate() {
+		return true;
 	}
 }

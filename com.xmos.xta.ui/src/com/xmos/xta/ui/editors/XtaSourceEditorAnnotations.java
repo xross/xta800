@@ -11,11 +11,10 @@ import java.util.Set;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.custom.StyledText;
 
+import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -37,6 +36,11 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
         m_pcToSourceLineIndex = new HashMap<Long, Set<Long>>();
     }
 
+	public void connectToFile() {
+		super.connectToFile();
+		updateLineMap();
+	}
+	
 	public void updateSourcePcs(boolean showPosition) {
 		StyledText text = m_editor.getViewer().getTextWidget();
 		int charOffset = text.getCaretOffset();
@@ -48,24 +52,15 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		}
 	}
     
-    public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("XtaDisassemblyEditor: propertyChange: %s\n", event.getProperty());	
-
-		if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) ||
-			event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			updateLineMap();
-
-		}
-		
-		super.propertyChange(event);
-	}
-
     private void updateLineMap() {
 		Engine engine = GuiEngine.getEngine();
 		int nodeId = engine.getNodeId();
 		int coreId = engine.getCoreId();
 
 		m_pcToSourceLineIndex.clear();
+		
+		if (!engine.getXeLoader().isLoaded() || m_editor.isDirty())
+			return;
 
 		for (long lineNumber = 1; lineNumber < m_editor.getDocument().getNumberOfLines(); lineNumber++) {
     		String refString = String.format("%s:%d", getFileName(), lineNumber);
@@ -87,7 +82,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		indexes.add(lineNumber - 1);
 	}
 
-	void updateAll() {
+	public void updateAll() {
 		updateUnknowns();
 		updateHighlighting();
 	}
@@ -101,30 +96,44 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
         long endPointIndex = getEndPointIndex();
 
         m_endPointLineIndexes.clear();
-        for (CodePointTableInfo info : GuiEngine.getEngine().getEndpointTable().values()) {
-        	if (info.getFileName().equals(getFileName())) {
-        		long index = info.getLineNumber() - 1;
-        		m_endPointLineIndexes.add(index);
-        		if (index != endPointIndex && index != startPointIndex) {
-        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
-        		}
-        	}
-        } 
+        String fileName = getFileName();
 
-        for (CodePointTableInfo info : GuiEngine.getEngine().getCallTable().values()) {
-        	if (info.getFileName().equals(getFileName())) {
-        		long index = info.getLineNumber() - 1;
-        		m_endPointLineIndexes.add(index);
-        		if (index != endPointIndex && index != startPointIndex) {
-        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
-        		}
-        	}
-        } 
+        Engine engine = GuiEngine.getEngine();
+		if (canAnnotate()) {
+			for (CodePointTableInfo info : engine.getEndpointTable().values()) {
+	        	if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName)) {
+	        		long index = info.getLineNumber() - 1;
+	        		m_endPointLineIndexes.add(index);
+	        		if (index != endPointIndex && index != startPointIndex) {
+	        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
+	        		}
+	        	}
+	        } 
+	
+	        for (CodePointTableInfo info : engine.getCallTable().values()) {
+	        	if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName)) {
+	        		long index = info.getLineNumber() - 1;
+	        		m_endPointLineIndexes.add(index);
+	        		if (index != endPointIndex && index != startPointIndex) {
+	        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
+	        		}
+	        	}
+	        }
+		}
 
         super.updateAnnotations(allAnnotations, allPositions);
 	}
 
-    boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+    boolean canAnnotate() {
+		if (!GuiEngine.getEngine().getXeLoader().isLoaded())
+			return false;
+		if (m_editor.isDirty())
+			return false;
+			
+		return true;
+	}
+
+	boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions) {
     	
     	boolean hit = false;
@@ -140,7 +149,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	long getIndexForRef(Reference ref) {
 		if (ref != null) {
 			if (ref.getResolved()) {
-				if (ref.getFileName().equals(getFileName())) {
+				if (FileNameCompare.fileNamesMatch(ref.getFileName(), getFileName())) {
 					return ref.getLineNum() - 1;
 				} else {
 					long pc = ref.getPc();
@@ -174,7 +183,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		return sourceFile.getLineForPc(pc);
 	}
 
-	String getLineDescription(long index) {
+	public String getLineDescription(long index) {
 		if (m_endPointLineIndexes.contains(index)) {
 			return lineIndexToString(index);
 		}
@@ -192,9 +201,17 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 
 	Collection<Long> getPcsForLine(long lineNumber) {
 		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
-		SourceFile sourceFile = sourceMapper.getSourceFile(getFileName());
-		SourceLine sourceLine = sourceFile.getSourceLines().get((int)lineNumber - 1);
-		return sourceLine.getAllPcs();
+		if (sourceMapper != null) {
+			SourceFile sourceFile = sourceMapper.getSourceFile(getFileName()); 
+			if (sourceFile != null) {
+				List<SourceLine> sourceLines = sourceFile.getSourceLines();
+				if (lineNumber <= sourceLines.size()) {
+					SourceLine sourceLine = sourceLines.get((int)lineNumber - 1);
+					return sourceLine.getAllPcs();
+				}
+			}
+		}
+		return new ArrayList<Long>();
 	}
 
 	public boolean isValidEndPoint(long lineNumber) {
@@ -206,10 +223,11 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	}
 
 	String getSrcLabel(long index) {
+    	String fileName = getFileName();
 		long lineNumber = index + 1;
         Map<Long, SrcLabelTableInfo> srcLabelTable = GuiEngine.getEngine().getSrcLabelTable();
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
-        	if (info.getFileName().equals(getFileName())) {
+			if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName)) {
         		long startLineNumber = info.getLineNumberStart();
         		long endLineNumber = info.getLineNumberEnd();
     			if (lineNumber >= startLineNumber && lineNumber <= endLineNumber) {

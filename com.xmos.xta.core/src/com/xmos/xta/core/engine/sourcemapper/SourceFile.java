@@ -82,4 +82,8 @@ public class SourceFile {
 	public DebugFile getDebugFile() {
 		return m_debugFile;
 	}
+
+	public boolean fileNameMatches(String fileName) {
+		return m_debugFile.fileNameMatches(fileName);
+	}
 }

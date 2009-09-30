@@ -280,7 +280,7 @@ public class SourceMapper {
 
 	public SourceFile getSourceFile(String fileName) {
         for (SourceFile sourceFile : m_sourceFiles){
-        	if (sourceFile.getFileName().equals(fileName))
+        	if (sourceFile.fileNameMatches(fileName))
         		return sourceFile;
         }
         assert(false);

@@ -11,6 +11,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
@@ -22,6 +25,8 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.editors.InputDisassembly;
+import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.XtaEditor;
 
 public class GuiEngine {
 	private static Engine s_engine;
@@ -305,5 +310,21 @@ public class GuiEngine {
 
 	public static boolean showSourcePcsPosition() {
 		return s_showPcPosition;
+	}
+
+	public static void openDisassembly() {
+		IEditorInput input = GuiEngine.getDisassemblyInput();
+
+		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		try {
+			XtaEditor editor = (XtaEditor)page.openEditor(input, XtaDisassemblyEditor.ID);
+	    	editor.setName(XtaDisassemblyEditor.EDITORNAME);
+		} catch (PartInitException e) {
+			
+		}
+	}
+
+	public static void closeDisassembly() {
+		s_disassemblyInputs.clear();
 	}
 }

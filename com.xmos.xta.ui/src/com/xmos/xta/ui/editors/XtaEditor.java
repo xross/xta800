@@ -31,14 +31,6 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.ui.editors.XtaEditor.Test";
     
-    public static final String HighlightAnnotationID = "com.xmos.xta.ui.highlight";
-    public static final String SourcePcsAnnotationID = "com.xmos.xta.ui.source";
-    public static final String UnknownAnnotationID   = "com.xmos.xta.ui.unknown";
-    public static final String StartAnnotationID     = "com.xmos.xta.ui.start";
-    public static final String StopAnnotationID      = "com.xmos.xta.ui.stop";
-    public static final String StartStopAnnotationID = "com.xmos.xta.ui.startstop";
-    public static final String ExcludedAnnotationID  = "com.xmos.xta.ui.excluded";
-    public static final String EndpointID            = "com.xmos.xta.ui.endpoint";
     public static final String ExpandAllID           = "com.xmos.xta.ui.action.ExpandAll";
     public static final String CollapseAllID         = "com.xmos.xta.ui.action.CollapseAll";
     public static final String ShowStartPointID      = "com.xmos.xta.ui.action.ShowStartPoint";
@@ -58,10 +50,11 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
     private Action m_setInstructionTimeAction;
     private String m_clickCodeRefString;
 
-    protected String m_fileName;
     protected String m_partName;
     protected XtaEditorAnnotations m_annotations;
 
+	public abstract String getFileName();
+    
     public XtaEditor() {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
     	setDocumentProvider(new XtaDocumentProvider());
@@ -83,7 +76,7 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
         viewer.showAnnotationsOverview(true);
         
         AnnotationPainter painter = new AnnotationPainter(viewer, getAnnotationAccess());        
-        painter.addAnnotationType(HighlightAnnotationID);
+        painter.addAnnotationType(XtaEditorAnnotations.HighlightAnnotationID);
     }
     
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
@@ -230,11 +223,9 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
     }
 
 	// Once the name is set then the endpoints can be updated
-    public void setNames(String partName, String fileName) {
+    public void setName(String partName) {
 		m_partName = partName;
 		setPartName(partName);
-		m_fileName = fileName;
-		m_annotations.updateHighlighting();
 	}
 
 	public IDocument getDocument() {
@@ -266,9 +257,5 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
 	public void refreshInput(IEditorInput input) {
 		setInput(input);
 		setPartName(m_partName);
-	}
-	
-	public String getFileName() {
-		return m_fileName;
 	}
 }

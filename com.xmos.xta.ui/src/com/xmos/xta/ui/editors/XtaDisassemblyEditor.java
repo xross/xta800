@@ -1,6 +1,8 @@
 package com.xmos.xta.ui.editors;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -14,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 public class XtaDisassemblyEditor extends XtaEditor {
     public static final String ID = "com.xmos.xta.ui.editors.XtaDisassemblyEditor";
@@ -60,6 +63,8 @@ public class XtaDisassemblyEditor extends XtaEditor {
         projectionSupport.install();
 
         viewer.doOperation(ProjectionViewer.TOGGLE);
+        
+        m_annotations.connectToFile();
     }
 
 	protected IVerticalRulerColumn createLineNumberRulerColumn() {
@@ -101,6 +106,15 @@ public class XtaDisassemblyEditor extends XtaEditor {
      	});
     }    
 
+	protected void editorContextMenuAboutToShow(IMenuManager menu) {
+		if (DEBUG) System.out.printf("XtaDisassemblyEditor: editorContextMenuAboutToShow\n");
+		super.editorContextMenuAboutToShow(menu);
+
+		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
+     	addAction(menu, ExpandAllID);
+     	addAction(menu, CollapseAllID);
+	}
+
 	public boolean isDirty() {
 		// Keep the editor pages from showing a '*' when FNOPs are inserted and removed
 		return false;
@@ -110,5 +124,9 @@ public class XtaDisassemblyEditor extends XtaEditor {
 		XtaDisassemblyEditorAnnotations annotations = (XtaDisassemblyEditorAnnotations)getAnnotations();
 		ProjectionAnnotationModel model = annotations.updateFoldingStructure();
 		annotations.collapseFolding(model);
+	}
+
+	public String getFileName() {
+		return EDITORNAME;
 	}
 }
