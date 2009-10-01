@@ -79,6 +79,10 @@ public abstract class Node implements Comparable<Node>{
 	public int getId() {
 		return m_id;
 	}
+
+	public void setId(int id) {
+		m_id = id;;
+	}
 	
 	public int compareTo(Node node) {
 		return Integer.signum(m_id - node.m_id);

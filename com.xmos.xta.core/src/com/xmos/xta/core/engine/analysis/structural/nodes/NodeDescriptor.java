@@ -27,8 +27,16 @@ public class NodeDescriptor implements Comparable<NodeDescriptor>{
     	return m_node;
     }
 
+    public void setNode(Node node) {
+    	m_node = node;
+    }
+    
     public Stack<Node> getAncestors() {
     	return m_ancestors;
+    }
+
+    public void setAncestors(Stack<Node> ancestors) {
+    	m_ancestors = ancestors;
     }
     
 	public boolean checkBackTrail(Stack<ReferenceType> referenceTypes) {
@@ -149,7 +157,6 @@ public class NodeDescriptor implements Comparable<NodeDescriptor>{
     	} else {
         	str += String.format(" (%s)]", m_node);    		    		
     	}
-        	
     	return str;
     }
     
