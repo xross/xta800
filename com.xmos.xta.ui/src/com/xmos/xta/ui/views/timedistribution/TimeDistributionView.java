@@ -100,6 +100,8 @@ public class TimeDistributionView extends ViewPart implements IPropertyChangeLis
 	    createContextMenus();
 		
 		initialiseTree();
+		updateSelection(GuiEngine.getSelectedNodes());
+		refresh();
 	}
 	
 	public void dumpJpg(){

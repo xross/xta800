@@ -184,6 +184,9 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	}
 
 	public String getLineDescription(long index) {
+		if (!GuiEngine.getEngine().getXeLoader().isLoaded())
+			return null;
+		
 		if (m_endPointLineIndexes.contains(index)) {
 			return lineIndexToString(index);
 		}
