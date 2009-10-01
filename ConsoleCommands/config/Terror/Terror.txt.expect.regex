@@ -21,7 +21,7 @@ Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
 No routes analysed
 Route\(0\) function: main
-    Fail with 3 unknowns, Num Paths: 1, Violation: \d+\.0ns, Required: 10\.0ns, Worst: \d+\.0ns, Min Frequency: \d+ Mhz
+    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.0ns, Required: 10\.0ns, Worst: \d+\.0ns, Min Frequency: \d+ Mhz
 
 Fail, 1/1, Max Violation: \d+\.0ns
 RETURN CODE OK
@@ -48,7 +48,7 @@ Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
 No routes analysed
 Route\(0\) function: main
-    Fail with 3 unknowns, Num Paths: 1, Violation: \d+\.0ns, Required: 10\.0ns, Worst: \d+\.0ns, Min Frequency: \d+ Mhz
+    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.0ns, Required: 10\.0ns, Worst: \d+\.0ns, Min Frequency: \d+ Mhz
 
 Fail, 1/1, Max Violation: \d+\.0ns
 RETURN CODE OK
