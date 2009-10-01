@@ -24,10 +24,11 @@ public abstract class XtaInstruction extends Instruction {
 	
 	private void adjustSetcPause(String nmenonic){
 		if(nmenonic.equals("setc (ru6)")){
+			
 			if(getOperandField("op2") == 0x0007){
 				this.setCanPause(true);
 			} else {
-				this.setCanPause(true);
+				this.setCanPause(false);
 			}
 		}
 	}

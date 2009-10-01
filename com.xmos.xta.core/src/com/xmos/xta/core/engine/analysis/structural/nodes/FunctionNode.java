@@ -213,10 +213,14 @@ public class FunctionNode extends IBufferNode {
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbSequence = new LinkedList<TimeDistributionBuckets>();
-		if(m_functionSequence != null){
+		if(m_functionSequence != null && !m_functionSequence.isEmpty()){
 			for(Node node : m_functionSequence){
 				tsbSequence.add(node.getTimeSpread());
 			}
+		} else {
+			TimeDistributionBuckets infinite = new TimeDistributionBuckets(0);
+			infinite.setInfinite();
+			tsbSequence.add(infinite);
 		}
 		tdb.add(tsbSequence);
 		return tdb;

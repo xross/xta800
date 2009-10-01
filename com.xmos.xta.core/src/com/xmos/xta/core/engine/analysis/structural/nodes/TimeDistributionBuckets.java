@@ -36,6 +36,7 @@ public class TimeDistributionBuckets {
 	
 	private void normalise(){
 		double total = 0;
+
 		for(int i=0;i<BUCKET_COUNT;i++){
 			total += m_buckets[i];
 		}
@@ -65,14 +66,17 @@ public class TimeDistributionBuckets {
 			m_lowest = time.m_lowest;
 			m_highest = time.m_highest;
 			m_isInfinite = time.m_isInfinite;
+			m_buckets = time.m_buckets;
+			normalise();
 		}
-		normalise();
+		
 	}
 	
 	
 	public void add (TimeDistributionBuckets b0, TimeDistributionBuckets b1){
 		if(b0.isInfinite() || b1.isInfinite()) {
 			setInfinite();
+			m_buckets = new double [BUCKET_COUNT];
 			return;
 		}
 		m_lowest = b0.m_lowest + b1.m_lowest;

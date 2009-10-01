@@ -120,15 +120,7 @@ public class Engine implements Notifier {
 	public Vector<MemoryImage> getMemoryImages() {
 		return m_xeLoader.getMemoryImages();
 	}
-/*
-	public Vector<SymbolTable> getSymbolTables() {
-		return m_xeLoader.getSymbolTables();
-	}
 
-	public Vector<DebugInfo> getDebugInfos() {
-		return m_xeLoader.getDebugInfos();
-	}
-	*/
 	public MemoryImage getMemoryImage() {
 		return m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 	}
