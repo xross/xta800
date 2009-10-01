@@ -151,8 +151,8 @@ public class BlockNode extends IBufferNode {
 		m_insts = insts;
 	}
 
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
+    public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
+	    Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
 		
 		ancestors.push(this);
 		if (m_insts.get(m_insts.size() - 1).getXtaInstruction().isFnop()) {
@@ -166,7 +166,11 @@ public class BlockNode extends IBufferNode {
 		return set;
 	}
 	
-	public TimeDistributionBuckets getTimeSpread() {
-		return new TimeDistributionBuckets(m_insts.size());
-	}
+    public TimeDistributionBuckets getTimeSpread() {
+	    long time = 0;
+	    for(InstructionNode inst : m_insts){
+		    time += inst.getAttributes().getInstructionNumCycles();
+	    }
+	    return new TimeDistributionBuckets(time);
+    }
 }

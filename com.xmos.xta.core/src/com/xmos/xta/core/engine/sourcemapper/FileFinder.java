@@ -17,17 +17,6 @@ public abstract class FileFinder {
     
 	public abstract File openFileFinder(String compilationDir, String fileName);
     	
-	protected File findFileInSrcPaths(String srcPathsString, String fileName) {
-		String[] srcPaths = srcPathsString.split(";");
-		for (String srcPath : srcPaths) {
-		    File file = new File(srcPath + File.separator + fileName); 		
-	        if (file.exists()) {
-	    	    return file;
-	        }
-		}
-		return null;
-	}		
-	
 	protected void addToFileCache(String compilationDir, String fileName, File file) {
     	DebugFile debugFile = new DebugFile(compilationDir, fileName, "");
     	debugFile.setFile(file);

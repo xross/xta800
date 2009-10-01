@@ -124,8 +124,7 @@ public class InstructionNode extends Node {
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
-		assert(false);
-		return null;
+		return new TimeDistributionBuckets(m_attributes.getInstructionNumCycles());
 	}
 		
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 

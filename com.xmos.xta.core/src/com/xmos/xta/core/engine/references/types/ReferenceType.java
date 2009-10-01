@@ -1,8 +1,8 @@
 package com.xmos.xta.core.engine.references.types;
 
-import java.io.File;
 import java.util.Map;
 
+import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
@@ -87,7 +87,7 @@ public abstract class ReferenceType {
         long lineNumber  = getLineNumber(ref);		
 
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
-            if (info.getFileName().equals(fileName) &&
+            if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName) &&
             	((lineNumber >= info.getLineNumberStart()) &&
             	 (lineNumber <= info.getLineNumberEnd()))) {
             	return true;
@@ -101,7 +101,7 @@ public abstract class ReferenceType {
         long lineNumber  = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : codePointTable.values()) {
-            if (fileNameMatches(info.getCompilationDir(), info.getFileName(), fileName) &&
+            if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName) &&
             	(info.getLineNumber() == lineNumber)) {
             	return true;
             }			
@@ -163,18 +163,6 @@ public abstract class ReferenceType {
 		} else {
 			return refArray[refArray.length - 2];
 		}
-	}
-
-	boolean fileNameMatches(String dir, String name, String fileName) {
-		if (name.equals(fileName)) {
-			return true;
-		}
-		
-		String fullName = dir + File.separator + name;
-		if (fullName.equals(fileName)) {
-			return true;
-		}
-		return false;
 	}
 
 	long getLineNumber(String fileLineReference) {

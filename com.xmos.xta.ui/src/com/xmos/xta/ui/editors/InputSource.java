@@ -13,9 +13,11 @@ public class InputSource implements IEditorInput {
     public static final String s_lineType = XtaDocumentPartitioner.DISASSEMBLY;
 
     private Input m_input;
+    private SourceFile m_sourceFile;
     
     public InputSource(SourceFile sourceFile) {	
 		if (DEBUG) System.out.printf("InputSource( " + sourceFile.getFileName() + ")\n");
+        m_sourceFile = sourceFile;
 				
 		long lineIndex = 0;
 		m_input = new Input(s_headerType, s_lineType);
@@ -60,4 +62,7 @@ public class InputSource implements IEditorInput {
 		return null;
 	}
 
+	public SourceFile getSourceFile() {
+		return m_sourceFile;
+	}
 }

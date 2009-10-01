@@ -23,11 +23,6 @@ public class GuiFileFinder extends FileFinder {
 			return cachedFile;
 		}
 		
-		File srcPathFile = findFileInSrcPaths(GuiEngine.getEngine().getSrcPaths(), fileName);
-		if (srcPathFile != null) {
-			return srcPathFile;
-		}
-		
 		File userSpecifiedFile = askUserForFile(compilationDir, fileName);
 		if (userSpecifiedFile != null) {
 			return userSpecifiedFile;

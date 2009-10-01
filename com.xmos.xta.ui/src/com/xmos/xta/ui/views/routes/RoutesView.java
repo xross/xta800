@@ -32,6 +32,11 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener {
 		if (DEBUG) System.out.printf("RoutesView()\n");			
 		GuiEngine.addBroadcastListener(this);
 	}
+	
+	public void dispose() {
+		GuiEngine.removeBroadcastListener(this);
+		super.dispose();
+	}
 
 	public void createPartControl(final Composite parent) {
 	    if (DEBUG) System.out.printf("RoutesView: createPartControl\n");

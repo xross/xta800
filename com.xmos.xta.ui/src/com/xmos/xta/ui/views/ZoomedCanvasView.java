@@ -206,6 +206,8 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	public void dispose() {
 		if (DEBUG) System.out.println(m_name + ": dispose()");			
 		m_renderControl.signalDone();
+		GuiEngine.removeBroadcastListener(this);
+		super.dispose();
 	}
 
 	public void setFocus() {

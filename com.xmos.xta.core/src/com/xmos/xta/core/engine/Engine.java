@@ -120,15 +120,7 @@ public class Engine implements Notifier {
 	public Vector<MemoryImage> getMemoryImages() {
 		return m_xeLoader.getMemoryImages();
 	}
-/*
-	public Vector<SymbolTable> getSymbolTables() {
-		return m_xeLoader.getSymbolTables();
-	}
 
-	public Vector<DebugInfo> getDebugInfos() {
-		return m_xeLoader.getDebugInfos();
-	}
-	*/
 	public MemoryImage getMemoryImage() {
 		return m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 	}
@@ -1079,7 +1071,7 @@ public class Engine implements Notifier {
 				setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
 
 				provideFeedback(String.format("Processing sources..."));				
-				SourceMapper sourceMapper = new SourceMapper(xeLoader, nodeId, coreId, starts, 
+				SourceMapper sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
 						fileFinder, id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 				
 				newSourceMappers.add(nodeId, coreId, sourceMapper);

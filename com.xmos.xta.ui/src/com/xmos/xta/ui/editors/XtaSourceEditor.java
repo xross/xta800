@@ -1,5 +1,7 @@
 package com.xmos.xta.ui.editors;
 
+import java.io.IOException;
+
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -42,5 +44,16 @@ public class XtaSourceEditor extends XtaEditor {
 				m_annotations.updateSourcePcs(false);
 			}
 		});
+
+		m_annotations.connectToFile();
     }
+
+	public String getFileName() {
+	    String fileName = "";
+	    try {
+			fileName = ((InputSource)getEditorInput()).getSourceFile().getFile().getCanonicalPath();
+		} catch (IOException e) {
+		}
+		return fileName;
+	}
 }

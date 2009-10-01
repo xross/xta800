@@ -107,7 +107,8 @@ public class TimeDistributionView extends ViewPart implements IPropertyChangeLis
 	}
 	
 	public void dispose() {
-		if (DEBUG) System.out.println(m_name + ": dispose()");			
+		GuiEngine.removeBroadcastListener(this);
+		super.dispose();
 	}
 
 	public void setFocus() {

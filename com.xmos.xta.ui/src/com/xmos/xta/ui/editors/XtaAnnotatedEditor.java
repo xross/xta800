@@ -13,5 +13,6 @@ public interface XtaAnnotatedEditor {
 	public ISourceViewer getViewer();
 	public IEditorInput getEditorInput();
 	public void refreshInput(IEditorInput input);
-	public String getFileName();	
+	public String getFileName();
+	public boolean isDirty();
 }

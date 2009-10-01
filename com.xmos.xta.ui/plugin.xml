@@ -505,6 +505,14 @@
             label="controls"
             visible="false">
          <action
+               class="com.xmos.xta.ui.actions.ActionOpenDisassembly"
+               icon="icons/open_disassembly.png"
+               id="com.xmos.xta.ui.actions.opendisassembly"
+               label="Open Disassembly"
+               style="push"
+               toolbarPath="Normal/controls">
+         </action>
+         <action
                class="com.xmos.xta.ui.actions.ActionSettings"
                icon="icons/settings.png"
                id="com.xmos.xta.ui.actions.settings"
