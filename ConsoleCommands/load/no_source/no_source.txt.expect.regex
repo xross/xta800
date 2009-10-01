@@ -1,4 +1,3 @@
-xta: warning: failed to find source file: test.xc
 Current node: 0
 Current core: 0
 Frequency: 400
@@ -11,3 +10,4 @@ Verbosity: 0
 Loaded executable: test.xe
 Node: 0, Core: 0 \(Debug information avaliable\)
 No routes analysed
+compilation dir: .*, filename: test.xc \(File not found\)

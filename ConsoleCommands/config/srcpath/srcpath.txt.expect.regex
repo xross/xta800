@@ -1,4 +1,3 @@
-xta: warning: failed to find source file: test.xc
 compilation dir: .*srcpath, filename: test.xc \(File not found\)
 Current node: 0
 Current core: 0
