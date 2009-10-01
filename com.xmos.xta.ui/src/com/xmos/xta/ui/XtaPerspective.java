@@ -12,6 +12,8 @@ import com.xmos.xta.ui.views.structure.StructureView;
 import com.xmos.xta.ui.views.timedistribution.TimeDistributionView;
 
 public class XtaPerspective implements IPerspectiveFactory {
+	public static final String ID = "com.xmos.xta.ui.XtaPerspective";
+	
 	public void createInitialLayout(IPageLayout layout) {
         IFolderLayout viewsFolder = layout.createFolder(
         		"views.folder", IPageLayout.BOTTOM, 0.7f, layout.getEditorArea());
