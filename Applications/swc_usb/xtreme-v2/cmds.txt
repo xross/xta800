@@ -6,8 +6,12 @@ add branch BranchOnTokenPid Pid_Out
 
 analyse path ReadDataPidByte NextRxWord
 set required - 133 ns
+
+add exclusion RxALow
 analyse path NextRxWord NextRxWord
 set required - 67 ns
+
+remove exclusion *
 analyse path StoreTailDataOut ReadToken_PID
 set required - 200 ns
 
