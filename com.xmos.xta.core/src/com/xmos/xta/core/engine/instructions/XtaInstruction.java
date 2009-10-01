@@ -23,7 +23,7 @@ public abstract class XtaInstruction extends Instruction {
 	public abstract long getOperandField(String opName);    		   
 	
 	private void adjustSetcPause(String nmenonic){
-		if(nmenonic.equals("setc (ru6)")){
+		if(nmenonic.equals("setc (ru6)") || nmenonic.equals("setc (lru6)")){
 			
 			if(getOperandField("op2") == 0x0007){
 				this.setCanPause(true);
