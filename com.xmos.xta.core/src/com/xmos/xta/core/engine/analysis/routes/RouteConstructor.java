@@ -356,7 +356,7 @@ public class RouteConstructor {
 				assert(!currentNodesExclusions.isEmpty());
 				
 				NodeDescriptor functionStartNode = findFirstInstruction(currentNode);				
-				if (m_exclusions.contains(functionStartNode) && workingSet.isEmpty()) {
+				if (m_exclusions.contains(functionStartNode) && !workingSet.isEmpty()) {
 					m_excludedRouteNodes.add(parent);
 					return false;
 				}
