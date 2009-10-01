@@ -362,31 +362,50 @@ public class GuiEngine {
 
 		IEditorReference[] editorReferences = workbenchPage.getEditorReferences();
 		// Do it only if we have more that one editor
-		if (editorReferences.length > 1) {
-			// Get PartPane that correspond to the active editor
-			PartPane currentEditorPartPane = ((PartSite) workbenchPage.getActiveEditor().getSite()).getPane();
-			EditorSashContainer editorSashContainer = null;
-			ILayoutContainer rootLayoutContainer = layoutPart.getContainer();
-			if (rootLayoutContainer instanceof LayoutPart) {
-				ILayoutContainer editorSashLayoutContainer = ((LayoutPart) rootLayoutContainer).getContainer();
-				if (editorSashLayoutContainer instanceof EditorSashContainer) {
-					editorSashContainer = ((EditorSashContainer) editorSashLayoutContainer);
-				}
-			}
-			/*
-			 * Create a new part stack (i.e. a workbook) to home the
-			 * currentEditorPartPane which hold the active editor
-			 */
-			PartStack newPart = createStack(editorSashContainer);
-			editorSashContainer.stack(currentEditorPartPane, newPart);
-			if (rootLayoutContainer instanceof LayoutPart) {
-				ILayoutContainer cont = ((LayoutPart) rootLayoutContainer).getContainer();
-				if (cont instanceof PartSashContainer) {
-					// "Split" the editor area by adding the new part
-					((PartSashContainer) cont).add(newPart);
-				}
+		if (editorReferences.length < 2) {
+			return;
+		}
+		
+		// Don't bother if there are already more than 1
+		int numSashes = getNumSashes(layoutPart);
+		if (numSashes > 1) {
+			return;
+		}
+		
+		// Get PartPane that correspond to the active editor
+		PartPane currentEditorPartPane = ((PartSite) workbenchPage.getActiveEditor().getSite()).getPane();
+		EditorSashContainer editorSashContainer = null;
+		ILayoutContainer rootLayoutContainer = layoutPart.getContainer();
+		if (rootLayoutContainer instanceof LayoutPart) {
+			ILayoutContainer editorSashLayoutContainer = ((LayoutPart) rootLayoutContainer).getContainer();
+			if (editorSashLayoutContainer instanceof EditorSashContainer) {
+				editorSashContainer = ((EditorSashContainer) editorSashLayoutContainer);
 			}
 		}
+		/*
+		 * Create a new part stack (i.e. a workbook) to home the
+		 * currentEditorPartPane which hold the active editor
+		 */
+		PartStack newPart = createStack(editorSashContainer);
+		editorSashContainer.stack(currentEditorPartPane, newPart);
+		if (rootLayoutContainer instanceof LayoutPart) {
+			ILayoutContainer cont = ((LayoutPart) rootLayoutContainer).getContainer();
+			if (cont instanceof PartSashContainer) {
+				// "Split" the editor area by adding the new part
+				((PartSashContainer) cont).add(newPart);
+			}
+		}
+	}
+
+	private static int getNumSashes(LayoutPart layoutPart) {
+		ILayoutContainer rootLayoutContainer = layoutPart.getContainer();
+		if (rootLayoutContainer instanceof LayoutPart) {
+			ILayoutContainer cont = ((LayoutPart) rootLayoutContainer).getContainer();
+			if (cont instanceof PartSashContainer) {
+				return ((PartSashContainer) cont).getChildren().length;
+			}
+		}
+		return 0;
 	}
 
 	/**
