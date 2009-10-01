@@ -1,10 +1,10 @@
-function\(\d+\)   : Infinity / Infinity test
-.    block\(\d+\)      : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    infiniteloop\(\d+\) : Infinity / Infinity 
-.    .    block\(\d+\)     : Infinity \(x -\) / Infinity \(x -\) 
-.    .    block\(\d+\)      : Infinity \(x -\) / Infinity \(x -\) 
-.    .    block\(\d+\)      : Infinity \(x -\) / Infinity \(x -\) 
-.    .    block\(\d+\)     : Infinity \(x -\) / Infinity \(x -\) 
-.    .    block\(\d+\)     : Infinity \(x -\) / Infinity \(x -\) 
-.    .    block\(\d+\)     : Infinity \(x -\) / Infinity \(x -\) 
+function\(\d+\) +: Infinity / Infinity test
+.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    infiniteloop\(\d+\) +: Infinity / Infinity 
+.    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
+.    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
+.    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
+.    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
+.    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
+.    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
 

@@ -10,4 +10,5 @@ xta 2>he  help pr  print
       option: route_info <route id>: Show detailed information for the given route
       option: node_info <route id> <node id>: Show detailed information for the given node in the given route
       option: warnings: Print all timing warnings
+      option: td <route id> \[node id\]: Display time distribution for the given route/node
 xta 3>exit

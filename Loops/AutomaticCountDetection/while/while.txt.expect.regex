@@ -1,6 +1,6 @@
-function\(\d+\) : \d+.0ns / \d+.0ns test
-.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    selfloop\(\d+\) : \d+.0ns / \d+.0ns 
-.    .    block\(\d+\)    : \d+.0ns \(x 500\) / \d+.0ns \(x 500\) 
-.    block\(\d+\)    : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+function\(\d+\) +: \d+.0ns / \d+.0ns test
+.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    selfloop\(\d+\) +: \d+.0ns / \d+.0ns 
+.    .    block\(\d+\) +: \d+.0ns \(x 500\) / \d+.0ns \(x 500\) 
+.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 
