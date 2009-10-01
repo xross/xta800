@@ -526,37 +526,7 @@ public class RouteConstructor {
 	private NodeDescriptor makeBasicBlocks(NodeDescriptor startInstruction, Collection<NodeDescriptor> endNodes, Collection<NodeDescriptor> workingSet) {
 		
 		// First search the working set to find the node that contains the start instruction
-		NodeDescriptor beginingOfFirstBlock = null;
-		
-		if (m_startInstructionNode != null) {
-			// The start instruction was detected within a 'refurbished' function,
-			for (NodeDescriptor wnd : workingSet) {
-				if (wnd.getNode() == m_startInstructionNode) {
-					beginingOfFirstBlock = wnd;
-					break;
-					
-				} else {
-					for (NodeDescriptor cnd : getContainedNodes(wnd)) {
-						if (cnd.getNode() == m_startInstructionNode) {
-							beginingOfFirstBlock = wnd;
-							break;
-						}						
-					}					
-				}				
-			}
-		} else {
-			// Searches the working set for a match with the original start instruction node descriptor. 
-			for (NodeDescriptor nodeDescriptor : workingSet) {						
-				if ((getContainedNodes(nodeDescriptor).contains(startInstruction) && (beginingOfFirstBlock == null)) || 
-			       (nodeDescriptor.equals(startInstruction))) {
-					
-					if (findFirstInstruction(nodeDescriptor).equals(startInstruction)) {
-						beginingOfFirstBlock = nodeDescriptor;
-					}
-				}
-			}			
-		}		
-		assert(beginingOfFirstBlock != null);
+		NodeDescriptor beginingOfFirstBlock = lookupStartInstruction(startInstruction, workingSet);
 
 		NodeDescriptor startNode = null;
 		if (beginingOfFirstBlock.getNode().isInstructionNode()) {
@@ -936,11 +906,7 @@ public class RouteConstructor {
 		}
 		return nodeDescriptors;
 	}
-	
-	private boolean m_startNodeFound;
-	private int m_startNodeIndex;
-	private int m_index;
-	
+		
 	private WorkingSet convertWorkingSet(Collection<NodeDescriptor> workingSet, 
 			NodeDescriptor start, final NodeDescriptor startInstruction) {
 		
@@ -960,41 +926,7 @@ public class RouteConstructor {
 			if (nodeDescriptor.equals(start))
 				startNode = node;
 			
-			// Checks if the route start instruction is found within this working set.
-			m_startNodeFound = false;
-			m_startNodeIndex = 0;
-			m_index = 0;
-			
-			nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
-				public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {	
-					++m_index;
-
-					NodeDescriptor nd = new NodeDescriptor(node, ancestors);
-					if (nd.equals(startInstruction)) {
-						// We have found the start instruction.
-						m_startNodeFound = true;
-						m_startNodeIndex = m_index;
-					}
-					return true;
-				}
-		    });	
-			
-			// If the start instruction was found in the working set, then we need to find
-			// (and remember) the corresponding new duplicated node.
-			if (m_startNodeFound) {
-				m_index = 0;
-				
-				node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
-				    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
-				        ++m_index;
-				        
-				        if (m_index == m_startNodeIndex) {
-				    	    m_startInstructionNode = node;
-				    	}
-    				    return true;
-				    }
-				});
-			}
+			updateStartInstruction(startInstruction, nodeDescriptor, node);
 		}
 		assert(startNode != null);
 
@@ -1080,6 +1012,84 @@ public class RouteConstructor {
 			}
 		}
 		return true;
+	}
+	
+	private boolean m_startNodeFound;
+	private int m_startNodeIndex;
+	private int m_index;
+	
+	private void updateStartInstruction(final NodeDescriptor startInstruction, NodeDescriptor nodeDescriptor, Node node) {
+		// Checks if the route start instruction is found within this working set.
+		m_startNodeFound = false;
+		m_startNodeIndex = 0;
+		m_index = 0;
+		
+		nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
+			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {	
+				++m_index;
+
+				NodeDescriptor nd = new NodeDescriptor(node, ancestors);
+				if (nd.equals(startInstruction)) {
+					// We have found the start instruction.
+					m_startNodeFound = true;
+					m_startNodeIndex = m_index;
+				}
+				return true;
+			}
+	    });	
+		
+		// If the start instruction was found in the working set, then we need to find
+		// (and remember) the corresponding new duplicated node.
+		if (m_startNodeFound) {
+			m_index = 0;
+			
+			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
+			    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+			        ++m_index;
+			        
+			        if (m_index == m_startNodeIndex) {
+			    	    m_startInstructionNode = node;
+			    	}
+				    return true;
+			    }
+			});
+		}		
+	}
+	
+	private NodeDescriptor lookupStartInstruction(NodeDescriptor startInstruction, Collection<NodeDescriptor> workingSet) {
+		// First search the working set to find the node that contains the start instruction
+		NodeDescriptor beginingOfFirstBlock = null;
+		
+		if (m_startInstructionNode != null) {
+			// The start instruction was detected within a 'refurbished' function,
+			for (NodeDescriptor wnd : workingSet) {
+				if (wnd.getNode() == m_startInstructionNode) {
+					beginingOfFirstBlock = wnd;
+					break;
+					
+				} else {
+					for (NodeDescriptor cnd : getContainedNodes(wnd)) {
+						if (cnd.getNode() == m_startInstructionNode) {
+							beginingOfFirstBlock = wnd;
+							break;
+						}						
+					}					
+				}				
+			}
+		} else {
+			// Searches the working set for a match with the original start instruction node descriptor. 
+			for (NodeDescriptor nodeDescriptor : workingSet) {						
+				if ((getContainedNodes(nodeDescriptor).contains(startInstruction) && (beginingOfFirstBlock == null)) || 
+			       (nodeDescriptor.equals(startInstruction))) {
+					
+					if (findFirstInstruction(nodeDescriptor).equals(startInstruction)) {
+						beginingOfFirstBlock = nodeDescriptor;
+					}
+				}
+			}			
+		}		
+		assert(beginingOfFirstBlock != null);
+		return beginingOfFirstBlock;
 	}
 	
 	static class NodeDescriptorWrapper {
