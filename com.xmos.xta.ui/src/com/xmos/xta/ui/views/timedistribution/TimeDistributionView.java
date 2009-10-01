@@ -100,7 +100,6 @@ public class TimeDistributionView extends ViewPart implements IPropertyChangeLis
 	    createContextMenus();
 		
 		initialiseTree();
-		updateSelection(GuiEngine.getSelectedNodes());
 		refresh();
 	}
 	
@@ -155,13 +154,18 @@ public class TimeDistributionView extends ViewPart implements IPropertyChangeLis
 		if (m_treeNode != null) {
 			m_tdb = m_treeNode.getTimeSpread();
 		} else {
+			m_tdb = null;
 		}
 		m_canvas.redraw();
 	}
 
 	private void updateSelection(List<Node> newNodes) {
-		if(newNodes != null && !newNodes.isEmpty()){
-			m_treeNode = newNodes.get(0);
+		if (newNodes != null) {
+			if (newNodes.isEmpty()) {
+				m_treeNode = null;
+			} else {
+				m_treeNode = newNodes.get(0);
+			}
 		}
 	}
 
@@ -216,13 +220,7 @@ public class TimeDistributionView extends ViewPart implements IPropertyChangeLis
 
     protected void initialiseTree() {
 		if (DEBUG) System.out.println(m_name + ": initialiseTree");
-		Route route = GuiEngine.getEngine().getSelectedRoute();
-		if (route != null) {
-			updateSelection(GuiEngine.getSelectedNodes());
-
-		} else {
-			updateSelection(new ArrayList<Node>());
-		}
+		updateSelection(GuiEngine.getSelectedNodes());
 	}
 
 	protected void drawCanvas(GC gc) {
@@ -231,8 +229,6 @@ public class TimeDistributionView extends ViewPart implements IPropertyChangeLis
 		gc.fillRectangle(0, 0, m_canvas.getClientArea().width,m_canvas.getClientArea().height );
 		
 		if (m_tdb != null){
-			
-			
 			double currentX=SIDE_BORDER_X;
 			double maxBucket = m_tdb.getMaxBucket();
 			double stepX = ((double)(m_canvas.getClientArea().width- 2*SIDE_BORDER_X))/(double)TimeDistributionBuckets.BUCKET_COUNT;
