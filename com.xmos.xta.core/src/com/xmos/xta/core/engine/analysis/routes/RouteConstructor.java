@@ -142,17 +142,6 @@ public class RouteConstructor {
 		return null;
 	}
 	
-	private boolean firstNodeAdded;
-	
-	/**
-	 * @param src					- 
-	 * @param startInstruction      - the instruction node descriptor that the route begins at
-	 * @param seenEndPoint			- if true then an end node has been seen on this route
-	 * @param endInstructions		- a list of the node descriptors that the route terminates on
-	 * @param addFunctionWrappers	- to solve the function wrappers problem
-	 * @return						- true if an end point has been seen false otherwise
-	 * @throws Exception			- fails if the jvm dies for some reason or one of the endless assertions fails
-	 */
 	private boolean makeSubRoute(CommandSource src, NodeDescriptor startInstruction, NodeDescriptor startNode, 
 			boolean seenEndPoint, Collection<NodeDescriptor> endInstructions, boolean isFunction) throws Exception {
 				
@@ -166,7 +155,6 @@ public class RouteConstructor {
 				
 		m_startInstructionNode = null;
 		
-		firstNodeAdded = false;
 		Collection<NodeDescriptor> workingSet = new TreeSet<NodeDescriptor>();
 		
 		m_structureGraph.removeLinks();
@@ -174,7 +162,7 @@ public class RouteConstructor {
 		
 		Collection<NodeDescriptor> realEndNodes = new HashSet<NodeDescriptor>();
 		
-		seenEndPoint |= explore(startInstruction, new NodeDescriptorWrapper(startNode), 
+		seenEndPoint |= explore(startInstruction, startNode, 
 				workingSet, endInstructions, null, isFunction, realEndNodes);		
 		assert(cfgSanityCheckNodeDescriptors(workingSet));	
 		
@@ -219,20 +207,9 @@ public class RouteConstructor {
 		return seenEndPoint;
 	}
 	
-	/**
-	 * @param startInstruction - the instruction that is at the beginning of the route
-	 * @param node - a pointer to the current node
-	 * @param workingSet - the nodes in the control flow graph we are making
-	 * @param endInstructions - a set of instructions that the route will end on
-	 * @param previous - the node before this one
-	 * @param realEndNodes 
-	 * @return true if the explore saw an end node
-	 */
-	private boolean explore(NodeDescriptor startInstruction, NodeDescriptorWrapper node, 
+	private boolean explore(NodeDescriptor startInstruction, NodeDescriptor currentNode, 
 			Collection<NodeDescriptor> workingSet, Collection<NodeDescriptor> endInstructions, 
 			NodeDescriptor previous, boolean isFunction, Collection<NodeDescriptor> realEndNodes) {	
-
-		NodeDescriptor currentNode = node.m_nodeDescriptor;
 
 		if (DEBUG_ROUTE_CONSTRUCTION)
 			System.out.printf("explore: nodeId: %s\n", currentNode);
@@ -288,7 +265,7 @@ public class RouteConstructor {
 					}
 				} else {
 					return exploreIntoCurrentNode(startInstruction, workingSet, 
-							endInstructions, currentNode, node,  previous, 
+							endInstructions, currentNode, previous, 
 							exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode, 
 							isFunction, realEndNodes);
 				}
@@ -297,6 +274,7 @@ public class RouteConstructor {
 			// exclusions
 			if (currentNode.getNode().isInstructionNode()) {
 				addNodeToWorkingSet(workingSet, currentNode);
+				
 				if (!currentNode.equals(startInstruction)) {
 					// this doesn't allow excluded nodes to form a loop with the start node! --check
 					// maybe it should also contain 'endNodes.contains(start) &&'
@@ -310,7 +288,7 @@ public class RouteConstructor {
 				
 			} else {
 				return exploreIntoCurrentNode(startInstruction, workingSet, 
-						endInstructions, currentNode, node, previous, 
+						endInstructions, currentNode, previous, 
 						exclusionsWithinCurrentNode, endInstructionsWithinCurrentNode, 
 						isFunction, realEndNodes);
 			}
@@ -332,7 +310,6 @@ public class RouteConstructor {
 		makeConnection(replacementNode, originalParent);
 
 		addNodeToWorkingSet(workingSet, replacementNode);
-		firstNodeAdded = true;
 		
 		Node parent = currentNode.getAncestors().peek();				
 		if (parent != null) {			
@@ -341,7 +318,7 @@ public class RouteConstructor {
 				for (NodeDescriptor next : nexts) {	
 					if (!workingSet.contains(next) ||
 						next.equals(startInstruction)) {
-						seenEndPoint |= explore(startInstruction, new NodeDescriptorWrapper(next), 
+						seenEndPoint |= explore(startInstruction, next, 
 								workingSet, endInstructions, replacementNode, isFunction, realEndNodes);						
 					}
 				}	
@@ -353,7 +330,7 @@ public class RouteConstructor {
 
 	private boolean exploreIntoCurrentNode(NodeDescriptor startInstruction, 
 			Collection<NodeDescriptor> workingSet, Collection<NodeDescriptor> endInstructions, 
-			NodeDescriptor currentNode, NodeDescriptorWrapper node, NodeDescriptor parent, 
+			NodeDescriptor currentNode, NodeDescriptor parent, 
 			Collection<NodeDescriptor> currentNodesExclusions, 
 			Set<NodeDescriptor> containedEndPoints, boolean isFunction, 
 			Collection<NodeDescriptor> realEndNodes ) {
@@ -369,22 +346,17 @@ public class RouteConstructor {
 			if (!containedEndPoints.isEmpty()) {
 				for (NodeDescriptor child : currentNode.getImmediateChildren()) {
 					if (!workingSet.contains(child) ||
-						child.equals(startInstruction)) {							
-						NodeDescriptorWrapper childDescriptorWrapper = new NodeDescriptorWrapper(child);
-											
-						seenEndPoint |= explore(startInstruction, childDescriptorWrapper, 
-								workingSet, endInstructions, parent, isFunction, realEndNodes);
+						child.equals(startInstruction)) {
 						
-						if (parent == null) {
-							node.m_nodeDescriptor = childDescriptorWrapper.m_nodeDescriptor;
-						}						
+						seenEndPoint |= explore(startInstruction, child, 
+								workingSet, endInstructions, parent, isFunction, realEndNodes);						
 					}					
 				}
 			} else {
 				assert(!currentNodesExclusions.isEmpty());
 				
 				NodeDescriptor functionStartNode = findFirstInstruction(currentNode);				
-				if (m_exclusions.contains(functionStartNode) && firstNodeAdded){
+				if (m_exclusions.contains(functionStartNode) && workingSet.isEmpty()) {
 					m_excludedRouteNodes.add(parent);
 					return false;
 				}
@@ -393,12 +365,11 @@ public class RouteConstructor {
 
 				NodeDescriptor first = currentNode.getImmediateChildren().get(0);				
 				NodeDescriptor functionNodeDescriptor = new NodeDescriptor(first.getNode(), first.getAncestors());
-				NodeDescriptorWrapper functionNodeWrapper = new NodeDescriptorWrapper(functionNodeDescriptor);				
 				
 				Collection<NodeDescriptor> functionEndNodes = currentNode.getEndInstructions();
 				Collection<NodeDescriptor> newWorkingSet = new TreeSet<NodeDescriptor>();
 				
-				seenEndPoint |= explore(functionStartNode, functionNodeWrapper, newWorkingSet, 
+				seenEndPoint |= explore(functionStartNode, functionNodeDescriptor, newWorkingSet, 
 						functionEndNodes, null, true, realEndNodes);				
 				assert(cfgSanityCheckNodeDescriptors(newWorkingSet));	
 				
@@ -441,14 +412,9 @@ public class RouteConstructor {
 		} else {
 			for (NodeDescriptor child : currentNode.getImmediateChildren()) {
 				if (!workingSet.contains(child) || child.equals(startInstruction)) {							
-					NodeDescriptorWrapper childDescriptorWrapper = new NodeDescriptorWrapper(child);
 					
-					seenEndPoint |= explore(startInstruction, childDescriptorWrapper, 
+					seenEndPoint |= explore(startInstruction, child, 
 							workingSet, endInstructions, parent, isFunction, realEndNodes);
-					
-					if (parent == null) {
-						node.m_nodeDescriptor = childDescriptorWrapper.m_nodeDescriptor;
-					}					
 				}				
 			}
 		}
@@ -1092,14 +1058,6 @@ public class RouteConstructor {
 		return beginingOfFirstBlock;
 	}
 	
-	static class NodeDescriptorWrapper {
-		NodeDescriptor m_nodeDescriptor;
-		
-		public NodeDescriptorWrapper(NodeDescriptor nodeDescriptor){
-			m_nodeDescriptor = nodeDescriptor;
-		}
-	}	
-
 	static class WorkingSet {
 		Node m_start;
 		Set<Node> m_set;
