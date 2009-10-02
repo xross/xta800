@@ -3,6 +3,7 @@ package com.xmos.xta.ui.editors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,6 +119,10 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 					}
 				}
 			}
+			
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_PERSPECTIVE_CHANGED)) {
+			updateAll();
+			
 		}
 	}
 
@@ -153,14 +158,16 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
         boolean hasHighlightedLines = false;
         
         if (canAnnotate()) {
+        	Collection<Long> pcs = new HashSet<Long>();
 	        for (Node node : m_selectedNodes) {
-	        	Collection<XtaInstruction> instructionsCovered = node.getInstructions();
-	        	for (XtaInstruction instruction : instructionsCovered) {
-	        		hasHighlightedLines |= addAnnotationsForPc(
-	        				instruction.getPc(), HighlightAnnotationID, 
-	        				annotations, annotationPositions);
-				}
+	        	for (XtaInstruction instruction : node.getInstructions()) {
+	        		pcs.add(instruction.getPc());
+	        	}
 	        }
+        	for (long pc : pcs) {
+        		hasHighlightedLines |= addAnnotationsForPc(pc, HighlightAnnotationID, 
+        				annotations, annotationPositions);
+			}
         }
 		updateAnnotations(annotations, annotationPositions);		
     }

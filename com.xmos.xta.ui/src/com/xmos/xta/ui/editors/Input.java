@@ -93,7 +93,7 @@ class InputSection {
 		input.addPcToLine(pc, newLine);
 	}
 	
-	public void addFnop(String line, long pc, long index, Input input) {
+	public void addFnop(String line, long pc, long index) {
 		long offset = index - m_index - 1;
 		
 		InputLine fnop = new InputLine(this, line, "", pc, offset, m_headerType);
