@@ -35,7 +35,7 @@ public class FunctionNode extends IBufferNode {
 		super();
 		
 		if (function.isSequenceNode()){
-			m_functionSequence = function.getChildren();
+			m_functionSequence = function.getIndirectChildren();
 		} else {
 			m_functionSequence = new LinkedList<Node>();
 			m_functionSequence.add(function);
@@ -150,7 +150,7 @@ public class FunctionNode extends IBufferNode {
 		}
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		List<Node> children = null;
 		if(m_functionSequence!= null){
 			children =  m_functionSequence;
@@ -215,7 +215,7 @@ public class FunctionNode extends IBufferNode {
 		return super.getBackTrace(m_functionName + ":" + backTrace); 
 	}
 	
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
 		ancestors.push(this);
 	    list.add(new NodeDescriptor(m_functionSequence.get(0), ancestors));
@@ -274,7 +274,7 @@ public class FunctionNode extends IBufferNode {
 
 					// Finds the node previous to this one...
 					Node previousNode = null;
-					for (Node child : parent.getChildren()) {
+					for (Node child : parent.getIndirectChildren()) {
 						if (child == this)
 							break;
 						

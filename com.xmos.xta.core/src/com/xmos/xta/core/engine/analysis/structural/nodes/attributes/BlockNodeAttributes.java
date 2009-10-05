@@ -14,7 +14,11 @@ public class BlockNodeAttributes extends NodeAttributes {
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.mergeStatus(S.INFINITE);
 			return Double.MAX_VALUE;
+		} else if(totalIterations == 0) {
+			status.mergeStatus(S.ZERO);
+			return 0;
 		}
+
 	    return super.getTimeTaken(c, status, ignoreIterationsAboveCond) * totalIterations;
 	}
 
@@ -23,6 +27,9 @@ public class BlockNodeAttributes extends NodeAttributes {
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.mergeStatus(S.INFINITE);
 			return Long.MAX_VALUE;
+		} else if(totalIterations == 0) {
+			status.mergeStatus(S.ZERO);
+			return 0;
 		}
 		return super.getNumCycles(c, status, ignoreIterationsAboveCond) * totalIterations;
 	}
@@ -32,6 +39,9 @@ public class BlockNodeAttributes extends NodeAttributes {
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.mergeStatus(S.INFINITE);
 			return Long.MAX_VALUE;
+		} else if(totalIterations == 0) {
+			status.mergeStatus(S.ZERO);
+			return 0;
 		}
 		return super.getNumInstructions(c, status, ignoreIterationsAboveCond) * totalIterations;
 	}
@@ -41,6 +51,9 @@ public class BlockNodeAttributes extends NodeAttributes {
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.mergeStatus(S.INFINITE);
 			return Long.MAX_VALUE;
+		} else if(totalIterations == 0) {
+			status.mergeStatus(S.ZERO);
+			return 0;
 		}
 		return super.getNumFNops(c, status, ignoreIterationsAboveCond) * totalIterations;
 	}	

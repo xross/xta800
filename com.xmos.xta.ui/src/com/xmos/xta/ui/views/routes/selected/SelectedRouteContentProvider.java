@@ -18,7 +18,7 @@ public class SelectedRouteContentProvider implements ITreeContentProvider  {
 				parentElement.toString());
 
 		if (parentElement instanceof Node){
-			return ((Node)parentElement).getChildren().toArray();
+			return ((Node)parentElement).getIndirectChildren().toArray();
 		}
 		
 		return EMPTY_ARRAY;
@@ -39,7 +39,7 @@ public class SelectedRouteContentProvider implements ITreeContentProvider  {
 				element.toString());
 		
 		if (element instanceof Node){
-			return ((Node)element).getChildren().size() > 0;
+			return ((Node)element).getIndirectChildren().size() > 0;
 		}
 		
 		return false;

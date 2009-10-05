@@ -30,6 +30,12 @@ public class BlockNode extends IBufferNode {
         m_attributes = new BlockNodeAttributes(this);
 	}
 		
+	//this is for empty basic blocks for conditionals
+	public BlockNode() {
+		m_insts = new LinkedList<InstructionNode>();
+		m_attributes = new BlockNodeAttributes(this);
+	}
+
 	public BlockNode shallowCopy() {
 		return new BlockNode(this);
 	}
@@ -82,7 +88,7 @@ public class BlockNode extends IBufferNode {
 		ancestors.pop();
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		return new LinkedList<Node>(m_insts);
 	}
 
@@ -126,7 +132,7 @@ public class BlockNode extends IBufferNode {
 		}
 	}
 
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
 		ancestors.push(this);
 		list.add(new NodeDescriptor(m_insts.get(0), ancestors));

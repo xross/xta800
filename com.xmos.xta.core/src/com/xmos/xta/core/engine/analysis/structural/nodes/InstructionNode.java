@@ -80,7 +80,7 @@ public class InstructionNode extends Node {
 		nodeTraverser.foundInstructionNode(this, ancestors);
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		return new LinkedList<Node>();
 	}
 
@@ -112,7 +112,7 @@ public class InstructionNode extends Node {
 		return null;
 	}
 
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		assert(false);
 		return null;
 	}

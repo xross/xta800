@@ -19,26 +19,24 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 public class ConditionalNode extends Node {
 	private ConditionalNodeAttributes m_attributes;
 	private Collection<Node> m_options;
-	private boolean m_isOptional;
 
 	public ConditionalNode() {
 		super();
 		m_options = new TreeSet<Node>();
-		m_isOptional = false;
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 	
 	public ConditionalNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
-		m_isOptional = isOptional;
+		if(isOptional)
+			m_options.add(new BlockNode());
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 	
 	public ConditionalNode(ConditionalNode ms) {
 		super();
 		m_options = ms.m_options;
-		m_isOptional = ms.m_isOptional;
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
@@ -52,7 +50,6 @@ public class ConditionalNode extends Node {
 			Node clone = option.deepCopy();
 			sn.m_options.add(clone);
 		}
-		sn.m_isOptional = m_isOptional; 
 		sn.m_attributes = new ConditionalNodeAttributes(sn);
 		return sn;
 	}
@@ -92,7 +89,7 @@ public class ConditionalNode extends Node {
 		ancestors.pop();
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		return new LinkedList<Node>(m_options);
 	}
 
@@ -140,15 +137,6 @@ public class ConditionalNode extends Node {
 	public boolean isCondNode() {
 		return true;
 	}
-
-	public boolean isCondOptional() {
-		return m_isOptional;
-	}
-
-	public long getError(Case c) {
-		long error = 0;
-		return error;
-	}
 	
 	public List<Node> getAllUnsetOptions() {
 		List<Node> unsetOptions = new ArrayList<Node>();
@@ -170,7 +158,7 @@ public class ConditionalNode extends Node {
 		return setOptions;
 	}
 	
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
 		ancestors.push(this);
 		for (Node option : m_options) {
@@ -190,22 +178,32 @@ public class ConditionalNode extends Node {
 	}	
 	
 	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {
+		
+		//TODO
 		// Must handle optional conditionals as a special case.. 
-		if ((c == Case.BEST) && (m_isOptional))
-			return null;
+		//if ((c == Case.BEST) && (m_isOptional))
+		//	return null;
 		
 		// Finds the best/worst case of the real options..
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();		
-		double caseTime = caseNode.getAttributes().getTimeTaken(c, new Status(), ignoreIterationsAboveCond);
+		Status s = new Status();
+		double caseTime = caseNode.getAttributes().getTimeTaken(c, s, ignoreIterationsAboveCond);
+		/*
+		System.out.println(c + " "+ nodes);
 		
+		for(Node node : nodes ){
+			Status b = new Status();
+			System.out.println(node + " "+ node.getAttributes().getTimeTaken(c, b, ignoreIterationsAboveCond)  +" " + b.getStatus());
+		}
+		System.out.println();
+		*/
 		while (iter.hasNext()) {
 			Node node = iter.next();
-			double time = node.getAttributes().getTimeTaken(c, new Status(), ignoreIterationsAboveCond);
-
+			Status status = new Status();
+			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
 			switch (c) {
 			case WORST:
-				// Finds the worst case option...
 				if (time > caseTime) {
 				    caseNode = node;
 				    caseTime = time;
@@ -213,17 +211,16 @@ public class ConditionalNode extends Node {
 				break;
 				
 			case BEST:
-				// Finds the best (non-zero) case option... 
-				if ((caseTime == 0) && (time != 0)) {
-					caseNode = node;
-				    caseTime = time;
-				} else if ((time > 0) && (time < caseTime)) {
+				if (time <= caseTime && status.getStatus() != Status.S.ZERO) {
 				    caseNode = node;
 				    caseTime = time;
 				}
 				break;
-			}			
-		}		
+			}	
+			assert(time >= 0);
+		}	
+		
+		
 		return caseNode;		
 	}
 
@@ -244,9 +241,6 @@ public class ConditionalNode extends Node {
 		Collection<TimeDistributionBuckets> tdbs = new LinkedList<TimeDistributionBuckets>();
 		for(Node node : m_options){
 			tdbs.add(node.getTimeSpread());
-		}
-		if(m_isOptional){
-			tdbs.add(new TimeDistributionBuckets(0));
 		}
 		tdb.merge(tdbs);
 		return tdb;

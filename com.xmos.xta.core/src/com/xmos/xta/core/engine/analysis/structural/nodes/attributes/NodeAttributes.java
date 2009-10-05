@@ -130,6 +130,7 @@ public class NodeAttributes {
 	    case COMPLETED:  return String.format("%.1fns", value);
 	    case INFINITE:   return String.format("Infinity");
 	    case UNRESOLVED: return String.format("Unresolved");
+	    case ZERO:  return String.format("%.1fns", value);
 	    }
 	    assert(false);
 	    return "";
@@ -142,6 +143,7 @@ public class NodeAttributes {
 	    case COMPLETED:  return String.format("%d", value);
 	    case INFINITE:   return String.format("Infinity");
 	    case UNRESOLVED: return String.format("Unresolved");
+	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
 	    return "";
@@ -154,6 +156,7 @@ public class NodeAttributes {
 	    case COMPLETED:  return String.format("%d", value);
 	    case INFINITE:   return String.format("Infinity");
 	    case UNRESOLVED: return String.format("Unresolved");
+	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
 	    return "";
@@ -166,6 +169,7 @@ public class NodeAttributes {
 	    case COMPLETED:  return String.format("%d", value);
 	    case INFINITE:   return String.format("Infinity");
 	    case UNRESOLVED: return String.format("Unresolved");
+	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
 	    return "";
@@ -189,7 +193,7 @@ public class NodeAttributes {
 		}
 
 		double value = 0;
-		for (Node child : getNode().getChildren()) {
+		for (Node child : getNode().getIndirectChildren()) {
 			Status childStatus = new Status();
 			value += child.getAttributes().getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
 			status.mergeStatus(childStatus.getStatus());
@@ -214,7 +218,7 @@ public class NodeAttributes {
 		}
 
 		long value = 0;
-		for (Node child : getNode().getChildren()) {
+		for (Node child : getNode().getIndirectChildren()) {
 			value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveCond);
 		}
 		if (ignoreIterationsAboveCond == null) {
@@ -232,7 +236,7 @@ public class NodeAttributes {
 		}
 		
 		long value = 0;
-		for (Node child : getNode().getChildren()) {
+		for (Node child : getNode().getIndirectChildren()) {
 			value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveCond);		
 		}
 		if (ignoreIterationsAboveCond == null) {
@@ -250,7 +254,7 @@ public class NodeAttributes {
 		}
 		
 		long value = 0;
-		for (Node child : getNode().getChildren()) {
+		for (Node child : getNode().getIndirectChildren()) {
 			value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveCond);
 		}			
 		if (ignoreIterationsAboveCond == null) {
@@ -263,7 +267,7 @@ public class NodeAttributes {
 
 	public long getNumPaths() throws NumPathsOverflowException {
 		long value = 1;
-		for (Node child : getNode().getChildren()) {
+		for (Node child : getNode().getIndirectChildren()) {
 			value = multiplyNumPaths(value, child.getAttributes().getNumPaths());
 		}
 		return value;

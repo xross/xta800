@@ -617,7 +617,7 @@ public class RouteConstructor {
 	}
 
 	private void setParent(Node node) {
-		for (Node child : node.getChildren()){
+		for (Node child : node.getIndirectChildren()){
 			child.setParent(node);
 			setParent(child);
 		}

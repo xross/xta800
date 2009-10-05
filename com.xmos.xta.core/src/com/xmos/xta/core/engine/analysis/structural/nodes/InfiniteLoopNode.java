@@ -111,7 +111,7 @@ public class InfiniteLoopNode extends Node {
 		ancestors.pop();
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		List<Node> children = new LinkedList<Node>();
 		children.add(m_loopHeader);
 		for (Node node : m_loops) {
@@ -159,7 +159,7 @@ public class InfiniteLoopNode extends Node {
 		return before;
 	}
 	
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
 		ancestors.push(this);
 	    list.add(new NodeDescriptor(m_loopHeader, ancestors));

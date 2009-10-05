@@ -4,17 +4,14 @@ import java.util.List;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
-
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.ui.views.ZoomedCanvasProperties;
 
 public class StructureConditionalNode extends StructureNode {
     public static final boolean DEBUG = false;
 
-    private boolean m_isOptional;
     private int m_gapY = 12;
     
 	int m_bestCaseY;
@@ -24,8 +21,6 @@ public class StructureConditionalNode extends StructureNode {
     
 	public StructureConditionalNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
-		
-		m_isOptional = m_treeNode.isCondOptional();
 	    m_borderX = 4;
 	    m_borderY = 2;
 	}
@@ -56,9 +51,6 @@ public class StructureConditionalNode extends StructureNode {
 			pixels += child.getPixelsY();
 		}
 		pixels += (getChildren().size() - 1) * m_gapY;
-		
-		if (m_isOptional)
-			pixels += m_gapY;
 		
 		return pixels;
 	}
@@ -113,18 +105,6 @@ public class StructureConditionalNode extends StructureNode {
     	}
 		
 		drawBestWorstCaseConnections(display, gc, midY);
-		
-		if (m_isOptional) {
-	        NodeAttributes nodeAttributes = getTreeNode().getAttributes();
-			boolean optionIsBestCase = isBestCase && nodeAttributes.hasFloatingIterations();
-			int optionalMid = scaleY(m_pixelOffsetY + childOffsetY - (m_gapY / 2));
-			drawConnection(display, gc, m_renderX, midY, m_renderX, optionalMid,
-					optionIsBestCase, false);
-			drawConnection(display, gc, m_renderX, optionalMid, m_renderX + (int)m_width, optionalMid,
-					optionIsBestCase, false);
-			drawConnection(display, gc, m_renderX + (int)m_width, midY, m_renderX + (int)m_width, optionalMid,
-					optionIsBestCase, false);
-		}
 	}
 
 	private void trackBestWorstY(int midY, int childMidY, boolean childIsBestCase, boolean childIsWorstCase,

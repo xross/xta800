@@ -86,7 +86,7 @@ public class SequenceNode extends Node {
 		ancestors.pop();
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		return m_nodes;
 	}
 
@@ -137,7 +137,7 @@ public class SequenceNode extends Node {
 		}
 	}
 
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
 		ancestors.push(this);
 	    list.add(new NodeDescriptor(m_nodes.get(0), ancestors));
