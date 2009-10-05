@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Stack;
 
 import com.xmos.xta.core.console.Console;
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -34,10 +35,14 @@ public class StructureDisplayer {
     }
 	
 	private void displayNodeInfo(Node node, Stack<Node> ancestors, StringBuffer sb) {
-		if (node.isInstructionNode() && (m_verbosity <= 0))
+		if (node.isInstructionNode() && 
+			(m_verbosity < Config.VERBOSITY_DISPLAY_INSTRUCTION_NODES))
 			return;
-		if (node.isNullNode() && (m_verbosity <= 50))
+
+		if (node.isNullNode() && 
+			(m_verbosity < Config.VERBOSITY_DISPLAY_NULL_NODE))
 			return;
+
 		printIndent(ancestors.size(), sb);
 		printModifiers(node, ancestors.size(), sb);
 		displayNodeName(node, sb);
@@ -75,7 +80,7 @@ public class StructureDisplayer {
 	}	
 
 	private void displayNumPaths(Node node, StringBuffer sb) {
-		if (m_verbosity >= 10)
+		if (m_verbosity >= Config.VERBOSITY_DISPLAY_NUM_PATHS)
 			sb.append(String.format(" [%s]", node.getAttributes().getNumPathsStr())); 		
 	}	
 	
@@ -84,7 +89,7 @@ public class StructureDisplayer {
 	}
 	
 	private void displayAttributes(Node node, StringBuffer sb) {		
-		if (m_verbosity >= 50) {			
+		if (m_verbosity >= Config.VERBOSITY_DISPLAY_ATTRIBUTES) {			
 			NodeAttributes nodeAttributes = node.getAttributes();
 			
 			if (node.isUnresolved())
@@ -117,7 +122,7 @@ public class StructureDisplayer {
 	}
 	
 	private void displayAncestors(Node node, Stack<Node> ancestors, StringBuffer sb) {	
-		if (m_verbosity >= 50) {
+		if (m_verbosity >= Config.VERBOSITY_DISPLAY_ANCESTORS) {
 			sb.append(" [ANCESTORS: ");
 			for (Node ancestor : ancestors) {
 				sb.append(String.format("%d ", ancestor.getId()));				

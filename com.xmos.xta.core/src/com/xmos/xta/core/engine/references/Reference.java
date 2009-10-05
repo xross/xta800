@@ -85,7 +85,9 @@ public class Reference {
     }	
     
     public int hashCode() {
- 	    //this is needed to complete the equals method
-    	return 0;
+        int hash = 1;
+        hash = hash * 31 + m_base.hashCode();
+        hash = hash * 31 + (m_backTrail == null ? 0 : m_backTrail.hashCode());
+        return hash;
     }
 }
