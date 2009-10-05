@@ -59,7 +59,7 @@ public class GuiEngine {
 	private static Map<String, IEditorInput> s_disassemblyInputs;
 	private static List<Long> s_sourcePcs;
 	private static boolean s_showPcPosition;
-
+	
 	public static final CommandSource s_guiCommandSrc = new CommandSource(Type.GUI);  
 
 	static {
@@ -77,6 +77,9 @@ public class GuiEngine {
         s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();
         
         s_disassemblyInputs = new HashMap<String, IEditorInput>();
+        
+        // Create a perspective monitor to broadcast when it changes
+        new GuiPerspectiveMonitor();
 	}
 	
 	public static Engine getEngine() {

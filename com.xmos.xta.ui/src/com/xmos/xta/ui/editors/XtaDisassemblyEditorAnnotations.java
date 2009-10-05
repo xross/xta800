@@ -3,6 +3,7 @@ package com.xmos.xta.ui.editors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -169,24 +170,20 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     		if (fnopsAdded) {
     			inputSection.incrementIndex();
     		} else {
-	    		long lineNum = 0;
-	    		while (!fnopsAdded && (lineNum < inputSection.getNumLines())) {
-	    			InputLine line = inputSection.getLine(lineNum);
-	    			long index = line.getIndex();
-					if (line.getPc() == pc) {
+	    		for (InputLine inputLine : inputSection.getLines()) {
+					if (inputLine.getPc() == pc) {
 						try {
+			    			long index = inputLine.getIndex();
 							IRegion lineInfo = document.getLineInformation((int)index);
-							
 				            document.replace(lineInfo.getOffset(), 0, fnopString);
-							inputSection.addFnop(fnopString, pc, index, getInput());
+							inputSection.addFnop(fnopString, pc, index);
 							fnopsAdded = true;
+							break;
 						} catch (BadLocationException e) {
 							e.printStackTrace();
 						}
-					} else {
-						lineNum++;
 					}
-				}
+	    		}
     		}
 		}
 	}
@@ -196,7 +193,8 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
 		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
 		
-		Collection<Long> pcs = GuiEngine.getSourcePcs();
+		Set<Long> pcs = new HashSet<Long>();
+		pcs.addAll(GuiEngine.getSourcePcs());
         for (long pc : pcs) {
         	addAnnotationsForPc(pc, SourcePcsAnnotationID, allAnnotations, allPositions);
         } 

@@ -1,0 +1,29 @@
+package com.xmos.xta.ui;
+
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.IPerspectiveListener;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+
+public class GuiPerspectiveMonitor implements IPerspectiveFactory, IPerspectiveListener{
+
+	public GuiPerspectiveMonitor() {
+		super();
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		window.addPerspectiveListener(this);
+	}
+
+	public void createInitialLayout(IPageLayout layout) {
+	}
+
+	public void perspectiveActivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
+	    GuiEngine.broadcast(Broadcaster.BROADCAST_PERSPECTIVE_CHANGED, "");
+	}
+
+	public void perspectiveChanged(IWorkbenchPage page, IPerspectiveDescriptor perspective, String changeId) {
+	}
+}
+

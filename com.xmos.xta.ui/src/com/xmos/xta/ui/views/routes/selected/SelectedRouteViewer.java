@@ -11,6 +11,8 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -157,6 +159,23 @@ public class SelectedRouteViewer {
 						}
 					}
 					GuiEngine.setSelectedNodes(selectedNodes);
+		        }
+			}
+		});
+		
+		m_viewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				ISelection sel = event.getSelection();
+				if (sel instanceof IStructuredSelection) {
+					List<Node> selectedNodes = new ArrayList<Node>();
+					for (Object object : ((IStructuredSelection)sel).toArray()) {
+						if (object instanceof Node) {
+							selectedNodes.add((Node)object);
+						}
+					}
+					if (selectedNodes.size() == 1) {
+						GuiEngine.setFocus(selectedNodes.get(0));
+					}
 		        }
 			}
 		});

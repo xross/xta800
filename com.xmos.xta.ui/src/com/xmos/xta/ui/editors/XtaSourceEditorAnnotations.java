@@ -12,6 +12,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 
 import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.Engine;
@@ -24,6 +26,7 @@ import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceLine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.XtaPerspective;
 
 public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 
@@ -129,6 +132,11 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 			return false;
 		if (m_editor.isDirty())
 			return false;
+
+		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		if (!page.getPerspective().getId().equals(XtaPerspective.ID)) {
+			return false;
+		}
 			
 		return true;
 	}
