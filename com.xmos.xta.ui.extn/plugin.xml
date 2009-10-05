@@ -23,5 +23,10 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.xmos.xta.ui.extn.views.files.FilesViewStartup"></startup>
+   </extension>
 
 </plugin>

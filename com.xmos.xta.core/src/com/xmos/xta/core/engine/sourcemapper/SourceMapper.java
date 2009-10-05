@@ -162,7 +162,21 @@ public class SourceMapper {
 		sourceFile.readFile();
 		mapSourceFileLines(debugEngine, sourceFile);
     }
-    
+
+    public String getDebugFileName(String diskFileName) {
+        for (SourceFile sourceFile : m_sourceFiles) {
+        	try {
+        		File fileOnDisk = sourceFile.getFile();
+        		if (fileOnDisk != null) {
+    				if (fileOnDisk.getCanonicalPath().equals(diskFileName)) {
+    					return sourceFile.getFullFileName();
+    				}
+        		}
+			} catch (IOException e) {}
+        }
+        return diskFileName;
+    }
+
     private void mapSourceFileLines(DebugEngine debugEngine, SourceFile sourceFile) {
     	for (SourceLine sourceLine : sourceFile.getSourceLines()) {
     		long lineNumber = sourceLine.getLineNumber();

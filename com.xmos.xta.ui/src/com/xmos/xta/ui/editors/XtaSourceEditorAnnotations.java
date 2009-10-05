@@ -99,10 +99,11 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
         long endPointIndex = getEndPointIndex();
 
         m_endPointLineIndexes.clear();
-        String fileName = getFileName();
 
-        Engine engine = GuiEngine.getEngine();
+        Engine engine = GuiEngine.getEngine();        
 		if (canAnnotate()) {
+			String fileName = engine.getSourceMapper().getDebugFileName(getFileName());
+			
 			for (CodePointTableInfo info : engine.getEndpointTable().values()) {
 	        	if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName)) {
 	        		long index = info.getLineNumber() - 1;

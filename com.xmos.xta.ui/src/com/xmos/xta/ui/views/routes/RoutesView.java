@@ -11,8 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.core.engine.Notifier;
@@ -83,10 +81,6 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener {
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
 		    m_routeSelectorViewer.initialise();
-			try {
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					getActivePage().showView(RoutesView.ID);
-			} catch (PartInitException e) {}
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			m_routeSelectorViewer.clear();

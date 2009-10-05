@@ -569,5 +569,11 @@
          </actionSet>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.xmos.xta.ui.views.routes.RoutesViewStartup">
+      </startup>
+   </extension>
   
 </plugin>

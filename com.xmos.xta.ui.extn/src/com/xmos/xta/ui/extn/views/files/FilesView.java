@@ -27,7 +27,6 @@ import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.Broadcaster;
@@ -42,10 +41,10 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
     public static final String ID = "com.xmos.xta.ui.extn.views.files.Files";
     
     private FilteredTree m_filesViewer;
-    
+
     // Keep a map to ensure source files can't be opened twice
     private Map<String, IEditorInput> m_editorInputs;
-    
+        
 	public FilesView() {
 		if (DEBUG) System.out.printf("FilesView()\n");			
 		GuiEngine.addBroadcastListener(this);
@@ -85,15 +84,8 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("FilesView: propertyChange: %s\n", event.getProperty());	
 		
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			m_editorInputs.clear();
-			m_filesViewer.getViewer().refresh();
-			
-			try {
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					getActivePage().showView(FilesView.ID);
-			} catch (PartInitException e) {}
-		}
+		m_editorInputs.clear();
+		m_filesViewer.getViewer().refresh();
 	}
 
 	private void openEditor(DebugFile debugFile) {
