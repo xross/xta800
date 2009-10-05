@@ -19,5 +19,6 @@ function\(\d+\) +: Infinity / \d+.0ns test
 .    .    .    .    .    cond\(\d+\) +: 0.0ns / 0.0ns 
 .    .    .    .    .    .    block\(\d+\) +: 0.0ns \(x 0\) / 0.0ns \(x 0\) 
 .    .    .    .    .    .    block\(\d+\) +: 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    block\(\d+\) +: 0.0ns \(x 0\) / 0.0ns \(x 1\) 
 .    .    .    block\(\d+\) +: 0.0ns \(x 0\) / \d+.0ns \(x 1\) 
 

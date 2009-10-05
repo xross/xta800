@@ -36,6 +36,7 @@ function\(\d+\) : \d+.0ns / \d+.0ns fix_fft_64_inverse
 .    .    .    .    .    .    seq\(\d+\)      : 0.0ns / 0.0ns 
 .    .    .    .    .    .    .    cond\(\d+\)     : 0.0ns / 0.0ns 
 .    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
 .    .    .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)    : 0.0ns \(x 0\) / 0.0ns \(x 0\) 
 .    .    .  \* cond\(\d+\)     : 0.0ns / 0.0ns 

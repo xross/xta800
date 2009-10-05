@@ -8,6 +8,7 @@ function\(\d+\) +: 3920.0ns / 1440.0ns fix_fft_64
 .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 .    .    .    cond\(\d+\) +: \d+.0ns / 0.0ns 
 .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
+.    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / 0.0ns \(x 1\) 
 .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 .  \* selfloop\(\d+\) +: \d+.0ns / \d+.0ns 
@@ -24,7 +25,9 @@ function\(\d+\) +: 3920.0ns / 1440.0ns fix_fft_64
 .    .    .    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
 .    .    .    .    .    .    .    .    .  \* selfloop\(\d+\) +: \d+.0ns / 0.0ns 
 .    .    .    .    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
+.    .    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / 0.0ns \(x 0\) 
 .    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
+.    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / \d+.0ns \(x 1\) 
 .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
 
