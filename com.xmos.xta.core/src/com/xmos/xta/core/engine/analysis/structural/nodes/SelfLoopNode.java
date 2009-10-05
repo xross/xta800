@@ -71,7 +71,7 @@ public class SelfLoopNode extends Node{
 		ancestors.pop();
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		List<Node> children = new LinkedList<Node>();
 		children.add(m_loop);
 		return children;
@@ -105,7 +105,7 @@ public class SelfLoopNode extends Node{
 		return before;
 	}
 	
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
 		ancestors.push(this);
 	    list.add(new NodeDescriptor(m_loop, ancestors));

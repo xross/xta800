@@ -165,6 +165,6 @@ public class NodeDescriptor implements Comparable<NodeDescriptor>{
     }
 
     public List<NodeDescriptor> getImmediateChildren() {
-    	return m_node.getImmediateChildren(m_ancestors);
+    	return m_node.getDirectChildren(m_ancestors);
     }
 }

@@ -272,12 +272,12 @@ public class StructuralAnalysisEngine {
 			done =true;
 			fn.traverse(new Stack<Node>(),  new DefaultNodeTraverser() {
 				public boolean foundSequenceNode(Node node, Stack<Node> ancestors) {
-					for(Node child : node.getChildren()){
+					for(Node child : node.getIndirectChildren()){
 						if(child.isSequenceNode()){
-							int insertPathAt =node.getChildren().indexOf(child);
-							node.getChildren().remove(insertPathAt);
-							for(Node pathChild : child.getChildren()){
-								node.getChildren().add(insertPathAt++, pathChild);
+							int insertPathAt =node.getIndirectChildren().indexOf(child);
+							node.getIndirectChildren().remove(insertPathAt);
+							for(Node pathChild : child.getIndirectChildren()){
+								node.getIndirectChildren().add(insertPathAt++, pathChild);
 							}
 							done = false;
 							return false;
@@ -287,12 +287,12 @@ public class StructuralAnalysisEngine {
 				}
 				
 				public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
-					for(Node child : node.getChildren()){
+					for(Node child : node.getIndirectChildren()){
 						if(child.isSequenceNode()){
-							int insertPathAt =node.getChildren().indexOf(child);
-							node.getChildren().remove(insertPathAt);
-							for(Node pathChild : child.getChildren()){
-								node.getChildren().add(insertPathAt++, pathChild);
+							int insertPathAt =node.getIndirectChildren().indexOf(child);
+							node.getIndirectChildren().remove(insertPathAt);
+							for(Node pathChild : child.getIndirectChildren()){
+								node.getIndirectChildren().add(insertPathAt++, pathChild);
 							}
 							done = false;
 							return false;
@@ -779,7 +779,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private void setParent(Node node) {
-		for (Node child : node.getChildren()){
+		for (Node child : node.getIndirectChildren()){
 			child.setParent(node);
 			setParent(child);
 		}

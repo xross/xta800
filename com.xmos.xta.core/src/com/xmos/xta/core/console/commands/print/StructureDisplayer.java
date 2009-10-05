@@ -100,7 +100,7 @@ public class StructureDisplayer {
 			} else if (node.isCondNode()) {
 				Node enclosingLoopNode = node.getEnclosingLoopNode();
 				if (enclosingLoopNode != null) {
-	                for (Node option : node.getChildren()) {
+	                for (Node option : node.getIndirectChildren()) {
 	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
 	                	sb.append(String.format("[%s,%d,%d]", optionSet, 
 	                			nodeAttributes.getLoopPathIterations(
@@ -109,9 +109,7 @@ public class StructureDisplayer {
 	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.BEST)));
 	                }					
 				}
-				if (node.isCondOptional())		
-					sb.append(" (OPTIONAL)"); 				
-				
+
 			} else if (node.getAttributes().getIsLoopHeader())  {
 				sb.append(" (HEADER)"); 
 			}			

@@ -26,11 +26,11 @@ public class EndNode extends IBufferNode {
 		return m_nodeAttributes;	
 	}
 
-	public List<Node> getChildren() {
+	public List<Node> getIndirectChildren() {
 		return new LinkedList<Node>();
 	}
 
-	public List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors) {
+	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		return new LinkedList<NodeDescriptor>();
 	}
 

@@ -33,8 +33,8 @@ public abstract class Node implements Comparable<Node>{
 	public abstract NodeAttributes getAttributes();	
 	public abstract Node shallowCopy();
 	public abstract Node deepCopy();			
-	public abstract List<Node> getChildren();
-	public abstract List<NodeDescriptor> getImmediateChildren(Stack<Node> ancestors);
+	public abstract List<Node> getIndirectChildren();
+	public abstract List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors);
 	public abstract Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor);
 	public abstract Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor);
 	public abstract void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser);
@@ -289,15 +289,11 @@ public abstract class Node implements Comparable<Node>{
 		assert(false);
 		return null;
 	}
-
-	public boolean isCondOptional() {
-		return false;
-	}
 	
 	public void setFolded(boolean folded, boolean applyToChildren) {
 		m_isFolded = folded;
 		if (applyToChildren) {
-			for (Node child : getChildren()) {
+			for (Node child : getIndirectChildren()) {
 				child.setFolded(folded, applyToChildren);
 			}
 		}
@@ -317,7 +313,7 @@ public abstract class Node implements Comparable<Node>{
 		if (referenceTypes.peek().getType() != ReferenceType.Type.CALL) {
 			// Builds up a stack of all the children up to the calling node...
 			Stack<Node> children = new Stack<Node>();
-			for (Node child : getChildren()) {
+			for (Node child : getIndirectChildren()) {
 				if (child == node)
 					break;
 				
