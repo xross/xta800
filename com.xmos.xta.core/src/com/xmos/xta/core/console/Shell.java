@@ -9,6 +9,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.console.commands.Invalid;
 import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
@@ -223,7 +224,7 @@ public class Shell {
 		m_savedNotifier = m_engine.getNotifier();
     	m_engine.setNotifier(m_notifier);
     	
-    	if (m_engine.getConfig().m_verbosity >= 10)
+    	if (m_engine.getVerbosity() >= Config.VERBOSITY_PROGRESS_MONITOR_ENABLED)
     		m_engine.setMonitor(new ConsoleProgessMonitor(m_console));
     
     	if (command.getFileRedirect() != null) {
