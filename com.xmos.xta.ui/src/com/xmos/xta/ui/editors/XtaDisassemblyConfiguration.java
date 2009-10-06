@@ -46,10 +46,9 @@ public class XtaDisassemblyConfiguration extends SourceViewerConfiguration {
 			new URLHyperlinkDetector()
 		};
 	}
-/*
+
 	public int getHyperlinkStateMask(ISourceViewer sourceViewer) {
     	if (DEBUG) System.out.printf("XtaDisassemblyConfiguration: getHyperlinkStateMask\n");	
 		return 0;
 	}
-*/
 }
