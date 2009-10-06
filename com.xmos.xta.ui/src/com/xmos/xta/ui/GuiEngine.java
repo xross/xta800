@@ -345,9 +345,10 @@ public class GuiEngine {
 	    	splitEditorArea();
 
 
-		} catch (PartInitException e) {
-			
-		}
+		} catch (PartInitException e) {}
+		
+		// Cause an update in the new editor which will do the highlighting
+		GuiEngine.broadcast(Broadcaster.BROADCAST_OPEN_DISASSEMBLY, "");		
 	}
 
 	public static void closeDisassembly() {

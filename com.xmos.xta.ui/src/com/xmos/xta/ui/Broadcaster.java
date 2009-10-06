@@ -17,6 +17,7 @@ public class Broadcaster {
 	public static final String BROADCAST_SET_FOCUS           = "SetFocus";
 	public static final String BROADCAST_SET_SOURCE_PCS      = "SetSourcePcs";
 	public static final String BROADCAST_PERSPECTIVE_CHANGED = "PerspectiveChanged";
+	public static final String BROADCAST_OPEN_DISASSEMBLY    = "OpenDisassembly";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
 

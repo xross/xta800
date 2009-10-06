@@ -150,7 +150,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	}
     
 	public void updateHighlighting() {
-		if (DEBUG) System.out.printf("XtaEditor: updateHighlighting\n");
+		if (DEBUG) System.out.printf("XtaEditorAnnotations: updateHighlighting\n");
 		
 	    ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		

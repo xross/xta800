@@ -66,7 +66,8 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 			return;
 
 		for (long lineNumber = 1; lineNumber < m_editor.getDocument().getNumberOfLines(); lineNumber++) {
-    		String refString = String.format("%s:%d", getFileName(), lineNumber);
+			String fileName = engine.getSourceMapper().getDebugFileName(getFileName());
+    		String refString = String.format("%s:%d", fileName, lineNumber);
     		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 
 			if (ref.resolve(engine, nodeId, coreId)) {
@@ -188,7 +189,8 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 
 	private SourceLine getLineForPc(long pc) {
 		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
-		SourceFile sourceFile = sourceMapper.getSourceFile(getFileName());
+		String fileName = sourceMapper.getDebugFileName(getFileName());		
+		SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
 		return sourceFile.getLineForPc(pc);
 	}
 
@@ -214,7 +216,8 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	Collection<Long> getPcsForLine(long lineNumber) {
 		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
 		if (sourceMapper != null) {
-			SourceFile sourceFile = sourceMapper.getSourceFile(getFileName()); 
+			String fileName = sourceMapper.getDebugFileName(getFileName());					
+			SourceFile sourceFile = sourceMapper.getSourceFile(fileName); 
 			if (sourceFile != null) {
 				List<SourceLine> sourceLines = sourceFile.getSourceLines();
 				if (lineNumber <= sourceLines.size()) {

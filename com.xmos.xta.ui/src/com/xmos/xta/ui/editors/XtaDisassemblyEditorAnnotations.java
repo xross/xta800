@@ -50,7 +50,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     }
     
 	public void propertyChange(PropertyChangeEvent event) {
-		if (DEBUG) System.out.printf("XtaDisassemblyEditor: propertyChange: %s\n", event.getProperty());	
+		if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: propertyChange: %s\n", event.getProperty());	
 		if (m_isDisposed)
 			return;
 
@@ -60,6 +60,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	    		return;
 	    	}
 			showCodePoint(codePoint.getPc());
+			
 		}  else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			refreshInput();
 
@@ -71,29 +72,146 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 					showCodePoint(pcs.get(0));
 				}
 			}
-
+		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_OPEN_DISASSEMBLY)) {
+			m_selectedNodes = GuiEngine.getSelectedNodes();
+			updateAll();
+	        collapseFolding();			
 		}
 		
 		super.propertyChange(event);
 	}
 
-	private void refreshInput() {
-		if (DEBUG) System.out.printf("XtaDisassemblyEditor: refreshInput\n");
-		IEditorInput input = GuiEngine.getDisassemblyInput();
-		m_editor.refreshInput(input);
-        m_previousProjectionAnnotations = new Annotation[0];
-        ProjectionAnnotationModel model = updateFoldingStructure();
-        collapseFolding(model);
-	}
-
 	public void updateAll() {
+		if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: updateAll\n");
+		updateFoldingStructure();
 		updateFnops();
 		updateUnknowns();
 		updateHighlighting();
 	}
+    
+	public String getLineDescription(long index) {
+		return lineIndexToString(index);
+	}
 
+	public boolean isValidEndPoint(long lineNumber) {
+		if (isSection(lineNumber - 1))
+			return false;
+		else
+			return true;
+	}
+		
+	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
+		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
+		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
+		
+		Set<Long> pcs = new HashSet<Long>();
+		pcs.addAll(GuiEngine.getSourcePcs());
+        for (long pc : pcs) {
+        	addAnnotationsForPc(pc, SourcePcsAnnotationID, allAnnotations, allPositions);
+        } 
+
+        super.updateAnnotations(allAnnotations, allPositions);
+	}
+
+    boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+    		Map<Annotation, Position> annotationPositions) {
+    	
+    	InputLine line = getInput().getPcsToLines().get(pc);
+    	if (line == null) 
+    		return false;
+    	
+		addAnnotationForIndex(line.getIndex(), type, annotations, annotationPositions);
+		
+		// Don't apply source highlighting to sections
+		if (!type.equals(SourcePcsAnnotationID)) {
+			InputSection inputSection = getInput().getPcsToSection().get(pc);
+			if (inputSection != null) {
+				addAnnotationForIndex(inputSection.getIndex(), type, annotations, annotationPositions);
+			}
+		}
+    	
+		// Only annotate FNOPs with highlights
+		if (type.equals(HighlightAnnotationID)) {
+			for (InputSection section : getSections()) {
+				for (InputLine fnop : section.getFnops()) {
+					if (fnop.getPc() == pc) { 
+						addAnnotationForIndex(fnop.getIndex(), type, annotations, annotationPositions);
+					}
+				}
+			}
+		}
+		return true;
+    }
+    
+	long getIndexForRef(Reference ref) {
+		if (ref != null) {
+			if (ref.getResolved()) {
+			    long pc = ref.getPc();
+			    return getIndexForPc(pc);
+			}			
+		}
+		return -1;
+	}
+
+    long getIndexForPc(long pc) {
+		InputLine line = getInput().getPcsToLines().get(pc);
+		if (line != null) {
+			return line.getIndex();
+		}
+		return -1;
+	}
+
+    String lineIndexToString(long index) {
+    	for (InputSection inputSection : getSections()) {
+    		long startLine = inputSection.getIndex();
+    		long endLine = startLine + inputSection.getLines().size();
+    		long offset = index - startLine;
+
+    		// Don't map to the header
+    		if ((index > startLine) && (index <= endLine)) {
+    			if (!inputSection.isFnop(offset - 1)) {
+    				return inputSection.getLine(offset - 1).getCodeReference();
+    			} else {
+    				return null;
+    			}
+			}
+    	}
+		return null;
+	}
+
+	Collection<Long> getPcsForLine(long lineNumber) {
+		TreeSet<Long> pcs = new TreeSet<Long>();
+		HashMap<Long, InputLine> lineMap = getInput().getPcsToLines();
+		Iterator<Map.Entry<Long, InputLine>> lineIter = lineMap.entrySet().iterator();
+		while (lineIter.hasNext()) {
+    	    Map.Entry<Long, InputLine> pair = lineIter.next();
+    	    if (pair.getValue().getIndex() == lineNumber) {
+    	    	pcs.add(pair.getKey());
+    	    }                           
+    	}      
+
+		HashMap<Long, InputSection> sectionMap = getInput().getPcsToSection();
+		Iterator<Map.Entry<Long, InputSection>> sectionIter = sectionMap.entrySet().iterator();
+		while (sectionIter.hasNext()) {
+    	    Map.Entry<Long, InputSection> pair = sectionIter.next();
+    	    if (pair.getValue().getIndex() == lineNumber) {
+    	    	pcs.add(pair.getKey());
+    	    }                           
+    	}      
+		return pcs;
+	}
+
+	private void refreshInput() {
+		if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: refreshInput\n");
+		IEditorInput input = GuiEngine.getDisassemblyInput();
+		m_editor.refreshInput(input);
+        m_previousProjectionAnnotations = new Annotation[0];
+        updateFoldingStructure();
+        collapseFolding();
+	}
+	
     private void updateFnops() {
-		if (DEBUG) System.out.printf("XtaDisassemblyEditor: updateFnops\n"); 
+		if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: updateFnops\n"); 
 		
     	Set<XtaInstruction> toAdd = new TreeSet<XtaInstruction>();
     	Set<XtaInstruction> toRemove;
@@ -187,113 +305,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     		}
 		}
 	}
-    
-	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
-
-		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
-		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
-		
-		Set<Long> pcs = new HashSet<Long>();
-		pcs.addAll(GuiEngine.getSourcePcs());
-        for (long pc : pcs) {
-        	addAnnotationsForPc(pc, SourcePcsAnnotationID, allAnnotations, allPositions);
-        } 
-
-        super.updateAnnotations(allAnnotations, allPositions);
-	}
-
-    boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
-    		Map<Annotation, Position> annotationPositions) {
-    	
-    	InputLine line = getInput().getPcsToLines().get(pc);
-    	if (line == null) 
-    		return false;
-    	
-		addAnnotationForIndex(line.getIndex(), type, annotations, annotationPositions);
-		
-		// Don't apply source highlighting to sections
-		if (!type.equals(SourcePcsAnnotationID)) {
-			InputSection inputSection = getInput().getPcsToSection().get(pc);
-			if (inputSection != null) {
-				addAnnotationForIndex(inputSection.getIndex(), type, annotations, annotationPositions);
-			}
-		}
-    	
-		// Only annotate FNOPs with highlights
-		if (type.equals(HighlightAnnotationID)) {
-			for (InputSection section : getSections()) {
-				for (InputLine fnop : section.getFnops()) {
-					if (fnop.getPc() == pc) { 
-						addAnnotationForIndex(fnop.getIndex(), type, annotations, annotationPositions);
-					}
-				}
-			}
-		}
-		return true;
-    }
-    
-	long getIndexForRef(Reference ref) {
-		if (ref != null) {
-			if (ref.getResolved()) {
-			    long pc = ref.getPc();
-			    return getIndexForPc(pc);
-			}			
-		}
-		return -1;
-	}
-
-    long getIndexForPc(long pc) {
-		InputLine line = getInput().getPcsToLines().get(pc);
-		if (line != null) {
-			return line.getIndex();
-		}
-		return -1;
-	}
-
-	public String getLineDescription(long index) {
-		return lineIndexToString(index);
-	}
-
-    String lineIndexToString(long index) {
-    	for (InputSection inputSection : getSections()) {
-    		long startLine = inputSection.getIndex();
-    		long endLine = startLine + inputSection.getLines().size();
-    		long offset = index - startLine;
-
-    		// Don't map to the header
-    		if ((index > startLine) && (index <= endLine)) {
-    			if (!inputSection.isFnop(offset - 1)) {
-    				return inputSection.getLine(offset - 1).getCodeReference();
-    			} else {
-    				return null;
-    			}
-			}
-    	}
-		return null;
-	}
-
-	Collection<Long> getPcsForLine(long lineNumber) {
-		TreeSet<Long> pcs = new TreeSet<Long>();
-		HashMap<Long, InputLine> lineMap = getInput().getPcsToLines();
-		Iterator<Map.Entry<Long, InputLine>> lineIter = lineMap.entrySet().iterator();
-		while (lineIter.hasNext()) {
-    	    Map.Entry<Long, InputLine> pair = lineIter.next();
-    	    if (pair.getValue().getIndex() == lineNumber) {
-    	    	pcs.add(pair.getKey());
-    	    }                           
-    	}      
-
-		HashMap<Long, InputSection> sectionMap = getInput().getPcsToSection();
-		Iterator<Map.Entry<Long, InputSection>> sectionIter = sectionMap.entrySet().iterator();
-		while (sectionIter.hasNext()) {
-    	    Map.Entry<Long, InputSection> pair = sectionIter.next();
-    	    if (pair.getValue().getIndex() == lineNumber) {
-    	    	pcs.add(pair.getKey());
-    	    }                           
-    	}      
-		return pcs;
-	}
-
+	
 	private Input getInput() {
 		IDocument document = m_editor.getDocument();
 		if (document == null) {
@@ -317,13 +329,6 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return xtaDocumentPartitioner.getInput().getSections();
 	}
 
-	public boolean isValidEndPoint(long lineNumber) {
-		if (isSection(lineNumber - 1))
-			return false;
-		else
-			return true;
-	}
-
     private boolean isSection(long index) {
     	for (InputSection inputSection : getSections()) {
     		long sectionIndex = inputSection.getIndex();
@@ -336,8 +341,8 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return false;
 	}
 
-	public ProjectionAnnotationModel updateFoldingStructure() {
-	    if (DEBUG) System.out.printf("XtaEditor: updateFoldingStructure\n"); 
+	private ProjectionAnnotationModel updateFoldingStructure() {
+	    if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: updateFoldingStructure\n"); 
 
 	    IDocument document = m_editor.getDocument();
 	    ArrayList<Position> positions = new ArrayList<Position>();
@@ -361,11 +366,12 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
        
         ProjectionAnnotationModel model = m_editor.getProjectionAnnotationModel();
         model.modifyAnnotations(m_previousProjectionAnnotations, annotationPositions, null);
-        m_previousProjectionAnnotations = annotations;
+        m_previousProjectionAnnotations = annotations;        
         return model;
     }
 
-	public void collapseFolding(ProjectionAnnotationModel model) {
+	private void collapseFolding() {
+        ProjectionAnnotationModel model = m_editor.getProjectionAnnotationModel();
         model.collapseAll(0, m_editor.getDocument().getLength());
 	}
 

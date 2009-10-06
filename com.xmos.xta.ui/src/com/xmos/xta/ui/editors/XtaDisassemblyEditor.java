@@ -8,7 +8,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.IVerticalRulerColumn;
-import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -118,12 +117,6 @@ public class XtaDisassemblyEditor extends XtaEditor {
 	public boolean isDirty() {
 		// Keep the editor pages from showing a '*' when FNOPs are inserted and removed
 		return false;
-	}
-
-	public void updateFoldingStructure() {
-		XtaDisassemblyEditorAnnotations annotations = (XtaDisassemblyEditorAnnotations)getAnnotations();
-		ProjectionAnnotationModel model = annotations.updateFoldingStructure();
-		annotations.collapseFolding(model);
 	}
 
 	public String getFileName() {
