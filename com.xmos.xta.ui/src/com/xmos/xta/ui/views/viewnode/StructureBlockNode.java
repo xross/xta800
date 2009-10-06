@@ -18,7 +18,13 @@ public class StructureBlockNode extends StructureNode {
 	}
 
 	public int getPixelsX() {
-		return m_minBlockX + m_treeNode.getIndirectChildren().size();
+		int pixels = 0;
+		if(m_treeNode.getIndirectChildren().size() == 0){
+			pixels = 0;
+		} else {
+			pixels = m_minBlockX + m_treeNode.getIndirectChildren().size();
+		}
+		return pixels;
 	}
 
 	public int getPixelsY() {

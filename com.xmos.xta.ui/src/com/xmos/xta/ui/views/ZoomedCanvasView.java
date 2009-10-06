@@ -400,7 +400,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		contextMenu = menuMgr.createContextMenu(m_canvas);
 		m_canvas.setMenu(contextMenu);
 	}
-	
+
 	private void setupMouseListeners() {
 		m_toolTip = null;
 		m_tipLabel = null;
@@ -424,7 +424,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 	else if (event.character == '-')
                 		zoomOut();
                 	break;
-
                 case SWT.MouseDown:
                 	if (event.button == LEFT_MOUSE_BUTTON) {
                 		m_selectBox = new Rectangle(event.x, event.y, 0, 0);
