@@ -30,7 +30,7 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 		if (DEBUG) System.out.printf("XtaDocumentPartitioner()\n");		
 		m_input = input;
 	}
-	
+
 	public ITypedRegion[] computePartitioning(int offset, int length) {
 		if (DEBUG) System.out.printf("XtaDocumentPartitioner: computePartitioning: %d, %d\n", offset, length);	
 		return getRegions(offset, length);
@@ -237,10 +237,23 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 	    	++index;
 	    }
 	    
-	    TypedRegion[] regions = new TypedRegion[numRegions];
-	    for (index = 0; index < numRegions; ++index) {
-	    	regions[index] = m_regions[startRegion + index];
+		List<TypedRegion> list= new ArrayList<TypedRegion>();	    
+	    for (index = 0; index < numRegions; ++index) {	    	
+	    	TypedRegion fromRegion = m_regions[startRegion + index];
+	    	
+	    	int regionOffset = fromRegion.getOffset();
+	    	int regionLength = fromRegion.getLength();
+	    	if (index == 0) {
+	    		regionOffset = Math.max(offset, regionOffset);
+	    	}
+	    	if (index == (numRegions - 1)) {
+	    		regionLength = Math.min(length, regionLength);
+	    	}	    	
+	    	list.add(new TypedRegion(regionOffset, regionLength, fromRegion.getType()));
 	    }
+	    
+		TypedRegion[] regions = new TypedRegion[list.size()];
+		list.toArray(regions);	    
 		return regions;
 	}	
 	
