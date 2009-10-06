@@ -28,7 +28,7 @@ public class LoopPath extends XtaDialog {
     
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Iterations", 300, 150);
+    	configureShell(newShell, "Iterations", 380, 150);
     }
 
     protected Control createDialogArea(Composite parent) {

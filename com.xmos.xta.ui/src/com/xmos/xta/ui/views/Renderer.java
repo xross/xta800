@@ -89,9 +89,9 @@ public abstract class Renderer implements Runnable {
 	}
 	
 	protected void renderComplete() {
-		m_control.setCanvasImage(m_canvasImage);
 		m_display.syncExec(new Runnable() {
 			public void run() {
+				m_control.setCanvasImage(m_canvasImage);
 				m_canvas.redraw();
 			}});
 	}

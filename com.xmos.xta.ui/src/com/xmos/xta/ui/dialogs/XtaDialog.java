@@ -15,8 +15,8 @@ public abstract class XtaDialog extends Dialog {
     protected void configureShell(Shell shell, String title, int width, int height) {
     	shell.setText(title);
     	
-    	if ((width > 0) && (height > 0))
-    	    shell.setSize(width, height);
+    	//if ((width > 0) && (height > 0))
+    	//    shell.setSize(width, height);
 
     	// Ensure the shell positioning is next to mouse
     	Point pos = Display.getCurrent().getCursorLocation();
