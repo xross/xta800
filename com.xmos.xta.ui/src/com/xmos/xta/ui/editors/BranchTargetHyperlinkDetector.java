@@ -13,8 +13,10 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import com.xmos.xta.ui.GuiEngine;
 
 public class BranchTargetHyperlinkDetector implements IHyperlinkDetector {
+    public static final boolean DEBUG = false;
 	
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
+		if (DEBUG) System.out.printf("BranchTargetHyperlinkDetector: detectHyperlinks\n");
 
 		IDocument document = textViewer.getDocument();
 

@@ -14,7 +14,7 @@ public abstract class XtaInstructionDecoder {
 		switch (architecture) {
 		case REVB:
 			if(m_revB == null){
-				instructionDecoder = new RevbXtaInstructionDecoder();
+				instructionDecoder = new xs1bXtaInstructionDecoder();
 				m_revB = instructionDecoder;
 			} else {
 				instructionDecoder = m_revB;
@@ -22,7 +22,7 @@ public abstract class XtaInstructionDecoder {
 			break;
 		case REVC:
 			if(m_revC == null){
-				instructionDecoder = new RevbXtaInstructionDecoder();
+				instructionDecoder = new xs1bXtaInstructionDecoder();
 				m_revC = instructionDecoder;
 			} else {
 				instructionDecoder = m_revC;
