@@ -23,14 +23,14 @@ public abstract class XtaInstruction extends Instruction {
 	public abstract long getOperandField(String opName);    		   
 	
 	private void adjustSetcPause(String nmenonic){
-		if(getClass() == RevbXtaInstruction_setc_ru6.class 
-				|| getClass() == RevbXtaInstruction_setc_lru6.class) {
+		if(getClass() == xs1bXtaInstruction_setc_ru6.class 
+				|| getClass() == xs1bXtaInstruction_setc_lru6.class) {
 			if(getOperandField("op2") == 0x0007){
 				this.setCanPause(true);
 			} else {
 				this.setCanPause(false);
 			}
-		} else if( getClass() == RevbXtaInstruction_setc_l2r.class){
+		} else if( getClass() == xs1bXtaInstruction_setc_l2r.class){
 			this.setCanPause(true);
 		}
 	}

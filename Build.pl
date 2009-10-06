@@ -132,8 +132,8 @@ sub DoPreClean
   chdir("$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core") 
     or die("Failed to move to $TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta");
 
-  unlink("instructions/RevbInstructionDecoder.java");
-  unlink("instructions/RevbInstructions.java");
+  unlink("instructions/xs1bInstructionDecoder.java");
+  unlink("instructions/xs1bInstructions.java");
 
   chdir("$BUILDPATH") or die("oops");
 }
@@ -184,7 +184,7 @@ sub DoPreBuild
 
   print(" + Generating files from Databases\n");
 
-  CreateXtaFiles("revb", "Revb");
+  CreateXtaFiles("xs1b", "xs1b");
 
   chdir("$BUILDPATH") or die("oops");
 }
@@ -277,7 +277,7 @@ sub CreateXtaFiles
   my $versionDir = shift;
   my $version = shift;
    
-  chdir("$ARCH_DBS_XML${SLASH}xs1_$versionDir") or die("Generation failed to find $version databases\n");
+  chdir("$ARCH_DBS_XML${SLASH}$versionDir") or die("Generation failed to find $version databases\n");
   system("$TOOLS_XTA${SLASH}${BIN}${SLASH}XtaGeneration.exe XSystemDb${SLASH}XS1-040.xml $version");
 
   print(" + Installing $version generated xta files\n");
