@@ -42,7 +42,7 @@ public class Loop extends XtaDialog {
     
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Loop Iterations", 300, 150);
+    	configureShell(newShell, "Loop Iterations", 400, 150);
     }
 
     protected Control createDialogArea(Composite parent) {

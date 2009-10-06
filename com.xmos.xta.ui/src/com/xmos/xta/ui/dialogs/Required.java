@@ -50,7 +50,7 @@ public class Required extends XtaDialog {
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Set timing requirements", 300, 120);
+    	configureShell(newShell, "Set timing requirements", 380, 120);
     }
 
     protected Control createDialogArea(Composite parent) {
