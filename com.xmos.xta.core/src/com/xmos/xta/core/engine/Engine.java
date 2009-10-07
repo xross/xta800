@@ -969,12 +969,6 @@ public class Engine implements Notifier {
 		
 		if (m_sections.removeFromBranches(src, m_nodeId, m_coreId, fromRef.getPc())) {	
 			m_structuralGraphUpToDate.add(m_nodeId, m_coreId, false);
-			
-			/*
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, true)) {
-				return false;
-			}
-			*/
 			return true;			
 		}
 		return false;
@@ -1062,7 +1056,6 @@ public class Engine implements Notifier {
 		if(m_structuralGraphUpToDate.get(nodeId, coreId) != null && m_structuralGraphUpToDate.get(nodeId, coreId)){
 			//System.out.println("node " + nodeId + " core " + coreId + " is up to date");
 		} else {
-			//System.out.println("node " + nodeId + " core " + coreId + " needs updating");
 			provideFeedback(String.format("Processing node: %d, core: %d", nodeId, coreId));
 			
 			InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
@@ -1083,7 +1076,8 @@ public class Engine implements Notifier {
 			SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
 			if (!sa.process(src)) 
 				return false;
-
+			//warnAboutUnsetBranches(src, id);
+			
 			FunctionHandler fh = new FunctionHandler(id);
 			if (!fh.addFunctions()) 
 				return false;
@@ -1108,8 +1102,10 @@ public class Engine implements Notifier {
 			
 			UnreachableCodeFinder uca = new UnreachableCodeFinder();
 			uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
-
+			
 			ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts());
+			
+			
 			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 			
@@ -1119,9 +1115,9 @@ public class Engine implements Notifier {
 			}
 			
 			newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
-			m_structuralGraphUpToDate.add(nodeId, coreId, true);
 		}
 		
+		m_structuralGraphUpToDate.add(nodeId, coreId, true);
 		m_structuralGraph = newStructuralGraph;
 		m_functionNames = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
@@ -1133,6 +1129,8 @@ public class Engine implements Notifier {
 	private void setBranchTargets(InstructionDecoder id,
 			TreeMap<String, LinkedList<InstructionNode>> treeMap) {
 		for(InstructionNode inst : id.getInstructions()){
+			
+			
 			if(inst.getXtaInstruction().getBranchPcRelative()){
 				long branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
 				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Long.toHexString(branchTarget));
@@ -1145,9 +1143,21 @@ public class Engine implements Notifier {
 					}
 				}
 			}
+			
+			
 		}
 		
 	}
+	
+	private void warnAboutUnsetBranches(CommandSource src, InstructionDecoder id){
+		for(InstructionNode inst : id.getInstructions()){
+			if(inst.getXtaInstruction().isBranch() && inst.getNextNodesSize() == 0 
+					&& !inst.getXtaInstruction().getReturn()&& !inst.getXtaInstruction().getBranchPcRelative()){
+				notify(src, Notifier.NOTIFY_WARNING, "No branch targets set on instruction " + inst.getXtaInstruction());
+			}
+		}
+	}
+	
 
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, LinkedList<InstructionNode>> treeMap,
