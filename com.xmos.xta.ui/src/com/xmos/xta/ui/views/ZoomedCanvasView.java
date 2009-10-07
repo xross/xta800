@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
@@ -87,6 +88,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 		m_canvasProperties = createCanvasProperties();
 		m_compositeArea = new Rectangle(0, 0, 0, 0);
+		
 	}
 
 	protected abstract ViewNode buildViewNode(Node node, int depth);
@@ -98,6 +100,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	public void createPartControl(Composite parent) {
 		if (DEBUG) System.out.println(m_name + ": createPartControl");
 	    m_parent = parent;
+
 	    m_display = m_parent.getDisplay();
 		m_renderControl = createRenderControl(m_display);
 
@@ -158,7 +161,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		    }
 	    });	
 
-	    setupMouseListeners();
+	    m_oldCursor = parent.getCursor();
+		m_cursor = new Cursor(m_display, SWT.CURSOR_HAND);
+
+		setupMouseListeners();
 	    createContextMenus();
 
 	    m_renderer = createRenderer(m_display, m_renderControl, m_canvasProperties, m_canvas);
@@ -207,6 +213,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		if (DEBUG) System.out.println(m_name + ": dispose()");			
 		m_renderControl.signalDone();
 		GuiEngine.removeBroadcastListener(this);
+		m_cursor.dispose();
 		super.dispose();
 	}
 
@@ -433,6 +440,10 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	boolean m_dragging;
 	int m_prevX;
 	int m_prevY;
+
+	protected Cursor m_oldCursor;
+
+	protected Cursor m_cursor;
 	
 	private void setupMouseListeners() {
 		m_toolTip = null;
@@ -457,6 +468,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 	else if (event.character == '-')
                 		zoomOut();
                 	break;
+
                 case SWT.MouseDown:
                 	boolean keyPressed = (event.stateMask & SWT.SHIFT) != 0;
                 	
@@ -516,7 +528,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 	break;
                 
                 case SWT.MouseUp:
-                	
                 	boolean ctrlKeyPressed = (event.stateMask & SWT.CTRL) != 0;
                 	m_drag = false;
                 	if (m_viewNode == null) {
@@ -619,8 +630,15 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 				}
 			};
 
-			public void mouseEnter(MouseEvent e) {}  
-		    public void mouseExit(MouseEvent e) {}
+			public void mouseEnter(MouseEvent e) {
+				m_oldCursor = m_canvas.getCursor();
+				m_canvas.setCursor(m_cursor);
+			}
+			
+		    public void mouseExit(MouseEvent e) {
+				m_canvas.setCursor(m_oldCursor);
+		    }
+		    
 		    public void mouseHover(MouseEvent e) { 
 				ViewNode clickNode = getClickNode(e.x, e.y);
 				if (clickNode != null) {
