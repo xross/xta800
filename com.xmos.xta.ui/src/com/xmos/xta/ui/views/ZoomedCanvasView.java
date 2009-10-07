@@ -303,11 +303,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 	
 
-	private void updateScrollBars2() {
-		if (m_renderControl.getScale() == 0) {
-			zoomFit();
-			return;
-		}
+	private void matchScrollBarsToCanvas() {
 		int canvasX = m_renderControl.getCanvasWidth();
 		int canvasY = m_renderControl.getCanvasHeight();
 		
@@ -323,7 +319,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 
 		m_hScroll.setMaximum(renderX);
     	m_hScroll.setThumb(canvasX);
-    	
 
     	setScrollPosition(m_hScroll, m_renderControl.getOffsetX());
 	    
@@ -482,42 +477,38 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	                	m_selectBox.height = event.y - m_selectBox.y;
 	                	m_renderControl.setSelectBox(normaliseBox(m_selectBox));
                 	}
-    	        	if(m_drag){
+    	        	if (m_drag) {
     	        		m_dragging = true;
 
-	    	        	int moveX = m_prevX - event.x;
-	    	        	int moveY = m_prevY - event.y;
-
-	    	        	int offsetX = m_renderControl.getOffsetX();
-	    	        	int offsetY = m_renderControl.getOffsetY();
-	    	        	
-	    	        	double scaleX;
-	    	        	double scaleY;
-
-    	        		scaleX = m_canvasProperties.getScale();
-    	        		scaleY = m_canvasProperties.getScale();
-	    	        	
-	    	        	if((offsetX + moveX) < 0){
-	    	        		m_renderControl.setOffsetX(0);
-	    	        	} else {
-	    	        		if((offsetX + moveX) > m_renderControl.getCanvasWidth() * scaleX){
-	    	        			m_renderControl.setOffsetX((int)(m_renderControl.getCanvasWidth() * scaleX));
-	    	        		} else {
-	    	        			m_renderControl.setOffsetX(offsetX + moveX);
+    	        		int canvasWidth = m_renderControl.getCanvasWidth();
+						int renderX = scale(m_renderControl.getPixelsX());
+						if (canvasWidth < renderX) {
+		    	        	int moveX = m_prevX - event.x;
+		    	        	int newX = m_renderControl.getOffsetX() + moveX;
+	    	        		if (newX > (renderX - canvasWidth)) {
+	    	        			newX = (renderX - canvasWidth);
 	    	        		}
-	    	        	}
+	    	        		if (newX < 0) {
+		    	        		newX = 0;
+		    	        	}
+	    	        		m_renderControl.setOffsetX(newX);
+						}
 	    	        	
-	    	        	
-	    	        	if((offsetY + moveY) < 0){
-	    	        		m_renderControl.setOffsetY(0);
-	    	        	} else {
-	    	        		if((offsetY + moveY) > m_renderControl.getCanvasHeight() * scaleY){
-	    	        			m_renderControl.setOffsetY((int)(m_renderControl.getCanvasHeight() * scaleY));
-	    	        		} else {
-	    	        			m_renderControl.setOffsetY(offsetY + moveY);
+    	        		int canvasHeight = m_renderControl.getCanvasHeight();
+						int renderY = scale(m_renderControl.getPixelsY());
+						if (canvasHeight < renderY) {
+		    	        	int moveY = m_prevY - event.y;
+		    	        	int newY = m_renderControl.getOffsetY() + moveY;
+							if (newY > (renderY - canvasHeight)) {
+	    	        			newY = (renderY - canvasHeight);
 	    	        		}
-	    	        	}
-	    	        	updateScrollBars2();
+							if (newY < 0) {
+		    	        		newY = 0;
+		    	        	}
+							m_renderControl.setOffsetY(newY);
+						}
+
+	    	        	matchScrollBarsToCanvas();
     	        	}
     	        	m_prevX = event.x;
     	        	m_prevY = event.y;
@@ -532,7 +523,7 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 		// Ensure the selection box gets removed
                 		m_renderControl.refresh();
                 	} else {
-                		if(!m_dragging){
+                		if (!m_dragging){
 	                		if (event.button == LEFT_MOUSE_BUTTON ) {
 	                    		Rectangle box = normaliseBox(m_selectBox);
 	                			if ((box.width > 10) && (box.height > 10)) {
@@ -546,7 +537,6 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	                		}
                 		}
                 	}
-                	
                 	
                 	m_dragging = false;
         			m_selectBox = null;
