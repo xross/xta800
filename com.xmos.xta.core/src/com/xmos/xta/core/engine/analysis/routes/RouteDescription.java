@@ -1,8 +1,11 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.TreeSet;
+
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -14,21 +17,35 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 public class RouteDescription {
 	private String m_description;
 	private String m_functionName;
+	private String m_fromName;
+	private String m_toName;
 	private RouteMode m_mode;
 	private Reference m_from;
 	private Collection<Reference> m_to;
+	private int m_nodeId;
+	private int m_coreId;
+	private Collection<Reference> m_exclusions;
+	private Config m_config;
 
-	enum RouteMode {
+	public enum RouteMode {
 		PATH, FUNCTION
 	};
-	//TODO --node and core id arent used
-	public RouteDescription(Reference from, Reference to, int nodeId, int coreId) {
+
+	public RouteDescription(Reference from, Reference to, 
+			int nodeId, int coreId, Collection<Reference> exclusions, Config config) {
+		
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
 		m_mode = RouteMode.PATH;
 		m_from = from;
 		m_to = new LinkedList<Reference>();
 		m_to.add(to);
-
+		m_fromName = from.getRef();
+		m_toName = to.getRef();
+		m_nodeId = nodeId;
+		m_coreId = coreId;		
+		m_exclusions = new ArrayList<Reference>();
+		m_exclusions.addAll(exclusions);		
+		m_config = new Config(config);
 	}
 
 	public RouteDescription(String functionName, Engine engine, int nodeId, int coreId) {
@@ -87,5 +104,29 @@ public class RouteDescription {
 
 	public String getFunctionName() {
 		return m_functionName;
+	}
+
+	public String getFromName() {
+		return m_fromName;
+	}
+
+	public String getToName() {
+		return m_toName;
+	}
+	
+	public int getNodeId() {
+		return m_nodeId;
+	}
+	
+	public int getCoreId() {
+		return m_coreId;
+	}
+	
+	public Collection<Reference> getExclusions() {
+		return m_exclusions;
+	}
+	
+	public Config getConfig() {
+		return m_config;
 	}
 }

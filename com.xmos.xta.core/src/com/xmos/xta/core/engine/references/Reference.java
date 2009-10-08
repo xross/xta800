@@ -90,4 +90,12 @@ public class Reference {
         hash = hash * 31 + (m_backTrail == null ? 0 : m_backTrail.hashCode());
         return hash;
     }
+    
+    public String toString() {
+    	String str = m_base.getRef();
+    	for (ReferenceType backTrail : m_backTrail) {
+    		str += "," + backTrail.getRef();
+    	}
+    	return str;
+    }
 }

@@ -63,7 +63,7 @@ public class Load extends Command {
 	public String toString() {
 		return commandLine();
 	}
-	
+
     private void runSectionCommands(Shell shell, Engine engine, Console console) {
 	    for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands()) {
 	    	String commandString = cmdInfo.getString();

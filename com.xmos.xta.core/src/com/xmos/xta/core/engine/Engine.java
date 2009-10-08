@@ -30,6 +30,7 @@ import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
+import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
@@ -55,6 +56,7 @@ public class Engine implements Notifier {
 	private XeLoader m_xeLoader;
 	private FileFinder m_fileFinder;
 	private List<Route> m_routes;
+	private List<RouteContainer> m_routeContainers;
 	private int m_numRoutesLastAnalysed;
 	private Collection<Reference> m_exclusions;
 	private Route m_selectedRoute;
@@ -83,6 +85,7 @@ public class Engine implements Notifier {
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
+		m_routeContainers = new LinkedList<RouteContainer>();
 		m_numRoutesLastAnalysed = 0;
 		m_exclusions = new ArrayList<Reference>();
 		m_config = config;
@@ -114,6 +117,10 @@ public class Engine implements Notifier {
 
 	public List<Route> getRoutes() {
 		return m_routes;
+	}
+
+	public List<RouteContainer> getRouteContainers() {
+		return m_routeContainers;
 	}
 
 	public XeLoader getXeLoader() {
@@ -269,85 +276,12 @@ public class Engine implements Notifier {
 			return false;
 			
 		} else {		
-			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, m_nodeId, m_coreId);
+			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, 
+					m_nodeId, m_coreId, m_exclusions, m_config);
 			return analyseRouteSafely(src, routeDescription);
 		}
 	}
-
-	private boolean analyseRouteSafely(CommandSource src, RouteDescription routeDescription) {				
-		boolean success = false;
-		try {
-			success = doRouteAnalysis(src, routeDescription);
-			
-		} catch (final java.lang.OutOfMemoryError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
-			return false;
-
-		} catch (final java.lang.StackOverflowError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
-			return false;
-
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
-			return false;
-		}
-		return success;
-	}
-
-	private boolean doRouteAnalysis(CommandSource src, RouteDescription routeDescription) throws Exception {	
-		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"node: %d, Core: %d image not found in file: %s",
-					m_nodeId, m_coreId, m_executableFile));
-			return false;
-		}
-
-		notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
-		
-		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription);				
-		RouteError error = routeConstructor.analyse(src);		
-
-		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
-			notify(src, Notifier.NOTIFY_ERROR, "no paths of execution could reach the endpoint(s)");
-			return false;
-			
-		} else if (error == RouteError.COULD_NOT_FIND_ENDPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could not find any end points");
-			return false;
-			
-		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR,"could not find any start points");
-			return false;
-			
-		} else if (error == RouteError.ENDPOINTS_MISSING ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could not determine the endpoint(s)");
-			return false;
-			
-		} else if (error == RouteError.STARTPOINT_MISSING ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could not determine the startpoint");
-			return false;
-			
-		} else {
-			if (!getAbort()){
-				int currentSize = m_routes.size();
-				m_numRoutesLastAnalysed = 0;
-				for (Route route : routeConstructor.getRoutes()) {
-					m_routes.add(route);
-					++m_numRoutesLastAnalysed;
-				}
-				if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
-					setSelectedRoute(src, m_routes.get(currentSize));
-					notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
-				} else {
-					notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
-				}
-				return true;
-			} else {
-				return false;
-			}
-		}		
-	}
-		
+	
 	public Notifier getNotifier() {
 		return m_notifier;
 	}
@@ -447,6 +381,10 @@ public class Engine implements Notifier {
 		if (routes.size() == 0)
 			return false;
 		
+		for (Route route : routes) {
+			route.getRouteContainer().remove(route);
+		}
+
 		m_routes.removeAll(routes);			
 		if (m_routes.size() == 0) {
 			Route.resetRouteCount();
@@ -1113,6 +1051,83 @@ public class Engine implements Notifier {
 		return true;
 	}
 	
+	private boolean analyseRouteSafely(CommandSource src, RouteDescription routeDescription) {				
+		boolean success = false;
+		try {
+			success = doRouteAnalysis(src, routeDescription);
+			
+		} catch (final java.lang.OutOfMemoryError e) {
+			notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
+			return false;
+
+		} catch (final java.lang.StackOverflowError e) {
+			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
+			return false;
+
+		} catch (Exception e) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
+			return false;
+		}
+		return success;
+	}
+
+	private boolean doRouteAnalysis(CommandSource src, RouteDescription routeDescription) throws Exception {	
+		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format(
+					"node: %d, Core: %d image not found in file: %s",
+					m_nodeId, m_coreId, m_executableFile));
+			return false;
+		}
+
+		notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
+		
+        RouteContainer routeContainer = new RouteContainer(routeDescription); 
+		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription, routeContainer);				
+		RouteError error = routeConstructor.analyse(src);		
+
+		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
+			notify(src, Notifier.NOTIFY_ERROR, "no paths of execution could reach the endpoint(s)");
+			return false;
+			
+		} else if (error == RouteError.COULD_NOT_FIND_ENDPOINT ) {
+			notify(src, Notifier.NOTIFY_ERROR, "could not find any end points");
+			return false;
+			
+		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
+			notify(src, Notifier.NOTIFY_ERROR,"could not find any start points");
+			return false;
+			
+		} else if (error == RouteError.ENDPOINTS_MISSING ) {
+			notify(src, Notifier.NOTIFY_ERROR, "could not determine the endpoint(s)");
+			return false;
+			
+		} else if (error == RouteError.STARTPOINT_MISSING ) {
+			notify(src, Notifier.NOTIFY_ERROR, "could not determine the startpoint");
+			return false;
+			
+		} else {
+			if (!getAbort()){
+				int currentSize = m_routes.size();
+				m_numRoutesLastAnalysed = 0;
+				for (Route route : routeConstructor.getRoutes()) {
+					m_routes.add(route);
+					++m_numRoutesLastAnalysed;
+				}
+				if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
+					setSelectedRoute(src, m_routes.get(currentSize));					
+					routeContainer.add(routeConstructor.getRoutes());
+					m_routeContainers.add(routeContainer);
+					notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
+				} else {
+					notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
+				}
+				return true;
+			} else {
+				return false;
+			}
+		}		
+	}
+
 	private void setBranchTargets(InstructionDecoder id,
 			TreeMap<String, LinkedList<InstructionNode>> treeMap) {
 		for(InstructionNode inst : id.getInstructions()){

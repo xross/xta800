@@ -10,6 +10,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.references.Reference;
@@ -43,7 +44,7 @@ public class RouteUnknowns {
 			Reference reference, long iterations, boolean sourceLevelIterations) {
 		
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations);
+			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference);
 		}			
 	}
 
@@ -68,7 +69,7 @@ public class RouteUnknowns {
 
 		checkSetLoopIterations(node);
 		checkLoopIterationsValid(node, iterations);
-	    setLoopIterationsNoCheck(src, engine, node, iterations, false);
+	    setLoopIterationsNoCheck(src, engine, node, iterations, false, null);
 	}
 	
 	public void checkSetLoopIterations(Node node) throws Exception {
@@ -93,12 +94,13 @@ public class RouteUnknowns {
 	}
 	
 	private void setLoopIterationsNoCheck(CommandSource src, Engine engine,
-			Node node, long iterations, boolean sourceLevelIterations) {
+			Node node, long iterations, boolean sourceLevelIterations, Reference reference) {
 		
 		invalidateCachedStats();				
 		Node enclosingLoopNode = node.getEnclosingLoopNode();		
 	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
-		enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+		enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);
+		enclosingLoopNode.getAttributes().setReference(reference);
    		clearPathIterations(enclosingLoopNode);
 		refreshDisplayedUnknowns();
 	}
@@ -108,7 +110,7 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	public void setLoopPathIterations(Reference reference, long iterations) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopPathIterationsNoCheck(node, iterations);
+			setLoopPathIterationsNoCheck(node, iterations, reference);
 		}		
 	}
 	
@@ -133,7 +135,7 @@ public class RouteUnknowns {
 		
 		checkSetLoopPathIterations(node);
 		checkLoopPathIterationsValid(node, iterations);
-		setLoopPathIterationsNoCheck(node, iterations);
+		setLoopPathIterationsNoCheck(node, iterations, null);
 	}
 
 	public void checkSetLoopPathIterations(Node node) throws Exception {
@@ -163,11 +165,14 @@ public class RouteUnknowns {
 		condNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
 	}
 
-	private void setLoopPathIterationsNoCheck(Node node, long iterations) {
+	private void setLoopPathIterationsNoCheck(Node node, long iterations, Reference reference) {
 		invalidateCachedStats();
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
 	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);
+	    optionNode.getAttributes().setUnknownType(UnknownType.LOOP_PATH_ITERATIONS);
+	    optionNode.getAttributes().setUnknownState(UnknownState.KNOWN);
+	    optionNode.getAttributes().setReference(reference);
 		refreshDisplayedUnknowns();		
 	}
 	

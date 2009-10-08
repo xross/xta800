@@ -30,6 +30,7 @@ public class Route {
 
 	private int m_routeId;
 	private RouteDescription m_description;
+	private RouteContainer m_container;
 	private RouteTiming m_timing;
 	private RouteUnknowns m_unknowns;
 	private Node m_node;
@@ -39,16 +40,16 @@ public class Route {
 		s_routeCount = 0;
 	}
 
-	public Route(CommandSource src, Engine engine, Node node, RouteDescription description) {
+	public Route(CommandSource src, Engine engine, Node node, RouteDescription description, RouteContainer container) {
 		m_description = description;
+		m_container = container;
 		m_routeId = s_routeCount++;
 		m_node = node;
-		
-		Config config = new Config(engine.getConfig());
+
 		Architecture architecture = engine.getXeLoader().getArchitecture();
-		m_timing = new RouteTiming(src, this, config, engine.getNodeId(), engine.getCoreId());
+		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeId(), engine.getCoreId());
 		m_unknowns = new RouteUnknowns(this);		
-		setRouteSpecificConfigs(config, architecture);
+		setRouteSpecificConfigs(description.getConfig(), architecture);
 	}
 	
 	public int getRouteId() {
@@ -59,8 +60,12 @@ public class Route {
 		return m_node;
 	}
 	
-	public RouteDescription getRouteDescription(){
+	public RouteDescription getRouteDescription() {
 		return m_description;
+	}
+
+	public RouteContainer getRouteContainer() {
+		return m_container;
 	}
 	
 	public RouteTiming getRouteTiming() {
@@ -94,13 +99,43 @@ public class Route {
     	}    	
     }
     
+	public Node getNode(String nodeString) {
+		// Note: the nodeString takes the format ~x~x~x~x~...
+		// where x = the index of the child node at that level
+		// of the structure. It provides a (reasonably) robust way
+		// to describe a particular node and is required
+		// purely for testing purposes.
+		if (nodeString.charAt(0) != '~')
+			return null;
+		
+		if (nodeString.charAt(nodeString.length() - 1) != '~')
+			return null;
+		
+		Node node = m_node;
+		
+		String[] nodeIndecies = nodeString.substring(1, nodeString.length() - 1).split("~");
+		for (String nodeIndex : nodeIndecies) {
+			int index;
+	    	try { index = Integer.parseInt(nodeIndex);
+		    } catch (NumberFormatException e) {
+		        return null;
+		    }
+		    
+		    if (index >= node.getIndirectChildren().size())
+		    	return null;
+			
+		    node = node.getIndirectChildren().get(index);
+		}		
+		return node;
+	}
+
 	public Collection<Node> getReferencedNodes(Reference reference) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
 		
 		for (NodeDescriptor nodeDescriptor : referenceMatcher.getNodeDescriptors(m_node, reference)) {
 			referencedNodes.add(nodeDescriptor.getNode());
-		}				
+		}
 		return referencedNodes;		
 	} 
 
