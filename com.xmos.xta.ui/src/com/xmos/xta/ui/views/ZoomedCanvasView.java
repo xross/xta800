@@ -301,6 +301,34 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 			m_vScroll.getMaximum(), m_vScroll.getThumb(), m_vScroll.getSelection());
 	}
 
+	
+
+	private void matchScrollBarsToCanvas() {
+		int canvasX = m_renderControl.getCanvasWidth();
+		int canvasY = m_renderControl.getCanvasHeight();
+		
+		int renderX = scale(m_renderControl.getPixelsX());
+		if (canvasX > renderX)
+			renderX = canvasX;
+		
+		int renderY = m_renderControl.getPixelsY();
+		if (m_canvasProperties.scaleY())
+			renderY = scale(renderY);
+		if (canvasY > renderY)
+			renderY = canvasY;
+
+		m_hScroll.setMaximum(renderX);
+    	m_hScroll.setThumb(canvasX);
+
+    	setScrollPosition(m_hScroll, m_renderControl.getOffsetX());
+	    
+	    m_vScroll.setMaximum(renderY);
+    	m_vScroll.setThumb(canvasY);
+
+    	setScrollPosition(m_vScroll, m_renderControl.getOffsetY());
+	}
+	
+	
 	private int setScrollPosition(ScrollBar scrollBar, int position) {
 		// Need to ensure the scroll bar is in the valid range
 		int scrollRange = (scrollBar.getMaximum() - scrollBar.getThumb());
@@ -400,7 +428,12 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 		contextMenu = menuMgr.createContextMenu(m_canvas);
 		m_canvas.setMenu(contextMenu);
 	}
-
+	
+	boolean m_drag;
+	boolean m_dragging;
+	int m_prevX;
+	int m_prevY;
+	
 	private void setupMouseListeners() {
 		m_toolTip = null;
 		m_tipLabel = null;
@@ -425,8 +458,12 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
                 		zoomOut();
                 	break;
                 case SWT.MouseDown:
-                	if (event.button == LEFT_MOUSE_BUTTON) {
+                	boolean keyPressed = (event.stateMask & SWT.SHIFT) != 0;
+                	
+                	if (event.button == LEFT_MOUSE_BUTTON && keyPressed) {
                 		m_selectBox = new Rectangle(event.x, event.y, 0, 0);
+                	} else {
+                		m_drag = true;
                 	}
                 	break;
                 	
@@ -440,27 +477,68 @@ public abstract class ZoomedCanvasView extends ViewPart implements IPropertyChan
 	                	m_selectBox.height = event.y - m_selectBox.y;
 	                	m_renderControl.setSelectBox(normaliseBox(m_selectBox));
                 	}
+    	        	if (m_drag) {
+    	        		m_dragging = true;
+
+    	        		int canvasWidth = m_renderControl.getCanvasWidth();
+						int renderX = scale(m_renderControl.getPixelsX());
+						if (canvasWidth < renderX) {
+		    	        	int moveX = m_prevX - event.x;
+		    	        	int newX = m_renderControl.getOffsetX() + moveX;
+	    	        		if (newX > (renderX - canvasWidth)) {
+	    	        			newX = (renderX - canvasWidth);
+	    	        		}
+	    	        		if (newX < 0) {
+		    	        		newX = 0;
+		    	        	}
+	    	        		m_renderControl.setOffsetX(newX);
+						}
+	    	        	
+    	        		int canvasHeight = m_renderControl.getCanvasHeight();
+						int renderY = scale(m_renderControl.getPixelsY());
+						if (canvasHeight < renderY) {
+		    	        	int moveY = m_prevY - event.y;
+		    	        	int newY = m_renderControl.getOffsetY() + moveY;
+							if (newY > (renderY - canvasHeight)) {
+	    	        			newY = (renderY - canvasHeight);
+	    	        		}
+							if (newY < 0) {
+		    	        		newY = 0;
+		    	        	}
+							m_renderControl.setOffsetY(newY);
+						}
+
+	    	        	matchScrollBarsToCanvas();
+    	        	}
+    	        	m_prevX = event.x;
+    	        	m_prevY = event.y;
+    	        	
                 	break;
-                	
+                
                 case SWT.MouseUp:
-                	boolean ctrlKeyPressed = (event.stateMask & SWT.CTRL) != 0;
                 	
+                	boolean ctrlKeyPressed = (event.stateMask & SWT.CTRL) != 0;
+                	m_drag = false;
                 	if (m_viewNode == null) {
                 		// Ensure the selection box gets removed
                 		m_renderControl.refresh();
                 	} else {
-                		if (event.button == LEFT_MOUSE_BUTTON) {
-                    		Rectangle box = normaliseBox(m_selectBox);
-                			if ((box.width > 10) && (box.height > 10)) {
-                				// Only zoom if the user has selected enough
-                				zoomDragBox(box);
-                			} else {
-                				click(event.x, event.y, ctrlKeyPressed);
-                			}
-                		} else if (event.button == RIGHT_MOUSE_BUTTON) {
-            				click(event.x, event.y, ctrlKeyPressed);
+                		if (!m_dragging){
+	                		if (event.button == LEFT_MOUSE_BUTTON ) {
+	                    		Rectangle box = normaliseBox(m_selectBox);
+	                			if ((box.width > 10) && (box.height > 10)) {
+	                				// Only zoom if the user has selected enough
+	                				zoomDragBox(box);
+	                			} else {
+	                				click(event.x, event.y, ctrlKeyPressed);
+	                			}
+	                		} else if (event.button == RIGHT_MOUSE_BUTTON) {
+	            				click(event.x, event.y, ctrlKeyPressed);
+	                		}
                 		}
                 	}
+                	
+                	m_dragging = false;
         			m_selectBox = null;
                 	break;
 				}

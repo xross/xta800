@@ -151,16 +151,20 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      		}
      	});
 
+     	
      	m_setInstructionTimeAction = new Action("Set instruction time") {
      		public void run() {
-     	    	List<Node> nodes = new ArrayList<Node>();
-     	    	Engine engine = GuiEngine.getEngine();
+     			List<Node> nodes = new ArrayList<Node>();
+     			Engine engine = GuiEngine.getEngine();
      	    	Reference reference = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
      	    	if (!reference.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
      	    		assert(false);
      	    	}
      			nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
-     			new InstructionTime(m_parent.getShell(), nodes);
+     			if(!nodes.isEmpty()){
+     				new InstructionTime(m_parent.getShell(), nodes);
+     			}
+     			
      		}
      	};
      	setAction(SetInstructionTimeID, m_setInstructionTimeAction);
