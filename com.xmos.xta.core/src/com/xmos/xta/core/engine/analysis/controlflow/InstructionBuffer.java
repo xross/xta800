@@ -13,6 +13,11 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
         m_numBytes = 0;
 	}
     
+    public InstructionBuffer(long startPc, int numBytes) {
+    	m_pc = startPc;
+        m_numBytes = numBytes;
+	}
+    
     public InstructionBuffer(InstructionBuffer instructionBuffer) {
         m_numBytes = instructionBuffer.m_numBytes;
         m_pc = instructionBuffer.m_pc;
@@ -20,6 +25,10 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
     
     public void setPc(long pc) {
         m_pc = pc;
+    }
+    
+    public long getPc() {
+        return m_pc;
     }
     
     public int getNumBytes() {

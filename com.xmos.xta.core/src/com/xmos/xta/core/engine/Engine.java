@@ -33,6 +33,7 @@ import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
+import com.xmos.xta.core.engine.instructions.DataCollection;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
@@ -72,12 +73,12 @@ public class Engine implements Notifier {
 	private long m_loadStartTime;
 	
 	private NodeCoreCollection<Boolean> m_structuralGraphUpToDate;
-	
-	
-	
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
+	
+	private DataCollection m_dataCollection;
+	private final static boolean LAZY = false;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -98,6 +99,7 @@ public class Engine implements Notifier {
 		m_sections = new Sections();
 		m_timeOut = -1;
 		m_numErrors = 0;
+		m_dataCollection = new DataCollection();
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -211,9 +213,16 @@ public class Engine implements Notifier {
 			return false;
 		}
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
-
-		if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, m_nodeId, m_coreId))
+		if(LAZY){
+			if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, m_nodeId, m_coreId))
 			return false;
+		} else {
+			for(int n : xeLoader.getNodeIds()){
+				for(int c : xeLoader.getCoreIds(n)){
+					initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, n, c);
+				}
+			}
+		}
 		
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
@@ -231,7 +240,12 @@ public class Engine implements Notifier {
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
 		return true;
 	}
-
+	
+	public void printInstructionReport(){
+		m_dataCollection.report();
+	}
+	
+	
 	public boolean analyseRoute(CommandSource src, String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
@@ -1058,7 +1072,7 @@ public class Engine implements Notifier {
 		} else {
 			provideFeedback(String.format("Processing node: %d, core: %d", nodeId, coreId));
 			
-			InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config);
+			InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config, m_dataCollection);
 			if (!id.decode()) 
 				return false;
 			
@@ -1113,7 +1127,7 @@ public class Engine implements Notifier {
 					pcToEndPoints, sections, nodeId, coreId)) {
 				return false;
 			}
-			
+
 			newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 		}
 		
@@ -1124,8 +1138,7 @@ public class Engine implements Notifier {
 		notify(src, Notifier.RELEASE_MESSAGES, "");
 		return true;
 	}
-	
-	
+
 	private void setBranchTargets(InstructionDecoder id,
 			TreeMap<String, LinkedList<InstructionNode>> treeMap) {
 		for(InstructionNode inst : id.getInstructions()){
