@@ -1,0 +1,12 @@
+load .*test\.xe
+
+#
+# Route: x => x
+#
+add exclusion the_great_outdoors
+analyse path x x
+set time 0 x 100.0 ns
+set time 1 x 200.0 ns
+set time 2 x 300.0 ns
+set time 3 x 400.0 ns
+

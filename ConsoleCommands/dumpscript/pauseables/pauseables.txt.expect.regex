@@ -1,10 +1,20 @@
 load .*test\.xe
 
+#
+# Route: main
+#
 analyse function main
 set time - inst 1000 cycles
 
+#
+# Route: main
+#
 analyse function main
 set time - inst 2000.0 ns
 
+#
+# Route: main
+#
 analyse function main
 set time - inst 0.1 mhz
+
