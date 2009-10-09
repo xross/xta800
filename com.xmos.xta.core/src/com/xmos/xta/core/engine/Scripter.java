@@ -11,7 +11,8 @@ import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Scripter {
@@ -35,6 +36,7 @@ public class Scripter {
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
        		script.append("\n");
 
+       		routeComment(routeContainer, script);
         	globalConfig(routeContainer, script);
         	addExclusions(routeContainer, script);
         	analyseRoutes(routeContainer, script);
@@ -48,11 +50,28 @@ public class Scripter {
        			++m_currentRouteId;
     		}
     	}
+    	script.append("\n");
     	updateGlobalConfig(script, m_engine.getConfig());
     	
     	return script.toString();
     }
  
+	private void routeComment(RouteContainer routeContainer, StringBuffer script) {
+    	RouteDescription routeDescription = routeContainer.getDescription();
+
+    	script.append("#\n");
+    	switch (routeDescription.getMode()) {
+    	case FUNCTION:
+    		script.append(String.format("# Route: %s\n", routeDescription.getFunctionName()));
+    		break;
+    		
+    	case PATH:
+    		script.append(String.format("# Route: %s => %s\n", routeDescription.getFromName(), routeDescription.getToName()));
+    		break;
+    	}    	    	
+    	script.append("#\n");
+	}
+	
     private void globalConfig(RouteContainer routeContainer, StringBuffer script) {
     	updateGlobalConfig(script, routeContainer.getDescription().getConfig());
     }
@@ -96,12 +115,15 @@ public class Scripter {
     }
 
     private void setKnowns(Route route, StringBuffer script, boolean singleRoute) {
-		for (Node node : route.getRouteUnknowns().getUnknowns(UnknownState.KNOWN)) {	
+		for (Unknown unknown : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {	
+			Node node = unknown.getNode();
 			
 			String routeIdStr = getRouteIdString(singleRoute);			
-		    String refStr = getReferenceString(node);
-			
-		    switch (node.getAttributes().getUnknownType()) {
+		    String refStr = getReferenceString(unknown);
+
+		    outputPortableWarnings(script, unknown);
+		    
+		    switch (unknown.getType()) {
 		    case INSTRUCTION_TIME:
 		    	script.append(String.format("set time %s %s %s\n", 
 		    			routeIdStr, refStr, node.getAttributes().getInstructionTimeString()));
@@ -112,10 +134,15 @@ public class Scripter {
 		    			routeIdStr, refStr, node.getAttributes().getLoopIterations()));
 		    	break;
 
-		    case LOOP_PATH_ITERATIONS:		    	
+		    case LOOP_PATH_ITERATIONS:
 				Node condNode = node.getEnclosingCondNode();
 		    	script.append(String.format("set looppath %s %s %d\n", 
 		    			routeIdStr, refStr, condNode.getAttributes().getSetLoopPathIterations(node)));
+		    	break;
+		    	
+		    case LOOP_SCOPE:		    	
+		    	script.append(String.format("set loopscope %s %s %s\n", 
+		    			routeIdStr, refStr, node.getAttributes().getIsAbsolute() ? "a" : "r"));
 		    	break;
 		    }
 	    }    	
@@ -153,19 +180,19 @@ public class Scripter {
 		}
 		return routeIdStr;    	
     }
-    
-    private String getReferenceString(Node node) {
+
+    private String getReferenceString(Unknown unknown) {
 	    String refStr = "";
-		Reference reference = node.getAttributes().getReference();
+		Reference reference = unknown.getReference();
 		if (reference == null) {
 			// This unknown was set directly onto a node (and not via a reference),
 			// so we need to generate a suitable reference to use in the script.
 			List<Long> backTrail = new ArrayList<Long>();
-			node.getBackTrail(backTrail);
+			unknown.getNode().getBackTrail(backTrail);
 			for (Long pc : backTrail) {
 				refStr += String.format("CALL:0x%x,", pc);
 			}				
-			refStr += String.format("0x%x", node.getStartPc());
+			refStr += String.format("0x%x", unknown.getNode().getStartPc());
 			
 		} else {
 			// This unknown was set via a reference, so can use this directly in the script.
@@ -174,6 +201,12 @@ public class Scripter {
 		return refStr;
     }
     
+    private void outputPortableWarnings(StringBuffer script, Unknown unknown) {
+		if (unknown.getReference() == null) {
+			script.append("# Warning: The following line contains a non-portable reference.\n");
+		}    	
+    }
+
     private boolean exclusionsDiffer(Collection<Reference> ex1, Collection<Reference> ex2) {
     	if (ex1.size() != ex2.size())
     		return true;

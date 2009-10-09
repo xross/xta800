@@ -7,8 +7,8 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 
 public class Knowns extends Command {
 	private int m_routeId;
@@ -56,13 +56,13 @@ public class Knowns extends Command {
 		
 	    boolean found = false;
 	    for (Route route : engine.getRoute(m_routeId)) {
-		    Collection<Node> nodes = route.getRouteUnknowns().getUnknowns(UnknownState.KNOWN);
-		    if (nodes.size() > 0) {
-				for (Node node : nodes) {			
+		    Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.KNOWN);
+		    if (unknowns.size() > 0) {
+				for (Unknown unknown : unknowns) {
 				    console.display(String.format("%s, pc: 0x%x, backtrace: %s\n", 
-				    		node.getAttributes().getUnknownDescription(),
-				    		node.getStartPc(), 
-				    		node.getBackTrace("")));				    
+				    		unknown.getDescription(),
+				    		unknown.getNode().getStartPc(), 
+				    		unknown.getNode().getBackTrace("")));				    
 				}
 				found = true;
 		    }

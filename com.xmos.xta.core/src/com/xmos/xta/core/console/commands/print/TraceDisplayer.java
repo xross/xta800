@@ -107,7 +107,7 @@ public class TraceDisplayer {
 	}
     
 	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException {
-		String isUnknown = instruction.getAttributes().getDisplayUnknown() ? "*" : " ";
+		String isUnknown = instruction.getAttributes().getDisplayAsUnknown() ? "*" : " ";
 		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
      	
      	XtaInstruction xtaInstruction = instruction.getXtaInstruction();

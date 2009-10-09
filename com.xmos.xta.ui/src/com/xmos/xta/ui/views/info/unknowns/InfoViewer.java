@@ -23,6 +23,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -107,9 +108,9 @@ abstract class InfoViewer {
 				int numLoopIterationsNodes = 0;
 				
 				for (Object object : ((IStructuredSelection)selection).toList()) {
-					Node node = (Node)object;			
+					Unknown unknown = (Unknown)object;			
 					
-					switch (node.getAttributes().getUnknownType()) {
+					switch (unknown.getType()) {
 					case INSTRUCTION_TIME:
 						++numInstructionTimeNodes;
 						break;
@@ -118,7 +119,7 @@ abstract class InfoViewer {
 						++numLoopIterationsNodes;
 						break;
 					}
-					m_selectedNodes.add(node);
+					m_selectedNodes.add(unknown.getNode());
 				}
 				enableContextMenuActions(numInstructionTimeNodes, numLoopIterationsNodes);
 			}			

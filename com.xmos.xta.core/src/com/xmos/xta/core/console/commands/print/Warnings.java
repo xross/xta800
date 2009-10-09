@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 
 public class Warnings extends Command {
 	public Warnings() {
@@ -41,7 +41,7 @@ public class Warnings extends Command {
 		CommandSource src = routeTiming.getCommandSource();
 
 		if (!routeTiming.isTimingSpecified() || !routeTiming.passedTiming() ||
-			(route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0)) {
+			(route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0)) {
 			
 			// Need to take the '\n' off the end of the string
 			String description = routeTiming.getDescription(Level.DETAILED);

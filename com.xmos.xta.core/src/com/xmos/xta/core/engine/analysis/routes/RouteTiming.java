@@ -5,7 +5,7 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 
 public class RouteTiming {
 	public enum Level {
@@ -140,7 +140,7 @@ public class RouteTiming {
 			else
 				description += "Fail";
 
-			int numWarnings = m_route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size();
+			int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
 			if (numWarnings > 0)
 				description += " with " + numWarnings + " unknown";
 			if (numWarnings > 1)

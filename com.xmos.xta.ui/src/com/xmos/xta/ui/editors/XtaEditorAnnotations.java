@@ -24,7 +24,8 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
@@ -233,8 +234,8 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
         final HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 
 		TreeSet<Long> unknownsSet = new TreeSet<Long>();
-		for (Node node : getSelectedRouteUnknowns()) {
-			unknownsSet.add(node.getStartPc());
+		for (Unknown unknown : getSelectedRouteUnknowns()) {
+			unknownsSet.add(unknown.getNode().getStartPc());
 		}
 		for (long pc : unknownsSet) {
 			addAnnotationsForPc(pc, UnknownAnnotationID, annotations, annotationPositions);
@@ -249,25 +250,25 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		m_previousUnknownAnnotations = createArray(annotations);
     }
 
-	public Set<Node> getUnknownsForLine(long lineNumber) {
+	public Set<Unknown> getUnknownsForLine(long lineNumber) {
 	    if (DEBUG) System.out.printf("XtaEditor: getUnknownsForLine\n"); 
-    	TreeSet<Node> nodes = new TreeSet<Node>();
+    	TreeSet<Unknown> unknowns = new TreeSet<Unknown>();
     	Collection<Long> linePcs = getPcsForLine(lineNumber);
-		for (Node node : getSelectedRouteUnknowns()) {
-			if (linePcs.contains(node.getStartPc())) {
-				nodes.add(node);
+		for (Unknown unknown : getSelectedRouteUnknowns()) {
+			if (linePcs.contains(unknown.getNode().getStartPc())) {
+				unknowns.add(unknown);
 			}
 		}
-    	return nodes;
+    	return unknowns;
     }
-	
-	private Collection<Node> getSelectedRouteUnknowns() {
+
+	private Collection<Unknown> getSelectedRouteUnknowns() {
 		Engine engine = GuiEngine.getEngine();
 		Route route = engine.getSelectedRoute();
 		if (route != null) {
-            return route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN);
+            return route.getRouteUnknowns().getUnknowns(State.UNKNOWN);
 		} else {
-			return new TreeSet<Node>();
+			return new TreeSet<Unknown>();
 		}
 	}
 

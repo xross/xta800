@@ -3,7 +3,7 @@ package com.xmos.xta.ui.editors;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 
 public class XtaRulerAnnotationHover implements IAnnotationHover {
 
@@ -46,8 +46,8 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 
 	private String getWarningString(long lineNumber) {
 		String warning = "";
-		for (Node nodes : m_editor.getAnnotations().getUnknownsForLine(lineNumber)) {
-			warning += nodes.getAttributes().getUnknownDescription() + "\n";
+		for (Unknown unknown : m_editor.getAnnotations().getUnknownsForLine(lineNumber)) {
+			warning += unknown.getDescription() + "\n";
 		}
 		return warning;
 	}

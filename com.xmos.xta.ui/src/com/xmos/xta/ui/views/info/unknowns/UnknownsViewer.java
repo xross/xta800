@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.dialogs.InstructionTime;
@@ -58,7 +58,7 @@ public class UnknownsViewer extends InfoViewer {
 	}
 	
 	InfoViewerContentProvider createContentProvider() {
-		return new InfoViewerContentProvider(UnknownState.UNKNOWN);
+		return new InfoViewerContentProvider(State.UNKNOWN);
 	}
 	
 	InfoViewerLabelProvider createLabelProvider() {

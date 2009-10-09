@@ -16,18 +16,18 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.ui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {
-    List<Node> m_nodes;    
-    boolean m_valueChanged;
-    List<Boolean> m_wasSet;
-    List<Long> m_originalCycles;
-    Text m_ns;
-    Text m_cycles;    
-    ModifyListener m_nsListener;
-    ModifyListener m_cyclesListener;
+    private List<Node> m_nodes;    
+    private boolean m_valueChanged;
+    private List<Boolean> m_wasSet;
+    private List<Long> m_originalCycles;
+    private Text m_ns;
+    private Text m_cycles;    
+    private ModifyListener m_nsListener;
+    private ModifyListener m_cyclesListener;
 
 	public InstructionTime(Shell parent, List<Node> nodes) {
     	super(parent);
@@ -42,7 +42,7 @@ public class InstructionTime extends XtaDialog {
     	m_wasSet = new ArrayList<Boolean>();
     	m_originalCycles = new ArrayList<Long>();
     	for (Node node : m_nodes) {
-    		m_wasSet.add(node.getAttributes().getUnknownState() == UnknownState.UNKNOWN ? false : true);
+    		m_wasSet.add(node.getAttributes().getUnknowns().get(0).getState() == State.UNKNOWN ? false : true);
     		m_originalCycles.add(node.getAttributes().getInstructionCycles());
     	}    	
     	open();

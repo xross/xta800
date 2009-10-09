@@ -24,7 +24,7 @@ public class SelectedRouteLabelProvider extends CellLabelProvider {
 		cell.setText(nodeText);
 		
 		String iconName = node.getTypeName() + "_node";
-		if (node.getAttributes().getDisplayUnknown()) {
+		if (node.getAttributes().getDisplayAsUnknown()) {
 			iconName += ".unknown";
 		}
 		cell.setImage(Icons.getIcon(iconName));
