@@ -1,0 +1,33 @@
+load .*test\.xe
+
+#
+# Route: a
+#
+config threads 1
+config freq 100
+analyse function a
+
+#
+# Route: b
+#
+config threads 2
+config freq 200
+config proc 0 1
+analyse function b
+
+#
+# Route: c
+#
+config threads 3
+config freq 300
+config proc 0 2
+analyse function c
+
+#
+# Route: d
+#
+config threads 4
+config freq 400
+config proc 0 3
+analyse function d
+
