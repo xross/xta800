@@ -1,21 +1,16 @@
 .text
-.xtanoload "printf", "compilation_directory", "test.xc", 1
-
 .align 2
 .globl _start
 _start:
 .xtathreadstart
   bl main
-  clre
-.xtathreadstop
-  waiteu
+
+.xtasystem "main", "dir", "test.s", 0
 
 .type main, @function
 .globl main
 main:
   entsp 1
-  bl printf
+.xtathreadstop
   retsp 1
 
-printf:
-  retsp 0

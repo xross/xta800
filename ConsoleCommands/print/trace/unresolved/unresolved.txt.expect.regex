@@ -1,3 +1,4 @@
+xta: warning: No branch targets set on instruction \(main\+\d+\) 0x1000e bau \(1r\) r1
   0.0: \(20.0ns\) 0x10002 main \+ 0               entsp \(u6\)   i 0x4
   20.0: \(20.0ns\) 0x10004                        --FNOP--     
   40.0: \(20.0ns\) 0x10004 main \+ 2               ldc \(ru6\)    r0, i 0x0

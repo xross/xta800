@@ -1,5 +1,0 @@
-seq\(\d+\)        : Unresolved / Unresolved 
-.    block\(\d+\)      : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    function\(\d+\)   : Unresolved / Unresolved printf not loaded
-.    block\(\d+\)      : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-

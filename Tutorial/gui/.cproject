@@ -18,7 +18,7 @@
 <folderInfo id="com.xmos.cdt.xeproject.debug.1750236650." name="/" resourcePath="">
 <toolChain id="com.xmos.cdt.toolchain.debug.1229602293" name="XMOS Compiler Collection (xcc)" superClass="com.xmos.cdt.toolchain.debug">
 <targetPlatform id="com.xmos.cdt.core.platform.debug.869624225" isAbstract="false" superClass="com.xmos.cdt.core.platform.debug"/>
-<builder buildPath="${workspace_loc:/XTA GUI Tutorial/Debug}" id="com.xmos.cdt.builder.debug.667404059" managedBuildOn="true" name="Gnu Make Builder.Debug" superClass="com.xmos.cdt.builder.debug"/>
+<builder buildPath="${workspace_loc:/XTA GUI Tutorial/Debug}" id="com.xmos.cdt.builder.debug.667404059" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.xmos.cdt.builder.debug"/>
 <tool id="com.xmos.cdt.linker.debug.1743241098" name="XMOS Mapper" superClass="com.xmos.cdt.linker.debug">
 <inputType id="com.xmos.cdt.linker.input.xm.1512598888" name="XM File" superClass="com.xmos.cdt.linker.input.xm"/>
 <inputType id="com.xmos.cdt.linker.input.1651133761" superClass="com.xmos.cdt.linker.input">
@@ -27,18 +27,18 @@
 <inputType id="com.xmos.cdt.linker.xnInput.1423016485" name="XN File" superClass="com.xmos.cdt.linker.xnInput"/>
 </tool>
 <tool id="com.xmos.cdt.c.compiler.debug.547234936" name="XMOS C Compiler" superClass="com.xmos.cdt.c.compiler.debug">
-<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1026742694" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
-<option id="gnu.c.compiler.option.debugging.level.1206442729" superClass="gnu.c.compiler.option.debugging.level"/>
+<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1026742694" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" value="gnu.c.optimization.level.most" valueType="enumerated"/>
+<option id="gnu.c.compiler.option.debugging.level.1206442729" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level"/>
 <inputType id="com.xmos.cdt.c.compiler.input.1583869841" superClass="com.xmos.cdt.c.compiler.input"/>
 </tool>
 <tool id="com.xmos.cdt.cpp.compiler.debug.1432472292" name="XMOS C++ Compiler" superClass="com.xmos.cdt.cpp.compiler.debug">
-<option id="gnu.cpp.compiler.option.optimization.level.887219591" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-<option id="gnu.cpp.compiler.option.debugging.level.2124743014" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.option.optimization.level.887219591" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.option.debugging.level.2124743014" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2015804052" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
 <tool id="com.xmos.cdt.xc.compiler.debug.692012886" name="XMOS XC Compiler" superClass="com.xmos.cdt.xc.compiler.debug">
-<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1450185101" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
-<option id="gnu.c.compiler.option.debugging.level.1882444817" superClass="gnu.c.compiler.option.debugging.level"/>
+<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1450185101" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" value="gnu.c.optimization.level.most" valueType="enumerated"/>
+<option id="gnu.c.compiler.option.debugging.level.1882444817" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level"/>
 <inputType id="com.xmos.cdt.xc.compiler.input.1987768374" name="XC Sources" superClass="com.xmos.cdt.xc.compiler.input"/>
 <inputType id="com.xmos.cdt.core.xcCompilerXNInput.1498959713" name="XN File" superClass="com.xmos.cdt.core.xcCompilerXNInput"/>
 </tool>
@@ -701,6 +701,7 @@
 </scannerConfigBuildInfo>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 </cconfiguration>
 <cconfiguration id="com.xmos.cdt.xeproject.release.889252712">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.xmos.cdt.xeproject.release.889252712" moduleId="org.eclipse.cdt.core.settings" name="Release">
@@ -713,7 +714,7 @@
 </extensions>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-<configuration artifactExtension="xe" artifactName="XTAGUITutorial" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" description="" errorParsers="com.xmos.cdt.core.XCCErrorParser" id="com.xmos.cdt.xeproject.release.889252712" name="Release" parent="com.xmos.cdt.xeproject.release">
+<configuration artifactExtension="xe" artifactName="XTAGUITutorial" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" description="" errorParsers="com.xmos.cdt.core.XCCErrorParser" id="com.xmos.cdt.xeproject.release.889252712" name="Release" parent="com.xmos.cdt.xeproject.release">
 <folderInfo id="com.xmos.cdt.xeproject.release.889252712." name="/" resourcePath="">
 <toolChain id="com.xmos.cdt.toolchain.release.1319036357" name="XMOS Compiler Collection (xcc)" superClass="com.xmos.cdt.toolchain.release">
 <targetPlatform id="com.xmos.cdt.core.platform.release.1886062586" isAbstract="false" superClass="com.xmos.cdt.core.platform.release"/>
@@ -1399,6 +1400,7 @@
 </profile>
 </scannerConfigBuildInfo>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 </cconfiguration>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
