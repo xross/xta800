@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class LoopScope extends Command {	
 	private int m_routeId;
@@ -80,6 +81,12 @@ public class LoopScope extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 		
-		engine.setLoopScope(getSrc(), m_routeId, m_refString, m_absolute);
+		Node node = getReferencedNode(engine, m_routeId, m_refString);
+		if (node != null) {
+   		    engine.setLoopScope(getSrc(), node, m_absolute);
+			
+		} else {		
+   		    engine.setLoopScope(getSrc(), m_routeId, m_refString, m_absolute);
+		}
     }    
  }

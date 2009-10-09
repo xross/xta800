@@ -43,7 +43,7 @@ public class InstructionTime extends XtaDialog {
     	m_originalCycles = new ArrayList<Long>();
     	for (Node node : m_nodes) {
     		m_wasSet.add(node.getAttributes().getUnknownState() == UnknownState.UNKNOWN ? false : true);
-    		m_originalCycles.add(node.getAttributes().getInstructionNumCycles());
+    		m_originalCycles.add(node.getAttributes().getInstructionCycles());
     	}    	
     	open();
 	}
@@ -68,7 +68,7 @@ public class InstructionTime extends XtaDialog {
 			public void modifyText(ModifyEvent e) {
 				try {
 					for (Node node : m_nodes) {
-						GuiEngine.getEngine().setInstructionTimeTaken(GuiEngine.s_guiCommandSrc, 
+						GuiEngine.getEngine().setInstructionNs(GuiEngine.s_guiCommandSrc, 
 								node, Double.parseDouble(m_ns.getText()));
 					}
 					m_valueChanged = true;
@@ -87,7 +87,7 @@ public class InstructionTime extends XtaDialog {
 			public void modifyText(ModifyEvent e) {
 				try {
 					for (Node node : m_nodes) {
-						GuiEngine.getEngine().setInstructionNumCycles(GuiEngine.s_guiCommandSrc, 
+						GuiEngine.getEngine().setInstructionCycles(GuiEngine.s_guiCommandSrc, 
 								node, Integer.parseInt(m_cycles.getText()));
 					}
 					m_valueChanged = true;
@@ -115,13 +115,13 @@ public class InstructionTime extends XtaDialog {
 
 	private void updateNsValue() {
 		m_ns.removeModifyListener(m_nsListener);
-	    m_ns.setText(Double.toString(GuiEngine.getEngine().getInstructionTimeTaken(m_nodes.get(0))));
+	    m_ns.setText(Double.toString(GuiEngine.getEngine().getInstructionNs(m_nodes.get(0))));
 		m_ns.addModifyListener(m_nsListener);
 	}			
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		m_cycles.setText(Long.toString(GuiEngine.getEngine().getInstructionNumCycles(m_nodes.get(0))));
+		m_cycles.setText(Long.toString(GuiEngine.getEngine().getInstructionCycles(m_nodes.get(0))));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 
@@ -130,11 +130,11 @@ public class InstructionTime extends XtaDialog {
     		if (m_valueChanged) {
     			int index = 0;    			
     			for (Node node : m_nodes) {
-    				GuiEngine.getEngine().setInstructionNumCycles(GuiEngine.s_guiCommandSrc, 
+    				GuiEngine.getEngine().setInstructionCycles(GuiEngine.s_guiCommandSrc, 
     						node, m_originalCycles.get(index));
     				
     				if (!m_wasSet.get(index)) {
-    					GuiEngine.getEngine().unsetInstructionTimeTaken(GuiEngine.s_guiCommandSrc, node);
+    					GuiEngine.getEngine().unsetInstructionTime(GuiEngine.s_guiCommandSrc, node);
     				}
     				index++;
     			}
@@ -143,7 +143,7 @@ public class InstructionTime extends XtaDialog {
     		if (!m_valueChanged) {
 	    		int index = 0;
 	    		for (Node node : m_nodes) {
-    				GuiEngine.getEngine().setInstructionNumCycles(GuiEngine.s_guiCommandSrc, 
+    				GuiEngine.getEngine().setInstructionCycles(GuiEngine.s_guiCommandSrc, 
     						node, m_originalCycles.get(index));
 					index++;
 	    		}

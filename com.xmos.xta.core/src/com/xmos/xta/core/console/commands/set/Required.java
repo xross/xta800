@@ -11,12 +11,12 @@ public class Required extends Command {
 		MHZ,
 		CYCLES,
 	}
-	
+
 	private int m_routeId;
 	private Mode m_mode;
-	private int m_cycles;
-	private float m_ns;
-	private float m_mhz;
+	private long m_cycles;
+	private double m_ns;
+	private double m_mhz;
 	
 	public Required() {
 		m_mode = Mode.NS;
@@ -25,7 +25,7 @@ public class Required extends Command {
 		m_cycles = 0;
 	}
 	
-	public Required(int routeId, int cycles) {
+	public Required(int routeId, long cycles) {
 		m_mode = Mode.CYCLES;
 		m_routeId = routeId;
 		m_ns = 0;
@@ -33,7 +33,7 @@ public class Required extends Command {
 		m_cycles = cycles;
 	}
 
-	public Required(int routeId, float value, Mode mode) {
+	public Required(int routeId, double value, Mode mode) {
 		assert((mode == Mode.NS) || (mode == Mode.MHZ));
 		m_mode = mode;
 		m_routeId = routeId;
@@ -42,10 +42,8 @@ public class Required extends Command {
 		switch (mode) {
 		case NS: 
 		    m_ns = value;
-		    m_mhz = ((float)1.0 / value) * 1000;
 		    break;
 		case MHZ:
-		    m_ns = ((float)1.0 / value) * 1000;
 		    m_mhz = value;
 		    break;
 		}			
@@ -95,24 +93,24 @@ public class Required extends Command {
     	String mode = args[index + 3];
 
     	if (mode.equals("ns")) {			
-    	    float ns;
-    	    try { ns = Float.parseFloat(value); }
+    	    double ns;
+    	    try { ns = Double.parseDouble(value); }
     	    catch (NumberFormatException e) {
     	        return null;
     	    }
     	    return new Required(routeId, ns, Mode.NS);
     	        
     	} else if (mode.equals("mhz")) {
-    	    float mhz;
-    	    try { mhz = Float.parseFloat(value); }
+    		double mhz;
+    	    try { mhz = Double.parseDouble(value); }
     	    catch (NumberFormatException e) {
     	        return null;
     	    }
     	    return new Required(routeId, mhz, Mode.MHZ);
     		    
     	} else if (mode.equals("cycles")) {
-    	    int cycles;
-    	    try { cycles = Integer.parseInt(value); }
+    	    long cycles;
+    	    try { cycles = Long.parseLong(value); }
     	    catch (NumberFormatException e) {
     	        return null;
     	    }
@@ -132,11 +130,13 @@ public class Required extends Command {
     	
    		switch (m_mode) {
     	case NS:
+            engine.setRequiredTime(getSrc(), m_routeId, m_ns);
+    		return;
     	case MHZ:
-            engine.setRequirement(getSrc(), m_routeId, m_ns);
+            engine.setRequiredMhz(getSrc(), m_routeId, m_mhz);
     		return;
     	case CYCLES:
-            engine.setRequirement(getSrc(), m_routeId, m_cycles);
+            engine.setRequiredCycles(getSrc(), m_routeId, m_cycles);
     		return;
     	}
     	assert(false);

@@ -48,7 +48,7 @@ public class KnownsViewer extends InfoViewer {
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
 				for (Node node : getSelectedNodes()) {
-					GuiEngine.getEngine().unsetInstructionTimeTaken(GuiEngine.s_guiCommandSrc, node);
+					GuiEngine.getEngine().unsetInstructionTime(GuiEngine.s_guiCommandSrc, node);
 				}
 			}
 		};

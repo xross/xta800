@@ -7,6 +7,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.references.Reference;
 
 @SuppressWarnings("serial")
 class IgnoreCondIterationsException extends Exception {}
@@ -26,9 +27,10 @@ public class NodeAttributes {
 
 	public enum UnknownType {
     	INSTRUCTION_TIME,
-    	LOOP_ITERATIONS,    	
+    	LOOP_ITERATIONS,
+    	LOOP_PATH_ITERATIONS,
     }
-	
+
 	public enum UnknownState {
 		UNKNOWN,
 		KNOWN,
@@ -68,6 +70,7 @@ public class NodeAttributes {
 	private UnknownType m_unknownType;
 	private UnknownState m_unknownState; 	
     private boolean m_displayUnknown;
+    private Reference m_reference;
 
 	private boolean m_isAbsolute;	
 	private boolean m_isLoopHeader;
@@ -78,6 +81,7 @@ public class NodeAttributes {
 		m_unknownType = null;		
 		m_isAbsolute = false;
 		m_isLoopHeader = false;		
+		m_reference = null;
 		initialiseCachedStats();
 		invalidateCachedStats();
 	}
@@ -393,6 +397,14 @@ public class NodeAttributes {
 		return m_displayUnknown;
 	}
 	
+	public void setReference(Reference reference) {
+		m_reference = reference;
+	}
+
+	public Reference getReference() {
+		return m_reference;
+	}
+
 	public String getUnknownDescription() {
 		assert(m_isUnknown == true);
 
@@ -409,7 +421,7 @@ public class NodeAttributes {
 				return String.format("Time for instruction (0x%x: %s) set to %.1fns",
 						instruction.getPc(),
 						instruction.getNmenonic(),
-						m_node.getAttributes().getInstructionTimeTaken());
+						m_node.getAttributes().getInstructionNs());
 			}
 			assert(false);
 			return "";
@@ -426,6 +438,19 @@ public class NodeAttributes {
 			}
 			assert(false);
 			return "";
+			
+		case LOOP_PATH_ITERATIONS:
+			switch(m_unknownState) {
+			case UNKNOWN:
+				return String.format("Loop path iterations on node " + 
+						m_node.getId() + " are unknown");
+
+			case KNOWN:
+				return String.format("Loop path iterations on node " + 
+						m_node.getId() + " are known");
+			}
+			assert(false);
+			return "";			
 		}
 		assert(false);
 		return "";
@@ -529,32 +554,42 @@ public class NodeAttributes {
 	// ===================================================================== //
 	// Instruction Time Methods
 	// ===================================================================== //
-	public void setInstructionNumCycles(long numCycles) {
+	public void setInstructionCycles(long cycles) {
 		assert(false);		
 	}
 
-	public void unsetInstructionNumCycles() {
-		assert(false);		
-	}
-	
-	public long getInstructionNumCycles() {
+	public long getInstructionCycles() {
 		assert(false);		
 		return 0;
 	}
 
-	public void setInstructionTimeTaken(double timeTaken) {
-		assert(false);		
-	}
-
-	public void unsetInstructionTimeTaken() {
+	public void setInstructionNs(double ns) {
 		assert(false);		
 	}
 	
-	public double getInstructionTimeTaken() {
+	public double getInstructionNs() {
 		assert(false);
 		return 0;
 	}
 
+	public void setInstructionMhz(double mhz) {
+		assert(false);		
+	}
+	
+	public double getInstructionMhz() {
+		assert(false);
+		return 0;
+	}
+	
+	public void unsetInstructionTime() {
+		assert(false);		
+	}
+	
+	public String getInstructionTimeString() {		
+		assert(false);
+		return null;
+	}
+	
 	public boolean hasFloatingIterations() {
 		assert(false);
 		return false;

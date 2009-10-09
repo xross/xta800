@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class LoopPath extends Command {	
 	private int m_routeId;
@@ -63,6 +64,12 @@ public class LoopPath extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-   		engine.setLoopPathIterations(getSrc(), m_routeId, m_refString, m_iterations);
+		Node node = getReferencedNode(engine, m_routeId, m_refString);
+		if (node != null) {
+   		    engine.setLoopPathIterations(getSrc(), node, m_iterations);
+			
+		} else {		
+   		    engine.setLoopPathIterations(getSrc(), m_routeId, m_refString, m_iterations);
+		}
     }    
  }

@@ -16,8 +16,12 @@ public class Reference {
 	}
 
 	public String getRef() {
-		assert(m_base != null);
-		return m_base.getRef();
+    	String str = "";
+    	for (ReferenceType backTrail : m_backTrail) {
+    		str += backTrail.getRef() + ",";
+    	}
+    	str += m_base.getRef();
+    	return str;
 	}
 
 	public long getPc() {
@@ -89,5 +93,9 @@ public class Reference {
         hash = hash * 31 + m_base.hashCode();
         hash = hash * 31 + (m_backTrail == null ? 0 : m_backTrail.hashCode());
         return hash;
+    }
+    
+    public String toString() {
+    	return getRef();
     }
 }

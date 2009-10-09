@@ -184,6 +184,17 @@ public abstract class Command {
     	return nodes;    	
     }
 
+    protected Node getReferencedNode(Engine engine, int routeId, String nodeString) {
+    	Collection<Route> routes = engine.getRoute(routeId);
+    	for (Route route : routes) {
+    		Node node = route.getNode(nodeString);
+    		if (node != null) {
+    			return node;
+    		}
+    	}
+    	return null;
+    }
+    
     public void setSrc(CommandSource src) {
 		m_src = src;
 	}

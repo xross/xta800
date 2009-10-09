@@ -65,12 +65,14 @@ public class RouteConstructor {
 	private Collection<NodeDescriptor> m_exclusions;
 	private Set<NodeDescriptor> m_excludedRouteNodes;
 	private Node m_startInstructionNode;
+	private RouteContainer m_container;
 
-	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description) {
+	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description, RouteContainer container) {
 		m_structureGraph = structureGraph;
 		m_description = description;
 		m_routes = new ArrayList<Route>();
 		m_engine = engine;
+    	m_container = container;
 		createExclusions();
 	}
 
@@ -109,7 +111,7 @@ public class RouteConstructor {
 				if (startNode.getNode().isFunctionNode()&& notFoundFunctionYet) {
 					if (!containAnyNodes(startNode, m_exclusions)) {
 						startNode.getNode().setParent(null);
-						m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description));
+						m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description, m_container));
 						
 					} else {
 						seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
@@ -201,7 +203,7 @@ public class RouteConstructor {
 			newGraph.setParent(null);			
 			
 			if (!alreadyContainRoute(newGraph)) {
-				m_routes.add(new Route(src, m_engine, newGraph, m_description));
+				m_routes.add(new Route(src, m_engine, newGraph, m_description, m_container));
 			}
 		}	
 		return seenEndPoint;

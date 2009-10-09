@@ -57,6 +57,18 @@ public abstract class Node implements Comparable<Node>{
 		m_infinite = node.m_infinite;
 	}
 	
+	public boolean isCondNode()             { return false; }
+	public boolean isInstructionNode()      { return false; }
+	public boolean isFunctionNode()         { return false; }
+	public boolean isLoopNode()             { return false; }
+	public boolean isBlockNode()            { return false; }
+	public boolean isSelfLoopNode()         { return false; }
+	public boolean isNullNode()             { return false; }
+	public boolean isInfiniteLoopNode()     { return false; }
+	public boolean isInfiniteSelfLoopNode() { return false; }
+	public boolean isEndNode()              { return false; }	
+	public boolean isSequenceNode()         { return false; }
+
 	public String toString() {
 		return getTypeName() + m_id;
 	}
@@ -179,43 +191,7 @@ public abstract class Node implements Comparable<Node>{
 	public void setParent(Node node) {
 		m_parent = node;
 	}
-	
-	public boolean isCondNode() {
-		return false;
-	}
-	
-	public boolean isInstructionNode() {
-		return false;
-	}
-	
-	public boolean isFunctionNode() {
-		return false;
-	}
-
-	public boolean isLoopNode() {
-		return false;
-	}
-
-	public boolean isBlockNode() {
-		return false;
-	}
-	
-	public boolean isSelfLoopNode() {
-		return false;
-	}
-
-	public boolean isNullNode() {
-		return false;
-	}
-
-	public boolean isInfiniteLoopNode(){
-		return false;
-	}
-	
-	public boolean isInfiniteSelfLoopNode() {
-		return false;
-	}
-	
+		
 	public Node getEnclosingLoopNode() {		
 		Node node = this;
 		while ((node != null) && !node.isLoopNode() && !node.isSelfLoopNode()) {
@@ -303,8 +279,10 @@ public abstract class Node implements Comparable<Node>{
 		return m_isFolded;
 	}
 	
-	public boolean isSequenceNode() {
-		return false;
+	public void getBackTrail(List<Long> backTrail) {
+		if (m_parent != null) {
+			m_parent.getBackTrail(backTrail);
+		}
 	}
 	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
@@ -344,10 +322,6 @@ public abstract class Node implements Comparable<Node>{
 		}			
 		return false;
 	}
-	
-	public boolean isEndNode() {
-		return false;
-	}	
 }
 
 class FunctionCallStatus {

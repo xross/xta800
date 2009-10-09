@@ -100,5 +100,9 @@ public abstract class IBufferNode extends Node {
 		}
 	}
 
+	public int getFnopCount(){
+		return m_worstIbufferSequence.getfnops().size();
+	}
+	
 	public abstract void insertFnops();
 }

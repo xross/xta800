@@ -215,6 +215,10 @@ public class StructuralAnalysisEngine {
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
+			
+			//System.out.println(dumpTree("hello", basicBlocks));
+			
+			
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
 			
