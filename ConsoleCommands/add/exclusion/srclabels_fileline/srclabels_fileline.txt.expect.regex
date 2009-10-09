@@ -1,0 +1,49 @@
+=======================
+none
+=======================
+Route\(0\) function: testA
+    No Timing Specified
+
+Route\(1\) function: testB
+    No Timing Specified
+
+Route\(2\) function: testAandB
+    No Timing Specified
+
+Route\(3\) function: testAorB
+    No Timing Specified
+
+Fail, Timing Unspecified
+=======================
+- 0x[0-9a-z]+: test.xc:3
+=======================
+xta: cmds.txt:22: warning: no valid paths of execution
+xta: cmds.txt:24: warning: no valid paths of execution
+Route\(0\) function: testB
+    No Timing Specified
+
+Route\(1\) function: testAorB
+    No Timing Specified
+
+Fail, Timing Unspecified
+=======================
+- 0x[0-9a-z]+: test.xc:7
+=======================
+xta: cmds.txt:37: warning: no valid paths of execution
+xta: cmds.txt:38: warning: no valid paths of execution
+Route\(0\) function: testA
+    No Timing Specified
+
+Route\(1\) function: testAorB
+    No Timing Specified
+
+Fail, Timing Unspecified
+=======================
+- 0x[0-9a-z]+: test.xc:3
+- 0x[0-9a-z]+: test.xc:7
+=======================
+xta: cmds.txt:51: warning: no valid paths of execution
+xta: cmds.txt:52: warning: no valid paths of execution
+xta: cmds.txt:53: warning: no valid paths of execution
+xta: cmds.txt:54: warning: no valid paths of execution
+xta: cmds.txt:55: error: no routes analysed
