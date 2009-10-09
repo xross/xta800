@@ -1,4 +1,0 @@
-analyse function main
-print trace - > output.txt
-print trace - >> output.txt
-print summary
