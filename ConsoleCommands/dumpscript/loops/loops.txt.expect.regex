@@ -1,0 +1,9 @@
+load .*test\.xe
+
+analyse function main
+set loop - loop 10
+set loop - loop_path 10
+set looppath - loop_path 5
+set loop - 0x[0-9a-fA-F]{5} 10
+set loop - 0x[0-9a-fA-F]{5} 10
+set looppath - 0x[0-9a-fA-F]{5} 5

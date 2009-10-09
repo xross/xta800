@@ -1,0 +1,12 @@
+analyse function main
+set time - inst 1000 cycles
+
+analyse function main
+set time - inst 2000.0 ns
+
+analyse function main
+set time - inst 0.1 mhz
+
+dumpscript
+exit
+
