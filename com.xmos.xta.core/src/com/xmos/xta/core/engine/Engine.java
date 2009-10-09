@@ -52,7 +52,7 @@ public class Engine implements Notifier {
 	public static final int ROUTE_ID_INVALID  = -2;
 	public static final int ROUTE_ID_GLOBAL   = -3;
 	public static final int NODE_ID_TOP_LEVEL = -4;
-
+		
 	private XeLoader m_xeLoader;
 	private FileFinder m_fileFinder;
 	private List<Route> m_routes;
@@ -72,11 +72,7 @@ public class Engine implements Notifier {
 	private int m_timeOut;
 	private int m_numErrors;
 	private long m_loadStartTime;
-	
 	private NodeCoreCollection<Boolean> m_structuralGraphUpToDate;
-	
-	
-	
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
@@ -253,7 +249,8 @@ public class Engine implements Notifier {
 			return false;
 			
 		} else {
-			RouteDescription routeDescription = new RouteDescription(functionName, this, m_nodeId, m_coreId);		
+			RouteDescription routeDescription = new RouteDescription(functionName, this, 
+					m_nodeId, m_coreId, m_exclusions, m_config);			
 			return analyseRouteSafely(src, routeDescription);
 		}
 	}
@@ -393,7 +390,7 @@ public class Engine implements Notifier {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.size() == 0)
 			return false;
-		
+
 		for (Route route : routes) {
 			route.getRouteContainer().remove(route);
 		}
@@ -490,9 +487,9 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Requirements Methods
 	// ===================================================================== //		
-	public boolean setRequirement(CommandSource src, int routeId, double time) {
+	public boolean setRequiredTime(CommandSource src, int routeId, double time) {
 		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0)
+		if (routes.isEmpty())
 			return false;
 			
 		for (Route route : routes) {
@@ -502,9 +499,21 @@ public class Engine implements Notifier {
 		return true;
 	}
 
-	public boolean setRequirement(CommandSource src, int routeId, int cycles) {
+	public boolean setRequiredMhz(CommandSource src, int routeId, double mhz) {
 		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0)
+		if (routes.isEmpty())
+			return false;
+
+		for (Route route : routes) {
+			route.getRouteTiming().setMaxMhz(src, mhz);
+		}
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		return true;
+	}
+	
+	public boolean setRequiredCycles(CommandSource src, int routeId, long cycles) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty())
 			return false;
 
 		for (Route route : routes) {			
@@ -516,7 +525,7 @@ public class Engine implements Notifier {
 	
 	public boolean unsetRequirement(CommandSource src, int routeId) {
 		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0)
+		if (routes.isEmpty())
 			return false;
 		
 		for (Route route : routes) {			
@@ -683,17 +692,54 @@ public class Engine implements Notifier {
 	}
 	
 	// ===================================================================== //
-	// Unknown (Instruction Time) Methods
+	// Unknown Instruction Time Methods (Ns)
 	// ===================================================================== //			
-	public boolean setInstructionTimeTaken(CommandSource src, int routeId, String refString, double timeTaken) {
+	public boolean setInstructionNs(CommandSource src, int routeId, String refString, double ns) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
 		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0)
+		if (routes.isEmpty()) {
 			return false;
-		
+		}
+		for (Route route : routes) {
+		    if (!route.getRouteUnknowns().canInstructionPause(reference))
+		    	return false;		    	
+		}
+		boolean passed = false;
+		for (Route route : routes) {
+		    if (route.getRouteUnknowns().setInstructionNs(reference, ns)) {
+			    passed = true;
+		    }
+		}
+		if (passed) {
+		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		}
+		return passed;
+	}
+
+	public void setInstructionNs(CommandSource src, Node node, double ns) {
+		m_selectedRoute.getRouteUnknowns().setInstructionNs(node, ns);
+		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
+	public double getInstructionNs(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getInstructionNs(node);
+	}
+
+	// ===================================================================== //
+	// Unknown Instruction Time Methods (Mhz)
+	// ===================================================================== //				
+	public boolean setInstructionMhz(CommandSource src, int routeId, String refString, double mhz) {
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty()) {
+			return false;
+		}
 		for (Route route : routes) {
 		    if (!route.getRouteUnknowns().canInstructionPause(reference))
 		    	return false;		    	
@@ -701,7 +747,7 @@ public class Engine implements Notifier {
 
 		boolean passed = false;
 		for (Route route : routes) {
-		    if (route.getRouteUnknowns().setInstructionTimeTaken(reference, timeTaken)) {
+		    if (route.getRouteUnknowns().setInstructionMhz(reference, mhz)) {
 			    passed = true;
 		    }
 		}
@@ -711,50 +757,27 @@ public class Engine implements Notifier {
 		return passed;
 	}
 
-	public void setInstructionTimeTaken(CommandSource src, Node node, double timeTaken) {
-		m_selectedRoute.getRouteUnknowns().setInstructionTimeTaken(node, timeTaken);
+	public void setInstructionMhz(CommandSource src, Node node, double mhz) {
+		m_selectedRoute.getRouteUnknowns().setInstructionMhz(node, mhz);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
-	public boolean unsetInstructionTimeTaken(CommandSource src, int routeId, String refString) {
+	public double getInstructionMhz(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getInstructionMhz(node);
+	}
+	
+	// ===================================================================== //
+	// Unknown Instruction Time Methods (Cycles)
+	// ===================================================================== //					
+	public boolean setInstructionCycles(CommandSource src, int routeId, String refString, long numCycles) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
 		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0)
-			return false;
-		
-		boolean passed = false;
-		for (Route route : routes) {
-		    if (route.getRouteUnknowns().unsetInstructionTimeTaken(reference)) {
-			    passed = true;
-		    }
-		}
-		if (passed) {
-		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		}
-		return passed;
-	}
-
-	public void unsetInstructionTimeTaken(CommandSource src, Node node) {
-		m_selectedRoute.getRouteUnknowns().unsetInstructionTimeTaken(node);
-		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-	}
-
-	public double getInstructionTimeTaken(Node node) {
-		return m_selectedRoute.getRouteUnknowns().getInstructionTimeTaken(node);
-	}
-
-	public boolean setInstructionNumCycles(CommandSource src, int routeId, String refString, long numCycles) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
+		if (routes.isEmpty()) {
 			return false;
 		}
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0)
-			return false;
-		
 		for (Route route : routes) {
 		    if (!route.getRouteUnknowns().canInstructionPause(reference))
 		    	return false;		    	
@@ -762,7 +785,7 @@ public class Engine implements Notifier {
 		
 		boolean passed = false;
 		for (Route route : routes) {
-     		if (route.getRouteUnknowns().setInstructionNumCycles(reference, numCycles)) {
+     		if (route.getRouteUnknowns().setInstructionCycles(reference, numCycles)) {
 			    passed = true;
 		    }
 		}
@@ -772,41 +795,44 @@ public class Engine implements Notifier {
 		return passed;
 	}
 
-	public void setInstructionNumCycles(CommandSource src, Node node, long numCycles) {
-		m_selectedRoute.getRouteUnknowns().setInstructionNumCycles(node, numCycles);
+	public void setInstructionCycles(CommandSource src, Node node, long numCycles) {
+		m_selectedRoute.getRouteUnknowns().setInstructionCycles(node, numCycles);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
-	public boolean unsetInstructionNumCycles(CommandSource src, int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0)
-			return false;
-		
-		boolean passed = false;
-		for (Route route : routes) {
-		    if (route.getRouteUnknowns().unsetInstructionNumCycles(reference)) {
-			    passed = true;
-		    }
-		}
-		if (passed) {
-		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		}
-		return passed;
-	}
-			
-	public void unsetInstructionNumCycles(CommandSource src, Node node) {
-		m_selectedRoute.getRouteUnknowns().unsetInstructionNumCycles(node);
-		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-	}
-	
-	public long getInstructionNumCycles(Node node) {
-		return m_selectedRoute.getRouteUnknowns().getInstructionNumCycles(node);
+	public long getInstructionCycles(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getInstructionCycles(node);
 	}	
 
+	// ===================================================================== //
+	// Unknown Unset Instruction Time Methods
+	// ===================================================================== //						
+	public boolean unsetInstructionTime(CommandSource src, int routeId, String refString) {
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
+		if (!resolveRefernece(reference)) {
+			return false;
+		}
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty()) {
+			return false;
+		}
+		boolean passed = false;
+		for (Route route : routes) {
+		    if (route.getRouteUnknowns().unsetInstructionTime(reference)) {
+			    passed = true;
+		    }
+		}
+		if (passed) {
+		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		}
+		return passed;
+	}
+
+	public void unsetInstructionTime(CommandSource src, Node node) {
+		m_selectedRoute.getRouteUnknowns().unsetInstructionTime(node);
+		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
 	// ===================================================================== //
 	// Exclusion Methods
 	// ===================================================================== //	
@@ -1008,7 +1034,9 @@ public class Engine implements Notifier {
 			SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
 			if (!sa.process(src)) 
 				return false;
-			//warnAboutUnsetBranches(src, id);
+
+			/* BUGZILLA: 6593
+			warnAboutUnsetBranches(src, id);*/
 			
 			FunctionHandler fh = new FunctionHandler(id);
 			if (!fh.addFunctions()) 
@@ -1036,8 +1064,6 @@ public class Engine implements Notifier {
 			uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 			
 			ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts());
-			
-			
 			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 			
@@ -1087,6 +1113,11 @@ public class Engine implements Notifier {
 
 		notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
 		
+		if (!m_structuralGraphUpToDate.get(m_nodeId, m_coreId)) {
+			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, false, m_nodeId, m_coreId))
+				return false;
+		}
+
         RouteContainer routeContainer = new RouteContainer(routeDescription); 
 		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription, routeContainer);				
 		RouteError error = routeConstructor.analyse(src);		
@@ -1154,6 +1185,7 @@ public class Engine implements Notifier {
 		}
 	}
 	
+	/* BUGZILLA: 6593
 	private void warnAboutUnsetBranches(CommandSource src, InstructionDecoder id){
 		for(InstructionNode inst : id.getInstructions()){
 			if(inst.getXtaInstruction().isBranch() && inst.getNextNodesSize() == 0 
@@ -1161,9 +1193,8 @@ public class Engine implements Notifier {
 				notify(src, Notifier.NOTIFY_WARNING, "No branch targets set on instruction " + inst.getXtaInstruction());
 			}
 		}
-	}
+	}*/
 	
-
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, LinkedList<InstructionNode>> treeMap,
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts, Map<String, Long> labelToPc ) {

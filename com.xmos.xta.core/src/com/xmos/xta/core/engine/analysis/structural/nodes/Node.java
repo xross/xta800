@@ -279,6 +279,12 @@ public abstract class Node implements Comparable<Node>{
 		return m_isFolded;
 	}
 	
+	public void getBackTrail(List<Long> backTrail) {
+		if (m_parent != null) {
+			m_parent.getBackTrail(backTrail);
+		}
+	}
+	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		
@@ -315,7 +321,7 @@ public abstract class Node implements Comparable<Node>{
 			}
 		}			
 		return false;
-	}	
+	}
 }
 
 class FunctionCallStatus {

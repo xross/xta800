@@ -16,8 +16,12 @@ public class Reference {
 	}
 
 	public String getRef() {
-		assert(m_base != null);
-		return m_base.getRef();
+    	String str = "";
+    	for (ReferenceType backTrail : m_backTrail) {
+    		str += backTrail.getRef() + ",";
+    	}
+    	str += m_base.getRef();
+    	return str;
 	}
 
 	public long getPc() {
@@ -92,10 +96,6 @@ public class Reference {
     }
     
     public String toString() {
-    	String str = m_base.getRef();
-    	for (ReferenceType backTrail : m_backTrail) {
-    		str += "," + backTrail.getRef();
-    	}
-    	return str;
+    	return getRef();
     }
 }

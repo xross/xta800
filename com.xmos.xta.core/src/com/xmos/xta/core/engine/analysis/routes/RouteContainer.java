@@ -20,7 +20,7 @@ public class RouteContainer {
     
     public void add(List<Route> routes) {
     	m_routes.addAll(routes);
-    	for (@SuppressWarnings("unused") Route route : routes) {
+    	for (int i = 0; i < m_routes.size(); ++i) {
     		m_exists.add(true);
     	}
     }

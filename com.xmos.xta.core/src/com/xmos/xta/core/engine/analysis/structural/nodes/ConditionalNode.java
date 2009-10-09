@@ -177,27 +177,13 @@ public class ConditionalNode extends Node {
 		return false;
 	}	
 	
-	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {
-		
-		//TODO
-		// Must handle optional conditionals as a special case.. 
-		//if ((c == Case.BEST) && (m_isOptional))
-		//	return null;
-		
+	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {			
 		// Finds the best/worst case of the real options..
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();		
 		Status s = new Status();
 		double caseTime = caseNode.getAttributes().getTimeTaken(c, s, ignoreIterationsAboveCond);
-		/*
-		System.out.println(c + " "+ nodes);
-		
-		for(Node node : nodes ){
-			Status b = new Status();
-			System.out.println(node + " "+ node.getAttributes().getTimeTaken(c, b, ignoreIterationsAboveCond)  +" " + b.getStatus());
-		}
-		System.out.println();
-		*/
+
 		while (iter.hasNext()) {
 			Node node = iter.next();
 			Status status = new Status();

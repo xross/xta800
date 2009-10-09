@@ -3,17 +3,18 @@ package com.xmos.xta.core.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
+import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
+import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Scripter {
-	private static final boolean DEBUG = true;
-	
 	private Engine m_engine;
 	private int m_currentRouteId;
 	private Config m_currentConfig;
@@ -27,7 +28,7 @@ public class Scripter {
 
 	public String createScript() {
     	StringBuffer script = new StringBuffer();
-    	
+ 	
     	m_currentRouteId = 0;
     	script.append(String.format("load %s\n", m_engine.getExecutable().toString()));
     	    	
@@ -42,29 +43,18 @@ public class Scripter {
        		for (Route route : routeContainer.getRoutes()) {
        			if (routeContainer.routeExists(route)) {
            			setKnowns(route, script, routeContainer.getRoutes().size() == 1);
-           			setRequirements(route, script);       				
+           			setRequirements(route, script, routeContainer.getRoutes().size() == 1);       				
        			}
        			++m_currentRouteId;
     		}
     	}
+    	updateGlobalConfig(script, m_engine.getConfig());
+    	
     	return script.toString();
     }
-    
+ 
     private void globalConfig(RouteContainer routeContainer, StringBuffer script) {
-    	Config config = routeContainer.getDescription().getConfig();
-    	
-    	if (m_currentConfig.m_numThreads != config.m_numThreads) {
-        	script.append(String.format("config threads %s\n", config.m_numThreads));
-        	m_currentConfig.m_numThreads = config.m_numThreads;    		
-    	}
-    	if (m_currentConfig.m_frequency != config.m_frequency) {
-        	script.append(String.format("config freq %s\n", config.m_frequency));    		
-        	m_currentConfig.m_frequency = config.m_frequency; 
-    	}
-    	if (m_currentConfig.m_case != config.m_case) {
-        	script.append(String.format("config case %s\n", config.m_case));    		
-        	m_currentConfig.m_case = config.m_case; 
-    	}
+    	updateGlobalConfig(script, routeContainer.getDescription().getConfig());
     }
     
     private void addExclusions(RouteContainer routeContainer, StringBuffer script) {	
@@ -106,37 +96,82 @@ public class Scripter {
     }
 
     private void setKnowns(Route route, StringBuffer script, boolean singleRoute) {
-		for (Node node : route.getRouteUnknowns().getUnknowns(UnknownState.KNOWN)) {
-        	if (DEBUG) System.out.printf("    - %s, pc: 0x%x, backtrace: %s\n", 
-		    	    node.getAttributes().getUnknownDescription(),
-		    		node.getStartPc(), node.getBackTrace(""));
-
-		    System.out.printf("      - Reference: %s\n", node.getAttributes().getReference().toString());
-		    
-			assert (node.getAttributes().getReference() != null);
+		for (Node node : route.getRouteUnknowns().getUnknowns(UnknownState.KNOWN)) {	
+			
+			String routeIdStr = getRouteIdString(singleRoute);			
+		    String refStr = getReferenceString(node);
+			
 		    switch (node.getAttributes().getUnknownType()) {
 		    case INSTRUCTION_TIME:
-		    	// TODO script += String.format("set time - %s \n", routeDescription.getFunctionName());
+		    	script.append(String.format("set time %s %s %s\n", 
+		    			routeIdStr, refStr, node.getAttributes().getInstructionTimeString()));
 		    	break;
 
-		    case LOOP_ITERATIONS:
-		    	// TODO script += String.format("set loop - %s \n", routeDescription.getFunctionName());
+		    case LOOP_ITERATIONS:		    	
+		    	script.append(String.format("set loop %s %s %d\n", 
+		    			routeIdStr, refStr, node.getAttributes().getLoopIterations()));
 		    	break;
 
-		    case LOOP_PATH_ITERATIONS:
-		    	// TODO script += String.format("set looppath - %s \n", routeDescription.getFunctionName());
+		    case LOOP_PATH_ITERATIONS:		    	
+				Node condNode = node.getEnclosingCondNode();
+		    	script.append(String.format("set looppath %s %s %d\n", 
+		    			routeIdStr, refStr, condNode.getAttributes().getSetLoopPathIterations(node)));
 		    	break;
 		    }
 	    }    	
     }
     
-    private void setRequirements(Route route, StringBuffer script) {
-    	// TODO
-//		RouteTiming routeTiming = oldRoute.getRouteTiming();
-//		if (routeTiming.isTimingSpecified()) {
-//			System.out.printf("    - Timing: %f\n", routeTiming.getMaxTime());
-//		}			
+    private void setRequirements(Route route, StringBuffer script, boolean singleRoute) {
+		String routeIdStr = getRouteIdString(singleRoute);			    	
     	
+		RouteTiming routeTiming = route.getRouteTiming();
+		if (routeTiming.isTimingSpecified()) {
+	    	script.append(String.format("set requirement %s %s\n", routeIdStr, 
+	    			routeTiming.getDescription(Level.REQUIRED)));
+		}			    	
+    }
+    
+    private void updateGlobalConfig(StringBuffer script, Config config) {
+    	if (m_currentConfig.m_numThreads != config.m_numThreads) {
+        	script.append(String.format("config threads %s\n", config.m_numThreads));
+        	m_currentConfig.m_numThreads = config.m_numThreads;    		
+    	}
+    	if (m_currentConfig.m_frequency != config.m_frequency) {
+        	script.append(String.format("config freq %s\n", config.m_frequency));    		
+        	m_currentConfig.m_frequency = config.m_frequency; 
+    	}
+    	if (m_currentConfig.m_case != config.m_case) {
+        	script.append(String.format("config case %s\n", config.m_case));    		
+        	m_currentConfig.m_case = config.m_case; 
+    	}
+    }
+    
+    private String getRouteIdString(boolean singleRoute) {
+		String routeIdStr = "-";
+		if (!singleRoute) {
+			routeIdStr = String.format("%d", m_currentRouteId);
+		}
+		return routeIdStr;    	
+    }
+    
+    private String getReferenceString(Node node) {
+	    String refStr = "";
+		Reference reference = node.getAttributes().getReference();
+		if (reference == null) {
+			// This unknown was set directly onto a node (and not via a reference),
+			// so we need to generate a suitable reference to use in the script.
+			List<Long> backTrail = new ArrayList<Long>();
+			node.getBackTrail(backTrail);
+			for (Long pc : backTrail) {
+				refStr += String.format("CALL:0x%x,", pc);
+			}				
+			refStr += String.format("0x%x", node.getStartPc());
+			
+		} else {
+			// This unknown was set via a reference, so can use this directly in the script.
+			refStr = reference.getRef();
+		}
+		return refStr;
     }
     
     private boolean exclusionsDiffer(Collection<Reference> ex1, Collection<Reference> ex2) {

@@ -175,7 +175,7 @@ public class BlockNode extends IBufferNode {
     public TimeDistributionBuckets getTimeSpread() {
 	    long time = 0;
 	    for(InstructionNode inst : m_insts){
-		    time += inst.getAttributes().getInstructionNumCycles();
+		    time += inst.getAttributes().getInstructionCycles();
 	    }
 	    return new TimeDistributionBuckets(time);
     }

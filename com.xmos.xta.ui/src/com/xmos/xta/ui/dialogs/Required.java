@@ -79,14 +79,12 @@ public class Required extends XtaDialog {
 	    m_nsListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setRequirement(GuiEngine.s_guiCommandSrc, 
+					m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, 
 							m_routeId, Double.parseDouble(m_ns.getText()));
 					m_valueChanged = true;
 					updateCyclesValue();
 					updateMhzValue();
-				} catch (NumberFormatException exception) {
-					// Do nothing
-				}
+				} catch (NumberFormatException exception) {}
 			}
 		};
 	}
@@ -99,14 +97,12 @@ public class Required extends XtaDialog {
 	    m_cyclesListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					m_engine.setRequirement(GuiEngine.s_guiCommandSrc, 
+					m_engine.setRequiredCycles(GuiEngine.s_guiCommandSrc, 
 							m_routeId, Integer.parseInt(m_cycles.getText()));
 					m_valueChanged = true;
 					updateNsValue();
 					updateMhzValue();
-				} catch (NumberFormatException exception) {
-					// Do nothing
-				}
+				} catch (NumberFormatException exception) {}
 			}
 		};
 	}
@@ -119,15 +115,12 @@ public class Required extends XtaDialog {
 	    m_mhzListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				try {
-					double value = Double.parseDouble(m_mhz.getText());
-					m_engine.setRequirement(GuiEngine.s_guiCommandSrc, 
-							m_routeId, ((float)1.0 / value) * 1000);
+					m_engine.setRequiredMhz(GuiEngine.s_guiCommandSrc, 
+							m_routeId, Double.parseDouble(m_mhz.getText()));
 					m_valueChanged = true;
 					updateNsValue();
 					updateCyclesValue();
-				} catch (NumberFormatException exception) {
-					// Do nothing
-				}
+				} catch (NumberFormatException exception) {}
 			}
 		};
 	}
@@ -156,8 +149,7 @@ public class Required extends XtaDialog {
 
 	private void updateMhzValue() {
 		m_mhz.removeModifyListener(m_mhzListener);
-		Double ns = m_routeTiming.getMaxTime();
-		m_mhz.setText(Double.toString(((float)1.0 / ns) * 1000));
+		m_mhz.setText(Double.toString(m_routeTiming.getMaxMhz()));
 		m_mhz.addModifyListener(m_mhzListener);
 	}			
 
@@ -167,7 +159,7 @@ public class Required extends XtaDialog {
     			if (!m_timingWasSet)
     				m_engine.unsetRequirement(GuiEngine.s_guiCommandSrc, m_routeId);
     			else
-    				m_engine.setRequirement(GuiEngine.s_guiCommandSrc, m_routeId, m_originalValue);
+    				m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, m_originalValue);
     		}
     	}
     	super.buttonPressed(id);

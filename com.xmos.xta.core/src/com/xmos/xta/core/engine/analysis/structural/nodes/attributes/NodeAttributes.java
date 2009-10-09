@@ -421,7 +421,7 @@ public class NodeAttributes {
 				return String.format("Time for instruction (0x%x: %s) set to %.1fns",
 						instruction.getPc(),
 						instruction.getNmenonic(),
-						m_node.getAttributes().getInstructionTimeTaken());
+						m_node.getAttributes().getInstructionNs());
 			}
 			assert(false);
 			return "";
@@ -554,32 +554,42 @@ public class NodeAttributes {
 	// ===================================================================== //
 	// Instruction Time Methods
 	// ===================================================================== //
-	public void setInstructionNumCycles(long numCycles) {
+	public void setInstructionCycles(long cycles) {
 		assert(false);		
 	}
 
-	public void unsetInstructionNumCycles() {
-		assert(false);		
-	}
-	
-	public long getInstructionNumCycles() {
+	public long getInstructionCycles() {
 		assert(false);		
 		return 0;
 	}
 
-	public void setInstructionTimeTaken(double timeTaken) {
-		assert(false);		
-	}
-
-	public void unsetInstructionTimeTaken() {
+	public void setInstructionNs(double ns) {
 		assert(false);		
 	}
 	
-	public double getInstructionTimeTaken() {
+	public double getInstructionNs() {
 		assert(false);
 		return 0;
 	}
 
+	public void setInstructionMhz(double mhz) {
+		assert(false);		
+	}
+	
+	public double getInstructionMhz() {
+		assert(false);
+		return 0;
+	}
+	
+	public void unsetInstructionTime() {
+		assert(false);		
+	}
+	
+	public String getInstructionTimeString() {		
+		assert(false);
+		return null;
+	}
+	
 	public boolean hasFloatingIterations() {
 		assert(false);
 		return false;

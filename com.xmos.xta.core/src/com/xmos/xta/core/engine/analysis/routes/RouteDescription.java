@@ -31,9 +31,9 @@ public class RouteDescription {
 		PATH, FUNCTION
 	};
 
-	public RouteDescription(Reference from, Reference to, 
-			int nodeId, int coreId, Collection<Reference> exclusions, Config config) {
-		
+	public RouteDescription(Reference from, Reference to, int nodeId, int coreId, 
+			Collection<Reference> exclusions, Config config) {
+
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
 		m_mode = RouteMode.PATH;
 		m_from = from;
@@ -48,11 +48,19 @@ public class RouteDescription {
 		m_config = new Config(config);
 	}
 
-	public RouteDescription(String functionName, Engine engine, int nodeId, int coreId) {
+	public RouteDescription(String functionName, Engine engine, int nodeId, int coreId, 
+			Collection<Reference> exclusions, Config config) {
+
 		m_description = String.format("function: %s", functionName);
 		m_functionName = functionName;
 		m_mode = RouteMode.FUNCTION;
 		m_to = new LinkedList<Reference>();
+		m_nodeId = nodeId;
+		m_coreId = coreId;				
+		m_exclusions = new ArrayList<Reference>();
+		m_exclusions.addAll(exclusions);		
+		m_config = new Config(config);
+		
 		StructureGraph sg = engine.getStructureGraph();
 		
 		for (FunctionNode fn : sg.getThreads()){

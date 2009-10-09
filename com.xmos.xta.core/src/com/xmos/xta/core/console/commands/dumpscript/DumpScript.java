@@ -38,3 +38,4 @@ public class DumpScript extends Command {
 		console.display(scripter.createScript());
     }
 }
+
