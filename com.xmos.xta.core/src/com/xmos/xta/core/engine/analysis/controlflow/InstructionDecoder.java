@@ -34,7 +34,7 @@ public class InstructionDecoder {
 		MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 		XtaInstructionDecoder instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(m_xeLoader.getArchitecture());
-		for (ElfSection section: m_xeLoader.getSymbolTable(m_nodeId, m_coreId).getElfHandler().getSections()){
+		for (ElfSection section: m_xeLoader.getSymbolTable(m_nodeId, m_coreId).getElfHandler().getSections()) {
 			if (section.isExecutable()){
 				long sectionAddress = XtaInstruction.makeLongPc(section.getAddress());
 				long pc = sectionAddress;

@@ -5,18 +5,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPartSite;
 
-public class NoLoadsViewer extends SectionsViewer {
-	public NoLoadsViewer(Display display, Composite parent, 
+public class SystemsViewer extends SectionsViewer {
+	public SystemsViewer(Display display, Composite parent, 
 			IWorkbenchPartSite site, TableViewer viewer) {
 		super(display, parent, site, viewer);
 	}
 
 	SectionsViewerContentProvider createContentProvider() {
-		return new NoLoadsViewerContentProvider();
+		return new SystemsViewerContentProvider();
 	}
 	
 	SectionsViewerLabelProvider createLabelProvider() {
-		return new NoLoadsViewerLabelProvider();
+		return new SystemsViewerLabelProvider();
 	}
 
 	@Override

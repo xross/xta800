@@ -23,7 +23,7 @@ import com.xmos.xta.ui.views.info.sections.CallsViewer;
 import com.xmos.xta.ui.views.info.sections.EndpointsViewer;
 import com.xmos.xta.ui.views.info.sections.ExclusionsViewer;
 import com.xmos.xta.ui.views.info.sections.LabelsViewer;
-import com.xmos.xta.ui.views.info.sections.NoLoadsViewer;
+import com.xmos.xta.ui.views.info.sections.SystemsViewer;
 import com.xmos.xta.ui.views.info.sections.SourcesViewer;
 import com.xmos.xta.ui.views.info.sections.SrcCommandsViewer;
 import com.xmos.xta.ui.views.info.sections.SrcLabelsViewer;
@@ -53,7 +53,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 	private SrcCommandsViewer m_srcCommands;
 	private SrcLoopsViewer m_srcLoops;
 	private SourcesViewer m_sources;
-	private NoLoadsViewer m_noLoads;
+	private SystemsViewer m_systems;
 	
 	public InfoView() {
 		GuiEngine.addBroadcastListener(this);
@@ -100,8 +100,8 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 				createNewViewer("Src Level Loops", folders));
 		m_sources = new SourcesViewer(parent.getDisplay(), parent, getSite(),
 				createNewViewer("Source files", folders));
-		m_noLoads = new NoLoadsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Functions not loaded", folders));
+		m_systems = new SystemsViewer(parent.getDisplay(), parent, getSite(),
+				createNewViewer("System functions", folders));
 		
 		m_log.update();
 		m_unknowns.update();
@@ -120,7 +120,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 		m_srcCommands.update();
 		m_srcLoops.update();
 		m_sources.update();
-		m_noLoads.update();
+		m_systems.update();
 	}
 
 	public void setFocus() {
@@ -153,7 +153,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 			m_srcCommands.update();
 			m_srcLoops.update();
 			m_sources.update();
-			m_noLoads.update();
+			m_systems.update();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
 			m_exclusions.update();

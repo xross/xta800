@@ -103,7 +103,7 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 	}
 
 	private void updateState() {
-    	m_functions = new LinkedList<String>(GuiEngine.getEngine().getFunctionNames());
+    	m_functions = new LinkedList<String>(GuiEngine.getEngine().getNonSystemFunctionNames());
     	Collections.sort(m_functions);
     	m_action.setToolTipText("Select function to analyse");
 	}

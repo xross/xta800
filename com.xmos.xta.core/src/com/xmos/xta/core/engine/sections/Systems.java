@@ -8,20 +8,20 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
-public class NoLoads extends Section {
-	private Collection<SrcStringInfo> m_functions;
+public class Systems extends Section {
+	private Collection<String> m_functions;
 
-	NoLoads(int nodeId, int coreId, Notifier notifier) {
+	Systems(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
-		m_functions = new ArrayList<SrcStringInfo>(); 
+		m_functions = new ArrayList<String>(); 
 	}
 	
-	Collection<SrcStringInfo> get() {
+	Collection<String> get() {
 		return m_functions;
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtanoload", getNodeId(), getCoreId());
+		byte[] data = xeLoader.getSectionData(".xtasystem", getNodeId(), getCoreId());
 				
 		try {
 			int byteIndex = 0;
@@ -39,22 +39,21 @@ public class NoLoads extends Section {
 	       		byteIndex += compilationDir.length() + 1;
 	       		
 	           	while (byteIndex < (base + size)) {
-	        		String commandString = ByteArrayManipulation.readString(data, byteIndex);
-	        		byteIndex += commandString.length() + 1;
+	        		String functionName = ByteArrayManipulation.readString(data, byteIndex);
+	        		byteIndex += functionName.length() + 1;
 	        		
 	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
 	        		byteIndex += fileName.length() + 1;
 	        		
-	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
+	        		ByteArrayManipulation.readInt(data, byteIndex); // Skip line number
 	        		byteIndex += 4;
 	        				
-	        		SrcStringInfo command = new SrcStringInfo(commandString, compilationDir, fileName, lineNumber);
-	        		m_functions.add(command);
+	        		m_functions.add(functionName);
 	        	}			
 		    }
         } catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"problem reading .xtanoload while loading executable"));
+					"problem reading .xtasystem while loading executable"));
         	return false;
         }
         return true;
