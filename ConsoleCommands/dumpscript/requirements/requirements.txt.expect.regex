@@ -1,0 +1,10 @@
+load .*test\.xe
+
+analyse path x1 x2
+set requirement - 100.0 ns
+
+analyse path x1 x2
+set requirement - 200 cycles
+
+analyse path x1 x2
+set requirement - 0.5 mhz

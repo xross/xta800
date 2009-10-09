@@ -1,13 +1,13 @@
-Route(0) path: start to stop
+Route(0) path: test1,func1,start to test1,func1,stop
     No Timing Specified
 
-Route(1) path: start to stop
+Route(1) path: test1,func2,start to test1,func2,stop
     No Timing Specified
 
-Route(2) path: start to stop
+Route(2) path: test2,func1,start to test2,func1,stop
     No Timing Specified
 
-Route(3) path: start to stop
+Route(3) path: test2,func2,start to test2,func2,stop
     No Timing Specified
 
 Fail, Timing Unspecified

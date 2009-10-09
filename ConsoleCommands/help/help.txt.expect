@@ -10,6 +10,7 @@
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
   [-]print <option> <arg0> <arg1>...: Display analysis information
   [-]pwd: Displays the current working directory
+  [-]dumpscript: Dump script which represents the current state
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
   [-]set <option> <arg0> <arg1>...: Set path information
   [-]source <file name>: Sources the given command file

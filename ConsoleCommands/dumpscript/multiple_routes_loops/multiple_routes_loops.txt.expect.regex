@@ -1,0 +1,8 @@
+load .*test\.xe
+
+add exclusion the_great_outdoors
+analyse path x x
+set loop 0 0x[0-9a-fA-F]{5} 10
+set loop 1 0x[0-9a-fA-F]{5} 20
+set loop 2 0x[0-9a-fA-F]{5} 30
+set loop 3 0x[0-9a-fA-F]{5} 40
