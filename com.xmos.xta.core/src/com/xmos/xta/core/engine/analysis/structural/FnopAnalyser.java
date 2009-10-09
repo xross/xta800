@@ -11,7 +11,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class FnopAnalyser {
-
+	public static int totalFnops;
 	public FnopAnalyser() {
 	}
 
@@ -26,6 +26,7 @@ public class FnopAnalyser {
 		
 		for(IBufferNode node : nodes){
 			node.insertFnops();
+			totalFnops += node.getFnopCount();
 		}
 		
 	}
@@ -66,6 +67,7 @@ public class FnopAnalyser {
 		List<Long> fnopPcs = new LinkedList<Long>();
 		InstructionBuffer endInstBuffer = new InstructionBuffer(pretransitionIB);
 		
+		
 		if (parent == null) {
 			
 		} else {
@@ -86,7 +88,7 @@ public class FnopAnalyser {
 		}
 
 		int numStartBytes = endInstBuffer.getNumBytes();
-
+		
 		for (XtaInstruction inst : block.getInstructions()) {
 			
 			if (inst.isBranch()) {
@@ -96,18 +98,15 @@ public class FnopAnalyser {
 				update(endInstBuffer, fnopPcs, inst);
 				endInstBuffer.setPc(inst.getPc() + inst.getNumBytes());
 			}
-	//		System.out.println(inst);
-	//		System.out.print("");
 		}
-	//	System.out.println("--------------------------------------------------------------------------------");
 
+		endInstBuffer = new InstructionBuffer(pretransitionIB.getPc(), 1);
 		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer, fnopPcs);
 	}
 
 	private void update(InstructionBuffer ib, List<Long> fnopPcs, XtaInstruction inst) {
 		while (!ib.canIssue(inst.getNumBytes())) {
 			ib.fetch();
-	//		System.out.println("fnop");
 			fnopPcs.add(inst.getPc());
 		}
 		if (!inst.isLoadStore()) {
