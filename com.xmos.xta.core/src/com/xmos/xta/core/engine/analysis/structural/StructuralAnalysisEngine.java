@@ -36,7 +36,6 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatc
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sections.Sections;
-import com.xmos.xta.core.engine.sections.SrcStringInfo;
 
 public class StructuralAnalysisEngine {
 	
@@ -153,9 +152,6 @@ public class StructuralAnalysisEngine {
 		
 		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints);
 		
-		removeNoLoad(engine, allFunctionObjects, sections.getNoLoads(nodeId, coreId),
-				sections.getUnreachableFunctions(nodeId, coreId));
-
 		engine.provideFeedback("Analysing for recursion...");
 		detectRecursion(engine, allFunctionObjects, sections.getRecursiveFunctions(nodeId, coreId));
 		
@@ -485,98 +481,6 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	private void removeNoLoad(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects,
-			Collection<SrcStringInfo> noLoads, Collection<String> unreachableFunctions){
-		
-		if (noLoads.size() == 0)
-			return;
-		
-		Map<FunctionNode, TreeSet<FunctionNode>> links = createLinkedFunctions(allFunctionObjects);
-
-		Set<Long> noLoadFunctionPcs = new TreeSet<Long>();
-		for (SrcStringInfo noLoad : noLoads) {
-			String functionName = noLoad.getString();
-			long functionPc = findFunctionPc(functionName, allFunctionObjects);
-			if (functionPc != 0) {
-				noLoadFunctionPcs.add(functionPc);
-			}
-		}
-		
-		boolean changeDetected = true;
-		while (changeDetected) {
-			changeDetected = false;
-
-			for (FunctionNode fn : allFunctionObjects.keySet()) {
-				Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
-				for (FunctionNode fnLink : allFunctionObjects.get(fn)) {
-					Node branchTarget = fnLink.getBranchTarget();
-					if (branchTarget != null) {
-						long startPc = branchTarget.getStartPc();
-						if (noLoadFunctionPcs.contains(startPc)) {
-							toRemove.add(fnLink);
-							fnLink.setFunctionName(m_functionStartPcs.get(startPc).getFunctionName() +  " not loaded");
-							fnLink.setUnresolved(true);
-							
-							changeDetected = true;
-							
-							Set<FunctionNode> called = new TreeSet<FunctionNode>();
-							getAllFunctionPcsCalledByF(startPc, links, called);
-							removeFunctionsCalledByOthers(links, called, noLoadFunctionPcs);
-							
-							for (FunctionNode calledF : called) {
-								noLoadFunctionPcs.add(calledF.getStartPc());
-							}
-						}
-					}
-				}
-				allFunctionObjects.get(fn).removeAll(toRemove);
-				
-				if (noLoadFunctionPcs.contains(fn.getStartPc())) {
-					allFunctionObjects.get(fn).clear();
-				}
-			}
-		}
-			
-		for (Long pc : noLoadFunctionPcs) {
-			String functionName = m_functionStartPcs.get(pc).getFunctionName();
-			unreachableFunctions.add(functionName);
-		}
-	}
-
-	private void getAllFunctionPcsCalledByF(long startPc,
-			Map<FunctionNode, TreeSet<FunctionNode>> links,
-			Set<FunctionNode> called) {
-
-		for (FunctionNode fn : links.keySet()) {
-			if (fn.getStartPc() == startPc) {
-				crawlFunctionGraph(fn, links, called);
-				return;
-			}
-		}
-	}
-
-	private void removeFunctionsCalledByOthers( Map<FunctionNode, TreeSet<FunctionNode>> links,
-			Collection<FunctionNode> called, Collection<Long> noLoadFunctionPcs) {
-
-		boolean changeDetected = true;
-		while (changeDetected) {
-			changeDetected = false;
-			for (FunctionNode fn : links.keySet()) {
-				if (!noLoadFunctionPcs.contains(fn.getStartPc())) {
-					for (FunctionNode target : links.get(fn)) {
-						if (called.contains(target)) {
-							called.remove(target);
-							changeDetected = true;
-						}
-					}
-				}
-			}
-			if (called.isEmpty()) {
-				return;
-			}
-		}
-	}
-
 	private void detectRecursion(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects,
 			Collection<String> recursiveFunctions){
 		
@@ -836,15 +740,6 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new ConditionalTransformer());	//uses dominators
 	}
 
-	private long findFunctionPc(String functionName, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
-		for (FunctionNode fn : allFunctionObjects.keySet()) {
-			if (fn.getFunctionName().equals(functionName)) {
-				return fn.getStartPc();
-			}
-		}
-		return 0;
-	}
-	
 	private Collection<Node> getContainedNodes(Node node) {
 		final Collection<Node> nodes = new ArrayList<Node>();
 		

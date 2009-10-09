@@ -35,8 +35,6 @@ public abstract class XtaInstruction extends Instruction {
 		}
 	}
 	
-	
-	
 	public boolean isBranch(){
 		return m_isBranch;
 	}
@@ -45,8 +43,9 @@ public abstract class XtaInstruction extends Instruction {
 		return m_isLink;
 	}
 	
-	public String toString(){
-		return "0x" + Long.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
+	public String toString() {
+		return "(" + m_functionName + "+" + m_functionOffset + ")" + 
+			" 0x" + Long.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
 	}
 		
 	public void setFunctionName(String functionName) {

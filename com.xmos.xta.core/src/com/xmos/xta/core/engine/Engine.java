@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
+
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
@@ -79,7 +80,7 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
 	
 	private DataCollection m_dataCollection;
-	private final static boolean LAZY = false;
+	private final static boolean LAZY = true;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -156,7 +157,6 @@ public class Engine implements Notifier {
 	}
 	
 	public Set<String> getFunctionNames() {
-		
 		TreeMap<String, LinkedList<InstructionNode>> functionNames = m_functionNames.get(m_nodeId, m_coreId);
 		if (functionNames != null) {
 			Set<String> names = new TreeSet<String>(functionNames.keySet());
@@ -165,7 +165,20 @@ public class Engine implements Notifier {
 	    }
 		return new TreeSet<String>();
 	}
-		
+
+	public Collection<String> getNonSystemFunctionNames() {
+		Collection<String> functionNames = m_xeLoader.getFunctionNames(m_nodeId, m_coreId);
+		Set<String> systemFunctions = new HashSet<String>();
+		Collection<String> systems = m_sections.getSystems(m_nodeId, m_coreId);
+		for (String functionName : functionNames) {
+			if (isSystemFunction(systems, functionName)) {
+				systemFunctions.add(functionName);
+			}
+		}
+		functionNames.removeAll(systemFunctions);
+		return functionNames;
+	}
+
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -219,8 +232,8 @@ public class Engine implements Notifier {
 			return false;
 		}
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
-		if(LAZY){
-			if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, m_nodeId, m_coreId))
+		if (LAZY){
+			if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, 0, 0))
 			return false;
 		} else {
 			for(int n : xeLoader.getNodeIds()){
@@ -997,8 +1010,8 @@ public class Engine implements Notifier {
 		return m_sections.getSrcLevelLoops(m_nodeId, m_coreId);
 	}
 	
-	public Collection<SrcStringInfo> getNoLoads() {
-		return m_sections.getNoLoads(m_nodeId, m_coreId);
+	public Collection<String> getSystems() {
+		return m_sections.getSystems(m_nodeId, m_coreId);
 	}
 
 	public Collection<String> getRecursiveFunctions() {
@@ -1051,9 +1064,7 @@ public class Engine implements Notifier {
 			SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
 			if (!sa.process(src)) 
 				return false;
-
-			/* BUGZILLA: 6593
-			warnAboutUnsetBranches(src, id);*/
+			warnAboutUnsetBranches(xeLoader, sections, src, id, nodeId, coreId);
 			
 			FunctionHandler fh = new FunctionHandler(id);
 			if (!fh.addFunctions()) 
@@ -1184,15 +1195,14 @@ public class Engine implements Notifier {
 
 	private void setBranchTargets(InstructionDecoder id,
 			TreeMap<String, LinkedList<InstructionNode>> treeMap) {
-		for(InstructionNode inst : id.getInstructions()){
-			
-			
-			if(inst.getXtaInstruction().getBranchPcRelative()){
+
+		for (InstructionNode inst : id.getInstructions()) {
+			if (inst.getXtaInstruction().getBranchPcRelative()) {
 				long branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
 				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Long.toHexString(branchTarget));
-				for(String fn : treeMap.keySet()){
-					for(InstructionNode fnInst : treeMap.get(fn)){
-						if(fnInst.getStartPc() == branchTarget){
+				for (String fn : treeMap.keySet()) {
+					for (InstructionNode fnInst : treeMap.get(fn)) {
+						if (fnInst.getStartPc() == branchTarget){
 							inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fn);
 							break;
 						}
@@ -1202,32 +1212,51 @@ public class Engine implements Notifier {
 		}
 	}
 	
-	/* BUGZILLA: 6593
-	private void warnAboutUnsetBranches(CommandSource src, InstructionDecoder id){
-		for(InstructionNode inst : id.getInstructions()){
-			if(inst.getXtaInstruction().isBranch() && inst.getNextNodesSize() == 0 
-					&& !inst.getXtaInstruction().getReturn()&& !inst.getXtaInstruction().getBranchPcRelative()){
-				notify(src, Notifier.NOTIFY_WARNING, "No branch targets set on instruction " + inst.getXtaInstruction());
+	private void warnAboutUnsetBranches(XeLoader xeLoader, Sections sections, CommandSource src, InstructionDecoder id,
+			int nodeId, int coreId) {
+		SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
+		Collection<String> systemFunctions = sections.getSystems(nodeId, coreId);
+
+		for (InstructionNode inst : id.getInstructions()) {
+			if (inst.getXtaInstruction().isBranch() && (inst.getNextNodesSize() == 0) 
+					&& !inst.getXtaInstruction().getReturn() && !inst.getXtaInstruction().getBranchPcRelative()) {
+				
+				String functionName = symbolTable.functionName(inst.getXtaInstruction().getPc());
+				if (!isSystemFunction(systemFunctions, functionName)) {
+					notify(src, Notifier.NOTIFY_WARNING, "No branch targets set on instruction " + inst.getXtaInstruction());
+				}
 			}
 		}
-	}*/
-	
+	}
+
+	private boolean isSystemFunction(Collection<String> systems, String functionName) {
+		if (functionName.length() == 0) {
+			return false;
+		} else if (functionName.charAt(0) == '_') {
+			return true;
+		} else if (systems.contains(functionName)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
 			TreeMap<String, LinkedList<InstructionNode>> treeMap,
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts, Map<String, Long> labelToPc ) {
 		
 		Map<Long, String> pcToLabel = new HashMap<Long, String>();
 		
-		for (String label : labelToPc.keySet()){
+		for (String label : labelToPc.keySet()) {
 			pcToLabel.put(labelToPc.get(label), label);
 		}
 		
-		for(InstructionNode inst : funcStarts){
+		for (InstructionNode inst : funcStarts){
 			
 			String name = symbolTable.functionName(inst.getStartPc());
 			String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 			
-			if(treeMap.containsKey(name)){
+			if (treeMap.containsKey(name)){
 				//the one with the lower pc will stay in the set and the other will take an auto-generated name.
 				
 				LinkedList<InstructionNode> instNodes = new LinkedList<InstructionNode>(treeMap.get(name));
@@ -1253,10 +1282,10 @@ public class Engine implements Notifier {
 				addToMap(treeMap, inst, name);
 			}
 		}
-		for(InstructionNode inst : threadStarts){
+		for (InstructionNode inst : threadStarts){
 			
 			String name = symbolTable.functionName(inst.getStartPc());
-			if(treeMap.containsKey(name)){
+			if (treeMap.containsKey(name)){
 				name = "unnamed_thread_at_0x" + Long.toHexString(inst.getStartPc());
 				addToMap(treeMap, inst, name);
 			} else {
@@ -1269,7 +1298,7 @@ public class Engine implements Notifier {
 	private void addToMap(TreeMap<String, LinkedList<InstructionNode>> treeMap,
 			InstructionNode inst, String name) {
 		LinkedList<InstructionNode> list = treeMap.get(name);
-		if(list == null){
+		if (list == null){
 			list = new LinkedList<InstructionNode>();
 		}
 		list.add(inst);

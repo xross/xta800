@@ -21,7 +21,7 @@ public class FunctionsContentProvider implements ITreeContentProvider  {
 	}
 
 	public Object[] getElements(Object inputElement) {
-		return ((Engine)inputElement).getFunctionNames().toArray();
+		return ((Engine)inputElement).getNonSystemFunctionNames().toArray();
 	}
 
 	public void dispose() {

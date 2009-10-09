@@ -23,7 +23,7 @@ public class Sections {
 	private Collection<Section> m_threadStopPoints;
 	private Collection<Section> m_srcLevelCommands;
 	private Collection<Section> m_srcLevelLoops;
-	private Collection<Section> m_noLoads;
+	private Collection<Section> m_systems;
 	private Collection<Section> m_recursiveFunctions;
 	private Collection<Section> m_unreachableFunctions;
 	
@@ -42,7 +42,7 @@ public class Sections {
 		m_threadStopPoints = new ArrayList<Section>();
 		m_srcLevelCommands = new ArrayList<Section>();
 		m_srcLevelLoops = new ArrayList<Section>();
-		m_noLoads = new ArrayList<Section>();
+		m_systems = new ArrayList<Section>();
 		m_recursiveFunctions = new ArrayList<Section>();
 		m_unreachableFunctions = new ArrayList<Section>();
     }
@@ -62,7 +62,7 @@ public class Sections {
 		m_threadStopPoints.clear();
 		m_srcLevelCommands.clear();
 		m_srcLevelLoops.clear();
-		m_noLoads.clear();
+		m_systems.clear();
 		m_recursiveFunctions.clear();
 		m_unreachableFunctions.clear();
 
@@ -80,7 +80,7 @@ public class Sections {
 				m_threadStopPoints.add(new ThreadDelimiters(node, core, ".xtathreadstop", m_notifier));
 				m_srcLevelCommands.add(new SrcLevelCommands(node, core, m_notifier));
 				m_srcLevelLoops.add(new SrcLevelLoops(node, core, m_notifier));
-				m_noLoads.add(new NoLoads(node, core, m_notifier));
+				m_systems.add(new Systems(node, core, m_notifier));
 				m_recursiveFunctions.add(new StringSection(node, core, m_notifier));
 				m_unreachableFunctions.add(new StringSection(node, core, m_notifier));
 			}
@@ -110,7 +110,7 @@ public class Sections {
 			return false;
 		if (!loadSection(src, m_srcLevelLoops))
 			return false;
-		if (!loadSection(src, m_noLoads))
+		if (!loadSection(src, m_systems))
 			return false;
 		
 		return true;
@@ -186,9 +186,9 @@ public class Sections {
 		return loops.get();		
 	}
 	
-	public Collection<SrcStringInfo> getNoLoads(int nodeId, int coreId) {
-		NoLoads noLoads = (NoLoads)getSection(m_noLoads, nodeId, coreId);
-		return noLoads.get();		
+	public Collection<String> getSystems(int nodeId, int coreId) {
+		Systems systems = (Systems)getSection(m_systems, nodeId, coreId);
+		return systems.get();
 	}
 
 	public Collection<String> getRecursiveFunctions(int nodeId, int coreId) {
