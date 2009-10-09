@@ -1,15 +1,25 @@
 load .*test\.xe
 
+#
+# Route: main
+#
 analyse function main
 set loop - f1,loop 10
 set loop - f1,loop_path 10
 set looppath - f1,loop_path 5
+# Warning: The following line contains a non-portable reference.
 set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 20
+# Warning: The following line contains a non-portable reference.
 set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 20
+# Warning: The following line contains a non-portable reference.
 set looppath - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 10
 set loop - f2,loop 30
 set loop - f2,loop_path 30
 set looppath - f2,loop_path 15
+# Warning: The following line contains a non-portable reference.
 set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 40
+# Warning: The following line contains a non-portable reference.
 set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 40
+# Warning: The following line contains a non-portable reference.
 set looppath - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 20
+

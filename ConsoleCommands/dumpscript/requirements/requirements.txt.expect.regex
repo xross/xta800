@@ -1,10 +1,20 @@
 load .*test\.xe
 
+#
+# Route: x1 => x2
+#
 analyse path x1 x2
 set requirement - 100.0 ns
 
+#
+# Route: x1 => x2
+#
 analyse path x1 x2
 set requirement - 200 cycles
 
+#
+# Route: x1 => x2
+#
 analyse path x1 x2
 set requirement - 0.5 mhz
+

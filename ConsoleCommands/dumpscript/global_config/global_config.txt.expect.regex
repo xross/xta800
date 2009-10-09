@@ -1,0 +1,9 @@
+load .*test\.xe
+
+#
+# Route: main
+#
+analyse function main
+
+config threads 1
+config freq 100

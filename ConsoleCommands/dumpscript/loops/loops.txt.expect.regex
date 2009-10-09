@@ -1,9 +1,16 @@
 load .*test\.xe
 
+#
+# Route: main
+#
 analyse function main
 set loop - loop 10
 set loop - loop_path 10
 set looppath - loop_path 5
+# Warning: The following line contains a non-portable reference.
 set loop - 0x[0-9a-fA-F]{5} 10
+# Warning: The following line contains a non-portable reference.
 set loop - 0x[0-9a-fA-F]{5} 10
+# Warning: The following line contains a non-portable reference.
 set looppath - 0x[0-9a-fA-F]{5} 5
+
