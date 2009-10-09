@@ -80,7 +80,7 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
 	
 	private DataCollection m_dataCollection;
-	private final static boolean LAZY = false;
+	private final static boolean LAZY = true;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -232,7 +232,7 @@ public class Engine implements Notifier {
 			return false;
 		}
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
-		if(LAZY){
+		if (LAZY){
 			if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, 0, 0))
 			return false;
 		} else {
