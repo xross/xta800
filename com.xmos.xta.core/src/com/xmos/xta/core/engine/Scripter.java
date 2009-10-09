@@ -19,11 +19,15 @@ public class Scripter {
 	private Engine m_engine;
 	private int m_currentRouteId;
 	private Config m_currentConfig;
+	private int m_currentNodeId;
+	private int m_currentCoreId;
 	private Collection<Reference> m_currentExclusions;
 	
 	public Scripter(Engine engine) {
 		m_engine = engine;
 		m_currentConfig = new Config();
+		m_currentNodeId = 0;
+		m_currentCoreId = 0;
 		m_currentExclusions = new ArrayList<Reference>();
 	}
 
@@ -51,7 +55,7 @@ public class Scripter {
     		}
     	}
     	script.append("\n");
-    	updateGlobalConfig(script, m_engine.getConfig());
+    	updateGlobalConfig(script, m_engine.getConfig(), m_engine.getNodeId(), m_engine.getCoreId());
     	
     	return script.toString();
     }
@@ -73,7 +77,10 @@ public class Scripter {
 	}
 	
     private void globalConfig(RouteContainer routeContainer, StringBuffer script) {
-    	updateGlobalConfig(script, routeContainer.getDescription().getConfig());
+    	updateGlobalConfig(script, 
+    			routeContainer.getDescription().getConfig(), 
+    			routeContainer.getDescription().getNodeId(),
+    			routeContainer.getDescription().getCoreId());
     }
     
     private void addExclusions(RouteContainer routeContainer, StringBuffer script) {	
@@ -158,7 +165,7 @@ public class Scripter {
 		}			    	
     }
     
-    private void updateGlobalConfig(StringBuffer script, Config config) {
+    private void updateGlobalConfig(StringBuffer script, Config config, int nodeId, int coreId) {
     	if (m_currentConfig.m_numThreads != config.m_numThreads) {
         	script.append(String.format("config threads %s\n", config.m_numThreads));
         	m_currentConfig.m_numThreads = config.m_numThreads;    		
@@ -171,8 +178,13 @@ public class Scripter {
         	script.append(String.format("config case %s\n", config.m_case));    		
         	m_currentConfig.m_case = config.m_case; 
     	}
+    	if ((m_currentNodeId != nodeId) || (m_currentCoreId != coreId)) {
+        	script.append(String.format("config proc %d %d\n", nodeId, coreId));    		
+        	m_currentNodeId = nodeId;
+        	m_currentCoreId = coreId;    		
+    	}
     }
-    
+
     private String getRouteIdString(boolean singleRoute) {
 		String routeIdStr = "-";
 		if (!singleRoute) {
