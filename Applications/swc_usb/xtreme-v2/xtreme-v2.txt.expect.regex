@@ -1,3 +1,10 @@
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bau \(1r\) r11
+xta: cmds.txt:7: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: cmds.txt:7: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: cmds.txt:7: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
 Route\(0\) path: ReadDataPidByte to NextRxWord
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 133.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 

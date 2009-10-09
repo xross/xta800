@@ -1,3 +1,7 @@
+xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9a-z]+ bru \(1r\) r11
+xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9a-z]+ bau \(1r\) r11
 Route\(0\) path: left_output to right_output
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 5208.3ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
 
