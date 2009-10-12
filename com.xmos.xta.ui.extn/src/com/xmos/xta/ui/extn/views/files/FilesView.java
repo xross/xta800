@@ -31,10 +31,10 @@ import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.editors.InputSource;
-import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
 import com.xmos.xta.ui.editors.XtaEditor;
-import com.xmos.xta.ui.editors.XtaSourceEditor;
+import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.source.InputSource;
+import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;

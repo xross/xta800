@@ -11,7 +11,7 @@ import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
 
 public class FilesViewContentProvider implements ITreeContentProvider  {
 	private static Object[] EMPTY_ARRAY = new Object[]{};

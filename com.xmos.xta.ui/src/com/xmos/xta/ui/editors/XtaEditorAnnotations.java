@@ -57,14 +57,13 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	public abstract String getLineDescription(long clickLineIndex);
 
 	public abstract void updateAll();
-	abstract long getIndexForRef(Reference ref);
-	abstract long getIndexForPc(long pc);
-    abstract boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+	public abstract long getIndexForRef(Reference ref);
+	public abstract long getIndexForPc(long pc);
+	public abstract boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions);
-	abstract String lineIndexToString(long index);
-	abstract Collection<Long> getPcsForLine(long lineNumber);
-	abstract boolean canAnnotate();
-
+	public abstract String lineIndexToString(long index);
+	public abstract Collection<Long> getPcsForLine(long lineNumber);
+	public abstract boolean canAnnotate();
 
     public XtaEditorAnnotations(XtaAnnotatedEditor editor) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -173,7 +172,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		updateAnnotations(annotations, annotationPositions);		
     }
 
-	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
+	public void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
 
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
 		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
@@ -318,7 +317,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		viewer.setTopIndex((int)topIndex);
 	}
 
-	boolean showCodePoint(long pc) {
+	public boolean showCodePoint(long pc) {
     	long index = getIndexForPc(pc);
     	if (index >= 0) { 
 			try {

@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
-import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
 
 public class FilesViewLabelProvider extends CellLabelProvider implements ILabelProvider {
 

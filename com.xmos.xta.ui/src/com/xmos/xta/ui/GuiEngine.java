@@ -35,9 +35,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.ui.editors.InputDisassembly;
-import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
 import com.xmos.xta.ui.editors.XtaEditor;
+import com.xmos.xta.ui.editors.disassembly.InputDisassembly;
+import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.script.InputScript;
+import com.xmos.xta.ui.editors.script.ScriptEditor;
 
 @SuppressWarnings("restriction")
 public class GuiEngine {
@@ -311,6 +313,11 @@ public class GuiEngine {
 		return input;
 	}
 
+	public static IEditorInput getScriptInput() {
+		IEditorInput input = new InputScript();
+		return input;
+	}
+
 	public static void setSourcePcs(List<Long> pcs, boolean showPosition) {
 		if (!pcs.equals(s_sourcePcs) || showPosition) {
 			s_sourcePcs = pcs;
@@ -351,6 +358,25 @@ public class GuiEngine {
 		GuiEngine.broadcast(Broadcaster.BROADCAST_OPEN_DISASSEMBLY, "");		
 	}
 
+	public static void openScriptEditor() {
+		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		
+		// Check whether there is actually anything to do
+		IEditorReference[] editorReferences = page.getEditorReferences();
+		for (IEditorReference editorRef : editorReferences) {
+			if (editorRef.getPartName().equals(ScriptEditor.EDITORNAME)) {
+				GuiEngine.broadcast(Broadcaster.BROADCAST_REFRESH_SCRIPT, "");
+				return;
+			}
+		}
+
+		try {
+			IEditorInput input = GuiEngine.getScriptInput();
+		    page.openEditor(input, ScriptEditor.ID);
+
+		} catch (PartInitException e) {}		
+	}
+	
 	public static void closeDisassembly() {
 		s_disassemblyInputs.clear();
 	}

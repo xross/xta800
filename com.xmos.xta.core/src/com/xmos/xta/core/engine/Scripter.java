@@ -160,11 +160,11 @@ public class Scripter {
     	
 		RouteTiming routeTiming = route.getRouteTiming();
 		if (routeTiming.isTimingSpecified()) {
-	    	script.append(String.format("set requirement %s %s\n", routeIdStr, 
+	    	script.append(String.format("set required %s %s\n", routeIdStr, 
 	    			routeTiming.getDescription(Level.REQUIRED)));
-		}			    	
+		}
     }
-    
+
     private void updateGlobalConfig(StringBuffer script, Config config, int nodeId, int coreId) {
     	if (m_currentConfig.m_numThreads != config.m_numThreads) {
         	script.append(String.format("config threads %s\n", config.m_numThreads));

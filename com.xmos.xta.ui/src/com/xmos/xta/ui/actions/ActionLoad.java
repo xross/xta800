@@ -37,8 +37,8 @@ import com.xmos.xta.ui.GuiProgressMonitor;
 import com.xmos.xta.ui.XtaPlugin;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiFileFinder;
-import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
-import com.xmos.xta.ui.editors.XtaSourceEditor;
+import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 import com.xmos.xta.ui.views.console.ConsoleView;
 
 public class ActionLoad extends ActionDelegate implements IPropertyChangeListener, 
@@ -147,7 +147,7 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 		// Need to close any xta editors already open..
 		for (IEditorReference editorReference : page.getEditorReferences()) {
 			if (editorReference.getId().equals(XtaSourceEditor.ID) || 
-					editorReference.getId().equals(XtaDisassemblyEditor.ID)) {
+				editorReference.getId().equals(XtaDisassemblyEditor.ID)) {
 				page.closeEditor(editorReference.getEditor(false), false);
 			}
 		}

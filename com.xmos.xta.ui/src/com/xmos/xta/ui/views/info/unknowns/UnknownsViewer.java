@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.ui.GuiEngine;
@@ -48,8 +49,8 @@ public class UnknownsViewer extends InfoViewer {
     	}
 
 		for (TableItem item : getViewer().getTable().getItems()) {
-			Node node = (Node)item.getData();					
-			if (allInstructionNodes.contains(node)) {
+			Unknown unknown = (Unknown)item.getData();					
+			if (allInstructionNodes.contains(unknown.getNode())) {
 				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));

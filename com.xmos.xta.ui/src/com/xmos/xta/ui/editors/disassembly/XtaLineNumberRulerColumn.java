@@ -1,6 +1,8 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.disassembly;
 
 import org.eclipse.jface.text.source.LineNumberRulerColumn;
+
+import com.xmos.xta.ui.editors.Input;
 
 public class XtaLineNumberRulerColumn extends LineNumberRulerColumn {
 	private Input m_input;

@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.disassembly;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
@@ -8,6 +8,9 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+
+import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
+import com.xmos.xta.ui.editors.XtaRulerAnnotationHover;
 
 public class XtaDisassemblyConfiguration extends SourceViewerConfiguration {
     public static final boolean DEBUG = false;

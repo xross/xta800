@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.source;
 
 import java.util.ArrayList;
 import java.util.List;

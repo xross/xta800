@@ -251,6 +251,7 @@ public class Engine implements Notifier {
 		m_nodeId = 0;
 		m_coreId = 0;			
 		m_routes.clear();
+		m_routeContainers.clear();
 		m_numRoutesLastAnalysed = 0;
 		m_selectedRoute = null;
 		m_exclusions.clear();

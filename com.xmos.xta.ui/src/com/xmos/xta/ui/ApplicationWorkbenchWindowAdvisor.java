@@ -11,8 +11,6 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.part.EditorInputTransfer;
 
-import com.xmos.xta.ui.editors.EditorAreaDropAdapter;
-
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
@@ -31,7 +29,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setShowProgressIndicator(true);
         configurer.setTitle("XMOS Timing Analysis");
 		configurer.addEditorAreaTransfer(EditorInputTransfer.getInstance());
-		configurer.configureEditorAreaDropListener(new EditorAreaDropAdapter());
     }
     
     public void postWindowOpen() {

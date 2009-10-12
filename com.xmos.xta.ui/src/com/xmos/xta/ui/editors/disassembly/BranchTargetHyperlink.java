@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.disassembly;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
