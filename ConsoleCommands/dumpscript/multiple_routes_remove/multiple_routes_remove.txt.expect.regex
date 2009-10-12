@@ -1,0 +1,17 @@
+load .*test\.xe
+
+#
+# Route: x => x
+#
+add exclusion the_great_outdoors
+analyse path x x
+remove route 1
+remove route 3
+
+#
+# Route: x => x
+#
+analyse path x x
+remove route 6
+remove route 7
+
