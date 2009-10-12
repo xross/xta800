@@ -40,6 +40,7 @@ import com.xmos.xta.ui.editors.disassembly.InputDisassembly;
 import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
 import com.xmos.xta.ui.editors.script.InputScript;
 import com.xmos.xta.ui.editors.script.ScriptEditor;
+import com.xmos.xta.ui.views.console.ConsoleView;
 
 @SuppressWarnings("restriction")
 public class GuiEngine {
@@ -381,6 +382,18 @@ public class GuiEngine {
 		s_disassemblyInputs.clear();
 	}
 
+	public static void runCommandInConsole(String command) {
+		ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+		getActivePage().findView(ConsoleView.ID);
+	
+	    try {
+		    PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+		        getActivePage().showView(ConsoleView.ID);
+	    } catch (PartInitException e) {}
+	
+	    console.runCommand(command);		
+	}
+	
 	/**
 	 * Split the editor area if there is at least two editors in it.
 	 */

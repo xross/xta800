@@ -38,6 +38,9 @@ public class Scripter {
     	script.append(String.format("load %s\n", m_engine.getExecutable().toString()));
     	    	
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
+        	if (routeContainer.numExistingRoutes() <= 0)
+        		continue;
+    		
        		script.append("\n");
 
        		routeComment(routeContainer, script);
@@ -98,7 +101,7 @@ public class Scripter {
     	}    	
     }
 
-    private void analyseRoutes(RouteContainer routeContainer, StringBuffer script) {
+    private void analyseRoutes(RouteContainer routeContainer, StringBuffer script) {    	
     	RouteDescription routeDescription = routeContainer.getDescription();
     	switch (routeDescription.getMode()) {
     	case FUNCTION:
@@ -110,7 +113,7 @@ public class Scripter {
     		break;
     	}    	
     }
-    
+
     private void removeRoutes(RouteContainer routeContainer, StringBuffer script) {
     	int index = 0;
    		for (Route route : routeContainer.getRoutes()) {

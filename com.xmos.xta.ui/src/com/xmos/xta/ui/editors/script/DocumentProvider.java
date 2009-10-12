@@ -25,6 +25,7 @@ public class DocumentProvider extends AbstractDocumentProvider {
 
 	protected IDocument createDocument(Object element) throws CoreException {
 		if (DEBUG) System.out.printf("DocumentProvider: createDocument\n");			                    
+
 		if (element instanceof IEditorInput) {			
 			Document document = new Document();
             String contents = (String)((IEditorInput)element).getAdapter(String.class);

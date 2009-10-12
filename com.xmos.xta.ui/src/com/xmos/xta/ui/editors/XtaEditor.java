@@ -31,8 +31,6 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.ui.editors.XtaEditor.Test";
     
-    public static final String ExpandAllID           = "com.xmos.xta.ui.action.ExpandAll";
-    public static final String CollapseAllID         = "com.xmos.xta.ui.action.CollapseAll";
     public static final String ShowStartPointID      = "com.xmos.xta.ui.action.ShowStartPoint";
     public static final String ShowEndPointID        = "com.xmos.xta.ui.action.ShowEndPoint";
     public static final String SetStartPointID       = "com.xmos.xta.ui.action.SetStartPoint";

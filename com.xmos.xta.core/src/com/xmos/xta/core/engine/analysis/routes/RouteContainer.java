@@ -38,4 +38,14 @@ public class RouteContainer {
     	int index = m_routes.indexOf(route);
     	return m_exists.get(index);
     }
+
+    public int numExistingRoutes() {
+    	int num = 0;
+        for (Route route : m_routes) {
+        	if (routeExists(route)) {
+        		++num;
+        	}
+        }
+        return num;
+    }
 }

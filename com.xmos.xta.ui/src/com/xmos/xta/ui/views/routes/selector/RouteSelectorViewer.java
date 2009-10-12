@@ -193,16 +193,8 @@ public class RouteSelectorViewer {
     	// Adds the 'Trace in console' option.
     	Action traceInConsoleAction = new Action("Trace in console") {
 			public void run() {
-				ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					getActivePage().findView(ConsoleView.ID);
-				
-				try {
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					    getActivePage().showView(ConsoleView.ID);
-				} catch (PartInitException e) {}
-				
 				int routeId = GuiEngine.getEngine().getSelectedRouteId();
-				console.runCommand("print trace " + routeId + " " + firstNode.getRoute().getNode().getId());
+				GuiEngine.runCommandInConsole("print trace " + routeId + " " + firstNode.getRoute().getNode().getId());
 			}
 		};
     	manager.add(traceInConsoleAction);

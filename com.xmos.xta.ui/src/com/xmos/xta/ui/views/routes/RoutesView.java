@@ -107,8 +107,7 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener {
 			m_selectedRouteViewer.selectNodes();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
-			m_selectedRouteViewer.updateSelection();
-			
+			m_selectedRouteViewer.updateSelection();			
 		}
 	}
 	
