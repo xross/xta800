@@ -25,14 +25,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.dialogs.Required;
-import com.xmos.xta.ui.views.console.ConsoleView;
 
 public class RouteSelectorViewer {	
     private TreeViewer m_viewer;	

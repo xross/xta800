@@ -44,7 +44,6 @@ public class SuccessorAdder {
 			handleNonBranchingInstructions(src, node, inst, debug);
 			addUserSuccessors(src, node, inst, debug);
 			addBranchLinkReturns(src, node, inst);
-			
 		}
 		return true;
 	}

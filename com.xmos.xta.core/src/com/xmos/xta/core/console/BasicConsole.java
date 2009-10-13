@@ -6,6 +6,7 @@ import java.util.Vector;
 import com.xmos.xta.core.console.commands.Command;
 
 public class BasicConsole extends Console {
+
 	public void display(String str) {
 		if (!redirectToFile(str)) {
 			System.out.printf("%s", str);

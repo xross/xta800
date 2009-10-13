@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
@@ -24,17 +25,17 @@ import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.core.engine.analysis.controlflow.UnreachableCodeFinder;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
-import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
+import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
+import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.instructions.DataCollection;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
@@ -42,11 +43,11 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
-import com.xmos.xta.core.engine.sections.SrcStringInfo;
-import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
-import com.xmos.xta.core.engine.sourcemapper.FileFinder;
+import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
+import com.xmos.xta.core.engine.sections.SrcStringInfo;
+import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class Engine implements Notifier {
@@ -56,7 +57,6 @@ public class Engine implements Notifier {
 	public static final int NODE_ID_TOP_LEVEL = -4;
 		
 	private XeLoader m_xeLoader;
-	private FileFinder m_fileFinder;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
 	private int m_numRoutesLastAnalysed;
@@ -78,6 +78,7 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
+	private Collection<SourceMapperInfo> m_sourceMapperInfoCache;
 	
 	private DataCollection m_dataCollection;
 	private final static boolean LAZY = true;
@@ -94,7 +95,6 @@ public class Engine implements Notifier {
 		m_exclusions = new ArrayList<Reference>();
 		m_config = config;
 		m_executableFile = null;
-		m_fileFinder = null;
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
@@ -103,6 +103,7 @@ public class Engine implements Notifier {
 		m_timeOut = -1;
 		m_numErrors = 0;
 		m_dataCollection = new DataCollection();
+		m_sourceMapperInfoCache = new ArrayList<SourceMapperInfo>();
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -143,11 +144,7 @@ public class Engine implements Notifier {
 	public SymbolTable getSymbolTable() {
 		return m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 	}
-	
-	public SourceMapper getSourceMapper(int nodeId, int coreId) {
-		return m_sourceMapper.get(nodeId, coreId);
-	}
-	
+		
 	public SourceMapper getSourceMapper() {
 		return m_sourceMapper.get(m_nodeId, m_coreId);
 	}
@@ -212,7 +209,7 @@ public class Engine implements Notifier {
 		return routes;
 	}
 	
-	public boolean loadExecutable(CommandSource src, File executableFile, FileFinder fileFinder) {
+	public boolean loadExecutable(CommandSource src, File executableFile) {
 		
     	try {
     		executableFile = executableFile.getCanonicalFile();
@@ -233,19 +230,19 @@ public class Engine implements Notifier {
 		}
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
 		if (LAZY){
-			if (!initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, 0, 0))
-			return false;
+			if (!initialiseGlobalStructure(src, xeLoader, sections, false, 0, 0))
+			    return false;
+			
 		} else {
 			for(int n : xeLoader.getNodeIds()){
 				for(int c : xeLoader.getCoreIds(n)){
-					initialiseGlobalStructure(src, xeLoader, sections, fileFinder, false, n, c);
+					initialiseGlobalStructure(src, xeLoader, sections, false, n, c);
 				}
 			}
 		}
 		
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
-		m_fileFinder = fileFinder;
 		m_xeLoader = xeLoader;
 		m_sections = sections;
 		m_nodeId = 0;
@@ -334,12 +331,15 @@ public class Engine implements Notifier {
 	}
 
 	public void setNodeId(CommandSource src, int nodeId) {
-		if(nodeId != m_nodeId){
-			m_nodeId = nodeId;
-			m_selectedRoute = null;
-			//FIXME
-			initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, false, m_nodeId, m_coreId);
-			notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
+		if (nodeId != m_nodeId) {
+			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeId, m_coreId)) {
+				m_nodeId = nodeId;
+				m_selectedRoute = null;
+				notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
+				
+			} else {
+				notify(src, Notifier.NOTIFY_ERROR, String.format("Error initialising node: %d", nodeId));
+			}
 		}
 	}
 
@@ -348,12 +348,15 @@ public class Engine implements Notifier {
 	}
 
 	public void setCoreId(CommandSource src, int coreId) {
-		if(m_coreId != coreId){
-			m_coreId = coreId;
-			m_selectedRoute = null;
-			//FIXME
-			initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, false, m_nodeId, m_coreId);
-			notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
+		if (m_coreId != coreId) {
+			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeId, m_coreId)) {
+				m_coreId = coreId;
+				m_selectedRoute = null;
+				notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");		
+				
+			} else {
+				notify(src, Notifier.NOTIFY_ERROR, String.format("Error initialising core: %d", coreId));
+			}
 		}
 	}
 
@@ -479,6 +482,31 @@ public class Engine implements Notifier {
 		return m_functionsVisited;
 	}
 	
+	public void updateSourceMappers(String fileName, File file) {
+		// Ensure the debug information is up to date for all nodes/cores
+		for (int nodeId : m_xeLoader.getNodeIds()){
+			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
+				SourceMapper sourceMapper = m_sourceMapper.get(nodeId, coreId);		
+				if (sourceMapper != null) {
+					// The source mapper already exists, so register the file information.
+					updateSourceMapper(sourceMapper, fileName, file, nodeId, coreId);
+
+				} else {
+					// The source mapper for this node/core hasn't been created (due
+					// to the lazy evaluation optimisation), so we must store the file 
+					// info in a cache, and use it when this source mapper is created... 
+					m_sourceMapperInfoCache.add(new SourceMapperInfo(nodeId, coreId, fileName, file));
+				}
+			}
+		}		
+	}
+		
+    private void updateSourceMapper(SourceMapper sourceMapper, String fileName, File file, int nodeId, int coreId) {
+        DebugEngine debugEngine = m_xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();					
+        SourceFile sf = sourceMapper.getSourceFile(fileName);
+        sourceMapper.setFile(debugEngine, sf, file);    	
+    }
+
 	// ===================================================================== //
 	// Route Selection Methods
 	// ===================================================================== //			
@@ -938,13 +966,7 @@ public class Engine implements Notifier {
 		}			
 		
 		if (m_sections.addToBranches(src, m_nodeId, m_coreId, fromRef.getPc(), toRefPcs)) {
-			m_structuralGraphUpToDate.add(m_nodeId, m_coreId, false);
-			
-			/*
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, true)) {
-				return false;
-			}
-			*/
+			m_structuralGraphUpToDate.add(m_nodeId, m_coreId, false);			
 			return true;			
 		}		
 		return false;
@@ -1026,9 +1048,8 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Private Methods
 	// ===================================================================== //
-	private boolean initialiseGlobalStructure(CommandSource src, XeLoader xeLoader, Sections sections, FileFinder fileFinder, 
+	private boolean initialiseGlobalStructure(CommandSource src, XeLoader xeLoader, Sections sections,
 			boolean clearPrevious, int nodeId, int coreId) {
-		assert(fileFinder != null);
 
 		if (clearPrevious) {
 			m_structuralGraph = null;
@@ -1042,8 +1063,10 @@ public class Engine implements Notifier {
 		NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> newFunctionNames = new NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>>(m_functionNames);
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMapper);
 		
-		if(m_structuralGraphUpToDate.get(nodeId, coreId) != null && m_structuralGraphUpToDate.get(nodeId, coreId)){
+		if (m_structuralGraphUpToDate.get(nodeId, coreId) != null && 
+			m_structuralGraphUpToDate.get(nodeId, coreId)) {
 			//System.out.println("node " + nodeId + " core " + coreId + " is up to date");
+			
 		} else {
 			provideFeedback(String.format("Processing node: %d, core: %d", nodeId, coreId));
 			
@@ -1063,7 +1086,7 @@ public class Engine implements Notifier {
 			threadStartNodes = th.ensureThreadStartExists(src, threadStartNodes);
 
 			SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
-			if (!sa.process(src)) 
+			if (!sa.process(src))
 				return false;
 			warnAboutUnsetBranches(xeLoader, sections, src, id, nodeId, coreId);
 			
@@ -1085,7 +1108,13 @@ public class Engine implements Notifier {
 
 			provideFeedback(String.format("Processing sources..."));				
 			SourceMapper sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
-					fileFinder, id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
+					id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
+			
+			for (SourceMapperInfo smInfo : m_sourceMapperInfoCache) {
+				if ((smInfo.m_nodeId == nodeId) && (smInfo.m_coreId == coreId)) {
+					updateSourceMapper(sourceMapper, smInfo.m_fileName, smInfo.m_file, nodeId, coreId);
+				}
+			}
 			
 			newSourceMappers.add(nodeId, coreId, sourceMapper);
 			
@@ -1143,7 +1172,7 @@ public class Engine implements Notifier {
 		notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
 		
 		if (!m_structuralGraphUpToDate.get(m_nodeId, m_coreId)) {
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, m_fileFinder, false, m_nodeId, m_coreId))
+			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeId, m_coreId))
 				return false;
 		}
 
@@ -1344,5 +1373,19 @@ class NodeCoreCollection<E> {
 
 	private String nodeCoreToString(int nodeId, int coreId) {
 		return nodeId + ":" + coreId;
+	}
+}
+
+class SourceMapperInfo {
+	int m_nodeId;
+	int m_coreId;
+	String m_fileName;
+	File m_file;
+	
+	SourceMapperInfo(int nodeId, int coreId, String fileName, File file) {
+		m_nodeId = nodeId;
+		m_coreId = coreId;
+		m_fileName = fileName;		
+		m_file = file;
 	}
 }
