@@ -332,7 +332,7 @@ public class Engine implements Notifier {
 
 	public void setNodeId(CommandSource src, int nodeId) {
 		if (nodeId != m_nodeId) {
-			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeId, m_coreId)) {
+			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeId, m_coreId)) {
 				m_nodeId = nodeId;
 				m_selectedRoute = null;
 				notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
@@ -349,7 +349,7 @@ public class Engine implements Notifier {
 
 	public void setCoreId(CommandSource src, int coreId) {
 		if (m_coreId != coreId) {
-			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeId, m_coreId)) {
+			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeId, coreId)) {
 				m_coreId = coreId;
 				m_selectedRoute = null;
 				notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");		
