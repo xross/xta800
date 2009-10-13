@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.4"?>
 
-<product name="xtagui" id="xtagui.product" application="com.xmos.xta.ui.application" version="1.0.0" useFeatures="false">
+<product name="xtagui" id="com.xmos.xta.ui.product" application="com.xmos.xta.ui.application" version="1.0.0" useFeatures="false">
 
    <aboutInfo>
       <image path="/com.xmos.xta.ui/icons/xta.png"/>
