@@ -19,7 +19,7 @@ public class CallReference extends ReferenceType {
 		return null;
 	}
 	
-	public boolean resolve(Engine engine, int nodeId, int coreId) {
+	public boolean resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
 		

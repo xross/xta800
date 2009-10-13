@@ -140,7 +140,7 @@ public class Time extends Command {
 			return;			    	    	
     	
 		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.ENDPOINT_REF);
-		ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		ref.resolve(engine);
 
    		switch (m_mode) {
 	    case NS:

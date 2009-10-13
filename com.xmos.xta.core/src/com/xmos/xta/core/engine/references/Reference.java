@@ -47,14 +47,14 @@ public class Reference {
 		return m_backTrail;
 	}
 	
-	public boolean resolve(Engine engine, int nodeId, int coreId) {
+	public boolean resolve(Engine engine) {
 		assert(m_base != null);
 
-		if (!m_base.resolve(engine, nodeId, coreId))
+		if (!m_base.resolve(engine))
 			return false;
 			
 		for (ReferenceType referenceType : m_backTrail) {
-			if (!referenceType.resolve(engine, nodeId, coreId))
+			if (!referenceType.resolve(engine))
 				return false;
 		}
 		return true;

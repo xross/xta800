@@ -32,7 +32,7 @@ class BranchTargetHyperlink implements IHyperlink {
 		Reference ref = ReferenceFactory.createReference(m_pcString, ReferenceClass.LABEL_REF);
 		
 		Engine engine = GuiEngine.getEngine();
-		boolean resolved = ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		boolean resolved = ref.resolve(engine);
 		if (resolved) {
 			GuiEngine.setCodePoint(ref);
 			GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");

@@ -19,7 +19,7 @@ public class PcReference extends ReferenceType {
 		return null;
 	}
 	
-	public boolean resolve(Engine engine, int nodeId, int coreId) {
+	public boolean resolve(Engine engine) {
 		SourceMapper sourceMapper = engine.getSourceMapper();
 		if (sourceMapper == null) 
 			return false;

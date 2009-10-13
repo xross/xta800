@@ -155,7 +155,7 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      			List<Node> nodes = new ArrayList<Node>();
      			Engine engine = GuiEngine.getEngine();
      	    	Reference reference = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
-     	    	if (!reference.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+     	    	if (!reference.resolve(engine)) {
      	    		assert(false);
      	    	}
      			nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));

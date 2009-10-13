@@ -1340,7 +1340,7 @@ public class Engine implements Notifier {
 	}
 
 	private boolean resolveRefernece(Reference ref) {
-		return ref.resolve(this, m_nodeId, m_coreId);
+		return ref.resolve(this);
 	}
 		
 	public void setAnalysisTimeOut(int time) {

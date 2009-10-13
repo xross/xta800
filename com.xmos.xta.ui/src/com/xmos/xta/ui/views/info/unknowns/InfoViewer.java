@@ -91,7 +91,7 @@ abstract class InfoViewer {
 							Long.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
 					
 					Engine engine = GuiEngine.getEngine();
-					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					ref.resolve(engine);
 					
 					GuiEngine.setCodePoint(ref);
 					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");

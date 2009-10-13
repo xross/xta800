@@ -59,8 +59,6 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     
     private void updateLineMap() {
 		Engine engine = GuiEngine.getEngine();
-		int nodeId = engine.getNodeId();
-		int coreId = engine.getCoreId();
 
 		m_pcToSourceLineIndex.clear();
 		
@@ -72,7 +70,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     		String refString = String.format("%s:%d", fileName, lineNumber);
     		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 
-			if (ref.resolve(engine, nodeId, coreId)) {
+			if (ref.resolve(engine)) {
     			long linePc = ref.getPc();
     			addPcToLineEntry(linePc, lineNumber);
     		}

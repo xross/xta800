@@ -223,13 +223,13 @@ public class GuiEngine {
 		} else if (message.equals(Notifier.NOTIFY_SET_START_POINT)) {
 			Reference startPoint = ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF);			
 			Engine engine = GuiEngine.getEngine();
-		    startPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		    startPoint.resolve(engine);
 	    	s_startPoint = startPoint;
 
 		} else if (message.equals(Notifier.NOTIFY_SET_END_POINT)) {
 			Reference endPoint = ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF);			
 			Engine engine = GuiEngine.getEngine();
-			endPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());			
+			endPoint.resolve(engine);			
 			s_endPoint = endPoint;
 			
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
