@@ -275,26 +275,6 @@ public class GuiEngine {
 		}
 	}
 	
-	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {
-		if (s_routeProperties.containsKey(name)) {
-			return s_routeProperties.get(name);
-			
-		} else {
-			Map<Integer, GuiRouteProperties> routeIdMap = new HashMap<Integer, GuiRouteProperties>();
-			s_routeProperties.put(name, routeIdMap);
-			return routeIdMap;
-		}
-	}
-
-	private static void resetGuiState() {
-		s_codePoint = null;
-		s_startPoint = null;
-		s_endPoint = null;
-		s_focusNodes = null;
-		s_runMode = Notifier.RUN_MODE_FUNCTION;
-		setSelectedNodes(new ArrayList<Node>());
-	}
-
 	public static void setFocus(Node node) {
 		s_focusNodes = node;
 		broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
@@ -392,6 +372,26 @@ public class GuiEngine {
 	    } catch (PartInitException e) {}
 	
 	    console.runCommand(command);		
+	}
+	
+	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {
+		if (s_routeProperties.containsKey(name)) {
+			return s_routeProperties.get(name);
+			
+		} else {
+			Map<Integer, GuiRouteProperties> routeIdMap = new HashMap<Integer, GuiRouteProperties>();
+			s_routeProperties.put(name, routeIdMap);
+			return routeIdMap;
+		}
+	}
+
+	private static void resetGuiState() {
+		s_codePoint = null;
+		s_startPoint = null;
+		s_endPoint = null;
+		s_focusNodes = null;
+		s_runMode = Notifier.RUN_MODE_FUNCTION;
+		setSelectedNodes(new ArrayList<Node>());
 	}
 	
 	/**
