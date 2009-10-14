@@ -1071,8 +1071,12 @@ public class Engine implements Notifier {
 			provideFeedback(String.format("Processing node: %d, core: %d", nodeId, coreId));
 			
 			InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config, m_dataCollection);
-			if (!id.decode()) 
+			try {
+				id.decode();
+			} catch (Exception e) {
+				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());								
 				return false;
+			} 
 			
 			newFunctionNames.add(nodeId, coreId, new TreeMap<String, LinkedList<InstructionNode>>());
 			

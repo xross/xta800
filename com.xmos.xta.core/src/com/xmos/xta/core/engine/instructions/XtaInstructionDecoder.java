@@ -10,10 +10,11 @@ public abstract class XtaInstructionDecoder {
     
     public static XtaInstructionDecoder createInstructionDecoder(
     		XeLoader.Architecture architecture) {
+    	
 		XtaInstructionDecoder instructionDecoder = null;
 		switch (architecture) {
 		case REVB:
-			if(m_revB == null){
+			if (m_revB == null) {
 				instructionDecoder = new xs1bXtaInstructionDecoder();
 				m_revB = instructionDecoder;
 			} else {
@@ -21,15 +22,14 @@ public abstract class XtaInstructionDecoder {
 			}
 			break;
 		case REVC:
-			if(m_revC == null){
+			if (m_revC == null) {
 				instructionDecoder = new xs1bXtaInstructionDecoder();
 				m_revC = instructionDecoder;
 			} else {
 				instructionDecoder = m_revC;
 			}
-			break;
+			break;			
 		}
-		assert(instructionDecoder != null);
 		return instructionDecoder;
     }
 }

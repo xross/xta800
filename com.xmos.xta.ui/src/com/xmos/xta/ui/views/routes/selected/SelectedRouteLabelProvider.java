@@ -38,8 +38,8 @@ public class SelectedRouteLabelProvider extends CellLabelProvider {
 		return toolTip.substring(0, toolTip.length()-1);
 	}
 
-    public boolean useNativeToolTip(Object object) {
-        if (DEBUG) System.out.printf("SelectedRouteLabelProvider: useNativeToolTips\n");
-        return true;
-    }
+//    public boolean useNativeToolTip(Object object) {
+//        if (DEBUG) System.out.printf("SelectedRouteLabelProvider: useNativeToolTips\n");
+//        return true;
+//    }
 }

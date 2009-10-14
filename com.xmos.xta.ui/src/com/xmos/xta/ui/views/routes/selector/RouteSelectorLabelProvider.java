@@ -47,8 +47,8 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 		return routeNode.getRoute().getRouteTiming().getDescription(Level.COMPLETE);
 	}
 
-    public boolean useNativeToolTip(Object object) {
-        if (DEBUG) System.out.printf("RouteSelectorLabelProvider: useNativeToolTips\n");
-        return true;
-    }
+//    public boolean useNativeToolTip(Object object) {
+//        if (DEBUG) System.out.printf("RouteSelectorLabelProvider: useNativeToolTips\n");
+//        return true;
+//    }
 }
