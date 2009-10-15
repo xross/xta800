@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 
@@ -28,13 +27,14 @@ public class UnknownsViewer extends InfoViewer {
 	private Action m_setInstructionTimeAction;
 	private Action m_setLoopIterationsAction;
 
-	public UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
-		super(display, parent, site, tableViewer);
+	public UnknownsViewer(TableViewer tableViewer, Composite parent, IWorkbenchPartSite site) {
+		super(tableViewer, parent, site);
 	}
 
 	public void update() {
 		getViewer().setInput(GuiEngine.getEngine().getSelectedRoute());
 		updateHighlighting(GuiEngine.getSelectedNodes());
+		update();		
 	}
 	
 	public void updateHighlighting(List<Node> selectedNodes) {

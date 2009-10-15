@@ -1,17 +1,19 @@
 package com.xmos.xta.ui.views.info.log;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.IWorkbenchPartSite;
 
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.views.info.Viewer;
 
-public class LogViewer {
+public class LogViewer implements Viewer {
 	private TableViewer m_tableViewer;
 
-	public LogViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
+	public LogViewer(TableViewer tableViewer) {
 		m_tableViewer = tableViewer;
 
 		LogViewerContentProvider contentProvider = new LogViewerContentProvider();
@@ -23,15 +25,18 @@ public class LogViewer {
 			tableColumn.setWidth(labelProvider.getColumnWidths()[i]);
 		}
 	    m_tableViewer.setContentProvider(contentProvider);				
-	    m_tableViewer.setLabelProvider(labelProvider);	
+	    m_tableViewer.setLabelProvider(labelProvider);
+	    update();
 	}
-	
+
 	public void update() {
 		m_tableViewer.setInput(GuiEngine.getLog());
 	}
-
-	public void clear() {
-		GuiEngine.getLog().clear();
-		m_tableViewer.refresh();
+	
+	public void updateHighlighting(List<Node> selectedNodes) {		
+	}
+	
+	public Control getControl() {
+		return m_tableViewer.getControl();
 	}
 }

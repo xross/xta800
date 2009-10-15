@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-abstract class SectionsViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
+public abstract class SectionsViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
     String[] m_columnNames;
     int[] m_columnWidths;
     int[] m_columnAligmnments;

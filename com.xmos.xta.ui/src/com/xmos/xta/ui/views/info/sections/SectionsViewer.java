@@ -12,26 +12,26 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.views.info.Viewer;
 
-abstract class SectionsViewer {
+public abstract class SectionsViewer implements Viewer {
 	private TableViewer m_viewer;
 	private List<Long> m_selectedPcs;
 
 	abstract SectionsViewerContentProvider createContentProvider();
 	abstract SectionsViewerLabelProvider createLabelProvider();
 	
-	SectionsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer viewer) {
+	SectionsViewer(TableViewer viewer) {
 		m_viewer = viewer;
 		m_selectedPcs = new ArrayList<Long>();
 
@@ -81,7 +81,8 @@ abstract class SectionsViewer {
 					m_selectedPcs.add(getPc(object));
 				}
 			}
-		});
+		});		
+		update();
 	}
 	
 	protected abstract long getPc(Object object);
@@ -95,11 +96,14 @@ abstract class SectionsViewer {
 		}
 	}
 	
-	void clear() {
-		m_viewer.setInput(null);
+	public void updateHighlighting(List<Node> selectedNodes) {		
 	}
 	
+	public Control getControl() {
+		return m_viewer.getControl();
+	}
+
 	TableViewer getViewer() {
 		return m_viewer;
-	}
+	}	
 }
