@@ -45,7 +45,7 @@ public class Views {
     	addSetLoopPathIterations(manager, selectedNodes, shell);    	    	
     	addSetLoopScope(manager, selectedNodes, shell);    	    	
     	addSetInstructionTime(manager, selectedNodes, shell);    	    	
-    	addExcludeThis(manager, selectedNodes);    	    	
+    	addExclusion(manager, selectedNodes);    	    	
 
 	    manager.add(new Separator());
     	addFold(manager, selectedNodes);    	    	
@@ -142,9 +142,9 @@ public class Views {
 	    }		
 	}
 
-	private static void addExcludeThis(IMenuManager manager, final List<Node> selectedNodes) {
+	private static void addExclusion(IMenuManager manager, final List<Node> selectedNodes) {
 		final List<XtaInstruction> instructions = getFirstNode(selectedNodes).getInstructions();
-	    Action action = new Action("Exclude this") {
+	    Action action = new Action("Add to exclusion list") {
 		    public void run() {
 		    	XtaInstruction instruction = instructions.get(0);
 		    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiCommandSrc, "0x" + Long.toHexString(instruction.getPc())); 
