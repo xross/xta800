@@ -29,12 +29,12 @@ public class UnknownsViewer extends InfoViewer {
 
 	public UnknownsViewer(TableViewer tableViewer, Composite parent, IWorkbenchPartSite site) {
 		super(tableViewer, parent, site);
+		update();
 	}
 
 	public void update() {
 		getViewer().setInput(GuiEngine.getEngine().getSelectedRoute());
-		updateHighlighting(GuiEngine.getSelectedNodes());
-		update();		
+		updateHighlighting(GuiEngine.getSelectedNodes());	
 	}
 	
 	public void updateHighlighting(List<Node> selectedNodes) {

@@ -166,40 +166,57 @@ public class RouteSelectorViewer {
 	}
 
 	public static void createContextMenu(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
-		if (selectedNodes.size() < 1) {
+		if (selectedNodes.size() < 1)
 			return;
-		}
-    	boolean oneNodeSelected = selectedNodes.size() == 1;
-		final RouteNode firstNode = selectedNodes.get(0);
 
 		manager.add(new Separator());
+		addSetTimingRequirements(manager, selectedNodes, shell);
+		
+		manager.add(new Separator());
+		addTraceInConsole(manager, selectedNodes);
+		addShowRouteInfoInConsole(manager, selectedNodes);
+	}
 
-		Action setTimingRequirementsAction = new Action("Set timing requirements") {
+	private static void addSetTimingRequirements(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		Action action = new Action("Set timing requirements") {
 		    public void run() {
-			    new Required(shell, GuiEngine.getEngine(), firstNode.getRoute());
+			    new Required(shell, GuiEngine.getEngine(), getFirstNode(selectedNodes).getRoute());
 		    }
 	    };
-	    manager.add(setTimingRequirementsAction);
-	    if (oneNodeSelected)
-	    	setTimingRequirementsAction.setEnabled(true);
-	    else
-	    	setTimingRequirementsAction.setEnabled(false);
-
-		manager.add(new Separator());
-
-    	// Adds the 'Trace in console' option.
-    	Action traceInConsoleAction = new Action("Trace in console") {
+	    manager.add(action);
+	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+	
+	private static void addTraceInConsole(IMenuManager manager, final List<RouteNode> selectedNodes) {
+		Action action = new Action("Trace in console") {
 			public void run() {
-				int routeId = GuiEngine.getEngine().getSelectedRouteId();
-				GuiEngine.runCommandInConsole("print trace " + routeId + " " + firstNode.getRoute().getNode().getId());
+				GuiEngine.runCommandInConsole("print trace " + getRouteId()); 
 			}
 		};
-    	manager.add(traceInConsoleAction);
-    	
-		if (oneNodeSelected)
-    		traceInConsoleAction.setEnabled(true);
-    	else
-    		traceInConsoleAction.setEnabled(false);
+		manager.add(action);
+		action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+
+	private static void addShowRouteInfoInConsole(IMenuManager manager, final List<RouteNode> selectedNodes) {
+		Action action = new Action("Show route info in console") {
+			public void run() {
+				GuiEngine.runCommandInConsole("print route_info " + getRouteId());
+			}
+		};
+		manager.add(action);
+		action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+	
+	private static int getRouteId() {
+		return GuiEngine.getEngine().getSelectedRouteId();
+	}
+	
+	private static RouteNode getFirstNode(List<RouteNode> selectedNodes) {
+		return selectedNodes.get(0);
+	}
+	
+	private static boolean oneNodeSelected(List<RouteNode> selectedNodes) {
+		return selectedNodes.size() == 1;
 	}
 	
 	private boolean setSelection(RouteNode root, int routeId) {
