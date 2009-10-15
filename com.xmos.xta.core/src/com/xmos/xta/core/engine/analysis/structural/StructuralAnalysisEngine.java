@@ -174,9 +174,6 @@ public class StructuralAnalysisEngine {
 			engine.notify(src, Notifier.NOTIFY_WARNING, warning);
 		}
 		
-		engine.provideFeedback("Setting parent nodes...");
-		setParents();
-
 		engine.provideFeedback("Registering config...");
 		Config config = engine.getConfig();
 		Architecture architecture = engine.getXeLoader().getArchitecture();
@@ -247,11 +244,7 @@ public class StructuralAnalysisEngine {
 	   		});
 
 			allFunctionObjects.put(fn, unlinkedFunctions);
-
-			graphs.add(fn);
-			
-			//setParent(fn);
-			
+			graphs.add(fn);						
 			normaliseGraph(fn);
 			
 			startPcs.put(graphStart.getStartPc(), fn);
@@ -302,8 +295,7 @@ public class StructuralAnalysisEngine {
 				}
 		    });
 			setParent(fn);
-		}
-		
+		}		
 	}
 
 	private String getFunctionName(Node graphStart,
@@ -677,12 +669,6 @@ public class StructuralAnalysisEngine {
 			}
 			
 			wasEmptyLastTime = leafs.isEmpty();
-		}
-	}
-
-	private void setParents() {
-		for (Node node : m_structureGraph.getThreads()) {
-			setParent(node);
 		}
 	}
 
