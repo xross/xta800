@@ -177,7 +177,7 @@ public class StructuralAnalysisEngine {
 		
 		if (REGISTER_CONFIG_ON_GLOBAL_TREE) {
 			// If enabled, this allows the printing of the global structure to 
-			// display the node times. It is disabled by default for efficency reasons,
+			// display the node times. It is disabled by default for efficiency reasons,
 			// as printing the global structure is not a user activity. 
 			engine.provideFeedback("Registering config...");
 			Config config = engine.getConfig();
