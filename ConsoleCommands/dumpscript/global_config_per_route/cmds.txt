@@ -1,0 +1,22 @@
+config threads 1
+config freq 100
+config proc 0 0
+analyse function a
+
+config threads 2
+config freq 200
+config proc 0 1
+analyse function b
+
+config threads 3
+config freq 300
+config proc 0 2
+analyse function c
+
+config threads 4
+config freq 400
+config proc 0 3
+analyse function d
+
+dumpscript
+exit

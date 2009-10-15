@@ -5,8 +5,8 @@ load .*test\.xe
 #
 add exclusion the_great_outdoors
 analyse path x x
-set requirement 0 100.0 ns
-set requirement 1 200.0 ns
-set requirement 2 300.0 ns
-set requirement 3 400.0 ns
+set required 0 100.0 ns
+set required 1 200.0 ns
+set required 2 300.0 ns
+set required 3 400.0 ns
 
