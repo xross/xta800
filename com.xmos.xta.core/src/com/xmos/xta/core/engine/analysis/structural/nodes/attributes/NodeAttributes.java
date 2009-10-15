@@ -131,9 +131,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    double value = getTimeTaken(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%.1fns", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%.1fns", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO:  return String.format("%.1fns", value);
 	    }
 	    assert(false);
@@ -144,9 +145,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    long value = getNumCycles(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%d", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%d", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
@@ -157,9 +159,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    long value = getNumInstructions(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%d", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%d", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
@@ -170,9 +173,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    long value = getNumFNops(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%d", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%d", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
@@ -186,7 +190,7 @@ public class NodeAttributes {
 		}
 		return String.format("%d", totalIterations);
 	}
-		
+
 	// ===================================================================== //
 	// Statistics Methods
 	// ===================================================================== //

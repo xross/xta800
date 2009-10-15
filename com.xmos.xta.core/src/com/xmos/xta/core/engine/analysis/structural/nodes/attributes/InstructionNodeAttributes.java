@@ -36,6 +36,10 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		if (getNode().isUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
+		if (m_config == null) {
+			status.mergeStatus(S.NOT_AVALIABLE);
+			return 0.0;
+		}
 		return getInstructionNs();
 	}
 

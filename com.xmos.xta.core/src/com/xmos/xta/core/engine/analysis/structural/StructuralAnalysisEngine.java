@@ -40,6 +40,7 @@ import com.xmos.xta.core.engine.sections.Sections;
 public class StructuralAnalysisEngine {
 	
 	private static final boolean SYMBOLIC_LINK = true;
+	private static final boolean REGISTER_CONFIG_ON_GLOBAL_TREE = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Long, FunctionNode> m_functionStartPcs;
@@ -174,12 +175,17 @@ public class StructuralAnalysisEngine {
 			engine.notify(src, Notifier.NOTIFY_WARNING, warning);
 		}
 		
-		engine.provideFeedback("Registering config...");
-		Config config = engine.getConfig();
-		Architecture architecture = engine.getXeLoader().getArchitecture();
-		setConfig(config, architecture, m_structureGraph.getThreads());
-		setConfig(config, architecture, m_structureGraph.getFunctions());
-		setConfig(config, architecture, m_structureGraph.getUnlinkedFunctions());
+		if (REGISTER_CONFIG_ON_GLOBAL_TREE) {
+			// If enabled, this allows the printing of the global structure to 
+			// display the node times. It is disabled by default for efficency reasons,
+			// as printing the global structure is not a user activity. 
+			engine.provideFeedback("Registering config...");
+			Config config = engine.getConfig();
+			Architecture architecture = engine.getXeLoader().getArchitecture();
+			setConfig(config, architecture, m_structureGraph.getThreads());
+			setConfig(config, architecture, m_structureGraph.getFunctions());
+			setConfig(config, architecture, m_structureGraph.getUnlinkedFunctions());			
+		}
 		
 		engine.provideFeedback("Complete");
 		return true;
