@@ -19,9 +19,9 @@ public class Time extends Command {
 	private int m_routeId;
 	private String m_refString;
 	private Mode m_mode;
-	private float m_ns;
-	private float m_mhz;
-	private int m_cycles;
+	private double m_ns;
+	private double m_mhz;
+	private long m_cycles;
 	
 	public Time() {
 		m_routeId = 0;
@@ -31,7 +31,7 @@ public class Time extends Command {
 		m_cycles = 0;
 	}
 	
-	public Time(int routeId, String refString, int cycles) {
+	public Time(int routeId, String refString, long cycles) {
 		m_routeId = routeId;
 		m_mode = Mode.CYCLES;
 		m_refString = refString;
@@ -40,19 +40,17 @@ public class Time extends Command {
 		m_mhz = 0;
 	}
 
-	public Time(int routeId, String refString, float value, Mode mode) {
+	public Time(int routeId, String refString, double value, Mode mode) {
 		m_routeId = routeId;
-		m_mode = Mode.NS;
+		m_mode = mode;
 		m_refString = refString;
 		m_cycles = 0;
 		
 		switch (mode) {
 		case NS: 
 		    m_ns = value;
-		    m_mhz = ((float)1.0 / value) * 1000;
 		    break;
 		case MHZ:
-		    m_ns = ((float)1.0 / value) * 1000;
 		    m_mhz = value;
 		    break;
 		}
@@ -109,24 +107,24 @@ public class Time extends Command {
    		String mode = args[index + 4];
     		
    		if (mode.equals("ns")) {			
-   		    float ns;
-   	        try { ns = Float.parseFloat(value); }
+   		    double ns;
+   	        try { ns = Double.parseDouble(value); }
    	        catch (NumberFormatException e) {
    	            return null;
    	        }    
    	        return new Time(routeId, ref, ns, Mode.NS);
    		    
    		} else if (mode.equals("mhz")) {
-   		    float mhz;
-   	        try { mhz = Float.parseFloat(value); }
+   			double mhz;
+   	        try { mhz = Double.parseDouble(value); }
    	        catch (NumberFormatException e) {
    	            return null;
    	        }    
    	        return new Time(routeId, ref, mhz, Mode.MHZ);
     		    
    		} else if (mode.equals("cycles")) {
-   		    int cycles;
-   	        try { cycles = Integer.parseInt(value); }
+   		    long cycles;
+   	        try { cycles = Long.parseLong(value); }
    	        catch (NumberFormatException e) {
    	            return null;
    	        }    
@@ -142,23 +140,23 @@ public class Time extends Command {
 			return;			    	    	
     	
 		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.ENDPOINT_REF);
-		ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		ref.resolve(engine);
 
    		switch (m_mode) {
 	    case NS:
-	        if (!engine.setInstructionTimeTaken(getSrc(), m_routeId, m_refString, m_ns))
+	        if (!engine.setInstructionNs(getSrc(), m_routeId, m_refString, m_ns))
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
 	       			"failed to set instruction time on reference id: %s", m_refString));    			            	
 	    	break;
 
 	    case MHZ:
-	        if (!engine.setInstructionTimeTaken(getSrc(), m_routeId, m_refString, m_mhz))
+	        if (!engine.setInstructionMhz(getSrc(), m_routeId, m_refString, m_mhz))
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
         		    "failed to set instruction time on reference id: %s", m_refString));    			            	
 	        break;
 	    		
 	    case CYCLES:
-	        if (!engine.setInstructionNumCycles(getSrc(), m_routeId, m_refString, m_cycles))
+	        if (!engine.setInstructionCycles(getSrc(), m_routeId, m_refString, m_cycles))
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
         			"failed to set instruction time on reference id: %s", m_refString));    			            	
 	        break;

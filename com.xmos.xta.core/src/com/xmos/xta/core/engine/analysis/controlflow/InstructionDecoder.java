@@ -24,7 +24,7 @@ public class InstructionDecoder {
 	private XeLoader m_xeLoader;
 	private DataCollection m_dataCollection;
 	
-	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader, Config config,DataCollection dataCollection) {
+	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader, Config config, DataCollection dataCollection) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
@@ -33,11 +33,15 @@ public class InstructionDecoder {
 		m_dataCollection = dataCollection;
 	}
 	
-	public boolean decode(){		
+	public void decode() throws Exception {		
 		MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
 		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
 		XtaInstructionDecoder instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(m_xeLoader.getArchitecture());
-		for (ElfSection section: m_xeLoader.getSymbolTable(m_nodeId, m_coreId).getElfHandler().getSections()){
+		if (instructionDecoder == null) {
+			throw new Exception("Architecture not supported");		
+		}
+		
+		for (ElfSection section: m_xeLoader.getSymbolTable(m_nodeId, m_coreId).getElfHandler().getSections()) {
 			if (section.isExecutable()){
 				long sectionAddress = XtaInstruction.makeLongPc(section.getAddress());
 				long pc = sectionAddress;
@@ -46,7 +50,7 @@ public class InstructionDecoder {
 					try {
 		                opcode = memoryImage.readInstructionWord(pc);
 		            } catch (Exception e) {
-		            	return false;
+		            	throw new Exception("Invalid address detected");
 		            }
 		            
 		            XtaInstruction inst = instructionDecoder.decode(opcode, pc);
@@ -64,7 +68,6 @@ public class InstructionDecoder {
 				}
 			}
 		}
-		return true;
 	}
 	
 	public List<InstructionNode> getInstructions(){

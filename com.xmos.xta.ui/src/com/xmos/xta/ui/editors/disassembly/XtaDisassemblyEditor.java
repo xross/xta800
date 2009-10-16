@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.disassembly;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -16,6 +16,10 @@ import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
+
+import com.xmos.xta.ui.editors.Input;
+import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
+import com.xmos.xta.ui.editors.XtaEditor;
 
 public class XtaDisassemblyEditor extends XtaEditor {
     public static final String ID = "com.xmos.xta.ui.editors.XtaDisassemblyEditor";

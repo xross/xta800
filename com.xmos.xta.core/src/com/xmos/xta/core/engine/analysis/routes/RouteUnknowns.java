@@ -8,8 +8,9 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.references.Reference;
@@ -21,21 +22,21 @@ public class RouteUnknowns {
 		m_route = route;
 	}
 
-	public Collection<Node> getUnknowns(final UnknownState unknownState) {
-	    final Collection<Node> unknowns = new ArrayList<Node>();
+	public Collection<Unknown> getUnknowns(final State unknownState) {
+	    final Collection<Unknown> unknowns = new ArrayList<Unknown>();
 	    m_route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
-	    		NodeAttributes nodeAttributes = node.getAttributes();		    		
-	    		if (nodeAttributes.isUnknown() &&
-	    			(nodeAttributes.getUnknownState() == unknownState)) {
-	    			unknowns.add(node);
-	    		}		    			
+	    		for (Unknown unknown : node.getAttributes().getUnknowns()) {
+	    			if (unknown.getState() == unknownState) {
+		    			unknowns.add(unknown);
+	    			}
+	    		}
 	        	return true;
 	    	}
 	    });
 		return unknowns;
-	}	
-	
+	}
+
 	// ===================================================================== //
 	// Setting Loop Iterations
 	// ===================================================================== //
@@ -43,7 +44,7 @@ public class RouteUnknowns {
 			Reference reference, long iterations, boolean sourceLevelIterations) {
 		
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations);
+			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference);
 		}			
 	}
 
@@ -68,7 +69,7 @@ public class RouteUnknowns {
 
 		checkSetLoopIterations(node);
 		checkLoopIterationsValid(node, iterations);
-	    setLoopIterationsNoCheck(src, engine, node, iterations, false);
+	    setLoopIterationsNoCheck(src, engine, node, iterations, false, null);
 	}
 	
 	public void checkSetLoopIterations(Node node) throws Exception {
@@ -93,12 +94,12 @@ public class RouteUnknowns {
 	}
 	
 	private void setLoopIterationsNoCheck(CommandSource src, Engine engine,
-			Node node, long iterations, boolean sourceLevelIterations) {
-		
-		invalidateCachedStats();				
+			Node node, long iterations, boolean sourceLevelIterations, Reference reference) {
+
+		invalidateCachedStats();
 		Node enclosingLoopNode = node.getEnclosingLoopNode();		
-	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
-		enclosingLoopNode.getAttributes().setUnknownState(UnknownState.KNOWN);	
+	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);	    
+	    enclosingLoopNode.getAttributes().addKnown(Type.LOOP_ITERATIONS, reference);
    		clearPathIterations(enclosingLoopNode);
 		refreshDisplayedUnknowns();
 	}
@@ -108,7 +109,7 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	public void setLoopPathIterations(Reference reference, long iterations) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopPathIterationsNoCheck(node, iterations);
+			setLoopPathIterationsNoCheck(node, iterations, reference);
 		}		
 	}
 	
@@ -133,7 +134,7 @@ public class RouteUnknowns {
 		
 		checkSetLoopPathIterations(node);
 		checkLoopPathIterationsValid(node, iterations);
-		setLoopPathIterationsNoCheck(node, iterations);
+		setLoopPathIterationsNoCheck(node, iterations, null);
 	}
 
 	public void checkSetLoopPathIterations(Node node) throws Exception {
@@ -163,11 +164,12 @@ public class RouteUnknowns {
 		condNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
 	}
 
-	private void setLoopPathIterationsNoCheck(Node node, long iterations) {
+	private void setLoopPathIterationsNoCheck(Node node, long iterations, Reference reference) {
 		invalidateCachedStats();
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);
+	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);	    
+	    optionNode.getAttributes().addKnown(Type.LOOP_PATH_ITERATIONS, reference);
 		refreshDisplayedUnknowns();		
 	}
 	
@@ -176,7 +178,7 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	public void setLoopScope(Reference reference, boolean isAbsolute) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopScopeNoCheck(node, isAbsolute);
+			setLoopScopeNoCheck(node, isAbsolute, reference);
 		}		
 	}
 
@@ -193,7 +195,7 @@ public class RouteUnknowns {
 	
 	public void setLoopScope(Node node, boolean isAbsolute) throws Exception {
 		checkSetLoopScope(node);
-		setLoopScopeNoCheck(node, isAbsolute);
+		setLoopScopeNoCheck(node, isAbsolute, null);
 	}	
 
 	public void checkSetLoopScope(Node node) throws Exception {
@@ -204,88 +206,114 @@ public class RouteUnknowns {
 	public boolean getSetLoopScope(Node node) {
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
 		return enclosingLoopNode.getAttributes().getIsAbsolute();
-	}		
+	}
 	
-	private void setLoopScopeNoCheck(Node node, boolean isAbsolute) {
+	private void setLoopScopeNoCheck(Node node, boolean isAbsolute, Reference reference) {
 		invalidateCachedStats();		
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
 		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-	}
-	
-	// ===================================================================== //
-	// Setting Instruction Time
-	// ===================================================================== //
-	public boolean setInstructionTimeTaken(Reference reference, double timeTaken) {
-		boolean found = false;
-	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setInstructionTimeTaken(node, timeTaken);
-	    	found = true;
-		}
-		return found;
-	}
-	
-	public void setInstructionTimeTaken(Node node, double timeTaken) {
-		invalidateCachedStats();
-    	node.getAttributes().setInstructionTimeTaken(timeTaken);
-		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
-		refreshDisplayedUnknowns();	
+		enclosingLoopNode.getAttributes().addKnown(Type.LOOP_SCOPE, reference);
 	}
 
-	public boolean unsetInstructionTimeTaken(Reference reference) {
+	// ===================================================================== //
+	// Setting Instruction Time (Cycles)
+	// ===================================================================== //	
+	public boolean setInstructionCycles(Reference reference, long numCycles) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	unsetInstructionTimeTaken(node);
+	    	setInstructionCycles(node, numCycles, reference);
 	    	found = true;
 		}
 		return found;
 	}
 
-	public void unsetInstructionTimeTaken(Node node) {
+	public void setInstructionCycles(Node node, long numCycles) {
+		setInstructionCycles(node, numCycles, null);
+	}
+		
+	public long getInstructionCycles(Node node) {
+		return node.getAttributes().getInstructionCycles();
+	}	
+	
+	private void setInstructionCycles(Node node, long numCycles, Reference reference) {
 		invalidateCachedStats();
-    	node.getAttributes().unsetInstructionTimeTaken();
-		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);	
+    	node.getAttributes().setInstructionCycles(numCycles);
+		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
 		refreshDisplayedUnknowns();
 	}
 	
-	public double getInstructionTimeTaken(Node node) {
-		return node.getAttributes().getInstructionTimeTaken();
-	}	
-
-	public boolean setInstructionNumCycles(Reference reference, long numCycles) {
+	// ===================================================================== //
+	// Setting Instruction Time (Ns)
+	// ===================================================================== //
+	public boolean setInstructionNs(Reference reference, double ns) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setInstructionNumCycles(node, numCycles);
+	    	setInstructionNs(node, ns, reference);
 	    	found = true;
 		}
 		return found;
-	}
-
-	public void setInstructionNumCycles(Node node, long numCycles) {
-		invalidateCachedStats();
-    	node.getAttributes().setInstructionNumCycles(numCycles);
-		node.getAttributes().setUnknownState(UnknownState.KNOWN);	
-		refreshDisplayedUnknowns();		
 	}
 	
-	public boolean unsetInstructionNumCycles(Reference reference) {
+	public void setInstructionNs(Node node, double ns) {
+		 setInstructionNs(node, ns, null);
+    }
+
+	public double getInstructionNs(Node node) {
+		return node.getAttributes().getInstructionNs();
+	}	
+			
+	private void setInstructionNs(Node node, double ns, Reference reference) {
+		invalidateCachedStats();
+    	node.getAttributes().setInstructionNs(ns);
+		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
+		refreshDisplayedUnknowns();
+	}
+	
+	// ===================================================================== //
+	// Setting Instruction Time (Mhz)
+	// ===================================================================== //		
+	public boolean setInstructionMhz(Reference reference, double mhz) {
 		boolean found = false;
-        for (Node node : m_route.getReferencedNodes(reference)) {
-        	unsetInstructionNumCycles(node);
+	    for (Node node : m_route.getReferencedNodes(reference)) {
+	    	setInstructionMhz(node, mhz, reference);
+	    	found = true;
+		}
+		return found;
+	}
+	
+	public void setInstructionMhz(Node node, double mhz) {
+		setInstructionMhz(node, mhz, null);
+	}
+
+	public double getInstructionMhz(Node node) {
+		return node.getAttributes().getInstructionMhz();
+	}
+
+	private void setInstructionMhz(Node node, double mhz, Reference reference) {
+		invalidateCachedStats();
+    	node.getAttributes().setInstructionMhz(mhz);
+		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
+		refreshDisplayedUnknowns();	
+	}
+	
+	// ===================================================================== //
+	// Unsetting Instruction Time
+	// ===================================================================== //		
+	public boolean unsetInstructionTime(Reference reference) {
+		boolean found = false;
+	    for (Node node : m_route.getReferencedNodes(reference)) {
+	    	unsetInstructionTime(node);
 	    	found = true;
 		}
 		return found;
 	}
 
-	public void unsetInstructionNumCycles(Node node) {
+	public void unsetInstructionTime(Node node) {
 		invalidateCachedStats();
-    	node.getAttributes().unsetInstructionNumCycles();
-		node.getAttributes().setUnknownState(UnknownState.UNKNOWN);			
-		refreshDisplayedUnknowns();			
+    	node.getAttributes().unsetInstructionTime();
+		node.getAttributes().addUnknown(Type.INSTRUCTION_TIME);
+		refreshDisplayedUnknowns();
 	}
-		
-	public long getInstructionNumCycles(Node node) {
-		return node.getAttributes().getInstructionNumCycles();
-	}	
 	
 	public boolean canInstructionPause(Reference reference) {
 		boolean canPause = true;
@@ -296,7 +324,7 @@ public class RouteUnknowns {
 		}
 		return canPause;
 	}
-
+	
 	// ===================================================================== //
 	// Helper Methods
 	// ===================================================================== //	
@@ -308,7 +336,7 @@ public class RouteUnknowns {
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
-	    		node.getAttributes().setDisplayUnknown(false);
+	    		node.getAttributes().setDisplayAsUnknown(false);
 	        	return true;
 	    	}
 	    });
@@ -316,19 +344,18 @@ public class RouteUnknowns {
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
-	    		if (node.getAttributes().isUnknown() &&
-	    			node.getAttributes().getUnknownState() == UnknownState.UNKNOWN) {
-	    			setDisplayUnknownOnParentNodes(node);
+	    		if (node.getAttributes().hasUnknowns()) {
+	    			setDisplayAsUnknownOnParentNodes(node);
 	    		}
 	        	return true;
 	    	}
 	    });	   
 	}	
 	
-	private void setDisplayUnknownOnParentNodes(Node node) {
+	private void setDisplayAsUnknownOnParentNodes(Node node) {
 		Node parent = node;
 		while (parent != null) {
-			parent.getAttributes().setDisplayUnknown(true);
+			parent.getAttributes().setDisplayAsUnknown(true);
 			parent = parent.getParent();		    
 		}
 	}

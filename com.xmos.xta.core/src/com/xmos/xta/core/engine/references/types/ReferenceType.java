@@ -36,7 +36,7 @@ public abstract class ReferenceType {
 	public abstract ReferenceType create(Engine engine, String reference);
 	public abstract String name();
 	public abstract String description();
-	public abstract boolean resolve(Engine engine, int nodeId, int coreId);
+	public abstract boolean resolve(Engine engine);
 	
 	public String getRef() {
 	    return m_ref;	    

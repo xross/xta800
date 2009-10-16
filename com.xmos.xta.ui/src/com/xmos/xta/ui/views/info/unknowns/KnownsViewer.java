@@ -6,18 +6,18 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.ui.GuiEngine;
 
 public class KnownsViewer extends InfoViewer {
 	private Action m_clearInstructionTimesAction;
 
-	public KnownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
-		super(display, parent, site, tableViewer);
+	public KnownsViewer(TableViewer tableViewer, Composite parent, IWorkbenchPartSite site) {
+		super(tableViewer, parent, site);
+		update();
 	}
 
 	public void update() {
@@ -28,7 +28,7 @@ public class KnownsViewer extends InfoViewer {
 	}
 	
 	InfoViewerContentProvider createContentProvider() {
-		return new InfoViewerContentProvider(UnknownState.KNOWN);
+		return new InfoViewerContentProvider(State.KNOWN);
 	}
 	
 	InfoViewerLabelProvider createLabelProvider() {
@@ -48,7 +48,7 @@ public class KnownsViewer extends InfoViewer {
 		m_clearInstructionTimesAction = new Action() { 
 			public void run() {
 				for (Node node : getSelectedNodes()) {
-					GuiEngine.getEngine().unsetInstructionTimeTaken(GuiEngine.s_guiCommandSrc, node);
+					GuiEngine.getEngine().unsetInstructionTime(GuiEngine.s_guiCommandSrc, node);
 				}
 			}
 		};

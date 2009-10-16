@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 
 class InfoViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
     private String[] m_columnNames;
@@ -29,13 +29,13 @@ class InfoViewerLabelProvider extends LabelProvider implements ITableLabelProvid
 	public String getColumnText(Object element, int columnIndex) {
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
-		Node node = (Node)element;	
+		Unknown unknown = (Unknown)element;	
 		if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%x", node.getStartPc());
+			return String.format("0x%x", unknown.getNode().getStartPc());
     	} else if (m_columnNames[columnIndex].equals(DESC)) {    		
-		    return node.getAttributes().getUnknownDescription();
+		    return unknown.getDescription();
     	} else if (m_columnNames[columnIndex].equals(BACKTRACE)) {    		
-	        return node.getBackTrace("");
+	        return unknown.getNode().getBackTrace("");
         }
 		assert(false);
 		return "";

@@ -12,8 +12,14 @@ public class GuiPerspectiveMonitor implements IPerspectiveFactory, IPerspectiveL
 
 	public GuiPerspectiveMonitor() {
 		super();
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		window.addPerspectiveListener(this);
+		
+		final GuiPerspectiveMonitor guiPerspectiveMonitor = this;
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+    		public void run() {
+    			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+    			window.addPerspectiveListener(guiPerspectiveMonitor);
+		    }
+    	});		
 	}
 
 	public void createInitialLayout(IPageLayout layout) {

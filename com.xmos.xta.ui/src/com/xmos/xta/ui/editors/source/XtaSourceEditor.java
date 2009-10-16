@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.source;
 
 import java.io.IOException;
 
@@ -8,6 +8,8 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
+
+import com.xmos.xta.ui.editors.XtaEditor;
 
 
 public class XtaSourceEditor extends XtaEditor {

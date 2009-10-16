@@ -29,7 +29,6 @@ public class SourceMapper {
 	private List<SourceFile> m_sourceFiles;
 	private List<AssemblyLine> m_instructions;
 	private Map<Long, SourceFile> m_pcToFile;
-	private FileFinder m_fileFinder;
 	
 	private InstructionDecoder m_instructionDecoder;
 	private Set<InstructionNode> m_starts;
@@ -41,10 +40,9 @@ public class SourceMapper {
 	private Map<String, Long> m_labels;
 	
     public SourceMapper(Engine engine, XeLoader xeLoader, int nodeId, int coreId,
-			Set<InstructionNode> starts, FileFinder fileFinder, InstructionDecoder instructionDecoder, 
+			Set<InstructionNode> starts, InstructionDecoder instructionDecoder, 
 			TreeMap<String, LinkedList<InstructionNode>> treeMap, Map<String, Long> labels) {
     	m_labels = labels;
-    	m_fileFinder = fileFinder;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;
         m_functionNames = treeMap;
@@ -125,8 +123,8 @@ public class SourceMapper {
     	setFile(debugEngine, sourceFile, file);
 	}
 
-    public File findFileForSourceFile(SourceFile sourceFile) {
-    	if (m_fileFinder == null) {
+    public File findFileForSourceFile(SourceFile sourceFile, FileFinder fileFinder) {
+    	if (fileFinder == null) {
     		return null;
     	}
 
@@ -134,7 +132,7 @@ public class SourceMapper {
     	DebugFile debugFile = sourceFile.getDebugFile();
     	boolean done = false;
 		while (!done) {
-			file = m_fileFinder.openFileFinder(debugFile.getBaseDir(), debugFile.getFileName());
+			file = fileFinder.openFileFinder(debugFile.getBaseDir(), debugFile.getFileName());
 
 			if (file == null) {
 				done = true;

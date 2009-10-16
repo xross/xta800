@@ -12,12 +12,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.dialogs.InstructionTime;
@@ -27,13 +27,14 @@ public class UnknownsViewer extends InfoViewer {
 	private Action m_setInstructionTimeAction;
 	private Action m_setLoopIterationsAction;
 
-	public UnknownsViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer tableViewer) {
-		super(display, parent, site, tableViewer);
+	public UnknownsViewer(TableViewer tableViewer, Composite parent, IWorkbenchPartSite site) {
+		super(tableViewer, parent, site);
+		update();
 	}
 
 	public void update() {
 		getViewer().setInput(GuiEngine.getEngine().getSelectedRoute());
-		updateHighlighting(GuiEngine.getSelectedNodes());
+		updateHighlighting(GuiEngine.getSelectedNodes());	
 	}
 	
 	public void updateHighlighting(List<Node> selectedNodes) {
@@ -48,8 +49,8 @@ public class UnknownsViewer extends InfoViewer {
     	}
 
 		for (TableItem item : getViewer().getTable().getItems()) {
-			Node node = (Node)item.getData();					
-			if (allInstructionNodes.contains(node)) {
+			Unknown unknown = (Unknown)item.getData();					
+			if (allInstructionNodes.contains(unknown.getNode())) {
 				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
 			} else {
 				item.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
@@ -58,7 +59,7 @@ public class UnknownsViewer extends InfoViewer {
 	}
 	
 	InfoViewerContentProvider createContentProvider() {
-		return new InfoViewerContentProvider(UnknownState.UNKNOWN);
+		return new InfoViewerContentProvider(State.UNKNOWN);
 	}
 	
 	InfoViewerLabelProvider createLabelProvider() {

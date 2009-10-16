@@ -31,8 +31,6 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.ui.editors.XtaEditor.Test";
     
-    public static final String ExpandAllID           = "com.xmos.xta.ui.action.ExpandAll";
-    public static final String CollapseAllID         = "com.xmos.xta.ui.action.CollapseAll";
     public static final String ShowStartPointID      = "com.xmos.xta.ui.action.ShowStartPoint";
     public static final String ShowEndPointID        = "com.xmos.xta.ui.action.ShowEndPoint";
     public static final String SetStartPointID       = "com.xmos.xta.ui.action.SetStartPoint";
@@ -131,13 +129,13 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      		}
      	});
      	
-     	setAction(AddExclusionID, new Action("Add Exclusion") {
+     	setAction(AddExclusionID, new Action("Add to exclusion list") {
      		public void run() {
      	    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiCommandSrc, m_clickCodeRefString);		
      		}
      	});
 
-     	setAction(RemoveExclusionID, new Action("Remove Exclusion") {
+     	setAction(RemoveExclusionID, new Action("Remove from exclusion list") {
      		public void run() {
      	    	GuiEngine.getEngine().removeExclusion(GuiEngine.s_guiCommandSrc, m_clickCodeRefString);		
      		}
@@ -157,7 +155,7 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      			List<Node> nodes = new ArrayList<Node>();
      			Engine engine = GuiEngine.getEngine();
      	    	Reference reference = ReferenceFactory.createReference(m_clickCodeRefString, ReferenceClass.ANY_REF);
-     	    	if (!reference.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+     	    	if (!reference.resolve(engine)) {
      	    		assert(false);
      	    	}
      			nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));

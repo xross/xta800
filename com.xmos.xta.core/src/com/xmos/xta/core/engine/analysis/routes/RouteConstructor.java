@@ -28,8 +28,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NodeDescriptor;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownType;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
@@ -65,12 +64,14 @@ public class RouteConstructor {
 	private Collection<NodeDescriptor> m_exclusions;
 	private Set<NodeDescriptor> m_excludedRouteNodes;
 	private Node m_startInstructionNode;
+	private RouteContainer m_container;
 
-	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description) {
+	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description, RouteContainer container) {
 		m_structureGraph = structureGraph;
 		m_description = description;
 		m_routes = new ArrayList<Route>();
 		m_engine = engine;
+    	m_container = container;
 		createExclusions();
 	}
 
@@ -109,7 +110,7 @@ public class RouteConstructor {
 				if (startNode.getNode().isFunctionNode()&& notFoundFunctionYet) {
 					if (!containAnyNodes(startNode, m_exclusions)) {
 						startNode.getNode().setParent(null);
-						m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description));
+						m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description, m_container));
 						
 					} else {
 						seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
@@ -201,7 +202,7 @@ public class RouteConstructor {
 			newGraph.setParent(null);			
 			
 			if (!alreadyContainRoute(newGraph)) {
-				m_routes.add(new Route(src, m_engine, newGraph, m_description));
+				m_routes.add(new Route(src, m_engine, newGraph, m_description, m_container));
 			}
 		}	
 		return seenEndPoint;
@@ -647,21 +648,21 @@ public class RouteConstructor {
 				public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
-						NodeAttributes nodeAttributes = node.getAttributes();
-						nodeAttributes.setUnknownType(UnknownType.INSTRUCTION_TIME);
+						NodeAttributes nodeAttributes = node.getAttributes();						
+						nodeAttributes.addUnknown(Unknown.Type.INSTRUCTION_TIME);
 					}
 					return true;
 				}
 				// Sets all the loop iterations to unknown.
 				public boolean foundLoopNode(Node node, Stack<Node> ancestors) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(Unknown.Type.LOOP_ITERATIONS);
 					return true;
 				}
 				// Sets all the self loop iterations to unknown.
 				public boolean foundSelfLoopNode(Node node, Stack<Node> ancestors) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.setUnknownType(UnknownType.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(Unknown.Type.LOOP_ITERATIONS);
 					return true;
 				}
 		    });
@@ -731,7 +732,7 @@ public class RouteConstructor {
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
-	    		node.getAttributes().setDisplayUnknown(false);
+	    		node.getAttributes().setDisplayAsUnknown(false);
 	        	return true;
 	    	}
 	    });
@@ -739,19 +740,18 @@ public class RouteConstructor {
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
-	    		if (node.getAttributes().isUnknown() &&
-	    			node.getAttributes().getUnknownState() == UnknownState.UNKNOWN) {
-	    			setDisplayUnknownOnParentNodes(node);
+	    		if (node.getAttributes().hasUnknowns()) {
+	    			setDisplayAsUnknownOnParentNodes(node);
 	    		}
 	        	return true;
 	    	}
 	    });	   
 	}
 	
-	private void setDisplayUnknownOnParentNodes(Node node) {
+	private void setDisplayAsUnknownOnParentNodes(Node node) {
 		Node parent = node;
 		while (parent != null) {
-			parent.getAttributes().setDisplayUnknown(true);
+			parent.getAttributes().setDisplayAsUnknown(true);
 			parent = parent.getParent();		    
 		}
 	}		

@@ -8,6 +8,7 @@ import com.xmos.xta.core.console.commands.add.Add;
 import com.xmos.xta.core.console.commands.analyse.Analyse;
 import com.xmos.xta.core.console.commands.clear.Clear;
 import com.xmos.xta.core.console.commands.config.Config;
+import com.xmos.xta.core.console.commands.dumpscript.DumpScript;
 import com.xmos.xta.core.console.commands.echo.Echo;
 import com.xmos.xta.core.console.commands.exit.Exit;
 import com.xmos.xta.core.console.commands.help.Help;
@@ -37,6 +38,7 @@ public class CommandFactory {
 		new List(),
 		new Print(), 
 		new Pwd(),
+		new DumpScript(),
 		new Remove(),
 		new Set(),
 		new Source(),

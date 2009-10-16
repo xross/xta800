@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.disassembly;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +32,12 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sourcemapper.AssemblyLine;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.editors.Input;
+import com.xmos.xta.ui.editors.InputLine;
+import com.xmos.xta.ui.editors.InputSection;
+import com.xmos.xta.ui.editors.XtaAnnotatedEditor;
+import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
+import com.xmos.xta.ui.editors.XtaEditorAnnotations;
 
 public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     protected static final String fnopString = AssemblyLine.getLeadingWhiteSpace() + " FNOP\n";
@@ -100,7 +106,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 			return true;
 	}
 		
-	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
+	public void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
 		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
 		
@@ -113,7 +119,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
         super.updateAnnotations(allAnnotations, allPositions);
 	}
 
-    boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+    public boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions) {
     	
     	InputLine line = getInput().getPcsToLines().get(pc);
@@ -143,7 +149,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return true;
     }
     
-	long getIndexForRef(Reference ref) {
+	public long getIndexForRef(Reference ref) {
 		if (ref != null) {
 			if (ref.getResolved()) {
 			    long pc = ref.getPc();
@@ -153,7 +159,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return -1;
 	}
 
-    long getIndexForPc(long pc) {
+    public long getIndexForPc(long pc) {
 		InputLine line = getInput().getPcsToLines().get(pc);
 		if (line != null) {
 			return line.getIndex();
@@ -161,7 +167,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return -1;
 	}
 
-    String lineIndexToString(long index) {
+    public String lineIndexToString(long index) {
     	for (InputSection inputSection : getSections()) {
     		long startLine = inputSection.getIndex();
     		long endLine = startLine + inputSection.getLines().size();
@@ -179,7 +185,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return null;
 	}
 
-	Collection<Long> getPcsForLine(long lineNumber) {
+	public Collection<Long> getPcsForLine(long lineNumber) {
 		TreeSet<Long> pcs = new TreeSet<Long>();
 		HashMap<Long, InputLine> lineMap = getInput().getPcsToLines();
 		Iterator<Map.Entry<Long, InputLine>> lineIter = lineMap.entrySet().iterator();
@@ -201,6 +207,10 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return pcs;
 	}
 
+    public boolean canAnnotate() {
+		return true;
+	}
+	
 	private void refreshInput() {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: refreshInput\n");
 		IEditorInput input = GuiEngine.getDisassemblyInput();
@@ -373,9 +383,5 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	private void collapseFolding() {
         ProjectionAnnotationModel model = m_editor.getProjectionAnnotationModel();
         model.collapseAll(0, m_editor.getDocument().getLength());
-	}
-
-    boolean canAnnotate() {
-		return true;
 	}
 }

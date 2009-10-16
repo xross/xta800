@@ -11,8 +11,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -23,9 +21,8 @@ import com.xmos.xta.ui.GuiEngine;
 public class ExclusionsViewer extends SectionsViewer {
 	private Action m_removeExclusionAction;
 
-	public ExclusionsViewer(Display display, Composite parent, 
-			IWorkbenchPartSite site, TableViewer viewer) {
-		super(display, parent, site, viewer);
+	public ExclusionsViewer(TableViewer viewer, IWorkbenchPartSite site) {
+		super(viewer);
 		
 		getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {

@@ -24,7 +24,8 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
@@ -56,14 +57,13 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	public abstract String getLineDescription(long clickLineIndex);
 
 	public abstract void updateAll();
-	abstract long getIndexForRef(Reference ref);
-	abstract long getIndexForPc(long pc);
-    abstract boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+	public abstract long getIndexForRef(Reference ref);
+	public abstract long getIndexForPc(long pc);
+	public abstract boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions);
-	abstract String lineIndexToString(long index);
-	abstract Collection<Long> getPcsForLine(long lineNumber);
-	abstract boolean canAnnotate();
-
+	public abstract String lineIndexToString(long index);
+	public abstract Collection<Long> getPcsForLine(long lineNumber);
+	public abstract boolean canAnnotate();
 
     public XtaEditorAnnotations(XtaAnnotatedEditor editor) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
@@ -137,7 +137,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	public boolean isExcluded(String refString) {
 		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		Engine engine = GuiEngine.getEngine();
-		if (ref.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+		if (ref.resolve(engine)) {
 			long refPc = ref.getPc();
 			Collection<Reference> exclusions = GuiEngine.getEngine().getExclusions();
 			for (Reference exclusion : exclusions) {
@@ -172,7 +172,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		updateAnnotations(annotations, annotationPositions);		
     }
 
-	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
+	public void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
 
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
 		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
@@ -233,8 +233,8 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
         final HashMap<Annotation, Position> annotationPositions = new HashMap<Annotation, Position>();		
 
 		TreeSet<Long> unknownsSet = new TreeSet<Long>();
-		for (Node node : getSelectedRouteUnknowns()) {
-			unknownsSet.add(node.getStartPc());
+		for (Unknown unknown : getSelectedRouteUnknowns()) {
+			unknownsSet.add(unknown.getNode().getStartPc());
 		}
 		for (long pc : unknownsSet) {
 			addAnnotationsForPc(pc, UnknownAnnotationID, annotations, annotationPositions);
@@ -249,25 +249,25 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		m_previousUnknownAnnotations = createArray(annotations);
     }
 
-	public Set<Node> getUnknownsForLine(long lineNumber) {
+	public Set<Unknown> getUnknownsForLine(long lineNumber) {
 	    if (DEBUG) System.out.printf("XtaEditor: getUnknownsForLine\n"); 
-    	TreeSet<Node> nodes = new TreeSet<Node>();
+    	TreeSet<Unknown> unknowns = new TreeSet<Unknown>();
     	Collection<Long> linePcs = getPcsForLine(lineNumber);
-		for (Node node : getSelectedRouteUnknowns()) {
-			if (linePcs.contains(node.getStartPc())) {
-				nodes.add(node);
+		for (Unknown unknown : getSelectedRouteUnknowns()) {
+			if (linePcs.contains(unknown.getNode().getStartPc())) {
+				unknowns.add(unknown);
 			}
 		}
-    	return nodes;
+    	return unknowns;
     }
-	
-	private Collection<Node> getSelectedRouteUnknowns() {
+
+	private Collection<Unknown> getSelectedRouteUnknowns() {
 		Engine engine = GuiEngine.getEngine();
 		Route route = engine.getSelectedRoute();
 		if (route != null) {
-            return route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN);
+            return route.getRouteUnknowns().getUnknowns(State.UNKNOWN);
 		} else {
-			return new TreeSet<Node>();
+			return new TreeSet<Unknown>();
 		}
 	}
 
@@ -317,7 +317,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		viewer.setTopIndex((int)topIndex);
 	}
 
-	boolean showCodePoint(long pc) {
+	public boolean showCodePoint(long pc) {
     	long index = getIndexForPc(pc);
     	if (index >= 0) { 
 			try {

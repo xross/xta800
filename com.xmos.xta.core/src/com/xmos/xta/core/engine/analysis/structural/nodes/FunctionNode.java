@@ -257,7 +257,18 @@ public class FunctionNode extends IBufferNode {
 		m_functionName = string;
 	}
 	
-	private Node m_callNode;
+	public void getBackTrail(List<Long> backTrail) {
+		super.getBackTrail(backTrail);
+
+		Node parent = getParent();
+		if (parent != null) {
+			Node callNode = findCallNode(parent);
+			if (callNode != null) {
+				backTrail.add(callNode.getStartPc());
+			}
+		}				
+	}	
+	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		
@@ -272,32 +283,13 @@ public class FunctionNode extends IBufferNode {
 				if (!ancestors.isEmpty()) {					
     				Node parent = ancestors.peek();
 
-					// Finds the node previous to this one...
-					Node previousNode = null;
-					for (Node child : parent.getIndirectChildren()) {
-						if (child == this)
-							break;
-						
-						previousNode = child;
-					}
-					if (previousNode != null) {
-						// Finds the final instruction in the previous node
-						// (which must be the calling instruction..)
-						m_callNode = null;
-						previousNode.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-							public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
-								m_callNode = node;
+    				Node callNode = findCallNode(parent);
+					if (callNode != null) {
+						if (referenceType.getPc() == callNode.getStartPc()) {
+							referenceTypes.pop();
+							if (referenceTypes.empty()) {
 								return true;
-							}
-						});
-						
-						if (m_callNode != null) {
-							if (referenceType.getPc() == m_callNode.getStartPc()) {
-								referenceTypes.pop();
-								if (referenceTypes.empty()) {
-									return true;
-								}								
-							}
+							}								
 						}
 					}					
 				}
@@ -305,5 +297,31 @@ public class FunctionNode extends IBufferNode {
 		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
+	}
+	
+	private Node m_callNode;	
+	private Node findCallNode(Node parent) {
+		// Finds the node previous to this one...
+		Node previousNode = null;
+		for (Node child : parent.getIndirectChildren()) {
+			if (child == this)
+				break;
+			
+			previousNode = child;
+		}
+		if (previousNode == null) {
+			return null;
+		}
+		
+		// Finds the final instruction in the previous node
+		// (which must be the calling instruction..)
+		m_callNode = null;
+		previousNode.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+				m_callNode = node;
+				return true;
+			}
+		});			
+		return m_callNode;
 	}
 }

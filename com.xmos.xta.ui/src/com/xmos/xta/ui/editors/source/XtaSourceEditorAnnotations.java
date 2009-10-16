@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.source;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +27,8 @@ import com.xmos.xta.core.engine.sourcemapper.SourceLine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.XtaPerspective;
+import com.xmos.xta.ui.editors.XtaAnnotatedEditor;
+import com.xmos.xta.ui.editors.XtaEditorAnnotations;
 
 public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 
@@ -57,8 +59,6 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     
     private void updateLineMap() {
 		Engine engine = GuiEngine.getEngine();
-		int nodeId = engine.getNodeId();
-		int coreId = engine.getCoreId();
 
 		m_pcToSourceLineIndex.clear();
 		
@@ -70,7 +70,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     		String refString = String.format("%s:%d", fileName, lineNumber);
     		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 
-			if (ref.resolve(engine, nodeId, coreId)) {
+			if (ref.resolve(engine)) {
     			long linePc = ref.getPc();
     			addPcToLineEntry(linePc, lineNumber);
     		}
@@ -91,7 +91,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		updateHighlighting();
 	}
 
-	void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
+	public void updateAnnotations(List<Annotation> annotations, HashMap<Annotation, Position> positions) {
 
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
 		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
@@ -129,7 +129,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
         super.updateAnnotations(allAnnotations, allPositions);
 	}
 
-    boolean canAnnotate() {
+    public boolean canAnnotate() {
 		if (!GuiEngine.getEngine().getXeLoader().isLoaded())
 			return false;
 		if (m_editor.isDirty())
@@ -143,7 +143,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		return true;
 	}
 
-	boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
+	public boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions) {
     	
     	boolean hit = false;
@@ -156,7 +156,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     	return hit;
     }
 
-	long getIndexForRef(Reference ref) {
+	public long getIndexForRef(Reference ref) {
 		if (ref != null) {
 			if (ref.getResolved()) {
 				if (FileNameCompare.fileNamesMatch(ref.getFileName(), getFileName())) {
@@ -179,7 +179,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		}
 	}
 
-	long getIndexForPc(long pc) {
+	public long getIndexForPc(long pc) {
 		SourceLine sourceLine = getLineForPc(pc);
 		if (sourceLine != null) {
 			return sourceLine.getLineNumber() - 1;
@@ -209,11 +209,11 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		return null;
 	}
 	
-	String lineIndexToString(long index) {
+	public String lineIndexToString(long index) {
 		return String.format("%s:%d", getFileName(), index + 1);
 	}
 
-	Collection<Long> getPcsForLine(long lineNumber) {
+	public Collection<Long> getPcsForLine(long lineNumber) {
 		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
 		if (sourceMapper != null) {
 			String fileName = sourceMapper.getDebugFileName(getFileName());					

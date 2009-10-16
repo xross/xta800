@@ -18,7 +18,7 @@ public class EndpointFileLineReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine, int nodeId, int coreId) {
+	public boolean resolve(Engine engine) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
         long lineNumber = getLineNumber(ref);		

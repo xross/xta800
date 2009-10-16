@@ -6,19 +6,19 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 
 class InfoViewerContentProvider implements IStructuredContentProvider {
-    private UnknownState m_unknownState;
+    private State m_unknownState;
 
-    InfoViewerContentProvider(UnknownState unknownState) {
+    InfoViewerContentProvider(State unknownState) {
     	m_unknownState = unknownState;
     }
     
 	public Object[] getElements(Object inputElement) {
-	    Collection<Node> nodes = ((Route)inputElement).getRouteUnknowns().getUnknowns(m_unknownState);
-		return nodes.toArray();
+	    Collection<Unknown> unknowns = ((Route)inputElement).getRouteUnknowns().getUnknowns(m_unknownState);
+		return unknowns.toArray();
 	}
 
 	public void dispose() {

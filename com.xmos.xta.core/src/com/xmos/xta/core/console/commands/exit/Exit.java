@@ -6,7 +6,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 
 public class Exit extends Command {
 	public Exit() {		
@@ -55,7 +55,7 @@ public class Exit extends Command {
 				}
 				
 				if (warnAsErrors) {
-					if (route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0) {
+					if (route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0) {
 						errors = 1;
 						break;
 					}

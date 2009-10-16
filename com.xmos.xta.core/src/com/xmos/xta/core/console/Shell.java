@@ -150,7 +150,10 @@ public class Shell {
             for (String line : lines) {
                 line = line.trim();
                 
-                if (line.length() > 0) {            	
+                if (line.startsWith("#")) {
+                	// Ignore comment lines...
+                	                
+                } else if (line.length() > 0) {            	
                     String[] tokens = line.trim().split("\\s+");                
                     ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
                     tokens = tokenGroups.toArray(tokens);

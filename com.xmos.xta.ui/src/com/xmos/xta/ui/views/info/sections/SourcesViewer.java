@@ -1,14 +1,10 @@
 package com.xmos.xta.ui.views.info.sections;
 
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPartSite;
 
 public class SourcesViewer extends SectionsViewer {
-	public SourcesViewer(Display display, Composite parent, 
-			IWorkbenchPartSite site, TableViewer viewer) {
-		super(display, parent, site, viewer);
+	public SourcesViewer(TableViewer viewer) {
+		super(viewer);
 	}
 
 	SectionsViewerContentProvider createContentProvider() {
@@ -19,7 +15,6 @@ public class SourcesViewer extends SectionsViewer {
 		return new SourcesViewerLabelProvider();
 	}
 
-	@Override
 	protected long getPc(Object object) {
 		return 0;
 	}

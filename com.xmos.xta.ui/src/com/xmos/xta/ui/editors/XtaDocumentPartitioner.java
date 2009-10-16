@@ -247,7 +247,9 @@ public class XtaDocumentPartitioner implements IDocumentPartitioner,
 	    		regionOffset = Math.max(offset, regionOffset);
 	    	}
 	    	if (index == (numRegions - 1)) {
-	    		regionLength = Math.min(length, regionLength);
+	    		// Use +1 since the length come in as line regions which don't include newline
+	    		// whilst all regions include line length
+	    		regionLength = Math.min(length + 1, regionLength);
 	    	}	    	
 	    	list.add(new TypedRegion(regionOffset, regionLength, fromRegion.getType()));
 	    }

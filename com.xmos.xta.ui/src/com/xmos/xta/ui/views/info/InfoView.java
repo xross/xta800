@@ -2,58 +2,26 @@ package com.xmos.xta.ui.views.info;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.views.info.log.LogViewer;
-import com.xmos.xta.ui.views.info.sections.AllCallsViewer;
-import com.xmos.xta.ui.views.info.sections.AllEndpointsViewer;
-import com.xmos.xta.ui.views.info.sections.AllSrcLabelsViewer;
-import com.xmos.xta.ui.views.info.sections.BranchesViewer;
-import com.xmos.xta.ui.views.info.sections.CallsViewer;
-import com.xmos.xta.ui.views.info.sections.EndpointsViewer;
-import com.xmos.xta.ui.views.info.sections.ExclusionsViewer;
-import com.xmos.xta.ui.views.info.sections.LabelsViewer;
-import com.xmos.xta.ui.views.info.sections.NoLoadsViewer;
-import com.xmos.xta.ui.views.info.sections.SourcesViewer;
-import com.xmos.xta.ui.views.info.sections.SrcCommandsViewer;
-import com.xmos.xta.ui.views.info.sections.SrcLabelsViewer;
-import com.xmos.xta.ui.views.info.sections.SrcLoopsViewer;
-import com.xmos.xta.ui.views.info.sections.ThreadStartPointsViewer;
-import com.xmos.xta.ui.views.info.sections.ThreadStopPointsViewer;
-import com.xmos.xta.ui.views.info.unknowns.KnownsViewer;
-import com.xmos.xta.ui.views.info.unknowns.UnknownsViewer;
 
 public class InfoView extends ViewPart implements IPropertyChangeListener {
 	public static final String ID = "com.xmos.xta.ui.views.info.Info";
-
-	private LogViewer m_log;
-	private UnknownsViewer m_unknowns;
-	private KnownsViewer m_knowns;
-	private ExclusionsViewer m_exclusions;
-	private EndpointsViewer m_endpoints;
-	private AllEndpointsViewer m_allEndpoints;
-	private SrcLabelsViewer m_srcLabels;
-	private AllSrcLabelsViewer m_allSrcLabels;
-	private CallsViewer m_calls;
-	private AllCallsViewer m_allCalls;
-	private BranchesViewer m_branches;
-	private LabelsViewer m_labels;
-	private ThreadStartPointsViewer m_threadStartPoints;
-	private ThreadStopPointsViewer m_threadStopPoints;
-	private SrcCommandsViewer m_srcCommands;
-	private SrcLoopsViewer m_srcLoops;
-	private SourcesViewer m_sources;
-	private NoLoadsViewer m_noLoads;
+	
+	private Viewer m_currentViewer;
 	
 	public InfoView() {
 		GuiEngine.addBroadcastListener(this);
@@ -64,63 +32,59 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 		super.dispose();
 	}
 
-	public void createPartControl(Composite parent) {
-		TabFolder folders = new TabFolder(parent, SWT.BORDER);		
-		m_log = new LogViewer(parent.getDisplay(), parent, getSite(), 
-				createNewViewer("Log", folders));		
-		m_unknowns = new UnknownsViewer(parent.getDisplay(), parent, getSite(), 
-				createNewViewer("Unknowns", folders));		
-		m_knowns = new KnownsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Knowns", folders));		
-		m_exclusions = new ExclusionsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Exclusions", folders));		
-		m_endpoints = new EndpointsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Endpoints", folders));				
-		m_allEndpoints = new AllEndpointsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("All Endpoints", folders));		
-		m_srcLabels = new SrcLabelsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("SrcLabels", folders));		
-		m_allSrcLabels = new AllSrcLabelsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("All SrcLabels", folders));		
-		m_calls = new CallsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Calls", folders));		
-		m_allCalls = new AllCallsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("All Calls", folders));		
-		m_branches = new BranchesViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Branches", folders));	
-		m_labels = new LabelsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Labels", folders));	
-		m_threadStartPoints = new ThreadStartPointsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Thread Start Points", folders));	
-		m_threadStopPoints = new ThreadStopPointsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Thread Stop Points", folders));
-		m_srcCommands = new SrcCommandsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Src Level Commands", folders));
-		m_srcLoops = new SrcLoopsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Src Level Loops", folders));
-		m_sources = new SourcesViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Source files", folders));
-		m_noLoads = new NoLoadsViewer(parent.getDisplay(), parent, getSite(),
-				createNewViewer("Functions not loaded", folders));
+	public void createPartControl(final Composite parent) {
+        final ViewerFactory viewerFactory = new ViewerFactory();
 		
-		m_log.update();
-		m_unknowns.update();
-		m_knowns.update();
-		m_exclusions.update();
-		m_endpoints.update();
-		m_allEndpoints.update();
-		m_srcLabels.update();
-		m_allSrcLabels.update();
-		m_calls.update();
-		m_allCalls.update();
-		m_branches.update();
-		m_labels.update();
-		m_threadStartPoints.update();
-		m_threadStopPoints.update();
-		m_srcCommands.update();
-		m_srcLoops.update();
-		m_sources.update();
-		m_noLoads.update();
+		final Composite composite = new Composite(parent, SWT.None);
+		composite.setLayout(new FormLayout());		
+
+		final Sash sash = new Sash(composite, SWT.VERTICAL);
+	    FormData data = new FormData();	    
+	    data.top    = new FormAttachment(0, 0);
+	    data.bottom = new FormAttachment(100, 0);
+	    data.left   = new FormAttachment(20, 0);
+	    sash.setLayoutData(data);
+
+	    // Create the available viewers tree and attach its right edge to the sash.
+		final Tree tree = new Tree(composite, SWT.BORDER | SWT.V_SCROLL);
+		TreeItem first = viewerFactory.initialiseTree(tree);
+		tree.setSelection(first);
+
+		final FormData treeData = new FormData();
+		treeData.top    = new FormAttachment(0, 0);
+		treeData.bottom = new FormAttachment(100, 0);
+		treeData.left   = new FormAttachment(0, 0);
+		treeData.right  = new FormAttachment(sash, 0);
+		tree.setLayoutData(treeData);
+
+	    // Create the default info viewer and attach its left edge to the sash.
+		m_currentViewer = viewerFactory.createDefaultViewer(composite);				
+
+		final FormData controlData = new FormData();
+		controlData.top    = new FormAttachment(0, 0);
+		controlData.bottom = new FormAttachment(100, 0);
+		controlData.left   = new FormAttachment(sash, 0);
+		controlData.right  = new FormAttachment(100, 0);
+		m_currentViewer.getControl().setLayoutData(controlData);		
+
+        // Control the sash re-sizing.
+	    sash.addSelectionListener(new SelectionAdapter() {
+	        public void widgetSelected(SelectionEvent event) {
+	          ((FormData)sash.getLayoutData()).left = new FormAttachment(0, event.x);
+	          sash.getParent().layout();
+	        }
+	    });	    
+	    
+	    // Swaps viewers on tree selection events.
+	    tree.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+			    String selection = tree.getSelection()[0].getText();
+		    	m_currentViewer.getControl().dispose();			    
+			    m_currentViewer = viewerFactory.createViewer(selection, composite, getSite());			    
+		    	m_currentViewer.getControl().setLayoutData(controlData);
+			    composite.layout(true);
+		    }
+		});
 	}
 
 	public void setFocus() {
@@ -128,58 +92,19 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE) ||
-				   event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
-				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE) ||
-				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
-				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
-			m_unknowns.update();
-			m_knowns.update();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
-				   event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
-			m_unknowns.clear();
-			m_knowns.clear();			
-			m_exclusions.update();			
-			m_endpoints.update();
-			m_allEndpoints.update();
-			m_srcLabels.update();
-			m_allSrcLabels.update();
-			m_calls.update();
-			m_allCalls.update();			
-			m_branches.update();
-			m_labels.update();
-			m_threadStartPoints.update();
-			m_threadStopPoints.update();
-			m_srcCommands.update();
-			m_srcLoops.update();
-			m_sources.update();
-			m_noLoads.update();
-			
-		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS)) {
-			m_exclusions.update();
-		
-		} else if (event.getProperty().equals(Notifier.NOTIFY_ERROR) || 
-				   event.getProperty().equals(Notifier.NOTIFY_WARNING)) {
-			m_log.update();
+		    event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) ||
+			event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE) ||
+			event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS) ||
+			event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE) ||
+		    event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) || 
+			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) ||
+		    event.getProperty().equals(Notifier.NOTIFY_UPDATE_EXCLUSIONS) ||
+		    event.getProperty().equals(Notifier.NOTIFY_ERROR) || 
+			event.getProperty().equals(Notifier.NOTIFY_WARNING)) {
+			m_currentViewer.update();
 
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SELECTION_CHANGED)) {
-			m_unknowns.updateHighlighting(GuiEngine.getSelectedNodes());
-			
+			m_currentViewer.updateHighlighting(GuiEngine.getSelectedNodes());
 		}
-		
 	}
-
-	private TableViewer createNewViewer(String displayText, TabFolder folders) {
-		TabItem tab = new TabItem(folders, SWT.NONE);
-		tab.setText(displayText);
-		Composite composite = new Composite(folders, SWT.NONE);
-		composite.setLayout(new FillLayout());
-		TableViewer viewer = new TableViewer(composite);
-		tab.setControl(composite);
-		Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);		
-		return viewer;
-	}
-	
 }

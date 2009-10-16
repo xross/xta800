@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.ui.icons.Icons;
 
 public class RouteSelectorLabelProvider extends CellLabelProvider {
@@ -34,7 +34,7 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 			iconName = "required_notset";
 		}
 		
-		if (route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size() > 0) {
+		if (route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0) {
 			iconName += ".unknown";
 		}
 		cell.setImage(Icons.getIcon(iconName));
@@ -46,9 +46,4 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 		RouteNode routeNode = (RouteNode)element;		
 		return routeNode.getRoute().getRouteTiming().getDescription(Level.COMPLETE);
 	}
-
-    public boolean useNativeToolTip(Object object) {
-        if (DEBUG) System.out.printf("RouteSelectorLabelProvider: useNativeToolTips\n");
-        return true;
-    }
 }

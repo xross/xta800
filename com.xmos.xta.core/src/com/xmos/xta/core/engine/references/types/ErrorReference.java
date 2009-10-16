@@ -12,7 +12,7 @@ public class ErrorReference extends ReferenceType {
 		return null;
 	}
 	
-	public boolean resolve(Engine engine, int nodeId, int coreId) {
+	public boolean resolve(Engine engine) {
         return false;
 	}	
 	

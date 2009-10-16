@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TableColumn;
@@ -23,13 +24,15 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.views.info.Viewer;
 
-abstract class InfoViewer {
+abstract class InfoViewer implements Viewer {
 	private Composite m_parent;
 	private Display m_display;
 	private TableViewer m_viewer;
@@ -39,12 +42,14 @@ abstract class InfoViewer {
 	abstract InfoViewerLabelProvider createLabelProvider();
 	abstract void createContextMenuActions(MenuManager menuMgr);	
 	abstract void enableContextMenuActions(int numInstructionTimeNodes, int numLoopIterationsNodes);
-	abstract void update();
-	abstract void updateHighlighting(List<Node> selectedNodes);
 	
-	InfoViewer(Display display, Composite parent, IWorkbenchPartSite site, TableViewer viewer) {
+	public Control getControl() {
+		return m_viewer.getControl();
+	}
+	
+	InfoViewer(TableViewer viewer, Composite parent, IWorkbenchPartSite site) {
 		m_parent = parent;
-		m_display = display;
+		m_display = parent.getDisplay();
 		m_selectedNodes = new ArrayList<Node>();
 		m_viewer = viewer;
 
@@ -90,7 +95,7 @@ abstract class InfoViewer {
 							Long.toHexString(m_selectedNodes.get(0).getStartPc()), ReferenceClass.LABEL_REF);
 					
 					Engine engine = GuiEngine.getEngine();
-					ref.resolve(engine, engine.getNodeId(), engine.getCoreId());
+					ref.resolve(engine);
 					
 					GuiEngine.setCodePoint(ref);
 					GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
@@ -107,9 +112,9 @@ abstract class InfoViewer {
 				int numLoopIterationsNodes = 0;
 				
 				for (Object object : ((IStructuredSelection)selection).toList()) {
-					Node node = (Node)object;			
+					Unknown unknown = (Unknown)object;			
 					
-					switch (node.getAttributes().getUnknownType()) {
+					switch (unknown.getType()) {
 					case INSTRUCTION_TIME:
 						++numInstructionTimeNodes;
 						break;
@@ -118,7 +123,7 @@ abstract class InfoViewer {
 						++numLoopIterationsNodes;
 						break;
 					}
-					m_selectedNodes.add(node);
+					m_selectedNodes.add(unknown.getNode());
 				}
 				enableContextMenuActions(numInstructionTimeNodes, numLoopIterationsNodes);
 			}			
@@ -134,10 +139,6 @@ abstract class InfoViewer {
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
-	public void clear() {
-		m_viewer.setInput(null);
-	}
-	
 	Composite getParent() {
 		return m_parent;
 	}

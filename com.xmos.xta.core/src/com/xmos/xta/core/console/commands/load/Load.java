@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Vector;
 
 import com.xmos.xta.core.console.Console;
-import com.xmos.xta.core.console.ConsoleFileFinder;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
@@ -12,7 +11,6 @@ import com.xmos.xta.core.console.commands.Invalid;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
-import com.xmos.xta.core.engine.sourcemapper.FileFinder;
 
 public class Load extends Command {
 	private String m_executableName;
@@ -54,8 +52,7 @@ public class Load extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {    	
-		FileFinder fileFinder = new ConsoleFileFinder(getSrc(), engine);	
-		if (engine.loadExecutable(getSrc(), new File(m_executableName), fileFinder)) {
+		if (engine.loadExecutable(getSrc(), new File(m_executableName))) {
 		    runSectionCommands(shell, engine, console);
 		}
     }
@@ -63,7 +60,7 @@ public class Load extends Command {
 	public String toString() {
 		return commandLine();
 	}
-	
+
     private void runSectionCommands(Shell shell, Engine engine, Console console) {
 	    for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands()) {
 	    	String commandString = cmdInfo.getString();

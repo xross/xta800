@@ -36,11 +36,11 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatc
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sections.Sections;
-import com.xmos.xta.core.engine.sections.SrcStringInfo;
 
 public class StructuralAnalysisEngine {
 	
 	private static final boolean SYMBOLIC_LINK = true;
+	private static final boolean REGISTER_CONFIG_ON_GLOBAL_TREE = false;
 	
 	private ControlFlowGraph m_controlFlowGraph;
 	private Map<Long, FunctionNode> m_functionStartPcs;
@@ -158,9 +158,6 @@ public class StructuralAnalysisEngine {
 		
 		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints);
 		
-		removeNoLoad(engine, allFunctionObjects, sections.getNoLoads(nodeId, coreId),
-				sections.getUnreachableFunctions(nodeId, coreId));
-
 		engine.provideFeedback("Analysing for recursion...");
 		detectRecursion(engine, allFunctionObjects, sections.getRecursiveFunctions(nodeId, coreId));
 		
@@ -183,15 +180,17 @@ public class StructuralAnalysisEngine {
 			engine.notify(src, Notifier.NOTIFY_WARNING, warning);
 		}
 		
-		engine.provideFeedback("Setting parent nodes...");
-		setParents();
-
-		engine.provideFeedback("Registering config...");
-		Config config = engine.getConfig();
-		Architecture architecture = engine.getXeLoader().getArchitecture();
-		setConfig(config, architecture, m_structureGraph.getThreads());
-		setConfig(config, architecture, m_structureGraph.getFunctions());
-		setConfig(config, architecture, m_structureGraph.getUnlinkedFunctions());
+		if (REGISTER_CONFIG_ON_GLOBAL_TREE) {
+			// If enabled, this allows the printing of the global structure to 
+			// display the node times. It is disabled by default for efficiency reasons,
+			// as printing the global structure is not a user activity. 
+			engine.provideFeedback("Registering config...");
+			Config config = engine.getConfig();
+			Architecture architecture = engine.getXeLoader().getArchitecture();
+			setConfig(config, architecture, m_structureGraph.getThreads());
+			setConfig(config, architecture, m_structureGraph.getFunctions());
+			setConfig(config, architecture, m_structureGraph.getUnlinkedFunctions());			
+		}
 		
 		engine.provideFeedback("Complete");
 		return true;
@@ -256,11 +255,7 @@ public class StructuralAnalysisEngine {
 	   		});
 
 			allFunctionObjects.put(fn, unlinkedFunctions);
-
-			graphs.add(fn);
-			
-			//setParent(fn);
-			
+			graphs.add(fn);						
 			normaliseGraph(fn);
 			
 			startPcs.put(graphStart.getStartPc(), fn);
@@ -311,8 +306,7 @@ public class StructuralAnalysisEngine {
 				}
 		    });
 			setParent(fn);
-		}
-		
+		}		
 	}
 
 	private String getFunctionName(Node graphStart,
@@ -488,98 +482,6 @@ public class StructuralAnalysisEngine {
 			total += node.getPrevNodesSize() - node.getNextNodesSize();
 		}
 		return true;
-	}
-
-	private void removeNoLoad(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects,
-			Collection<SrcStringInfo> noLoads, Collection<String> unreachableFunctions){
-		
-		if (noLoads.size() == 0)
-			return;
-		
-		Map<FunctionNode, TreeSet<FunctionNode>> links = createLinkedFunctions(allFunctionObjects);
-
-		Set<Long> noLoadFunctionPcs = new TreeSet<Long>();
-		for (SrcStringInfo noLoad : noLoads) {
-			String functionName = noLoad.getString();
-			long functionPc = findFunctionPc(functionName, allFunctionObjects);
-			if (functionPc != 0) {
-				noLoadFunctionPcs.add(functionPc);
-			}
-		}
-		
-		boolean changeDetected = true;
-		while (changeDetected) {
-			changeDetected = false;
-
-			for (FunctionNode fn : allFunctionObjects.keySet()) {
-				Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
-				for (FunctionNode fnLink : allFunctionObjects.get(fn)) {
-					Node branchTarget = fnLink.getBranchTarget();
-					if (branchTarget != null) {
-						long startPc = branchTarget.getStartPc();
-						if (noLoadFunctionPcs.contains(startPc)) {
-							toRemove.add(fnLink);
-							fnLink.setFunctionName(m_functionStartPcs.get(startPc).getFunctionName() +  " not loaded");
-							fnLink.setUnresolved(true);
-							
-							changeDetected = true;
-							
-							Set<FunctionNode> called = new TreeSet<FunctionNode>();
-							getAllFunctionPcsCalledByF(startPc, links, called);
-							removeFunctionsCalledByOthers(links, called, noLoadFunctionPcs);
-							
-							for (FunctionNode calledF : called) {
-								noLoadFunctionPcs.add(calledF.getStartPc());
-							}
-						}
-					}
-				}
-				allFunctionObjects.get(fn).removeAll(toRemove);
-				
-				if (noLoadFunctionPcs.contains(fn.getStartPc())) {
-					allFunctionObjects.get(fn).clear();
-				}
-			}
-		}
-			
-		for (Long pc : noLoadFunctionPcs) {
-			String functionName = m_functionStartPcs.get(pc).getFunctionName();
-			unreachableFunctions.add(functionName);
-		}
-	}
-
-	private void getAllFunctionPcsCalledByF(long startPc,
-			Map<FunctionNode, TreeSet<FunctionNode>> links,
-			Set<FunctionNode> called) {
-
-		for (FunctionNode fn : links.keySet()) {
-			if (fn.getStartPc() == startPc) {
-				crawlFunctionGraph(fn, links, called);
-				return;
-			}
-		}
-	}
-
-	private void removeFunctionsCalledByOthers( Map<FunctionNode, TreeSet<FunctionNode>> links,
-			Collection<FunctionNode> called, Collection<Long> noLoadFunctionPcs) {
-
-		boolean changeDetected = true;
-		while (changeDetected) {
-			changeDetected = false;
-			for (FunctionNode fn : links.keySet()) {
-				if (!noLoadFunctionPcs.contains(fn.getStartPc())) {
-					for (FunctionNode target : links.get(fn)) {
-						if (called.contains(target)) {
-							called.remove(target);
-							changeDetected = true;
-						}
-					}
-				}
-			}
-			if (called.isEmpty()) {
-				return;
-			}
-		}
 	}
 
 	private void detectRecursion(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects,
@@ -781,12 +683,6 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private void setParents() {
-		for (Node node : m_structureGraph.getThreads()) {
-			setParent(node);
-		}
-	}
-
 	private void setParent(Node node) {
 		for (Node child : node.getIndirectChildren()){
 			child.setParent(node);
@@ -888,15 +784,6 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new ConditionalTransformer());	//uses dominators
 	}
 
-	private long findFunctionPc(String functionName, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
-		for (FunctionNode fn : allFunctionObjects.keySet()) {
-			if (fn.getFunctionName().equals(functionName)) {
-				return fn.getStartPc();
-			}
-		}
-		return 0;
-	}
-	
 	private Collection<Node> getContainedNodes(Node node) {
 		final Collection<Node> nodes = new ArrayList<Node>();
 		

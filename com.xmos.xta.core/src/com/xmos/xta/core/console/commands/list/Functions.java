@@ -39,7 +39,7 @@ public class Functions extends Command {
 	    int nodeId = engine.getNodeId();
 	    int coreId = engine.getCoreId();
 	    
-        Collection<String> functionNames = engine.getXeLoader().getFunctionNames(nodeId, coreId);
+        Collection<String> functionNames = engine.getNonSystemFunctionNames();
         if (functionNames.size() > 0) {
             XeLoader xeLoader = engine.getXeLoader();
             SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);

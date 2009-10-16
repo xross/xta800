@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.source;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -6,6 +6,8 @@ import org.eclipse.ui.IPersistableElement;
 
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceLine;
+import com.xmos.xta.ui.editors.Input;
+import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
 
 public class InputSource implements IEditorInput {
     public static final boolean DEBUG = false;

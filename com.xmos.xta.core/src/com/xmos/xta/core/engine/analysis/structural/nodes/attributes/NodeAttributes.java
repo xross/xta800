@@ -1,12 +1,17 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
+import com.xmos.xta.core.engine.references.Reference;
 
 @SuppressWarnings("serial")
 class IgnoreCondIterationsException extends Exception {}
@@ -26,9 +31,11 @@ public class NodeAttributes {
 
 	public enum UnknownType {
     	INSTRUCTION_TIME,
-    	LOOP_ITERATIONS,    	
+    	LOOP_ITERATIONS,
+    	LOOP_PATH_ITERATIONS,
+    	LOOP_SCOPE,
     }
-	
+
 	public enum UnknownState {
 		UNKNOWN,
 		KNOWN,
@@ -64,20 +71,17 @@ public class NodeAttributes {
 	private boolean m_cachedBestNumInstructionsValid;
 	private boolean m_cachedBestNumFnopsValid;	
 	
-	private boolean m_isUnknown;
-	private UnknownType m_unknownType;
-	private UnknownState m_unknownState; 	
-    private boolean m_displayUnknown;
-
+    private List<Unknown> m_unknowns;
+    private boolean m_displayAsUnknown;
 	private boolean m_isAbsolute;	
 	private boolean m_isLoopHeader;
 
 	public NodeAttributes(Node node) {
 		m_node = node;
-		m_isUnknown = false;
-		m_unknownType = null;		
 		m_isAbsolute = false;
-		m_isLoopHeader = false;		
+		m_isLoopHeader = false;	
+		m_unknowns = new ArrayList<Unknown>();
+		m_displayAsUnknown = false;
 		initialiseCachedStats();
 		invalidateCachedStats();
 	}
@@ -127,9 +131,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    double value = getTimeTaken(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%.1fns", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%.1fns", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO:  return String.format("%.1fns", value);
 	    }
 	    assert(false);
@@ -140,9 +145,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    long value = getNumCycles(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%d", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%d", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
@@ -153,9 +159,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    long value = getNumInstructions(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%d", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%d", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
@@ -166,9 +173,10 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    long value = getNumFNops(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:  return String.format("%d", value);
-	    case INFINITE:   return String.format("Infinity");
-	    case UNRESOLVED: return String.format("Unresolved");
+	    case COMPLETED:     return String.format("%d", value);
+	    case INFINITE:      return String.format("Infinity");
+	    case UNRESOLVED:    return String.format("Unresolved");
+	    case NOT_AVALIABLE: return String.format("n/a");
 	    case ZERO: return String.format("%d", value);
 	    }
 	    assert(false);
@@ -182,7 +190,7 @@ public class NodeAttributes {
 		}
 		return String.format("%d", totalIterations);
 	}
-		
+
 	// ===================================================================== //
 	// Statistics Methods
 	// ===================================================================== //
@@ -358,77 +366,52 @@ public class NodeAttributes {
 	void setCachedNumFnopsValid(Case c, boolean value)        { if (!DISABLE_STATS_CACHE) { if (c == Case.WORST) m_cachedWorstNumFnopsValid = value;        else m_cachedBestNumFnopsValid = value; } }
 	
 	// ===================================================================== //
-	// Unknown Status Methods
+	// Unknowns Methods
 	// ===================================================================== //
-	public boolean isUnknown() {
-		return m_isUnknown;
-	}
-	
-	public void setUnknownType(UnknownType unknownType) {		
-		m_isUnknown = true;
-		m_unknownType = unknownType;
-		setUnknownState(UnknownState.UNKNOWN);
-	}
+    public List<Unknown> getUnknowns() {
+    	return m_unknowns;
+    }
 
-	public UnknownType getUnknownType() {
-		assert(m_isUnknown == true);
-		return m_unknownType;
-	}
+    public void addUnknown(Type type) {
+    	removeUnknownOfType(type);
+    	m_unknowns.add(new Unknown(m_node, type, State.UNKNOWN));
+    }
 
-	public void setUnknownState(UnknownState unknownState) {
-		assert(m_isUnknown == true);
-		m_unknownState = unknownState;
-	}
-
-	public UnknownState getUnknownState() {
-		assert(m_isUnknown == true);
-		return m_unknownState;
-	}
-
-	public void setDisplayUnknown(boolean displayUnknown) {
-		m_displayUnknown = displayUnknown;
-	}
-
-	public boolean getDisplayUnknown() {
-		return m_displayUnknown;
-	}
-	
-	public String getUnknownDescription() {
-		assert(m_isUnknown == true);
-
-		switch(m_unknownType) {
-		case INSTRUCTION_TIME:
-			XtaInstruction instruction = ((InstructionNode)m_node).getXtaInstruction();
-			switch(m_unknownState) {
-			case UNKNOWN:
-				return String.format("Time taken for instruction (0x%x: %s) is unknown",
-						instruction.getPc(),
-						instruction.getNmenonic());	
-				
-			case KNOWN:
-				return String.format("Time for instruction (0x%x: %s) set to %.1fns",
-						instruction.getPc(),
-						instruction.getNmenonic(),
-						m_node.getAttributes().getInstructionTimeTaken());
-			}
-			assert(false);
-			return "";
-			
-		case LOOP_ITERATIONS:
-			switch(m_unknownState) {
-			case UNKNOWN:
-				return String.format("Loop iterations on loop " + 
-						m_node.getId() + " are unknown");
-
-			case KNOWN:
-				return String.format("Loop iterations on loop " + 
-						m_node.getId() + " are known");
-			}
-			assert(false);
-			return "";
+    public void addKnown(Type type, Reference reference) {
+    	removeUnknownOfType(type);
+    	m_unknowns.add(new Unknown(m_node, type, State.KNOWN, reference));
+    }
+    
+	public boolean hasUnknowns() {
+		for (Unknown unknown : m_unknowns) {
+			if (unknown.getState() == State.UNKNOWN)
+				return true;
 		}
-		assert(false);
-		return "";
+		return false;
+	}
+
+	public boolean hasKnowns() {
+		for (Unknown unknown : m_unknowns) {
+			if (unknown.getState() == State.KNOWN)
+				return true;
+		}
+		return false;
+	}
+	
+	public void setDisplayAsUnknown(boolean displayAsUnknown) {
+		m_displayAsUnknown = displayAsUnknown;
+	}
+
+	public boolean getDisplayAsUnknown() {
+		return m_displayAsUnknown;
+	}
+	
+	private void removeUnknownOfType(Type type) {
+    	Iterator<Unknown> iter = m_unknowns.iterator();
+    	while (iter.hasNext()) {
+    		if (iter.next().getType() == type)
+    			iter.remove();
+    	}
 	}
 	
 	// ===================================================================== //
@@ -529,32 +512,42 @@ public class NodeAttributes {
 	// ===================================================================== //
 	// Instruction Time Methods
 	// ===================================================================== //
-	public void setInstructionNumCycles(long numCycles) {
+	public void setInstructionCycles(long cycles) {
 		assert(false);		
 	}
 
-	public void unsetInstructionNumCycles() {
-		assert(false);		
-	}
-	
-	public long getInstructionNumCycles() {
+	public long getInstructionCycles() {
 		assert(false);		
 		return 0;
 	}
 
-	public void setInstructionTimeTaken(double timeTaken) {
-		assert(false);		
-	}
-
-	public void unsetInstructionTimeTaken() {
+	public void setInstructionNs(double ns) {
 		assert(false);		
 	}
 	
-	public double getInstructionTimeTaken() {
+	public double getInstructionNs() {
 		assert(false);
 		return 0;
 	}
 
+	public void setInstructionMhz(double mhz) {
+		assert(false);		
+	}
+	
+	public double getInstructionMhz() {
+		assert(false);
+		return 0;
+	}
+	
+	public void unsetInstructionTime() {
+		assert(false);		
+	}
+	
+	public String getInstructionTimeString() {		
+		assert(false);
+		return null;
+	}
+	
 	public boolean hasFloatingIterations() {
 		assert(false);
 		return false;

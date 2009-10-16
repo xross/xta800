@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
 public class Status {
 	public enum S {
-		COMPLETED, INFINITE, UNRESOLVED, ZERO
+		COMPLETED, INFINITE, UNRESOLVED, ZERO, NOT_AVALIABLE
 	}
 	private S m_status;
 	
@@ -36,8 +36,9 @@ public class Status {
 
 	// Keep the worst-case (UNRESOLVED, INFINITE, COMPLETE)
 	public void mergeStatus(S s) {
-		if(s == S.COMPLETED &&  m_status == S.ZERO){
+		if (s == S.COMPLETED &&  m_status == S.ZERO) {
 			m_status = S.COMPLETED;
+			
 		} else if (m_status == S.UNRESOLVED || s == S.UNRESOLVED) {
 			m_status = S.UNRESOLVED;
 			
@@ -46,6 +47,9 @@ public class Status {
 			
 		} else if (m_status == S.ZERO || s == S.ZERO) {
 			m_status = S.ZERO;
+
+		} else if (m_status == S.NOT_AVALIABLE || s == S.NOT_AVALIABLE) {
+			m_status = S.NOT_AVALIABLE;
 		}
 	}
 }

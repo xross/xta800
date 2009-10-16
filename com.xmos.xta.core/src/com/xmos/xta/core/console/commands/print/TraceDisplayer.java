@@ -107,7 +107,7 @@ public class TraceDisplayer {
 	}
     
 	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException {
-		String isUnknown = instruction.getAttributes().getDisplayUnknown() ? "*" : " ";
+		String isUnknown = instruction.getAttributes().getDisplayAsUnknown() ? "*" : " ";
 		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
      	
      	XtaInstruction xtaInstruction = instruction.getXtaInstruction();
@@ -121,7 +121,7 @@ public class TraceDisplayer {
      	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s",
      			isUnknown,
          		m_currentTime,
-         		instruction.getAttributes().getInstructionTimeTaken(),
+         		instruction.getAttributes().getInstructionNs(),
            		xtaInstruction.getPc(), 
            		functionOffsetString, 
            		xtaInstruction.getNmenonic(), 
@@ -131,7 +131,7 @@ public class TraceDisplayer {
      	if (xtaInstruction.canPause())
      		m_console.display(" (P)");
      	
-     	m_currentTime += instruction.getAttributes().getInstructionTimeTaken();
+     	m_currentTime += instruction.getAttributes().getInstructionNs();
       	m_console.display("\n");    
       	
       	if (m_console.hasEscaped()) {

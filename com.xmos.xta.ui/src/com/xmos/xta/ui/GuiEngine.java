@@ -35,9 +35,12 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.ui.editors.InputDisassembly;
-import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
 import com.xmos.xta.ui.editors.XtaEditor;
+import com.xmos.xta.ui.editors.disassembly.InputDisassembly;
+import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.script.InputScript;
+import com.xmos.xta.ui.editors.script.ScriptEditor;
+import com.xmos.xta.ui.views.console.ConsoleView;
 
 @SuppressWarnings("restriction")
 public class GuiEngine {
@@ -220,13 +223,13 @@ public class GuiEngine {
 		} else if (message.equals(Notifier.NOTIFY_SET_START_POINT)) {
 			Reference startPoint = ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF);			
 			Engine engine = GuiEngine.getEngine();
-		    startPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());
+		    startPoint.resolve(engine);
 	    	s_startPoint = startPoint;
 
 		} else if (message.equals(Notifier.NOTIFY_SET_END_POINT)) {
 			Reference endPoint = ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF);			
 			Engine engine = GuiEngine.getEngine();
-			endPoint.resolve(engine, engine.getNodeId(), engine.getCoreId());			
+			endPoint.resolve(engine);			
 			s_endPoint = endPoint;
 			
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
@@ -272,26 +275,6 @@ public class GuiEngine {
 		}
 	}
 	
-	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {
-		if (s_routeProperties.containsKey(name)) {
-			return s_routeProperties.get(name);
-			
-		} else {
-			Map<Integer, GuiRouteProperties> routeIdMap = new HashMap<Integer, GuiRouteProperties>();
-			s_routeProperties.put(name, routeIdMap);
-			return routeIdMap;
-		}
-	}
-
-	private static void resetGuiState() {
-		s_codePoint = null;
-		s_startPoint = null;
-		s_endPoint = null;
-		s_focusNodes = null;
-		s_runMode = Notifier.RUN_MODE_FUNCTION;
-		setSelectedNodes(new ArrayList<Node>());
-	}
-
 	public static void setFocus(Node node) {
 		s_focusNodes = node;
 		broadcast(Broadcaster.BROADCAST_SET_FOCUS, "");
@@ -308,6 +291,11 @@ public class GuiEngine {
 			input = new InputDisassembly();
 			s_disassemblyInputs.put(nodeCoreId, input);
 		}
+		return input;
+	}
+
+	public static IEditorInput getScriptInput() {
+		IEditorInput input = new InputScript();
 		return input;
 	}
 
@@ -351,10 +339,61 @@ public class GuiEngine {
 		GuiEngine.broadcast(Broadcaster.BROADCAST_OPEN_DISASSEMBLY, "");		
 	}
 
+	public static void openScriptEditor() {
+		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		
+		// Check whether there is actually anything to do
+		IEditorReference[] editorReferences = page.getEditorReferences();
+		for (IEditorReference editorRef : editorReferences) {
+			if (editorRef.getPartName().equals(ScriptEditor.EDITORNAME)) {
+				GuiEngine.broadcast(Broadcaster.BROADCAST_REFRESH_SCRIPT, "");
+				return;
+			}
+		}
+
+		try {
+			IEditorInput input = GuiEngine.getScriptInput();
+		    page.openEditor(input, ScriptEditor.ID);
+
+		} catch (PartInitException e) {}		
+	}
+	
 	public static void closeDisassembly() {
 		s_disassemblyInputs.clear();
 	}
 
+	public static void runCommandInConsole(String command) {
+		ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+		getActivePage().findView(ConsoleView.ID);
+	
+	    try {
+		    PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+		        getActivePage().showView(ConsoleView.ID);
+	    } catch (PartInitException e) {}
+	
+	    console.runCommand(command);		
+	}
+	
+	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {
+		if (s_routeProperties.containsKey(name)) {
+			return s_routeProperties.get(name);
+			
+		} else {
+			Map<Integer, GuiRouteProperties> routeIdMap = new HashMap<Integer, GuiRouteProperties>();
+			s_routeProperties.put(name, routeIdMap);
+			return routeIdMap;
+		}
+	}
+
+	private static void resetGuiState() {
+		s_codePoint = null;
+		s_startPoint = null;
+		s_endPoint = null;
+		s_focusNodes = null;
+		s_runMode = Notifier.RUN_MODE_FUNCTION;
+		setSelectedNodes(new ArrayList<Node>());
+	}
+	
 	/**
 	 * Split the editor area if there is at least two editors in it.
 	 */

@@ -3,7 +3,7 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-abstract class SectionsViewerContentProvider implements IStructuredContentProvider {
+public abstract class SectionsViewerContentProvider implements IStructuredContentProvider {
 	public void dispose() {
 	}
 

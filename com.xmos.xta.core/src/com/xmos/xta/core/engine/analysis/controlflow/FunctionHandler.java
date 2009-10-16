@@ -40,9 +40,8 @@ public class FunctionHandler {
 		m_functions = new TreeSet<FunctionNode>();
 		m_pseudoFunctions = new TreeSet<Node>();
 		
-		for (InstructionNode instruction : m_instDecoder.getInstructions() ){
+		for (InstructionNode instruction : m_instDecoder.getInstructions()) {
 			
-
 			assert(instruction.getInstructions().size() == 1);
 			XtaInstruction inst = instruction.getInstructions().getFirst();
 			if(inst.isLink()){

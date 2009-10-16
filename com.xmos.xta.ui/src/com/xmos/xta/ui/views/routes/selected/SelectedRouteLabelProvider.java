@@ -24,7 +24,7 @@ public class SelectedRouteLabelProvider extends CellLabelProvider {
 		cell.setText(nodeText);
 		
 		String iconName = node.getTypeName() + "_node";
-		if (node.getAttributes().getDisplayUnknown()) {
+		if (node.getAttributes().getDisplayAsUnknown()) {
 			iconName += ".unknown";
 		}
 		cell.setImage(Icons.getIcon(iconName));
@@ -37,9 +37,4 @@ public class SelectedRouteLabelProvider extends CellLabelProvider {
 		String toolTip = node.getAttributes().getTimingDetails();
 		return toolTip.substring(0, toolTip.length()-1);
 	}
-
-    public boolean useNativeToolTip(Object object) {
-        if (DEBUG) System.out.printf("SelectedRouteLabelProvider: useNativeToolTips\n");
-        return true;
-    }
 }

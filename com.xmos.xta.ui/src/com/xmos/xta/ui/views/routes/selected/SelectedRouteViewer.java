@@ -94,7 +94,7 @@ public class SelectedRouteViewer {
 		// contains the given pc in one of their children..		
 		Reference codePoint = GuiEngine.getCodePoint();
 		Engine engine = GuiEngine.getEngine();
-		if (codePoint.resolve(engine, engine.getNodeId(), engine.getCoreId())) {
+		if (codePoint.resolve(engine)) {
 			final long pc = codePoint.getPc();
 			final List<Node> selectedNodes = new ArrayList<Node>();
 

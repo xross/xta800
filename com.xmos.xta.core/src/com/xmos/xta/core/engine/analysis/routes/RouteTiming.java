@@ -5,10 +5,11 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 
 public class RouteTiming {
 	public enum Level {
+		REQUIRED,
 		SIMPLE,
 		DETAILED,
 		COMPLETE
@@ -20,6 +21,7 @@ public class RouteTiming {
 	private boolean m_maxTimeSet;
 	private int m_nodeId;
 	private int m_coreId;
+	private String m_description;
 	
 	private CommandSource m_requirementsSrc;
 
@@ -29,6 +31,7 @@ public class RouteTiming {
 		m_config = config;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
+		m_description = null;
 	}
 
 	public int getNodeId() {
@@ -43,12 +46,12 @@ public class RouteTiming {
 		return m_maxTimeSet;
 	}
 
-	public void setMaxCycles(CommandSource src, int maxCycles) {
+	public void setMaxCycles(CommandSource src, long maxCycles) {
 		m_requirementsSrc = src;
-		
 		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
 		m_maxTime = (double) (threadFactor * 1000 * maxCycles) / (double) m_config.m_frequency;
 		m_maxTimeSet = true;
+		m_description = String.format("%d cycles", maxCycles); 
 	}
 
 	public int getMaxCycles() {
@@ -58,13 +61,24 @@ public class RouteTiming {
 
 	public void setMaxTime(CommandSource src, double maxTime) {
 		m_requirementsSrc = src;
-		
 		m_maxTime = maxTime;
 		m_maxTimeSet = true;
+		m_description = String.format("%.1f ns", maxTime); 
 	}
 
 	public double getMaxTime() {
 		return m_maxTime;
+	}
+	
+	public void setMaxMhz(CommandSource src, double maxMhz) {
+		m_requirementsSrc = src;		
+		m_maxTime = ((double)1.0 / maxMhz) * 1000;
+		m_maxTimeSet = true;
+		m_description = String.format("%.1f mhz", maxMhz);
+	}
+
+	public double getMaxMhz() {
+		return ((double)1.0 / m_maxTime) * 1000;
 	}
 
 	public void unset() {
@@ -109,7 +123,11 @@ public class RouteTiming {
 		
 	public String getDescription(Level level) {
 		String description = "";
-		if (isTimingSpecified()) {
+		if (isTimingSpecified()) {			
+			if (level == Level.REQUIRED) {
+				return m_description;
+			}
+			
 			if (level == Level.COMPLETE) {
 				description += String.format("Node: %d, Core: %d\n", m_nodeId, m_coreId);
 
@@ -122,7 +140,7 @@ public class RouteTiming {
 			else
 				description += "Fail";
 
-			int numWarnings = m_route.getRouteUnknowns().getUnknowns(UnknownState.UNKNOWN).size();
+			int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
 			if (numWarnings > 0)
 				description += " with " + numWarnings + " unknown";
 			if (numWarnings > 1)

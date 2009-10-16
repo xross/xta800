@@ -10,8 +10,6 @@ import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes.UnknownState;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.ui.icons.Icons;
 import com.xmos.xta.ui.views.ZoomedCanvasProperties;
@@ -119,9 +117,7 @@ public abstract class StructureNode extends ViewNode {
 	    found = false;
 	    m_treeNode.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
-	    		NodeAttributes nodeAttributes = node.getAttributes();		    		
-	    		if (nodeAttributes.isUnknown() &&
-	    			(nodeAttributes.getUnknownState() == UnknownState.UNKNOWN)) {
+	    		if (node.getAttributes().hasUnknowns()) {
 	    			found = true;
 	    			return false;
 	    		}

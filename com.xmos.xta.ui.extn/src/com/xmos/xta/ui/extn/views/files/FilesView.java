@@ -23,18 +23,17 @@ import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
-import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.editors.InputSource;
-import com.xmos.xta.ui.editors.XtaDisassemblyEditor;
+import com.xmos.xta.ui.GuiFileFinder;
 import com.xmos.xta.ui.editors.XtaEditor;
-import com.xmos.xta.ui.editors.XtaSourceEditor;
+import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
+import com.xmos.xta.ui.editors.source.InputSource;
+import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
@@ -131,20 +130,11 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 		SourceMapper sourceMapper = engine.getSourceMapper();
 		SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
 		if (sourceFile.getDebugFile().getFile() == null) {
-			File file = sourceMapper.findFileForSourceFile(sourceFile);
+			File file = sourceMapper.findFileForSourceFile(sourceFile, new GuiFileFinder());
 			if (file == null)
 				return null;
-			
-			// Ensure the debug information is up to date for all nodes/cores
-			XeLoader xeLoader = engine.getXeLoader();
-			for (int nodeId : xeLoader.getNodeIds()){
-				for (int coreId : xeLoader.getCoreIds(nodeId)) {
-					DebugEngine de = xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();
-					SourceMapper sm = engine.getSourceMapper(nodeId, coreId);
-					SourceFile sf = sm.getSourceFile(fileName);
-					sm.setFile(de, sf, file);
-				}
-			}
+
+			engine.updateSourceMappers(fileName, file);
 			m_filesViewer.getViewer().refresh();
 		}
 		return sourceFile;

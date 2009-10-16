@@ -1,14 +1,10 @@
 package com.xmos.xta.ui.views.info.sections;
 
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPartSite;
 
 public class ThreadStopPointsViewer extends SectionsViewer {
-	public ThreadStopPointsViewer(Display display, Composite parent, 
-			IWorkbenchPartSite site, TableViewer viewer) {
-		super(display, parent, site, viewer);
+	public ThreadStopPointsViewer(TableViewer viewer) {
+		super(viewer);
 	}
 
 	SectionsViewerContentProvider createContentProvider() {

@@ -1,9 +1,12 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.editors.disassembly;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.editors.Input;
+import com.xmos.xta.ui.editors.InputSection;
+import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
 import com.xmos.xta.core.engine.sourcemapper.AssemblyLine;
 import com.xmos.xta.core.engine.sourcemapper.Function;
 
