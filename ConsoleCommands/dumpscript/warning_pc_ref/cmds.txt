@@ -1,0 +1,5 @@
+analyse function main
+set loop - 0x10008 10
+dumpscript
+exit
+

@@ -1,0 +1,11 @@
+load .*test\.xe
+
+#
+# Route: main
+#
+analyse function main
+# Warning: The following line contains a non-portable reference.
+set loop - ENDPOINT:test.xc:12 10
+# Warning: The following line contains a non-portable reference.
+set loop - CALL:test.xc:22 10
+
