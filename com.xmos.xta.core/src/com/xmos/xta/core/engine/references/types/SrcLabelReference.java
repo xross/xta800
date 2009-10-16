@@ -35,4 +35,8 @@ public class SrcLabelReference extends ReferenceType {
 	public String description() {
 		return "Source label specified using the source level pragma mechanism";
 	}		
+	
+	public boolean isPortable() {
+		return true;
+	}	
 }

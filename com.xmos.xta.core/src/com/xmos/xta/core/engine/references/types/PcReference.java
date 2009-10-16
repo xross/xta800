@@ -38,4 +38,8 @@ public class PcReference extends ReferenceType {
 	public String description() {
 		return "Raw program counter specified in the format: 0x*";
 	}			
+	
+	public boolean isPortable() {
+		return false;
+	}	
 }

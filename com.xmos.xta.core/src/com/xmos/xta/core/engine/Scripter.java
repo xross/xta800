@@ -130,27 +130,31 @@ public class Scripter {
 			
 			String routeIdStr = getRouteIdString(singleRoute);			
 		    String refStr = getReferenceString(unknown);
-
-		    outputPortableWarnings(script, unknown);
 		    
 		    switch (unknown.getType()) {
 		    case INSTRUCTION_TIME:
+			    outputPortableWarnings(script, unknown);
 		    	script.append(String.format("set time %s %s %s\n", 
 		    			routeIdStr, refStr, node.getAttributes().getInstructionTimeString()));
 		    	break;
 
-		    case LOOP_ITERATIONS:		    	
-		    	script.append(String.format("set loop %s %s %d\n", 
-		    			routeIdStr, refStr, node.getAttributes().getLoopIterations()));
+		    case LOOP_ITERATIONS:
+		    	if (!node.getAttributes().isSourceLevelIterations()) {
+				    outputPortableWarnings(script, unknown);
+			    	script.append(String.format("set loop %s %s %d\n", 
+			    			routeIdStr, refStr, node.getAttributes().getLoopIterations()));		    		
+		    	}
 		    	break;
 
 		    case LOOP_PATH_ITERATIONS:
+			    outputPortableWarnings(script, unknown);
 				Node condNode = node.getEnclosingCondNode();
 		    	script.append(String.format("set looppath %s %s %d\n", 
 		    			routeIdStr, refStr, condNode.getAttributes().getSetLoopPathIterations(node)));
 		    	break;
 		    	
 		    case LOOP_SCOPE:		    	
+			    outputPortableWarnings(script, unknown);
 		    	script.append(String.format("set loopscope %s %s %s\n", 
 		    			routeIdStr, refStr, node.getAttributes().getIsAbsolute() ? "a" : "r"));
 		    	break;
@@ -217,9 +221,10 @@ public class Scripter {
     }
     
     private void outputPortableWarnings(StringBuffer script, Unknown unknown) {
-		if (unknown.getReference() == null) {
+		if ((unknown.getReference() == null) ||
+			(!unknown.getReference().isPortable())) {
 			script.append("# Warning: The following line contains a non-portable reference.\n");
-		}    	
+		}
     }
 
     private boolean exclusionsDiffer(Collection<Reference> ex1, Collection<Reference> ex2) {

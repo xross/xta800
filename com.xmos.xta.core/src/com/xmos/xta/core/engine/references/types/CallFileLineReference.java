@@ -44,4 +44,8 @@ public class CallFileLineReference extends ReferenceType {
 	public String description() {
 		return "Call specified in the format: 'file name:line number'";
 	}
+	
+	public boolean isPortable() {
+		return false;
+	}
 }

@@ -44,4 +44,8 @@ public class EndpointFileLineReference extends ReferenceType {
 	public String description() {
 		return "Endpoint specified in the format: 'file name:line number'";
 	}
+	
+	public boolean isPortable() {
+		return false;
+	}	
 }

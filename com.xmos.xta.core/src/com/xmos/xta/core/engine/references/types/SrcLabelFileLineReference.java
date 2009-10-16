@@ -45,4 +45,8 @@ public class SrcLabelFileLineReference extends ReferenceType {
 	public String description() {
 		return "Source label specified in the format: 'file name:line number'";
 	}	
+	
+	public boolean isPortable() {
+		return false;
+	}	
 }

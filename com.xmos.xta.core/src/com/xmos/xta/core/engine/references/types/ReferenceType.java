@@ -37,6 +37,7 @@ public abstract class ReferenceType {
 	public abstract String name();
 	public abstract String description();
 	public abstract boolean resolve(Engine engine);
+	public abstract boolean isPortable();
 	
 	public String getRef() {
 	    return m_ref;	    

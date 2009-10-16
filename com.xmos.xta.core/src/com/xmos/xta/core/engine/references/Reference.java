@@ -59,11 +59,24 @@ public class Reference {
 		}
 		return true;
 	}
+
+	public boolean isPortable() {
+		assert(m_base != null);
+
+		if (!m_base.isPortable())
+			return false;
+			
+		for (ReferenceType referenceType : m_backTrail) {
+			if (!referenceType.isPortable())
+				return false;
+		}
+		return true;		
+	}
 	
 	public void addToBackTrail(ReferenceType referenceType) {
 		m_backTrail.add(referenceType);
 	}
-
+	
     public boolean equals(Object obj) {
     	if(obj == null)
     	return false;

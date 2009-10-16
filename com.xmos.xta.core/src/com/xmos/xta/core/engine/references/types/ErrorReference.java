@@ -23,4 +23,8 @@ public class ErrorReference extends ReferenceType {
 	public String description() {
 		return "Error";
 	}		
+	
+	public boolean isPortable() {
+		return false;
+	}	
 }

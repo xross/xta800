@@ -33,5 +33,9 @@ public class LabelReference extends ReferenceType {
 	
 	public String description() {
 		return "Any source or assembly level symbol defined with respect to an executable section";
-	}		
+	}
+	
+	public boolean isPortable() {
+		return true;
+	}	
 }

@@ -47,5 +47,9 @@ public class CallReference extends ReferenceType {
 	
 	public String description() {
 		return "Call specified using the source level pragma mechanism";
+	}
+	
+	public boolean isPortable() {
+		return true;
 	}	
 }

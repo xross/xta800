@@ -444,6 +444,11 @@ public class NodeAttributes {
 		return 0;
 	}
 
+	public boolean isSourceLevelIterations() {
+		assert(false);
+		return false;
+	}
+	
 	public void loopPathIterationsValid(Node optionNode, long numIterations) throws Exception {
 		assert(false);
 	}
