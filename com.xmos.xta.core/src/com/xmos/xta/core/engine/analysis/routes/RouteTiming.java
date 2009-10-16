@@ -63,7 +63,7 @@ public class RouteTiming {
 		m_requirementsSrc = src;
 		m_maxTime = maxTime;
 		m_maxTimeSet = true;
-		m_description = String.format("%.1f ns", maxTime); 
+		m_description = String.format("%f ns", maxTime); 
 	}
 
 	public double getMaxTime() {
@@ -74,7 +74,7 @@ public class RouteTiming {
 		m_requirementsSrc = src;		
 		m_maxTime = ((double)1.0 / maxMhz) * 1000;
 		m_maxTimeSet = true;
-		m_description = String.format("%.1f mhz", maxMhz);
+		m_description = String.format("%f mhz", maxMhz);
 	}
 
 	public double getMaxMhz() {
