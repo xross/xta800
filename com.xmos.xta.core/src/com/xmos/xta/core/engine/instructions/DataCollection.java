@@ -63,16 +63,25 @@ public class DataCollection {
 	}
 	
 	public void report(){
-		int wrongCount =0;
+		int wrongCount = 0;
+		int longCount = 0;
+		int shortCount = 0;
 		for(InstructionData id : m_instructionData){
-			id.printResults();
+			//if(id.getLongCount() != 0 || id.getShortCount() != 0){
+			//if(id.getWrongCount()!= 0){
+				id.printResults();
+			//}
+			
 			wrongCount += id.getWrongCount();
+			longCount += id.getLongCount();
+			shortCount += id.getShortCount();
 		}
 		
 		double total = round(((double)(wrongCount*200)/(double)m_bytesSeen ),1);
+		double saving = round(((double)(longCount*200)/(double)m_bytesSeen ),1);
 		System.out.println("Total Wasted Space (Bytes): " + (wrongCount*2) + " (" +((wrongCount*2)/1024) +"kb) of " 
 				+ m_bytesSeen + " bytes (" + (m_bytesSeen/1024) + "kb) " + total + "%");
-		
+		System.out.println("Total longs: " + longCount + " total shorts: " + shortCount + " saving if all short " + (longCount*2)/1024 + "kb(" + saving +"%)");
 	}
 	
 	double round(double d, int decimalPlace) {
@@ -137,6 +146,13 @@ public class DataCollection {
 		
 		public int getWrongCount(){
 			return m_couldHaveBeenAShort;
+		}
+		
+		public int getLongCount(){
+			return m_longCount;
+		}
+		public int getShortCount(){
+			return m_shortCount;
 		}
 		
 		public void printResults(){

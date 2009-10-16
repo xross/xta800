@@ -47,6 +47,7 @@ public class StructuralAnalysisEngine {
 	private StructureGraph m_structureGraph;
 	private List<PatternMatcher> m_patternMatchers;
 	private Architecture m_arch;
+	private static BasicBlockData m_basicBlockData = new BasicBlockData();
 	
 	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph, XeLoader xeLoader) {
 		m_controlFlowGraph = controlFlowGraph;
@@ -54,6 +55,10 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
+	public static BasicBlockData getBasicBlockData(){
+		return m_basicBlockData;
+	}
+	
 	public StructuralAnalysisEngine() {
 		setUpPatternMatcher();
 	}
@@ -140,13 +145,13 @@ public class StructuralAnalysisEngine {
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
 		Collection<FunctionNode> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
-				m_functionStartPcs, engine, false, treeMap, allFunctionObjects);
+				m_functionStartPcs, engine, false, treeMap, allFunctionObjects, nodeId, coreId);
 		if (threads == null) {
 			return false;
 		}
 		
 		Collection<FunctionNode> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
-				m_functionStartPcs, engine, true, treeMap, allFunctionObjects);
+				m_functionStartPcs, engine, true, treeMap, allFunctionObjects, nodeId, coreId);
 		if (functions == null) {
 			return false;
 		}
@@ -194,7 +199,7 @@ public class StructuralAnalysisEngine {
 
 	private Collection<FunctionNode> buildGraph(Collection<InstructionNode> graphStartNodes, Map<Long, FunctionNode> startPcs,
 			Engine engine, boolean isFunction, TreeMap<String, LinkedList<InstructionNode>> treeMap,
-			Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
+			Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects, int nodeId, int coreId) {
 
 		Collection<FunctionNode> graphs = new TreeSet<FunctionNode>();
 
@@ -219,9 +224,9 @@ public class StructuralAnalysisEngine {
 
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
 			
+			m_basicBlockData.add(basicBlocks, nodeId, coreId);
 			
 			//System.out.println(dumpTree("hello", basicBlocks));
-			
 			
 			assert(!basicBlocks.isEmpty());
 			FnopAnalyser fa = new FnopAnalyser();
@@ -807,16 +812,48 @@ public class StructuralAnalysisEngine {
 			for (Node node : workingSet) {
 				for (Node next : node.getNextNodes()) {
 					if (node.getBranchTargets().contains(next)) {
-						sb.append(node + " -> " + next + " [style=dotted];");
+						if(node.isBlockNode()){
+							
+							BlockNode b = (BlockNode)node;
+							
+							if(b.getInstructions().size() > 0 && b.getInstructions().getLast().getNumBytes() == 4){
+								sb.append(node + " -> " + next + " [style=dotted, penwidth=5, color=red];");
+							} else {
+								sb.append(node + " -> " + next + " [style=dotted];");
+							}
+							
+						} else {
+							sb.append(node + " -> " + next + " [style=dotted];");
+						}
+
 					} else {
 						sb.append(node + " -> " + next + ";");
 					}
+					
+
+					
+					
 				}
-				//if(node.isBlockNode()){
-				//	sb.append(node + " [label=\""+node.getInstructions() +"\"];");
-				//} 
-			if(node.isFunctionNode()){
-					sb.append(node + " [label=\""+((FunctionNode)node).getFunctionName() +"\"];");
+				if (node.isFunctionNode()) {
+					//sb.append(node + " [label=\""+ ((FunctionNode) node).getFunctionName()+ "\", style=filled, color=green];");
+					sb.append(node + " [label=\"func\"];");
+				} else if(node.isBlockNode()){
+					
+					BlockNode b = (BlockNode)node;
+					
+					int bytes = 0;
+							for(XtaInstruction inst : b.getInstructions()){
+								bytes +=inst.getNumBytes();
+							}
+							sb.append(node + " [label=\"bytes: " + bytes + "\"];");
+				
+					/*
+					if (singleEntryIbuffer(node)) {
+						sb.append(node + " [label=\"" + node+ "\", style=filled, color=green];");
+					} else {
+						sb.append(node + " [label=\"" + node+ "\", style=filled, color=red];");
+					}
+					*/
 				}
 			}
 			sb.append("}\n");
@@ -827,6 +864,21 @@ public class StructuralAnalysisEngine {
 		return sb.toString();
 	}
 	
+	private static boolean singleEntryIbuffer(Node node) {
+		
+		
+		//if(node.getPrevNodesSize() == 1){
+		//	return true;
+		//}
+		boolean allBranch= true;
+		for(Node prev : node.getPrevNodes()){
+			if(!prev.getBranchTargets().contains(node)){
+				allBranch = false;
+			}
+		}
+		return allBranch;
+	}
+
 	private void setUpPatternMatcher() {
 		m_patternMatchers = new ArrayList<PatternMatcher>();
 		m_patternMatchers.add(new SelfLoopPattern());
