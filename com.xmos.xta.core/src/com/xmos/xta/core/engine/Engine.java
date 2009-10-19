@@ -79,7 +79,7 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
-	private Collection<SourceMapperInfo> m_sourceMapperInfoCache;
+	private Collection<FileLocation> m_userSpecifedFileLocations;
 	
 	private DataCollection m_dataCollection;
 	private final static boolean LAZY = true;
@@ -105,7 +105,7 @@ public class Engine implements Notifier {
 		m_timeOut = -1;
 		m_numErrors = 0;
 		m_dataCollection = new DataCollection();
-		m_sourceMapperInfoCache = new ArrayList<SourceMapperInfo>();
+		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -211,8 +211,7 @@ public class Engine implements Notifier {
 		return routes;
 	}
 	
-	public boolean loadExecutable(CommandSource src, File executableFile) {
-		
+	public boolean loadExecutable(CommandSource src, File executableFile) {		
     	try {
     		executableFile = executableFile.getCanonicalFile();
 		} catch (IOException e) {
@@ -230,6 +229,12 @@ public class Engine implements Notifier {
 		if (!sections.load(src, xeLoader, this)) {
 			return false;
 		}
+
+		m_wasReload = isReloaded(executableFile);
+		if (!m_wasReload) {
+			m_userSpecifedFileLocations.clear();
+		}		
+
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
 		if (LAZY){
 			if (!initialiseGlobalStructure(src, xeLoader, sections, false, 0, 0))
@@ -243,7 +248,6 @@ public class Engine implements Notifier {
 			}
 		}
 		
-		m_wasReload = isReloaded(executableFile); 				
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
@@ -489,20 +493,13 @@ public class Engine implements Notifier {
 	}
 		
 	public void updateSourceMappers(String fileName, File file) {
-		// Ensure the debug information is up to date for all nodes/cores
 		for (int nodeId : m_xeLoader.getNodeIds()){
 			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
 				SourceMapper sourceMapper = m_sourceMapper.get(nodeId, coreId);		
 				if (sourceMapper != null) {
-					// The source mapper already exists, so register the file information.
 					updateSourceMapper(sourceMapper, fileName, file, nodeId, coreId);
-
-				} else {
-					// The source mapper for this node/core hasn't been created (due
-					// to the lazy evaluation optimisation), so we must store the file 
-					// info in a cache, and use it when this source mapper is created... 
-					m_sourceMapperInfoCache.add(new SourceMapperInfo(nodeId, coreId, fileName, file));
 				}
+				m_userSpecifedFileLocations.add(new FileLocation(nodeId, coreId, fileName, file));
 			}
 		}		
 	}
@@ -1120,9 +1117,9 @@ public class Engine implements Notifier {
 			SourceMapper sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
 					id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 			
-			for (SourceMapperInfo smInfo : m_sourceMapperInfoCache) {
-				if ((smInfo.m_nodeId == nodeId) && (smInfo.m_coreId == coreId)) {
-					updateSourceMapper(sourceMapper, smInfo.m_fileName, smInfo.m_file, nodeId, coreId);
+			for (FileLocation fileLocation : m_userSpecifedFileLocations) {
+				if ((fileLocation.m_nodeId == nodeId) && (fileLocation.m_coreId == coreId)) {
+					updateSourceMapper(sourceMapper, fileLocation.m_fileName, fileLocation.m_file, nodeId, coreId);
 				}
 			}
 			
@@ -1394,13 +1391,13 @@ class NodeCoreCollection<E> {
 	}
 }
 
-class SourceMapperInfo {
+class FileLocation {
 	int m_nodeId;
 	int m_coreId;
 	String m_fileName;
 	File m_file;
 	
-	SourceMapperInfo(int nodeId, int coreId, String fileName, File file) {
+	FileLocation(int nodeId, int coreId, String fileName, File file) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_fileName = fileName;		

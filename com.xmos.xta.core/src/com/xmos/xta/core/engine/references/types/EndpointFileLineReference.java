@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.references.types;
 
-import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.FileNameMatcher;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 
 public class EndpointFileLineReference extends ReferenceType {
@@ -12,7 +12,7 @@ public class EndpointFileLineReference extends ReferenceType {
 	public ReferenceType create(Engine engine, String reference) {
 		if (checkTypeString(reference, Type.ENDPOINT, 2) &&
 		    isSourceReference(reference) && 
-			inCodePointTable(reference, engine.getEndpointTable())) {
+			inCodePointTable(reference, engine.getEndpointTable(), engine.getSourceMapper())) {
 	    	return new EndpointFileLineReference(reference);
 		}
 		return null;
@@ -24,7 +24,7 @@ public class EndpointFileLineReference extends ReferenceType {
         long lineNumber = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : engine.getEndpointTable().values()) {
-            if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName) &&
+            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper()) &&
             	(info.getLineNumber() == lineNumber)) {
             	setPc(info.getPc());
             	setFileName(fileName);

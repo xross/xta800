@@ -15,8 +15,8 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.FileNameMatcher;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -106,7 +106,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 			String fileName = engine.getSourceMapper().getDebugFileName(getFileName());
 			
 			for (CodePointTableInfo info : engine.getEndpointTable().values()) {
-	        	if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName)) {
+	        	if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper())) {
 	        		long index = info.getLineNumber() - 1;
 	        		m_endPointLineIndexes.add(index);
 	        		if (index != endPointIndex && index != startPointIndex) {
@@ -116,7 +116,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	        } 
 	
 	        for (CodePointTableInfo info : engine.getCallTable().values()) {
-	        	if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName)) {
+	        	if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper())) {
 	        		long index = info.getLineNumber() - 1;
 	        		m_endPointLineIndexes.add(index);
 	        		if (index != endPointIndex && index != startPointIndex) {
@@ -159,8 +159,10 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	public long getIndexForRef(Reference ref) {
 		if (ref != null) {
 			if (ref.getResolved()) {
-				if (FileNameCompare.fileNamesMatch(ref.getFileName(), getFileName())) {
+				if (FileNameMatcher.isMatch(ref.getFileName(), getFileName(), 
+						GuiEngine.getEngine().getSourceMapper())) {					
 					return ref.getLineNum() - 1;
+					
 				} else {
 					long pc = ref.getPc();
 					return getIndexForPc(pc);
@@ -242,7 +244,9 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		long lineNumber = index + 1;
         Map<Long, SrcLabelTableInfo> srcLabelTable = GuiEngine.getEngine().getSrcLabelTable();
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
-			if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName)) {
+			if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, 
+					GuiEngine.getEngine().getSourceMapper())) {
+				
         		long startLineNumber = info.getLineNumberStart();
         		long endLineNumber = info.getLineNumberEnd();
     			if (lineNumber >= startLineNumber && lineNumber <= endLineNumber) {

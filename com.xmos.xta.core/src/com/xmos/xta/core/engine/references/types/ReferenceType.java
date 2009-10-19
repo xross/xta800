@@ -2,10 +2,11 @@ package com.xmos.xta.core.engine.references.types;
 
 import java.util.Map;
 
-import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.FileNameMatcher;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public abstract class ReferenceType {
 	private String m_ref;
@@ -83,12 +84,12 @@ public abstract class ReferenceType {
 		return m_type;
 	}
 	
-	boolean inSrcLabelTable(String ref, Map<Long, SrcLabelTableInfo> srcLabelTable) {
+	boolean inSrcLabelTable(String ref, Map<Long, SrcLabelTableInfo> srcLabelTable, SourceMapper sourceMapper) {
 		String fileName = getFileName(ref);
         long lineNumber  = getLineNumber(ref);		
 
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
-            if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName) &&
+            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper) &&
             	((lineNumber >= info.getLineNumberStart()) &&
             	 (lineNumber <= info.getLineNumberEnd()))) {
             	return true;
@@ -97,12 +98,12 @@ public abstract class ReferenceType {
 		return false;
 	}
 	
-	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable) {		
+	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable, SourceMapper sourceMapper) {		
 		String fileName = getFileName(ref);
         long lineNumber  = getLineNumber(ref);		
 
 		for (CodePointTableInfo info : codePointTable.values()) {
-            if (FileNameCompare.fileNamesMatch(info.getCompilationDir(), info.getFileName(), fileName) &&
+            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper) &&
             	(info.getLineNumber() == lineNumber)) {
             	return true;
             }			
@@ -213,5 +214,5 @@ public abstract class ReferenceType {
 			}
 		}
 		return false;
-	}
+	}	
 }

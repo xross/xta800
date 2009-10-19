@@ -175,6 +175,39 @@ public class SourceMapper {
         return diskFileName;
     }
 
+	public List<SourceFile> getSourceFiles() {
+        return m_sourceFiles;
+    }
+
+	public SourceFile getSourceFile(String fileName) {
+        for (SourceFile sourceFile : m_sourceFiles){
+        	if (sourceFile.fileNameMatches(fileName))
+        		return sourceFile;
+        }
+        return null;
+    }
+
+	public List<Function> getFunctions() {
+        return m_functions;
+    }
+	
+	public boolean isProfilablePc(long pc) {
+		for (Function function : m_functions){
+			if (function.containsPc(pc)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Function getFunction(long pc) {
+		return m_pcToFunction.get(pc);
+	}
+	
+	public String getFunctionFileName(String string) {
+		return m_functionToFile.get(string);
+	}
+    
     private void mapSourceFileLines(DebugEngine debugEngine, SourceFile sourceFile) {
     	for (SourceLine sourceLine : sourceFile.getSourceLines()) {
     		long lineNumber = sourceLine.getLineNumber();
@@ -297,38 +330,5 @@ public class SourceMapper {
 		
 		assert(false);
 		return "";
-	}
-
-	public List<SourceFile> getSourceFiles() {
-        return m_sourceFiles;
-    }
-
-	public SourceFile getSourceFile(String fileName) {
-        for (SourceFile sourceFile : m_sourceFiles){
-        	if (sourceFile.fileNameMatches(fileName))
-        		return sourceFile;
-        }
-        assert(false);
-        return null;
-    }
-
-	public List<Function> getFunctions() {
-        return m_functions;
-    }
-	public boolean isProfilablePc(long pc) {
-		for (Function function : m_functions){
-			if (function.containsPc(pc)){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public Function getFunction(long pc) {
-		return m_pcToFunction.get(pc);
-	}
-	
-	public String getFunctionFileName(String string) {
-		return m_functionToFile.get(string);
 	}
 }
