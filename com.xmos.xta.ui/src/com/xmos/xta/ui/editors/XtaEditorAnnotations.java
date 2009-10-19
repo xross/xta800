@@ -121,8 +121,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 			}
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_PERSPECTIVE_CHANGED)) {
-			updateAll();
-			
+			updateAll();			
 		}
 	}
 

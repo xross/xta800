@@ -218,9 +218,11 @@ public class GuiEngine {
 			s_log.add(GuiLog.Level.INFO, argument);
 
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			resetGuiState();
-			refreshGuiRouteProperties();
-			s_disassemblyInputs.clear();
+			if (!s_engine.wasReload()) {
+				resetGuiState();
+				refreshGuiRouteProperties();
+				s_disassemblyInputs.clear();				
+			}
 			
 		} else if (message.equals(Notifier.NOTIFY_SET_FUNCTION_NAME)) {
 			s_functionName = argument;
