@@ -725,11 +725,8 @@ public class StructuralAnalysisEngine {
 					} else {
 						sb.append(node + " -> " + next + ";");
 					}
-					
-
-					
-					
 				}
+				
 				if (node.isFunctionNode()) {
 					//sb.append(node + " [label=\""+ ((FunctionNode) node).getFunctionName()+ "\", style=filled, color=green];");
 					sb.append(node + " [label=\"func\"];");
@@ -738,18 +735,10 @@ public class StructuralAnalysisEngine {
 					BlockNode b = (BlockNode)node;
 					
 					int bytes = 0;
-							for(XtaInstruction inst : b.getInstructions()){
-								bytes +=inst.getNumBytes();
-							}
-							sb.append(node + " [label=\"bytes: " + bytes + "\"];");
-				
-					/*
-					if (singleEntryIbuffer(node)) {
-						sb.append(node + " [label=\"" + node+ "\", style=filled, color=green];");
-					} else {
-						sb.append(node + " [label=\"" + node+ "\", style=filled, color=red];");
+					for(XtaInstruction inst : b.getInstructions()){
+						bytes +=inst.getNumBytes();
 					}
-					*/
+					sb.append(node + " [label=\"bytes: " + bytes + "\"];");
 				}
 			}
 			sb.append("}\n");
@@ -760,21 +749,6 @@ public class StructuralAnalysisEngine {
 		return sb.toString();
 	}
 	
-	private static boolean singleEntryIbuffer(Node node) {
-		
-		
-		//if(node.getPrevNodesSize() == 1){
-		//	return true;
-		//}
-		boolean allBranch= true;
-		for(Node prev : node.getPrevNodes()){
-			if(!prev.getBranchTargets().contains(node)){
-				allBranch = false;
-			}
-		}
-		return allBranch;
-	}
-
 	private void setUpPatternMatcher() {
 		m_patternMatchers = new ArrayList<PatternMatcher>();
 		m_patternMatchers.add(new SelfLoopPattern());

@@ -216,6 +216,11 @@ public class GuiEngine {
 			
 		} else if (message.equals(Notifier.NOTIFY_INFO)) {
 			s_log.add(GuiLog.Level.INFO, argument);
+
+		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+			resetGuiState();
+			refreshGuiRouteProperties();
+			s_disassemblyInputs.clear();
 			
 		} else if (message.equals(Notifier.NOTIFY_SET_FUNCTION_NAME)) {
 			s_functionName = argument;
@@ -231,12 +236,7 @@ public class GuiEngine {
 			Engine engine = GuiEngine.getEngine();
 			endPoint.resolve(engine);			
 			s_endPoint = endPoint;
-			
-		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			resetGuiState();
-			refreshGuiRouteProperties();
-			s_disassemblyInputs.clear();
-			
+						
 		} else if (message.equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			resetGuiState();
 						
@@ -244,8 +244,7 @@ public class GuiEngine {
 			s_runMode = argument;
 			
 		} else if (message.equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
-			refreshGuiRouteProperties();
-			
+			refreshGuiRouteProperties();			
 		}
 	}
 	

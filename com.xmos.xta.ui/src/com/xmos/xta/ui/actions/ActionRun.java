@@ -50,8 +50,7 @@ public class ActionRun extends ActionDelegate implements IPropertyChangeListener
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) ||
 			event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
 			event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
-			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
-			
+			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {			
 			updateState();
 		}
 	}

@@ -5,7 +5,7 @@ public interface Notifier {
 	public static final String NOTIFY_WARNING = "Warning";
 	public static final String NOTIFY_INFO = "Info";
 
-	public static final String NOTIFY_LOAD_EXECUTABLE = "LoadExecutable";
+	public static final String NOTIFY_LOAD_EXECUTABLE   = "LoadExecutable";
 
 	public static final String NOTIFY_ANALYSIS_BEGIN    = "AnalysisBegin";
 	public static final String NOTIFY_ANALYSIS_COMPLETE = "AnalysisComplete";
@@ -32,6 +32,9 @@ public interface Notifier {
 	
 	public static final String HOLD_MESSAGES     = "Hold messages";
 	public static final String RELEASE_MESSAGES  = "Release messages";
+	
+	public static final String LOAD   = "Load";
+	public static final String RELOAD = "Reload";
 	
 	void notify(CommandSource src, String message, String argument);
 }

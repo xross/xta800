@@ -64,6 +64,7 @@ public class Engine implements Notifier {
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
+	private boolean m_wasReload;
 	private int m_nodeId;
 	private int m_coreId;
 	private Notifier m_notifier;	
@@ -95,6 +96,7 @@ public class Engine implements Notifier {
 		m_exclusions = new ArrayList<Reference>();
 		m_config = config;
 		m_executableFile = null;
+		m_wasReload = false;
 		m_nodeId = 0;
 		m_coreId = 0;
 		m_srcPaths = ".";
@@ -241,6 +243,7 @@ public class Engine implements Notifier {
 			}
 		}
 		
+		m_wasReload = isReloaded(executableFile); 				
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
@@ -253,15 +256,14 @@ public class Engine implements Notifier {
 		m_selectedRoute = null;
 		m_exclusions.clear();
 		Route.resetRouteCount();
-		
-		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, executableFile.getAbsolutePath());		
+
+		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
 		return true;
 	}
 	
 	public void printInstructionReport(){
 		m_dataCollection.report();
 	}
-	
 	
 	public boolean analyseRoute(CommandSource src, String functionName) {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
@@ -482,6 +484,10 @@ public class Engine implements Notifier {
 		return m_functionsVisited;
 	}
 	
+	public boolean wasReload() {
+		return m_wasReload; 
+	}
+		
 	public void updateSourceMappers(String fileName, File file) {
 		// Ensure the debug information is up to date for all nodes/cores
 		for (int nodeId : m_xeLoader.getNodeIds()){
@@ -1345,6 +1351,14 @@ public class Engine implements Notifier {
 
 	private boolean resolveRefernece(Reference ref) {
 		return ref.resolve(this);
+	}
+	
+	private boolean isReloaded(File executableFile) {
+		if ((m_executableFile != null) && 
+			m_executableFile.getAbsolutePath().equals(executableFile.getAbsolutePath())) {
+			return true;
+		}
+		return false;
 	}
 		
 	public void setAnalysisTimeOut(int time) {

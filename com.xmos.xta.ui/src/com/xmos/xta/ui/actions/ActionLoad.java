@@ -132,15 +132,17 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 		job.setUser(true);
 		job.schedule();		        		
 	}
-	
+
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {			
-	        openEditors();
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+			if (!GuiEngine.getEngine().wasReload()) {
+		        closeEditors();				
+			}
 	        runSrcLevelCommands();
 		}
 	}
 
-    private void openEditors() {
+    private void closeEditors() {
 		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		
 		// Need to close any xta editors already open..
