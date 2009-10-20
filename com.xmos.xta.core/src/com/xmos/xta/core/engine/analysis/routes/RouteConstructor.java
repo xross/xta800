@@ -107,16 +107,16 @@ public class RouteConstructor {
 					break;
 				}
 
-				if (startNode.getNode().isFunctionNode()&& notFoundFunctionYet) {
-					if (!containAnyNodes(startNode, m_exclusions)) {
+				if (notFoundFunctionYet) {
+					if (startNode.getNode().isFunctionNode() && !containAnyNodes(startNode, m_exclusions)) {
 						startNode.getNode().setParent(null);
 						m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description, m_container));
 						
 					} else {
 						seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
-								seenEndPoint, endNodeDescriptors, true);
-					}	
-					notFoundFunctionYet = false;
+								seenEndPoint, endNodeDescriptors, true);					
+					}
+					notFoundFunctionYet = false;					
 				}
 			    break;
 			
@@ -176,13 +176,13 @@ public class RouteConstructor {
 			addTerminator(workingSet);
 			assert(cfgSanityCheckNodeDescriptors(workingSet));
 
+			if (DEBUG_ROUTE_CONSTRUCTION)
+			    System.out.println(dumpGraph("Before", workingSet));
+			
 			WorkingSet ws = convertWorkingSet(workingSet, newStart, startInstruction);
-
-			if (DEBUG_ROUTE_CONSTRUCTION) {
-			    System.out.println(StructuralAnalysisEngine.dumpTree("eek", ws.m_set));
-			    System.out.println("end instructions: " +endInstructions);
-			    System.out.println("real end Nodes: "+ realEndNodes +"\n\n" );
-			}
+			
+			if (DEBUG_ROUTE_CONSTRUCTION)
+			    System.out.println(StructuralAnalysisEngine.dumpTree("After", ws.m_set));
 						
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();				
 			sae.createStructure(ws.m_set, ws.m_start, m_engine, "Analysing route");
@@ -226,9 +226,10 @@ public class RouteConstructor {
 				endInstructionsWithinCurrentNode.add(currentNode);
 			}
 			
-		} else {
+		} else {			
 			exclusionsWithinCurrentNode = new TreeSet<NodeDescriptor>(m_exclusions);
 			exclusionsWithinCurrentNode.retainAll(getContainedNodes(currentNode));
+			
 			endInstructionsWithinCurrentNode = new TreeSet<NodeDescriptor>(endInstructions);
 			endInstructionsWithinCurrentNode.retainAll(getContainedNodes(currentNode));
 		}
@@ -518,12 +519,6 @@ public class RouteConstructor {
 			
 			startNode = new NodeDescriptor(new BlockNode(startListNodes), beginingOfFirstBlock.getAncestors());
 			
-			// Ensure that the id/ancestors of the new block 
-			// match that of the one it is replacing.
-			int origionalBlockId = startListNodes.get(0).getParent().getId();
-			startNode.getNode().setId(origionalBlockId);	
-			startNode.getAncestors().pop();
-
 			workingSet.removeAll(startList);
 			addNodeToWorkingSet(workingSet, startNode);
 
@@ -806,7 +801,7 @@ public class RouteConstructor {
 		}
 		return referencedNodeDescriptors;		
 	}
-		
+
 	private Set<NodeDescriptor> findEndNodeDescriptors() {
 		Set<NodeDescriptor> endNodeDescriptors = new TreeSet<NodeDescriptor>();
 		
@@ -835,7 +830,7 @@ public class RouteConstructor {
 
 		Stack<Node> ancestors = new Stack<Node>();
 		ancestors.addAll(startNodeDescriptor.getAncestors());
-		
+
 		while (parentIsBetterThanChild(startNode, ancestors)) {
 			startNode = ancestors.pop();
 		}
@@ -843,20 +838,32 @@ public class RouteConstructor {
 	}
 
 	private boolean parentIsBetterThanChild(Node child, Stack<Node> ancestors) {
-		// The parent is a better start node than the child if the parent starts 
-		// with the same PC as the child. Note: be careful of FNOPs
-		if (ancestors.isEmpty()) 
+		if (ancestors.isEmpty())
 			return false;
 
+		// Checks that the parent is not a conditional node..
 		Node parent = ancestors.peek();		
 		if (parent.isCondNode()) { 
 			return false;
 		}
-		if ((parent.getStartPc() == child.getStartPc()) && 
-			!parent.getInstructions().getFirst().isFnop()) {
-			return true;
+		
+		// The parent is a better start node than the child if the parent starts 
+		// with the same PC as the child. Note: be careful of FNOPs		
+		if ((parent.getStartPc() != child.getStartPc()) || 
+			parent.getInstructions().getFirst().isFnop()) {
+			return false;
 		}
-		return false;
+		
+		// Check that the parent doesn't contain any exclusions..
+		Stack<Node> parentAncestors = new Stack<Node>();
+		parentAncestors.addAll(ancestors);	
+		parentAncestors.pop();
+		NodeDescriptor parentDescriptor = new NodeDescriptor(parent, parentAncestors);	
+		if (containsExclusions(parentDescriptor)) {
+			return false;
+		}		
+		
+		return true;
 	}
 	
 	private Collection<NodeDescriptor> getContainedNodes(NodeDescriptor nodeDescriptor) {
@@ -872,7 +879,25 @@ public class RouteConstructor {
 		}
 		return nodeDescriptors;
 	}
+
+	private boolean m_containsExclusions;
+	private boolean containsExclusions(NodeDescriptor nodeDescriptor) {
+		if (m_exclusions.isEmpty())
+			return false;
 		
+		m_containsExclusions = false;		
+		nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
+			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {	
+				NodeDescriptor nodeDescriptor = new NodeDescriptor(node, ancestors);
+				if (m_exclusions.contains(nodeDescriptor)) {
+					m_containsExclusions = true;
+				}
+				return true;
+			}
+	    });			
+		return m_containsExclusions;
+	}
+	
 	private WorkingSet convertWorkingSet(Collection<NodeDescriptor> workingSet, 
 			NodeDescriptor start, final NodeDescriptor startInstruction) {
 		
@@ -1056,6 +1081,24 @@ public class RouteConstructor {
 		}		
 		assert(beginingOfFirstBlock != null);
 		return beginingOfFirstBlock;
+	}
+		
+	private String dumpGraph(String text, Collection<NodeDescriptor> workingSet) {		
+		StringBuffer sb = new StringBuffer();
+		
+		if (workingSet.size() > 1) {
+			sb.append("digraph "+ text + "{");
+			for (NodeDescriptor node : workingSet) {
+				for (NodeDescriptor next : node.getNextNodes()) {
+					sb.append(node.getNode() + " -> " + next.getNode() + ";");
+				}
+			}
+			sb.append("}\n");
+
+		} else {
+			sb.append("# graph has only " + workingSet.size() + " nodes");
+		}
+		return sb.toString();
 	}
 	
 	static class WorkingSet {
