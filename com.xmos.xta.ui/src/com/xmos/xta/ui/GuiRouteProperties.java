@@ -1,6 +1,6 @@
 package com.xmos.xta.ui;
 
-import com.xmos.xta.ui.views.viewnode.ViewNode;
+import com.xmos.xta.ui.views.visualisations.viewnode.ViewNode;
 
 public class GuiRouteProperties {
     private double m_scale;

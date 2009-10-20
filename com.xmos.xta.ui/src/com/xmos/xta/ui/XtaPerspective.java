@@ -5,11 +5,9 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
 import com.xmos.xta.ui.views.console.ConsoleView;
-import com.xmos.xta.ui.views.function.FunctionView;
 import com.xmos.xta.ui.views.info.InfoView;
 import com.xmos.xta.ui.views.routes.RoutesView;
-import com.xmos.xta.ui.views.structure.StructureView;
-import com.xmos.xta.ui.views.timedistribution.TimeDistributionView;
+import com.xmos.xta.ui.views.visualisations.VisualisationsView;
 
 public class XtaPerspective implements IPerspectiveFactory {
 	public static final String ID = "com.xmos.xta.ui.XtaPerspective";
@@ -20,9 +18,7 @@ public class XtaPerspective implements IPerspectiveFactory {
 
         addView(layout, viewsFolder, ConsoleView.ID);
         addView(layout, viewsFolder, InfoView.ID);
-        addView(layout, viewsFolder, FunctionView.ID);
-        addView(layout, viewsFolder, StructureView.ID);
-        addView(layout, viewsFolder, TimeDistributionView.ID);
+        addView(layout, viewsFolder, VisualisationsView.ID);
 
         IFolderLayout treeFolder = layout.createFolder(
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        

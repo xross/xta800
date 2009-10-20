@@ -75,16 +75,11 @@ public class GuiEngine {
         s_showPcPosition = false;
         s_focusNodes = null;
         s_commandLineXeFile = null;
-
         s_engine.setNotifier(s_notifier);
-        s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();
-        
+        s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();        
         s_disassemblyInputs = new HashMap<String, IEditorInput>();
-        
-        // Create a perspective monitor to broadcast when it changes
-        new GuiPerspectiveMonitor();
 	}
-	
+
 	public static Engine getEngine() {
 		assert(s_engine != null);
 		return s_engine;		

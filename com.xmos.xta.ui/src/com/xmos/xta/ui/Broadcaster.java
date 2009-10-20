@@ -19,6 +19,16 @@ public class Broadcaster {
 	public static final String BROADCAST_PERSPECTIVE_CHANGED = "PerspectiveChanged";
 	public static final String BROADCAST_OPEN_DISASSEMBLY    = "OpenDisassembly";
 	public static final String BROADCAST_REFRESH_SCRIPT      = "RefreshScript";
+	public static final String BROADCAST_EXPORT_JPG_ENABLED  = "ExportJpgEnabled";
+	public static final String BROADCAST_EXPORT_JPG_DISABLED = "ExportJpgDisabled";
+	public static final String BROADCAST_ZOOM_FIT_ENABLED    = "ZoomFitEnabled";
+	public static final String BROADCAST_ZOOM_FIT_DISABLED   = "ZoomFitDisabled";
+	public static final String BROADCAST_ZOOM_IN_ENABLED     = "ZoomInEnabled";
+	public static final String BROADCAST_ZOOM_IN_DISABLED    = "ZoomInDisbled";
+	public static final String BROADCAST_ZOOM_OUT_ENABLED    = "ZoomOutEnabled";
+	public static final String BROADCAST_ZOOM_OUT_DISABLED   = "ZoomOutDisabled";
+	public static final String BROADCAST_ZOOM_RESET_ENABLED  = "ZoomResetEnabled";
+	public static final String BROADCAST_ZOOM_RESET_DISABLED = "ZoomResetDisabled";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
 
