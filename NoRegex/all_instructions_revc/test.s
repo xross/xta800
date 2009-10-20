@@ -4,7 +4,9 @@
 .xtathreadstart
 .globl _start
 _start:
-  bu main
+  bl main
+  clre
+  waiteu
 
 .type main, @function
 .globl main

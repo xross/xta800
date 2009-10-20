@@ -5,6 +5,8 @@
 .globl _start
 _start:
   bl main
+  clre
+  waiteu
 
 .align 4
 .type main, @function

@@ -1,26 +1,33 @@
-xta: warning: target (0x0) of: (main+24) 0x1001a blacp (u10) cp[i 0xffc] not found in executable sections
-xta: warning: CP address 0x410234 out of bounds
-xta: warning: target (0x10826) of: (main+36) 0x10026 blrf (u10) i 0x7fe not found in executable sections
-xta: warning: target (0x21002a) of: (main+38) 0x10028 blrf (lu10) i 0x1ffffe not found in executable sections
-xta: warning: target (0xf830) of: (main+42) 0x1002c blrb (u10) i 0x7fe not found in executable sections
-xta: warning: target (0xffe10034) of: (main+44) 0x1002e blrb (lu10) i 0x1ffffe not found in executable sections
-xta: warning: target (0x100b2) of: (main+48) 0x10032 brff (ru6) r0, i 0x7e not found in executable sections
-xta: warning: target (0x30036) of: (main+50) 0x10034 brff (lru6) r0, i 0x1fffe not found in executable sections
-xta: warning: target (0xffbc) of: (main+54) 0x10038 brbt (ru6) r0, i 0x7e not found in executable sections
-xta: warning: target (0xffff0040) of: (main+56) 0x1003a brbt (lru6) r0, i 0x1fffe not found in executable sections
-xta: warning: target (0x30042) of: (main+62) 0x10040 brfu (lu6) i 0x1fffe not found in executable sections
-xta: warning: target (0x100c4) of: (main+66) 0x10044 brff (ru6) r0, i 0x7e not found in executable sections
-xta: warning: target (0x30048) of: (main+68) 0x10046 brff (lru6) r0, i 0x1fffe not found in executable sections
-xta: warning: target (0x3004e) of: (main+74) 0x1004c brft (lru6) r0, i 0x1fffe not found in executable sections
-xta: warning: target (0x30054) of: (main+80) 0x10052 brfu (lu6) i 0x1fffe not found in executable sections
-xta: warning: No branch targets set on instruction (main+16) 0x10012 bau (1r) r0
-xta: warning: No branch targets set on instruction (main+22) 0x10018 bla (1r) r0
-xta: warning: No branch targets set on instruction (main+24) 0x1001a blacp (u10) cp[i 0xffc]
-xta: warning: No branch targets set on instruction (main+26) 0x1001c blacp (lu10) cp[i 0x3ffffc]
-xta: warning: No branch targets set on instruction (main+30) 0x10020 blat (u6) i 0xfc
-xta: warning: No branch targets set on instruction (main+32) 0x10022 blat (lu6) i 0x3fffc
-xta: warning: No branch targets set on instruction (main+84) 0x10056 bru (1r) r0
-xta: warning: No branch targets set on instruction (main+132) 0x10086 dret (0r) 
-xta: warning: No branch targets set on instruction (main+240) 0x100f2 kret (0r) 
-xta: warning: no valid paths of execution
-xta: error: no routes analysed
+xta: warning: target (0x0) of: (main+24) 0x1001e blacp (u10) cp[i 0xffc] not found in executable sections
+xta: warning: CP address 0x410238 out of bounds
+xta: warning: target (0x1082a) of: (main+36) 0x1002a blrf (u10) i 0x7fe not found in executable sections
+xta: warning: target (0x21002e) of: (main+38) 0x1002c blrf (lu10) i 0x1ffffe not found in executable sections
+xta: warning: target (0xf834) of: (main+42) 0x10030 blrb (u10) i 0x7fe not found in executable sections
+xta: warning: target (0xffe10038) of: (main+44) 0x10032 blrb (lu10) i 0x1ffffe not found in executable sections
+xta: warning: target (0x100b6) of: (main+48) 0x10036 brff (ru6) r0, i 0x7e not found in executable sections
+xta: warning: target (0x3003a) of: (main+50) 0x10038 brff (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0xffc0) of: (main+54) 0x1003c brbt (ru6) r0, i 0x7e not found in executable sections
+xta: warning: target (0xffff0044) of: (main+56) 0x1003e brbt (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0x30046) of: (main+62) 0x10044 brfu (lu6) i 0x1fffe not found in executable sections
+xta: warning: target (0x100c8) of: (main+66) 0x10048 brff (ru6) r0, i 0x7e not found in executable sections
+xta: warning: target (0x3004c) of: (main+68) 0x1004a brff (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0x30052) of: (main+74) 0x10050 brft (lru6) r0, i 0x1fffe not found in executable sections
+xta: warning: target (0x30058) of: (main+80) 0x10056 brfu (lu6) i 0x1fffe not found in executable sections
+xta: warning: No branch targets set on instruction (main+16) 0x10016 bau (1r) r0
+xta: warning: No branch targets set on instruction (main+22) 0x1001c bla (1r) r0
+xta: warning: No branch targets set on instruction (main+24) 0x1001e blacp (u10) cp[i 0xffc]
+xta: warning: No branch targets set on instruction (main+26) 0x10020 blacp (lu10) cp[i 0x3ffffc]
+xta: warning: No branch targets set on instruction (main+30) 0x10024 blat (u6) i 0xfc
+xta: warning: No branch targets set on instruction (main+32) 0x10026 blat (lu6) i 0x3fffc
+xta: warning: No branch targets set on instruction (main+84) 0x1005a bru (1r) r0
+xta: warning: No branch targets set on instruction (main+132) 0x1008a dret (0r) 
+xta: warning: No branch targets set on instruction (main+240) 0x100f6 kret (0r) 
+  0.0: (20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
+  20.0: (20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, i 0x1
+  40.0: (20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0
+  60.0: (20.0ns) 0x1000c main + 6               andnot (2r)  r0, r0
+  80.0: (20.0ns) 0x1000e main + 8               ashr (l3r)   r0, r0, r0
+  100.0: (20.0ns) 0x10012                        --FNOP--     
+  120.0: (20.0ns) 0x10012 main + 12              ashr (l2rus) r0, r0, i 0x1
+  140.0: (20.0ns) 0x10016 main + 16              bau (1r)     r0 [UNRESOLVED]
+
