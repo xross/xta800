@@ -26,7 +26,7 @@
 #define Nr			(Nk +6)			//the number of rounds, can be 10, 12, and 14 for key length of 128, 192, and 256 respectively
 
 
-void _Encrypt(unsigned int plainText[], unsigned int w[], unsigned int cipherText[]);
+void DoEncrypt(unsigned int plainText[], unsigned int w[], unsigned int cipherText[]);
 void Encrypt(unsigned int plainText[], unsigned int key[], unsigned int cipherText[]);
 void _Decrypt(unsigned int cipherText[], unsigned int w[], unsigned int decipheredText[]);
 void Decrypt(unsigned int cipherText[], unsigned int key[], unsigned int decipheredText[]);

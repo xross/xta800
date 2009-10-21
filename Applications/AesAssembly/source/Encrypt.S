@@ -29,11 +29,11 @@
 
 	
 		  .text
-.globl _Encrypt
-.type _Encrypt, @function
-.globl _Encrypt.nstackwords
-.linkset _Encrypt.nstackwords, 10 
-_Encrypt:
+.globl DoEncrypt
+.type DoEncrypt, @function
+.globl DoEncrypt.nstackwords
+.linkset DoEncrypt.nstackwords, 10 
+DoEncrypt:
           extsp     10 
           //save arguments
           stw       r1, sp[0] 
@@ -1186,7 +1186,7 @@ Encrypt:
           ldaw      r1, sp[2] //w
           ldw       r2, sp[1] //cipherText
 
-          bl        _Encrypt 
+          bl        DoEncrypt 
           retsp     46 
 
 #endif

@@ -18,7 +18,7 @@
 
 #include "AESincludes.h"
 #pragma unsafe arrays
-void _Encrypt(unsigned int plainText[], unsigned int w[], unsigned int cipherText[]) {
+void DoEncrypt(unsigned int plainText[], unsigned int w[], unsigned int cipherText[]) {
 	unsigned int laststate0, laststate1, laststate2, laststate3;
 	unsigned int state0, state1, state2, state3;
 
@@ -58,7 +58,7 @@ void Encrypt(unsigned int plainText[], unsigned int key[], unsigned int cipherTe
 	
 	KeyExpansion(key, w);
 	
-	_Encrypt(plainText, w, cipherText);
+	DoEncrypt(plainText, w, cipherText);
 	
 }
 #endif

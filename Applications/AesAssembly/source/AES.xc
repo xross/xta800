@@ -61,7 +61,7 @@ int main(){
 		//this will populate the w vector	
 		KeyExpansion(key, w);
 		//this will populate the cipher text vector (the encryption process)
-		_Encrypt(plainText, w, cipherText);
+		DoEncrypt(plainText, w, cipherText);
 		InvKeyExpansion(key, wDecrypt);
 		//and this will popluate the decrypted text vector (this will complete the loop and decrypt 
 		//the test case back to the original form)

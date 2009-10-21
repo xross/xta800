@@ -1,4 +1,4 @@
-function main
+function f
 Time taken:       \d+\.\d+ns / \d+\.\d+ns
 Thread cycles:    \d+ / \d+
 Num Instructions: \d+ / \d+
