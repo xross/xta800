@@ -270,20 +270,22 @@ public class Engine implements Notifier {
 	}
 	
 	public boolean analyseRoute(CommandSource src, String functionName) {
+		Reference functionRef = ReferenceFactory.createReference(
+				functionName, ReferenceClass.FUNCTION_REF);
+
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"node: %d, Core: %d image not found in file: %s", m_nodeId,
 					m_coreId, m_executableFile));
 			return false;
-			
-		} else if (!functionExists(functionName)) {
+
+		} else if (!resolveRefernece(functionRef)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"cannot find function: %s in file: %s, node: %d, core: %d",
-					functionName, m_executableFile, m_nodeId, m_coreId));
+					"unresolved reference: %s", functionName));
 			return false;
-			
+						
 		} else {
-			RouteDescription routeDescription = new RouteDescription(functionName, this, 
+			RouteDescription routeDescription = new RouteDescription(functionRef, this, 
 					m_nodeId, m_coreId, m_exclusions, m_config);			
 			return analyseRouteSafely(src, routeDescription);
 		}
@@ -1342,10 +1344,6 @@ public class Engine implements Notifier {
 		treeMap.put(name, list);
 	}
 	
-	private boolean functionExists(String functionName) {
-		return getFunctionNames().contains(functionName);
-	}
-
 	private boolean resolveRefernece(Reference ref) {
 		return ref.resolve(this);
 	}

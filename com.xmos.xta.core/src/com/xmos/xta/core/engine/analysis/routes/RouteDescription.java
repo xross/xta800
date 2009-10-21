@@ -12,6 +12,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class RouteDescription {
@@ -20,6 +21,7 @@ public class RouteDescription {
 	private String m_fromName;
 	private String m_toName;
 	private RouteMode m_mode;
+	private Reference m_function;
 	private Reference m_from;
 	private Collection<Reference> m_to;
 	private int m_nodeId;
@@ -34,8 +36,8 @@ public class RouteDescription {
 	public RouteDescription(Reference from, Reference to, int nodeId, int coreId, 
 			Collection<Reference> exclusions, Config config) {
 
-		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
 		m_mode = RouteMode.PATH;
+		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
 		m_from = from;
 		m_to = new LinkedList<Reference>();
 		m_to.add(to);
@@ -48,12 +50,14 @@ public class RouteDescription {
 		m_config = new Config(config);
 	}
 
-	public RouteDescription(String functionName, Engine engine, int nodeId, int coreId, 
+	public RouteDescription(Reference function, Engine engine, int nodeId, int coreId, 
 			Collection<Reference> exclusions, Config config) {
 
-		m_description = String.format("function: %s", functionName);
-		m_functionName = functionName;
 		m_mode = RouteMode.FUNCTION;
+		m_description = String.format("function: %s", function.getRef());
+		m_function = function;
+		m_functionName = function.getBase().getRef();
+		m_from = function;
 		m_to = new LinkedList<Reference>();
 		m_nodeId = nodeId;
 		m_coreId = coreId;				
@@ -62,36 +66,12 @@ public class RouteDescription {
 		m_config = new Config(config);
 		
 		StructureGraph sg = engine.getStructureGraph();
-		
-		for (FunctionNode fn : sg.getThreads()){
-			if (fn.getFunctionName().equals(functionName)){
-				long pc = fn.getStartPc();
-				String from = "0x" + Long.toHexString(pc);
-				m_from = ReferenceFactory.createReference(
-						from, ReferenceClass.ENDPOINT_REF);
-				TreeSet<Node> endInstructions = sg.getPcToEndPoints().get(pc);
-				for(Node endPoint : endInstructions){
-					String to = "0x" + Long.toHexString(endPoint.getStartPc());
-					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
-				}
-				break;
-			}
-		}
-		
-		for (FunctionNode fn : sg.getFunctions()){
-			if (fn.getFunctionName().equals(functionName)){
-				long pc = fn.getStartPc();
-				String from = "0x" + Long.toHexString(pc);
-				m_from = ReferenceFactory.createReference(
-						from, ReferenceClass.ENDPOINT_REF);
-				TreeSet<Node> endInstructions = sg.getPcToEndPoints().get(pc);
-				for(Node endPoint : endInstructions){
-					String to = "0x" + Long.toHexString(endPoint.getStartPc());
-					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
-				}
-				break;
-			}
-		}
+        findEndpoints(sg, sg.getThreads());
+        findEndpoints(sg, sg.getFunctions());
+        
+        for (Reference to : m_to) {
+        	to.resolve(engine);
+        }
 	}
 	
 	public String getDescription() {
@@ -137,4 +117,24 @@ public class RouteDescription {
 	public Config getConfig() {
 		return m_config;
 	}
+	
+	private void findEndpoints(StructureGraph sg, Collection<FunctionNode> functionNodes) {
+		for (FunctionNode fn : functionNodes) {
+			if (fn.getFunctionName().equals(m_functionName)) {
+				long pc = fn.getStartPc();
+
+				TreeSet<Node> endInstructions = sg.getPcToEndPoints().get(pc);
+				for (Node endPoint : endInstructions){
+					
+					String to = "";
+			    	for (ReferenceType backTrail : m_function.getBackTrail()) {
+			    		to += backTrail.getRef() + ",";
+			    	}					
+					to += "0x" + Long.toHexString(endPoint.getStartPc());				
+					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
+				}
+				break;
+			}
+		}		
+	}	
 }

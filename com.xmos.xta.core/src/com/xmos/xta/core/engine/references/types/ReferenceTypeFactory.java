@@ -7,7 +7,7 @@ import com.xmos.xta.core.engine.Engine;
 
 public class ReferenceTypeFactory {
 	public enum ReferenceClass {
-		PC_REF, LABEL_REF, ENDPOINT_REF, ANY_REF,
+		PC_REF, FUNCTION_REF, LABEL_REF, ENDPOINT_REF, ANY_REF,
 	}
 	
 	private static Map<ReferenceClass, ReferenceType[]> m_referenceClasses;	
@@ -16,6 +16,9 @@ public class ReferenceTypeFactory {
 
 		m_referenceClasses.put(ReferenceClass.PC_REF, new ReferenceType[] {
 				new PcReference(null)});
+
+		m_referenceClasses.put(ReferenceClass.FUNCTION_REF, new ReferenceType[] {
+				new FunctionReference(null)});
 		
 		m_referenceClasses.put(ReferenceClass.LABEL_REF, new ReferenceType[] {
 				new PcReference(null), 

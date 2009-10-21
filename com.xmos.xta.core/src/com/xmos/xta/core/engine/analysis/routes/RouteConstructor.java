@@ -89,12 +89,12 @@ public class RouteConstructor {
 			return RouteError.ENDPOINTS_MISSING;
 		}
 		
-		Collection<NodeDescriptor> startNodeDescriptors = getReferencedNodeDescriptors(m_description.getStartPoint());
+		Collection<NodeDescriptor> startNodeDescriptors = findStartDescriptors();
+		Collection<NodeDescriptor> endNodeDescriptors = findEndNodeDescriptors();
+
 		if (startNodeDescriptors.isEmpty()) {
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
-		}
-		
-		Collection<NodeDescriptor> endNodeDescriptors = findEndNodeDescriptors();
+		}		
 
 		boolean notFoundFunctionYet = true;
 		for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
@@ -802,7 +802,11 @@ public class RouteConstructor {
 		return referencedNodeDescriptors;		
 	}
 
-	private Set<NodeDescriptor> findEndNodeDescriptors() {
+	private Collection<NodeDescriptor> findStartDescriptors() {
+    	return getReferencedNodeDescriptors(m_description.getStartPoint());
+	}
+	
+	private Collection<NodeDescriptor> findEndNodeDescriptors() {
 		Set<NodeDescriptor> endNodeDescriptors = new TreeSet<NodeDescriptor>();
 		
 		for (Reference endPoint : m_description.getEndPoint()){

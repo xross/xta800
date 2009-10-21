@@ -19,6 +19,7 @@ public abstract class ReferenceType {
 	public enum Type {
 		PC,
 		LABEL,
+		FUNCTION,
 		ENDPOINT,
 		SRCLABEL,
 		CALL,

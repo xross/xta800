@@ -42,6 +42,10 @@ public class Reference {
 		assert(m_base != null);
 		return m_base.getFileName();		
 	}
+
+	public ReferenceType getBase() {
+		return m_base;
+	}
 	
 	public List<ReferenceType> getBackTrail() {
 		return m_backTrail;
