@@ -20,8 +20,8 @@
       option: branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points
-      option: function <name>: Sets a path to trace a given function
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
+      option: function <name>: Analyse the given function
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
@@ -80,13 +80,13 @@
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
       option: time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
-          mode: ns:     Sets the time this instruction takes in ns
-          mode: mhz:    Sets the time this instruction takes in mhz
-          mode: cycles: Sets the time this instruction takes in thread cycles
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
       option: required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route
-          mode: ns:     Sets the required route time in ns
-          mode: mhz:    Sets the required route time in mhz
-          mode: cycles: Sets the required route time in thread cycles
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   Any of the following are permitted:
