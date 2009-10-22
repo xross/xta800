@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
@@ -17,11 +18,10 @@ public class RouteTiming {
 	
 	private Route m_route;
 	private Config m_config;
-	private double m_maxTime;
+	private TimeUnit m_maxTime;
 	private boolean m_maxTimeSet;
 	private int m_nodeId;
 	private int m_coreId;
-	private String m_description;
 	
 	private CommandSource m_requirementsSrc;
 
@@ -31,7 +31,6 @@ public class RouteTiming {
 		m_config = config;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
-		m_description = null;
 	}
 
 	public int getNodeId() {
@@ -46,43 +45,19 @@ public class RouteTiming {
 		return m_maxTimeSet;
 	}
 
-	public void setMaxCycles(CommandSource src, long maxCycles) {
-		m_requirementsSrc = src;
-		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-		m_maxTime = (double) (threadFactor * 1000 * maxCycles) / (double) m_config.m_frequency;
-		m_maxTimeSet = true;
-		m_description = String.format("%d cycles", maxCycles); 
-	}
-
-	public int getMaxCycles() {
-		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-		return (int) (m_config.m_frequency * m_maxTime) / (threadFactor * 1000);
-	}
-
-	public void setMaxTime(CommandSource src, double maxTime) {
+	public void setMaxTime(CommandSource src, TimeUnit maxTime) {
 		m_requirementsSrc = src;
 		m_maxTime = maxTime;
 		m_maxTimeSet = true;
-		m_description = String.format("%f ns", maxTime); 
+		m_maxTime.setConfig(m_config);
 	}
 
-	public double getMaxTime() {
+	public TimeUnit getMaxTime() {
 		return m_maxTime;
 	}
 	
-	public void setMaxMhz(CommandSource src, double maxMhz) {
-		m_requirementsSrc = src;		
-		m_maxTime = ((double)1.0 / maxMhz) * 1000;
-		m_maxTimeSet = true;
-		m_description = String.format("%f mhz", maxMhz);
-	}
-
-	public double getMaxMhz() {
-		return ((double)1.0 / m_maxTime) * 1000;
-	}
-
 	public void unset() {
-		m_maxTime = 0.0;
+		m_maxTime = null;
 		m_maxTimeSet = false;
 	}
 
@@ -94,38 +69,38 @@ public class RouteTiming {
 		Status status = new Status();
 		double worstTime = getWorstTime(status);
 		if (status.isComplete()) {
-			if (worstTime <= getMaxTime())
+			if (worstTime <= m_maxTime.getNs())
 			    return true;
 		}
 		return false;
 	}
 	
 	public long getViolationCycles(Status status) {
-		return getWorstCycles(status) - getMaxCycles();
+		return getWorstCycles(status) - m_maxTime.getCycles();
 	}
 
 	public double getViolationTime(Status status) {
-		return getWorstTime(status) - getMaxTime();
+		return getWorstTime(status) - m_maxTime.getNs();
 	}
 
 	public long getSlackCycles(Status status) {
-		return getMaxCycles() - getWorstCycles(status);
+		return m_maxTime.getCycles() - getWorstCycles(status);
 	}
 
 	public double getSlackTime(Status status) {
-		return getMaxTime() - getWorstTime(status);
+		return m_maxTime.getNs() - getWorstTime(status);
 	}
 
 	public int getMinFrequency(Status status) {
 		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-		return (int)(getWorstCycles(status) * 1000 * threadFactor) / (int)(getMaxTime() + 1.0);
+		return (int)(getWorstCycles(status) * 1000 * threadFactor) / (int)(m_maxTime.getNs() + 1.0);
 	}
 		
 	public String getDescription(Level level) {
 		String description = "";
 		if (isTimingSpecified()) {			
 			if (level == Level.REQUIRED) {
-				return m_description;
+				return m_maxTime.getDescription(true);
 			}
 			
 			if (level == Level.COMPLETE) {
@@ -171,7 +146,7 @@ public class RouteTiming {
 			    	}
 				}
 
-				description += String.format("Required: %.1fns, ", getMaxTime());
+				description += String.format("Required: %.1fns, ", m_maxTime.getNs());
 				
 				Status worstTimeStatus = new Status();
 				double worstTime = getWorstTime(worstTimeStatus);
@@ -216,9 +191,9 @@ public class RouteTiming {
 		    	
 				if (isTimingSpecified()) {  			
 					description += String.format("Required:    %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
-		    		    	getMaxTime(), 
-		    		    	getMhz(getMaxTime()),
-		    			    getMaxCycles());
+							m_maxTime.getNs(), 
+							m_maxTime.getMhz(),
+							m_maxTime.getCycles());
 
 					if (passedTiming()) {
 						assert(status.isComplete());						

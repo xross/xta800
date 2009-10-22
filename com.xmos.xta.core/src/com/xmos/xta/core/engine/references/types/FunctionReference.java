@@ -29,7 +29,7 @@ public class FunctionReference extends ReferenceType {
             SymbolTable symbolTable = engine.getXeLoader().getSymbolTable(nodeId, coreId);            
 		    setPc(symbolTable.symbolAddress(functionName));
 	        setResolved(true);
-	        return true;
+	        return true;	        
         }	    
 	    return false;
 	}	

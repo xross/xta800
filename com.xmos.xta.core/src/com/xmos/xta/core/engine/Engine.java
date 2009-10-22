@@ -551,42 +551,18 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Requirements Methods
 	// ===================================================================== //		
-	public boolean setRequiredTime(CommandSource src, int routeId, double time) {
+	public boolean setRequiredTime(CommandSource src, int routeId, TimeUnit timeUnit) {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.isEmpty())
 			return false;
 			
 		for (Route route : routes) {
-			route.getRouteTiming().setMaxTime(src, time);
+			route.getRouteTiming().setMaxTime(src, timeUnit);
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;
 	}
 
-	public boolean setRequiredMhz(CommandSource src, int routeId, double mhz) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty())
-			return false;
-
-		for (Route route : routes) {
-			route.getRouteTiming().setMaxMhz(src, mhz);
-		}
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		return true;
-	}
-	
-	public boolean setRequiredCycles(CommandSource src, int routeId, long cycles) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty())
-			return false;
-
-		for (Route route : routes) {			
-			route.getRouteTiming().setMaxCycles(src, cycles);
-		}
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		return true;
-	}
-	
 	public boolean unsetRequirement(CommandSource src, int routeId) {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.isEmpty())
@@ -756,9 +732,9 @@ public class Engine implements Notifier {
 	}
 	
 	// ===================================================================== //
-	// Unknown Instruction Time Methods (Ns)
+	// Unknown Instruction Time Methods
 	// ===================================================================== //			
-	public boolean setInstructionNs(CommandSource src, int routeId, String refString, double ns) {
+	public boolean setInstructionTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
@@ -773,7 +749,7 @@ public class Engine implements Notifier {
 		}
 		boolean passed = false;
 		for (Route route : routes) {
-		    if (route.getRouteUnknowns().setInstructionNs(reference, ns)) {
+		    if (route.getRouteUnknowns().setInstructionTime(reference, timeUnit)) {
 			    passed = true;
 		    }
 		}
@@ -783,94 +759,15 @@ public class Engine implements Notifier {
 		return passed;
 	}
 
-	public void setInstructionNs(CommandSource src, Node node, double ns) {
-		m_selectedRoute.getRouteUnknowns().setInstructionNs(node, ns);
+	public void setInstructionTime(CommandSource src, Node node, TimeUnit timeUnit) {
+		m_selectedRoute.getRouteUnknowns().setInstructionTime(node, timeUnit);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
-	public double getInstructionNs(Node node) {
-		return m_selectedRoute.getRouteUnknowns().getInstructionNs(node);
+	public TimeUnit getInstructionTime(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getInstructionTime(node);
 	}
 
-	// ===================================================================== //
-	// Unknown Instruction Time Methods (Mhz)
-	// ===================================================================== //				
-	public boolean setInstructionMhz(CommandSource src, int routeId, String refString, double mhz) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty()) {
-			return false;
-		}
-		for (Route route : routes) {
-		    if (!route.getRouteUnknowns().canInstructionPause(reference))
-		    	return false;		    	
-		}
-
-		boolean passed = false;
-		for (Route route : routes) {
-		    if (route.getRouteUnknowns().setInstructionMhz(reference, mhz)) {
-			    passed = true;
-		    }
-		}
-		if (passed) {
-		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		}
-		return passed;
-	}
-
-	public void setInstructionMhz(CommandSource src, Node node, double mhz) {
-		m_selectedRoute.getRouteUnknowns().setInstructionMhz(node, mhz);
-		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-	}
-	
-	public double getInstructionMhz(Node node) {
-		return m_selectedRoute.getRouteUnknowns().getInstructionMhz(node);
-	}
-	
-	// ===================================================================== //
-	// Unknown Instruction Time Methods (Cycles)
-	// ===================================================================== //					
-	public boolean setInstructionCycles(CommandSource src, int routeId, String refString, long numCycles) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty()) {
-			return false;
-		}
-		for (Route route : routes) {
-		    if (!route.getRouteUnknowns().canInstructionPause(reference))
-		    	return false;		    	
-		}
-		
-		boolean passed = false;
-		for (Route route : routes) {
-     		if (route.getRouteUnknowns().setInstructionCycles(reference, numCycles)) {
-			    passed = true;
-		    }
-		}
-		if (passed) {
-		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		}
-		return passed;
-	}
-
-	public void setInstructionCycles(CommandSource src, Node node, long numCycles) {
-		m_selectedRoute.getRouteUnknowns().setInstructionCycles(node, numCycles);
-		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-	}
-	
-	public long getInstructionCycles(Node node) {
-		return m_selectedRoute.getRouteUnknowns().getInstructionCycles(node);
-	}	
-
-	// ===================================================================== //
-	// Unknown Unset Instruction Time Methods
-	// ===================================================================== //						
 	public boolean unsetInstructionTime(CommandSource src, int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {

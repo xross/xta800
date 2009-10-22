@@ -5,55 +5,26 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Time extends Command {
-	private enum Mode {
-		NS,
-		MHZ,
-		CYCLES,
-	}
-
 	private int m_routeId;
 	private String m_refString;
-	private Mode m_mode;
-	private double m_ns;
-	private double m_mhz;
-	private long m_cycles;
+	private TimeUnit m_timeUnit;
 	
 	public Time() {
 		m_routeId = 0;
-		m_mode = Mode.NS;
-		m_ns = 0;
-		m_mhz = 0;
-		m_cycles = 0;
+		m_refString = null;
+		m_timeUnit = null;
 	}
 	
-	public Time(int routeId, String refString, long cycles) {
+	public Time(int routeId, String refString, TimeUnit timeUnit) {
 		m_routeId = routeId;
-		m_mode = Mode.CYCLES;
 		m_refString = refString;
-		m_cycles = cycles;
-		m_ns = 0;
-		m_mhz = 0;
-	}
-
-	public Time(int routeId, String refString, double value, Mode mode) {
-		m_routeId = routeId;
-		m_mode = mode;
-		m_refString = refString;
-		m_cycles = 0;
-		
-		switch (mode) {
-		case NS: 
-		    m_ns = value;
-		    break;
-		case MHZ:
-		    m_mhz = value;
-		    break;
-		}
+		m_timeUnit = timeUnit;
 	}
 
     public int numArgs() {
@@ -69,25 +40,15 @@ public class Time extends Command {
     }        
 
     public String commandLine() {
-       	switch (m_mode) {
-       	case NS:
-           	return String.format("time %s %s %.1f ns", getRouteId(m_routeId), m_refString, m_ns);
-       	case MHZ:
-           	return String.format("time %s %s %.1f mhz", getRouteId(m_routeId), m_refString, m_mhz);
-       	case CYCLES:
-           	return String.format("time %s %s %d cycles", getRouteId(m_routeId), m_refString, m_cycles);    		
-       	}
-       	assert(false);
-       	return "";
+       	return String.format("time %s %s %s", getRouteId(m_routeId), 
+       			m_refString, m_timeUnit.getDescription(false));
     }
     
     public String description(Engine engine, boolean detailed) {
         String descString = "time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";         
        	if (detailed) {    	    	
            	descString += "\n";
-       		descString += "          mode: ns:     Sets the time this instruction takes in ns\n";
-       		descString += "          mode: mhz:    Sets the time this instruction takes in mhz\n";
-       		descString += "          mode: cycles: Sets the time this instruction takes in thread cycles";
+           	descString += TimeUnit.getHelp();
        	}
        	return descString;
     }
@@ -96,43 +57,22 @@ public class Time extends Command {
     	if ((index + numArgs()) >= args.length) 
 			return null;
 
-		int routeId;
-    	try { routeId = getRouteId(args[index + 1]);
-	    } catch (NumberFormatException e) {
-	        return null;
-	    }    			
-    	
-   		String ref = args[index + 2];
-   		String value = args[index + 3];
+    	int routeId = 0;
+   		try {
+     		routeId = getRouteId(args[index + 1]);
+    	} catch (NumberFormatException e) {
+    		return null;
+    	} 	
+
+    	String ref = args[index + 2];   		
+    	String value = args[index + 3];
    		String mode = args[index + 4];
-    		
-   		if (mode.equals("ns")) {			
-   		    double ns;
-   	        try { ns = Double.parseDouble(value); }
-   	        catch (NumberFormatException e) {
-   	            return null;
-   	        }    
-   	        return new Time(routeId, ref, ns, Mode.NS);
    		    
-   		} else if (mode.equals("mhz")) {
-   			double mhz;
-   	        try { mhz = Double.parseDouble(value); }
-   	        catch (NumberFormatException e) {
-   	            return null;
-   	        }    
-   	        return new Time(routeId, ref, mhz, Mode.MHZ);
-    		    
-   		} else if (mode.equals("cycles")) {
-   		    long cycles;
-   	        try { cycles = Long.parseLong(value); }
-   	        catch (NumberFormatException e) {
-   	            return null;
-   	        }    
-   	        return new Time(routeId, ref, cycles);
-    	        
-   		} else {
-   			return null;
-   		}
+	    TimeUnit timeUnit = new TimeUnit(value, mode);
+	    if (timeUnit.isValid()) {
+	    	return new Time(routeId, ref, timeUnit);
+	    }
+	    return null;
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -142,24 +82,9 @@ public class Time extends Command {
 		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.ENDPOINT_REF);
 		ref.resolve(engine);
 
-   		switch (m_mode) {
-	    case NS:
-	        if (!engine.setInstructionNs(getSrc(), m_routeId, m_refString, m_ns))
-	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-	       			"failed to set instruction time on reference id: %s", m_refString));    			            	
-	    	break;
-
-	    case MHZ:
-	        if (!engine.setInstructionMhz(getSrc(), m_routeId, m_refString, m_mhz))
-	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-        		    "failed to set instruction time on reference id: %s", m_refString));    			            	
-	        break;
-	    		
-	    case CYCLES:
-	        if (!engine.setInstructionCycles(getSrc(), m_routeId, m_refString, m_cycles))
-	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-        			"failed to set instruction time on reference id: %s", m_refString));    			            	
-	        break;
-	    }
+        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
+        }
     }    
 }

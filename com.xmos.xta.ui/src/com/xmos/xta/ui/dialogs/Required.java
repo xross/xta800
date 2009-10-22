@@ -13,27 +13,25 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.ui.GuiEngine;
 
 public class Required extends XtaDialog {
-	Engine m_engine;
-    Route m_route;
-    RouteTiming m_routeTiming;
-    int m_routeId;
-    
-    boolean m_valueChanged;
-    boolean m_timingWasSet;
-    double m_originalValue;
-	
-    Text m_ns;
-    Text m_cycles;
-    Text m_mhz;
-    
-    ModifyListener m_nsListener;
-    ModifyListener m_cyclesListener;
-    ModifyListener m_mhzListener;
+	private Engine m_engine;
+	private Route m_route;
+	private RouteTiming m_routeTiming;
+	private int m_routeId;    
+	private boolean m_valueChanged;
+	private boolean m_timingWasSet;
+	private TimeUnit m_originalValue;	
+	private Text m_ns;
+	private Text m_cycles;
+	private Text m_mhz;    
+	private ModifyListener m_nsListener;
+	private ModifyListener m_cyclesListener;
+	private ModifyListener m_mhzListener;
     
     public Required(Shell parent, Engine engine, Route route) {
     	super(parent);
@@ -78,13 +76,13 @@ public class Required extends XtaDialog {
 	    
 	    m_nsListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				try {
-					m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, 
-							m_routeId, Double.parseDouble(m_ns.getText()));
+				TimeUnit timeUnit = new TimeUnit(m_ns.getText(), "ns");
+				if (timeUnit.isValid()) {
+					m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, timeUnit);
 					m_valueChanged = true;
 					updateCyclesValue();
-					updateMhzValue();
-				} catch (NumberFormatException exception) {}
+					updateMhzValue();					
+				}
 			}
 		};
 	}
@@ -96,13 +94,13 @@ public class Required extends XtaDialog {
 	    
 	    m_cyclesListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				try {
-					m_engine.setRequiredCycles(GuiEngine.s_guiCommandSrc, 
-							m_routeId, Integer.parseInt(m_cycles.getText()));
+				TimeUnit timeUnit = new TimeUnit(m_cycles.getText(), "cycles");
+				if (timeUnit.isValid()) {
+					m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, timeUnit);
 					m_valueChanged = true;
 					updateNsValue();
-					updateMhzValue();
-				} catch (NumberFormatException exception) {}
+					updateMhzValue();					
+				}
 			}
 		};
 	}
@@ -114,13 +112,13 @@ public class Required extends XtaDialog {
 	    
 	    m_mhzListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				try {
-					m_engine.setRequiredMhz(GuiEngine.s_guiCommandSrc, 
-							m_routeId, Double.parseDouble(m_mhz.getText()));
+				TimeUnit timeUnit = new TimeUnit(m_mhz.getText(), "mhz");
+				if (timeUnit.isValid()) {
+					m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, timeUnit);
 					m_valueChanged = true;
 					updateNsValue();
 					updateCyclesValue();
-				} catch (NumberFormatException exception) {}
+				}
 			}
 		};
 	}
@@ -137,19 +135,19 @@ public class Required extends XtaDialog {
 
 	private void updateNsValue() {
 		m_ns.removeModifyListener(m_nsListener);
-		m_ns.setText(Double.toString(m_routeTiming.getMaxTime()));
+		m_ns.setText(Double.toString(m_routeTiming.getMaxTime().getNs()));
 		m_ns.addModifyListener(m_nsListener);
 	}			
 
 	private void updateCyclesValue() {
 		m_cycles.removeModifyListener(m_cyclesListener);
-		m_cycles.setText(Integer.toString(m_routeTiming.getMaxCycles()));
+		m_cycles.setText(Long.toString(m_routeTiming.getMaxTime().getCycles()));
 		m_cycles.addModifyListener(m_cyclesListener);
 	}			
 
 	private void updateMhzValue() {
 		m_mhz.removeModifyListener(m_mhzListener);
-		m_mhz.setText(Double.toString(m_routeTiming.getMaxMhz()));
+		m_mhz.setText(Double.toString(m_routeTiming.getMaxTime().getMhz()));
 		m_mhz.addModifyListener(m_mhzListener);
 	}			
 

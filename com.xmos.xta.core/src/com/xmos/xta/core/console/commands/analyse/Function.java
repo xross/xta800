@@ -33,7 +33,7 @@ public class Function extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "function <name>: Sets a path to trace a given function";      	
+        return "function <name>: Analyse the given function";      	
     }
 
     public Command clone(String[] args, int index) {

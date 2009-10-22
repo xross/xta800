@@ -36,7 +36,7 @@ public class Path extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "path <from ENDPOINT_REF> <to ENDPOINT_REF>: Sets a path start and end points";      	
+        return "path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path";      	
     }
 
     public Command clone(String[] args, int index) {

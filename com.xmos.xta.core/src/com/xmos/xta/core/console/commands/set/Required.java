@@ -4,49 +4,20 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.TimeUnit;
 
 public class Required extends Command {
-	private enum Mode {
-		NS,
-		MHZ,
-		CYCLES,
-	}
-
 	private int m_routeId;
-	private Mode m_mode;
-	private long m_cycles;
-	private double m_ns;
-	private double m_mhz;
+	private TimeUnit m_timeUnit;
 	
 	public Required() {
-		m_mode = Mode.NS;
-		m_ns = 0;
-		m_mhz = 0;
-		m_cycles = 0;
+		m_routeId = 0;
+		m_timeUnit = null;
 	}
 	
-	public Required(int routeId, long cycles) {
-		m_mode = Mode.CYCLES;
+	public Required(int routeId, TimeUnit timeUnit) {
 		m_routeId = routeId;
-		m_ns = 0;
-		m_mhz = 0;
-		m_cycles = cycles;
-	}
-
-	public Required(int routeId, double value, Mode mode) {
-		assert((mode == Mode.NS) || (mode == Mode.MHZ));
-		m_mode = mode;
-		m_routeId = routeId;
-		m_cycles = 0;
-
-		switch (mode) {
-		case NS: 
-		    m_ns = value;
-		    break;
-		case MHZ:
-		    m_mhz = value;
-		    break;
-		}			
+		m_timeUnit = timeUnit;
 	}
 
     public int numArgs() {
@@ -58,25 +29,14 @@ public class Required extends Command {
     }        
 
     public String commandLine() {
-       	switch (m_mode) {
-       	case NS:
-           	return String.format("required %s %.1f ns", getRouteId(m_routeId), m_ns);
-       	case MHZ:
-           	return String.format("required %s %.1f mhz", getRouteId(m_routeId), m_mhz);
-       	case CYCLES:
-           	return String.format("required %s %d cycles", getRouteId(m_routeId), m_cycles);    		
-       	}
-    	assert(false);
-    	return "";
+       	return String.format("required %s %s", getRouteId(m_routeId), 
+       			m_timeUnit.getDescription(false));
     }
     
     public String description(Engine engine, boolean detailed) {
         String descString = "required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route";         
-      	if (detailed) {    	    	
-           	descString += "\n";
-       		descString += "          mode: ns:     Sets the required route time in ns\n";
-       		descString += "          mode: mhz:    Sets the required route time in mhz\n";
-       		descString += "          mode: cycles: Sets the required route time in thread cycles";
+      	if (detailed) { 
+           	descString += "\n" + TimeUnit.getHelp();
        	}
        	return descString;
     }
@@ -84,41 +44,22 @@ public class Required extends Command {
     public Command clone(String[] args, int index) {
     	if ((index + numArgs()) >= args.length) 
 			return null;
-    	int routeId;
-    	try {routeId  = getRouteId(args[index + 1]);    	}
-    	catch (NumberFormatException e) {
-	        return null;
-	    }
-   		String value = args[index + 2];
-    	String mode = args[index + 3];
-
-    	if (mode.equals("ns")) {			
-    	    double ns;
-    	    try { ns = Double.parseDouble(value); }
-    	    catch (NumberFormatException e) {
-    	        return null;
-    	    }
-    	    return new Required(routeId, ns, Mode.NS);
-    	        
-    	} else if (mode.equals("mhz")) {
-    		double mhz;
-    	    try { mhz = Double.parseDouble(value); }
-    	    catch (NumberFormatException e) {
-    	        return null;
-    	    }
-    	    return new Required(routeId, mhz, Mode.MHZ);
-    		    
-    	} else if (mode.equals("cycles")) {
-    	    long cycles;
-    	    try { cycles = Long.parseLong(value); }
-    	    catch (NumberFormatException e) {
-    	        return null;
-    	    }
-    	    return new Required(routeId, cycles);    	        
-    	        
-    	} else {
+    	
+       	int routeId = 0;
+   		try {
+     		routeId = getRouteId(args[index + 1]);
+    	} catch (NumberFormatException e) {
     		return null;
-    	}
+    	} 	
+    	
+  		String value = args[index + 2];
+     	String mode = args[index + 3];
+
+	    TimeUnit timeUnit = new TimeUnit(value, mode);
+	    if (timeUnit.isValid()) {
+	    	return new Required(routeId, timeUnit);
+	    }
+	    return null;
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -128,17 +69,6 @@ public class Required extends Command {
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;    	
     	
-   		switch (m_mode) {
-    	case NS:
-            engine.setRequiredTime(getSrc(), m_routeId, m_ns);
-    		return;
-    	case MHZ:
-            engine.setRequiredMhz(getSrc(), m_routeId, m_mhz);
-    		return;
-    	case CYCLES:
-            engine.setRequiredCycles(getSrc(), m_routeId, m_cycles);
-    		return;
-    	}
-    	assert(false);
+        engine.setRequiredTime(getSrc(), m_routeId, m_timeUnit);
     }    
 }

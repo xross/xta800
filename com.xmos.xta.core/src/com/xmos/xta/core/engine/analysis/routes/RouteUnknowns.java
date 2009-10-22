@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
@@ -216,89 +217,33 @@ public class RouteUnknowns {
 	}
 
 	// ===================================================================== //
-	// Setting Instruction Time (Cycles)
+	// Instruction Time Methods
 	// ===================================================================== //	
-	public boolean setInstructionCycles(Reference reference, long numCycles) {
+	public boolean setInstructionTime(Reference reference, TimeUnit timeUnit) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setInstructionCycles(node, numCycles, reference);
+	    	setInstructionTime(node, timeUnit, reference);
 	    	found = true;
 		}
 		return found;
 	}
 
-	public void setInstructionCycles(Node node, long numCycles) {
-		setInstructionCycles(node, numCycles, null);
+	public void setInstructionTime(Node node, TimeUnit timeUnit) {
+		setInstructionTime(node, timeUnit, null);
 	}
-		
-	public long getInstructionCycles(Node node) {
-		return node.getAttributes().getInstructionCycles();
+
+	public TimeUnit getInstructionTime(Node node) {
+		return node.getAttributes().getInstructionTime();
 	}	
 	
-	private void setInstructionCycles(Node node, long numCycles, Reference reference) {
+	private void setInstructionTime(Node node, TimeUnit timeUnit, Reference reference) {
+		timeUnit.setConfig(m_route.getRouteDescription().getConfig());		
 		invalidateCachedStats();
-    	node.getAttributes().setInstructionCycles(numCycles);
+    	node.getAttributes().setInstructionTime(timeUnit);
 		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
 		refreshDisplayedUnknowns();
 	}
-	
-	// ===================================================================== //
-	// Setting Instruction Time (Ns)
-	// ===================================================================== //
-	public boolean setInstructionNs(Reference reference, double ns) {
-		boolean found = false;
-	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setInstructionNs(node, ns, reference);
-	    	found = true;
-		}
-		return found;
-	}
-	
-	public void setInstructionNs(Node node, double ns) {
-		 setInstructionNs(node, ns, null);
-    }
 
-	public double getInstructionNs(Node node) {
-		return node.getAttributes().getInstructionNs();
-	}	
-			
-	private void setInstructionNs(Node node, double ns, Reference reference) {
-		invalidateCachedStats();
-    	node.getAttributes().setInstructionNs(ns);
-		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
-		refreshDisplayedUnknowns();
-	}
-	
-	// ===================================================================== //
-	// Setting Instruction Time (Mhz)
-	// ===================================================================== //		
-	public boolean setInstructionMhz(Reference reference, double mhz) {
-		boolean found = false;
-	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setInstructionMhz(node, mhz, reference);
-	    	found = true;
-		}
-		return found;
-	}
-	
-	public void setInstructionMhz(Node node, double mhz) {
-		setInstructionMhz(node, mhz, null);
-	}
-
-	public double getInstructionMhz(Node node) {
-		return node.getAttributes().getInstructionMhz();
-	}
-
-	private void setInstructionMhz(Node node, double mhz, Reference reference) {
-		invalidateCachedStats();
-    	node.getAttributes().setInstructionMhz(mhz);
-		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
-		refreshDisplayedUnknowns();	
-	}
-	
-	// ===================================================================== //
-	// Unsetting Instruction Time
-	// ===================================================================== //		
 	public boolean unsetInstructionTime(Reference reference) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {

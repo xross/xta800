@@ -2,6 +2,8 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.Config;
+import com.xmos.xta.core.engine.TimeUnit;
+import com.xmos.xta.core.engine.TimeUnit.Units;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
@@ -40,7 +42,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 			status.mergeStatus(S.NOT_AVALIABLE);
 			return 0.0;
 		}
-		return getInstructionNs();
+		return new TimeUnit(m_config, m_numCycles, Units.CYCLES).getNs();
 	}
 
 	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
@@ -74,7 +76,8 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		return 1;
 	}
 	
-	public void setInstructionCycles(long cycles) {
+	public void setInstructionTime(TimeUnit timeUnit) {
+		long cycles = timeUnit.getCycles();		
 		if (m_instruction.canPause()) {
 			long baseNumCycles = getThreadAdjustedCycles();
 			if (cycles > baseNumCycles) {
@@ -83,35 +86,13 @@ public class InstructionNodeAttributes extends NodeAttributes {
 			    m_numCycles = baseNumCycles;	
 			}
 		}
-		m_instructionTimeString = String.format("%d cycles", cycles);
+		m_instructionTimeString = timeUnit.getDescription(false);
 	}
 	
-	public long getInstructionCycles() {
-		return m_numCycles;
-	}
-	
-	public void setInstructionNs(double ns) {
-		assert(m_config != null);
-    	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;		
-       	setInstructionCycles((int)((ns * m_config.m_frequency) / (threadFactor * 1000)));
-       	m_instructionTimeString = String.format("%.1f ns", ns);
-	}
-	
-	public double getInstructionNs() {
-		assert(m_config != null);		
-    	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-        return ((double)(threadFactor * 1000) / (double)m_config.m_frequency) * m_numCycles;
+	public TimeUnit getInstructionTime() {
+		return new TimeUnit(m_config, m_numCycles, Units.CYCLES);
 	}
 
-	public void setInstructionMhz(double mhz) {
-		setInstructionNs(((double)1.0 / mhz) * 1000);
-		m_instructionTimeString = String.format("%.1f mhz", mhz);
-	}
-
-	public double getInstructionMhz() {
-		return ((double)1.0 / getInstructionNs()) * 1000;
-	}
-	
 	public void unsetInstructionTime() {
 	    m_numCycles = getThreadAdjustedCycles();
 	    

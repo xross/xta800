@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
@@ -517,31 +518,13 @@ public class NodeAttributes {
 	// ===================================================================== //
 	// Instruction Time Methods
 	// ===================================================================== //
-	public void setInstructionCycles(long cycles) {
+	public void setInstructionTime(TimeUnit timeUnit) {
 		assert(false);		
 	}
 
-	public long getInstructionCycles() {
+	public TimeUnit getInstructionTime() {
 		assert(false);		
-		return 0;
-	}
-
-	public void setInstructionNs(double ns) {
-		assert(false);		
-	}
-	
-	public double getInstructionNs() {
-		assert(false);
-		return 0;
-	}
-
-	public void setInstructionMhz(double mhz) {
-		assert(false);		
-	}
-	
-	public double getInstructionMhz() {
-		assert(false);
-		return 0;
+		return null;
 	}
 	
 	public void unsetInstructionTime() {
