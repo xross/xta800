@@ -1,5 +1,6 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
+  [-]assert <option> <arg0> <arg1>...: Assert timing requirement
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
   [-]echo "text": prints the text to the console
