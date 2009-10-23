@@ -14,11 +14,6 @@ public class Function extends Command {
 		m_functionName = "";
 	}
 	
-	public Function(String functionName) {
-		m_functionName = functionName;
-		m_timeUnit = null;
-	}
-	
 	public Function(String functionName, TimeUnit timeUnit) {
 		m_functionName = functionName;
 		m_timeUnit = timeUnit;
@@ -53,14 +48,22 @@ public class Function extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-    	String functionName = args[index + 1];
-        return new Function(functionName);
+    	String name  = args[index + 1];
+    	String value = args[index + 2];
+   		String mode  = args[index + 3];
+   		    
+	    TimeUnit timeUnit = new TimeUnit(value, mode);
+	    if (timeUnit.isValid()) {
+	    	return new Function(name, timeUnit);
+	    }
+	    return null;        
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.analyseRoute(getSrc(), m_functionName);  
+        engine.analyseRoute(getSrc(), m_functionName); 
+        engine.setRequiredTime(getSrc(), Engine.ROUTE_ID_LAST, m_timeUnit);
     }
 }

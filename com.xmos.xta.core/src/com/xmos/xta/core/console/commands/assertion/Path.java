@@ -4,23 +4,26 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.TimeUnit;
 
 public class Path extends Command {
 	private String m_fromRef;
 	private String m_toRef;
+	private TimeUnit m_timeUnit;
 	
 	public Path() {
 		m_fromRef = "";
 		m_toRef = "";
 	}
 	
-	public Path(String fromRef, String toRef) {
+	public Path(String fromRef, String toRef, TimeUnit timeUnit) {
 		m_fromRef = fromRef;
 		m_toRef = toRef;	  	
+		m_timeUnit = timeUnit;
 	}
 	
     public int numArgs() {
-    	return 2;
+    	return 4;
     }        
 
 	public ArgType[] getArgTypes() {
@@ -32,11 +35,15 @@ public class Path extends Command {
     }        
 
     public String commandLine() {
-    	return "path " + m_fromRef + " " + m_toRef;
+    	return "path " + m_fromRef + " " + m_toRef + " " + m_timeUnit.getDescription(false);
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "path <from ENDPOINT_REF> <to ENDPOINT_REF>: Assert timing requirement for the given path";      	
+    	String descString = "path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing requirement for the given path";      	
+       	if (detailed) {    	    	
+       		descString += "\n" + TimeUnit.getHelp();
+       	}
+        return descString;    
     }
 
     public Command clone(String[] args, int index) {
@@ -44,8 +51,15 @@ public class Path extends Command {
 			return null;		
 
     	String fromRef = args[index + 1];
-        String toRef = args[index + 2];
-        return new Path(fromRef, toRef);
+        String toRef   = args[index + 2];
+    	String value   = args[index + 3];
+   		String mode    = args[index + 4];
+
+	    TimeUnit timeUnit = new TimeUnit(value, mode);
+	    if (timeUnit.isValid()) {
+	    	return new Path(fromRef, toRef, timeUnit);
+	    }
+	    return null;                
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
@@ -53,5 +67,6 @@ public class Path extends Command {
 			return;			    	
 
         engine.analyseRoute(getSrc(), m_fromRef, m_toRef);
+        engine.setRequiredTime(getSrc(), Engine.ROUTE_ID_LAST, m_timeUnit);
     }    
  }

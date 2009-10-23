@@ -9,8 +9,8 @@ public class Assert extends CommandContainer {
 		new Function(), 
 	};
 
-	public Assert() { super("analyse"); }
-	public Assert(Command command) { super("analyse", command); }
+	public Assert() { super("assert"); }
+	public Assert(Command command) { super("assert", command); }
 	
 	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Assert timing requirement"; }

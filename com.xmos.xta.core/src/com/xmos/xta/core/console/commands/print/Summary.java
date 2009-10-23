@@ -93,13 +93,13 @@ public class Summary extends Command {
 				if (routeTiming.passedTiming()) {
 					Status status = new Status();
 					int frequency = routeTiming.getMinFrequency(status);
-					if (status.isComplete() && (frequency > minFrequency)) {
+					if ((status.isComplete() || status.isZero()) && (frequency > minFrequency)) {
 						minFrequency = frequency;
 					}
 				} else {
 					Status status = new Status();
 					double violationTime = routeTiming.getViolationTime(status);				
-					if (status.isComplete() && (violationTime > maxViolationTime)) {
+					if ((status.isComplete() || status.isZero()) && (violationTime > maxViolationTime)) {
 						maxViolationTime = violationTime;
 					}
 					++numFails;				
