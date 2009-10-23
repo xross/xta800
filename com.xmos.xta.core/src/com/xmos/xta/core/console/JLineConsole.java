@@ -8,7 +8,6 @@ import com.xmos.xta.core.console.completors.XtaCompletor;
 import com.xmos.xta.core.engine.Engine;
 
 import jline.ConsoleReader;
-import jline.Terminal;
 
 public class JLineConsole extends Console {
 	private ConsoleReader m_reader;
@@ -43,10 +42,6 @@ public class JLineConsole extends Console {
 		    } catch (IOException e) {
 	            line = null;
 		    }
-		    // The terminal needs resetting each time just 
-		    // in case this process has been interrupted (Ctrl-Z). 
-            Terminal.resetTerminal();
-		    Terminal.setupTerminal();
 		}
 		return line;
 	}
