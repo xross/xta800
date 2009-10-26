@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.xmos.xta.core.console.BasicConsole;
+import com.xmos.xta.core.console.commands.print.StructureDisplayer;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -13,6 +15,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class RouteAssertions {
+	private static final boolean DEBUG_ROUTE_ASSERTIONS = false;
+	
 	public void apply(Notifier notifer, CommandSource src, List<Route> assertionRoutes, List<Route> routes) {
 		for (Route assertionRoute : assertionRoutes) {
 			RouteDescription routeDescription = assertionRoute.getRouteDescription();			
@@ -29,10 +33,11 @@ public class RouteAssertions {
 					case PATH:
 						applyPathAssertion(notifer, src, assertionRoute, route, assertedTime);
 						break;
-					}					
+					}
+					route.getRouteUnknowns().invalidateCachedStats();
 				}						
 			}
-		}		
+		}
 	}
 	
 	private void applyFunctionAssertion(Notifier notifer, CommandSource src, 
@@ -75,17 +80,31 @@ public class RouteAssertions {
 
 				for (RouteAssertionPatterns pattern : patterns) {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
-						pattern.apply(route, fromBlock, from, toBlock, to, assertedTime);
+
+						if (DEBUG_ROUTE_ASSERTIONS) display("BEFORE", route);						
+						pattern.apply(route, fromBlock, from, toBlock, to, assertedTime);						
+						RouteConstructor.setParent(route.getNode());
+						if (DEBUG_ROUTE_ASSERTIONS) display("AFTER", route);
+						
 						success = true;
 						break;
 					}
 				}
 			}
-			
+
 			if (!success) {
-				notifer.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply assertion route: %s", 
-						assertionRoute.getRouteDescription().getDescription()));				
+				notifer.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply assertion route: %s, to route: %s", 
+						assertionRoute.getRouteDescription().getDescription(), 
+						route.getRouteDescription().getDescription()));				
 			}
 		}
 	}	
+
+	private void display(String str, Route route) {
+		System.out.printf("------------ %s -------------\n", str);
+		StructureDisplayer sd = new StructureDisplayer(new BasicConsole(), 100);	
+		Collection<Node> nodes = new ArrayList<Node>();
+		nodes.add(route.getNode());
+		sd.display(nodes);					
+	}
 }

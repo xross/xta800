@@ -270,6 +270,15 @@ public class RouteUnknowns {
 		return canPause;
 	}
 	
+	void invalidateCachedStats() {
+		m_route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    		node.getAttributes().invalidateCachedStats();
+	        	return true;
+	    	}
+	    });		
+	}
+	
 	// ===================================================================== //
 	// Helper Methods
 	// ===================================================================== //	
@@ -312,14 +321,5 @@ public class RouteUnknowns {
 	        	return true;
 	    	}
 	    });		
-	}
-	
-	private void invalidateCachedStats() {
-		m_route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
-	    		node.getAttributes().invalidateCachedStats();
-	        	return true;
-	    	}
-	    });		
-	}
+	}	
 }

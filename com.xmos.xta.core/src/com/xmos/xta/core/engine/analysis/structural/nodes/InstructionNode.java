@@ -48,6 +48,10 @@ public class InstructionNode extends Node {
 		return in;
 	}
 	
+	public String toString() {
+		return String.format("%s (0x%x)", super.toString(), m_inst.getPc());
+	}
+	
     public String getTypeName() {    	
         return "instruction";
     }

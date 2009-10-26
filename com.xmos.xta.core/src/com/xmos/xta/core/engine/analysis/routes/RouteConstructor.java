@@ -66,6 +66,13 @@ public class RouteConstructor {
 	private Node m_startInstructionNode;
 	private RouteContainer m_container;
 
+	static void setParent(Node node) {
+		for (Node child : node.getIndirectChildren()){
+			child.setParent(node);
+			setParent(child);
+		}
+	}
+	
 	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description, RouteContainer container) {
 		m_structureGraph = structureGraph;
 		m_description = description;
@@ -612,13 +619,6 @@ public class RouteConstructor {
 	private void setParents() {
 		for (Route route : m_routes) {
 			setParent(route.getNode());
-		}
-	}
-
-	private void setParent(Node node) {
-		for (Node child : node.getIndirectChildren()){
-			child.setParent(node);
-			setParent(child);
 		}
 	}
 	

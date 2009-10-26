@@ -23,7 +23,7 @@ public abstract class RouteAssertionPatterns {
 			return true;
 		}
 		return false;
-	}	    
+	}	
 }
 
 class SameBlockPattern extends RouteAssertionPatterns {
@@ -56,7 +56,7 @@ class SameBlockPattern extends RouteAssertionPatterns {
 
 		} else {
 			route.setNode(sequence);
-		}		
+		}				
 	}	
 }
 
