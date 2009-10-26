@@ -1,0 +1,21 @@
+function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    seq\(\d+\)\s+: 1999.0ns / 1999.0ns 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns f
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    seq\(\d+\)\s+: 2999.0ns / 2999.0ns 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns f
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    seq\(\d+\)\s+: 3999.0ns / 3999.0ns 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns f
+.    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+

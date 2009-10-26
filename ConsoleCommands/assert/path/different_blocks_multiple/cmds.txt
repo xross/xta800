@@ -1,0 +1,6 @@
+assert path start1 stop1 1999.0 ns 
+assert path start2 stop2 2999.0 ns 
+assert path start3 stop3 3999.0 ns 
+
+analyse function main
+print structure -
