@@ -1,0 +1,3 @@
+assert path start stop 4999.0 ns 
+analyse path outer_start outer_stop
+print structure -
