@@ -130,6 +130,9 @@ public class RouteConstructor {
 		setUnknowns();	
 		setSrcLoopCounts();	
 		checkSupportedInstructions(src);
+		
+		RouteAssertions assertions = new RouteAssertions();
+		assertions.apply(m_engine, src, m_engine.getRoutes(), m_routes);
 
 		switch (m_description.getMode()) {
 		case FUNCTION:
@@ -722,7 +725,7 @@ public class RouteConstructor {
 			});
 		}
 	}
-	
+		
 	private void refreshDisplayedUnknowns(Node node) {	
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {

@@ -65,7 +65,7 @@ public class Unknown {
 				return String.format("Time for instruction (0x%x: %s) set to %.1fns",
 						instruction.getPc(),
 						instruction.getNmenonic(),
-						m_node.getAttributes().getInstructionTime().getNs());
+						m_node.getAttributes().getFixedTime().getNs());
 			}
 			assert(false);
 			return "";

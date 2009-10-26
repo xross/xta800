@@ -124,9 +124,15 @@ public class InstructionNode extends Node {
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
-		return new TimeDistributionBuckets(m_attributes.getInstructionTime().getCycles());
+		return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
 	}
 
+	public void replaceChild(Node oldNode, Node newNode) {
+	}
+
+	public void replaceChildren(List<Node> children) {
+	}
+	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		

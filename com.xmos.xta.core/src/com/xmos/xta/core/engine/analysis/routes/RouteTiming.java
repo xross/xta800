@@ -92,8 +92,7 @@ public class RouteTiming {
 	}
 
 	public int getMinFrequency(Status status) {
-		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-		return (int)(getWorstCycles(status) * 1000 * threadFactor) / (int)(m_maxTime.getNs() + 1.0);
+		return (int)((getWorstTime(status) / m_maxTime.getNs()) * m_config.m_frequency);
 	}
 		
 	public String getDescription(Level level) {

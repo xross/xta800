@@ -217,45 +217,45 @@ public class RouteUnknowns {
 	}
 
 	// ===================================================================== //
-	// Instruction Time Methods
+	// Fixed Time Methods
 	// ===================================================================== //	
-	public boolean setInstructionTime(Reference reference, TimeUnit timeUnit) {
+	public boolean setFixedTime(Reference reference, TimeUnit timeUnit) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setInstructionTime(node, timeUnit, reference);
+	    	setFixedTime(node, timeUnit, reference);
 	    	found = true;
 		}
 		return found;
 	}
 
-	public void setInstructionTime(Node node, TimeUnit timeUnit) {
-		setInstructionTime(node, timeUnit, null);
+	public void setFixedTime(Node node, TimeUnit timeUnit) {
+		setFixedTime(node, timeUnit, null);
 	}
 
-	public TimeUnit getInstructionTime(Node node) {
-		return node.getAttributes().getInstructionTime();
+	public TimeUnit getFixedTime(Node node) {
+		return node.getAttributes().getFixedTime();
 	}	
 	
-	private void setInstructionTime(Node node, TimeUnit timeUnit, Reference reference) {
+	private void setFixedTime(Node node, TimeUnit timeUnit, Reference reference) {
 		timeUnit.setConfig(m_route.getRouteDescription().getConfig());		
 		invalidateCachedStats();
-    	node.getAttributes().setInstructionTime(timeUnit);
+    	node.getAttributes().setFixedTime(timeUnit);
 		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
 		refreshDisplayedUnknowns();
 	}
 
-	public boolean unsetInstructionTime(Reference reference) {
+	public boolean unsetFixedTime(Reference reference) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	unsetInstructionTime(node);
+	    	unsetFixedTime(node);
 	    	found = true;
 		}
 		return found;
 	}
 
-	public void unsetInstructionTime(Node node) {
+	public void unsetFixedTime(Node node) {
 		invalidateCachedStats();
-    	node.getAttributes().unsetInstructionTime();
+    	node.getAttributes().unsetFixedTime();
 		node.getAttributes().addUnknown(Type.INSTRUCTION_TIME);
 		refreshDisplayedUnknowns();
 	}

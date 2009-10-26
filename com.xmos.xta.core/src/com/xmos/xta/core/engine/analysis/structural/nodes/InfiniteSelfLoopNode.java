@@ -129,6 +129,17 @@ public class InfiniteSelfLoopNode extends Node{
 		return tdb;
 	}
 	
+	public void replaceChild(Node oldNode, Node newNode) {
+		if (oldNode == m_loop) {
+			m_loop = newNode;
+		}				
+	}	
+	
+	public void replaceChildren(List<Node> children) {
+		assert(children.size() == 1);
+		m_loop = children.get(0);		
+	}	
+	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		

@@ -257,6 +257,17 @@ public class FunctionNode extends IBufferNode {
 		m_functionName = string;
 	}
 	
+	public void replaceChild(Node oldNode, Node newNode) {
+		int index = m_functionSequence.indexOf(oldNode);
+		m_functionSequence.remove(index);
+		m_functionSequence.add(index, newNode);
+	}	
+	
+	public void replaceChildren(List<Node> children) {
+		m_functionSequence.clear();
+		m_functionSequence.addAll(children);
+	}	
+	
 	public void getBackTrail(List<Long> backTrail) {
 		super.getBackTrail(backTrail);
 

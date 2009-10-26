@@ -135,7 +135,7 @@ public class Scripter {
 		    case INSTRUCTION_TIME:
 			    outputPortableWarnings(script, unknown);
 		    	script.append(String.format("set time %s %s %s\n", 
-		    			routeIdStr, refStr, node.getAttributes().getInstructionTimeString()));
+		    			routeIdStr, refStr, node.getAttributes().getFixedTimeString()));
 		    	break;
 
 		    case LOOP_ITERATIONS:

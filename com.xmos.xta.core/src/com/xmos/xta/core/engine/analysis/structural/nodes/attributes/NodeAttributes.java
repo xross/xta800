@@ -72,6 +72,8 @@ public class NodeAttributes {
 	private boolean m_cachedBestNumInstructionsValid;
 	private boolean m_cachedBestNumFnopsValid;	
 	
+	private TimeUnit m_fixedTimeTaken;
+	
     private List<Unknown> m_unknowns;
     private boolean m_displayAsUnknown;
 	private boolean m_isAbsolute;	
@@ -82,7 +84,8 @@ public class NodeAttributes {
 		m_isAbsolute = false;
 		m_isLoopHeader = false;	
 		m_unknowns = new ArrayList<Unknown>();
-		m_displayAsUnknown = false;
+		m_displayAsUnknown = false;		
+		m_fixedTimeTaken = null;
 		initialiseCachedStats();
 		invalidateCachedStats();
 	}
@@ -136,7 +139,7 @@ public class NodeAttributes {
 	    case INFINITE:      return String.format("Infinity");
 	    case UNRESOLVED:    return String.format("Unresolved");
 	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO:  return String.format("%.1fns", value);
+	    case ZERO:          return String.format("%.1fns", value);
 	    }
 	    assert(false);
 	    return "";
@@ -150,7 +153,7 @@ public class NodeAttributes {
 	    case INFINITE:      return String.format("Infinity");
 	    case UNRESOLVED:    return String.format("Unresolved");
 	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO: return String.format("%d", value);
+	    case ZERO:          return String.format("%d", value);
 	    }
 	    assert(false);
 	    return "";
@@ -164,7 +167,7 @@ public class NodeAttributes {
 	    case INFINITE:      return String.format("Infinity");
 	    case UNRESOLVED:    return String.format("Unresolved");
 	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO: return String.format("%d", value);
+	    case ZERO:          return String.format("%d", value);
 	    }
 	    assert(false);
 	    return "";
@@ -178,7 +181,7 @@ public class NodeAttributes {
 	    case INFINITE:      return String.format("Infinity");
 	    case UNRESOLVED:    return String.format("Unresolved");
 	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO: return String.format("%d", value);
+	    case ZERO:          return String.format("%d", value);
 	    }
 	    assert(false);
 	    return "";
@@ -196,6 +199,10 @@ public class NodeAttributes {
 	// Statistics Methods
 	// ===================================================================== //
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getFixedTime() != null) {
+			return getFixedTime().getNs();
+		}
+		
 		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.setStatus(getCachedTimeTakenStatus(c));
 			return getCachedTimeTaken(c);			
@@ -280,8 +287,8 @@ public class NodeAttributes {
 			value = multiplyNumPaths(value, child.getAttributes().getNumPaths());
 		}
 		return value;
-	}
-
+	}	
+	
 	// ===================================================================== //
 	// Cached Statistics Methods
 	// ===================================================================== //
@@ -366,6 +373,26 @@ public class NodeAttributes {
 	void setCachedNumInstructionsValid(Case c, boolean value) { if (!DISABLE_STATS_CACHE) { if (c == Case.WORST) m_cachedWorstNumInstructionsValid = value; else m_cachedBestNumInstructionsValid = value; } }
 	void setCachedNumFnopsValid(Case c, boolean value)        { if (!DISABLE_STATS_CACHE) { if (c == Case.WORST) m_cachedWorstNumFnopsValid = value;        else m_cachedBestNumFnopsValid = value; } }
 	
+	// ===================================================================== //
+	// Fixed Time Methods
+	// ===================================================================== //
+	public void setFixedTime(TimeUnit timeUnit) {
+		m_fixedTimeTaken = timeUnit;
+	}
+
+	public TimeUnit getFixedTime() {
+		return m_fixedTimeTaken;
+	}
+	
+	public void unsetFixedTime() {
+		m_fixedTimeTaken = null;
+	}
+	
+	public String getFixedTimeString() {
+		assert (m_fixedTimeTaken != null);
+		return m_fixedTimeTaken.getDescription(false);
+	}
+		
 	// ===================================================================== //
 	// Unknowns Methods
 	// ===================================================================== //
@@ -513,27 +540,6 @@ public class NodeAttributes {
 	}
 	
 	void invalidateCacheIterations() {
-	}
-
-	// ===================================================================== //
-	// Instruction Time Methods
-	// ===================================================================== //
-	public void setInstructionTime(TimeUnit timeUnit) {
-		assert(false);		
-	}
-
-	public TimeUnit getInstructionTime() {
-		assert(false);		
-		return null;
-	}
-	
-	public void unsetInstructionTime() {
-		assert(false);		
-	}
-	
-	public String getInstructionTimeString() {		
-		assert(false);
-		return null;
 	}
 	
 	public boolean hasFloatingIterations() {

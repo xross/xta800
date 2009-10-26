@@ -319,6 +319,28 @@ public class Engine implements Notifier {
 			return analyseRouteSafely(src, routeDescription);
 		}
 	}
+
+	public boolean assertRoute(CommandSource src, String functionName, TimeUnit timeUnit) {
+		if (analyseRoute(src, functionName)) {
+			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
+			for (Route route : getRoute(ROUTE_ID_LAST)) {
+				route.getRouteDescription().setIsAssertion(true);
+			}			
+			return true;
+		}
+		return false;
+	}
+
+	public boolean assertRoute(CommandSource src, String from, String to, TimeUnit timeUnit) {
+		if (analyseRoute(src, from, to)) {
+			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);
+			for (Route route : getRoute(ROUTE_ID_LAST)) {
+				route.getRouteDescription().setIsAssertion(true);
+			}			
+			return true;			
+		}
+		return false;
+	}	
 	
 	public Notifier getNotifier() {
 		return m_notifier;
@@ -732,9 +754,9 @@ public class Engine implements Notifier {
 	}
 	
 	// ===================================================================== //
-	// Unknown Instruction Time Methods
+	// Fixed Time Methods
 	// ===================================================================== //			
-	public boolean setInstructionTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
+	public boolean setFixedTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
@@ -749,7 +771,7 @@ public class Engine implements Notifier {
 		}
 		boolean passed = false;
 		for (Route route : routes) {
-		    if (route.getRouteUnknowns().setInstructionTime(reference, timeUnit)) {
+		    if (route.getRouteUnknowns().setFixedTime(reference, timeUnit)) {
 			    passed = true;
 		    }
 		}
@@ -759,16 +781,16 @@ public class Engine implements Notifier {
 		return passed;
 	}
 
-	public void setInstructionTime(CommandSource src, Node node, TimeUnit timeUnit) {
-		m_selectedRoute.getRouteUnknowns().setInstructionTime(node, timeUnit);
+	public void setFixedTime(CommandSource src, Node node, TimeUnit timeUnit) {
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
-	public TimeUnit getInstructionTime(Node node) {
-		return m_selectedRoute.getRouteUnknowns().getInstructionTime(node);
+	public TimeUnit getFixedTime(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getFixedTime(node);
 	}
 
-	public boolean unsetInstructionTime(CommandSource src, int routeId, String refString) {
+	public boolean unsetFixedTime(CommandSource src, int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
@@ -779,7 +801,7 @@ public class Engine implements Notifier {
 		}
 		boolean passed = false;
 		for (Route route : routes) {
-		    if (route.getRouteUnknowns().unsetInstructionTime(reference)) {
+		    if (route.getRouteUnknowns().unsetFixedTime(reference)) {
 			    passed = true;
 		    }
 		}
@@ -789,8 +811,8 @@ public class Engine implements Notifier {
 		return passed;
 	}
 
-	public void unsetInstructionTime(CommandSource src, Node node) {
-		m_selectedRoute.getRouteUnknowns().unsetInstructionTime(node);
+	public void unsetFixedTime(CommandSource src, Node node) {
+		m_selectedRoute.getRouteUnknowns().unsetFixedTime(node);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	

@@ -28,6 +28,7 @@ public class RouteDescription {
 	private int m_coreId;
 	private Collection<Reference> m_exclusions;
 	private Config m_config;
+	private boolean m_isAssertion;
 
 	public enum RouteMode {
 		PATH, FUNCTION
@@ -48,6 +49,7 @@ public class RouteDescription {
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);		
 		m_config = new Config(config);
+		m_isAssertion = false;
 	}
 
 	public RouteDescription(Reference function, Engine engine, int nodeId, int coreId, 
@@ -64,6 +66,7 @@ public class RouteDescription {
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);		
 		m_config = new Config(config);
+		m_isAssertion = false;
 		
 		StructureGraph sg = engine.getStructureGraph();
         findEndpoints(sg, sg.getThreads());
@@ -90,6 +93,10 @@ public class RouteDescription {
 		return m_to;
 	}
 
+	public Reference getFunctionReference() {
+		return m_function;
+	}
+	
 	public String getFunctionName() {
 		return m_functionName;
 	}
@@ -116,6 +123,14 @@ public class RouteDescription {
 	
 	public Config getConfig() {
 		return m_config;
+	}
+
+	public void setIsAssertion(boolean isAssertion) {
+		m_isAssertion = isAssertion;
+	}
+	
+	public boolean isAssertion() {
+		return m_isAssertion;
 	}
 	
 	private void findEndpoints(StructureGraph sg, Collection<FunctionNode> functionNodes) {

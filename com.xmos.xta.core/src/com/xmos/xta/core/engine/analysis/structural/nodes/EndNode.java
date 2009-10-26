@@ -11,8 +11,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class EndNode extends IBufferNode {
-	
 	private NodeAttributes m_nodeAttributes;
+	
 	public EndNode(){
 		super();
 		m_nodeAttributes = new NodeAttributes(this);
@@ -95,4 +95,10 @@ public class EndNode extends IBufferNode {
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(0);
 	}
+	
+	public void replaceChild(Node oldNode, Node newNode) {
+	}	
+	
+	public void replaceChildren(List<Node> children) {
+	}		
 }

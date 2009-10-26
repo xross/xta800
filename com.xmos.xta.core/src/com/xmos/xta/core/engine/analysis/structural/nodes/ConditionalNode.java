@@ -231,4 +231,14 @@ public class ConditionalNode extends Node {
 		tdb.merge(tdbs);
 		return tdb;
 	}	
+	
+	public void replaceChild(Node oldNode, Node newNode) {
+		m_options.remove(oldNode);
+		m_options.add(newNode);
+	}
+	
+	public void replaceChildren(List<Node> children) {
+		m_options.clear();
+		m_options.addAll(children);
+	}	
 }

@@ -91,4 +91,10 @@ public class NullNode extends IBufferNode {
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(0);
 	}
+	
+	public void replaceChild(Node oldNode, Node newNode) {
+	}	
+	
+	public void replaceChildren(List<Node> children) {
+	}		
 }

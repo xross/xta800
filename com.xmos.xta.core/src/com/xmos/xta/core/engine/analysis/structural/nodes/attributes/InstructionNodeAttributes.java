@@ -76,7 +76,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		return 1;
 	}
 	
-	public void setInstructionTime(TimeUnit timeUnit) {
+	public void setFixedTime(TimeUnit timeUnit) {
 		long cycles = timeUnit.getCycles();		
 		if (m_instruction.canPause()) {
 			long baseNumCycles = getThreadAdjustedCycles();
@@ -89,11 +89,11 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		m_instructionTimeString = timeUnit.getDescription(false);
 	}
 	
-	public TimeUnit getInstructionTime() {
+	public TimeUnit getFixedTime() {
 		return new TimeUnit(m_config, m_numCycles, Units.CYCLES);
 	}
 
-	public void unsetInstructionTime() {
+	public void unsetFixedTime() {
 	    m_numCycles = getThreadAdjustedCycles();
 	    
 	    for (Unknown unknown : getUnknowns()) {
@@ -102,7 +102,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	    }
 	}
 	
-	public String getInstructionTimeString() {
+	public String getFixedTimeString() {
 		assert(m_instructionTimeString != null);
 		return m_instructionTimeString;
 	}

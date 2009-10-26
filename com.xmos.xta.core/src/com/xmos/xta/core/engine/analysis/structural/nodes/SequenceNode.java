@@ -169,6 +169,17 @@ public class SequenceNode extends Node {
 		return m_nodes;
 	}
 
+	public void replaceChild(Node oldNode, Node newNode) {
+		int index = m_nodes.indexOf(oldNode);
+		m_nodes.remove(index);
+		m_nodes.add(index, newNode);
+	}
+
+	public void replaceChildren(List<Node> children) {
+		m_nodes.clear();
+		m_nodes.addAll(children);
+	}	
+	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		

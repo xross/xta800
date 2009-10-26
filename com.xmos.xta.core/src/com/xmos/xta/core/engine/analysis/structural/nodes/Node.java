@@ -32,7 +32,7 @@ public abstract class Node implements Comparable<Node>{
 	public abstract String getTypeName();
 	public abstract NodeAttributes getAttributes();	
 	public abstract Node shallowCopy();
-	public abstract Node deepCopy();			
+	public abstract Node deepCopy();
 	public abstract List<Node> getIndirectChildren();
 	public abstract List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors);
 	public abstract Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor);
@@ -42,6 +42,8 @@ public abstract class Node implements Comparable<Node>{
 	public abstract LinkedList<XtaInstruction> getInstructions();	
 	public abstract TimeDistributionBuckets getTimeSpread();	
 	public abstract long getStartPc();
+	public abstract void replaceChild(Node oldNode, Node newNode);
+	public abstract void replaceChildren(List<Node> newChildren);
 
 	public Node() {
 		m_id = s_numNodes++;

@@ -66,7 +66,6 @@ public class Path extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.analyseRoute(getSrc(), m_fromRef, m_toRef);
-        engine.setRequiredTime(getSrc(), Engine.ROUTE_ID_LAST, m_timeUnit);
+        engine.assertRoute(getSrc(), m_fromRef, m_toRef, m_timeUnit);
     }    
  }

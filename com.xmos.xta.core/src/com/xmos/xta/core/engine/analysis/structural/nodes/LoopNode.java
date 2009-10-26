@@ -206,6 +206,26 @@ public class LoopNode extends Node {
 		return tdb;
 	}
 	
+	public void replaceChild(Node oldNode, Node newNode) {
+		if (oldNode == m_loopHeader) {
+			m_loopHeader = newNode;
+				
+		} else {	
+		    int index = m_loops.indexOf(oldNode);
+		    m_loops.remove(index);
+		    m_loops.add(index, newNode);
+		}
+	}	
+	
+	public void replaceChildren(List<Node> children) {
+		if (!children.isEmpty()) {
+			m_loopHeader = children.get(0);		
+			for (int index = 1; index < children.size(); ++index) {
+				m_loops.add(children.get(index));
+			}			
+		}		
+	}	
+	
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		

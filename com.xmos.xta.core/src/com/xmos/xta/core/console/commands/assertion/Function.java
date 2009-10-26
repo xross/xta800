@@ -63,7 +63,6 @@ public class Function extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.analyseRoute(getSrc(), m_functionName); 
-        engine.setRequiredTime(getSrc(), Engine.ROUTE_ID_LAST, m_timeUnit);
+        engine.assertRoute(getSrc(), m_functionName, m_timeUnit); 
     }
 }

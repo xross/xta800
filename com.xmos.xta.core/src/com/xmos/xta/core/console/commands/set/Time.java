@@ -6,6 +6,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -82,9 +83,15 @@ public class Time extends Command {
 		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.ENDPOINT_REF);
 		ref.resolve(engine);
 
-        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
-        }
+		Node node = getReferencedNode(engine, m_routeId, m_refString);
+		if (node != null) {
+	        engine.setFixedTime(getSrc(), node, m_timeUnit);
+			
+		} else {		
+	        if (!engine.setFixedTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
+	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+	   	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
+	        }
+		}		
     }    
 }

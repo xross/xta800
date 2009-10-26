@@ -9,7 +9,6 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
-import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NodeDescriptor;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
@@ -58,6 +57,10 @@ public class Route {
 
 	public Node getNode() {
 		return m_node;
+	}
+	
+	public void setNode(Node node) {
+		m_node = node;
 	}
 	
 	public RouteDescription getRouteDescription() {
@@ -139,6 +142,16 @@ public class Route {
 		return referencedNodes;		
 	} 
 
+	public Collection<Node> getReferencedFunctionNodes(Reference reference) {
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		Collection<Node> referencedNodes = new ArrayList<Node>();
+		
+		for (NodeDescriptor nodeDescriptor : referenceMatcher.getFunctionNodeDescriptors(m_node, reference)) {
+			referencedNodes.add(nodeDescriptor.getNode());
+		}
+		return referencedNodes;		
+	} 
+	
 	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
 		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {

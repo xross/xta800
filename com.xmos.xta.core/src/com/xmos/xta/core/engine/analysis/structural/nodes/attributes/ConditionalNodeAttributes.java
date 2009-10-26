@@ -22,6 +22,10 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 	// Statistics Methods
 	// --------------------------------------------------------------------- //	
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
+		if (getFixedTime() != null) {
+			return getFixedTime().getNs();
+		}
+		
 		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {
 			status.mergeStatus(getCachedTimeTakenStatus(c));		
 			double timeTaken = getCachedTimeTaken(c);
