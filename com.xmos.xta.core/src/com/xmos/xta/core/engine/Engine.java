@@ -782,7 +782,7 @@ public class Engine implements Notifier {
 	}
 
 	public void setFixedTime(CommandSource src, Node node, TimeUnit timeUnit) {
-		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit);
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, true);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	

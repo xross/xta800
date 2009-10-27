@@ -105,11 +105,26 @@ public class Scripter {
     	RouteDescription routeDescription = routeContainer.getDescription();
     	switch (routeDescription.getMode()) {
     	case FUNCTION:
-    		script.append(String.format("analyse function %s\n", routeDescription.getFunctionName()));
+    		if (routeDescription.isAssertion()) {
+    			RouteTiming routeTiming = routeContainer.getRoutes().get(0).getRouteTiming();
+        		script.append(String.format("assert function %s %s\n", 
+        				routeDescription.getFunctionName(),
+        				routeTiming.getDescription(Level.REQUIRED)));    			    			
+    		} else {
+        		script.append(String.format("analyse function %s\n", routeDescription.getFunctionName()));    			
+    		}
     		break;
     		
     	case PATH:
-    		script.append(String.format("analyse path %s %s\n", routeDescription.getFromName(), routeDescription.getToName()));
+    		if (routeDescription.isAssertion()) {
+    			RouteTiming routeTiming = routeContainer.getRoutes().get(0).getRouteTiming();    			    			
+        		script.append(String.format("assert path %s %s %s\n", 
+        				routeDescription.getFromName(), 
+        				routeDescription.getToName(),
+        				routeTiming.getDescription(Level.REQUIRED)));    			    			
+    		} else {
+        		script.append(String.format("analyse path %s %s\n", routeDescription.getFromName(), routeDescription.getToName()));    			
+    		}
     		break;
     	}    	
     }
@@ -166,7 +181,7 @@ public class Scripter {
 		String routeIdStr = getRouteIdString(singleRoute);			    	
     	
 		RouteTiming routeTiming = route.getRouteTiming();
-		if (routeTiming.isTimingSpecified()) {
+		if (routeTiming.isTimingSpecified() && !route.getRouteDescription().isAssertion()) {
 	    	script.append(String.format("set required %s %s\n", routeIdStr, 
 	    			routeTiming.getDescription(Level.REQUIRED)));
 		}

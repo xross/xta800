@@ -45,7 +45,7 @@ public class RouteAssertions {
 		
 		Reference reference = assertionRoute.getRouteDescription().getFunctionReference();
 		for (Node node : route.getReferencedFunctionNodes(reference)) {
-			route.getRouteUnknowns().setFixedTime(node, assertedTime);							
+			route.getRouteUnknowns().setFixedTime(node, assertedTime, false);							
 		}		
 	}
 	

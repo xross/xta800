@@ -54,18 +54,29 @@ public class Unknown {
 	public String getDescription() {
 		switch(m_type) {
 		case INSTRUCTION_TIME:
-			XtaInstruction instruction = ((InstructionNode)m_node).getXtaInstruction();
-			switch(m_state) {
-			case UNKNOWN:
-				return String.format("Time taken for instruction (0x%x: %s) is unknown",
-						instruction.getPc(),
-						instruction.getNmenonic());	
-				
-			case KNOWN:
-				return String.format("Time for instruction (0x%x: %s) set to %.1fns",
-						instruction.getPc(),
-						instruction.getNmenonic(),
-						m_node.getAttributes().getFixedTime().getNs());
+			if (m_node instanceof InstructionNode) {
+				XtaInstruction instruction = ((InstructionNode)m_node).getXtaInstruction();
+				switch(m_state) {
+				case UNKNOWN:
+					return String.format("Time taken for instruction (0x%x: %s) is unknown",
+							instruction.getPc(),
+							instruction.getNmenonic());	
+					
+				case KNOWN:
+					return String.format("Time for instruction (0x%x: %s) set to %.1fns",
+							instruction.getPc(),
+							instruction.getNmenonic(),
+							m_node.getAttributes().getFixedTime().getNs());
+				}				
+			} else {
+				switch(m_state) {
+				case UNKNOWN:
+					return String.format("Time taken for node (id: %d) is unknown", m_node.getId());
+					
+				case KNOWN:
+					return String.format("Time taken for node (id: %d) is set to %.1fns", m_node.getId(),
+							m_node.getAttributes().getFixedTime().getNs());
+				}								
 			}
 			assert(false);
 			return "";
