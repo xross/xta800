@@ -1,0 +1,12 @@
+load .*test\.xe
+
+#
+# Route: f
+#
+assert function f 999.000000 ns
+
+#
+# Route: main
+#
+analyse function main
+

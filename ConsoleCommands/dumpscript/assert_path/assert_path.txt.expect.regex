@@ -1,0 +1,12 @@
+load .*test\.xe
+
+#
+# Route: start => stop
+#
+assert path start stop 999.000000 ns
+
+#
+# Route: main
+#
+analyse function main
+
