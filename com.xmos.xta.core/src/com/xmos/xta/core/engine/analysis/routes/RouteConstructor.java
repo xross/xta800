@@ -103,7 +103,63 @@ public class RouteConstructor {
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}		
 
+		switch (m_description.getMode()) {
+			case FUNCTION:
+				if (m_engine.getRecursiveFunctions().contains(m_description.getFunctionName())) {
+					m_engine.notify(src, Notifier.NOTIFY_ERROR, "Cannot analyse function " + m_description.getFunctionName() +" as it is recursive");
+					break;
+				}
+				Set<Set<NodeDescriptor>> seenExclusionsSets = new HashSet<Set<NodeDescriptor>>();
+				for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
+					NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);
+
+					NodeDescriptor fn;
+					if(startNode.getNode().isFunctionNode()){
+						fn = startNode;
+					} else {
+						Node currentNode = startNode.getNode();
+						
+						Stack<Node> ancestors = new Stack<Node>();
+						ancestors.addAll(startNode.getAncestors());
+						
+						while(!currentNode.isFunctionNode()){
+							currentNode = ancestors.pop();
+						}
+						fn = new NodeDescriptor(currentNode, ancestors);
+						
+					}
+					assert(fn.getNode().isFunctionNode());
+					
+					Set<NodeDescriptor> exclusionsWithinFunction = containNodes(fn, m_exclusions);
+					
+					if(!containsSet(exclusionsWithinFunction, seenExclusionsSets)){
+						seenExclusionsSets.add(exclusionsWithinFunction);
+						
+						if(!exclusionsWithinFunction.isEmpty()){
+							seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
+								seenEndPoint, endNodeDescriptors, true);	
+						} else {
+							startNode.getNode().setParent(null);
+							m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description, m_container));
+						}
+					}
+				}
+				break;
+		
+			case PATH:
+				for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
+					NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);
+					seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
+							seenEndPoint, endNodeDescriptors, false);
+				}
+				break;
+		}
+		
+		/*
+		
+		
 		boolean notFoundFunctionYet = true;
+
 		for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
 			
 			NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);
@@ -133,6 +189,8 @@ public class RouteConstructor {
 				break;
 			}
 		}
+		
+		*/
 		setParents();
 		setUnknowns();	
 		setSrcLoopCounts();	
@@ -153,6 +211,16 @@ public class RouteConstructor {
 		return null;
 	}
 	
+	private boolean containsSet(Set<NodeDescriptor> exclusionsWithinFunction,
+			Set<Set<NodeDescriptor>> seenExclusionsSets) {
+		for(Set<NodeDescriptor> alreadySeen : seenExclusionsSets){
+			if(seenExclusionsSets.containsAll(alreadySeen) && alreadySeen.size() == exclusionsWithinFunction.size()){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private boolean makeSubRoute(CommandSource src, NodeDescriptor startInstruction, NodeDescriptor startNode, 
 			boolean seenEndPoint, Collection<NodeDescriptor> endInstructions, boolean isFunction) throws Exception {
 				
@@ -831,6 +899,17 @@ public class RouteConstructor {
 		}
 		return false;
 	}
+	private Set<NodeDescriptor> containNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) {
+		Collection<NodeDescriptor> contained = getContainedNodes(start);
+		Set<NodeDescriptor> foundNodes = new TreeSet<NodeDescriptor>();
+		for (NodeDescriptor end : ends) {
+			if (contained.contains(end)) {
+				foundNodes.add(end);
+			}
+		}
+		return foundNodes;
+	}
+	
 	
 	private NodeDescriptor getStartNodeDescriptor(NodeDescriptor startNodeDescriptor) {
 		Node startNode = startNodeDescriptor.getNode();
