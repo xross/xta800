@@ -1,5 +1,3 @@
-assert function f 999.0 ns 
-
 analyse function main
+assert path start stop 4999.0 ns 
 print structure -
-

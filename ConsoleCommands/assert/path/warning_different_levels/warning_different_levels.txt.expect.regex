@@ -1,4 +1,4 @@
-xta: cmds.txt:2: warning: failed to apply assertion route: path: start to stop, to route: function: main
+xta: cmds.txt:2: warning: failed to apply path assertion: path: start to stop, to route: function: main
 function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
 .  \* block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 .  \* function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns f

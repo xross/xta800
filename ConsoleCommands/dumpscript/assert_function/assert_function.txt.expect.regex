@@ -1,7 +1,7 @@
 load .*test\.xe
 
 #
-# Route: f
+# Assertions
 #
 assert function f 999.000000 ns
 

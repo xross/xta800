@@ -1,0 +1,4 @@
+assert function f 999.0 ns 
+analyse function main
+print structure -
+

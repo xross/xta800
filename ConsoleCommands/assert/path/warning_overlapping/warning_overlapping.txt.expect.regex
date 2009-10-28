@@ -1,5 +1,5 @@
-xta: cmds.txt:2: warning: failed to apply assertion route: path: start2 to stop2, to route: path: start1 to stop1
-xta: cmds.txt:3: warning: failed to apply assertion route: path: start1 to stop1, to route: function: main
+xta: cmds.txt:2: warning: failed to apply path assertion: path: start2 to stop2, to route: path: start1 to stop1
+xta: cmds.txt:3: warning: failed to apply path assertion: path: start1 to stop1, to route: function: main
 function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
 .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
 .    seq\(\d+\)\s+: 999.0ns / 999.0ns 

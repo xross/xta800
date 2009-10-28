@@ -1,7 +1,7 @@
 load .*test\.xe
 
 #
-# Route: start => stop
+# Assertions
 #
 assert path start stop 999.000000 ns
 
