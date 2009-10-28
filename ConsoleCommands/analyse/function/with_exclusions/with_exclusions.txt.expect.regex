@@ -1,0 +1,17 @@
+function\(\d+\)  : \d+.0ns / \d+.0ns f
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    cond\(\d+\)      : \d+.0ns / \d+.0ns 
+.    .    block\(\d+\)     : \d+.0ns \(x 0\) / \d+.0ns \(x 1\) 
+.    .    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 0\) 
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+
+seq\(\d+\)       : \d+.0ns / \d+.0ns 
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+
+seq\(\d+\)       : \d+.0ns / \d+.0ns 
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+
