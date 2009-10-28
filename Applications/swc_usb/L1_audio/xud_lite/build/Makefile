@@ -19,7 +19,7 @@ XUD_INCLUDES	= -I $(XUD_INC_DIR) \
                   -I $(XUD_SRC_UIFM_DIR) \
 		  -I $(XUD_SRC_SUP_DIR)
 
-BUILD_FLAGS 	= -Wall -g -O3 -D UIFM_MODE=2  -fasm-linenum -fcomment-asm  -fall-stream-select -D G1 
+BUILD_FLAGS 	= -Wall -g -O3 -D UIFM_MODE=2  -fasm-linenum -fcomment-asm  -fsubword-select -D G1 
 
 #XUD src
 XUD_SRC_XC		= XUD_Manager \
