@@ -13,6 +13,8 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
+import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.PathInfo;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Scripter {
@@ -37,6 +39,8 @@ public class Scripter {
     	m_currentRouteId = 0;
     	script.append(String.format("load %s\n", m_engine.getExecutable().toString()));
     	    	
+    	assertions(script);
+    	
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
         	if (routeContainer.numExistingRoutes() <= 0)
         		continue;
@@ -63,6 +67,26 @@ public class Scripter {
     	return script.toString();
     }
  
+	private void assertions(StringBuffer script) {
+		if (m_engine.getFunctionAssertions().isEmpty() &&
+			m_engine.getPathAssertions().isEmpty())
+			return;
+			
+		script.append("\n");
+    	script.append("#\n");
+    	script.append("# Assertions\n");
+    	script.append("#\n");			
+    	
+		for (FunctionInfo info : m_engine.getFunctionAssertions()) {			
+			script.append("assert function " + info.getFunction() + 
+					" " + info.getTimeUnit().getDescription(true) + "\n");
+		}
+		for (PathInfo info : m_engine.getPathAssertions()) {			
+			script.append("assert path " + info.getFrom() + " " + info.getTo() + 
+					" " + info.getTimeUnit().getDescription(true) + "\n");			
+		}			    	
+	}
+	
 	private void routeComment(RouteContainer routeContainer, StringBuffer script) {
     	RouteDescription routeDescription = routeContainer.getDescription();
 

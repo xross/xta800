@@ -2,65 +2,54 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.xmos.xta.core.console.BasicConsole;
 import com.xmos.xta.core.console.commands.print.StructureDisplayer;
 import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.PathInfo;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class RouteAssertions {
 	private static final boolean DEBUG_ROUTE_ASSERTIONS = false;
 	
-	public void apply(Notifier notifer, CommandSource src, List<Route> assertionRoutes, List<Route> routes) {
-		for (Route assertionRoute : assertionRoutes) {
-			RouteDescription routeDescription = assertionRoute.getRouteDescription();			
+	public void applyFunctionAssertion(Engine engine, CommandSource src, 
+			Route route, FunctionInfo info) {
+		
+		Reference reference = ReferenceFactory.createReference(
+				info.getFunction(), ReferenceClass.FUNCTION_REF);	
+		
+		if (!reference.resolve(engine))
+			return;
 			
-			if (routeDescription.isAssertion()) {				
-				TimeUnit assertedTime = assertionRoute.getRouteTiming().getMaxTime();
-
-				for (Route route : routes) {					
-					switch (routeDescription.getMode()) {
-					case FUNCTION:
-						applyFunctionAssertion(notifer, src, assertionRoute, route, assertedTime);
-						break;
-						
-					case PATH:
-						applyPathAssertion(notifer, src, assertionRoute, route, assertedTime);
-						break;
-					}
-					route.getRouteUnknowns().invalidateCachedStats();
-				}						
-			}
-		}
-	}
-	
-	private void applyFunctionAssertion(Notifier notifer, CommandSource src, 
-			Route assertionRoute, Route route, TimeUnit assertedTime) {
-		
-		Reference reference = assertionRoute.getRouteDescription().getFunctionReference();
 		for (Node node : route.getReferencedFunctionNodes(reference)) {
-			route.getRouteUnknowns().setFixedTime(node, assertedTime, false);							
-		}		
-	}
-	
-	private void applyPathAssertion(Notifier notifer, CommandSource src, 
-			Route assertionRoute, Route route, TimeUnit assertedTime) {
-		
-		// Finds the block that contains the instruction start node
-		Collection<Node> fromNodes = route.getReferencedNodes(
-				assertionRoute.getRouteDescription().getStartPoint());
-
-		// Finds the block that contains the instruction end node
-		Collection<Node> toNodes = new ArrayList<Node>();
-		for (Reference to : assertionRoute.getRouteDescription().getEndPoint()) {
-			toNodes.addAll(route.getReferencedNodes(to));
+			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), false);							
 		}
+		route.getRouteUnknowns().invalidateCachedStats();		
+	}
+
+	public void applyPathAssertion(Engine engine, CommandSource src, 
+			Route route, PathInfo info) {
+		
+		Reference fromRef = ReferenceFactory.createReference(
+				info.getFrom(), ReferenceClass.ENDPOINT_REF);
+		Reference toRef = ReferenceFactory.createReference(
+				info.getTo(), ReferenceClass.ENDPOINT_REF);
+
+		if (!fromRef.resolve(engine))
+			return;
+		if (!toRef.resolve(engine))
+			return;
+				
+		Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
+		Collection<Node> toNodes = route.getReferencedNodes(toRef);
 		
 		RouteAssertionPatterns[] patterns = new RouteAssertionPatterns[] {
 				new SameBlockPattern(),
@@ -82,7 +71,7 @@ public class RouteAssertions {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
 
 						if (DEBUG_ROUTE_ASSERTIONS) display("BEFORE", route);						
-						pattern.apply(route, fromBlock, from, toBlock, to, assertedTime);						
+						pattern.apply(route, fromBlock, from, toBlock, to, info.getTimeUnit());						
 						RouteConstructor.setParent(route.getNode());
 						if (DEBUG_ROUTE_ASSERTIONS) display("AFTER", route);
 						
@@ -93,10 +82,10 @@ public class RouteAssertions {
 			}
 
 			if (!success) {
-				notifer.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply assertion route: %s, to route: %s", 
-						assertionRoute.getRouteDescription().getDescription(), 
-						route.getRouteDescription().getDescription()));				
+				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path assertion: %s, to route: %s", 
+						info, route.getRouteDescription().getDescription()));				
 			}
+			route.getRouteUnknowns().invalidateCachedStats();			
 		}
 	}	
 

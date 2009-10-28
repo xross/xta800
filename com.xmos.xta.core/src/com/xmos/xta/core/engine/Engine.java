@@ -26,6 +26,7 @@ import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.core.engine.analysis.controlflow.UnreachableCodeFinder;
 import com.xmos.xta.core.engine.analysis.routes.Route;
+import com.xmos.xta.core.engine.analysis.routes.RouteAssertions;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
@@ -36,6 +37,9 @@ import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.core.engine.assertions.Assertions;
+import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.PathInfo;
 import com.xmos.xta.core.engine.instructions.DataCollection;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
@@ -56,6 +60,8 @@ public class Engine implements Notifier {
 	public static final int ROUTE_ID_GLOBAL   = -3;
 	public static final int NODE_ID_TOP_LEVEL = -4;
 		
+	private final static boolean LAZY = true;
+	
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
@@ -71,6 +77,7 @@ public class Engine implements Notifier {
 	private ProgressMonitor m_progressMonitor;
 	private String m_srcPaths;
 	private Sections m_sections;
+	private Assertions m_assertions;
 	private Collection<String> m_functionsVisited;
 	private int m_timeOut;
 	private int m_numErrors;
@@ -79,10 +86,8 @@ public class Engine implements Notifier {
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>> m_functionNames;
-	private Collection<FileLocation> m_userSpecifedFileLocations;
-	
+	private Collection<FileLocation> m_userSpecifedFileLocations;	
 	private DataCollection m_dataCollection;
-	private final static boolean LAZY = true;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -102,6 +107,7 @@ public class Engine implements Notifier {
 		m_srcPaths = ".";
 		m_progressMonitor = null;
 		m_sections = new Sections();
+		m_assertions = new Assertions();
 		m_timeOut = -1;
 		m_numErrors = 0;
 		m_dataCollection = new DataCollection();
@@ -319,28 +325,6 @@ public class Engine implements Notifier {
 			return analyseRouteSafely(src, routeDescription);
 		}
 	}
-
-	public boolean assertRoute(CommandSource src, String functionName, TimeUnit timeUnit) {
-		if (analyseRoute(src, functionName)) {
-			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
-			for (Route route : getRoute(ROUTE_ID_LAST)) {
-				route.getRouteDescription().setIsAssertion(true);
-			}			
-			return true;
-		}
-		return false;
-	}
-
-	public boolean assertRoute(CommandSource src, String from, String to, TimeUnit timeUnit) {
-		if (analyseRoute(src, from, to)) {
-			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);
-			for (Route route : getRoute(ROUTE_ID_LAST)) {
-				route.getRouteDescription().setIsAssertion(true);
-			}			
-			return true;			
-		}
-		return false;
-	}	
 	
 	public Notifier getNotifier() {
 		return m_notifier;
@@ -568,6 +552,93 @@ public class Engine implements Notifier {
 		Collection<Route> routes = getRoute(routeId);
 		assert(routes.size() == 1);
 		setSelectedRoute(src, routes.iterator().next());
+	}
+
+	// ===================================================================== //
+	// Assert Function/Path Methods
+	// ===================================================================== //			
+	public boolean assertFunction(CommandSource src, String functionName, TimeUnit timeUnit) {
+		if (analyseRoute(src, functionName)) {
+			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
+			
+			boolean passed = timingPassed(ROUTE_ID_LAST);
+			if (passed) {
+				Route route = getRoute(ROUTE_ID_LAST).iterator().next();
+				m_assertions.addFunction(m_nodeId, m_coreId, 
+						route.getRouteDescription().getFunctionName(), 
+						route.getRouteTiming().getMaxTime());				
+
+			} else {
+				notify(src, Notifier.NOTIFY_ERROR, "Timing failed on function assertion");
+			}	
+			removeRoute(src, ROUTE_ID_LAST);
+
+			if (passed) {
+				applyFunctionAssertionToAllExistingRoutes(src);
+			}			
+			return passed;
+		}		
+		return false;
+	}
+
+	public boolean assertPath(CommandSource src, String from, String to, TimeUnit timeUnit) {
+		if (analyseRoute(src, from, to)) {
+			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
+			
+			boolean passed = timingPassed(ROUTE_ID_LAST);
+			if (passed) {
+				Route route = getRoute(ROUTE_ID_LAST).iterator().next();
+				m_assertions.addPath(m_nodeId, m_coreId, 
+						route.getRouteDescription().getFromName(),
+						route.getRouteDescription().getToName(), 
+						route.getRouteTiming().getMaxTime());
+				
+			} else {
+				notify(src, Notifier.NOTIFY_ERROR, "Timing failed on path assertion");
+			}	
+			removeRoute(src, ROUTE_ID_LAST);
+			
+			if (passed) {
+				applyPathAssertionToAllExistingRoutes(src);				
+			}
+			return passed;
+		}		
+		return false;
+	}	
+	
+	public Collection<FunctionInfo> getFunctionAssertions() {
+		return m_assertions.getFunctions(m_nodeId, m_coreId);
+	}
+
+	public Collection<PathInfo> getPathAssertions() {
+		return m_assertions.getPaths(m_nodeId, m_coreId);
+	}
+	
+	private boolean timingPassed(int routeId) {
+		for (Route route : getRoute(routeId)) {
+			if (!route.getRouteTiming().passedTiming()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private void applyFunctionAssertionToAllExistingRoutes(CommandSource src) {
+		RouteAssertions assertions = new RouteAssertions();
+		List<FunctionInfo> infos = m_assertions.getFunctions(m_nodeId, m_coreId);
+		FunctionInfo info = infos.get(infos.size() - 1);					
+		for (Route route : m_routes) {
+			assertions.applyFunctionAssertion(this, src, route, info);
+		}		
+	}
+
+	private void applyPathAssertionToAllExistingRoutes(CommandSource src) {
+		RouteAssertions assertions = new RouteAssertions();
+		List<PathInfo> infos = m_assertions.getPaths(m_nodeId, m_coreId);
+		PathInfo info = infos.get(infos.size() - 1);					
+		for (Route route : m_routes) {
+			assertions.applyPathAssertion(this, src, route, info);
+		}		
 	}
 	
 	// ===================================================================== //

@@ -31,6 +31,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
+import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.PathInfo;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
@@ -137,9 +139,7 @@ public class RouteConstructor {
 		setUnknowns();	
 		setSrcLoopCounts();	
 		checkSupportedInstructions(src);
-		
-		RouteAssertions assertions = new RouteAssertions();
-		assertions.apply(m_engine, src, m_engine.getRoutes(), m_routes);
+		applyAssertions(src);
 
 		switch (m_description.getMode()) {
 		case FUNCTION:
@@ -725,7 +725,19 @@ public class RouteConstructor {
 			});
 		}
 	}
-		
+
+	private void applyAssertions(CommandSource src) {
+		RouteAssertions assertions = new RouteAssertions();
+		for (Route route : m_routes) {			
+			for (FunctionInfo info : m_engine.getFunctionAssertions()) {			
+				assertions.applyFunctionAssertion(m_engine, src, route, info);
+			}
+			for (PathInfo info : m_engine.getPathAssertions()) {			
+				assertions.applyPathAssertion(m_engine, src, route, info);
+			}			
+		}		
+	}
+
 	private void refreshDisplayedUnknowns(Node node) {	
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
