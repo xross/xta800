@@ -591,7 +591,7 @@ public class Engine implements Notifier {
 			return false;
 		
 		for (Route route : routes) {			
-			route.getRouteTiming().unset();
+			route.getRouteTiming().unsetMaxTime();
 		}
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;

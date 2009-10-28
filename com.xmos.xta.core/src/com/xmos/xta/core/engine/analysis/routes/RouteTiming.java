@@ -3,6 +3,7 @@ package com.xmos.xta.core.engine.analysis.routes;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.TimeUnit;
+import com.xmos.xta.core.engine.TimeUnit.Units;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
@@ -18,10 +19,10 @@ public class RouteTiming {
 	
 	private Route m_route;
 	private Config m_config;
-	private TimeUnit m_maxTime;
-	private boolean m_maxTimeSet;
 	private int m_nodeId;
 	private int m_coreId;
+	private TimeUnit m_maxTime;
+	private boolean m_maxTimeSet;
 	
 	private CommandSource m_requirementsSrc;
 
@@ -31,6 +32,7 @@ public class RouteTiming {
 		m_config = config;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
+		unsetMaxTime();
 	}
 
 	public int getNodeId() {
@@ -56,8 +58,8 @@ public class RouteTiming {
 		return m_maxTime;
 	}
 	
-	public void unset() {
-		m_maxTime = null;
+	public void unsetMaxTime() {
+		m_maxTime = new TimeUnit(m_config, 0.0, Units.NS);
 		m_maxTimeSet = false;
 	}
 
