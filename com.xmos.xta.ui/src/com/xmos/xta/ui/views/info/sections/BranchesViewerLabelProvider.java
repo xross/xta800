@@ -23,7 +23,7 @@ class BranchesViewerLabelProvider extends SectionsViewerLabelProvider implements
     	} else if (m_columnNames[columnIndex].equals(TOPCS)) {
     		String toPcs = "";
     		for (Long toPc : branches.m_toPcs) {
-    			toPcs += "0x" + Long.toHexString(toPc);
+    			toPcs += "0x" + Long.toHexString(toPc) + ", ";
     		}
 	        return toPcs;
         }

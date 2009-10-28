@@ -222,25 +222,27 @@ public class RouteUnknowns {
 	public boolean setFixedTime(Reference reference, TimeUnit timeUnit) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setFixedTime(node, timeUnit, reference);
+	    	setFixedTime(node, timeUnit, reference, true);
 	    	found = true;
 		}
 		return found;
 	}
 
-	public void setFixedTime(Node node, TimeUnit timeUnit) {
-		setFixedTime(node, timeUnit, null);
+	public void setFixedTime(Node node, TimeUnit timeUnit, boolean explicit) {
+		setFixedTime(node, timeUnit, null, explicit);
 	}
 
 	public TimeUnit getFixedTime(Node node) {
 		return node.getAttributes().getFixedTime();
 	}	
 	
-	private void setFixedTime(Node node, TimeUnit timeUnit, Reference reference) {
+	private void setFixedTime(Node node, TimeUnit timeUnit, Reference reference, boolean explicit) {
 		timeUnit.setConfig(m_route.getRouteDescription().getConfig());		
 		invalidateCachedStats();
     	node.getAttributes().setFixedTime(timeUnit);
-		node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
+    	if (explicit) {
+		    node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
+    	}
 		refreshDisplayedUnknowns();
 	}
 
