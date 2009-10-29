@@ -22,7 +22,16 @@
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
-      option: function <name>: Analyse the given function
+      option: function <FUNCTION_REF>: Analyse the given function
+  [-]assert <option> <arg0> <arg1>...: Assert timing requirement
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing requirement for the given path
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: function <FUNCTION_REF> <value> <mode>: Assert timing requirement for the given function
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
@@ -85,6 +94,14 @@
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
       option: required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: function <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: path <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles

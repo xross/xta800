@@ -1,6 +1,7 @@
 help
 help add
 help analyse
+help assert
 help clear
 help config
 help echo
