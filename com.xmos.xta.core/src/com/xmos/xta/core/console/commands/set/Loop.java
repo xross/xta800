@@ -28,7 +28,7 @@ public class Loop extends Command {
     }        
 
 	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS, ArgType.IGNORE};
+		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS};
 	}    
     
     public String name() {
@@ -47,17 +47,14 @@ public class Loop extends Command {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-		int routeId;
-    	try { routeId = getRouteId(args[index + 1]);
-	    } catch (NumberFormatException e) {
-	        return null;
-	    }    			
-   	    int iterations;
-       	try { iterations = Integer.parseInt(args[index + 3]); }
-   	    catch (NumberFormatException e) {
-   	        return null;
-   	    }    		   	    
-        return new Loop(routeId, args[index + 2], iterations);    		
+		try {
+			int routeId = getRouteId(args[index + 1]);
+	   	    int iterations = Integer.parseInt(args[index + 3]);
+	        return new Loop(routeId, args[index + 2], iterations);    		
+	        
+		} catch (NumberFormatException e) {
+	   	    return null;
+	   	}    		   	    		
     }
     
     public void execute(Shell shell, Engine engine, Console console) {

@@ -10,6 +10,8 @@ public class Set extends CommandContainer {
 		new LoopScope(), 
 		new Time(), 
 		new Required(), 
+		new Function(), 
+		new Path(), 
 	};
 	
 	public Set() { super("set"); }

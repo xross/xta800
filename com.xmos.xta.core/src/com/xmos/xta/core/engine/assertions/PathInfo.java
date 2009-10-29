@@ -7,7 +7,7 @@ public class PathInfo {
 	private String m_to;
 	private TimeUnit m_timeUnit;
 
-	PathInfo(String from, String to, TimeUnit timeUnit) {
+	public PathInfo(String from, String to, TimeUnit timeUnit) {
 		m_from = from;
 		m_to = to;
 		m_timeUnit = timeUnit;

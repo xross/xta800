@@ -1,15 +1,11 @@
 package com.xmos.xta.core.console.completors;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import com.xmos.xta.core.console.commands.Command;
-import com.xmos.xta.core.console.commands.CommandFactory;
-import com.xmos.xta.core.engine.Engine;
+import java.util.TreeMap;
 
 import jline.ArgumentCompletor;
 import jline.Completor;
@@ -17,86 +13,112 @@ import jline.FileNameCompletor;
 import jline.NullCompletor;
 import jline.SimpleCompletor;
 
+import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.console.commands.CommandFactory;
+import com.xmos.xta.core.engine.Engine;
+
 public class XtaCompletor implements Completor {
+	private static final boolean DEBUG = false;
+	
     private ArgumentCompletor m_baseCompletor;
     private Map<String, Completor> m_subCompletors;
     private Engine m_engine;
     
 	public XtaCompletor(Engine engine) {			
 		m_engine = engine;
-		m_subCompletors = new HashMap<String, Completor>();
+		m_subCompletors = new TreeMap<String, Completor>();
 		createCommandCompletors();		
+		if (DEBUG) displayCommandCompletors();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public int complete(String buffer, int cursor, List candidates) {
 		List<String> tokens = tokeniseBuffer(buffer);		
 		if (tokens.size() > 1) {
-			String lastCompleteCommand = getLastCompleteCommand(tokens.iterator(), 
+			String lastCompleteCommand = getCompleteCommandString(tokens.iterator(), 
 					CommandFactory.getCommands(), "");			
 			
-			if (m_subCompletors.containsKey(lastCompleteCommand)) {											
+			if (m_subCompletors.containsKey(lastCompleteCommand)) {															
 				return m_subCompletors.get(lastCompleteCommand).complete(buffer, cursor, candidates);
 			} else {
 			    return 0;
 			}
 		} else {		
-		    return m_baseCompletor.complete(buffer, cursor, candidates);
+			return m_baseCompletor.complete(buffer, cursor, candidates);
 		}		
 	}
 
-	private void createCommandCompletors() {
+	private void createCommandCompletors() {		
 	  	Command[] commands = CommandFactory.getCommands();
 	  	String[] commandStrings = new String[commands.length];
-	  	for (int index = 0; index < commands.length; ++index) {
-            createSubCommandCompleters(commands[index], 1);
+	  	for (int index = 0; index < commands.length; ++index) {	  		
+            createSubCommandCompleters(commands[index], 1, "");
 	  		commandStrings[index] = commands[index].name();	  		
 	  	}
 	  	m_baseCompletor = createArgCompletor(new SimpleCompletor(commandStrings), 0);
 	}
 	
-	private void createSubCommandCompleters(Command command, int commandLevel) {				
+	private void createSubCommandCompleters(Command command, int commandLevel, String prefix) {
+        if (DEBUG) {
+        	ouptutIndent(commandLevel);
+        	System.out.printf("-> %s, level: %d ", command.name(), commandLevel);				
+        }
+		
 		Command[] commands = command.getSubCommands();
 	  	if (commands.length > 0) {
 	  		// Adds the completors for the sub-commands of this command.
+	        if (DEBUG) System.out.printf("(NODE)\n");	  		
+	  		
      	  	String[] subCommandStrings = new String[commands.length];
 	  	  	for (int index = 0; index < commands.length; ++index) {
 	  	  	    subCommandStrings[index] = commands[index].name();
-	  	        createSubCommandCompleters(commands[index], commandLevel + 1);	  		  	    
+	  	        createSubCommandCompleters(commands[index], commandLevel + 1, command.name());	  		  	    
 	  	  	}
   	        ArgumentCompletor argCompletor = createArgCompletor(
   	        		new SimpleCompletor(subCommandStrings), commandLevel);
-	  	    m_subCompletors.put(command.name(), argCompletor);
+	  	    m_subCompletors.put(getCompleteCommandString(prefix, command), argCompletor);
+	  	    	  	 
+	  	    if (DEBUG) System.out.printf("    %s\n", argCompletor.toString());
+	  	    
 	  	} else {
 	  		// Adds the completors for the options of this (leaf) sub-command.
+	        if (DEBUG) System.out.printf("(LEAF) ");
+	        
   		    List<Completor> completors = new ArrayList<Completor>();
 	  	    for (Command.ArgType argType : command.getArgTypes()) {
 	  		    switch (argType) {
 	  		    case FILE:
+	  		    	if (DEBUG) System.out.printf("[file]");
 	  			    completors.add(new FileNameCompletor());	  			
 	  		        break;
 			    
 	  		    case FUNCTION:
+	  		    	if (DEBUG) System.out.printf("[function]");
 	  			    completors.add(new FunctionCompletor(m_engine));	  			
 			        break;
 			    			        
 	  		    case ALLREFS:
+	  		    	if (DEBUG) System.out.printf("[allrefs]");
 	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
 			        break;
 
 	  		    case ENDPOINT:
+	  		    	if (DEBUG) System.out.printf("[endpoint]");
 	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
 			        break;
 
 	  		    case LABEL:
+	  		    	if (DEBUG) System.out.printf("[label]");
 	  			    completors.add(new CodeReferenceCompletor(m_engine, argType));	  			
 			        break;
 			        
 	  		    case HELP:
+	  		    	if (DEBUG) System.out.printf("[help]");
 	  			    completors.add(new HelpCompletor());	  			
 			        break;
 			        
 	  		    case IGNORE:
+	  		    	if (DEBUG) System.out.printf("[ignore]");
 	  		    	completors.add(new NullCompletor());
 	  		    	break;
 			        
@@ -105,11 +127,15 @@ public class XtaCompletor implements Completor {
 			        break;
 	  		    }
 	  	    }
+	  	    if (DEBUG) System.out.printf(" (%d) ", completors.size());
 
     	  	if (completors.size() > 0) {
   		        ArgumentCompletor argCompletor = createArgCompletor(completors, commandLevel);
-	            m_subCompletors.put(command.name(), argCompletor);
-	  	    }
+	            m_subCompletors.put(getCompleteCommandString(prefix, command), argCompletor);
+
+		  	    if (DEBUG) System.out.printf(" %s", argCompletor.toString());
+    	  	}
+	  	    if (DEBUG) System.out.printf("\n");
 	  	}
 	}
 
@@ -150,18 +176,39 @@ public class XtaCompletor implements Completor {
 		  return tokens;
 	}
 	
-	private String getLastCompleteCommand(Iterator<String> iter, 
+	private String getCompleteCommandString(Iterator<String> iter, 
 			Command[] commands, String lastCommandName) {
 				
 		if (iter.hasNext()) {			
 	        String token = iter.next();		
 	        
 		    for (Command command : commands) {
-			    if (command.name().equals(token)) {
-			        return getLastCompleteCommand(iter, command.getSubCommands(), token);
+			    if (command.name().equals(token)) {			    	
+			    	String dash = (lastCommandName.length() > 0) ? "-" : "";
+			        return lastCommandName + dash + getCompleteCommandString(iter, command.getSubCommands(), token);
 			    }
 		    }
 		}
 	    return lastCommandName;		
+	}
+	
+	private String getCompleteCommandString(String prefix, Command command) {
+		String dash = prefix.length() > 0 ? "-" : "";
+		return prefix + dash + command.name();
+	}
+	
+	private void ouptutIndent(int level) {
+		int i = level;
+		while (i > 1) {
+			System.out.printf("    ");
+			--i;
+		}
+	}
+	
+	private void displayCommandCompletors() {
+		System.out.printf("baseCompletor: %s\n", m_baseCompletor.toString());
+		for (String key : m_subCompletors.keySet()) {
+			System.out.printf("  %s %s\n", key, m_subCompletors.get(key).toString());
+		}
 	}
 }

@@ -28,7 +28,7 @@ public class LoopScope extends Command {
     }        
 
 	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS, ArgType.IGNORE};
+		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS};
 	}    
     
     public String name() {

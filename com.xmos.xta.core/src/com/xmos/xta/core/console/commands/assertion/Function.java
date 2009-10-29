@@ -37,7 +37,7 @@ public class Function extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-        String descString = "function <name> <value> <mode>: Assert timing requirement for the given function";         
+        String descString = "function <FUNCTION_REF> <value> <mode>: Assert timing for the given function";         
        	if (detailed) {    	    	
        		descString += "\n" + TimeUnit.getHelp();
        	}
