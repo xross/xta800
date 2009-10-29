@@ -39,7 +39,7 @@ public class Path extends Command {
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing requirement for the given path";      	
+    	String descString = "path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing for the given path";      	
        	if (detailed) {    	    	
        		descString += "\n" + TimeUnit.getHelp();
        	}

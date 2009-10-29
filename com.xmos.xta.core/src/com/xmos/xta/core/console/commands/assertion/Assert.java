@@ -13,6 +13,6 @@ public class Assert extends CommandContainer {
 	public Assert(Command command) { super("assert", command); }
 	
 	public Command[] getSubCommands() { return m_options; }
-	protected String getDescription() { return "Assert timing requirement"; }
+	protected String getDescription() { return "Assert timing"; }
 	protected Command clone(Command command) { return new Assert(command); }	
 }
