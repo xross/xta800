@@ -31,7 +31,7 @@ public class Path extends Command {
     }        
 
 	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ENDPOINT, ArgType.ENDPOINT, ArgType.IGNORE, ArgType.IGNORE};
+		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ENDPOINT, ArgType.ENDPOINT};
 	}    
 
     public String name() {

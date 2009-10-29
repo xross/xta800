@@ -28,7 +28,7 @@ public class Function extends Command {
     }        
 	
 	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.IGNORE, ArgType.FUNCTION, ArgType.IGNORE, ArgType.IGNORE};
+		return new Command.ArgType[] {ArgType.IGNORE, ArgType.FUNCTION};
 	}    
     
     public String name() {
