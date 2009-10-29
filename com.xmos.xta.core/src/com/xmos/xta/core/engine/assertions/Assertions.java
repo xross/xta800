@@ -3,59 +3,80 @@ package com.xmos.xta.core.engine.assertions;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.xmos.xta.core.engine.NodeCoreCollection;
 import com.xmos.xta.core.engine.TimeUnit;
+import com.xmos.xta.core.engine.references.Reference;
 
 public class Assertions {
-	private List<Assertion> m_functions;
-	private List<Assertion> m_paths;
+	private NodeCoreCollection<ArrayList<FunctionInfo>> m_functions;
+	private NodeCoreCollection<ArrayList<PathInfo>> m_paths;
+	private NodeCoreCollection<ArrayList<LoopInfo>> m_loops;
+	private NodeCoreCollection<ArrayList<LoopPathInfo>> m_loopPaths;
+	private NodeCoreCollection<ArrayList<LoopScopeInfo>> m_loopScopes;
+	private NodeCoreCollection<ArrayList<TimeInfo>> m_times;
     
     public Assertions() {
-    	m_functions = new ArrayList<Assertion>();
-    	m_paths     = new ArrayList<Assertion>();
+    	m_functions  = new NodeCoreCollection<ArrayList<FunctionInfo>>();
+    	m_paths      = new NodeCoreCollection<ArrayList<PathInfo>>();
+    	m_loops      = new NodeCoreCollection<ArrayList<LoopInfo>>();
+    	m_loopPaths  = new NodeCoreCollection<ArrayList<LoopPathInfo>>();
+    	m_loopScopes = new NodeCoreCollection<ArrayList<LoopScopeInfo>>();
+    	m_times      = new NodeCoreCollection<ArrayList<TimeInfo>>();
 	}
 
-    public List<FunctionInfo> getFunctions(int nodeId, int coreId) {    	
-		return ((Functions)getAssertionList(m_functions, nodeId, coreId, new FunctionBuilder())).get();    	
+    public List<FunctionInfo> getFunctions(int nodeId, int coreId) {
+    	return get(m_functions, nodeId, coreId);
     }
 
-    public List<PathInfo> getPaths(int nodeId, int coreId) {    	
-		return ((Paths)getAssertionList(m_paths, nodeId, coreId, new PathBuilder())).get();    	
+    public List<PathInfo> getPaths(int nodeId, int coreId) {    
+    	return get(m_paths, nodeId, coreId);
+    }
+
+    public List<LoopInfo> getLoops(int nodeId, int coreId) {    	
+    	return get(m_loops, nodeId, coreId);
+    }
+
+    public List<LoopPathInfo> getLoopPaths(int nodeId, int coreId) {    	
+    	return get(m_loopPaths, nodeId, coreId);
+    }
+
+    public List<LoopScopeInfo> getLoopScopes(int nodeId, int coreId) {    	
+    	return get(m_loopScopes, nodeId, coreId);
+    }
+
+    public List<TimeInfo> getTimes(int nodeId, int coreId) {    	
+    	return get(m_times, nodeId, coreId);
     }
     
 	public void addFunction(int nodeId, int coreId, String function, TimeUnit timeUnit) {
-		((Functions)getAssertionList(m_functions, nodeId, coreId, new FunctionBuilder())).add(function, timeUnit);
+		get(m_functions, nodeId, coreId).add(new FunctionInfo(function, timeUnit));
 	}
 
 	public void addPath(int nodeId, int coreId, String from, String to, TimeUnit timeUnit) {
-		((Paths)getAssertionList(m_paths, nodeId, coreId, new PathBuilder())).add(from, to, timeUnit);
+		get(m_paths, nodeId, coreId).add(new PathInfo(from, to, timeUnit));
+	}
+
+	public void addLoop(int nodeId, int coreId, Reference reference, long iterations) {
+		get(m_loops, nodeId, coreId).add(new LoopInfo(reference, iterations));
+	}
+
+	public void addLoopPath(int nodeId, int coreId, Reference reference, long iterations) {
+		get(m_loopPaths, nodeId, coreId).add(new LoopPathInfo(reference, iterations));
+	}
+
+	public void addLoopScope(int nodeId, int coreId, Reference reference, boolean absolute) {
+		get(m_loopScopes, nodeId, coreId).add(new LoopScopeInfo(reference, absolute));
+	}
+
+	public void addTime(int nodeId, int coreId, Reference reference, TimeUnit timeUnit) {
+		get(m_times, nodeId, coreId).add(new TimeInfo(reference, timeUnit));
 	}
 	
-	private Assertion getAssertionList(List<Assertion> assertions, int nodeId, int coreId, AssertionBuilder builder) {
-		for (Assertion assertion : assertions) {
-			if ((assertion.getNodeId() == nodeId) &&
-				(assertion.getCoreId() == coreId)) {
-				return assertion;
-			}
+	private <T> ArrayList<T> get(NodeCoreCollection<ArrayList<T>> list, int nodeId, int coreId) {
+		if (list.get(nodeId, coreId) == null) {
+			list.add(nodeId, coreId, new ArrayList<T>());
 		}
-		Assertion assertion = builder.build(nodeId, coreId);
-		assertions.add(assertion);
-		return assertion;
-	}
-	
-	private static interface AssertionBuilder {
-		Assertion build(int nodeId, int coreId);
-	}
-	
-	private static class FunctionBuilder implements AssertionBuilder {
-		public Assertion build(int nodeId, int coreId) {
-			return new Functions(nodeId, coreId);
-		}
-	}
-	
-	private static class PathBuilder implements AssertionBuilder {
-		public Assertion build(int nodeId, int coreId) {
-			return new Paths(nodeId, coreId);
-		}
-	}
+        return list.get(nodeId, coreId);		
+	}	
 }
 

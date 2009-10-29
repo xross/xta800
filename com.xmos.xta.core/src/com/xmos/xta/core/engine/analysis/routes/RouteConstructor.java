@@ -32,7 +32,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.LoopInfo;
+import com.xmos.xta.core.engine.assertions.LoopPathInfo;
+import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
 import com.xmos.xta.core.engine.assertions.PathInfo;
+import com.xmos.xta.core.engine.assertions.TimeInfo;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
@@ -802,7 +806,23 @@ public class RouteConstructor {
 			}
 			for (PathInfo info : m_engine.getPathAssertions()) {			
 				assertions.applyPathAssertion(m_engine, src, route, info);
+			}
+			for (LoopInfo info : m_engine.getLoopAssertions()) {
+				route.getRouteUnknowns().setLoopIterations(src, m_engine, 
+						info.getReference(), info.getIterations(), false);
 			}			
+			for (LoopPathInfo info : m_engine.getLoopPathAssertions()) {
+				route.getRouteUnknowns().setLoopPathIterations(
+						info.getReference(), info.getIterations());
+			}
+			for (LoopScopeInfo info : m_engine.getLoopScopeAssertions()) {
+				route.getRouteUnknowns().setLoopScope( 
+						info.getReference(), info.getAbsolute());
+			}
+			for (TimeInfo info : m_engine.getTimeAssertions()) {
+				route.getRouteUnknowns().setFixedTime( 
+						info.getReference(), info.getTimeUnit());
+			}
 		}		
 	}
 

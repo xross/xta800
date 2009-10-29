@@ -5,8 +5,9 @@ import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Assert extends CommandContainer {
 	static private Command[] m_options = { 
-		new Path(), 
+		new Loop(), 
 		new Function(), 
+		new Path(), 
 	};
 
 	public Assert() { super("assert"); }
