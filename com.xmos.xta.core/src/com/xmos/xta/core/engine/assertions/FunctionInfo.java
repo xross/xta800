@@ -6,7 +6,7 @@ public class FunctionInfo {
 	private String m_function;
 	private TimeUnit m_timeUnit;
 
-	FunctionInfo(String function, TimeUnit timeUnit) {
+	public FunctionInfo(String function, TimeUnit timeUnit) {
 		m_function = function;
 		m_timeUnit = timeUnit;
 	}

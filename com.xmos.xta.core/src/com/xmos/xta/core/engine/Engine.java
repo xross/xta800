@@ -512,12 +512,14 @@ public class Engine implements Notifier {
 		}		
 	}
 		
-    private void updateSourceMapper(SourceMapper sourceMapper, String fileName, File file, int nodeId, int coreId) {
-        DebugEngine debugEngine = m_xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();					
-        SourceFile sf = sourceMapper.getSourceFile(fileName);
-        sourceMapper.setFile(debugEngine, sf, file);    	
-    }
+	public void setAnalysisTimeOut(int time) {
+		m_timeOut = time;
+	}
 
+	public int getNumErrors() {
+		return m_numErrors;
+	}
+    
 	// ===================================================================== //
 	// Route Selection Methods
 	// ===================================================================== //			
@@ -555,55 +557,39 @@ public class Engine implements Notifier {
 	}
 
 	// ===================================================================== //
+	// Set Function/Path Methods
+	// ===================================================================== //			
+	public boolean setFunction(CommandSource src, int routeId, String functionName, TimeUnit timeUnit) {		
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty())
+			return false;
+
+		applyFunctionAssertionToRoutes(src, routes, new FunctionInfo(functionName, timeUnit));		
+		return analyseTemporaryRoute(src, functionName, timeUnit);
+	}
+
+	public boolean setPath(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty())
+			return false;
+		
+		applyPathAssertionToRoutes(src, routes, new PathInfo(from, to, timeUnit));		
+		return analyseTemporaryRoute(src, from, to, timeUnit);
+	}	
+	
+	// ===================================================================== //
 	// Assert Function/Path Methods
 	// ===================================================================== //			
 	public boolean assertFunction(CommandSource src, String functionName, TimeUnit timeUnit) {
-		if (analyseRoute(src, functionName)) {
-			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
-			
-			boolean passed = timingPassed(ROUTE_ID_LAST);
-			if (passed) {
-				Route route = getRoute(ROUTE_ID_LAST).iterator().next();
-				m_assertions.addFunction(m_nodeId, m_coreId, 
-						route.getRouteDescription().getFunctionName(), 
-						route.getRouteTiming().getMaxTime());				
-
-			} else {
-				notify(src, Notifier.NOTIFY_ERROR, "Timing failed on function assertion");
-			}	
-			removeRoute(src, ROUTE_ID_LAST);
-
-			if (passed) {
-				applyFunctionAssertionToAllExistingRoutes(src);
-			}			
-			return passed;
-		}		
-		return false;
+		m_assertions.addFunction(m_nodeId, m_coreId, functionName, timeUnit);
+		applyFunctionAssertionToRoutes(src, m_routes, new FunctionInfo(functionName, timeUnit));
+		return analyseTemporaryRoute(src, functionName, timeUnit);
 	}
 
 	public boolean assertPath(CommandSource src, String from, String to, TimeUnit timeUnit) {
-		if (analyseRoute(src, from, to)) {
-			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
-			
-			boolean passed = timingPassed(ROUTE_ID_LAST);
-			if (passed) {
-				Route route = getRoute(ROUTE_ID_LAST).iterator().next();
-				m_assertions.addPath(m_nodeId, m_coreId, 
-						route.getRouteDescription().getFromName(),
-						route.getRouteDescription().getToName(), 
-						route.getRouteTiming().getMaxTime());
-				
-			} else {
-				notify(src, Notifier.NOTIFY_ERROR, "Timing failed on path assertion");
-			}	
-			removeRoute(src, ROUTE_ID_LAST);
-			
-			if (passed) {
-				applyPathAssertionToAllExistingRoutes(src);				
-			}
-			return passed;
-		}		
-		return false;
+		m_assertions.addPath(m_nodeId, m_coreId, from, to, timeUnit);
+		applyPathAssertionToRoutes(src, m_routes, new PathInfo(from, to, timeUnit));				
+		return analyseTemporaryRoute(src, from, to, timeUnit);
 	}	
 	
 	public Collection<FunctionInfo> getFunctionAssertions() {
@@ -612,33 +598,6 @@ public class Engine implements Notifier {
 
 	public Collection<PathInfo> getPathAssertions() {
 		return m_assertions.getPaths(m_nodeId, m_coreId);
-	}
-	
-	private boolean timingPassed(int routeId) {
-		for (Route route : getRoute(routeId)) {
-			if (!route.getRouteTiming().passedTiming()) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private void applyFunctionAssertionToAllExistingRoutes(CommandSource src) {
-		RouteAssertions assertions = new RouteAssertions();
-		List<FunctionInfo> infos = m_assertions.getFunctions(m_nodeId, m_coreId);
-		FunctionInfo info = infos.get(infos.size() - 1);					
-		for (Route route : m_routes) {
-			assertions.applyFunctionAssertion(this, src, route, info);
-		}		
-	}
-
-	private void applyPathAssertionToAllExistingRoutes(CommandSource src) {
-		RouteAssertions assertions = new RouteAssertions();
-		List<PathInfo> infos = m_assertions.getPaths(m_nodeId, m_coreId);
-		PathInfo info = infos.get(infos.size() - 1);					
-		for (Route route : m_routes) {
-			assertions.applyPathAssertion(this, src, route, info);
-		}		
 	}
 	
 	// ===================================================================== //
@@ -1345,14 +1304,61 @@ public class Engine implements Notifier {
 		}
 		return false;
 	}
-		
-	public void setAnalysisTimeOut(int time) {
-		m_timeOut = time;
+			
+	private boolean timingPassed(int routeId) {
+		for (Route route : getRoute(routeId)) {
+			if (!route.getRouteTiming().passedTiming()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
-	public int getNumErrors() {
-		return m_numErrors;
+	private void applyFunctionAssertionToRoutes(CommandSource src, Collection<Route> routes, FunctionInfo info) {
+		RouteAssertions assertions = new RouteAssertions();
+		for (Route route : routes) {
+			assertions.applyFunctionAssertion(this, src, route, info);
+		}		
 	}
+	
+	private void applyPathAssertionToRoutes(CommandSource src, Collection<Route> routes, PathInfo info) {
+		RouteAssertions assertions = new RouteAssertions();
+		for (Route route : routes) {
+			assertions.applyPathAssertion(this, src, route, info);
+		}		
+	}	
+	
+	private boolean analyseTemporaryRoute(CommandSource src, String functionName, TimeUnit timeUnit) {
+		boolean passed = false;
+		if (analyseRoute(src, functionName)) {
+			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
+			passed = timingPassed(ROUTE_ID_LAST);
+			if (!passed) {
+				notify(src, Notifier.NOTIFY_WARNING, "Timing failed on function assertion");
+			}	
+			removeRoute(src, ROUTE_ID_LAST);
+		}
+		return passed;
+	}
+	
+	private boolean analyseTemporaryRoute(CommandSource src, String from, String to, TimeUnit timeUnit) {
+		boolean passed = false;
+		if (analyseRoute(src, from, to)) {
+			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);						
+			passed = timingPassed(ROUTE_ID_LAST);
+			if (!passed) {
+				notify(src, Notifier.NOTIFY_WARNING, "Timing failed on path assertion");
+			}	
+			removeRoute(src, ROUTE_ID_LAST);
+		}	
+		return passed;
+	}
+	
+    private void updateSourceMapper(SourceMapper sourceMapper, String fileName, File file, int nodeId, int coreId) {
+        DebugEngine debugEngine = m_xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();					
+        SourceFile sf = sourceMapper.getSourceFile(fileName);
+        sourceMapper.setFile(debugEngine, sf, file);    	
+    }	
 }
 
 class NodeCoreCollection<E> {
