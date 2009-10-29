@@ -581,17 +581,19 @@ public class Engine implements Notifier {
 	// Assert Function/Path Methods
 	// ===================================================================== //			
 	public boolean assertFunction(CommandSource src, String functionName, TimeUnit timeUnit) {
+		boolean passed = analyseTemporaryRoute(src, functionName, timeUnit);
 		m_assertions.addFunction(m_nodeId, m_coreId, functionName, timeUnit);
 		applyFunctionAssertionToRoutes(src, m_routes, new FunctionInfo(functionName, timeUnit));
-		return analyseTemporaryRoute(src, functionName, timeUnit);
+		return passed;
 	}
 
 	public boolean assertPath(CommandSource src, String from, String to, TimeUnit timeUnit) {
+		boolean passed = analyseTemporaryRoute(src, from, to, timeUnit);
 		m_assertions.addPath(m_nodeId, m_coreId, from, to, timeUnit);
 		applyPathAssertionToRoutes(src, m_routes, new PathInfo(from, to, timeUnit));				
-		return analyseTemporaryRoute(src, from, to, timeUnit);
+		return passed;
 	}	
-	
+
 	public Collection<FunctionInfo> getFunctionAssertions() {
 		return m_assertions.getFunctions(m_nodeId, m_coreId);
 	}
