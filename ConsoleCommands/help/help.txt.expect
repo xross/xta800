@@ -1,6 +1,6 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
-  [-]assert <option> <arg0> <arg1>...: Assert timing requirement
+  [-]assert <option> <arg0> <arg1>...: Assert timing
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
   [-]echo "text": prints the text to the console
@@ -23,12 +23,12 @@
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
       option: function <FUNCTION_REF>: Analyse the given function
-  [-]assert <option> <arg0> <arg1>...: Assert timing requirement
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing requirement for the given path
+  [-]assert <option> <arg0> <arg1>...: Assert timing
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing for the given path
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
-      option: function <FUNCTION_REF> <value> <mode>: Assert timing requirement for the given function
+      option: function <FUNCTION_REF> <value> <mode>: Assert timing for the given function
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
