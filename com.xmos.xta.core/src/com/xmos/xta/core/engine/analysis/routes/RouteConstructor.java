@@ -157,42 +157,6 @@ public class RouteConstructor {
 				break;
 		}
 		
-		/*
-		
-		
-		boolean notFoundFunctionYet = true;
-
-		for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
-			
-			NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);
-			switch (m_description.getMode()) {
-			case FUNCTION:				
-				if (m_engine.getRecursiveFunctions().contains(m_description.getFunctionName())) {
-					m_engine.notify(src, Notifier.NOTIFY_ERROR, "Cannot analyse function " + m_description.getFunctionName() +" as it is recursive");
-					break;
-				}
-
-				if (notFoundFunctionYet) {
-					if (startNode.getNode().isFunctionNode() && !containAnyNodes(startNode, m_exclusions)) {
-						startNode.getNode().setParent(null);
-						m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description, m_container));
-						
-					} else {
-						seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
-								seenEndPoint, endNodeDescriptors, true);					
-					}
-					notFoundFunctionYet = false;					
-				}
-			    break;
-			
-			case PATH:
-				seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
-						seenEndPoint, endNodeDescriptors, false);
-				break;
-			}
-		}
-		
-		*/
 		setParents();
 		setUnknowns();	
 		setSrcLoopCounts();	
