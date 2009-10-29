@@ -63,6 +63,6 @@ public class Function extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.assertRoute(getSrc(), m_functionName, m_timeUnit); 
+        engine.assertFunction(getSrc(), m_functionName, m_timeUnit); 
     }
 }

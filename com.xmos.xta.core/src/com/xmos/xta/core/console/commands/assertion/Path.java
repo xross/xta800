@@ -66,6 +66,6 @@ public class Path extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.assertRoute(getSrc(), m_fromRef, m_toRef, m_timeUnit);
+        engine.assertPath(getSrc(), m_fromRef, m_toRef, m_timeUnit);
     }    
  }

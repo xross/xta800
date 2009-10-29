@@ -30,10 +30,8 @@ public class LabelMap {
 	Map<String, Long> getMap() {
 		return m_labels;
 	}
-	
 
 	public boolean load(XeLoader xeLoader) {
-
         SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeId, m_coreId);
         ElfHandler elfHandler = symbolTable.getElfHandler();
         
