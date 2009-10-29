@@ -137,7 +137,7 @@ public class RouteConstructor {
 					if(!containsSet(exclusionsWithinFunction, seenExclusionsSets)){
 						seenExclusionsSets.add(exclusionsWithinFunction);
 						
-						if(!exclusionsWithinFunction.isEmpty()){
+						if(!exclusionsWithinFunction.isEmpty() || !startNode.getNode().isFunctionNode()){
 							seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
 								seenEndPoint, endNodeDescriptors, true);	
 						} else {
