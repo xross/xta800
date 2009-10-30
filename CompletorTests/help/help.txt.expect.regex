@@ -1,4 +1,4 @@
-xta 1>load csim__xs1b__default/test.xe
+xta 1>load .*/test.xe
 xta 2>he  help pr  print
   \[-\]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary \(verbosity -2|-1|0\)
