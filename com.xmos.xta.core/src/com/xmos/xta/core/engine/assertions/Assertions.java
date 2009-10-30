@@ -24,6 +24,15 @@ public class Assertions {
     	m_times      = new NodeCoreCollection<ArrayList<TimeInfo>>();
 	}
 
+    public void clear() {
+    	m_functions.clear();
+    	m_paths.clear();
+    	m_loops.clear();
+    	m_loopPaths.clear();
+    	m_loopScopes.clear();
+    	m_times.clear();    	
+    }
+
     public List<FunctionInfo> getFunctions(int nodeId, int coreId) {
     	return get(m_functions, nodeId, coreId);
     }
@@ -71,12 +80,12 @@ public class Assertions {
 	public void addTime(int nodeId, int coreId, Reference reference, TimeUnit timeUnit) {
 		get(m_times, nodeId, coreId).add(new TimeInfo(reference, timeUnit));
 	}
-	
+		
 	private <T> ArrayList<T> get(NodeCoreCollection<ArrayList<T>> list, int nodeId, int coreId) {
 		if (list.get(nodeId, coreId) == null) {
 			list.add(nodeId, coreId, new ArrayList<T>());
 		}
         return list.get(nodeId, coreId);		
-	}	
+	}		
 }
 

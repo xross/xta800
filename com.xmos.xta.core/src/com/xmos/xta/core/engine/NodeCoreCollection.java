@@ -22,6 +22,10 @@ public class NodeCoreCollection<E> {
 		return m_collectedObjects.get(nodeCoreToString(nodeId, coreId));
 	}
 
+	public void clear() {
+		m_collectedObjects.clear();
+	}
+
 	private String nodeCoreToString(int nodeId, int coreId) {
 		return nodeId + ":" + coreId;
 	}

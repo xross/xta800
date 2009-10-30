@@ -268,7 +268,7 @@ public class Engine implements Notifier {
 		m_routeContainers.clear();
 		m_numRoutesLastAnalysed = 0;
 		m_selectedRoute = null;
-		m_exclusions.clear();
+		m_assertions.clear();
 		Route.resetRouteCount();
 
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
