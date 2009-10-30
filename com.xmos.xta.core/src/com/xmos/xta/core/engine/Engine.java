@@ -878,8 +878,8 @@ public class Engine implements Notifier {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.isEmpty()) {
 			return false;
-		}		
-		if (applyFixedTimeToRoutes(m_routes, new TimeInfo(reference, timeUnit))) {
+		}
+		if (applyFixedTimeToRoutes(routes, new TimeInfo(reference, timeUnit))) {
 		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		    return true;
 		}
