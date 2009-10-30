@@ -3,7 +3,9 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
-class SystemsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
+
+class SystemsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String FUNCTION = "Function";
     
     SystemsViewerLabelProvider() {

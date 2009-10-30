@@ -3,17 +3,20 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.TableViewer;
 
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
+import com.xmos.xta.ui.views.info.BaseViewer;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-public class AllSrcLabelsViewer extends SectionsViewer {
+public class AllSrcLabelsViewer extends BaseViewer {
 	public AllSrcLabelsViewer(TableViewer viewer) {
 		super(viewer);
 	}
 
-	SectionsViewerContentProvider createContentProvider() {
+	protected BaseViewerContentProvider createContentProvider() {
 		return new AllSrcLabelsViewerContentProvider();
 	}
 	
-	SectionsViewerLabelProvider createLabelProvider() {
+	protected BaseViewerLabelProvider createLabelProvider() {
 		return new AllSrcLabelsViewerLabelProvider();
 	}
 

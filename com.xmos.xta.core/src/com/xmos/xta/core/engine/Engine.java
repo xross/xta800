@@ -37,6 +37,7 @@ import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.core.engine.assertions.AssertionInfo;
 import com.xmos.xta.core.engine.assertions.Assertions;
 import com.xmos.xta.core.engine.assertions.FunctionInfo;
 import com.xmos.xta.core.engine.assertions.LoopInfo;
@@ -652,6 +653,10 @@ public class Engine implements Notifier {
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
 		}
+	}
+
+	public Collection<AssertionInfo> getAssertions() {
+		return m_assertions.getDescriptions(m_nodeId, m_coreId);
 	}
 	
 	public Collection<FunctionInfo> getFunctionAssertions() {

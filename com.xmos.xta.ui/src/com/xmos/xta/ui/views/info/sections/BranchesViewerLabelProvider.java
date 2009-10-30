@@ -3,7 +3,9 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
-class BranchesViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
+
+class BranchesViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String FROMPC = "From Pc";
     static final String TOPCS =  "To Pcs";
     

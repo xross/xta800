@@ -1,9 +1,9 @@
-package com.xmos.xta.ui.views.info.sections;
+package com.xmos.xta.ui.views.info;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public abstract class SectionsViewerContentProvider implements IStructuredContentProvider {
+public abstract class BaseViewerContentProvider implements IStructuredContentProvider {
 	public void dispose() {
 	}
 

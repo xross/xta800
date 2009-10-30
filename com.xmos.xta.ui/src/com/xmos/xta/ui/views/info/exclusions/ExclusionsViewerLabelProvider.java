@@ -1,11 +1,12 @@
-package com.xmos.xta.ui.views.info.sections;
+package com.xmos.xta.ui.views.info.exclusions;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-class ExclusionsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+class ExclusionsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String PC          = "Pc";
     static final String DESCRIPTION = "Description";
     

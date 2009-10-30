@@ -3,7 +3,9 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
-class ThreadStartPointsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
+
+class ThreadStartPointsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String PC = "Pc";
     
     ThreadStartPointsViewerLabelProvider() {

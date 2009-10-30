@@ -1,6 +1,7 @@
 package com.xmos.xta.core.engine.assertions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.xmos.xta.core.engine.NodeCoreCollection;
@@ -33,6 +34,41 @@ public class Assertions {
     	m_times.clear();    	
     }
 
+	public Collection<AssertionInfo> getDescriptions(int nodeId, int coreId) {
+	    Collection<AssertionInfo> infos = new ArrayList<AssertionInfo>();   
+		for (FunctionInfo info : get(m_functions, nodeId, coreId)) {
+			infos.add(new AssertionInfo(
+					String.format("Function: %s", info.getFunction()),
+					String.format("%s", info.getTimeUnit().getDescription(false))));
+		}
+		for (PathInfo info : get(m_paths, nodeId, coreId)) {
+			infos.add(new AssertionInfo(
+					String.format("Path: %s %s", info.getFrom(), info.getTo()),
+					String.format("%s", info.getTimeUnit().getDescription(false))));			
+		}
+    	for (LoopInfo info : get(m_loops, nodeId, coreId)) {
+			infos.add(new AssertionInfo(
+					String.format("Loop: %s", info.getReference().toString()),
+					String.format("%d", info.getIterations())));			
+    	}
+	    for (LoopPathInfo info : get(m_loopPaths, nodeId, coreId)) {
+			infos.add(new AssertionInfo(
+					String.format("LoopPath: %s", info.getReference().toString()),
+					String.format("%d", info.getIterations())));			
+	    }
+  	    for (LoopScopeInfo info : get(m_loopScopes, nodeId, coreId)) {
+			infos.add(new AssertionInfo(
+					String.format("LoopScope: %s", info.getReference().toString()),
+					String.format("%s", info.getAbsolute() ? "a" : "r")));			
+	    }
+	    for (TimeInfo info : get(m_times, nodeId, coreId)) {
+			infos.add(new AssertionInfo(
+					String.format("Time: %s", info.getReference().toString()),
+					String.format("%s", info.getTimeUnit().getDescription(false))));
+    	}
+	    return infos;
+    }
+    
     public List<FunctionInfo> getFunctions(int nodeId, int coreId) {
     	return get(m_functions, nodeId, coreId);
     }

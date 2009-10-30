@@ -4,8 +4,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-class SrcLoopsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+class SrcLoopsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String PC = "Pc";
     static final String COUNT =  "Iteration Count";
     

@@ -2,16 +2,20 @@ package com.xmos.xta.ui.views.info.sections;
 
 import org.eclipse.jface.viewers.TableViewer;
 
-public class ThreadStopPointsViewer extends SectionsViewer {
+import com.xmos.xta.ui.views.info.BaseViewer;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
+
+public class ThreadStopPointsViewer extends BaseViewer {
 	public ThreadStopPointsViewer(TableViewer viewer) {
 		super(viewer);
 	}
 
-	SectionsViewerContentProvider createContentProvider() {
+	protected BaseViewerContentProvider createContentProvider() {
 		return new ThreadStopPointsViewerContentProvider();
 	}
 	
-	SectionsViewerLabelProvider createLabelProvider() {
+	protected BaseViewerLabelProvider createLabelProvider() {
 		return new ThreadStopPointsViewerLabelProvider();
 	}
 

@@ -2,16 +2,20 @@ package com.xmos.xta.ui.views.info.sections;
 
 import org.eclipse.jface.viewers.TableViewer;
 
-public class SystemsViewer extends SectionsViewer {
+import com.xmos.xta.ui.views.info.BaseViewer;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
+
+public class SystemsViewer extends BaseViewer {
 	public SystemsViewer(TableViewer viewer) {
 		super(viewer);
 	}
 
-	SectionsViewerContentProvider createContentProvider() {
+	protected BaseViewerContentProvider createContentProvider() {
 		return new SystemsViewerContentProvider();
 	}
 	
-	SectionsViewerLabelProvider createLabelProvider() {
+	protected BaseViewerLabelProvider createLabelProvider() {
 		return new SystemsViewerLabelProvider();
 	}
 

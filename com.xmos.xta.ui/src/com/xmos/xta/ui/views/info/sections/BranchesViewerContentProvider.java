@@ -6,8 +6,9 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
 
-class BranchesViewerContentProvider extends SectionsViewerContentProvider {
+class BranchesViewerContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
 		Map<Long, TreeSet<Long>> branchesMap = ((Engine)inputElement).getBranches();
 		

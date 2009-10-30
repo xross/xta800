@@ -3,17 +3,20 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.TableViewer;
 
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
+import com.xmos.xta.ui.views.info.BaseViewer;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-public class SrcLoopsViewer extends SectionsViewer {
+public class SrcLoopsViewer extends BaseViewer {
 	public SrcLoopsViewer(TableViewer viewer) {
 		super(viewer);
 	}
 
-	SectionsViewerContentProvider createContentProvider() {
+	protected BaseViewerContentProvider createContentProvider() {
 		return new SrcLoopsViewerContentProvider();
 	}
 	
-	SectionsViewerLabelProvider createLabelProvider() {
+	protected BaseViewerLabelProvider createLabelProvider() {
 		return new SrcLoopsViewerLabelProvider();
 	}
 
