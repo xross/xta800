@@ -49,9 +49,9 @@ public class Time extends Command {
     	if ((index + numArgs()) >= args.length) 
 			return null;
 
-    	String ref = args[index + 2];   		
-    	String value = args[index + 3];
-   		String mode = args[index + 4];
+    	String ref   = args[index + 1];   		
+    	String value = args[index + 2];
+   		String mode  = args[index + 3];
    		    
 	    TimeUnit timeUnit = new TimeUnit(value, mode);
 	    if (timeUnit.isValid()) {

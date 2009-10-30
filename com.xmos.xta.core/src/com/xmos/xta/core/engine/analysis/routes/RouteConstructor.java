@@ -161,42 +161,6 @@ public class RouteConstructor {
 				break;
 		}
 		
-		/*
-		
-		
-		boolean notFoundFunctionYet = true;
-
-		for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
-			
-			NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);
-			switch (m_description.getMode()) {
-			case FUNCTION:				
-				if (m_engine.getRecursiveFunctions().contains(m_description.getFunctionName())) {
-					m_engine.notify(src, Notifier.NOTIFY_ERROR, "Cannot analyse function " + m_description.getFunctionName() +" as it is recursive");
-					break;
-				}
-
-				if (notFoundFunctionYet) {
-					if (startNode.getNode().isFunctionNode() && !containAnyNodes(startNode, m_exclusions)) {
-						startNode.getNode().setParent(null);
-						m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description, m_container));
-						
-					} else {
-						seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
-								seenEndPoint, endNodeDescriptors, true);					
-					}
-					notFoundFunctionYet = false;					
-				}
-			    break;
-			
-			case PATH:
-				seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
-						seenEndPoint, endNodeDescriptors, false);
-				break;
-			}
-		}
-		
-		*/
 		setParents();
 		setUnknowns();	
 		setSrcLoopCounts();	
@@ -807,23 +771,27 @@ public class RouteConstructor {
 			for (PathInfo info : m_engine.getPathAssertions()) {			
 				assertions.applyPathAssertion(m_engine, src, route, info);
 			}
-			for (LoopInfo info : m_engine.getLoopAssertions()) {
-				route.getRouteUnknowns().setLoopIterations(src, m_engine, 
-						info.getReference(), info.getIterations(), false);
-			}			
-			for (LoopPathInfo info : m_engine.getLoopPathAssertions()) {
-				route.getRouteUnknowns().setLoopPathIterations(
-						info.getReference(), info.getIterations());
-			}
-			for (LoopScopeInfo info : m_engine.getLoopScopeAssertions()) {
-				route.getRouteUnknowns().setLoopScope( 
-						info.getReference(), info.getAbsolute());
-			}
-			for (TimeInfo info : m_engine.getTimeAssertions()) {
-				route.getRouteUnknowns().setFixedTime( 
-						info.getReference(), info.getTimeUnit());
-			}
 		}		
+		for (LoopInfo info : m_engine.getLoopAssertions()) {
+			try {
+				m_engine.applyLoopToRoutes(src, m_routes, info);
+			} catch (Exception e) {}
+		}
+		for (LoopPathInfo info : m_engine.getLoopPathAssertions()) {
+			try {
+				m_engine.applyLoopPathToRoutes(m_routes, info);
+			} catch (Exception e) {}
+		}
+		for (LoopScopeInfo info : m_engine.getLoopScopeAssertions()) {
+			try {
+				m_engine.applyLoopScopeToRoutes(m_routes, info);
+			} catch (Exception e) {}
+		}
+		for (TimeInfo info : m_engine.getTimeAssertions()) {
+			try {
+				m_engine.applyFixedTimeToRoutes(m_routes, info);
+			} catch (Exception e) {}
+		}
 	}
 
 	private void refreshDisplayedUnknowns(Node node) {	
@@ -922,15 +890,6 @@ public class RouteConstructor {
 		return endNodeDescriptors;
 	}
 	
-	private boolean containAnyNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) {
-		Collection<NodeDescriptor> contained = getContainedNodes(start);
-		for (NodeDescriptor end : ends) {
-			if (contained.contains(end)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	private Set<NodeDescriptor> containNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) {
 		Collection<NodeDescriptor> contained = getContainedNodes(start);
 		Set<NodeDescriptor> foundNodes = new TreeSet<NodeDescriptor>();
