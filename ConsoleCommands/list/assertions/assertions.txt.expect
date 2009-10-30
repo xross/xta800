@@ -1,0 +1,7 @@
+Function: f, time: 1000.0 ns
+Path: start to stop, time: 2000.0 ns
+Loop: l, iterations: 10
+LoopPath: lp, iterations: 22
+LoopScope: l, scope: r
+Time: inst, time: 200.0 ns
+none

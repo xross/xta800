@@ -75,6 +75,7 @@
       option: sources: Lists the source files
       option: knowns <route id>: Displays the list of knowns set for the given route
       option: exclusions: Displays the exclusions
+      option: assertions: Lists the assertions
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary (verbosity -2|-1|0)
