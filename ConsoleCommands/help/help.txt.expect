@@ -24,11 +24,20 @@
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
       option: function <FUNCTION_REF>: Analyse the given function
   [-]assert <option> <arg0> <arg1>...: Assert timing
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing for the given path
+      option: loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified
+      option: looppath <route id> <ANY_REF> <iterations>: Sets the number of iterations for the path identified
+      option: loopscope <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop
+          scope: relative/r: Iteration number propagates to the enclosing path (Default)
+          scope: absolute/a: Absolute number of iterations
+      option: time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
       option: function <FUNCTION_REF> <value> <mode>: Assert timing for the given function
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing for the given path
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
