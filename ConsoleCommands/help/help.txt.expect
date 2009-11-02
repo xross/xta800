@@ -24,11 +24,20 @@
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
       option: function <FUNCTION_REF>: Analyse the given function
   [-]assert <option> <arg0> <arg1>...: Assert timing
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing for the given path
+      option: loop <ANY_REF> <iterations>: Assert the number of iterations for the loop identified
+      option: looppath <ANY_REF> <iterations>: Asserts the number of iterations for the path identified
+      option: loopscope <ANY_REF> <scope>: Asserts the scope of the referenced loop
+          scope: relative/r: Iteration number propagates to the enclosing path (Default)
+          scope: absolute/a: Absolute number of iterations
+      option: time <ENDPOINT_REF> <value> <mode>: Asserts the time taken for the instruction at the given pc
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
       option: function <FUNCTION_REF> <value> <mode>: Assert timing for the given function
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing for the given path
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
@@ -66,6 +75,7 @@
       option: sources: Lists the source files
       option: knowns <route id>: Displays the list of knowns set for the given route
       option: exclusions: Displays the exclusions
+      option: assertions: Lists the assertions
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary (verbosity -2|-1|0)

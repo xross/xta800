@@ -1,0 +1,8 @@
+assert function f 1000.0 ns
+assert path start stop 2000.0 ns
+assert loop l 10
+assert looppath lp 22
+assert loopscope l r
+assert time inst 200.0 ns
+list assertions
+

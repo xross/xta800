@@ -1,0 +1,4 @@
+assert loop l 10
+analyse function main
+print structure -
+
