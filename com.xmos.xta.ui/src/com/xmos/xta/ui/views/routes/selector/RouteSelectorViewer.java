@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.dialogs.FunctionTime;
+import com.xmos.xta.ui.dialogs.PathTime;
 import com.xmos.xta.ui.dialogs.Required;
 
 public class RouteSelectorViewer {	
@@ -171,6 +173,10 @@ public class RouteSelectorViewer {
 
 		manager.add(new Separator());
 		addSetTimingRequirements(manager, selectedNodes, shell);
+
+		manager.add(new Separator());
+		addSetPathTiming(manager, selectedNodes, shell);
+		addSetFunctionTiming(manager, selectedNodes, shell);
 		
 		manager.add(new Separator());
 		addTraceInConsole(manager, selectedNodes);
@@ -181,6 +187,26 @@ public class RouteSelectorViewer {
 		Action action = new Action("Set timing requirements") {
 		    public void run() {
 			    new Required(shell, GuiEngine.getEngine(), getFirstNode(selectedNodes).getRoute());
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+
+	private static void addSetPathTiming(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		Action action = new Action("Set path timing") {
+		    public void run() {
+			    new PathTime(shell, GuiEngine.getEngine(), getFirstNode(selectedNodes).getRoute());
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+
+	private static void addSetFunctionTiming(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		Action action = new Action("Set function timing") {
+		    public void run() {
+			    new FunctionTime(shell, GuiEngine.getEngine(), getFirstNode(selectedNodes).getRoute());
 		    }
 	    };
 	    manager.add(action);

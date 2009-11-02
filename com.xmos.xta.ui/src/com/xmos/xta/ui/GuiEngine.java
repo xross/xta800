@@ -111,7 +111,7 @@ public class GuiEngine {
 			Job job = new Job("Analyse: " + functionName) {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(new GuiProgressMonitor(monitor));
-					s_engine.analyseRoute(s_guiCommandSrc, functionName);
+					s_engine.analyseRoute(s_guiCommandSrc, functionName, false);
 					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}
@@ -136,7 +136,7 @@ public class GuiEngine {
 			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(new GuiProgressMonitor(monitor));
-					s_engine.analyseRoute(s_guiCommandSrc, startRef, endRef);
+					s_engine.analyseRoute(s_guiCommandSrc, startRef, endRef, false);
 					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}

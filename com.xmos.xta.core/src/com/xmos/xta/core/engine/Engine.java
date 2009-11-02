@@ -280,7 +280,7 @@ public class Engine implements Notifier {
 		m_dataCollection.report();
 	}
 	
-	public boolean analyseRoute(CommandSource src, String functionName) {
+	public boolean analyseRoute(CommandSource src, String functionName, boolean temporaryRoute) {
 		Reference functionRef = ReferenceFactory.createReference(
 				functionName, ReferenceClass.FUNCTION_REF);
 
@@ -298,11 +298,11 @@ public class Engine implements Notifier {
 		} else {
 			RouteDescription routeDescription = new RouteDescription(functionRef, this, 
 					m_nodeId, m_coreId, m_exclusions, m_config);			
-			return analyseRouteSafely(src, routeDescription);
+			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
 
-	public boolean analyseRoute(CommandSource src, String from, String to) {
+	public boolean analyseRoute(CommandSource src, String from, String to, boolean temporaryRoute) {
 		Reference fromRef = ReferenceFactory.createReference(
 				from, ReferenceClass.ENDPOINT_REF);
 		Reference toRef = ReferenceFactory.createReference(
@@ -327,7 +327,7 @@ public class Engine implements Notifier {
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, 
 					m_nodeId, m_coreId, m_exclusions, m_config);
-			return analyseRouteSafely(src, routeDescription);
+			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
 	
@@ -1152,10 +1152,10 @@ public class Engine implements Notifier {
 		return true;
 	}
 	
-	private boolean analyseRouteSafely(CommandSource src, RouteDescription routeDescription) {				
+	private boolean analyseRouteSafely(CommandSource src, RouteDescription routeDescription, boolean temporaryRoute) {				
 		boolean success = false;
 		try {
-			success = doRouteAnalysis(src, routeDescription);
+			success = doRouteAnalysis(src, routeDescription, temporaryRoute);
 			
 		} catch (final java.lang.OutOfMemoryError e) {
 			notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
@@ -1172,7 +1172,7 @@ public class Engine implements Notifier {
 		return success;
 	}
 
-	private boolean doRouteAnalysis(CommandSource src, RouteDescription routeDescription) throws Exception {	
+	private boolean doRouteAnalysis(CommandSource src, RouteDescription routeDescription, boolean temporaryRoute) throws Exception {	
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"node: %d, Core: %d image not found in file: %s",
@@ -1180,7 +1180,9 @@ public class Engine implements Notifier {
 			return false;
 		}
 
-		notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");		
+		if (!temporaryRoute) {
+		    notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");
+		}
 		
 		if (!m_structuralGraphUpToDate.get(m_nodeId, m_coreId)) {
 			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeId, m_coreId))
@@ -1220,10 +1222,13 @@ public class Engine implements Notifier {
 					++m_numRoutesLastAnalysed;
 				}
 				if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
-					setSelectedRoute(src, m_routes.get(currentSize));					
-					routeContainer.add(routeConstructor.getRoutes());
-					m_routeContainers.add(routeContainer);
-					notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
+    				routeContainer.add(routeConstructor.getRoutes());
+	    			m_routeContainers.add(routeContainer);		
+
+					if (!temporaryRoute) {
+    					setSelectedRoute(src, m_routes.get(currentSize));					
+					    notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
+					}
 				} else {
 					notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
 				}
@@ -1383,7 +1388,7 @@ public class Engine implements Notifier {
 	
 	private boolean analyseTemporaryRoute(CommandSource src, String functionName, TimeUnit timeUnit) {
 		boolean passed = false;
-		if (analyseRoute(src, functionName)) {
+		if (analyseRoute(src, functionName, true)) {
 			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
 			passed = timingPassed(ROUTE_ID_LAST);
 			if (!passed) {
@@ -1396,7 +1401,7 @@ public class Engine implements Notifier {
 	
 	private boolean analyseTemporaryRoute(CommandSource src, String from, String to, TimeUnit timeUnit) {
 		boolean passed = false;
-		if (analyseRoute(src, from, to)) {
+		if (analyseRoute(src, from, to, true)) {
 			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);						
 			passed = timingPassed(ROUTE_ID_LAST);
 			if (!passed) {

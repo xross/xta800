@@ -63,8 +63,8 @@ public class InstructionTime extends XtaDialog {
     }
     
     private void createValueControl(Composite container) {
-		Group nsGroup = createGroup(container, "value", 1, 1);
-		m_value = new Text(nsGroup, SWT.SINGLE | SWT.CENTER);
+		Group group = createGroup(container, "value", 1, 1);
+		m_value = new Text(group, SWT.SINGLE | SWT.CENTER);
 		m_value.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_value.setText(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getValueStr());		
 		m_value.addModifyListener(new ModifyListener() {
@@ -75,8 +75,8 @@ public class InstructionTime extends XtaDialog {
     }
     
     private void createUnitsControl(Composite container) {
-		Group cyclesGroup = createGroup(container, "units", 1, 1);
-		m_units = new Combo(cyclesGroup, SWT.SINGLE | SWT.CENTER);
+		Group group = createGroup(container, "units", 1, 1);
+		m_units = new Combo(group, SWT.SINGLE | SWT.CENTER);
 		m_units.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_units.setItems(TimeUnit.getUnits());
 		m_units.setText(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getUnitsStr());
