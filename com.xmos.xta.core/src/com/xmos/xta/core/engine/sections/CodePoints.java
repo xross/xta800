@@ -110,17 +110,9 @@ public class CodePoints extends Section  {
 	
 	private boolean validateCodePoint(CommandSource src, String codePoint, int location) {
 		if (m_codePoints.containsKey(codePoint)) {
-			CodePointInfo info = m_codePoints.get(codePoint);
-			
-			if (info.getPc() == location) {
-				getNotifier().notify(src, Notifier.NOTIFY_WARNING, 
-						String.format("duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
-				return true; 
-			} else {
-				getNotifier().notify(src, Notifier.NOTIFY_ERROR, 
-						String.format("duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
-				return false; 				
-			}				
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, 
+					String.format("duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
+			return false; 				
 		}
 		return true;
 	}
