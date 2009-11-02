@@ -32,7 +32,8 @@ public class RouteTiming {
 		m_config = config;
 		m_nodeId = nodeId;
 		m_coreId = coreId;
-		unsetMaxTime();
+		m_maxTime = new TimeUnit(m_config, 0.0, Units.NS);
+		m_maxTimeSet = false;
 	}
 
 	public int getNodeId() {
@@ -58,11 +59,6 @@ public class RouteTiming {
 		return m_maxTime;
 	}
 	
-	public void unsetMaxTime() {
-		m_maxTime = new TimeUnit(m_config, 0.0, Units.NS);
-		m_maxTimeSet = false;
-	}
-
 	public CommandSource getCommandSource() {
 		return m_requirementsSrc;
 	}

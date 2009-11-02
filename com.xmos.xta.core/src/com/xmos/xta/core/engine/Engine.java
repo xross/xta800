@@ -575,18 +575,6 @@ public class Engine implements Notifier {
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return true;
 	}
-
-	public boolean unsetRequirement(CommandSource src, int routeId) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty())
-			return false;
-		
-		for (Route route : routes) {			
-			route.getRouteTiming().unsetMaxTime();
-		}
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		return true;
-	}	
 	
 	// ===================================================================== //
 	// Assertion Methods
@@ -898,32 +886,6 @@ public class Engine implements Notifier {
 	
 	public TimeUnit getFixedTime(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getFixedTime(node);
-	}
-
-	public boolean unsetFixedTime(CommandSource src, int routeId, String refString) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
-			return false;
-		}
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty()) {
-			return false;
-		}
-		boolean passed = false;
-		for (Route route : routes) {
-		    if (route.getRouteUnknowns().unsetFixedTime(reference)) {
-			    passed = true;
-		    }
-		}
-		if (passed) {
-		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-		}
-		return passed;
-	}
-
-	public void unsetFixedTime(CommandSource src, Node node) {
-		m_selectedRoute.getRouteUnknowns().unsetFixedTime(node);
-		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
 	public boolean applyFixedTimeToRoutes(Collection<Route> routes, TimeInfo info) {	

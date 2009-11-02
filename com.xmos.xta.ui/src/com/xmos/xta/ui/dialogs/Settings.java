@@ -96,17 +96,7 @@ public class Settings extends XtaDialog {
 			}
 		});
 	}
-	
-	private Group createGroup(Composite parent, String description, int numColumns, int span) {
-		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-	    GridLayout layout = new GridLayout();
-	    layout.numColumns = numColumns;
-	    group.setLayout(layout);
-	    group.setText(description);
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
-	    return group;
-	}	
-	
+		
 	public int getFrequency() {
 		return GuiEngine.getEngine().getFrequency();
 	}

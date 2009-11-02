@@ -9,6 +9,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -17,37 +18,20 @@ import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.ui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {
     private List<Node> m_nodes;    
-    private boolean m_valueChanged;
-    private List<Boolean> m_wasSet;
-    private List<TimeUnit> m_originalTime;
-    private Text m_ns;
-    private Text m_cycles;    
-    private ModifyListener m_nsListener;
-    private ModifyListener m_cyclesListener;
+    private Text m_value;
+	private Combo m_units;
 
 	public InstructionTime(Shell parent, List<Node> nodes) {
     	super(parent);
     	assert(nodes.size() > 0);
     	m_nodes = new ArrayList<Node>();
     	m_nodes.addAll(nodes);
-    	initialise();
-    }
-
-	private void initialise() {
-    	m_valueChanged = false;    	
-    	m_wasSet = new ArrayList<Boolean>();
-    	m_originalTime = new ArrayList<TimeUnit>();
-    	for (Node node : m_nodes) {
-    		m_wasSet.add(node.getAttributes().getUnknowns().get(0).getState() == State.UNKNOWN ? false : true);
-    		m_originalTime.add(node.getAttributes().getFixedTime());
-    	}    	
     	open();
-	}
+    }
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
@@ -61,91 +45,54 @@ public class InstructionTime extends XtaDialog {
 	    gridLayout.numColumns = 2;
 	    container.setLayout(gridLayout);
 
-		Group nsGroup = createGroup(container, "ns", 1, 1);
-		m_ns = new Text(nsGroup, SWT.SINGLE | SWT.CENTER);
-		m_ns.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    
-	    m_nsListener = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				for (Node node : m_nodes) {
-					TimeUnit timeUnit = new TimeUnit(m_ns.getText(), "ns");
-					if (timeUnit.isValid()) {
-						GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, node, timeUnit);							
-						m_valueChanged = true;
-						updateCyclesValue();
-					}
-				}
-			}
-		};
+	    createValueControl(container);
+	    createUnitsControl(container);
 
-		Group cyclesGroup = createGroup(container, "cycles", 1, 1);
-	    m_cycles = new Text(cyclesGroup, SWT.SINGLE | SWT.CENTER);
-	    m_cycles.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    
-	    m_cyclesListener = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				for (Node node : m_nodes) {
-					TimeUnit timeUnit = new TimeUnit(m_cycles.getText(), "cycles");
-					if (timeUnit.isValid()) {						
-						GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, node, timeUnit);
-	     				m_valueChanged = true;
-		     			updateNsValue();
-					}
-				}
-			}
-		};
-
-		updateNsValue();
-		updateCyclesValue();
     	return container;
     }
 
-	private Group createGroup(Composite parent, String description, int numColumns, int span) {
-		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-	    GridLayout layout = new GridLayout();
-	    layout.numColumns = numColumns;
-	    group.setLayout(layout);
-	    group.setText(description);
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
-	    return group;
-	}
-
-	private void updateNsValue() {
-		m_ns.removeModifyListener(m_nsListener);
-	    m_ns.setText(Double.toString(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getNs()));
-		m_ns.addModifyListener(m_nsListener);
-	}			
-
-	private void updateCyclesValue() {
-		m_cycles.removeModifyListener(m_cyclesListener);
-		m_cycles.setText(Long.toString(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getCycles()));
-		m_cycles.addModifyListener(m_cyclesListener);
-	}			
-
     protected void buttonPressed(int id) {
-    	if (id == IDialogConstants.CANCEL_ID) {
-    		if (m_valueChanged) {
-    			int index = 0;    			
-    			for (Node node : m_nodes) {
-    				GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, 
-    						node, m_originalTime.get(index));
-    				
-    				if (!m_wasSet.get(index)) {
-    					GuiEngine.getEngine().unsetFixedTime(GuiEngine.s_guiCommandSrc, node);
-    				}
-    				index++;
-    			}
-    		}
-    	} else if (id == IDialogConstants.OK_ID) {
-    		if (!m_valueChanged) {
-	    		int index = 0;
-	    		for (Node node : m_nodes) {
-    				GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, 
-    						node, m_originalTime.get(index));
-					index++;
-	    		}
+    	if (id == IDialogConstants.OK_ID) {
+    		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
+    		assert (timeUnit.isValid());
+    		for (Node node : m_nodes) {
+   				GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, node, timeUnit);
     		}
     	}
     	super.buttonPressed(id);
     }
+    
+    private void createValueControl(Composite container) {
+		Group nsGroup = createGroup(container, "value", 1, 1);
+		m_value = new Text(nsGroup, SWT.SINGLE | SWT.CENTER);
+		m_value.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_value.setText(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getValueStr());		
+		m_value.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				checkButtonStatus();
+			}
+		});		    	
+    }
+    
+    private void createUnitsControl(Composite container) {
+		Group cyclesGroup = createGroup(container, "units", 1, 1);
+		m_units = new Combo(cyclesGroup, SWT.SINGLE | SWT.CENTER);
+		m_units.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_units.setItems(TimeUnit.getUnits());
+		m_units.setText(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getUnitsStr());
+		m_units.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				checkButtonStatus();
+			}
+		});		    	
+    }
+        
+    private void checkButtonStatus() {
+		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
+		if (timeUnit.isValid()) {
+			getButton(IDialogConstants.OK_ID).setEnabled(true);
+		} else {
+			getButton(IDialogConstants.OK_ID).setEnabled(false);					
+		}    	
+    }    
 }

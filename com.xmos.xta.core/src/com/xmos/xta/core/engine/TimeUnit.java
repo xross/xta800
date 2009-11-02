@@ -22,6 +22,10 @@ public class TimeUnit {
    		return helpStr;
 	}
 	
+	public static String[] getUnits() {
+		return new String[] {"ns", "mhz", "cycles"};
+	}
+	
 	public TimeUnit(String value, String units) {
 		try {
 		   	if (units.equals("ns")) {	
@@ -66,7 +70,7 @@ public class TimeUnit {
 		}
 		m_config = config;
 	}
-	
+		
 	public void setConfig(Config config) {
 		m_config  = config;
 	}
@@ -87,6 +91,26 @@ public class TimeUnit {
            		    String.format("%.1f mhz", m_mhz);
        	case CYCLES:
            	return String.format("%d cycles", m_cycles);
+       	}
+       	assert(false);
+       	return "";		
+	}
+
+	public String getValueStr() {
+       	switch (m_units) {
+       	case NS:     return String.format("%.1f", m_ns); 
+       	case MHZ:    return String.format("%.1f", m_mhz); 
+       	case CYCLES: return String.format("%d", m_cycles); 
+       	}
+       	assert(false);
+       	return "";	
+	}
+
+	public String getUnitsStr() {
+       	switch (m_units) {
+       	case NS:     return "ns"; 
+       	case MHZ:    return "mhz"; 
+       	case CYCLES: return "cycles"; 
        	}
        	assert(false);
        	return "";		

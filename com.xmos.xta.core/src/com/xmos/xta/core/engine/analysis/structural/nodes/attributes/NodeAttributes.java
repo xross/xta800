@@ -383,11 +383,7 @@ public class NodeAttributes {
 	public TimeUnit getFixedTime() {
 		return m_fixedTimeTaken;
 	}
-	
-	public void unsetFixedTime() {
-		m_fixedTimeTaken = null;
-	}
-	
+		
 	public String getFixedTimeString() {
 		assert (m_fixedTimeTaken != null);
 		return m_fixedTimeTaken.getDescription(false);

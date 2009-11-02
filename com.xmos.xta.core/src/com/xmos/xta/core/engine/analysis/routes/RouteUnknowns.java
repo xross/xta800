@@ -245,22 +245,6 @@ public class RouteUnknowns {
     	}
 		refreshDisplayedUnknowns();
 	}
-
-	public boolean unsetFixedTime(Reference reference) {
-		boolean found = false;
-	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	unsetFixedTime(node);
-	    	found = true;
-		}
-		return found;
-	}
-
-	public void unsetFixedTime(Node node) {
-		invalidateCachedStats();
-    	node.getAttributes().unsetFixedTime();
-		node.getAttributes().addUnknown(Type.INSTRUCTION_TIME);
-		refreshDisplayedUnknowns();
-	}
 	
 	public boolean canInstructionPause(Reference reference) {
 		boolean canPause = true;

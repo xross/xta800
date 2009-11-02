@@ -1,9 +1,14 @@
 package com.xmos.xta.ui.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 
 public abstract class XtaDialog extends Dialog {
@@ -15,9 +20,6 @@ public abstract class XtaDialog extends Dialog {
     protected void configureShell(Shell shell, String title, int width, int height) {
     	shell.setText(title);
     	
-    	//if ((width > 0) && (height > 0))
-    	//    shell.setSize(width, height);
-
     	// Ensure the shell positioning is next to mouse
     	Point pos = Display.getCurrent().getCursorLocation();
 		Rectangle displayBounds = Display.getCurrent().getBounds();
@@ -29,4 +31,14 @@ public abstract class XtaDialog extends Dialog {
 		}
 		shell.setLocation(pos);
     }
+    
+	Group createGroup(Composite parent, String description, int numColumns, int span) {
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+	    GridLayout layout = new GridLayout();
+	    layout.numColumns = numColumns;
+	    group.setLayout(layout);
+	    group.setText(description);
+	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
+	    return group;
+	}    
 }

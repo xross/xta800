@@ -8,8 +8,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
@@ -93,15 +91,6 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		return new TimeUnit(m_config, m_numCycles, Units.CYCLES);
 	}
 
-	public void unsetFixedTime() {
-	    m_numCycles = getThreadAdjustedCycles();
-	    
-	    for (Unknown unknown : getUnknowns()) {
-	    	if (unknown.getType() == Type.INSTRUCTION_TIME)
-	    		unknown.setState(State.UNKNOWN);
-	    }
-	}
-	
 	public String getFixedTimeString() {
 		assert(m_instructionTimeString != null);
 		return m_instructionTimeString;
