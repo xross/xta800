@@ -1,3 +1,2 @@
-xta: warning: duplicate endpoint: SAME at pc: 0x[0-9a-fA-F]+
-xta: error: duplicate endpoint: DIFFERENT at pc: 0x[0-9a-fA-F]+
+xta: error: duplicate endpoint: SAME at pc: 0x[0-9a-fA-F]+
 xta: error: no executable loaded
