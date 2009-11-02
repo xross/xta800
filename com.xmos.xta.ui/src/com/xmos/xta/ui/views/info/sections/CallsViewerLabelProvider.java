@@ -4,8 +4,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
 import com.xmos.xta.core.engine.sections.CodePointInfo;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-class CallsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+class CallsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String PC          = "Pc";
     static final String LABEL       = "Label";
     static final String COMPDIR     = "Compilation Directory";

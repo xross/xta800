@@ -2,8 +2,9 @@ package com.xmos.xta.ui.views.info.sections;
 
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
 
-class SourcesViewerContentProvider extends SectionsViewerContentProvider {
+class SourcesViewerContentProvider extends BaseViewerContentProvider {
 	private static Object[] EMPTY_ARRAY = new Object[]{};
 
 	public Object[] getElements(Object inputElement) {

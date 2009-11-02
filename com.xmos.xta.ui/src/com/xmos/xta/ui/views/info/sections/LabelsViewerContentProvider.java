@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
 
-class LabelsViewerContentProvider extends SectionsViewerContentProvider {
+class LabelsViewerContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
 		Map<String, Long> labelsMap = ((Engine)inputElement).getLabels();
 		

@@ -7,9 +7,6 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Time extends Command {
 	private int m_routeId;
@@ -80,9 +77,6 @@ public class Time extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	    	
     	
-		Reference ref = ReferenceFactory.createReference(m_refString, ReferenceClass.ENDPOINT_REF);
-		ref.resolve(engine);
-
 		Node node = getReferencedNode(engine, m_routeId, m_refString);
 		if (node != null) {
 	        engine.setFixedTime(getSrc(), node, m_timeUnit);

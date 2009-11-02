@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.info.sections;
+package com.xmos.xta.ui.views.info.exclusions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -17,8 +17,11 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.views.info.BaseViewer;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-public class ExclusionsViewer extends SectionsViewer {
+public class ExclusionsViewer extends BaseViewer {
 	private Action m_removeExclusionAction;
 
 	public ExclusionsViewer(TableViewer viewer, IWorkbenchPartSite site) {
@@ -57,11 +60,11 @@ public class ExclusionsViewer extends SectionsViewer {
 		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	SectionsViewerContentProvider createContentProvider() {
+	protected BaseViewerContentProvider createContentProvider() {
 		return new ExclusionsViewerContentProvider();
 	}
 	
-	SectionsViewerLabelProvider createLabelProvider() {
+	protected BaseViewerLabelProvider createLabelProvider() {
 		return new ExclusionsViewerLabelProvider();
 	}
 

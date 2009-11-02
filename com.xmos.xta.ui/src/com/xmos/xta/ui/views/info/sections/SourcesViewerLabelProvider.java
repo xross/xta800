@@ -4,8 +4,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-class SourcesViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+class SourcesViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String COMPDIR = "Compilation Directory";
     static final String FILENAME = "File Name";
     

@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.info.sections;
+package com.xmos.xta.ui.views.info;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,23 +22,23 @@ import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.views.info.Viewer;
 
-public abstract class SectionsViewer implements Viewer {
+public abstract class BaseViewer implements Viewer {
 	private TableViewer m_viewer;
 	private List<Long> m_selectedPcs;
 
-	abstract SectionsViewerContentProvider createContentProvider();
-	abstract SectionsViewerLabelProvider createLabelProvider();
+	protected abstract BaseViewerContentProvider createContentProvider();
+	protected abstract BaseViewerLabelProvider createLabelProvider();
+	protected abstract long getPc(Object object);
 	
-	SectionsViewer(TableViewer viewer) {
+	public BaseViewer(TableViewer viewer) {
 		m_viewer = viewer;
 		m_selectedPcs = new ArrayList<Long>();
 
-		SectionsViewerContentProvider contentProvider = createContentProvider();
-		final SectionsViewerLabelProvider labelProvider = createLabelProvider();
+		BaseViewerContentProvider contentProvider = createContentProvider();
+		final BaseViewerLabelProvider labelProvider = createLabelProvider();
 
-		final SectionSorter sectionSorter = new SectionSorter(labelProvider);
+		final BaseViewerSorter sectionSorter = new BaseViewerSorter(labelProvider);
 		m_viewer.setSorter(sectionSorter);
 
 		for (int i = 0; i < labelProvider.getColumnNames().length; ++i) {
@@ -84,9 +84,7 @@ public abstract class SectionsViewer implements Viewer {
 		});		
 		update();
 	}
-	
-	protected abstract long getPc(Object object);
-	
+		
 	public void update() {
 		Engine engine = GuiEngine.getEngine();
 		if (engine.getExecutable() != null) {
@@ -103,7 +101,7 @@ public abstract class SectionsViewer implements Viewer {
 		return m_viewer.getControl();
 	}
 
-	TableViewer getViewer() {
+	protected TableViewer getViewer() {
 		return m_viewer;
 	}	
 }

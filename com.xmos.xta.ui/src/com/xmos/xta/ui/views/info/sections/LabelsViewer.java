@@ -2,16 +2,20 @@ package com.xmos.xta.ui.views.info.sections;
 
 import org.eclipse.jface.viewers.TableViewer;
 
-public class LabelsViewer extends SectionsViewer {
+import com.xmos.xta.ui.views.info.BaseViewer;
+import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
+
+public class LabelsViewer extends BaseViewer {
 	public LabelsViewer(TableViewer viewer) {
 		super(viewer);
 	}
 
-	SectionsViewerContentProvider createContentProvider() {
+	protected BaseViewerContentProvider createContentProvider() {
 		return new LabelsViewerContentProvider();
 	}
 	
-	SectionsViewerLabelProvider createLabelProvider() {
+	protected BaseViewerLabelProvider createLabelProvider() {
 		return new LabelsViewerLabelProvider();
 	}
 

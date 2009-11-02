@@ -46,7 +46,8 @@ public class FunctionView extends ZoomedCanvasView implements ControlMonitor {
     		viewNode = new FunctionBlockNode(node, m_canvasProperties);
     	} else if (node.isFunctionNode()) {
     		viewNode = new FunctionFunctionNode(node, m_canvasProperties);
-    		if (depth > 3)
+    		depth += 1;
+    		if (depth > 2)
     			viewNode.setFolded(true, false);
     	} else if (node.isLoopNode() || node.isSelfLoopNode()) {
     		viewNode = new FunctionLoopNode(node, m_canvasProperties);
@@ -58,7 +59,7 @@ public class FunctionView extends ZoomedCanvasView implements ControlMonitor {
     	
     	if (!node.isBlockNode()) {
 	        for (Node subNode : node.getIndirectChildren()) {
-	        	ViewNode child = buildViewNode(subNode, depth + 1);
+	        	ViewNode child = buildViewNode(subNode, depth);
 	        	if (child != null)
 	        		viewNode.addChild(child);
 	        }

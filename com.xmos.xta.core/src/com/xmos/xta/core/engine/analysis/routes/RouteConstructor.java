@@ -32,7 +32,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.LoopInfo;
+import com.xmos.xta.core.engine.assertions.LoopPathInfo;
+import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
 import com.xmos.xta.core.engine.assertions.PathInfo;
+import com.xmos.xta.core.engine.assertions.TimeInfo;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
@@ -766,8 +770,28 @@ public class RouteConstructor {
 			}
 			for (PathInfo info : m_engine.getPathAssertions()) {			
 				assertions.applyPathAssertion(m_engine, src, route, info);
-			}			
+			}
 		}		
+		for (LoopInfo info : m_engine.getLoopAssertions()) {
+			try {
+				m_engine.applyLoopToRoutes(src, m_routes, info);
+			} catch (Exception e) {}
+		}
+		for (LoopPathInfo info : m_engine.getLoopPathAssertions()) {
+			try {
+				m_engine.applyLoopPathToRoutes(m_routes, info);
+			} catch (Exception e) {}
+		}
+		for (LoopScopeInfo info : m_engine.getLoopScopeAssertions()) {
+			try {
+				m_engine.applyLoopScopeToRoutes(m_routes, info);
+			} catch (Exception e) {}
+		}
+		for (TimeInfo info : m_engine.getTimeAssertions()) {
+			try {
+				m_engine.applyFixedTimeToRoutes(m_routes, info);
+			} catch (Exception e) {}
+		}
 	}
 
 	private void refreshDisplayedUnknowns(Node node) {	
@@ -866,15 +890,6 @@ public class RouteConstructor {
 		return endNodeDescriptors;
 	}
 	
-	private boolean containAnyNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) {
-		Collection<NodeDescriptor> contained = getContainedNodes(start);
-		for (NodeDescriptor end : ends) {
-			if (contained.contains(end)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	private Set<NodeDescriptor> containNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) {
 		Collection<NodeDescriptor> contained = getContainedNodes(start);
 		Set<NodeDescriptor> foundNodes = new TreeSet<NodeDescriptor>();

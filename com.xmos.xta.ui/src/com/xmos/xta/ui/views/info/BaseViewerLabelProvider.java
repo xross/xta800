@@ -1,14 +1,14 @@
-package com.xmos.xta.ui.views.info.sections;
+package com.xmos.xta.ui.views.info;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-public abstract class SectionsViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
-    String[] m_columnNames;
-    int[] m_columnWidths;
-    int[] m_columnAligmnments;
-        
+public abstract class BaseViewerLabelProvider extends LabelProvider implements ITableLabelProvider {
+    protected String[] m_columnNames;
+    protected int[] m_columnWidths;
+    protected int[] m_columnAligmnments;
+
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}

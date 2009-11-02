@@ -22,6 +22,7 @@ public class List extends CommandContainer {
 		new Sources(),
 		new Knowns(),
 		new Exclusion(Exclusion.Operation.LIST),		
+		new Assertions(),
 	};
 	
 	public List() { super("list"); }

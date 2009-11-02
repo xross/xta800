@@ -1,14 +1,14 @@
-package com.xmos.xta.ui.views.info.sections;
+package com.xmos.xta.ui.views.info;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
-class SectionSorter extends ViewerSorter {
+class BaseViewerSorter extends ViewerSorter {
 	private String m_field = "";
 	private int m_direction = 1;
-	private SectionsViewerLabelProvider m_labelProvider;
+	private BaseViewerLabelProvider m_labelProvider;
 	
-	SectionSorter(SectionsViewerLabelProvider labelProvider) {
+	BaseViewerSorter(BaseViewerLabelProvider labelProvider) {
 		m_labelProvider = labelProvider;
 	}
 	

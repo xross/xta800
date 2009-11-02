@@ -4,8 +4,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
+import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-class SrcCommandsViewerLabelProvider extends SectionsViewerLabelProvider implements ITableLabelProvider {
+class SrcCommandsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String COMMAND = "Command";
     static final String COMPDIR = "Compilation Directory";
     static final String FILENAME = "File Name";
