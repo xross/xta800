@@ -1,0 +1,4 @@
+analyse function main
+set function - f 999.0 ns
+list knowns -
+dumpscript

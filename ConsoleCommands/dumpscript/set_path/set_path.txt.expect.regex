@@ -1,0 +1,9 @@
+Time taken for path \(node id: \d+\) is set to 999.0ns, pc: 0x[0-9a-z]+, backtrace: main:g:
+load .*test\.xe
+
+#
+# Route: main
+#
+analyse function main
+set path - start stop 999.0 ns
+
