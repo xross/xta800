@@ -7,6 +7,8 @@ set loop - ~5~ 10
 set loop - ~7~ 10
 set looppath - ~7~1~1~0~ 5
 
+dumpscript > dump.txt
+source dump.txt
 dumpscript
 
 exit

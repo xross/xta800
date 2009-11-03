@@ -16,6 +16,9 @@ set loop - ~1~3~5~ 40
 set loop - ~1~3~7~ 40
 set looppath - ~1~3~7~1~1~0~ 20
 
+dumpscript > dump.txt
+source dump.txt
 dumpscript
+
 exit
 

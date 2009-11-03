@@ -7,6 +7,9 @@ set time - inst 2000.0 ns
 analyse function main
 set time - inst 0.1 mhz
 
+dumpscript > dump.txt
+source dump.txt
 dumpscript
+
 exit
 
