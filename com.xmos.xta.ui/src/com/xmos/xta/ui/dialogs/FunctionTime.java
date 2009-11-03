@@ -1,9 +1,11 @@
 package com.xmos.xta.ui.dialogs;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -12,6 +14,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -22,10 +26,12 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 import com.xmos.xta.ui.GuiEngine;
 
 public class FunctionTime extends XtaDialog {
+	static private String s_filterString = "";
+	
 	private Engine m_engine;
 	private Route m_route;
 	private int m_routeId;    
-	private Combo m_function;
+	private FilteredTree m_function;	
 	private Text m_value;
 	private Combo m_units;
 	private Button m_assert;
@@ -64,36 +70,67 @@ public class FunctionTime extends XtaDialog {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
 
-    		if (m_assert.getSelection()) {
-    		    m_engine.assertFunction(GuiEngine.s_guiCommandSrc, m_function.getText(), timeUnit);    			
-    		} else {
-    		    m_engine.setFunction(GuiEngine.s_guiCommandSrc, m_routeId, m_function.getText(), timeUnit);
-    		}
+			for (Object object : ((IStructuredSelection)m_function.getViewer().getSelection()).toArray()) {
+				if (object instanceof String) {
+		    		if (m_assert.getSelection()) {
+		    		    m_engine.assertFunction(GuiEngine.s_guiCommandSrc, (String)object, timeUnit);    			
+		    		} else {
+		    		    m_engine.setFunction(GuiEngine.s_guiCommandSrc, m_routeId, (String)object, timeUnit);
+		    		}					
+				}
+			}
+			Text filterControl = m_function.getFilterControl();
+			if (filterControl != null) {
+				s_filterString = filterControl.getText();
+			}    		
     	}
     	super.buttonPressed(id);
     }
     
     void checkButtonStatus() {
-		Reference functionRef = ReferenceFactory.createReference(
-				m_function.getText(), ReferenceClass.FUNCTION_REF);
-
 		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
-		if (timeUnit.isValid() && functionRef.resolve(m_engine)) {
-			getButton(IDialogConstants.OK_ID).setEnabled(true);
-		} else {
-			getButton(IDialogConstants.OK_ID).setEnabled(false);					
+		if (!timeUnit.isValid()) {
+			getButton(IDialogConstants.OK_ID).setEnabled(false);
+			return;
+		}
+
+		if (m_function.getViewer().getSelection().isEmpty()) {
+			getButton(IDialogConstants.OK_ID).setEnabled(false);
+			return;			
+		}
+		
+		boolean allValid = true;
+		for (Object object : ((IStructuredSelection)m_function.getViewer().getSelection()).toArray()) {
+			if (object instanceof String) {
+		    	Reference functionRef = ReferenceFactory.createReference(
+		    			(String)object, ReferenceClass.FUNCTION_REF);
+				
+		    	if (!functionRef.resolve(m_engine)) {
+		    		allValid = false;
+		    		break;
+		    	}
+			}
 		}    	
+		getButton(IDialogConstants.OK_ID).setEnabled(allValid);
     }
     
-    private void createFunctionControl(Composite container) {
+    private void createFunctionControl(Composite container) {    	
 		Group group = createGroup(container, "function", 1, 2);
-		m_function = new Combo(group, SWT.SINGLE);
-		m_function.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
-		m_function.setItems((String[])m_engine.getNonSystemFunctionNames().toArray(new String[0]));
-		m_function.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
+    	
+    	m_function = new FilteredTree(group, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter());
+	    TreeViewer viewer = m_function.getViewer();
+		viewer.getTree().setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+
+	    viewer.setContentProvider(new FunctionsContentProvider());			
+	    viewer.setLabelProvider(new FunctionsLabelProvider());
+	    
+	    viewer.setInput(GuiEngine.getEngine());
+	    m_function.getFilterControl().setText(s_filterString);
+	    
+	    m_function.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
 				checkButtonStatus();
 			}
-		});
+	    });			
     }    
 }
