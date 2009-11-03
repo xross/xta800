@@ -7,8 +7,8 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class Unknowns extends Command {
 	private int m_routeId;

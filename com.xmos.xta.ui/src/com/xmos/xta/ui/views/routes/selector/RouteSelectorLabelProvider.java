@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.ui.icons.Icons;
 
 public class RouteSelectorLabelProvider extends CellLabelProvider {

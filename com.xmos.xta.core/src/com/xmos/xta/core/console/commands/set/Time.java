@@ -7,7 +7,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 
 public class Time extends Command {
 	private int m_routeId;

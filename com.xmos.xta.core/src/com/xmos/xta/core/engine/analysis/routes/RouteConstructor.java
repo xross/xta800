@@ -28,10 +28,10 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NodeDescriptor;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.assertions.FunctionInfo;
 import com.xmos.xta.core.engine.assertions.LoopInfo;
 import com.xmos.xta.core.engine.assertions.LoopPathInfo;
@@ -684,20 +684,20 @@ public class RouteConstructor {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
 						NodeAttributes nodeAttributes = node.getAttributes();						
-						nodeAttributes.addUnknown(Unknown.Type.INSTRUCTION_TIME);
+						nodeAttributes.addUnknown(UnknownFactory.Type.INSTRUCTION_TIME);
 					}
 					return true;
 				}
 				// Sets all the loop iterations to unknown.
 				public boolean foundLoopNode(Node node, Stack<Node> ancestors) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.addUnknown(Unknown.Type.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
 					return true;
 				}
 				// Sets all the self loop iterations to unknown.
 				public boolean foundSelfLoopNode(Node node, Stack<Node> ancestors) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.addUnknown(Unknown.Type.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
 					return true;
 				}
 		    });
@@ -790,7 +790,7 @@ public class RouteConstructor {
 		}
 		for (TimeInfo info : m_engine.getTimeAssertions()) {
 			try {
-				m_engine.applyFixedTimeToRoutes(m_routes, info, Unknown.Type.INSTRUCTION_TIME);
+				m_engine.applyFixedTimeToRoutes(m_routes, info, UnknownFactory.Type.INSTRUCTION_TIME);
 			} catch (Exception e) {}
 		}
 	}

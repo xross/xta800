@@ -8,8 +8,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
 
 public abstract class RouteAssertionPatterns {

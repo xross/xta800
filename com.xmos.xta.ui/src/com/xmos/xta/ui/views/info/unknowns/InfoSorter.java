@@ -3,7 +3,7 @@ package com.xmos.xta.ui.views.info.unknowns;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 
 class InfoSorter extends ViewerSorter {
 	private int m_field = 0;

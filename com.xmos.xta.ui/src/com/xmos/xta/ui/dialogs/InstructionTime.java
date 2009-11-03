@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.ui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {

@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 class InfoViewerContentProvider implements IStructuredContentProvider {
     private State m_unknownState;

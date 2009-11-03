@@ -10,9 +10,11 @@ import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
 
 @SuppressWarnings("serial")
@@ -387,14 +389,14 @@ public class NodeAttributes {
 
     public void addUnknown(Type type) {
     	removeUnknownOfType(type);
-    	m_unknowns.add(new Unknown(m_node, type, State.UNKNOWN));
+    	m_unknowns.add(UnknownFactory.createUnknown(m_node, type, State.UNKNOWN));
     }
 
     public void addKnown(Type type, Source source, Reference[] reference) {
     	removeUnknownOfType(type);
-    	m_unknowns.add(new Unknown(m_node, type, State.KNOWN, source, reference));
+    	m_unknowns.add(UnknownFactory.createKnown(m_node, type, State.KNOWN, source, reference));
     }
-    
+
 	public boolean hasUnknowns() {
 		for (Unknown unknown : m_unknowns) {
 			if (unknown.getState() == State.UNKNOWN)
@@ -418,7 +420,7 @@ public class NodeAttributes {
 	public boolean getDisplayAsUnknown() {
 		return m_displayAsUnknown;
 	}
-	
+
 	private void removeUnknownOfType(Type type) {
     	Iterator<Unknown> iter = m_unknowns.iterator();
     	while (iter.hasNext()) {

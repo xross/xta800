@@ -3,7 +3,7 @@ package com.xmos.xta.ui.editors;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 
 public class XtaRulerAnnotationHover implements IAnnotationHover {
 
