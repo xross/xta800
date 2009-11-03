@@ -3,7 +3,6 @@ package com.xmos.xta.core.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
@@ -227,12 +226,7 @@ public class Scripter {
 		if (reference == null) {
 			// This unknown was set directly onto a node (and not via a reference),
 			// so we need to generate a suitable reference to use in the script.
-			List<Long> backTrail = new ArrayList<Long>();
-			node.getBackTrail(backTrail);
-			for (Long pc : backTrail) {
-				refStr += String.format("CALL:0x%x,", pc);
-			}				
-			refStr += String.format("0x%x", node.getStartPc());
+			refStr = node.getReferenceStr();
 			
 		} else {
 			// This unknown was set via a reference, so can use this directly in the script.

@@ -66,5 +66,8 @@ public class FilteredFunctions extends XtaDialog {
     	}
     	super.buttonPressed(id);
     }
+    
+    void checkButtonStatus() {
+    }
 }
 

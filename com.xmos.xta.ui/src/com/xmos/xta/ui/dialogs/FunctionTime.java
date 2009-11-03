@@ -5,7 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -28,6 +28,7 @@ public class FunctionTime extends XtaDialog {
 	private Combo m_function;
 	private Text m_value;
 	private Combo m_units;
+	private Button m_assert;
 
     public FunctionTime(Shell parent, Engine engine, Route route) {
     	super(parent);
@@ -43,15 +44,12 @@ public class FunctionTime extends XtaDialog {
     }
 
     protected Control createDialogArea(Composite parent) {
-    	Composite container = (Composite) super.createDialogArea(parent);
-
-	    final GridLayout gridLayout = new GridLayout();
-	    gridLayout.numColumns = 2;
-	    container.setLayout(gridLayout);
-
+	    Composite container = createContainer(parent);
+	    
 	    createFunctionControl(container);	    
-	    createValueControl(container);
-	    createUnitsControl(container);
+	    m_value = createValueControl(container);
+	    m_units = createUnitsControl(container);
+	    m_assert = createAssertControl(container);
 
     	return container;
     }
@@ -65,9 +63,26 @@ public class FunctionTime extends XtaDialog {
     	if (id == IDialogConstants.OK_ID) {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
-    		m_engine.setFunction(GuiEngine.s_guiCommandSrc, m_routeId, m_function.getText(), timeUnit);
+
+    		if (m_assert.getSelection()) {
+    		    m_engine.assertFunction(GuiEngine.s_guiCommandSrc, m_function.getText(), timeUnit);    			
+    		} else {
+    		    m_engine.setFunction(GuiEngine.s_guiCommandSrc, m_routeId, m_function.getText(), timeUnit);
+    		}
     	}
     	super.buttonPressed(id);
+    }
+    
+    void checkButtonStatus() {
+		Reference functionRef = ReferenceFactory.createReference(
+				m_function.getText(), ReferenceClass.FUNCTION_REF);
+
+		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
+		if (timeUnit.isValid() && functionRef.resolve(m_engine)) {
+			getButton(IDialogConstants.OK_ID).setEnabled(true);
+		} else {
+			getButton(IDialogConstants.OK_ID).setEnabled(false);					
+		}    	
     }
     
     private void createFunctionControl(Composite container) {
@@ -80,40 +95,5 @@ public class FunctionTime extends XtaDialog {
 				checkButtonStatus();
 			}
 		});
-    }
-    
-	private void createValueControl(Composite container) {
-		Group group = createGroup(container, "value", 1, 1);
-		m_value = new Text(group, SWT.SINGLE | SWT.CENTER | SWT.BORDER);
-		m_value.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_value.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				checkButtonStatus();
-			}
-		});		
-	}
-
-	private void createUnitsControl(Composite container) {
-		Group group = createGroup(container, "units", 1, 1);
-		m_units = new Combo(group, SWT.SINGLE | SWT.CENTER);
-		m_units.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_units.setItems(TimeUnit.getUnits());
-		m_units.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				checkButtonStatus();
-			}
-		});		
-	}
-    
-    private void checkButtonStatus() {
-		Reference functionRef = ReferenceFactory.createReference(
-				m_function.getText(), ReferenceClass.FUNCTION_REF);
-
-		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
-		if (timeUnit.isValid() && functionRef.resolve(m_engine)) {
-			getButton(IDialogConstants.OK_ID).setEnabled(true);
-		} else {
-			getButton(IDialogConstants.OK_ID).setEnabled(false);					
-		}    	
-    }
+    }    
 }

@@ -31,6 +31,22 @@ public class Settings extends XtaDialog {
     	open();
     }
 
+	public int getFrequency() {
+		return GuiEngine.getEngine().getFrequency();
+	}
+
+	public void setFrequency(int frequency) {
+		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiCommandSrc, frequency);
+	}
+
+	public int getNumThreads() {
+		return GuiEngine.getEngine().getNumThreads();
+	}
+
+	public void setNumThreads(int numThreads) {
+		GuiEngine.getEngine().setNumThreads(GuiEngine.s_guiCommandSrc, numThreads);
+	}	
+    
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
     	configureShell(newShell, "Xta Settings", 0, 0);
@@ -41,11 +57,11 @@ public class Settings extends XtaDialog {
 
 		Composite controls = new Composite(parent, SWT.NONE);
 	    GridLayout layout = new GridLayout();
-	    layout.numColumns = 2;
+	    layout.numColumns = 2;	    	    
 	    controls.setLayout(layout);
 	    controls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+	    
 	    createSettingsBar(controls);
-
     	return container;
     }
 
@@ -56,6 +72,9 @@ public class Settings extends XtaDialog {
     	}
     	super.buttonPressed(id);
     }
+    
+    void checkButtonStatus() {
+    }    
     
 	private void createSettingsBar(Composite controls) {
 		Group freqGroup = createGroup(controls, "Core Mhz", 1, 1);
@@ -97,22 +116,6 @@ public class Settings extends XtaDialog {
 		});
 	}
 		
-	public int getFrequency() {
-		return GuiEngine.getEngine().getFrequency();
-	}
-
-	public void setFrequency(int frequency) {
-		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiCommandSrc, frequency);
-	}
-
-	public int getNumThreads() {
-		return GuiEngine.getEngine().getNumThreads();
-	}
-
-	public void setNumThreads(int numThreads) {
-		GuiEngine.getEngine().setNumThreads(GuiEngine.s_guiCommandSrc, numThreads);
-	}	
-
 	private boolean isWorstCase() {
 		return GuiEngine.getEngine().getCase().equals(Case.WORST);
 	}

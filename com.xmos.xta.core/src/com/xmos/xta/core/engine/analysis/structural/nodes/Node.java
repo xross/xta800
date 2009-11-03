@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -279,6 +280,17 @@ public abstract class Node implements Comparable<Node>{
 
 	public boolean isFolded() {
 		return m_isFolded;
+	}
+	
+	public String getReferenceStr() {
+		String refStr = "";
+		List<Long> backTrail = new ArrayList<Long>();
+		getBackTrail(backTrail);
+		for (Long pc : backTrail) {
+			refStr += String.format("CALL:0x%x,", pc);
+		}				
+		refStr += String.format("0x%x", getStartPc());
+		return refStr;
 	}
 	
 	public void getBackTrail(List<Long> backTrail) {

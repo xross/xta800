@@ -30,7 +30,8 @@ public class ReferenceTypeFactory {
 				new EndpointReference(null), 
 				new EndpointFileLineReference(null),
 				new CallReference(null), 
-				new CallFileLineReference(null)});
+				new CallFileLineReference(null),
+				new CallPcReference(null)});
 
 		m_referenceClasses.put(ReferenceClass.ANY_REF, new ReferenceType[] {
 				new PcReference(null), 
@@ -39,6 +40,7 @@ public class ReferenceTypeFactory {
 				new EndpointFileLineReference(null),		
 		        new CallReference(null), 
 		        new CallFileLineReference(null),
+		        new CallPcReference(null),
 		        new SrcLabelReference(null), 
 		        new SrcLabelFileLineReference(null)});
 	}

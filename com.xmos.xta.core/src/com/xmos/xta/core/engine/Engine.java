@@ -585,13 +585,15 @@ public class Engine implements Notifier {
 		boolean passed = analyseTemporaryRoute(src, functionName, timeUnit);
 		m_assertions.addFunction(m_nodeId, m_coreId, functionName, timeUnit);
 		applyFunctionAssertionToRoutes(src, m_routes, new FunctionInfo(functionName, timeUnit));
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return passed;
 	}
 
 	public boolean assertPath(CommandSource src, String from, String to, TimeUnit timeUnit) {
 		boolean passed = analyseTemporaryRoute(src, from, to, timeUnit);
 		m_assertions.addPath(m_nodeId, m_coreId, from, to, timeUnit);
-		applyPathAssertionToRoutes(src, m_routes, new PathInfo(from, to, timeUnit));				
+		applyPathAssertionToRoutes(src, m_routes, new PathInfo(from, to, timeUnit));
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		return passed;
 	}	
 
@@ -601,7 +603,8 @@ public class Engine implements Notifier {
 			m_assertions.addLoop(m_nodeId, m_coreId, reference, iterations);			
 			try {
 				applyLoopToRoutes(src, m_routes, new LoopInfo(reference, iterations));
-			} catch (Exception e) {}			
+			} catch (Exception e) {}
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
@@ -615,6 +618,7 @@ public class Engine implements Notifier {
 			try {
 				applyLoopPathToRoutes(m_routes, new LoopPathInfo(reference, iterations));
 			} catch (Exception e) {}			
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
@@ -628,6 +632,7 @@ public class Engine implements Notifier {
 			try {
 				applyLoopScopeToRoutes(m_routes, new LoopScopeInfo(reference, absolute));
 			} catch (Exception e) {}			
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
