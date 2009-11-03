@@ -165,40 +165,15 @@ public class Scripter {
 
     private void setKnowns(Route route, StringBuffer script, boolean singleRoute) {
 		for (Unknown unknown : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {	
-			Node node = unknown.getNode();
-			
 			String routeIdStr = getRouteIdString(singleRoute);			
-		    String refStr = getReferenceString(unknown);
-		    
-		    switch (unknown.getType()) {
-		    case INSTRUCTION_TIME:
-			    outputPortableWarnings(script, unknown);
-		    	script.append(String.format("set time %s %s %s\n", 
-		    			routeIdStr, refStr, node.getAttributes().getFixedTimeString()));
-		    	break;
+		    String[] refStrs = getReferenceStrings(unknown);
 
-		    case LOOP_ITERATIONS:
-		    	if (!node.getAttributes().isSourceLevelIterations()) {
-				    outputPortableWarnings(script, unknown);
-			    	script.append(String.format("set loop %s %s %d\n", 
-			    			routeIdStr, refStr, node.getAttributes().getLoopIterations()));		    		
-		    	}
-		    	break;
-
-		    case LOOP_PATH_ITERATIONS:
+		    try {
+		    	String scriptStr = unknown.getScriptStr(routeIdStr, refStrs);
 			    outputPortableWarnings(script, unknown);
-				Node condNode = node.getEnclosingCondNode();
-		    	script.append(String.format("set looppath %s %s %d\n", 
-		    			routeIdStr, refStr, condNode.getAttributes().getSetLoopPathIterations(node)));
-		    	break;
-		    	
-		    case LOOP_SCOPE:		    	
-			    outputPortableWarnings(script, unknown);
-		    	script.append(String.format("set loopscope %s %s %s\n", 
-		    			routeIdStr, refStr, node.getAttributes().getIsAbsolute() ? "a" : "r"));
-		    	break;
-		    }
-	    }    	
+		    	script.append(scriptStr);		    	
+		    } catch (Exception e) {}
+		}
     }
     
     private void setRequirements(Route route, StringBuffer script, boolean singleRoute) {
@@ -239,18 +214,25 @@ public class Scripter {
 		return routeIdStr;    	
     }
 
-    private String getReferenceString(Unknown unknown) {
+    private String[] getReferenceStrings(Unknown unknown) {
+    	Collection<String> refStrings = new ArrayList<String>();
+    	for (Reference reference : unknown.getReferences()) {
+    		refStrings.add(getReferenceString(reference, unknown.getNode()));
+    	}
+    	return refStrings.toArray(new String[0]);
+    }
+    
+    private String getReferenceString(Reference reference, Node node) {
 	    String refStr = "";
-		Reference reference = unknown.getReference();
 		if (reference == null) {
 			// This unknown was set directly onto a node (and not via a reference),
 			// so we need to generate a suitable reference to use in the script.
 			List<Long> backTrail = new ArrayList<Long>();
-			unknown.getNode().getBackTrail(backTrail);
+			node.getBackTrail(backTrail);
 			for (Long pc : backTrail) {
 				refStr += String.format("CALL:0x%x,", pc);
 			}				
-			refStr += String.format("0x%x", unknown.getNode().getStartPc());
+			refStr += String.format("0x%x", node.getStartPc());
 			
 		} else {
 			// This unknown was set via a reference, so can use this directly in the script.
@@ -260,8 +242,13 @@ public class Scripter {
     }
     
     private void outputPortableWarnings(StringBuffer script, Unknown unknown) {
-		if ((unknown.getReference() == null) ||
-			(!unknown.getReference().isPortable())) {
+    	boolean portable = true;
+    	for (Reference reference : unknown.getReferences()) {
+    		if ((reference == null) || (!reference.isPortable())) {
+    			portable = false;
+    		}
+    	}    	
+    	if (!portable) {
 			script.append("# Warning: The following line contains a non-portable reference.\n");
 		}
     }

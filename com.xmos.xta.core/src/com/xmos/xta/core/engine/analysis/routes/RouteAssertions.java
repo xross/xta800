@@ -11,6 +11,8 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
 import com.xmos.xta.core.engine.assertions.FunctionInfo;
 import com.xmos.xta.core.engine.assertions.PathInfo;
 import com.xmos.xta.core.engine.references.Reference;
@@ -21,7 +23,7 @@ public class RouteAssertions {
 	private static final boolean DEBUG_ROUTE_ASSERTIONS = false;
 	
 	public void applyFunctionAssertion(Engine engine, CommandSource src, 
-			Route route, FunctionInfo info) {
+			Route route, FunctionInfo info, Source source) {
 		
 		Reference reference = ReferenceFactory.createReference(
 				info.getFunction(), ReferenceClass.FUNCTION_REF);	
@@ -30,13 +32,14 @@ public class RouteAssertions {
 			return;
 			
 		for (Node node : route.getReferencedFunctionNodes(reference)) {
-			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), false);							
+			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), 
+					reference, Type.FUNCTION_TIME, source);	
 		}
 		route.getRouteUnknowns().invalidateCachedStats();		
 	}
 
 	public void applyPathAssertion(Engine engine, CommandSource src, 
-			Route route, PathInfo info) {
+			Route route, PathInfo info, Source source) {
 		
 		Reference fromRef = ReferenceFactory.createReference(
 				info.getFrom(), ReferenceClass.ENDPOINT_REF);
@@ -71,7 +74,7 @@ public class RouteAssertions {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
 
 						if (DEBUG_ROUTE_ASSERTIONS) display("BEFORE", route);						
-						pattern.apply(route, fromBlock, from, toBlock, to, info.getTimeUnit());						
+						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, info.getTimeUnit(), source);						
 						RouteConstructor.setParent(route.getNode());
 						if (DEBUG_ROUTE_ASSERTIONS) display("AFTER", route);
 						

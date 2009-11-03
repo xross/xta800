@@ -39,10 +39,6 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		return m_numIterations;
 	}		
 	
-	public boolean isSourceLevelIterations() {
-		return m_sourceLevelIterations;
-	}
-
 	long getLocalIterations(Node child) 
         throws CondIterationsNotSetException, InfiniteIterationsException {
 		return m_numIterations;		

@@ -10,6 +10,7 @@ import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -99,8 +100,12 @@ public class RouteUnknowns {
 
 		invalidateCachedStats();
 		Node enclosingLoopNode = node.getEnclosingLoopNode();		
-	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);	    
-	    enclosingLoopNode.getAttributes().addKnown(Type.LOOP_ITERATIONS, reference);
+	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
+	    
+        enclosingLoopNode.getAttributes().addKnown(Type.LOOP_ITERATIONS, 
+        		sourceLevelIterations ? Source.IMPLICIT : Source.EXPLICIT, 
+        		new Reference[] {reference});
+	    
    		clearPathIterations(enclosingLoopNode);
 		refreshDisplayedUnknowns();
 	}
@@ -170,7 +175,7 @@ public class RouteUnknowns {
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
 	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);	    
-	    optionNode.getAttributes().addKnown(Type.LOOP_PATH_ITERATIONS, reference);
+	    optionNode.getAttributes().addKnown(Type.LOOP_PATH_ITERATIONS, Source.EXPLICIT, new Reference[] {reference});
 		refreshDisplayedUnknowns();		
 	}
 	
@@ -213,38 +218,36 @@ public class RouteUnknowns {
 		invalidateCachedStats();		
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
 		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-		enclosingLoopNode.getAttributes().addKnown(Type.LOOP_SCOPE, reference);
+		enclosingLoopNode.getAttributes().addKnown(Type.LOOP_SCOPE, Source.EXPLICIT, new Reference[] {reference});
 	}
 
 	// ===================================================================== //
 	// Fixed Time Methods
 	// ===================================================================== //	
-	public boolean setFixedTime(Reference reference, TimeUnit timeUnit) {
+	public boolean setFixedTime(Reference reference, TimeUnit timeUnit, Type type, Source source) {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
-	    	setFixedTime(node, timeUnit, reference, true);
+	    	setFixedTime(node, timeUnit, reference, type, source);
 	    	found = true;
 		}
 		return found;
 	}
 
-	public void setFixedTime(Node node, TimeUnit timeUnit, boolean explicit) {
-		setFixedTime(node, timeUnit, null, explicit);
+	public void setFixedTime(Node node, TimeUnit timeUnit, Type type, Source source) {
+		setFixedTime(node, timeUnit, null, type, source);
 	}
 
-	public TimeUnit getFixedTime(Node node) {
-		return node.getAttributes().getFixedTime();
-	}	
-	
-	private void setFixedTime(Node node, TimeUnit timeUnit, Reference reference, boolean explicit) {
+	public void setFixedTime(Node node, TimeUnit timeUnit, Reference reference, Type type, Source source) {
 		timeUnit.setConfig(m_route.getRouteDescription().getConfig());		
 		invalidateCachedStats();
     	node.getAttributes().setFixedTime(timeUnit);
-    	if (explicit) {
-		    node.getAttributes().addKnown(Type.INSTRUCTION_TIME, reference);
-    	}
+	    node.getAttributes().addKnown(type, source, new Reference[] {reference});
 		refreshDisplayedUnknowns();
 	}
+	
+	public TimeUnit getFixedTime(Node node) {
+		return node.getAttributes().getFixedTime();
+	}	
 	
 	public boolean canInstructionPause(Reference reference) {
 		boolean canPause = true;

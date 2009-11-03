@@ -10,6 +10,7 @@ import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
 import com.xmos.xta.core.engine.references.Reference;
@@ -28,23 +29,11 @@ class SourceLevelIterationsSetException extends Exception {}
 public class NodeAttributes {
 	private static final boolean DISABLE_STATS_CACHE = false; 
 	
-    private Node m_node; 
-
-	public enum UnknownType {
-    	INSTRUCTION_TIME,
-    	LOOP_ITERATIONS,
-    	LOOP_PATH_ITERATIONS,
-    	LOOP_SCOPE,
-    }
-
-	public enum UnknownState {
-		UNKNOWN,
-		KNOWN,
-	}
-
 	public static final long INFINITE_ITERATIONS = -1;
 	public static final long IGNORE_COND_ITERATIONS = 1;
 	
+    private Node m_node;
+    
 	private double m_cachedWorstTimeTaken;
 	private long m_cachedWorstNumCycles;
 	private long m_cachedWorstNumInstructions;
@@ -401,9 +390,9 @@ public class NodeAttributes {
     	m_unknowns.add(new Unknown(m_node, type, State.UNKNOWN));
     }
 
-    public void addKnown(Type type, Reference reference) {
+    public void addKnown(Type type, Source source, Reference[] reference) {
     	removeUnknownOfType(type);
-    	m_unknowns.add(new Unknown(m_node, type, State.KNOWN, reference));
+    	m_unknowns.add(new Unknown(m_node, type, State.KNOWN, source, reference));
     }
     
 	public boolean hasUnknowns() {
@@ -466,11 +455,6 @@ public class NodeAttributes {
 	public long getLoopIterations() {
 		assert(false);
 		return 0;
-	}
-
-	public boolean isSourceLevelIterations() {
-		assert(false);
-		return false;
 	}
 	
 	public void loopPathIterationsValid(Node optionNode, long numIterations) throws Exception {

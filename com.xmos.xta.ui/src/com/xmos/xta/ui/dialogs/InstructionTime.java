@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
 import com.xmos.xta.ui.GuiEngine;
 
 public class InstructionTime extends XtaDialog {
@@ -56,7 +57,7 @@ public class InstructionTime extends XtaDialog {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
     		for (Node node : m_nodes) {
-   				GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, node, timeUnit);
+   				GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, node, timeUnit, Type.INSTRUCTION_TIME);
     		}
     	}
     	super.buttonPressed(id);

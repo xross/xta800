@@ -35,10 +35,6 @@ public class LoopNodeAttributes extends NodeAttributes {
 	public long getLoopIterations() {
 		return m_numIterations;
 	}
-
-	public boolean isSourceLevelIterations() {
-		return m_sourceLevelIterations;
-	}
 	
 	long getLocalIterations(Node child) 
         throws CondIterationsNotSetException, InfiniteIterationsException {

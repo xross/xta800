@@ -8,10 +8,14 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
+import com.xmos.xta.core.engine.references.Reference;
 
 public abstract class RouteAssertionPatterns {
     abstract boolean match(Node fromBlock, Node from, Node toBlock, Node to);
-    abstract void apply(Route route, Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time);	
+    abstract void apply(Reference fromRef, Reference toRef, Route route, 
+    		Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source);	
     
 	boolean createBlock(List<Node> blocks, List<Node> children, int fromIndex, int toIndex) {
 		List<InstructionNode> instructions = new ArrayList<InstructionNode>(); 
@@ -39,14 +43,19 @@ class SameBlockPattern extends RouteAssertionPatterns {
 		return true;
 	}
 	
-	public void apply(Route route, Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time) {
+	public void apply(Reference fromRef, Reference toRef, Route route, 
+			Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source) {
+		
 		List<Node> blocks = new ArrayList<Node>();
 		List<Node> children = fromBlock.getIndirectChildren();
 			
 		createBlock(blocks, children, 0, children.indexOf(from));
 		
-		if (createBlock(blocks, children, children.indexOf(from), children.indexOf(to)))
-			blocks.get(blocks.size() - 1).getAttributes().setFixedTime(time);
+		if (createBlock(blocks, children, children.indexOf(from), children.indexOf(to))) {
+			Node block = blocks.get(blocks.size() - 1);
+			block.getAttributes().setFixedTime(time);
+			block.getAttributes().addKnown(Type.PATH_TIME, source, new Reference[] {fromRef, toRef});
+		}
 
 		createBlock(blocks, children, children.indexOf(to), children.size());				
 
@@ -74,7 +83,9 @@ class DifferentBlockPattern extends RouteAssertionPatterns {
 		return true;		
 	}
 	
-	public void apply(Route route, Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time) {
+	public void apply(Reference fromRef, Reference toRef, Route route, 
+			Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source) {
+		
 		Node parent = fromBlock.getParent();
 		List<Node> children = parent.getIndirectChildren();
 		List<Node> newChildren = new ArrayList<Node>();
@@ -95,7 +106,8 @@ class DifferentBlockPattern extends RouteAssertionPatterns {
 				0, toBlock.getIndirectChildren().indexOf(to));		
 
 		Node sequence = new SequenceNode(timingChildren);
-		sequence.getAttributes().setFixedTime(time);
+		sequence.getAttributes().setFixedTime(time);		
+		sequence.getAttributes().addKnown(Type.PATH_TIME, source, new Reference[] {fromRef, toRef});		
 		newChildren.add(sequence);		
 		
 		createBlock(newChildren, toBlock.getIndirectChildren(), 

@@ -29,6 +29,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.NodeDescriptor;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.assertions.FunctionInfo;
@@ -766,10 +767,10 @@ public class RouteConstructor {
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : m_routes) {			
 			for (FunctionInfo info : m_engine.getFunctionAssertions()) {			
-				assertions.applyFunctionAssertion(m_engine, src, route, info);
+				assertions.applyFunctionAssertion(m_engine, src, route, info, Source.IMPLICIT);
 			}
 			for (PathInfo info : m_engine.getPathAssertions()) {			
-				assertions.applyPathAssertion(m_engine, src, route, info);
+				assertions.applyPathAssertion(m_engine, src, route, info, Source.IMPLICIT);
 			}
 		}		
 		for (LoopInfo info : m_engine.getLoopAssertions()) {
@@ -789,7 +790,7 @@ public class RouteConstructor {
 		}
 		for (TimeInfo info : m_engine.getTimeAssertions()) {
 			try {
-				m_engine.applyFixedTimeToRoutes(m_routes, info);
+				m_engine.applyFixedTimeToRoutes(m_routes, info, Unknown.Type.INSTRUCTION_TIME);
 			} catch (Exception e) {}
 		}
 	}

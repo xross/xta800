@@ -37,6 +37,8 @@ import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Source;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Unknown.Type;
 import com.xmos.xta.core.engine.assertions.AssertionInfo;
 import com.xmos.xta.core.engine.assertions.Assertions;
 import com.xmos.xta.core.engine.assertions.FunctionInfo;
@@ -636,7 +638,7 @@ public class Engine implements Notifier {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (resolveRefernece(reference)) {
 			m_assertions.addTime(m_nodeId, m_coreId, reference, timeUnit);
-			applyFixedTimeToRoutes(m_routes, new TimeInfo(reference, timeUnit));
+			applyFixedTimeToRoutes(m_routes, new TimeInfo(reference, timeUnit), Type.INSTRUCTION_TIME);
 			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
@@ -863,7 +865,7 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Fixed Time Methods
 	// ===================================================================== //			
-	public boolean setFixedTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
+	public boolean setFixedTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit, Type type) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
@@ -872,15 +874,15 @@ public class Engine implements Notifier {
 		if (routes.isEmpty()) {
 			return false;
 		}
-		if (applyFixedTimeToRoutes(routes, new TimeInfo(reference, timeUnit))) {
+		if (applyFixedTimeToRoutes(routes, new TimeInfo(reference, timeUnit), type)) {
 		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		    return true;
 		}
 		return false;
 	}
 
-	public void setFixedTime(CommandSource src, Node node, TimeUnit timeUnit) {
-		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, true);
+	public void setFixedTime(CommandSource src, Node node, TimeUnit timeUnit, Type type) {
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, type, Source.EXPLICIT);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
@@ -888,13 +890,13 @@ public class Engine implements Notifier {
 		return m_selectedRoute.getRouteUnknowns().getFixedTime(node);
 	}
 	
-	public boolean applyFixedTimeToRoutes(Collection<Route> routes, TimeInfo info) {	
+	public boolean applyFixedTimeToRoutes(Collection<Route> routes, TimeInfo info, Type type) {	
 		for (Route route : routes) {
 		    if (!route.getRouteUnknowns().canInstructionPause(info.getReference()))
 		    	return false;		    	
 		}
 		for (Route route : routes) {
-		    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit());
+		    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit(), type, Source.EXPLICIT);
 		}
 		return true;
 	}
@@ -1375,14 +1377,14 @@ public class Engine implements Notifier {
 	private void applyFunctionAssertionToRoutes(CommandSource src, Collection<Route> routes, FunctionInfo info) {
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : routes) {
-			assertions.applyFunctionAssertion(this, src, route, info);
+			assertions.applyFunctionAssertion(this, src, route, info, Source.EXPLICIT);
 		}		
 	}
 	
 	private void applyPathAssertionToRoutes(CommandSource src, Collection<Route> routes, PathInfo info) {
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : routes) {
-			assertions.applyPathAssertion(this, src, route, info);
+			assertions.applyPathAssertion(this, src, route, info, Source.EXPLICIT);
 		}		
 	}	
 	
