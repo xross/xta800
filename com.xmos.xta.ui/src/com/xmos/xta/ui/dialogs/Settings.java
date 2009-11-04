@@ -1,5 +1,6 @@
 package com.xmos.xta.ui.dialogs;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -16,7 +17,7 @@ import org.eclipse.swt.widgets.Spinner;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.ui.GuiEngine;
 
-public class Settings extends XtaDialog {
+public class Settings extends Dialog {
     private Spinner m_coreMhzSpinner;
     private Spinner m_threadSpinner;
     private Button m_caseButton;
@@ -49,7 +50,7 @@ public class Settings extends XtaDialog {
     
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Xta Settings", 0, 0);
+    	XtaDialog.configureShell(newShell, "Xta Settings", 0, 0);
     }
 
     protected Control createDialogArea(Composite parent) {
@@ -77,7 +78,7 @@ public class Settings extends XtaDialog {
     }    
     
 	private void createSettingsBar(Composite controls) {
-		Group freqGroup = createGroup(controls, "Core Mhz", 1, 1);
+		Group freqGroup = XtaDialog.createGroup(controls, "Core Mhz", 1, 1);
 	    m_coreMhzSpinner = new Spinner(freqGroup, SWT.BORDER);
 		m_coreMhzSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_coreMhzSpinner.setMinimum(1);
@@ -91,7 +92,7 @@ public class Settings extends XtaDialog {
 			}			
 		});
 
-		Group threadsGroup = createGroup(controls, "Num Threads", 1, 1);
+		Group threadsGroup = XtaDialog.createGroup(controls, "Num Threads", 1, 1);
 		m_threadSpinner = new Spinner(threadsGroup, SWT.BORDER);
 		m_threadSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		m_threadSpinner.setMinimum(1);
@@ -105,7 +106,7 @@ public class Settings extends XtaDialog {
 			}			
 		});
 
-		Group caseGroup = createGroup(controls, "Print worst case", 1, 1);
+		Group caseGroup = XtaDialog.createGroup(controls, "Print worst case", 1, 1);
 		m_caseButton = new Button(caseGroup, SWT.CHECK);
 		m_caseButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		m_caseButton.setSelection(isWorstCase());

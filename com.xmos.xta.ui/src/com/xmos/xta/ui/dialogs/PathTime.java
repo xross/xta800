@@ -25,60 +25,59 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 import com.xmos.xta.ui.GuiEngine;
 
 public class PathTime extends XtaDialog {
+    public PathTime(Shell parent, Route route) {
+    	super(parent, new PathTimeImpl(route), "Path Time");
+    }
+}
+
+class PathTimeImpl implements XtaImpl {
 	private Engine m_engine;
 	private Route m_route;
-	private int m_routeId;    
 	private Combo m_from;
 	private Combo m_to;
 	private Text m_value;
 	private Combo m_units;
 	private Button m_assert;
-    
-    public PathTime(Shell parent, Engine engine, Route route) {
-    	super(parent);
-    	m_engine = engine;
-    	m_route = route;
-    	m_routeId = m_route.getRouteId();
-    	open();
+	private ButtonEnabler m_enabler;
+	
+    public PathTimeImpl(Route route) {
+    	m_engine = GuiEngine.getEngine();
+    	m_route = route;    	
     }
 
-    protected void configureShell(Shell newShell) {
-    	super.configureShell(newShell);
-    	configureShell(newShell, "Set path timing", 380, 120);    	
-    }
-
-    protected Control createDialogArea(Composite parent) {
-	    Composite container = createContainer(parent);
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	m_enabler = enabler;
+    	
+	    Composite container = new Composite(parent, SWT.NONE);
+	    XtaDialog.configureContainer(container);
 
 	    createFromControl(container);	    
 	    createToControl(container);	    
-	    m_value = createValueControl(container);
-	    m_units = createUnitsControl(container);
-	    m_assert = createAssertControl(container);
+	    m_value = XtaDialog.createValueControl(container, this);
+	    m_units = XtaDialog.createUnitsControl(container, this);
+	    m_assert = XtaDialog.createAssertControl(container);
 
+	    if (m_route == null) {
+	    	m_assert.setSelection(true);
+	    	m_assert.setEnabled(false);	    	
+	    }	   	    
     	return container;
     }
 
-    protected void createButtonsForButtonBar(Composite parent) {
-    	super.createButtonsForButtonBar(parent);
-    	getButton(IDialogConstants.OK_ID).setEnabled(false);
-    }
-    
-    protected void buttonPressed(int id) {
+    public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
     		
-    		if (m_assert.getSelection()) {
+    		if (m_assert.getSelection() || (m_route == null)) {
     		    m_engine.assertPath(GuiEngine.s_guiCommandSrc, m_from.getText(), m_to.getText(), timeUnit);    			
     		} else {
-    		    m_engine.setPath(GuiEngine.s_guiCommandSrc, m_routeId, m_from.getText(), m_to.getText(), timeUnit);
+    		    m_engine.setPath(GuiEngine.s_guiCommandSrc, m_route.getRouteId(), m_from.getText(), m_to.getText(), timeUnit);
     		}
     	}
-    	super.buttonPressed(id);
     }
     
-    void checkButtonStatus() {
+    public void updateButtonStatus() {
 		Reference fromRef = ReferenceFactory.createReference(
 				m_from.getText(), ReferenceClass.ENDPOINT_REF);
 		Reference toRef = ReferenceFactory.createReference(
@@ -86,20 +85,20 @@ public class PathTime extends XtaDialog {
     	
 		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
 		if (timeUnit.isValid() && fromRef.resolve(m_engine) && toRef.resolve(m_engine)) {
-			getButton(IDialogConstants.OK_ID).setEnabled(true);
+			m_enabler.enable(true);
 		} else {
-			getButton(IDialogConstants.OK_ID).setEnabled(false);					
+			m_enabler.enable(false);
 		}    	
-    }
-    
+    }    
+        
     private void createFromControl(Composite container) {
-		Group group = createGroup(container, "from", 1, 2);
+		Group group = XtaDialog.createGroup(container, "from", 1, 2);
 		m_from = new Combo(group, SWT.SINGLE);
 		initialiseEndpointControl(m_from, GuiEngine.getStartPoint());
     }
 
     private void createToControl(Composite container) {
-		Group group = createGroup(container, "to", 1, 2);
+		Group group = XtaDialog.createGroup(container, "to", 1, 2);
 		m_to = new Combo(group, SWT.SINGLE);
 		initialiseEndpointControl(m_to, GuiEngine.getEndPoint());
     }
@@ -122,7 +121,7 @@ public class PathTime extends XtaDialog {
 		combo.setSelection(new Point(combo.getText().length(), combo.getText().length()));
 		combo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				checkButtonStatus();
+				updateButtonStatus();
 			}
 		});    	
     }    

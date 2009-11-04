@@ -51,7 +51,7 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 		m_instanceId = s_numInstances;
 		++s_numInstances;
 	}
-
+	
 	public void init(IAction action) {
 	    m_action = action;
 	    

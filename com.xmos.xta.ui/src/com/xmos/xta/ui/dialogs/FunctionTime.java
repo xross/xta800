@@ -26,56 +26,57 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 import com.xmos.xta.ui.GuiEngine;
 
 public class FunctionTime extends XtaDialog {
+    public FunctionTime(Shell parent, Route route) {
+    	super(parent, new FunctionTimeImpl(route), "Function Time");
+    	open();
+    }
+}
+
+class FunctionTimeImpl implements XtaImpl {
 	static private String s_filterString = "";
 	
 	private Engine m_engine;
 	private Route m_route;
-	private int m_routeId;    
 	private FilteredTree m_function;	
 	private Text m_value;
 	private Combo m_units;
 	private Button m_assert;
+	private ButtonEnabler m_enabler;
 
-    public FunctionTime(Shell parent, Engine engine, Route route) {
-    	super(parent);
-    	m_engine = engine;
+    public FunctionTimeImpl(Route route) {
+    	m_engine = GuiEngine.getEngine();
     	m_route = route;
-    	m_routeId = m_route.getRouteId();
-    	open();
     }
 
-    protected void configureShell(Shell newShell) {
-    	super.configureShell(newShell);
-    	configureShell(newShell, "Set function timing", 380, 120);
-    }
-
-    protected Control createDialogArea(Composite parent) {
-	    Composite container = createContainer(parent);
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	m_enabler = enabler;
+    	
+	    Composite container = new Composite(parent, SWT.NONE);
+	    XtaDialog.configureContainer(container);
 	    
 	    createFunctionControl(container);	    
-	    m_value = createValueControl(container);
-	    m_units = createUnitsControl(container);
-	    m_assert = createAssertControl(container);
+	    m_value = XtaDialog.createValueControl(container, this);
+	    m_units = XtaDialog.createUnitsControl(container, this);
+	    m_assert = XtaDialog.createAssertControl(container);
 
+	    if (m_route == null) {
+	    	m_assert.setSelection(true);
+	    	m_assert.setEnabled(false);	    	
+	    }	   
     	return container;
     }
     
-    protected void createButtonsForButtonBar(Composite parent) {
-    	super.createButtonsForButtonBar(parent);
-    	getButton(IDialogConstants.OK_ID).setEnabled(false);
-    }
-
-    protected void buttonPressed(int id) {
+    public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
 
 			for (Object object : ((IStructuredSelection)m_function.getViewer().getSelection()).toArray()) {
 				if (object instanceof String) {
-		    		if (m_assert.getSelection()) {
+		    		if (m_assert.getSelection() || (m_route == null)) {
 		    		    m_engine.assertFunction(GuiEngine.s_guiCommandSrc, (String)object, timeUnit);    			
 		    		} else {
-		    		    m_engine.setFunction(GuiEngine.s_guiCommandSrc, m_routeId, (String)object, timeUnit);
+		    		    m_engine.setFunction(GuiEngine.s_guiCommandSrc, m_route.getRouteId(), (String)object, timeUnit);
 		    		}					
 				}
 			}
@@ -84,18 +85,17 @@ public class FunctionTime extends XtaDialog {
 				s_filterString = filterControl.getText();
 			}    		
     	}
-    	super.buttonPressed(id);
     }
-    
-    void checkButtonStatus() {
+      
+    public void updateButtonStatus() {
 		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
 		if (!timeUnit.isValid()) {
-			getButton(IDialogConstants.OK_ID).setEnabled(false);
+			m_enabler.enable(false);
 			return;
 		}
 
 		if (m_function.getViewer().getSelection().isEmpty()) {
-			getButton(IDialogConstants.OK_ID).setEnabled(false);
+			m_enabler.enable(false);
 			return;			
 		}
 		
@@ -110,12 +110,12 @@ public class FunctionTime extends XtaDialog {
 		    		break;
 		    	}
 			}
-		}    	
-		getButton(IDialogConstants.OK_ID).setEnabled(allValid);
+		}    
+		m_enabler.enable(allValid);
     }
     
     private void createFunctionControl(Composite container) {    	
-		Group group = createGroup(container, "function", 1, 2);
+		Group group = XtaDialog.createGroup(container, "function", 1, 2);
     	
     	m_function = new FilteredTree(group, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter());
 	    TreeViewer viewer = m_function.getViewer();
@@ -129,7 +129,7 @@ public class FunctionTime extends XtaDialog {
 	    
 	    m_function.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				checkButtonStatus();
+				updateButtonStatus();
 			}
 	    });			
     }    

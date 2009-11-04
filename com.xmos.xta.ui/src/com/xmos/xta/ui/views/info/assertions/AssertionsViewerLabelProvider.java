@@ -12,7 +12,7 @@ class AssertionsViewerLabelProvider extends BaseViewerLabelProvider implements I
     
     AssertionsViewerLabelProvider() {
     	m_columnNames = new String[] { DESCRIPTION, VALUE };
-    	m_columnWidths = new int[] { 200, 200 };
+    	m_columnWidths = new int[] { 300, 200 };
     	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT };
     }
     

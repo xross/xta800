@@ -1,6 +1,7 @@
 package com.xmos.xta.ui.dialogs;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -14,54 +15,55 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.ui.GuiEngine;
 
 public class Required extends XtaDialog {
+    public Required(Shell parent, Route route) {
+    	super(parent, new RequiredImpl(route), "Requirement");
+    }
+}
+
+class RequiredImpl implements XtaImpl {
 	private Engine m_engine;
 	private Route m_route;
 	private RouteTiming m_routeTiming;
 	private int m_routeId;    
 	private Text m_value;
 	private Combo m_units;
-    
-    public Required(Shell parent, Engine engine, Route route) {
-    	super(parent);
-    	m_engine = engine;
+	private ButtonEnabler m_enabler;
+	
+    public RequiredImpl(Route route) {
     	m_route = route;
     	m_routeId = m_route.getRouteId();
     	m_routeTiming = m_route.getRouteTiming();
-    	open();
     }
 
-    protected void configureShell(Shell newShell) {
-    	super.configureShell(newShell);
-    	configureShell(newShell, "Set timing requirements", 380, 120);
-    }
-
-    protected Control createDialogArea(Composite parent) {
-	    Composite container = createContainer(parent);
-
-	    m_value = createValueControl(container);
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	m_enabler = enabler;
+    	
+    	Composite container = new Composite(parent, SWT.NONE);
+	    XtaDialog.configureContainer(container);
+	    
+	    m_value = XtaDialog.createValueControl(container, this);
 	    m_value.setText(m_routeTiming.getMaxTime().getValueStr());
 	    
-	    m_units = createUnitsControl(container);
+	    m_units = XtaDialog.createUnitsControl(container, this);
 	    m_units.setText(m_routeTiming.getMaxTime().getUnitsStr());
 
     	return container;
     }
 
-    protected void buttonPressed(int id) {
+    public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
     		m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, timeUnit);
     	}
-    	super.buttonPressed(id);
-    }
+    }    
     
-    void checkButtonStatus() {
+    public void updateButtonStatus() {
 		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
 		if (timeUnit.isValid()) {
-			getButton(IDialogConstants.OK_ID).setEnabled(true);
+			m_enabler.enable(true);
 		} else {
-			getButton(IDialogConstants.OK_ID).setEnabled(false);					
+			m_enabler.enable(false);
 		}    	
-    }    
+    } 
 }

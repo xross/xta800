@@ -1,5 +1,6 @@
 package com.xmos.xta.ui.dialogs;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -16,7 +17,7 @@ import org.eclipse.ui.dialogs.PatternFilter;
 
 import com.xmos.xta.ui.GuiEngine;
 
-public class FilteredFunctions extends XtaDialog {
+public class FilteredFunctions extends Dialog {
     private FilteredTree m_signalsViewer;
     static private String filterString = "";
     
@@ -27,7 +28,7 @@ public class FilteredFunctions extends XtaDialog {
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	configureShell(newShell, "Function selector", 0, 0);
+    	XtaDialog.configureShell(newShell, "Function selector", 0, 0);
     }
 
     protected Control createDialogArea(Composite parent) {

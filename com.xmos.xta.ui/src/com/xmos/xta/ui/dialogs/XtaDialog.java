@@ -1,6 +1,7 @@
 package com.xmos.xta.ui.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -11,6 +12,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -19,15 +21,46 @@ import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.TimeUnit;
 
-public abstract class XtaDialog extends Dialog {
-    
-    public XtaDialog(Shell parent) {
+public abstract class XtaDialog extends Dialog implements ButtonEnabler {
+	private XtaImpl m_impl;
+	private String m_title;
+	
+    public XtaDialog(Shell parent, XtaImpl impl, String title) {
     	super(parent);
+    	m_impl = impl;
+    	m_title = title;
+    	open();
+    }
+    
+	public void enable(boolean enable) {
+		Button okButton = getButton(IDialogConstants.OK_ID);
+		if (okButton != null) {
+			okButton.setEnabled(enable);
+		}
+	}
+    
+    protected void configureShell(Shell newShell) {
+    	super.configureShell(newShell);
+    	XtaDialog.configureShell(newShell, m_title, 400, 150);
     }
 
-    abstract void checkButtonStatus();
+    protected Control createDialogArea(Composite parent) {
+    	Composite container = (Composite)super.createDialogArea(parent);    	
+    	m_impl.createDialogArea(container, this);
+    	return container;
+    }
 
-    protected void configureShell(Shell shell, String title, int width, int height) {
+    protected void buttonPressed(int id) {
+    	m_impl.buttonPressed(id);
+    	super.buttonPressed(id);
+    }	
+	
+    protected void createButtonsForButtonBar(Composite parent) {
+    	super.createButtonsForButtonBar(parent);
+    	getButton(IDialogConstants.OK_ID).setEnabled(false);
+    }
+    
+    static void configureShell(Shell shell, String title, int width, int height) {
     	shell.setText(title);
     	
     	// Ensure the shell positioning is next to mouse
@@ -42,15 +75,14 @@ public abstract class XtaDialog extends Dialog {
 		shell.setLocation(pos);
     }
     
-    Composite createContainer(Composite parent) {
-    	Composite container = (Composite)super.createDialogArea(parent);
+    static Composite configureContainer(Composite container) {
 	    final GridLayout gridLayout = new GridLayout();
 	    gridLayout.numColumns = 2;
 	    container.setLayout(gridLayout); 
 	    return container;
     }
    
-	Group createGroup(Composite parent, String description, int numColumns, int span) {
+    static Group createGroup(Composite parent, String description, int numColumns, int span) {
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
 	    GridLayout layout = new GridLayout();
 	    layout.numColumns = numColumns;
@@ -62,32 +94,32 @@ public abstract class XtaDialog extends Dialog {
 	    return group;
 	}  
 	
-    Text createValueControl(Composite container) {
+    static Text createValueControl(Composite container, final XtaImpl impl) {
 		Group group = createGroup(container, "value", 1, 1);
-		Text text = new Text(group, SWT.SINGLE | SWT.CENTER);
+		Text text = new Text(group, SWT.SINGLE | SWT.CENTER | SWT.BORDER);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				checkButtonStatus();
+				impl.updateButtonStatus();
 			}
 		});	
 		return text;
     }    
 	
-	Combo createUnitsControl(Composite container) {
+    static Combo createUnitsControl(Composite container, final XtaImpl impl) {
 		Group group = createGroup(container, "units", 1, 1);
 		Combo combo = new Combo(group, SWT.SINGLE | SWT.CENTER);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setItems(TimeUnit.getUnits());
 		combo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				checkButtonStatus();
+				impl.updateButtonStatus();
 			}
 		});
 		return combo;
 	}
 	
-	Button createAssertControl(Composite container) {
+    static Button createAssertControl(Composite container) {
 		Group group = createGroup(container, null, 2, 2);
 		Button button = new Button(group, SWT.CHECK);
 		Label label = new Label(group, SWT.NONE);

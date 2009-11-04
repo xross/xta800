@@ -2,6 +2,8 @@ package com.xmos.xta.ui.dialogs;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -14,55 +16,70 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.GuiEngine;
 
 public class LoopScope extends XtaDialog {
+    public LoopScope(Shell parent, Node node) {
+    	super(parent, new LoopScopeImpl(node), "Loop Scope");
+    }
+}
+
+class LoopScopeImpl implements XtaImpl {
 	private Node m_node;
 	private boolean m_scope;
 	private Button m_assert;	
 	private Text m_reference;
+	private ButtonEnabler m_enabler;
 	
-    public LoopScope(Shell parent, Node node) {
-    	super(parent);
-    	m_node = node;
-    	m_scope = GuiEngine.getEngine().getSetLoopScope(node);
-    	open();
+    public LoopScopeImpl(Node node) {
+    	m_node = node;    	
+    	
+    	if (m_node != null) {
+    	    m_scope = GuiEngine.getEngine().getSetLoopScope(node);
+    	}
     }
 
-    protected void configureShell(Shell newShell) {
-    	super.configureShell(newShell);
-    	configureShell(newShell, "Loop Scope", 380, 150);
-    }
-
-    protected Control createDialogArea(Composite parent) {
-	    Composite container = createContainer(parent);	    
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	m_enabler = enabler;
+    	
+    	Composite container = new Composite(parent, SWT.NONE);    	
+    	XtaDialog.configureContainer(container);
 		createAbsoluteCountControl(container);
 		createAssertControls(container);	
     	return container;
     }
 
-    protected void buttonPressed(int id) {
+    public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
-    		if (m_assert.getSelection()) {
+    		if (m_assert.getSelection() || (m_node == null)) {
     		    GuiEngine.getEngine().assertLoopScope(GuiEngine.s_guiCommandSrc, m_reference.getText(), m_scope);
     		} else {
     		    GuiEngine.getEngine().setLoopScope(GuiEngine.s_guiCommandSrc, m_node, m_scope);
     		}
     	}
-    	super.buttonPressed(id);
     } 
     
-    void checkButtonStatus() {
-    }
-    
+	public void updateButtonStatus() {
+		Reference ref = ReferenceFactory.createReference(m_reference.getText(), ReferenceClass.ANY_REF);    	
+		if (ref.resolve(GuiEngine.getEngine())) {
+			m_enabler.enable(true);
+		} else {
+			m_enabler.enable(false);
+		}    	
+	}
+	    
     private void createAbsoluteCountControl(Composite parent) {
-    	Group group = createGroup(parent, null, 2, 2);
+    	Group group = XtaDialog.createGroup(parent, null, 2, 2);
     	
 		final Button button = new Button(group, SWT.CHECK);
 		button.setSelection(m_scope);		
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				m_scope = button.getSelection();
+				updateButtonStatus();
 			}			
 		});
 		
@@ -71,7 +88,7 @@ public class LoopScope extends XtaDialog {
     }
     
 	private void createAssertControls(Composite container) {
-		Group group = createGroup(container, "set as assertion", 2, 2);
+		Group group = XtaDialog.createGroup(container, "set as assertion", 2, 2);
 		
 		m_assert = new Button(group, SWT.CHECK);
 		m_assert.setSelection(false);
@@ -83,8 +100,19 @@ public class LoopScope extends XtaDialog {
 		
 		m_reference = new Text(group, SWT.BORDER);
 		m_reference.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
-		m_reference.setText(m_node.getReferenceStr());
-		m_reference.setEnabled(false);
-		m_reference.setEditable(false);
+		
+		if (m_node != null) {
+		    m_reference.setText(m_node.getReferenceStr());
+			m_reference.setEnabled(false);
+			m_reference.setEditable(false);
+		} else {
+			m_assert.setSelection(true);
+			m_assert.setEnabled(false);
+			m_reference.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					updateButtonStatus();
+				}				
+			});
+		}
 	}    
 }

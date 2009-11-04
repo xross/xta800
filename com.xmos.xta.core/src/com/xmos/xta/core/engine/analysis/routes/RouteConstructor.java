@@ -790,7 +790,7 @@ public class RouteConstructor {
 		}
 		for (TimeInfo info : m_engine.getTimeAssertions()) {
 			try {
-				m_engine.applyFixedTimeToRoutes(m_routes, info, UnknownFactory.Type.INSTRUCTION_TIME);
+				m_engine.applyFixedTimeToRoutes(m_routes, info);
 			} catch (Exception e) {}
 		}
 	}

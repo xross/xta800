@@ -643,7 +643,8 @@ public class Engine implements Notifier {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (resolveRefernece(reference)) {
 			m_assertions.addTime(m_nodeId, m_coreId, reference, timeUnit);
-			applyFixedTimeToRoutes(m_routes, new TimeInfo(reference, timeUnit), Type.INSTRUCTION_TIME);
+			applyFixedTimeToRoutes(m_routes, new TimeInfo(reference, timeUnit));
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
@@ -870,7 +871,7 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Fixed Time Methods
 	// ===================================================================== //			
-	public boolean setFixedTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit, Type type) {
+	public boolean setFixedTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
@@ -879,15 +880,15 @@ public class Engine implements Notifier {
 		if (routes.isEmpty()) {
 			return false;
 		}
-		if (applyFixedTimeToRoutes(routes, new TimeInfo(reference, timeUnit), type)) {
+		if (applyFixedTimeToRoutes(routes, new TimeInfo(reference, timeUnit))) {
 		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		    return true;
 		}
 		return false;
 	}
 
-	public void setFixedTime(CommandSource src, Node node, TimeUnit timeUnit, Type type) {
-		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, type, Source.EXPLICIT);
+	public void setFixedTime(CommandSource src, Node node, TimeUnit timeUnit) {
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.EXPLICIT);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
@@ -895,13 +896,13 @@ public class Engine implements Notifier {
 		return m_selectedRoute.getRouteUnknowns().getFixedTime(node);
 	}
 	
-	public boolean applyFixedTimeToRoutes(Collection<Route> routes, TimeInfo info, Type type) {	
+	public boolean applyFixedTimeToRoutes(Collection<Route> routes, TimeInfo info) {	
 		for (Route route : routes) {
 		    if (!route.getRouteUnknowns().canInstructionPause(info.getReference()))
 		    	return false;		    	
 		}
 		for (Route route : routes) {
-		    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit(), type, Source.EXPLICIT);
+		    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit(), Type.INSTRUCTION_TIME, Source.EXPLICIT);
 		}
 		return true;
 	}

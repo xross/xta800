@@ -7,7 +7,6 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 
 public class Time extends Command {
 	private int m_routeId;
@@ -80,10 +79,10 @@ public class Time extends Command {
     	
 		Node node = getReferencedNode(engine, m_routeId, m_refString);
 		if (node != null) {
-	        engine.setFixedTime(getSrc(), node, m_timeUnit, Type.INSTRUCTION_TIME);
+	        engine.setFixedTime(getSrc(), node, m_timeUnit);
 			
 		} else {		
-	        if (!engine.setFixedTime(getSrc(), m_routeId, m_refString, m_timeUnit, Type.INSTRUCTION_TIME)) {
+	        if (!engine.setFixedTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
 	   	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
 	        }
