@@ -1,7 +1,7 @@
-Function: f 1000.0 ns
-Path: start stop 2000.0 ns
-Loop: l 10
-LoopPath: lp 22
-LoopScope: l r
-Time: inst 200.0 ns
+Function Time: f 1000.0 ns
+Path Time: start stop 2000.0 ns
+Loop Iterations: l 10
+Loop Path Iterations: lp 22
+Loop Scope: l r
+Instruction Time: inst 200.0 ns
 none
