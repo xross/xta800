@@ -598,7 +598,7 @@ int do_out_packet(unsigned address, unsigned endpoint, unsigned data_pid, unsign
 	//      partout(p_usb_txd, 16, data_crc);
 
 	// @!@!@!@ This needs adding back in, but compiler bug at the moment.
-	//	tx_data_size = 32;
+	tx_data_size = 32;
 	tx_data = (tx_data << 24) | (tmp & 0xffffff);
 	      t when timerafter(time) :> int _;
 		partout(p_usb_txd, 32, tx_data);
