@@ -98,9 +98,9 @@
       option: loop <ANY_REF|*>: Removes the given loop count assertion to the list of assertions
       option: looppath <ANY_REF|*>: Removes the given loop path count assertion to the list of assertions
       option: loopscope <ANY_REF|*>: Removes the given loop scope assertion to the list of assertions
-      option: instructiontime <ENDPOINT_REF>: Removes the given instruction time from the list of assertions
-      option: functiontime <FUNCTION_REF>: Removes the given functon time from the list of assertions
-      option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF>: Removes the given path time from the list of assertions
+      option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of assertions
+      option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of assertions
+      option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of assertions
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
       option: loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified

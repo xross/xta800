@@ -1,15 +1,15 @@
-f: 1000.0 ns
-f: 1000.0 ns
+f: 2000.0 ns
+none
 start to stop: 2000.0 ns
-start to stop: 2000.0 ns
-inst: 200.0 ns
-inst: 200.0 ns
-l: 10
-l: 10
-lp: 22
-lp: 22
-l: false
-l: false
+none
+inst: 2000.0 ns
+none
+l: 20
+none
+lp: 23
+none
+l: true
+none
 none
 none
 none
