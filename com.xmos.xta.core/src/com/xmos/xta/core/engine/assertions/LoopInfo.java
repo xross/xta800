@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.assertions;
 
 import com.xmos.xta.core.engine.references.Reference;
 
-public class LoopInfo {
+public class LoopInfo implements AssertionInfo {
 	private Reference m_reference;
 	private long m_iterations;
 
@@ -20,6 +20,14 @@ public class LoopInfo {
 	}
 
 	public String toString() {
-		return String.format("loop: %s: %d", m_reference.toString(), m_iterations);
+		return String.format("%s: %d", m_reference.toString(), m_iterations);
 	}
+	
+    public String getDescription() {
+    	return m_reference.toString();
+    }
+
+    public String getValue() {
+    	return String.format("%d", m_iterations);
+    }		
 }

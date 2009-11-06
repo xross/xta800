@@ -32,12 +32,12 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNode
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
-import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
 import com.xmos.xta.core.engine.assertions.LoopInfo;
 import com.xmos.xta.core.engine.assertions.LoopPathInfo;
 import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
-import com.xmos.xta.core.engine.assertions.PathInfo;
-import com.xmos.xta.core.engine.assertions.TimeInfo;
+import com.xmos.xta.core.engine.assertions.PathTimeInfo;
+import com.xmos.xta.core.engine.assertions.InstructionTimeInfo;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
@@ -766,10 +766,10 @@ public class RouteConstructor {
 	private void applyAssertions(CommandSource src) {
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : m_routes) {			
-			for (FunctionInfo info : m_engine.getFunctionAssertions()) {			
+			for (FunctionTimeInfo info : m_engine.getFunctionTimeAssertions()) {			
 				assertions.applyFunctionAssertion(m_engine, src, route, info, Source.IMPLICIT);
 			}
-			for (PathInfo info : m_engine.getPathAssertions()) {			
+			for (PathTimeInfo info : m_engine.getPathTimeAssertions()) {			
 				assertions.applyPathAssertion(m_engine, src, route, info, Source.IMPLICIT);
 			}
 		}		
@@ -788,9 +788,9 @@ public class RouteConstructor {
 				m_engine.applyLoopScopeToRoutes(m_routes, info);
 			} catch (Exception e) {}
 		}
-		for (TimeInfo info : m_engine.getTimeAssertions()) {
+		for (InstructionTimeInfo info : m_engine.getInstructionTimeAssertions()) {
 			try {
-				m_engine.applyFixedTimeToRoutes(m_routes, info);
+				m_engine.applyInstructionTimeToRoutes(m_routes, info);
 			} catch (Exception e) {}
 		}
 	}

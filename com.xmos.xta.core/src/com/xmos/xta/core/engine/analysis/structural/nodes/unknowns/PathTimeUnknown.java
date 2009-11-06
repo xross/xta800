@@ -27,7 +27,7 @@ public class PathTimeUnknown extends Unknown {
     	if (getSource() == Source.IMPLICIT) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
-    	return String.format("set path %s %s %s %s\n", 
+    	return String.format("set pathtime %s %s %s %s\n", 
     			routeIdStr, refStrs[0], refStrs[1], 
     			getNode().getAttributes().getFixedTimeString());
 	}

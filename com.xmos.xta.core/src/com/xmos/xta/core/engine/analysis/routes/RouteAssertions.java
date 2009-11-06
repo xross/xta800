@@ -8,13 +8,14 @@ import com.xmos.xta.core.console.commands.print.StructureDisplayer;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
-import com.xmos.xta.core.engine.assertions.FunctionInfo;
-import com.xmos.xta.core.engine.assertions.PathInfo;
+import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
+import com.xmos.xta.core.engine.assertions.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -23,7 +24,7 @@ public class RouteAssertions {
 	private static final boolean DEBUG_ROUTE_ASSERTIONS = false;
 	
 	public void applyFunctionAssertion(Engine engine, CommandSource src, 
-			Route route, FunctionInfo info, Source source) {
+			Route route, FunctionTimeInfo info, Source source) {
 		
 		Reference reference = ReferenceFactory.createReference(
 				info.getFunction(), ReferenceClass.FUNCTION_REF);	
@@ -39,7 +40,7 @@ public class RouteAssertions {
 	}
 
 	public void applyPathAssertion(Engine engine, CommandSource src, 
-			Route route, PathInfo info, Source source) {
+			Route route, PathTimeInfo info, Source source) {
 		
 		Reference fromRef = ReferenceFactory.createReference(
 				info.getFrom(), ReferenceClass.ENDPOINT_REF);
@@ -59,6 +60,8 @@ public class RouteAssertions {
 				new DifferentBlockPattern()
 		};
 
+		TimeUnit timeUnit = new TimeUnit(route.getRouteDescription().getConfig(), info.getTimeUnit());
+		
 		for (Node from : fromNodes) {
 			assert(from instanceof InstructionNode);
 			Node fromBlock = from.getParent();
@@ -74,7 +77,7 @@ public class RouteAssertions {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
 
 						if (DEBUG_ROUTE_ASSERTIONS) display("BEFORE", route);						
-						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, info.getTimeUnit(), source);						
+						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, timeUnit, source);						
 						RouteConstructor.setParent(route.getNode());
 						if (DEBUG_ROUTE_ASSERTIONS) display("AFTER", route);
 						

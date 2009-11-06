@@ -3,11 +3,11 @@ package com.xmos.xta.core.engine.assertions;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
 
-public class TimeInfo {
+public class InstructionTimeInfo implements AssertionInfo {
 	private Reference m_reference;
 	private TimeUnit m_timeUnit;
 
-	public TimeInfo(Reference reference, TimeUnit timeUnit) {
+	public InstructionTimeInfo(Reference reference, TimeUnit timeUnit) {
 		m_reference = reference;
 		m_timeUnit = timeUnit;
 	}
@@ -21,6 +21,14 @@ public class TimeInfo {
 	}
 
 	public String toString() {
-		return String.format("time: %s: %s", m_reference.toString(), m_timeUnit.toString());
+		return String.format("%s: %s", m_reference.toString(), m_timeUnit.getDescription(false));
 	}
+	
+    public String getDescription() {
+    	return m_reference.toString();
+    }
+
+    public String getValue() {
+    	return m_timeUnit.getDescription(false);
+    }	
 }

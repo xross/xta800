@@ -12,8 +12,8 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
-import com.xmos.xta.core.engine.assertions.FunctionInfo;
-import com.xmos.xta.core.engine.assertions.PathInfo;
+import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
+import com.xmos.xta.core.engine.assertions.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Scripter {
@@ -67,8 +67,8 @@ public class Scripter {
     }
  
 	private void assertions(StringBuffer script) {
-		if (m_engine.getFunctionAssertions().isEmpty() &&
-			m_engine.getPathAssertions().isEmpty())
+		if (m_engine.getFunctionTimeAssertions().isEmpty() &&
+			m_engine.getPathTimeAssertions().isEmpty())
 			return;
 			
 		script.append("\n");
@@ -76,11 +76,11 @@ public class Scripter {
     	script.append("# Assertions\n");
     	script.append("#\n");			
     	
-		for (FunctionInfo info : m_engine.getFunctionAssertions()) {			
+		for (FunctionTimeInfo info : m_engine.getFunctionTimeAssertions()) {			
 			script.append("assert function " + info.getFunction() + 
 					" " + info.getTimeUnit().getDescription(true) + "\n");
 		}
-		for (PathInfo info : m_engine.getPathAssertions()) {			
+		for (PathTimeInfo info : m_engine.getPathTimeAssertions()) {			
 			script.append("assert path " + info.getFrom() + " " + info.getTo() + 
 					" " + info.getTimeUnit().getDescription(true) + "\n");			
 		}			    	
@@ -128,26 +128,11 @@ public class Scripter {
     	RouteDescription routeDescription = routeContainer.getDescription();
     	switch (routeDescription.getMode()) {
     	case FUNCTION:
-    		if (routeDescription.isAssertion()) {
-    			RouteTiming routeTiming = routeContainer.getRoutes().get(0).getRouteTiming();
-        		script.append(String.format("assert function %s %s\n", 
-        				routeDescription.getFunctionName(),
-        				routeTiming.getDescription(Level.REQUIRED)));    			    			
-    		} else {
-        		script.append(String.format("analyse function %s\n", routeDescription.getFunctionName()));    			
-    		}
+       		script.append(String.format("analyse function %s\n", routeDescription.getFunctionName()));    			
     		break;
     		
     	case PATH:
-    		if (routeDescription.isAssertion()) {
-    			RouteTiming routeTiming = routeContainer.getRoutes().get(0).getRouteTiming();    			    			
-        		script.append(String.format("assert path %s %s %s\n", 
-        				routeDescription.getFromName(), 
-        				routeDescription.getToName(),
-        				routeTiming.getDescription(Level.REQUIRED)));    			    			
-    		} else {
-        		script.append(String.format("analyse path %s %s\n", routeDescription.getFromName(), routeDescription.getToName()));    			
-    		}
+       		script.append(String.format("analyse path %s %s\n", routeDescription.getFromName(), routeDescription.getToName()));    			
     		break;
     	}    	
     }
@@ -179,7 +164,7 @@ public class Scripter {
 		String routeIdStr = getRouteIdString(singleRoute);			    	
     	
 		RouteTiming routeTiming = route.getRouteTiming();
-		if (routeTiming.isTimingSpecified() && !route.getRouteDescription().isAssertion()) {
+		if (routeTiming.isTimingSpecified()) {
 	    	script.append(String.format("set required %s %s\n", routeIdStr, 
 	    			routeTiming.getDescription(Level.REQUIRED)));
 		}

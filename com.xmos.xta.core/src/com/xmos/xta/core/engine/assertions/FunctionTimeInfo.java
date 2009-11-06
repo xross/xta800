@@ -2,11 +2,11 @@ package com.xmos.xta.core.engine.assertions;
 
 import com.xmos.xta.core.engine.TimeUnit;
 
-public class FunctionInfo {
+public class FunctionTimeInfo implements AssertionInfo {
 	private String m_function;
 	private TimeUnit m_timeUnit;
 
-	public FunctionInfo(String function, TimeUnit timeUnit) {
+	public FunctionTimeInfo(String function, TimeUnit timeUnit) {
 		m_function = function;
 		m_timeUnit = timeUnit;
 	}
@@ -20,6 +20,14 @@ public class FunctionInfo {
 	}
 	
 	public String toString() {
-		return String.format("function: %s", m_function);
+		return String.format("%s: %s", m_function, m_timeUnit.getDescription(false));
 	}	
+	
+    public String getDescription() {
+    	return m_function;
+    }
+
+    public String getValue() {
+    	return m_timeUnit.getDescription(false);
+    }
 }

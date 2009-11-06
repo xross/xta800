@@ -66,10 +66,10 @@ public class LoopPath extends Command {
 
 		Node node = getReferencedNode(engine, m_routeId, m_refString);
 		if (node != null) {
-   		    engine.setLoopPathIterations(getSrc(), node, m_iterations);
+   		    engine.setLoopPath(getSrc(), node, m_iterations);
 			
 		} else {		
-   		    engine.setLoopPathIterations(getSrc(), m_routeId, m_refString, m_iterations);
+   		    engine.setLoopPath(getSrc(), m_routeId, m_refString, m_iterations);
 		}
     }    
  }

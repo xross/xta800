@@ -6,18 +6,18 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
 
-public class Function extends Command {
+public class FunctionTime extends Command {
 	private int m_routeId;
 	private String m_functionName;
 	private TimeUnit m_timeUnit;
 	
-	public Function() {
+	public FunctionTime() {
 		m_routeId = 0;
 		m_functionName = "";
 		m_timeUnit = null;
 	}
 	
-	public Function(int routeId, String functionName, TimeUnit timeUnit) {
+	public FunctionTime(int routeId, String functionName, TimeUnit timeUnit) {
 		m_routeId = routeId;
 		m_functionName = functionName;
 		m_timeUnit = timeUnit;
@@ -32,15 +32,15 @@ public class Function extends Command {
 	}    
     
     public String name() {
-    	return "function";
+    	return "functiontime";
     }        
 
     public String commandLine() {
-    	return "function " + getRouteId(m_routeId) + " " + m_functionName + " " + m_timeUnit.getDescription(false);
+    	return "functiontime " + getRouteId(m_routeId) + " " + m_functionName + " " + m_timeUnit.getDescription(false);
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = "function <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route";         
+        String descString = "functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route";         
        	if (detailed) {    	    	
        		descString += "\n" + TimeUnit.getHelp();
        	}
@@ -59,7 +59,7 @@ public class Function extends Command {
 	   		
 		    TimeUnit timeUnit = new TimeUnit(value, mode);
 		    if (timeUnit.isValid()) {
-		    	return new Function(routeId, name, timeUnit);
+		    	return new FunctionTime(routeId, name, timeUnit);
 		    }
 	    } catch (NumberFormatException e) {}
 	    return null;        
@@ -69,6 +69,6 @@ public class Function extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.setFunction(getSrc(), m_routeId, m_functionName, m_timeUnit); 
+        engine.setFunctionTime(getSrc(), m_routeId, m_functionName, m_timeUnit); 
     }
 }

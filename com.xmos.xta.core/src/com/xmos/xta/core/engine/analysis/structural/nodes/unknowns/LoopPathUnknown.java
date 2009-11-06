@@ -12,12 +12,12 @@ public class LoopPathUnknown extends Unknown {
 	public String getDescription() {
 		switch(getState()) {
 		case UNKNOWN:
-			return String.format("Loop path iterations on node " + 
-					getNode().getId() + " are unknown");
+			return String.format("Loop path iterations (node id: " + 
+					getNode().getId() + ") are unknown");
 
 		case KNOWN:
-			return String.format("Loop path iterations on node " + 
-					getNode().getId() + " are known");
+			return String.format("Loop path iterations (node id: " + 
+					getNode().getId() + ") are known");
 		}
 		assert(false);
 		return "";

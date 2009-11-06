@@ -12,12 +12,12 @@ public class LoopScopeUnknown extends Unknown {
 	public String getDescription() {
 		switch(getState()) {
 		case UNKNOWN:
-			return String.format("Loop scope on node " + 
-					getNode().getId() + " has not been set");
+			return String.format("Loop scope (node id: " + 
+					getNode().getId() + ") has not been set");
 
 		case KNOWN:
-			return String.format("Loop scope on node " + 
-					getNode().getId() + " has been set");
+			return String.format("Loop scope (node id: " + 
+					getNode().getId() + ") has been set");
 		}
 		assert(false);
 		return "";

@@ -5,14 +5,11 @@ import java.util.Collection;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Exclusion extends Command {	
-	public enum Operation {
-		ADD, REMOVE, LIST
-	};
-	
 	private String m_reference;
 	private Operation m_operation;
 	

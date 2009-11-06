@@ -6,7 +6,6 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.commands.Command.RedirectMode;
 import com.xmos.xta.core.console.commands.add.Add;
 import com.xmos.xta.core.console.commands.analyse.Analyse;
-import com.xmos.xta.core.console.commands.assertion.Assert;
 import com.xmos.xta.core.console.commands.clear.Clear;
 import com.xmos.xta.core.console.commands.config.Config;
 import com.xmos.xta.core.console.commands.dumpscript.DumpScript;
@@ -29,7 +28,6 @@ public class CommandFactory {
 	static private Command[] m_commands = { 
 		new Add(),
 		new Analyse(), 
-		new Assert(), 
 		new Config(),
 		new Clear(),
 	    new Echo(),

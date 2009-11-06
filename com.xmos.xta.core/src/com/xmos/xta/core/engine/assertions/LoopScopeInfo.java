@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.assertions;
 
 import com.xmos.xta.core.engine.references.Reference;
 
-public class LoopScopeInfo {
+public class LoopScopeInfo implements AssertionInfo {
 	private Reference m_reference;
 	private boolean m_absolute;
 
@@ -20,6 +20,14 @@ public class LoopScopeInfo {
 	}
 
 	public String toString() {
-		return String.format("loopscope: %s: %s", m_reference.toString(), m_absolute ? "true" : "false");
+		return String.format("%s: %s", m_reference.toString(), m_absolute ? "true" : "false");
 	}
+	
+    public String getDescription() {
+    	return m_reference.toString();
+    }
+
+    public String getValue() {
+    	return m_absolute ? "true" : "false";
+    }			
 }

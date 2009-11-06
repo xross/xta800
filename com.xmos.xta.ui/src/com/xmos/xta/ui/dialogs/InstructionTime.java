@@ -61,8 +61,8 @@ class InstructionTimeImpl implements XtaImpl {
 	    createAssertControls(container);	    
 
 	    if (m_nodes != null) {
-	        m_value.setText(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getValueStr());	
-    	    m_units.setText(GuiEngine.getEngine().getFixedTime(m_nodes.get(0)).getUnitsStr());
+	        m_value.setText(GuiEngine.getEngine().getInstructionTime(m_nodes.get(0)).getValueStr());	
+    	    m_units.setText(GuiEngine.getEngine().getInstructionTime(m_nodes.get(0)).getUnitsStr());
 	    }
     	return container;
     }
@@ -73,14 +73,14 @@ class InstructionTimeImpl implements XtaImpl {
     		assert (timeUnit.isValid());
     		
     		if (m_nodes == null) {
-				GuiEngine.getEngine().assertFixedTime(GuiEngine.s_guiCommandSrc, m_reference.getText(), timeUnit);
+				GuiEngine.getEngine().addInstructionTime(GuiEngine.s_guiCommandSrc, m_reference.getText(), timeUnit);
     			
     		} else {
         		for (Node node : m_nodes) {
         			if (m_assert.getSelection()) {
-        				GuiEngine.getEngine().assertFixedTime(GuiEngine.s_guiCommandSrc, node.getReferenceStr(), timeUnit);
+        				GuiEngine.getEngine().addInstructionTime(GuiEngine.s_guiCommandSrc, node.getReferenceStr(), timeUnit);
         			} else {
-       				    GuiEngine.getEngine().setFixedTime(GuiEngine.s_guiCommandSrc, node, timeUnit);
+       				    GuiEngine.getEngine().setInstructionTime(GuiEngine.s_guiCommandSrc, node, timeUnit);
         			}
         		}    			
     		}
