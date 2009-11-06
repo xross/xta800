@@ -3,7 +3,6 @@ load .*test\.xe
 #
 # Route: a
 #
-remove pathtime \* \*
 add pathtime start stop 999.0 ns
 add pathtime start1 stop1 999.0 ns
 analyse function a

@@ -8,9 +8,9 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/assert_function.log 2>&1");
+system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/assert_pathtime.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "source cmds.txt " .
-       "-exit > $genDir/assert_function.txt 2>&1");
+       "-exit > $genDir/assert_pathtime.txt 2>&1");
 
