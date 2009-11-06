@@ -92,7 +92,7 @@ public class InstructionTime extends Command {
            	}
         	break;
     	case REMOVE:
-    		descString = "instructiontime <ENDPOINT_REF>: Removes the given instruction time from the list of assertions";
+    		descString = "instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of assertions";
         	break;
     	case LIST:
         	descString = "instructiontime: Displays the instruction time assertions";

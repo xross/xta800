@@ -94,7 +94,7 @@ public class PathTime extends Command {
            	}
         	break;
     	case REMOVE:
-    		descString = "pathtime <from ENDPOINT_REF> <to ENDPOINT_REF>: Removes the given path time from the list of assertions";
+    		descString = "pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of assertions";
         	break;
     	case LIST:
         	descString = "pathtimes: Displays the path time assertions";

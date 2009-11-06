@@ -590,72 +590,102 @@ public class Engine implements Notifier {
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}	
 
-	public void addInstructionTime(CommandSource src, String refString, TimeUnit timeUnit) {		
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addInstructionTime(m_nodeId, m_coreId, reference, timeUnit);
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
+	public void addInstructionTime(CommandSource src, String refString, final TimeUnit timeUnit) {
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addInstructionTime(m_nodeId, m_coreId, reference, timeUnit);
+			}			
+		});
 	}
 	
-	public void addLoop(CommandSource src, String refString, long iterations) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addLoop(m_nodeId, m_coreId, reference, iterations);			
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
+	public void addLoop(CommandSource src, String refString, final long iterations) {
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addLoop(m_nodeId, m_coreId, reference, iterations);
+			}			
+		});
 	}
 
-	public void addLoopPath(CommandSource src, String refString, long iterations) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addLoopPath(m_nodeId, m_coreId, reference, iterations);
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
+	public void addLoopPath(CommandSource src, String refString, final long iterations) {
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addLoopPath(m_nodeId, m_coreId, reference, iterations);
+			}			
+		});
 	}
 
-	public void addLoopScope(CommandSource src, String refString, boolean absolute) {		
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addLoopScope(m_nodeId, m_coreId, reference, absolute);
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
+	public void addLoopScope(CommandSource src, String refString, final boolean absolute) {		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addLoopScope(m_nodeId, m_coreId, reference, absolute);
+			}			
+		});
 	}
 
 	public void removeFunctionTime(CommandSource src, String functionName) {
-		//TODO
+		if (functionName.equals("*")) {
+			m_assertions.clearFunctionTimes(m_nodeId, m_coreId);
+		} else {		
+		    m_assertions.removeFunctionTime(m_nodeId, m_coreId, functionName);
+		}
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public void removePathTime(CommandSource src, String from, String to) {
-		//TODO
+		if (from.equals("*") && to.equals("*")) {
+			m_assertions.clearPathTimes(m_nodeId, m_coreId);
+		} else {		
+			m_assertions.removePathTime(m_nodeId, m_coreId, from, to);
+		}		
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}	
 
-	public void removeInstructionTime(CommandSource src, String refString) {		
-		//TODO
+	public void removeInstructionTime(CommandSource src, String refString) {	
+		if (refString.equals("*")) {
+			m_assertions.clearInstructionTimes(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeInstructionTime(m_nodeId, m_coreId, reference);
+			}			
+		});
 	}
 	
 	public void removeLoop(CommandSource src, String refString) {
-		//TODO
+		if (refString.equals("*")) {
+			m_assertions.clearLoops(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeLoop(m_nodeId, m_coreId, reference);
+			}			
+		});
 	}
 
 	public void removeLoopPath(CommandSource src, String refString) {
-		//TODO
+		if (refString.equals("*")) {
+			m_assertions.clearLoopPaths(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeLoopPath(m_nodeId, m_coreId, reference);
+			}			
+		});
 	}
 
 	public void removeLoopScope(CommandSource src, String refString) {		
-		//TODO
+		if (refString.equals("*")) {
+			m_assertions.clearLoopScopes(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeLoopScope(m_nodeId, m_coreId, reference);
+			}			
+		});
 	}
 	
 	public Collection<FunctionTimeInfo> getFunctionTimeAssertions() {
@@ -1376,7 +1406,22 @@ public class Engine implements Notifier {
         DebugEngine debugEngine = m_xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();					
         SourceFile sf = sourceMapper.getSourceFile(fileName);
         sourceMapper.setFile(debugEngine, sf, file);    	
-    }	
+    }
+    
+	private void updateAssertions(CommandSource src, String refString, AssertionUpdate update) {		
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
+		if (resolveRefernece(reference)) {
+			update.run(reference);
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+			
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
+		}
+	}    
+	
+	private static interface AssertionUpdate {
+		void run(Reference reference);
+	}
 }
 
 class FileLocation {

@@ -30,4 +30,8 @@ public class FunctionTimeInfo implements AssertionInfo {
     public String getValue() {
     	return m_timeUnit.getDescription(false);
     }
+
+	public boolean equals(Object o) {
+		return m_function.equals(((FunctionTimeInfo)o).m_function);
+	}
 }

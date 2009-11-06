@@ -31,4 +31,8 @@ public class InstructionTimeInfo implements AssertionInfo {
     public String getValue() {
     	return m_timeUnit.getDescription(false);
     }	
+    	
+	public boolean equals(Object o) {
+		return m_reference.toString().equals(((InstructionTimeInfo)o).m_reference.toString());
+	}	
 }

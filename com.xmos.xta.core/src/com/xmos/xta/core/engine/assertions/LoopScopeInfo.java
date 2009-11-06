@@ -29,5 +29,9 @@ public class LoopScopeInfo implements AssertionInfo {
 
     public String getValue() {
     	return m_absolute ? "true" : "false";
-    }			
+    }		
+    
+	public boolean equals(Object o) {
+		return m_reference.toString().equals(((LoopScopeInfo)o).m_reference.toString());
+	}				
 }

@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.assertions;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.xmos.xta.core.engine.NodeCoreCollection;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -33,54 +33,120 @@ public class Assertions {
     	m_loopScopes.clear();
     }
     
-    public List<FunctionTimeInfo> getFunctionTimes(int nodeId, int coreId) {
+    public Collection<FunctionTimeInfo> getFunctionTimes(int nodeId, int coreId) {
     	return get(m_functionTimes, nodeId, coreId);
     }
 
-    public List<PathTimeInfo> getPathTimes(int nodeId, int coreId) {    
+    public Collection<PathTimeInfo> getPathTimes(int nodeId, int coreId) {    
     	return get(m_pathTimes, nodeId, coreId);
     }
 
-    public List<InstructionTimeInfo> getInstructionTimes(int nodeId, int coreId) {    	
+    public Collection<InstructionTimeInfo> getInstructionTimes(int nodeId, int coreId) {    	
     	return get(m_instructionTimes, nodeId, coreId);
     }
     
-    public List<LoopInfo> getLoops(int nodeId, int coreId) {    	
+    public Collection<LoopInfo> getLoops(int nodeId, int coreId) {    	
     	return get(m_loops, nodeId, coreId);
     }
 
-    public List<LoopPathInfo> getLoopPaths(int nodeId, int coreId) {    	
+    public Collection<LoopPathInfo> getLoopPaths(int nodeId, int coreId) {    	
     	return get(m_loopPaths, nodeId, coreId);
     }
 
-    public List<LoopScopeInfo> getLoopScopes(int nodeId, int coreId) {    	
+    public Collection<LoopScopeInfo> getLoopScopes(int nodeId, int coreId) {    	
     	return get(m_loopScopes, nodeId, coreId);
     }
     
 	public void addFunctionTime(int nodeId, int coreId, String function, TimeUnit timeUnit) {
-		get(m_functionTimes, nodeId, coreId).add(new FunctionTimeInfo(function, timeUnit));
+		FunctionTimeInfo info = new FunctionTimeInfo(function, timeUnit);
+		ArrayList<FunctionTimeInfo> list = get(m_functionTimes, nodeId, coreId);		
+		list.remove(info);
+		list.add(info);
 	}
 
 	public void addPathTime(int nodeId, int coreId, String from, String to, TimeUnit timeUnit) {
-		get(m_pathTimes, nodeId, coreId).add(new PathTimeInfo(from, to, timeUnit));
+		PathTimeInfo info = new PathTimeInfo(from, to, timeUnit);
+		ArrayList<PathTimeInfo> list = get(m_pathTimes, nodeId, coreId);		
+		list.remove(info);
+		list.add(info);
 	}
 
 	public void addInstructionTime(int nodeId, int coreId, Reference reference, TimeUnit timeUnit) {
-		get(m_instructionTimes, nodeId, coreId).add(new InstructionTimeInfo(reference, timeUnit));
+		InstructionTimeInfo info = new InstructionTimeInfo(reference, timeUnit);
+		ArrayList<InstructionTimeInfo> list = get(m_instructionTimes, nodeId, coreId);		
+		list.remove(info);
+		list.add(info);
 	}
 	
 	public void addLoop(int nodeId, int coreId, Reference reference, long iterations) {
-		get(m_loops, nodeId, coreId).add(new LoopInfo(reference, iterations));
+		LoopInfo info = new LoopInfo(reference, iterations);
+		ArrayList<LoopInfo> list = get(m_loops, nodeId, coreId);		
+		list.remove(info);
+		list.add(info);
 	}
 
 	public void addLoopPath(int nodeId, int coreId, Reference reference, long iterations) {
-		get(m_loopPaths, nodeId, coreId).add(new LoopPathInfo(reference, iterations));
+		LoopPathInfo info = new LoopPathInfo(reference, iterations);
+		ArrayList<LoopPathInfo> list = get(m_loopPaths, nodeId, coreId);		
+		list.remove(info);
+		list.add(info);
 	}
 
 	public void addLoopScope(int nodeId, int coreId, Reference reference, boolean absolute) {
-		get(m_loopScopes, nodeId, coreId).add(new LoopScopeInfo(reference, absolute));
+		LoopScopeInfo info = new LoopScopeInfo(reference, absolute);
+		ArrayList<LoopScopeInfo> list = get(m_loopScopes, nodeId, coreId);		
+		list.remove(info);
+		list.add(info);
 	}
-		
+
+	public void removeFunctionTime(int nodeId, int coreId, String function) {
+		get(m_functionTimes, nodeId, coreId).remove(new FunctionTimeInfo(function, null));
+	}
+
+	public void removePathTime(int nodeId, int coreId, String from, String to) {
+		get(m_pathTimes, nodeId, coreId).remove(new PathTimeInfo(from, to, null));
+	}
+	
+	public void removeInstructionTime(int nodeId, int coreId, Reference reference) {
+		get(m_instructionTimes, nodeId, coreId).remove(new InstructionTimeInfo(reference, null));
+	}
+	
+	public void removeLoop(int nodeId, int coreId, Reference reference) {
+		get(m_loops, nodeId, coreId).remove(new LoopInfo(reference, 0));
+	}
+
+	public void removeLoopPath(int nodeId, int coreId, Reference reference) {
+		get(m_loopPaths, nodeId, coreId).remove(new LoopPathInfo(reference, 0));
+	}
+
+	public void removeLoopScope(int nodeId, int coreId, Reference reference) {
+		get(m_loopScopes, nodeId, coreId).remove(new LoopScopeInfo(reference, false));
+	}
+
+	public void clearFunctionTimes(int nodeId, int coreId) {
+		get(m_functionTimes, nodeId, coreId).clear();
+	}
+
+	public void clearPathTimes(int nodeId, int coreId) {
+		get(m_pathTimes, nodeId, coreId).clear();
+	}
+	
+	public void clearInstructionTimes(int nodeId, int coreId) {
+		get(m_instructionTimes, nodeId, coreId).clear();
+	}
+	
+	public void clearLoops(int nodeId, int coreId) {
+		get(m_loops, nodeId, coreId).clear();
+	}
+
+	public void clearLoopPaths(int nodeId, int coreId) {
+		get(m_loopPaths, nodeId, coreId).clear();
+	}
+
+	public void clearLoopScopes(int nodeId, int coreId) {
+		get(m_loopScopes, nodeId, coreId).clear();
+	}
+	
 	private <T> ArrayList<T> get(NodeCoreCollection<ArrayList<T>> list, int nodeId, int coreId) {
 		if (list.get(nodeId, coreId) == null) {
 			list.add(nodeId, coreId, new ArrayList<T>());

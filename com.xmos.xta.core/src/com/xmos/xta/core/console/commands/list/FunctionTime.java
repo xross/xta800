@@ -91,7 +91,7 @@ public class FunctionTime extends Command {
            	}
         	break;
     	case REMOVE:
-    		descString = "functiontime <FUNCTION_REF>: Removes the given functon time from the list of assertions";
+    		descString = "functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of assertions";
         	break;
     	case LIST:
         	descString = "functiontimes: Displays the function time assertions";
