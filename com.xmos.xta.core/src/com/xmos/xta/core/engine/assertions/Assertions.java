@@ -35,26 +35,32 @@ public class Assertions {
     }
     	
 	public void updateScript(Assertions assertions, StringBuffer script, int nodeId, int coreId) {		
-		if (!getFunctionTimes(nodeId, coreId).equals(assertions.getFunctionTimes(nodeId, coreId))) {
-			updateScript(script, getFunctionTimes(nodeId, coreId), "functiontime", "*");
+		if (!getFunctionTimes(nodeId, coreId).equals(assertions.getFunctionTimes(nodeId, coreId))) {			
+			updateScript(script, getFunctionTimes(nodeId, coreId), 
+					assertions.getFunctionTimes(nodeId, coreId), "functiontime", "*");
 		}
 		if (!getPathTimes(nodeId, coreId).equals(assertions.getPathTimes(nodeId, coreId))) {
-			updateScript(script, getPathTimes(nodeId, coreId), "pathtime", "* *");
+			updateScript(script, getPathTimes(nodeId, coreId), 
+					assertions.getPathTimes(nodeId, coreId), "pathtime", "* *");
 		}
 		if (!getInstructionTimes(nodeId, coreId).equals(assertions.getInstructionTimes(nodeId, coreId))) {
-			updateScript(script, getInstructionTimes(nodeId, coreId), "instructiontime", "*");
+			updateScript(script, getInstructionTimes(nodeId, coreId), 
+					assertions.getInstructionTimes(nodeId, coreId), "instructiontime", "*");
 		}
 		if (!getLoops(nodeId, coreId).equals(assertions.getLoops(nodeId, coreId))) {
-			updateScript(script, getLoops(nodeId, coreId), "loop", "*");
+			updateScript(script, getLoops(nodeId, coreId), 
+					assertions.getLoops(nodeId, coreId), "loop", "*");
 		}
 		if (!getLoopPaths(nodeId, coreId).equals(assertions.getLoopPaths(nodeId, coreId))) {
-			updateScript(script, getLoopPaths(nodeId, coreId), "looppath", "*");
+			updateScript(script, getLoopPaths(nodeId, coreId), 
+					assertions.getLoopPaths(nodeId, coreId), "looppath", "*");
 		}
 		if (!getLoopScopes(nodeId, coreId).equals(assertions.getLoopScopes(nodeId, coreId))) {
-			updateScript(script, getLoopScopes(nodeId, coreId), "loopscope", "*");
+			updateScript(script, getLoopScopes(nodeId, coreId), 
+					assertions.getLoopScopes(nodeId, coreId), "loopscope", "*");
 		}
 	}
-    	
+
     public void clear() {
     	m_functionTimes.clear();
     	m_pathTimes.clear();
@@ -185,9 +191,15 @@ public class Assertions {
         return list.get(nodeId, coreId);		
 	}
 	
-	private void updateScript(StringBuffer script, Collection<? extends AssertionInfo> list, String command, String removeStr) {		
-		script.append("remove " + command + " " + removeStr + "\n");				
-		for (AssertionInfo info : list) {			
+	private void updateScript(StringBuffer script, 
+			Collection<? extends AssertionInfo> newList, 
+			Collection<? extends AssertionInfo> oldList,
+			String command, String removeStr) {
+		
+		if (!oldList.isEmpty()) {
+		    script.append("remove " + command + " " + removeStr + "\n");
+		}
+		for (AssertionInfo info : newList) {			
 			script.append("add " + command + " " + info.getDescription() + " " + info.getValue() + "\n");
 		}		
 	}

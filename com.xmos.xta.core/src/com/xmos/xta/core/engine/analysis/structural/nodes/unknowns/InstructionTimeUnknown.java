@@ -31,7 +31,9 @@ public class InstructionTimeUnknown extends Unknown {
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	assert(getSource() == Source.EXPLICIT);
+    	if (getSource() == Source.IMPLICIT) {
+    		throw new Exception("No script command avaliable (Not explicitly set by user)");
+    	}
     	return String.format("set instructiontime %s %s %s\n", 
     			routeIdStr, refStrs[0], 
     			getNode().getAttributes().getFixedTimeString());

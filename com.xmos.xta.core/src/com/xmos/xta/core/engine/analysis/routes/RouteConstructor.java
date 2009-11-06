@@ -716,7 +716,7 @@ public class RouteConstructor {
 			for (Route route : m_routes) {
 				try {
 					route.getRouteUnknowns().setLoopIterations(src, m_engine, 
-							reference, srcLevelLoopInfo.getNumIterations(), true);
+							reference, srcLevelLoopInfo.getNumIterations(), true, Source.IMPLICIT);
 				} catch (Exception e) {}				
 			}
 		}		
@@ -775,22 +775,22 @@ public class RouteConstructor {
 		}		
 		for (LoopInfo info : m_engine.getLoopAssertions()) {
 			try {
-				m_engine.applyLoopToRoutes(src, m_routes, info);
+				m_engine.applyLoopToRoutes(src, m_routes, info, Source.IMPLICIT);
 			} catch (Exception e) {}
 		}
 		for (LoopPathInfo info : m_engine.getLoopPathAssertions()) {
 			try {
-				m_engine.applyLoopPathToRoutes(m_routes, info);
+				m_engine.applyLoopPathToRoutes(m_routes, info, Source.IMPLICIT);
 			} catch (Exception e) {}
 		}
 		for (LoopScopeInfo info : m_engine.getLoopScopeAssertions()) {
 			try {
-				m_engine.applyLoopScopeToRoutes(m_routes, info);
+				m_engine.applyLoopScopeToRoutes(m_routes, info, Source.IMPLICIT);
 			} catch (Exception e) {}
 		}
 		for (InstructionTimeInfo info : m_engine.getInstructionTimeAssertions()) {
 			try {
-				m_engine.applyInstructionTimeToRoutes(m_routes, info);
+				m_engine.applyInstructionTimeToRoutes(m_routes, info, Source.IMPLICIT);
 			} catch (Exception e) {}
 		}
 	}

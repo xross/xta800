@@ -29,7 +29,7 @@ public class Scripter {
 		m_currentNodeId = 0;
 		m_currentCoreId = 0;
 		m_currentExclusions = new ArrayList<Reference>();
-		m_currentAssertions = engine.getAssertions();
+		m_currentAssertions = new Assertions();
 	}
 
 	public String createScript() {

@@ -43,10 +43,10 @@ public class RouteUnknowns {
 	// Setting Loop Iterations
 	// ===================================================================== //
 	public void setLoopIterations(CommandSource src, Engine engine,
-			Reference reference, long iterations, boolean sourceLevelIterations) {
+			Reference reference, long iterations, boolean sourceLevelIterations, Source source) {
 		
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference);
+			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference, source);
 		}			
 	}
 
@@ -65,13 +65,13 @@ public class RouteUnknowns {
 		}
 	}
 
-	public void setLoopIterations(CommandSource src, Engine engine, Node node, long iterations) throws Exception {
+	public void setLoopIterations(CommandSource src, Engine engine, Node node, long iterations, Source source) throws Exception {
 		if (iterations < 0)
 			throw new Exception("Cannot set a negative iteration count");
 
 		checkSetLoopIterations(node);
 		checkLoopIterationsValid(node, iterations);
-	    setLoopIterationsNoCheck(src, engine, node, iterations, false, null);
+	    setLoopIterationsNoCheck(src, engine, node, iterations, false, null, source);
 	}
 	
 	public void checkSetLoopIterations(Node node) throws Exception {
@@ -96,16 +96,13 @@ public class RouteUnknowns {
 	}
 	
 	private void setLoopIterationsNoCheck(CommandSource src, Engine engine,
-			Node node, long iterations, boolean sourceLevelIterations, Reference reference) {
+			Node node, long iterations, boolean sourceLevelIterations, 
+			Reference reference, Source source) {
 
 		invalidateCachedStats();
 		Node enclosingLoopNode = node.getEnclosingLoopNode();		
-	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
-	    
-        enclosingLoopNode.getAttributes().addKnown(Type.LOOP_ITERATIONS, 
-        		sourceLevelIterations ? Source.IMPLICIT : Source.EXPLICIT, 
-        		new Reference[] {reference});
-	    
+	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);	    
+        enclosingLoopNode.getAttributes().addKnown(Type.LOOP_ITERATIONS, source, new Reference[] {reference});	    
    		clearPathIterations(enclosingLoopNode);
 		refreshDisplayedUnknowns();
 	}
@@ -113,9 +110,9 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Loop Path Iterations
 	// ===================================================================== //
-	public void setLoopPathIterations(Reference reference, long iterations) {
+	public void setLoopPathIterations(Reference reference, long iterations, Source source) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopPathIterationsNoCheck(node, iterations, reference);
+			setLoopPathIterationsNoCheck(node, iterations, reference, source);
 		}		
 	}
 	
@@ -134,13 +131,13 @@ public class RouteUnknowns {
 		}
 	}
 	
-	public void setLoopPathIterations(Node node, long iterations) throws Exception {
+	public void setLoopPathIterations(Node node, long iterations, Source source) throws Exception {
 		if (iterations < 0)
 			throw new Exception("Cannot set a negative iteration count");
 		
 		checkSetLoopPathIterations(node);
 		checkLoopPathIterationsValid(node, iterations);
-		setLoopPathIterationsNoCheck(node, iterations, null);
+		setLoopPathIterationsNoCheck(node, iterations, null, source);
 	}
 
 	public void checkSetLoopPathIterations(Node node) throws Exception {
@@ -170,21 +167,21 @@ public class RouteUnknowns {
 		condNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
 	}
 
-	private void setLoopPathIterationsNoCheck(Node node, long iterations, Reference reference) {
+	private void setLoopPathIterationsNoCheck(Node node, long iterations, Reference reference, Source source) {
 		invalidateCachedStats();
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
 	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);	    
-	    optionNode.getAttributes().addKnown(Type.LOOP_PATH_ITERATIONS, Source.EXPLICIT, new Reference[] {reference});
+	    optionNode.getAttributes().addKnown(Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
 		refreshDisplayedUnknowns();		
 	}
 	
 	// ===================================================================== //
 	// Setting Loop Scope
 	// ===================================================================== //
-	public void setLoopScope(Reference reference, boolean isAbsolute) {
+	public void setLoopScope(Reference reference, boolean isAbsolute, Source source) {
 		for (Node node : m_route.getReferencedNodes(reference)) {
-			setLoopScopeNoCheck(node, isAbsolute, reference);
+			setLoopScopeNoCheck(node, isAbsolute, reference, source);
 		}		
 	}
 
@@ -199,9 +196,9 @@ public class RouteUnknowns {
 		}
 	}
 	
-	public void setLoopScope(Node node, boolean isAbsolute) throws Exception {
+	public void setLoopScope(Node node, boolean isAbsolute, Source source) throws Exception {
 		checkSetLoopScope(node);
-		setLoopScopeNoCheck(node, isAbsolute, null);
+		setLoopScopeNoCheck(node, isAbsolute, null, source);
 	}	
 
 	public void checkSetLoopScope(Node node) throws Exception {
@@ -214,11 +211,11 @@ public class RouteUnknowns {
 		return enclosingLoopNode.getAttributes().getIsAbsolute();
 	}
 	
-	private void setLoopScopeNoCheck(Node node, boolean isAbsolute, Reference reference) {
+	private void setLoopScopeNoCheck(Node node, boolean isAbsolute, Reference reference, Source source) {
 		invalidateCachedStats();		
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
 		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-		enclosingLoopNode.getAttributes().addKnown(Type.LOOP_SCOPE, Source.EXPLICIT, new Reference[] {reference});
+		enclosingLoopNode.getAttributes().addKnown(Type.LOOP_SCOPE, source, new Reference[] {reference});
 	}
 
 	// ===================================================================== //
