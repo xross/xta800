@@ -1,11 +1,11 @@
 analyse function main
-set time - inst 1000 cycles
+set instructiontime - inst 1000 cycles
 
 analyse function main
-set time - inst 2000.0 ns
+set instructiontime - inst 2000.0 ns
 
 analyse function main
-set time - inst 0.1 mhz
+set instructiontime - inst 0.1 mhz
 
 dumpscript > dump.txt
 source dump.txt

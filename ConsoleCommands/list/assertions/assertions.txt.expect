@@ -1,7 +1,18 @@
-Function Time: f 1000.0 ns
-Path Time: start stop 2000.0 ns
-Loop Iterations: l 10
-Loop Path Iterations: lp 22
-Loop Scope: l r
-Instruction Time: inst 200.0 ns
+f: 1000.0 ns
+f: 1000.0 ns
+start to stop: 2000.0 ns
+start to stop: 2000.0 ns
+inst: 200.0 ns
+inst: 200.0 ns
+l: 10
+l: 10
+lp: 22
+lp: 22
+l: false
+l: false
+none
+none
+none
+none
+none
 none

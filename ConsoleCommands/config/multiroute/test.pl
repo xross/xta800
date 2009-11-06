@@ -12,10 +12,10 @@ system("xcc -target=$target -nostartfiles test.s -o $genDir/test.xe > $genDir/mu
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "-set time - main 100.0 ns " .
+       "-set instructiontime - main 100.0 ns " .
        "-print structure - " .
        "-config threads 1 " .
-       "-set time - main 100.0 ns " .
+       "-set instructiontime - main 100.0 ns " .
        "-print structure - " .
        "-exit > $genDir/multiroute.txt 2>&1");
 

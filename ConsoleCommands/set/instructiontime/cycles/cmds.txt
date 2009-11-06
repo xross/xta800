@@ -1,0 +1,7 @@
+set instructiontime - inst 1000 cycles
+analyse function main
+list knowns -
+set instructiontime - inst 1000 cycles
+list knowns -
+set instructiontime - inst 5000 cycles
+list knowns -

@@ -1,0 +1,6 @@
+list functiontimes
+list pathtimes
+list instructiontimes
+list loops
+list looppaths
+list loopscopes

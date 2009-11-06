@@ -13,6 +13,6 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 system("@ARGV load $genDir/test.xe " . 
        "source cmds.txt " .
        "load $genDir/test.xe " .
-       "list assertions " .
+       "source cmds2.txt " .
        "exit > $genDir/assertions.txt 2>&1");
 

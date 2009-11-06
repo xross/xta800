@@ -56,9 +56,9 @@ system("@ARGV  " .
        "-remove branch branch1 " .
 
        "-set loop - a 99 " .
-       "-set time - test.xc:12 99 ns " .
-       "-set time - label1 99 cycles " .
-       "-set time - 0x1000 99 cycles " .
+       "-set instructiontime - test.xc:12 99 ns " .
+       "-set instructiontime - label1 99 cycles " .
+       "-set instructiontime - 0x1000 99 cycles " .
  
        "-source invalid.txt " .
        "-status " .

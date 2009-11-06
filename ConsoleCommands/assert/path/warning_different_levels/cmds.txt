@@ -1,4 +1,0 @@
-assert path start stop 999.0 ns 
-analyse function main
-print structure -
-

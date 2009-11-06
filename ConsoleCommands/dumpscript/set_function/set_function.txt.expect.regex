@@ -5,5 +5,5 @@ load .*test\.xe
 # Route: main
 #
 analyse function main
-set function - f 999.0 ns
+set functiontime - f 999.0 ns
 

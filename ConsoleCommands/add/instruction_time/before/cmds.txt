@@ -1,0 +1,4 @@
+add instructiontime inst 1000 ns
+analyse function main
+list knowns -
+

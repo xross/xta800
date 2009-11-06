@@ -1,4 +1,4 @@
 analyse function main
-set path - start stop 999.0 ns
+set pathtime - start stop 999.0 ns
 list knowns -
 dumpscript

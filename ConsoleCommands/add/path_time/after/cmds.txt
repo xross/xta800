@@ -1,0 +1,3 @@
+analyse function main
+add pathtime start stop 4999.0 ns 
+list knowns -

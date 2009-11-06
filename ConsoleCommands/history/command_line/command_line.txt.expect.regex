@@ -37,9 +37,9 @@
 35: print route_info 0
 36: remove branch branch1
 37: set loop - a 99
-38: set time - test.xc:12 99.0 ns
-39: set time - label1 99 cycles
-40: set time - 0x1000 99 cycles
+38: set instructiontime - test.xc:12 99.0 ns
+39: set instructiontime - label1 99 cycles
+40: set instructiontime - 0x1000 99 cycles
 41: source invalid.txt
 42: status
 43: version

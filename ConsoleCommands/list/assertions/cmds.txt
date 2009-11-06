@@ -1,8 +1,23 @@
-assert function f 1000.0 ns
-assert path start stop 2000.0 ns
-assert loop l 10
-assert looppath lp 22
-assert loopscope l r
-assert time inst 200.0 ns
-list assertions
+add functiontime f 1000.0 ns
+add functiontime f 1000.0 ns
+list functiontimes
 
+add pathtime start stop 2000.0 ns
+add pathtime start stop 2000.0 ns
+list pathtimes
+
+add instructiontime inst 200.0 ns
+add instructiontime inst 200.0 ns
+list instructiontimes
+
+add loop l 10
+add loop l 10
+list loops
+
+add looppath lp 22
+add looppath lp 22
+list looppaths
+
+add loopscope l r
+add loopscope l r
+list loopscopes

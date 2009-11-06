@@ -1,7 +1,0 @@
-set time - inst 1000 cycles
-analyse function main
-list knowns -
-set time - inst 1000 cycles
-list knowns -
-set time - inst 5000 cycles
-list knowns -

@@ -1,6 +1,0 @@
-assert loop outer 5
-assert loop inner 10
-assert loopscope inner a
-analyse function main
-print structure -
-

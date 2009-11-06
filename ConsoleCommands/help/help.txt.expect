@@ -1,6 +1,5 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
-  [-]assert <option> <arg0> <arg1>...: Assert timing
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
   [-]echo "text": prints the text to the console
@@ -20,27 +19,26 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
+      option: loop <ANY_REF> <iterations>: Adds the given loop count assertion to the list of assertions
+      option: looppath <ANY_REF> <iterations>: Adds the given loop path count assertion to the list of assertions
+      option: loopscope <ANY_REF> <scope>: Adds the given loop scope assertion to the list of assertions
+          scope: relative/r: Iteration number propagates to the enclosing path (Default)
+          scope: absolute/a: Absolute number of iterations
+      option: instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of assertions
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of assertions
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of assertions
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
       option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
       option: function <FUNCTION_REF>: Analyse the given function
-  [-]assert <option> <arg0> <arg1>...: Assert timing
-      option: loop <ANY_REF> <iterations>: Assert the number of iterations for the loop identified
-      option: looppath <ANY_REF> <iterations>: Asserts the number of iterations for the path identified
-      option: loopscope <ANY_REF> <scope>: Asserts the scope of the referenced loop
-          scope: relative/r: Iteration number propagates to the enclosing path (Default)
-          scope: absolute/a: Absolute number of iterations
-      option: time <ENDPOINT_REF> <value> <mode>: Asserts the time taken for the instruction at the given pc
-          mode: ns:     nanoseconds
-          mode: mhz:    megahertz
-          mode: cycles: processor thread cycles
-      option: function <FUNCTION_REF> <value> <mode>: Assert timing for the given function
-          mode: ns:     nanoseconds
-          mode: mhz:    megahertz
-          mode: cycles: processor thread cycles
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Assert timing for the given path
-          mode: ns:     nanoseconds
-          mode: mhz:    megahertz
-          mode: cycles: processor thread cycles
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
@@ -58,7 +56,6 @@
       options: PC_REF, FUNCTION_REF, LABEL_REF, ENDPOINT_REF, ANY_REF
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
-      option: branches: Lists the branches
       option: labels: Lists the labels
       option: srclabels: Lists the source labels
       option: endpoints: Lists the endpoints
@@ -74,8 +71,14 @@
       option: functions: Lists the functions in the loaded application
       option: sources: Lists the source files
       option: knowns <route id>: Displays the list of knowns set for the given route
+      option: branches: Lists the branches
       option: exclusions: Displays the exclusions
-      option: assertions: Lists the assertions
+      option: loops: Displays the loop assertions
+      option: looppaths: Displays the loop path assertions
+      option: loopscopes: Displays the loop scope assertions
+      option: instructiontime: Displays the instruction time assertions
+      option: functiontimes: Displays the function time assertions
+      option: pathtimes: Displays the path time assertions
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary (verbosity -2|-1|0)
@@ -92,6 +95,12 @@
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF>: Removes the given from reference from the branches list
       option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
+      option: loop <ANY_REF|*>: Removes the given loop count assertion to the list of assertions
+      option: looppath <ANY_REF|*>: Removes the given loop path count assertion to the list of assertions
+      option: loopscope <ANY_REF|*>: Removes the given loop scope assertion to the list of assertions
+      option: instructiontime <ENDPOINT_REF>: Removes the given instruction time from the list of assertions
+      option: functiontime <FUNCTION_REF>: Removes the given functon time from the list of assertions
+      option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF>: Removes the given path time from the list of assertions
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
       option: loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified
@@ -99,7 +108,7 @@
       option: loopscope <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
+      option: instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
@@ -107,11 +116,11 @@
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
-      option: function <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
+      option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
-      option: path <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route
+      option: pathtime <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles

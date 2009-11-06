@@ -1,0 +1,6 @@
+add pathtime start1 stop1 1999.0 ns 
+add pathtime start2 stop2 2999.0 ns 
+add pathtime start3 stop3 3999.0 ns 
+
+analyse function main
+print structure -

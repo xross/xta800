@@ -1,1 +1,0 @@
-assert function main 10.0 ns 

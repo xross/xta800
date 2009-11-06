@@ -17,7 +17,7 @@ system("@ARGV load $genDir/test.xe " .
        "list knowns - " .
        "print trace - " .
 
-       "-set time - 0x10008 100.0 ns " .
+       "-set instructiontime - 0x10008 100.0 ns " .
 
        "list unknowns - " .
        "list knowns - " .
