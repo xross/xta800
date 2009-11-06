@@ -54,9 +54,10 @@ class LoopScopeImpl implements XtaImpl {
 
     public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
-    		if (m_assert.getSelection() || (m_node == null)) {
+    		if (m_assert.getSelection()) {
     		    GuiEngine.getEngine().addLoopScope(GuiEngine.s_guiCommandSrc, m_reference.getText(), m_scope);
-    		} else {
+    		}
+    		if (m_node != null) {
     		    GuiEngine.getEngine().setLoopScope(GuiEngine.s_guiCommandSrc, m_node, m_scope);
     		}
     	}

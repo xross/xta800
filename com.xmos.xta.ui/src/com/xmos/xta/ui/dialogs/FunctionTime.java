@@ -28,7 +28,6 @@ import com.xmos.xta.ui.GuiEngine;
 public class FunctionTime extends XtaDialog {
     public FunctionTime(Shell parent, Route route) {
     	super(parent, new FunctionTimeImpl(route), "Function Time");
-    	open();
     }
 }
 
@@ -73,9 +72,10 @@ class FunctionTimeImpl implements XtaImpl {
 
 			for (Object object : ((IStructuredSelection)m_function.getViewer().getSelection()).toArray()) {
 				if (object instanceof String) {
-		    		if (m_assert.getSelection() || (m_route == null)) {
-		    		    m_engine.addFunctionTime(GuiEngine.s_guiCommandSrc, (String)object, timeUnit);    			
-		    		} else {
+		    		if (m_assert.getSelection()) {
+		    		    m_engine.addFunctionTime(GuiEngine.s_guiCommandSrc, (String)object, timeUnit);
+		    		}
+		    		if (m_route != null) {
 		    		    m_engine.setFunctionTime(GuiEngine.s_guiCommandSrc, m_route.getRouteId(), (String)object, timeUnit);
 		    		}					
 				}
@@ -83,7 +83,7 @@ class FunctionTimeImpl implements XtaImpl {
 			Text filterControl = m_function.getFilterControl();
 			if (filterControl != null) {
 				s_filterString = filterControl.getText();
-			}    		
+			}
     	}
     }
       

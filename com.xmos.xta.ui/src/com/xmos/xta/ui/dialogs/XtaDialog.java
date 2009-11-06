@@ -19,7 +19,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
+import com.xmos.xta.ui.GuiEngine;
 
 public abstract class XtaDialog extends Dialog implements ButtonEnabler {
 	private XtaImpl m_impl;
@@ -52,6 +54,9 @@ public abstract class XtaDialog extends Dialog implements ButtonEnabler {
 
     protected void buttonPressed(int id) {
     	m_impl.buttonPressed(id);
+    	if (id == IDialogConstants.OK_ID) {
+    		GuiEngine.broadcast(Notifier.NOTIFY_UPDATE_STATE, "");
+    	}
     	super.buttonPressed(id);
     }	
 	

@@ -79,9 +79,8 @@ class InstructionTimeImpl implements XtaImpl {
         		for (Node node : m_nodes) {
         			if (m_assert.getSelection()) {
         				GuiEngine.getEngine().addInstructionTime(GuiEngine.s_guiCommandSrc, node.getReferenceStr(), timeUnit);
-        			} else {
-       				    GuiEngine.getEngine().setInstructionTime(GuiEngine.s_guiCommandSrc, node, timeUnit);
         			}
+   				    GuiEngine.getEngine().setInstructionTime(GuiEngine.s_guiCommandSrc, node, timeUnit);
         		}    			
     		}
     	}
