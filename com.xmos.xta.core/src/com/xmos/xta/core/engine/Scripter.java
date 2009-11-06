@@ -2,7 +2,6 @@ package com.xmos.xta.core.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
@@ -12,8 +11,7 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
-import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
-import com.xmos.xta.core.engine.assertions.PathTimeInfo;
+import com.xmos.xta.core.engine.assertions.Assertions;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Scripter {
@@ -23,6 +21,7 @@ public class Scripter {
 	private int m_currentNodeId;
 	private int m_currentCoreId;
 	private Collection<Reference> m_currentExclusions;
+	private Assertions m_currentAssertions;
 	
 	public Scripter(Engine engine) {
 		m_engine = engine;
@@ -30,6 +29,7 @@ public class Scripter {
 		m_currentNodeId = 0;
 		m_currentCoreId = 0;
 		m_currentExclusions = new ArrayList<Reference>();
+		m_currentAssertions = engine.getAssertions();
 	}
 
 	public String createScript() {
@@ -37,9 +37,7 @@ public class Scripter {
  	
     	m_currentRouteId = 0;
     	script.append(String.format("load %s\n", m_engine.getExecutable().toString()));
-    	    	
-    	assertions(script);
-    	
+    	    	    	
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
         	if (routeContainer.numExistingRoutes() <= 0)
         		continue;
@@ -48,6 +46,7 @@ public class Scripter {
 
        		routeComment(routeContainer, script);
         	globalConfig(routeContainer, script);
+        	addAssertions(routeContainer, script);
         	addExclusions(routeContainer, script);
         	analyseRoutes(routeContainer, script);
         	removeRoutes(routeContainer, script);
@@ -65,27 +64,7 @@ public class Scripter {
     	
     	return script.toString();
     }
- 
-	private void assertions(StringBuffer script) {
-		if (m_engine.getFunctionTimeAssertions().isEmpty() &&
-			m_engine.getPathTimeAssertions().isEmpty())
-			return;
-			
-		script.append("\n");
-    	script.append("#\n");
-    	script.append("# Assertions\n");
-    	script.append("#\n");			
-    	
-		for (FunctionTimeInfo info : m_engine.getFunctionTimeAssertions()) {			
-			script.append("assert function " + info.getFunction() + 
-					" " + info.getTimeUnit().getDescription(true) + "\n");
-		}
-		for (PathTimeInfo info : m_engine.getPathTimeAssertions()) {			
-			script.append("assert path " + info.getFrom() + " " + info.getTo() + 
-					" " + info.getTimeUnit().getDescription(true) + "\n");			
-		}			    	
-	}
-	
+ 	
 	private void routeComment(RouteContainer routeContainer, StringBuffer script) {
     	RouteDescription routeDescription = routeContainer.getDescription();
 
@@ -109,10 +88,18 @@ public class Scripter {
     			routeContainer.getDescription().getCoreId());
     }
     
+	private void addAssertions(RouteContainer routeContainer, StringBuffer script) {
+		Assertions assertions = routeContainer.getDescription().getAssertions();
+   		assertions.updateScript(m_currentAssertions, script, 
+   				routeContainer.getDescription().getNodeId(), 
+   				routeContainer.getDescription().getCoreId());
+		m_currentAssertions = assertions;
+	}
+    
     private void addExclusions(RouteContainer routeContainer, StringBuffer script) {	
     	Collection<Reference> exclusions = routeContainer.getDescription().getExclusions();
     	
-    	if (exclusionsDiffer(m_currentExclusions, exclusions)) {
+    	if (!m_currentExclusions.equals(exclusions)) {
     		if (!m_currentExclusions.isEmpty()) {
         	    script.append("remove exclusion *\n");
     		}
@@ -230,20 +217,5 @@ public class Scripter {
     	if (!portable) {
 			script.append("# Warning: The following line contains a non-portable reference.\n");
 		}
-    }
-
-    private boolean exclusionsDiffer(Collection<Reference> ex1, Collection<Reference> ex2) {
-    	if (ex1.size() != ex2.size())
-    		return true;
-    	
-    	Iterator<Reference> iter1 = ex1.iterator();
-    	Iterator<Reference> iter2 = ex2.iterator();
-
-    	while (iter1.hasNext() && iter2.hasNext()) {
-    		if (iter1.next() != iter2.next()) {
-    			return true;
-    		}
-    	}    	
-        return false;
     }
 }

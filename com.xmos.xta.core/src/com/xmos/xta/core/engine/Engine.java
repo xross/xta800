@@ -298,7 +298,7 @@ public class Engine implements Notifier {
 						
 		} else {
 			RouteDescription routeDescription = new RouteDescription(functionRef, this, 
-					m_nodeId, m_coreId, m_exclusions, m_config);			
+					m_nodeId, m_coreId, m_exclusions, m_assertions, m_config);			
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
@@ -327,7 +327,7 @@ public class Engine implements Notifier {
 			
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, 
-					m_nodeId, m_coreId, m_exclusions, m_config);
+					m_nodeId, m_coreId, m_exclusions, m_assertions, m_config);
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
@@ -710,6 +710,10 @@ public class Engine implements Notifier {
 
 	public Collection<LoopScopeInfo> getLoopScopeAssertions() {
 		return m_assertions.getLoopScopes(m_nodeId, m_coreId);
+	}
+	
+	Assertions getAssertions() {
+		return m_assertions;
 	}
 	
 	// ===================================================================== //

@@ -3,6 +3,7 @@ package com.xmos.xta.core.engine.assertions;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.NodeCoreCollection;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
@@ -24,6 +25,36 @@ public class Assertions {
     	m_loopScopes       = new NodeCoreCollection<ArrayList<LoopScopeInfo>>();
 	}
 
+    public Assertions(Assertions assertions) {    	
+    	m_functionTimes    = copy(assertions.m_functionTimes);
+    	m_pathTimes        = copy(assertions.m_pathTimes);
+    	m_instructionTimes = copy(assertions.m_instructionTimes);
+    	m_loops            = copy(assertions.m_loops);
+    	m_loopPaths        = copy(assertions.m_loopPaths);
+    	m_loopScopes       = copy(assertions.m_loopScopes);
+    }
+    	
+	public void updateScript(Assertions assertions, StringBuffer script, int nodeId, int coreId) {		
+		if (!getFunctionTimes(nodeId, coreId).equals(assertions.getFunctionTimes(nodeId, coreId))) {
+			updateScript(script, getFunctionTimes(nodeId, coreId), "functiontime", "*");
+		}
+		if (!getPathTimes(nodeId, coreId).equals(assertions.getPathTimes(nodeId, coreId))) {
+			updateScript(script, getPathTimes(nodeId, coreId), "pathtime", "* *");
+		}
+		if (!getInstructionTimes(nodeId, coreId).equals(assertions.getInstructionTimes(nodeId, coreId))) {
+			updateScript(script, getInstructionTimes(nodeId, coreId), "instructiontime", "*");
+		}
+		if (!getLoops(nodeId, coreId).equals(assertions.getLoops(nodeId, coreId))) {
+			updateScript(script, getLoops(nodeId, coreId), "loop", "*");
+		}
+		if (!getLoopPaths(nodeId, coreId).equals(assertions.getLoopPaths(nodeId, coreId))) {
+			updateScript(script, getLoopPaths(nodeId, coreId), "looppath", "*");
+		}
+		if (!getLoopScopes(nodeId, coreId).equals(assertions.getLoopScopes(nodeId, coreId))) {
+			updateScript(script, getLoopScopes(nodeId, coreId), "loopscope", "*");
+		}
+	}
+    	
     public void clear() {
     	m_functionTimes.clear();
     	m_pathTimes.clear();
@@ -152,6 +183,22 @@ public class Assertions {
 			list.add(nodeId, coreId, new ArrayList<T>());
 		}
         return list.get(nodeId, coreId);		
-	}		
+	}
+	
+	private void updateScript(StringBuffer script, Collection<? extends AssertionInfo> list, String command, String removeStr) {		
+		script.append("remove " + command + " " + removeStr + "\n");				
+		for (AssertionInfo info : list) {			
+			script.append("add " + command + " " + info.getDescription() + " " + info.getValue() + "\n");
+		}		
+	}
+	
+	private <T> NodeCoreCollection<ArrayList<T>> copy(NodeCoreCollection<ArrayList<T>> oldList) {
+    	NodeCoreCollection<ArrayList<T>> newList = new NodeCoreCollection<ArrayList<T>>();
+    	for (Pair<Integer, Integer> pair : oldList.getEntries()) {
+    		newList.add(pair.first, pair.second, 
+                new ArrayList<T>(oldList.get(pair.first, pair.second)));
+    	}
+    	return newList;
+	}
 }
 
