@@ -1,12 +1,18 @@
 load .*test\.xe
 
 #
-# Assertions
+# Route: g
 #
-assert function f 999.000000 ns
+remove functiontime \*
+add functiontime f 999.010000 ns
+add functiontime a 111.010000 ns
+analyse function g
 
 #
-# Route: main
+# Route: h
 #
-analyse function main
+remove functiontime \*
+add functiontime f 888.010000 ns
+add functiontime b 222.010000 ns
+analyse function h
 

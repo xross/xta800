@@ -1,25 +1,44 @@
 #include <xs1.h>
 
-int f() {
-    int i = 0;
-    while (i < 10) {
-        ++i;
-    }
-    return 0;
-}
-
-int g() {
+void f() {
     int time;
     timer t;
-
     #pragma xta endpoint "start"
     t :> time;
-    f();
     #pragma xta endpoint "stop"
     t when timerafter(time + 300) :> time;
 }
 
+void g() {
+    int time;
+    timer t;
+    #pragma xta endpoint "start1"
+    t :> time;
+    #pragma xta endpoint "stop1"
+    t when timerafter(time + 300) :> time;
+}
+
+void h() {
+    int time;
+    timer t;
+    #pragma xta endpoint "start2"
+    t :> time;
+    #pragma xta endpoint "stop2"
+    t when timerafter(time + 300) :> time;
+}
+
+void a() {
+  f();
+  g(); 
+}
+
+void b() {
+  f();
+  h(); 
+}
+
 int main(void) {
-    g();
+    a();
+    b();
     return 0;
 }
