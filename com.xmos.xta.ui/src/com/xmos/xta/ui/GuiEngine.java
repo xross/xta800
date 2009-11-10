@@ -213,9 +213,9 @@ public class GuiEngine {
 			s_log.add(GuiLog.Level.INFO, argument);
 
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+			resetGuiState();
+			refreshGuiRouteProperties();
 			if (!s_engine.wasReload()) {
-				resetGuiState();
-				refreshGuiRouteProperties();
 				s_disassemblyInputs.clear();				
 			}
 			
