@@ -10,6 +10,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.assertions.Assertions;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
@@ -27,15 +28,15 @@ public class RouteDescription {
 	private int m_nodeId;
 	private int m_coreId;
 	private Collection<Reference> m_exclusions;
+	private Assertions m_assertions;
 	private Config m_config;
-	private boolean m_isAssertion;
 
 	public enum RouteMode {
 		PATH, FUNCTION
 	};
 
 	public RouteDescription(Reference from, Reference to, int nodeId, int coreId, 
-			Collection<Reference> exclusions, Config config) {
+			Collection<Reference> exclusions, Assertions assertions, Config config) {
 
 		m_mode = RouteMode.PATH;
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
@@ -47,13 +48,13 @@ public class RouteDescription {
 		m_nodeId = nodeId;
 		m_coreId = coreId;		
 		m_exclusions = new ArrayList<Reference>();
-		m_exclusions.addAll(exclusions);		
+		m_exclusions.addAll(exclusions);
+		m_assertions = new Assertions(assertions);
 		m_config = new Config(config);
-		m_isAssertion = false;
 	}
 
 	public RouteDescription(Reference function, Engine engine, int nodeId, int coreId, 
-			Collection<Reference> exclusions, Config config) {
+			Collection<Reference> exclusions, Assertions assertions, Config config) {
 
 		m_mode = RouteMode.FUNCTION;
 		m_description = String.format("function: %s", function.getRef());
@@ -64,9 +65,9 @@ public class RouteDescription {
 		m_nodeId = nodeId;
 		m_coreId = coreId;				
 		m_exclusions = new ArrayList<Reference>();
-		m_exclusions.addAll(exclusions);		
+		m_exclusions.addAll(exclusions);
+		m_assertions = new Assertions(assertions);		
 		m_config = new Config(config);
-		m_isAssertion = false;
 		
 		StructureGraph sg = engine.getStructureGraph();
         findEndpoints(sg, sg.getThreads());
@@ -120,17 +121,13 @@ public class RouteDescription {
 	public Collection<Reference> getExclusions() {
 		return m_exclusions;
 	}
-	
-	public Config getConfig() {
-		return m_config;
+
+	public Assertions getAssertions() {
+		return m_assertions;
 	}
 
-	public void setIsAssertion(boolean isAssertion) {
-		m_isAssertion = isAssertion;
-	}
-	
-	public boolean isAssertion() {
-		return m_isAssertion;
+	public Config getConfig() {
+		return m_config;
 	}
 	
 	private void findEndpoints(StructureGraph sg, Collection<FunctionNode> functionNodes) {

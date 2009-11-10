@@ -6,20 +6,19 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
-public class Time extends Command {
+public class InstructionTime extends Command {
 	private int m_routeId;
 	private String m_refString;
 	private TimeUnit m_timeUnit;
 	
-	public Time() {
+	public InstructionTime() {
 		m_routeId = 0;
 		m_refString = null;
 		m_timeUnit = null;
 	}
 	
-	public Time(int routeId, String refString, TimeUnit timeUnit) {
+	public InstructionTime(int routeId, String refString, TimeUnit timeUnit) {
 		m_routeId = routeId;
 		m_refString = refString;
 		m_timeUnit = timeUnit;
@@ -34,16 +33,16 @@ public class Time extends Command {
 	}    
     
     public String name() {
-    	return "time";
+    	return "instructiontime";
     }        
 
     public String commandLine() {
-       	return String.format("time %s %s %s", getRouteId(m_routeId), 
+       	return String.format("instructiontime %s %s %s", getRouteId(m_routeId), 
        			m_refString, m_timeUnit.getDescription(false));
     }
     
     public String description(Engine engine, boolean detailed) {
-        String descString = "time <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";         
+        String descString = "instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";         
        	if (detailed) {    	    	
            	descString += "\n";
            	descString += TimeUnit.getHelp();
@@ -68,7 +67,7 @@ public class Time extends Command {
    		    
 	    TimeUnit timeUnit = new TimeUnit(value, mode);
 	    if (timeUnit.isValid()) {
-	    	return new Time(routeId, ref, timeUnit);
+	    	return new InstructionTime(routeId, ref, timeUnit);
 	    }
 	    return null;
     }
@@ -77,15 +76,9 @@ public class Time extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	    	
     	
-		Node node = getReferencedNode(engine, m_routeId, m_refString);
-		if (node != null) {
-	        engine.setFixedTime(getSrc(), node, m_timeUnit);
-			
-		} else {		
-	        if (!engine.setFixedTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
-	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-	   	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
-	        }
+        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
 		}		
     }    
 }

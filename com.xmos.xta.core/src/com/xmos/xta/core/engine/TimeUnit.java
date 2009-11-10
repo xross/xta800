@@ -71,8 +71,16 @@ public class TimeUnit {
 		m_config = config;
 	}
 		
+	public TimeUnit(Config config, TimeUnit timeUnit) {
+		m_config = config;
+		m_units = timeUnit.m_units;
+		m_cycles = timeUnit.m_cycles;
+		m_ns = timeUnit.m_ns;
+		m_mhz = timeUnit.m_mhz;
+	}
+	
 	public void setConfig(Config config) {
-		m_config  = config;
+		m_config = config;
 	}
 	
 	public boolean isValid() {

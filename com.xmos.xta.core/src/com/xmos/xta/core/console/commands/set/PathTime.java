@@ -6,20 +6,20 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
 
-public class Path extends Command {
+public class PathTime extends Command {
 	private int m_routeId;	
 	private String m_fromRef;
 	private String m_toRef;
 	private TimeUnit m_timeUnit;
 	
-	public Path() {
+	public PathTime() {
 		m_routeId = 0;
 		m_fromRef = "";
 		m_toRef = "";
 		m_timeUnit = null;
 	}
 	
-	public Path(int routeId, String fromRef, String toRef, TimeUnit timeUnit) {
+	public PathTime(int routeId, String fromRef, String toRef, TimeUnit timeUnit) {
 		m_routeId = routeId;
 		m_fromRef = fromRef;
 		m_toRef = toRef;	  	
@@ -35,15 +35,15 @@ public class Path extends Command {
 	}    
 
     public String name() {
-    	return "path";
+    	return "pathtime";
     }        
 
     public String commandLine() {
-    	return "path " + getRouteId(m_routeId) + " " + m_fromRef + " " + m_toRef + " " + m_timeUnit.getDescription(false);
+    	return "pathtime " + getRouteId(m_routeId) + " " + m_fromRef + " " + m_toRef + " " + m_timeUnit.getDescription(false);
     }
     
     public String description(Engine engine, boolean detailed) {
-    	String descString = "path <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route";      	
+    	String descString = "pathtime <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route";      	
        	if (detailed) {    	    	
        		descString += "\n" + TimeUnit.getHelp();
        	}
@@ -63,7 +63,7 @@ public class Path extends Command {
 
 	        TimeUnit timeUnit = new TimeUnit(value, mode);
 	        if (timeUnit.isValid()) { 
-	    	    return new Path(routeId, fromRef, toRef, timeUnit);
+	    	    return new PathTime(routeId, fromRef, toRef, timeUnit);
 	        }
 	    } catch (NumberFormatException e) {}
 	    return null;                
@@ -73,6 +73,6 @@ public class Path extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.setPath(getSrc(), m_routeId, m_fromRef, m_toRef, m_timeUnit);
+        engine.setPathTime(getSrc(), m_routeId, m_fromRef, m_toRef, m_timeUnit);
     }    
  }

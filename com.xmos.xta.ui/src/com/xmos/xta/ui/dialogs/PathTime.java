@@ -69,10 +69,11 @@ class PathTimeImpl implements XtaImpl {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
     		
-    		if (m_assert.getSelection() || (m_route == null)) {
-    		    m_engine.assertPath(GuiEngine.s_guiCommandSrc, m_from.getText(), m_to.getText(), timeUnit);    			
-    		} else {
-    		    m_engine.setPath(GuiEngine.s_guiCommandSrc, m_route.getRouteId(), m_from.getText(), m_to.getText(), timeUnit);
+    		if (m_assert.getSelection()) {
+    		    m_engine.addPathTime(GuiEngine.s_guiCommandSrc, m_from.getText(), m_to.getText(), timeUnit);    			
+    		}
+    		if (m_route != null) {
+    		    m_engine.setPathTime(GuiEngine.s_guiCommandSrc, m_route.getRouteId(), m_from.getText(), m_to.getText(), timeUnit);
     		}
     	}
     }

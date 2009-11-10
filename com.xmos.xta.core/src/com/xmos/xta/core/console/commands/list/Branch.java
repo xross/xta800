@@ -10,16 +10,13 @@ import java.util.TreeSet;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Branch extends Command {
-	public enum Operation {
-		ADD, REMOVE, LIST
-	};
-
 	private String m_fromRefString;
 	private Collection<String> m_toRefStrings;
 	private Operation m_operation;

@@ -6,13 +6,13 @@ import org.eclipse.swt.SWT;
 import com.xmos.xta.core.engine.assertions.AssertionInfo;
 import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-class AssertionsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
+class LabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
     static final String DESCRIPTION = "Description";
     static final String VALUE       = "Value";
     
-    AssertionsViewerLabelProvider() {
+    LabelProvider() {
     	m_columnNames = new String[] { DESCRIPTION, VALUE };
-    	m_columnWidths = new int[] { 300, 200 };
+    	m_columnWidths = new int[] { 200, 200 };
     	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT };
     }
     
@@ -22,10 +22,10 @@ class AssertionsViewerLabelProvider extends BaseViewerLabelProvider implements I
 		
 		AssertionInfo info = (AssertionInfo)element;
 		if (m_columnNames[columnIndex].equals(DESCRIPTION)) {
-			return info.m_description;
+			return info.getDescription();
 			
     	} else if (m_columnNames[columnIndex].equals(VALUE)) {    		
-	        return info.m_value;
+	        return info.getValue();
         }
 		assert(false);
 		return "";
@@ -39,9 +39,9 @@ class AssertionsViewerLabelProvider extends BaseViewerLabelProvider implements I
 		AssertionInfo p2 = (AssertionInfo)e2;
 		int res = 0;
 		if (column.equals(DESCRIPTION)) {
-			res = p1.m_description.compareTo(p2.m_description);
+			res = p1.getDescription().compareTo(p2.getDescription());
 		} else if (column.equals(VALUE)) {
-			res = p1.m_value.compareTo(p2.m_value);
+			res = p1.getValue().compareTo(p2.getValue());
 		} else {
 			assert(false);
 		}

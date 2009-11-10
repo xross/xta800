@@ -21,7 +21,7 @@ public class Asm extends Command {
 		m_routeId = routeId;
 		m_nodeId = nodeId;
 		m_nodeIdSet = nodeIdSpecified;
-}
+    }
 	
     public int numArgs() {
     	if (m_nodeIdSet) {

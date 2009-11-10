@@ -39,7 +39,7 @@ class LoopPathImpl implements XtaImpl {
 	   	m_node = node;	   	
 	   	
     	if (m_node != null) {
-        	m_iterations = GuiEngine.getEngine().getSetLoopPathIterations(node);	    	
+        	m_iterations = GuiEngine.getEngine().getSetLoopPath(node);	    	
         	Node loopNode = m_node.getEnclosingLoopNode();
     		assert(loopNode != null);
     		if (loopNode.isSelfLoopNode()) {
@@ -65,10 +65,11 @@ class LoopPathImpl implements XtaImpl {
 	
     public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {  
-    		if (m_assert.getSelection() || (m_node == null)) {
-    		    GuiEngine.getEngine().assertLoopPath(GuiEngine.s_guiCommandSrc, m_reference.getText(), m_iterations);
-    		} else {
-    		    GuiEngine.getEngine().setLoopPathIterations(GuiEngine.s_guiCommandSrc, m_node, m_iterations);
+    		if (m_assert.getSelection()) {
+    		    GuiEngine.getEngine().addLoopPath(GuiEngine.s_guiCommandSrc, m_reference.getText(), m_iterations);
+    		}
+    		if (m_node != null) {
+    		    GuiEngine.getEngine().setLoopPath(GuiEngine.s_guiCommandSrc, m_node, m_iterations);
     		}
     	}
     }

@@ -8,10 +8,10 @@ public class Set extends CommandContainer {
 		new Loop(),
 		new LoopPath(),
 		new LoopScope(), 
-		new Time(), 
+		new InstructionTime(), 
 		new Required(), 
-		new Function(), 
-		new Path(), 
+		new FunctionTime(), 
+		new PathTime(), 
 	};
 	
 	public Set() { super("set"); }

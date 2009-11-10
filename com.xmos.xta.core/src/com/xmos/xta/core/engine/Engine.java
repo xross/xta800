@@ -39,14 +39,13 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
-import com.xmos.xta.core.engine.assertions.AssertionInfo;
 import com.xmos.xta.core.engine.assertions.Assertions;
-import com.xmos.xta.core.engine.assertions.FunctionInfo;
+import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
+import com.xmos.xta.core.engine.assertions.InstructionTimeInfo;
 import com.xmos.xta.core.engine.assertions.LoopInfo;
 import com.xmos.xta.core.engine.assertions.LoopPathInfo;
 import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
-import com.xmos.xta.core.engine.assertions.PathInfo;
-import com.xmos.xta.core.engine.assertions.TimeInfo;
+import com.xmos.xta.core.engine.assertions.PathTimeInfo;
 import com.xmos.xta.core.engine.instructions.DataCollection;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
@@ -179,6 +178,9 @@ public class Engine implements Notifier {
 	}
 
 	public Collection<String> getNonSystemFunctionNames() {
+		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId))
+			return new HashSet<String>();
+			
 		Collection<String> functionNames = m_xeLoader.getFunctionNames(m_nodeId, m_coreId);
 		Set<String> systemFunctions = new HashSet<String>();
 		Collection<String> systems = m_sections.getSystems(m_nodeId, m_coreId);
@@ -299,7 +301,7 @@ public class Engine implements Notifier {
 						
 		} else {
 			RouteDescription routeDescription = new RouteDescription(functionRef, this, 
-					m_nodeId, m_coreId, m_exclusions, m_config);			
+					m_nodeId, m_coreId, m_exclusions, m_assertions, m_config);			
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
@@ -328,7 +330,7 @@ public class Engine implements Notifier {
 			
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, 
-					m_nodeId, m_coreId, m_exclusions, m_config);
+					m_nodeId, m_coreId, m_exclusions, m_assertions, m_config);
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
@@ -581,88 +583,126 @@ public class Engine implements Notifier {
 	// ===================================================================== //
 	// Assertion Methods
 	// ===================================================================== //			
-	public boolean assertFunction(CommandSource src, String functionName, TimeUnit timeUnit) {
-		boolean passed = analyseTemporaryRoute(src, functionName, timeUnit);
-		m_assertions.addFunction(m_nodeId, m_coreId, functionName, timeUnit);
-		applyFunctionAssertionToRoutes(src, m_routes, new FunctionInfo(functionName, timeUnit));
+	public void addFunctionTime(CommandSource src, String functionName, TimeUnit timeUnit) {
+		m_assertions.addFunctionTime(m_nodeId, m_coreId, functionName, timeUnit);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		return passed;
 	}
 
-	public boolean assertPath(CommandSource src, String from, String to, TimeUnit timeUnit) {
-		boolean passed = analyseTemporaryRoute(src, from, to, timeUnit);
-		m_assertions.addPath(m_nodeId, m_coreId, from, to, timeUnit);
-		applyPathAssertionToRoutes(src, m_routes, new PathInfo(from, to, timeUnit));
+	public void addPathTime(CommandSource src, String from, String to, TimeUnit timeUnit) {
+		m_assertions.addPathTime(m_nodeId, m_coreId, from, to, timeUnit);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		return passed;
 	}	
 
-	public void assertLoop(CommandSource src, String refString, long iterations) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addLoop(m_nodeId, m_coreId, reference, iterations);			
-			try {
-				applyLoopToRoutes(src, m_routes, new LoopInfo(reference, iterations));
-			} catch (Exception e) {}
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
-	}
-
-	public void assertLoopPath(CommandSource src, String refString, long iterations) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addLoopPath(m_nodeId, m_coreId, reference, iterations);
-			try {
-				applyLoopPathToRoutes(m_routes, new LoopPathInfo(reference, iterations));
-			} catch (Exception e) {}			
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
-	}
-
-	public void assertLoopScope(CommandSource src, String refString, boolean absolute) {		
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addLoopScope(m_nodeId, m_coreId, reference, absolute);
-			try {
-				applyLoopScopeToRoutes(m_routes, new LoopScopeInfo(reference, absolute));
-			} catch (Exception e) {}			
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
+	public void addInstructionTime(CommandSource src, String refString, final TimeUnit timeUnit) {
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addInstructionTime(m_nodeId, m_coreId, reference, timeUnit);
+			}			
+		});
 	}
 	
-	public void assertFixedTime(CommandSource src, String refString, TimeUnit timeUnit) {		
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
-			m_assertions.addTime(m_nodeId, m_coreId, reference, timeUnit);
-			applyFixedTimeToRoutes(m_routes, new TimeInfo(reference, timeUnit));
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
-		}
+	public void addLoop(CommandSource src, String refString, final long iterations) {
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addLoop(m_nodeId, m_coreId, reference, iterations);
+			}			
+		});
 	}
 
-	public Collection<AssertionInfo> getAssertions() {
-		return m_assertions.getDescriptions(m_nodeId, m_coreId);
+	public void addLoopPath(CommandSource src, String refString, final long iterations) {
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addLoopPath(m_nodeId, m_coreId, reference, iterations);
+			}			
+		});
+	}
+
+	public void addLoopScope(CommandSource src, String refString, final boolean absolute) {		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.addLoopScope(m_nodeId, m_coreId, reference, absolute);
+			}			
+		});
+	}
+
+	public void removeFunctionTime(CommandSource src, String functionName) {
+		if (functionName.equals("*")) {
+			m_assertions.clearFunctionTimes(m_nodeId, m_coreId);
+		} else {		
+		    m_assertions.removeFunctionTime(m_nodeId, m_coreId, functionName);
+		}
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+	}
+
+	public void removePathTime(CommandSource src, String from, String to) {
+		if (from.equals("*") && to.equals("*")) {
+			m_assertions.clearPathTimes(m_nodeId, m_coreId);
+		} else {		
+			m_assertions.removePathTime(m_nodeId, m_coreId, from, to);
+		}		
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+	}	
+
+	public void removeInstructionTime(CommandSource src, String refString) {	
+		if (refString.equals("*")) {
+			m_assertions.clearInstructionTimes(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeInstructionTime(m_nodeId, m_coreId, reference);
+			}			
+		});
 	}
 	
-	public Collection<FunctionInfo> getFunctionAssertions() {
-		return m_assertions.getFunctions(m_nodeId, m_coreId);
+	public void removeLoop(CommandSource src, String refString) {
+		if (refString.equals("*")) {
+			m_assertions.clearLoops(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeLoop(m_nodeId, m_coreId, reference);
+			}			
+		});
 	}
 
-	public Collection<PathInfo> getPathAssertions() {
-		return m_assertions.getPaths(m_nodeId, m_coreId);
+	public void removeLoopPath(CommandSource src, String refString) {
+		if (refString.equals("*")) {
+			m_assertions.clearLoopPaths(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeLoopPath(m_nodeId, m_coreId, reference);
+			}			
+		});
 	}
 
+	public void removeLoopScope(CommandSource src, String refString) {		
+		if (refString.equals("*")) {
+			m_assertions.clearLoopScopes(m_nodeId, m_coreId);
+			return;
+		}		
+		updateAssertions(src, refString, new AssertionUpdate() {
+			public void run(Reference reference) {
+				m_assertions.removeLoopScope(m_nodeId, m_coreId, reference);
+			}			
+		});
+	}
+	
+	public Collection<FunctionTimeInfo> getFunctionTimeAssertions() {
+		return m_assertions.getFunctionTimes(m_nodeId, m_coreId);
+	}
+
+	public Collection<PathTimeInfo> getPathTimeAssertions() {
+		return m_assertions.getPathTimes(m_nodeId, m_coreId);
+	}
+
+	public Collection<InstructionTimeInfo> getInstructionTimeAssertions() {
+		return m_assertions.getInstructionTimes(m_nodeId, m_coreId);
+	}
+	
 	public Collection<LoopInfo> getLoopAssertions() {
 		return m_assertions.getLoops(m_nodeId, m_coreId);
 	}
@@ -674,36 +714,34 @@ public class Engine implements Notifier {
 	public Collection<LoopScopeInfo> getLoopScopeAssertions() {
 		return m_assertions.getLoopScopes(m_nodeId, m_coreId);
 	}
-
-	public Collection<TimeInfo> getTimeAssertions() {
-		return m_assertions.getTimes(m_nodeId, m_coreId);
+	
+	Assertions getAssertions() {
+		return m_assertions;
 	}
 	
 	// ===================================================================== //
 	// Set Function/Path Methods
 	// ===================================================================== //			
-	public boolean setFunction(CommandSource src, int routeId, String functionName, TimeUnit timeUnit) {		
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty())
-			return false;
-
-		applyFunctionAssertionToRoutes(src, routes, new FunctionInfo(functionName, timeUnit));		
-		return analyseTemporaryRoute(src, functionName, timeUnit);
+	public void setFunctionTime(CommandSource src, int routeId, String functionName, TimeUnit timeUnit) {		
+		FunctionTimeInfo info = new FunctionTimeInfo(functionName, timeUnit);
+		RouteAssertions assertions = new RouteAssertions();
+		for (Route route : getRoute(routeId)) {
+			assertions.applyFunctionAssertion(this, src, route, info, Source.EXPLICIT);
+		}		
 	}
 
-	public boolean setPath(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty())
-			return false;
-		
-		applyPathAssertionToRoutes(src, routes, new PathInfo(from, to, timeUnit));		
-		return analyseTemporaryRoute(src, from, to, timeUnit);
-	}	
-		
+	public void setPathTime(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
+	    PathTimeInfo info = new PathTimeInfo(from, to, timeUnit);
+		RouteAssertions assertions = new RouteAssertions();
+		for (Route route : getRoute(routeId)) {
+			assertions.applyPathAssertion(this, src, route, info, Source.EXPLICIT);
+		}
+	}
+			
 	// ===================================================================== //
-	// Set Loop Iteration Methods
+	// Set Loop Methods
 	// ===================================================================== //		
-	public void setLoopIterations(CommandSource src, int routeId, String refString, long iterations) {
+	public void setLoop(CommandSource src, int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
@@ -715,7 +753,7 @@ public class Engine implements Notifier {
 			return;
 		}
 		try {
-			applyLoopToRoutes(src, routes, new LoopInfo(reference, iterations));
+			applyLoopToRoutes(src, routes, new LoopInfo(reference, iterations), Source.EXPLICIT);
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;
@@ -723,9 +761,9 @@ public class Engine implements Notifier {
 	    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
-	public void setLoopIterations(CommandSource src, Node node, long iterations) {
+	public void setLoop(CommandSource src, Node node, long iterations) {
 		try {
-			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations);
+			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations, Source.EXPLICIT);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} catch (Exception e) {
@@ -733,7 +771,7 @@ public class Engine implements Notifier {
 		}		
 	}
 
-	public boolean canSetLoopIterations(Node node) {
+	public boolean canSetLoop(Node node) {
 		try {
 			m_selectedRoute.getRouteUnknowns().checkSetLoopIterations(node);
 			return true;
@@ -743,23 +781,27 @@ public class Engine implements Notifier {
 		}
 	}
 
-	public long getSetLoopIterations(Node node) {
+	public long getSetLoop(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getSetLoopIterations(node);
 	}
 	
-	public void applyLoopToRoutes(CommandSource src, Collection<Route> routes, LoopInfo info) throws Exception {
+	public void applyLoopToRoutes(CommandSource src, Collection<Route> routes, 
+			LoopInfo info, Source source) throws Exception {
+		
 		for (Route route : routes) {
-			route.getRouteUnknowns().checkSetLoopIterations(info.getReference(), info.getIterations());
+			route.getRouteUnknowns().checkSetLoopIterations(
+					info.getReference(), info.getIterations());
 		}
 		for (Route route : routes) {
-		    route.getRouteUnknowns().setLoopIterations(src, this, info.getReference(), info.getIterations(), false);
+		    route.getRouteUnknowns().setLoopIterations(src, this, 
+		    		info.getReference(), info.getIterations(), false, source);
 		}
 	}
 	
 	// ===================================================================== //
-	// Set Loop Path Iteration Methods
+	// Set Loop Path Methods
 	// ===================================================================== //			
-	public void setLoopPathIterations(CommandSource src, int routeId, String refString, long iterations) {
+	public void setLoopPath(CommandSource src, int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (!resolveRefernece(reference)) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
@@ -771,7 +813,7 @@ public class Engine implements Notifier {
 			return;
 		}
 		try {
-			applyLoopPathToRoutes(routes, new LoopPathInfo(reference, iterations));
+			applyLoopPathToRoutes(routes, new LoopPathInfo(reference, iterations), Source.EXPLICIT);
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;
@@ -779,9 +821,9 @@ public class Engine implements Notifier {
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
-	public void setLoopPathIterations(CommandSource src, Node node, long iterations) {
+	public void setLoopPath(CommandSource src, Node node, long iterations) {
 		try {
-			m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations);
+			m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations, Source.EXPLICIT);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} catch (Exception e) {
@@ -789,7 +831,7 @@ public class Engine implements Notifier {
 		}		
 	}
 
-	public boolean canSetLoopPathIterations(Node node) {
+	public boolean canSetLoopPath(Node node) {
 		try {
 			m_selectedRoute.getRouteUnknowns().checkSetLoopPathIterations(node);
 			return true;
@@ -799,16 +841,20 @@ public class Engine implements Notifier {
 		}
 	}
 	
-	public long getSetLoopPathIterations(Node node) {
+	public long getSetLoopPath(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getSetLoopPathIterations(node);
 	}
 
-	public void applyLoopPathToRoutes(Collection<Route> routes, LoopPathInfo info) throws Exception {
+	public void applyLoopPathToRoutes(Collection<Route> routes, 
+			LoopPathInfo info, Source source) throws Exception {
+		
 		for (Route route : routes) {
-			route.getRouteUnknowns().checkSetLoopPathIterations(info.getReference(), info.getIterations());
+			route.getRouteUnknowns().checkSetLoopPathIterations(
+					info.getReference(), info.getIterations());
 		}
 		for (Route route : routes) {
-		    route.getRouteUnknowns().setLoopPathIterations(info.getReference(), info.getIterations());
+		    route.getRouteUnknowns().setLoopPathIterations(
+		    		info.getReference(), info.getIterations(), source);
 		}
 	}
 	
@@ -827,7 +873,7 @@ public class Engine implements Notifier {
 			return;
 		}
 		try {
-			applyLoopScopeToRoutes(routes, new LoopScopeInfo(reference, absolute));
+			applyLoopScopeToRoutes(routes, new LoopScopeInfo(reference, absolute), Source.EXPLICIT);
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;			
@@ -837,7 +883,7 @@ public class Engine implements Notifier {
 
 	public void setLoopScope(CommandSource src, Node node, boolean absolute) {
 		try {
-		    m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute);
+		    m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute, Source.EXPLICIT);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		
     	} catch (Exception e) {
@@ -859,19 +905,23 @@ public class Engine implements Notifier {
 		return m_selectedRoute.getRouteUnknowns().getSetLoopScope(node);
 	}
 	
-	public void applyLoopScopeToRoutes(Collection<Route> routes, LoopScopeInfo info) throws Exception {
+	public void applyLoopScopeToRoutes(Collection<Route> routes, 
+			LoopScopeInfo info, Source source) throws Exception {
+		
 		for (Route route : routes) {
-			route.getRouteUnknowns().checkSetLoopScope(info.getReference(), info.getAbsolute());
+			route.getRouteUnknowns().checkSetLoopScope(
+					info.getReference(), info.getAbsolute());
 		}
 		for (Route route : routes) {
-		    route.getRouteUnknowns().setLoopScope(info.getReference(), info.getAbsolute());		   
+		    route.getRouteUnknowns().setLoopScope(
+		    		info.getReference(), info.getAbsolute(), source);		   
 		}
 	}
 	
 	// ===================================================================== //
-	// Fixed Time Methods
+	// Instruction Time Methods
 	// ===================================================================== //			
-	public boolean setFixedTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
+	public boolean setInstructionTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
 		if (!resolveRefernece(reference)) {
 			return false;
@@ -880,29 +930,31 @@ public class Engine implements Notifier {
 		if (routes.isEmpty()) {
 			return false;
 		}
-		if (applyFixedTimeToRoutes(routes, new TimeInfo(reference, timeUnit))) {
+		if (applyInstructionTimeToRoutes(routes, new InstructionTimeInfo(reference, timeUnit), Source.EXPLICIT)) {
 		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		    return true;
 		}
 		return false;
 	}
 
-	public void setFixedTime(CommandSource src, Node node, TimeUnit timeUnit) {
+	public void setInstructionTime(CommandSource src, Node node, TimeUnit timeUnit) {
 		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.EXPLICIT);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
-	public TimeUnit getFixedTime(Node node) {
+	public TimeUnit getInstructionTime(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getFixedTime(node);
 	}
 	
-	public boolean applyFixedTimeToRoutes(Collection<Route> routes, TimeInfo info) {	
+	public boolean applyInstructionTimeToRoutes(Collection<Route> routes, 
+			InstructionTimeInfo info, Source source) {
+		
 		for (Route route : routes) {
 		    if (!route.getRouteUnknowns().canInstructionPause(info.getReference()))
 		    	return false;		    	
 		}
 		for (Route route : routes) {
-		    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit(), Type.INSTRUCTION_TIME, Source.EXPLICIT);
+		    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit(), Type.INSTRUCTION_TIME, source);
 		}
 		return true;
 	}
@@ -1371,60 +1423,26 @@ public class Engine implements Notifier {
 		return false;
 	}
 			
-	private boolean timingPassed(int routeId) {
-		for (Route route : getRoute(routeId)) {
-			if (!route.getRouteTiming().passedTiming()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private void applyFunctionAssertionToRoutes(CommandSource src, Collection<Route> routes, FunctionInfo info) {
-		RouteAssertions assertions = new RouteAssertions();
-		for (Route route : routes) {
-			assertions.applyFunctionAssertion(this, src, route, info, Source.EXPLICIT);
-		}		
-	}
-	
-	private void applyPathAssertionToRoutes(CommandSource src, Collection<Route> routes, PathInfo info) {
-		RouteAssertions assertions = new RouteAssertions();
-		for (Route route : routes) {
-			assertions.applyPathAssertion(this, src, route, info, Source.EXPLICIT);
-		}		
-	}	
-	
-	private boolean analyseTemporaryRoute(CommandSource src, String functionName, TimeUnit timeUnit) {
-		boolean passed = false;
-		if (analyseRoute(src, functionName, true)) {
-			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);			
-			passed = timingPassed(ROUTE_ID_LAST);
-			if (!passed) {
-				notify(src, Notifier.NOTIFY_WARNING, "Timing failed on function assertion");
-			}	
-			removeRoute(src, ROUTE_ID_LAST);
-		}
-		return passed;
-	}
-	
-	private boolean analyseTemporaryRoute(CommandSource src, String from, String to, TimeUnit timeUnit) {
-		boolean passed = false;
-		if (analyseRoute(src, from, to, true)) {
-			setRequiredTime(src, ROUTE_ID_LAST, timeUnit);						
-			passed = timingPassed(ROUTE_ID_LAST);
-			if (!passed) {
-				notify(src, Notifier.NOTIFY_WARNING, "Timing failed on path assertion");
-			}	
-			removeRoute(src, ROUTE_ID_LAST);
-		}	
-		return passed;
-	}
-
     private void updateSourceMapper(SourceMapper sourceMapper, String fileName, File file, int nodeId, int coreId) {
         DebugEngine debugEngine = m_xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();					
         SourceFile sf = sourceMapper.getSourceFile(fileName);
         sourceMapper.setFile(debugEngine, sf, file);    	
-    }	
+    }
+    
+	private void updateAssertions(CommandSource src, String refString, AssertionUpdate update) {		
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
+		if (resolveRefernece(reference)) {
+			update.run(reference);
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+			
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
+		}
+	}    
+	
+	private static interface AssertionUpdate {
+		void run(Reference reference);
+	}
 }
 
 class FileLocation {

@@ -85,7 +85,7 @@ public class Views {
 		    }
 	    };
 	    manager.add(action);
-	    if (oneNodeSelected(selectedNodes) && GuiEngine.getEngine().canSetLoopIterations(firstNode))
+	    if (oneNodeSelected(selectedNodes) && GuiEngine.getEngine().canSetLoop(firstNode))
 	    	action.setEnabled(true);
 	    else
 	    	action.setEnabled(false);
@@ -100,7 +100,7 @@ public class Views {
 		    }
 	    };
 	    manager.add(action);
-	    if (oneNodeSelected(selectedNodes) && GuiEngine.getEngine().canSetLoopPathIterations(firstNode))
+	    if (oneNodeSelected(selectedNodes) && GuiEngine.getEngine().canSetLoopPath(firstNode))
 	    	action.setEnabled(true);
 	    else
 	    	action.setEnabled(false);		
