@@ -42,8 +42,6 @@ class InstructionTimeImpl implements XtaImpl {
 	private ButtonEnabler m_enabler;
 	
 	public InstructionTimeImpl(List<Node> nodes) {
-    	assert(nodes.size() > 0);    	
-    	
     	if (nodes != null) {
     	    m_nodes = new ArrayList<Node>();
     	    m_nodes.addAll(nodes);
