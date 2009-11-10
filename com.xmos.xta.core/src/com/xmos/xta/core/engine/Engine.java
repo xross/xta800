@@ -178,6 +178,9 @@ public class Engine implements Notifier {
 	}
 
 	public Collection<String> getNonSystemFunctionNames() {
+		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId))
+			return new HashSet<String>();
+			
 		Collection<String> functionNames = m_xeLoader.getFunctionNames(m_nodeId, m_coreId);
 		Set<String> systemFunctions = new HashSet<String>();
 		Collection<String> systems = m_sections.getSystems(m_nodeId, m_coreId);
