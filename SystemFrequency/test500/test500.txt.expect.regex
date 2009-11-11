@@ -1,0 +1,13 @@
+Route\(0\) function: f
+    Pass, Num Paths: 1, Slack: 16.0ns, Required: 48.0ns, Worst: 32.0ns, Min Frequency: 333 Mhz
+
+Route\(1\) function: f
+    Pass, Num Paths: 1, Slack: 20.0ns, Required: 60.0ns, Worst: 40.0ns, Min Frequency: 266 Mhz
+
+Route\(2\) function: f
+    Pass, Num Paths: 1, Slack: 16000000.0ns, Required: 48000000.0ns, Worst: 32000000.0ns, Min Frequency: 0 Mhz
+
+Route\(3\) function: f
+    Pass, Num Paths: 1, Slack: 16000.0ns, Required: 48000.0ns, Worst: 32000.0ns, Min Frequency: 0 Mhz
+
+Pass, Min Frequency: 333 Mhz
