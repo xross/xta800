@@ -35,5 +35,5 @@ INCLUDES 	= -I $(AES_SOURCE_DIR) \
 all: xc
 				
 xc:
-	xcc -O2 $(AESFILESBASIC) $(AESFILESXC) -o $(TARGETNAME)_xc.xe \
+	xcc -target=$(TARGET) -O2 $(AESFILESBASIC) $(AESFILESXC) -o $(TARGETNAME)_xc.xe \
 				

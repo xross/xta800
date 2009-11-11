@@ -60,7 +60,7 @@ $(TARGETDIR)/pktbuffer.o \
 $(TARGETDIR)/ledbuffer.o
 
 $(TARGETDIR)/test.xe: $(OBJECTS)
-	xcc -g -o $(TARGETDIR)/test.xe $(OBJECTS)
+	xcc -target=$(TARGET) -g -o $(TARGETDIR)/test.xe $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
 	xcc $(INCLUDES) -save-temps -g -O3 -Wall -c -o "$@" "$<"

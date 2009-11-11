@@ -42,7 +42,7 @@ static int serviceEndpoint(XUD_chan xc, chanend c_lld_ep, unsigned cmd, unsigned
     unsigned char pid;
     int i;
 
-#pragma unsafe-arrays
+#pragma unsafe arrays
     switch(cmd)
     {
         case XUD_CMD_OUT:

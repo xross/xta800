@@ -10,8 +10,8 @@ my $noBuild = shift(@ARGV);
 my $directory = "camera_1.0";
 
 if (!$noBuild) {
-    system("xmake>  $genDir/$directory.log 2>&1");
-    system("mv  bin/XDK/camera.xe $genDir/test.xe >  $genDir/$directory.log 2>&1");
+    system("xmake > $genDir/$directory.log 2>&1");
+    system("mv bin/XDK/camera.xe $genDir/test.xe > $genDir/$directory.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .

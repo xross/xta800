@@ -19,5 +19,5 @@ $(SOURCEDIR)/KeyExpansion.S \
 all: $(TARGETDIR)/test.xe
 
 $(TARGETDIR)/test.xe:
-	xcc $(SOURCES) -o $(TARGETDIR)/test.xe
+	xcc $(SOURCES) -target=$(TARGET) -o $(TARGETDIR)/test.xe
 

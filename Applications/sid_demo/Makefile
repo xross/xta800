@@ -20,7 +20,7 @@ $(TARGETDIR)/pwm.o \
 $(TARGETDIR)/main.o
 
 $(TARGETDIR)/test.xe: $(OBJECTS)
-	xcc -g -o $(TARGETDIR)/test.xe $(OBJECTS)
+	xcc -target=$(TARGET) -g -o $(TARGETDIR)/test.xe $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
 	xcc $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"

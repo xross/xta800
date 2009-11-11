@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xmake TARGETDIR=$genDir > $genDir/ledtile.log 2>&1");
+system("xmake TARGET=$target TARGETDIR=$genDir > $genDir/ledtile.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .

@@ -15,7 +15,7 @@ $(TARGETDIR)/interS1Thread.o \
 $(TARGETDIR)/interS2Thread.o
 
 $(TARGETDIR)/test.xe: $(OBJECTS)
-	xcc -o $(TARGETDIR)/test.xe $(OBJECTS)
+	xcc -target=$(TARGET) -o $(TARGETDIR)/test.xe $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
 	xcc $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
