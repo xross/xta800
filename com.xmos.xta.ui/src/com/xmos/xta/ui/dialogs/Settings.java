@@ -5,6 +5,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -13,16 +15,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.ui.GuiEngine;
 
 public class Settings extends Dialog {
-    private Spinner m_coreMhzSpinner;
+    private Text m_coreMhzText;
     private Spinner m_threadSpinner;
     private Button m_caseButton;
   
-    private int m_oldFrequency;
+    private double m_oldFrequency;
     private int m_oldNumThreads;
     
     public Settings(Shell parent) {
@@ -32,12 +35,13 @@ public class Settings extends Dialog {
     	open();
     }
 
-	public int getFrequency() {
-		return GuiEngine.getEngine().getFrequency();
+	public double getFrequency() {
+		return (double)GuiEngine.getEngine().getFrequencyHz() / 1000000;
 	}
 
-	public void setFrequency(int frequency) {
-		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiCommandSrc, frequency);
+	public void setFrequency(double frequency) {
+		long frequencyHz = (long)(frequency * 1000000);
+		GuiEngine.getEngine().setFrequencyHz(GuiEngine.s_guiCommandSrc, frequencyHz);
 	}
 
 	public int getNumThreads() {
@@ -79,17 +83,19 @@ public class Settings extends Dialog {
     
 	private void createSettingsBar(Composite controls) {
 		Group freqGroup = XtaDialog.createGroup(controls, "Core Mhz", 1, 1);
-	    m_coreMhzSpinner = new Spinner(freqGroup, SWT.BORDER);
-		m_coreMhzSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_coreMhzSpinner.setMinimum(1);
-		m_coreMhzSpinner.setMaximum(Integer.MAX_VALUE);
-		m_coreMhzSpinner.setSelection(getFrequency());
-		m_coreMhzSpinner.setIncrement(1);
-		m_coreMhzSpinner.setPageIncrement(10);
-		m_coreMhzSpinner.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setFrequency(m_coreMhzSpinner.getSelection());
-			}			
+		m_coreMhzText = new Text(freqGroup, SWT.BORDER | SWT.SINGLE);
+		m_coreMhzText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		m_coreMhzText.setText(Double.toString(getFrequency()));
+		m_coreMhzText.addVerifyListener(new VerifyListener() {
+			public void verifyText(VerifyEvent e) {
+				try {
+					double frequency = Double.parseDouble(m_coreMhzText.getText());
+					setFrequency(frequency);
+					enable(true);
+				} catch(Exception ex) {
+					enable(false);
+				}
+			}
 		});
 
 		Group threadsGroup = XtaDialog.createGroup(controls, "Num Threads", 1, 1);
@@ -123,6 +129,13 @@ public class Settings extends Dialog {
 
 	private void setCase(boolean isWorstCase) {
 		GuiEngine.getEngine().setCase(GuiEngine.s_guiCommandSrc, isWorstCase ? Case.WORST : Case.BEST);
+	}
+
+	private void enable(boolean enable) {
+		Button okButton = getButton(IDialogConstants.OK_ID);
+		if (okButton != null) {
+			okButton.setEnabled(enable);
+		}
 	}
 }
 

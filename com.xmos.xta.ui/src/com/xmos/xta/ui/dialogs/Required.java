@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
@@ -21,7 +20,6 @@ public class Required extends XtaDialog {
 }
 
 class RequiredImpl implements XtaImpl {
-	private Engine m_engine;
 	private Route m_route;
 	private RouteTiming m_routeTiming;
 	private int m_routeId;    
@@ -54,16 +52,20 @@ class RequiredImpl implements XtaImpl {
     	if (id == IDialogConstants.OK_ID) {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
-    		m_engine.setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, timeUnit);
+    		GuiEngine.getEngine().setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, timeUnit);
     	}
     }    
     
     public void updateButtonStatus() {
-		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
-		if (timeUnit.isValid()) {
-			m_enabler.enable(true);
-		} else {
-			m_enabler.enable(false);
-		}    	
+    	if (m_value != null && m_units != null) {
+			TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
+			if (timeUnit.isValid()) {
+				m_enabler.enable(true);
+			} else {
+				m_enabler.enable(false);
+			}
+    	} else {
+    		m_enabler.enable(false);
+    	}
     } 
 }

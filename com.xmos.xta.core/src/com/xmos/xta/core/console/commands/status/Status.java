@@ -43,7 +43,7 @@ public class Status extends Command {
     	console.display(String.format("Current node: %d\n", nodeId));    	
     	console.display(String.format("Current core: %d\n", coreId));
 
-    	console.display(String.format("Frequency: %d\n", engine.getConfig().m_frequency));    	
+    	console.display(String.format("Frequency: %d\n", engine.getConfig().m_frequencyHz / 1000000));    	
     	console.display(String.format("NumThreads: %d\n", engine.getConfig().m_numThreads));
     	console.display(String.format("TimingFailAsError: %s\n",
     			engine.getConfig().m_timingFailuresAsErrors ? "true" : "false"));

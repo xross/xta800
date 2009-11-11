@@ -19,6 +19,7 @@ import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionHandler;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
@@ -69,6 +70,7 @@ public class Engine implements Notifier {
 	private final static boolean LAZY = true;
 	
 	private XeLoader m_xeLoader;
+	private XnLoader m_xnLoader;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
 	private int m_numRoutesLastAnalysed;
@@ -101,6 +103,7 @@ public class Engine implements Notifier {
 		m_functionNames = new NodeCoreCollection<TreeMap<String, LinkedList<InstructionNode>>>();
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
 		m_xeLoader = new XeLoader();
+		m_xnLoader = new XnLoader();
 		m_routes = new LinkedList<Route>();
 		m_routeContainers = new LinkedList<RouteContainer>();
 		m_numRoutesLastAnalysed = 0;
@@ -239,7 +242,13 @@ public class Engine implements Notifier {
 			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
-		
+
+		XnLoader xnLoader = new XnLoader();
+		if (!xnLoader.loadExecutable(executableFile)) {
+			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' did not contain a valid XN.");
+			return false;			
+		}
+
 		Sections sections = new Sections();
 		if (!sections.load(src, xeLoader, this)) {
 			return false;
@@ -266,8 +275,10 @@ public class Engine implements Notifier {
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
+		m_xnLoader = xnLoader;
 		m_sections = sections;
-		m_nodeId = 0;
+		m_nodeId = -1; // Ensure the change happens
+		setNodeId(src, 0);
 		m_coreId = 0;			
 		m_routes.clear();
 		m_routeContainers.clear();
@@ -357,6 +368,7 @@ public class Engine implements Notifier {
 		if (nodeId != m_nodeId) {
 			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeId, m_coreId)) {
 				m_nodeId = nodeId;
+				m_config.m_frequencyHz = m_xnLoader.getFrequencyHz(m_nodeId);
 				m_selectedRoute = null;
 				notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
 				
@@ -387,13 +399,13 @@ public class Engine implements Notifier {
 		return m_coreId;
 	}
 
-	public void setFrequency(CommandSource src, int frequency) {
-		m_config.m_frequency = frequency;
+	public void setFrequencyHz(CommandSource src, long frequencyHz) {
+		m_config.m_frequencyHz = frequencyHz;
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
 	}
 
-	public int getFrequency() {
-		return m_config.m_frequency;
+	public long getFrequencyHz() {
+		return m_config.m_frequencyHz;
 	}
 
 	public void setNumThreads(CommandSource src, int numThreads) {

@@ -30,7 +30,7 @@ public class Freq extends Command {
     
     public String description(Engine engine, boolean detailed) {
         return String.format("freq <core frequency>: Sets the core frequency in Mhz (currently: %d)", 
-        		engine.getFrequency());      	
+        		(engine.getFrequencyHz() / 1000000));      	
     }
 
     public Command clone(String[] args, int index) {
@@ -46,6 +46,6 @@ public class Freq extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-        engine.setFrequency(getSrc(), m_frequency);
+        engine.setFrequencyHz(getSrc(), m_frequency * 1000000);
     }    
 }

@@ -90,7 +90,7 @@ public class RouteTiming {
 	}
 
 	public int getMinFrequency(Status status) {
-		return (int)((getWorstTime(status) / m_maxTime.getNs()) * m_config.m_frequency);
+		return (int)((getWorstTime(status) / m_maxTime.getNs()) * (double)m_config.m_frequencyHz / 1000000);
 	}
 		
 	public String getDescription(Level level) {

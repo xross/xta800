@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.xeloader.DebugInfo;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
@@ -36,7 +37,14 @@ public class FilesViewContentProvider implements ITreeContentProvider  {
 	        return EMPTY_ARRAY;
     	}
 
-	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeId(), engine.getCoreId());
+	    XeLoader xeLoader = engine.getXeLoader();
+	    int nodeId = engine.getNodeId();
+		int coreId = engine.getCoreId();
+		if (!xeLoader.isLoaded(nodeId, coreId)) {
+			return new LinkedList<DebugFile>().toArray();
+		}
+		
+		DebugInfo debugInfo = xeLoader.getDebugInfo(nodeId, coreId);
 	    LinkedList<DebugFile> files = new LinkedList<DebugFile>(debugInfo.getDebugEngine().getDebugFiles());
 	    Collections.sort(files);
 	    files.addFirst(new DebugFile("", XtaDisassemblyEditor.EDITORNAME, XtaDisassemblyEditor.EDITORNAME));
