@@ -264,11 +264,11 @@ public class RouteUnknowns {
 	    	}
 	    });		
 	}
-	
+
 	// ===================================================================== //
 	// Helper Methods
 	// ===================================================================== //	
-	private void refreshDisplayedUnknowns() {
+	public void refreshDisplayedUnknowns() {
 		refreshDisplayedUnknowns(m_route.getNode());
 	}
 	

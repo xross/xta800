@@ -62,7 +62,9 @@ public class StructureDisplayer {
 
 	private void printModifiers(Node node, int depth, StringBuffer sb) {
 		if (depth > 0) {
-			if (node.getAttributes().getDisplayAsUnknown()) {
+			if (node.getAttributes().getFixedTime() != null) {
+				sb.append(".  F ");
+			} else if (node.getAttributes().getDisplayAsUnknown()) {
 				sb.append(".  * ");
 			} else {
 				sb.append(".    ");		
