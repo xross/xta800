@@ -7,6 +7,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 

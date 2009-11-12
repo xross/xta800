@@ -9,6 +9,7 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.assertions.Assertions;
 import com.xmos.xta.core.engine.references.Reference;

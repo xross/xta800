@@ -129,7 +129,7 @@ public class FunctionHandler {
 		return functionToEndPoints;
 	}
 
-	private void findTerminals(Node start, Set<Node> terminals) {
+	private void findTerminals(InstructionNode start, Set<Node> terminals) {
 		Set<Node> seen = new TreeSet<Node>();
 		LinkedList<Node> workingSet = new LinkedList<Node>();
 		seen.add(start);
@@ -141,6 +141,7 @@ public class FunctionHandler {
 				workingSet.remove(currentNode);
 			} else {
 				Set<Node> newNodes = new TreeSet<Node>(currentNode.getNextNodes());
+				
 				newNodes.removeAll(seen);
 				workingSet.addAll(newNodes);
 				seen.addAll(newNodes);
