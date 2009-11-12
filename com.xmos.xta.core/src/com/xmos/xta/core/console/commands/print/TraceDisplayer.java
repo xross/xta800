@@ -23,7 +23,7 @@ public class TraceDisplayer {
     	if (isInfinite(node, c)) {
     		m_console.display("Cannot trace - time is infinite\n");
     	} else {
-        	m_currentTime = 0;        	        
+        	m_currentTime = 0;
     		try {
 				displayInstructions(node, c, 1, 0);
 			} catch (EscapedDetctedException e) {
@@ -60,6 +60,21 @@ public class TraceDisplayer {
     		Node child = getChild(node, c, totalIterations, iteration);
     		displayInstructions(child, c, totalIterations, iteration);
     		
+    	} else if (node.getAttributes().getFixedTime() != null) {
+    		// Deal with function/sequence nodes which have a fixed time
+    		double timeBefore = m_currentTime;
+    		displayChildren(node, c, totalIterations, iteration);
+    		double timeAfter = m_currentTime;
+    		
+    		double fixedTime = node.getAttributes().getFixedTime().getNs();
+    		double timeDifference = fixedTime - (timeAfter - timeBefore);
+         	m_console.display(String.format("  %.1f: (%.1fns) fixed %s time\n",
+             		m_currentTime,
+             		timeDifference,
+             		node.isFunctionNode() ? "function" : "path"));
+
+         	m_currentTime = m_currentTime + timeDifference;
+
     	} else {
     		displayChildren(node, c, totalIterations, iteration);
     	}
