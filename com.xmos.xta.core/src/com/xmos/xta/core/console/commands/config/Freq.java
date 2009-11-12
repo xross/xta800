@@ -6,14 +6,14 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Freq extends Command {
-	private int m_frequency;
+	private String m_frequencyString;
 	
 	public Freq() {
-		m_frequency = 0;
+		m_frequencyString = "";
 	}
 	
-	public Freq(int frequency) {
-		m_frequency = frequency;
+	public Freq(String frequencyString) {
+		m_frequencyString = frequencyString;
 	}
 	
     public int numArgs() {
@@ -25,27 +25,26 @@ public class Freq extends Command {
     }        
 
     public String commandLine() {
-    	return String.format("freq %d", m_frequency);
+    	return String.format("freq %s", m_frequencyString);
     }
     
     public String description(Engine engine, boolean detailed) {
-        return String.format("freq <core frequency>: Sets the core frequency in Mhz (currently: %d)", 
-        		(engine.getFrequencyHz() / 1000000));      	
+        return String.format("freq <core frequency>: Sets the core frequency in Mhz (currently: %f)", 
+        		engine.getFrequency());
     }
 
     public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) 
 			return null;		
 
-    	int frequency;
-        try { frequency = Integer.parseInt(args[index + 1]); }
+        try { Double.parseDouble(args[index + 1]); }
         catch (NumberFormatException e) {
             return null;
         }    	        
-        return new Freq(frequency);
+        return new Freq(args[index + 1]);
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-        engine.setFrequencyHz(getSrc(), m_frequency * 1000000);
+        engine.setFrequency(getSrc(), Double.parseDouble(m_frequencyString));
     }    
 }

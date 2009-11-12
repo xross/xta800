@@ -36,12 +36,11 @@ public class Settings extends Dialog {
     }
 
 	public double getFrequency() {
-		return (double)GuiEngine.getEngine().getFrequencyHz() / 1000000;
+		return GuiEngine.getEngine().getFrequency();
 	}
 
 	public void setFrequency(double frequency) {
-		long frequencyHz = (long)(frequency * 1000000);
-		GuiEngine.getEngine().setFrequencyHz(GuiEngine.s_guiCommandSrc, frequencyHz);
+		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiCommandSrc, frequency);
 	}
 
 	public int getNumThreads() {

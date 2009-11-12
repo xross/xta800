@@ -162,9 +162,9 @@ public class Scripter {
         	script.append(String.format("config threads %s\n", config.m_numThreads));
         	m_currentConfig.m_numThreads = config.m_numThreads;    		
     	}
-    	if (m_currentConfig.m_frequencyHz != config.m_frequencyHz) {
-        	script.append(String.format("config freq %s\n", (config.m_frequencyHz / 1000000)));    		
-        	m_currentConfig.m_frequencyHz = config.m_frequencyHz; 
+    	if (m_currentConfig.m_frequency != config.m_frequency) {
+        	script.append(String.format("config freq %s\n", config.m_frequency));    		
+        	m_currentConfig.m_frequency = config.m_frequency; 
     	}
     	if (m_currentConfig.m_case != config.m_case) {
         	script.append(String.format("config case %s\n", config.m_case));    		
