@@ -189,7 +189,7 @@ public class StructuralAnalysisEngine {
 		
 		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints, unlinkedFunctions);
 		
-		
+		/*
 		if (!allFunctionObjects.isEmpty()) {
 			String warning = "node " + nodeId + ", core " + coreId + ": functions (";
 			boolean first = true;
@@ -206,7 +206,7 @@ public class StructuralAnalysisEngine {
 		
 			engine.notify(src, Notifier.NOTIFY_WARNING, warning);
 		}
-		
+		*/
 		if (REGISTER_CONFIG_ON_GLOBAL_TREE) {
 			// If enabled, this allows the printing of the global structure to 
 			// display the node times. It is disabled by default for efficiency reasons,
