@@ -1,5 +1,3 @@
-xta: warning: failed to find source file: fft.xc
-xta: warning: failed to find source file: fft.xc
 xta: error: the file '.*test_2.xe' could not be loaded.
 Current node: 0
 Current core: 0
@@ -11,5 +9,5 @@ SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test_1.xe
-Node: 0, Core: 0 \(Debug information avaliable\)
+Node: 0, Core: 0 \(No debug information found\)
 No routes analysed

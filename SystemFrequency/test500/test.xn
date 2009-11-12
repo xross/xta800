@@ -20,13 +20,13 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
       <Core Number="2" Reference="stdcore[6]"/>
       <Core Number="3" Reference="stdcore[7]"/>
     </Node>
-    <Node Id="2" Type="XS1-G4A-FB512" SystemFrequency="500Hz">
+    <Node Id="2" Type="XS1-G4A-FB512" SystemFrequency="5000000Hz">
       <Core Number="0" Reference="stdcore[8]"/>
       <Core Number="1" Reference="stdcore[9]"/>
       <Core Number="2" Reference="stdcore[10]"/>
       <Core Number="3" Reference="stdcore[11]"/>
     </Node>
-    <Node Id="3" Type="XS1-G4A-FB512" SystemFrequency="500khz">
+    <Node Id="3" Type="XS1-G4A-FB512" SystemFrequency="5000khz">
       <Core Number="0" Reference="stdcore[12]"/>
       <Core Number="1" Reference="stdcore[13]"/>
       <Core Number="2" Reference="stdcore[14]"/>
