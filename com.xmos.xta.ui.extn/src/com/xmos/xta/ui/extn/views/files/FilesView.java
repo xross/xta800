@@ -49,6 +49,11 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 		GuiEngine.addBroadcastListener(this);
 		m_editorInputs = new HashMap<String, IEditorInput>();
 	}
+	
+	public void dispose() {
+		GuiEngine.removeBroadcastListener(this);
+		super.dispose();
+	}
 
 	public void createPartControl(final Composite parent) {
 	    if (DEBUG) System.out.printf("FilesView: createPartControl\n");
