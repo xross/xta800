@@ -130,11 +130,11 @@ public class TimeUnit {
        	switch (m_units) {
        	case NS: {
        		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-           	return (long)((m_ns * (double)m_config.m_frequencyHz / 1000000) / (threadFactor * 1000));
+           	return (long)((m_ns * m_config.m_frequency) / (threadFactor * 1000));
        	}
        	case MHZ: {
        		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-           	return (long)(((double)m_config.m_frequencyHz / 1000000) / (threadFactor * m_mhz));
+           	return (long)(m_config.m_frequency / (threadFactor * m_mhz));
        	}
        	case CYCLES:
            	return m_cycles;           	    	
@@ -155,7 +155,7 @@ public class TimeUnit {
        		
        	case CYCLES:
        		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-       	    return ((double)(threadFactor * 1000) / ((double)m_config.m_frequencyHz / 1000000)) * m_cycles;           	    		
+       	    return ((double)(threadFactor * 1000) / m_config.m_frequency) * m_cycles;           	    		
        	}
        	assert(false);
        	return 0;				
@@ -173,7 +173,7 @@ public class TimeUnit {
            	
        	case CYCLES:       		
        	  	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-            return ((double)m_config.m_frequencyHz / 1000000) / (double)(threadFactor * m_cycles);
+            return m_config.m_frequency / (double)(threadFactor * m_cycles);
        	}
        	assert(false);
        	return 0;				

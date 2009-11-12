@@ -368,7 +368,7 @@ public class Engine implements Notifier {
 		if (nodeId != m_nodeId) {
 			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeId, m_coreId)) {
 				m_nodeId = nodeId;
-				m_config.m_frequencyHz = m_xnLoader.getFrequencyHz(m_nodeId);
+				m_config.m_frequency = (double)m_xnLoader.getFrequencyHz(m_nodeId) / 1000000;
 				m_selectedRoute = null;
 				notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
 				
@@ -399,13 +399,13 @@ public class Engine implements Notifier {
 		return m_coreId;
 	}
 
-	public void setFrequencyHz(CommandSource src, long frequencyHz) {
-		m_config.m_frequencyHz = frequencyHz;
+	public void setFrequency(CommandSource src, double frequency) {
+		m_config.m_frequency = frequency;
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
 	}
 
-	public long getFrequencyHz() {
-		return m_config.m_frequencyHz;
+	public double getFrequency() {
+		return m_config.m_frequency;
 	}
 
 	public void setNumThreads(CommandSource src, int numThreads) {
