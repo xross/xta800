@@ -17,12 +17,12 @@ public class StructureGraph {
 	private Node m_searchNode;
 	private Map<Long, TreeSet<Node>> m_pcToEndPoints;
 	
-	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions, Map<Long, TreeSet<Node>> pcToEndPoints) {
+	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions, Map<Long, TreeSet<Node>> pcToEndPoints, Set<FunctionNode> unlinkedFunctions) {
 		super();
 		m_threads = threads;
 		m_functions = functions;
 		m_pcToEndPoints = pcToEndPoints;
-		m_unlinkedFunctions = new TreeSet<FunctionNode>();
+		m_unlinkedFunctions = unlinkedFunctions;
 		removeLinks();
 	}
 
@@ -92,7 +92,4 @@ public class StructureGraph {
         return m_searchNode;   	
     }
 
-	public void setUnlinkedFunctions(Set<FunctionNode> unlinkedFunctions) {
-		m_unlinkedFunctions = unlinkedFunctions;
-	}		
 }
