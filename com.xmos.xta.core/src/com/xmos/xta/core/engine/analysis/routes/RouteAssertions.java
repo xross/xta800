@@ -91,7 +91,8 @@ public class RouteAssertions {
 				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path assertion: %s, to route: %s", 
 						info, route.getRouteDescription().getDescription()));				
 			}
-			route.getRouteUnknowns().invalidateCachedStats();			
+			route.getRouteUnknowns().invalidateCachedStats();
+			route.getRouteUnknowns().refreshDisplayedUnknowns();
 		}
 	}	
 

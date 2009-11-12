@@ -4,10 +4,14 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -31,6 +35,11 @@ public class FilteredFunctions extends Dialog {
     	XtaDialog.configureShell(newShell, "Function selector", 0, 0);
     }
 
+    protected void createButtonsForButtonBar(Composite parent) {
+    	super.createButtonsForButtonBar(parent);
+    	getButton(IDialogConstants.OK_ID).setEnabled(false);
+    }
+
     protected Control createDialogArea(Composite parent) {
     	Composite container = (Composite) super.createDialogArea(parent);
 
@@ -41,10 +50,23 @@ public class FilteredFunctions extends Dialog {
 	    viewer.setContentProvider(new FunctionsContentProvider());			
 	    viewer.setLabelProvider(new FunctionsLabelProvider());
 
-		m_signalsViewer.getViewer().addDoubleClickListener(new IDoubleClickListener() {
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				buttonPressed(IDialogConstants.OK_ID);
 			}			
+		});
+		
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				ISelection sel = event.getSelection();
+				if (sel instanceof IStructuredSelection) {
+					if (((IStructuredSelection)sel).size() > 0) {
+						enable(true);
+					} else {
+						enable(false);
+					}
+		        }
+			}
 		});
 	    
 	    viewer.setInput(GuiEngine.getEngine());
@@ -70,5 +92,12 @@ public class FilteredFunctions extends Dialog {
     
     void checkButtonStatus() {
     }
+
+	private void enable(boolean enable) {
+		Button okButton = getButton(IDialogConstants.OK_ID);
+		if (okButton != null) {
+			okButton.setEnabled(enable);
+		}
+	}
 }
 

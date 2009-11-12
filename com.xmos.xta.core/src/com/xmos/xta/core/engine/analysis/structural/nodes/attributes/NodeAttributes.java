@@ -3,6 +3,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -10,6 +11,7 @@ import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
@@ -369,6 +371,16 @@ public class NodeAttributes {
 	// ===================================================================== //
 	public void setFixedTime(TimeUnit timeUnit) {
 		m_fixedTimeTaken = timeUnit;
+		clearUnknowns(m_node);
+	}
+
+	void clearUnknowns(Node node) {
+		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    		node.getAttributes().clearUnknowns();
+	        	return true;
+	    	}
+	    });
 	}
 
 	public TimeUnit getFixedTime() {
@@ -428,6 +440,10 @@ public class NodeAttributes {
     			iter.remove();
     	}
 	}
+
+	public void clearUnknowns() {
+    	m_unknowns.clear();
+    }
 	
 	// ===================================================================== //
 	// Loop Iteration Methods
