@@ -7,9 +7,12 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.NullInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
@@ -40,12 +43,12 @@ public class BlockNode extends IBufferNode {
 		return new BlockNode(this);
 	}
 	
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		List<InstructionNode> insts;
-		if(COPY_INSTRUCTIONS){
+		if (COPY_INSTRUCTIONS){
 			insts = new LinkedList<InstructionNode>();
 			for(InstructionNode inst : m_insts){
-				insts.add((InstructionNode) inst.deepCopy());
+				insts.add((InstructionNode) inst.deepCopy(aborter));
 			}
 		} else {
 			insts = m_insts;
@@ -72,20 +75,32 @@ public class BlockNode extends IBufferNode {
 		}
 		return insts;
 	}
-	
+
+	public XtaInstruction getStartInstruction() {
+		return m_insts.get(0).getXtaInstruction();
+	}
+
 	public long getStartPc() {
 		return getInstructions().getFirst().getPc();
 	}	
 		
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundBlockNode(this, ancestors)) 
-			return;
-			
-		ancestors.push(this);
-		for (Node instruction : m_insts) {
-			instruction.traverse(ancestors, nodeTraverser);
-		}		
-		ancestors.pop();
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundBlockNode(this, ancestors);
+		if (status == TraverseStatus.CONTINUE) {
+			ancestors.push(this);
+			for (Node instruction : m_insts) {
+				status = instruction.traverse(ancestors, nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}		
+			ancestors.pop();
+		}
+		
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> getIndirectChildren() {

@@ -24,9 +24,9 @@ public class StructureDisplayer {
 		final StringBuffer sb = new StringBuffer();
 		for (Node node : nodes) {					
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					displayNodeInfo(node, ancestors, sb);
-					return true;						
+					return TraverseStatus.CONTINUE;						
 				}
 		    });
 		    sb.append("\n");	

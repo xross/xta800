@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Stack;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -14,8 +16,11 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class ReferenceMatcher {
-	public Collection<NodeDescriptor> getNodeDescriptors(Node node, Reference reference) {
-		Collection<NodeDescriptor> nodeDescriptors = getNodesDescriptorsContainingReferencePc(node, reference.getPc());
+
+	public Collection<NodeDescriptor> getNodeDescriptors(Aborter aborter,
+			Node node, Reference reference) throws AbortedException {
+		
+		Collection<NodeDescriptor> nodeDescriptors = getNodesDescriptorsContainingReferencePc(aborter, node, reference.getPc());
 		return checkBackTrail(nodeDescriptors, reference);
 	}
 
@@ -24,20 +29,32 @@ public class ReferenceMatcher {
 		return checkBackTrail(nodeDescriptors, reference);
 	}
 	
-	private Collection<NodeDescriptor> getNodesDescriptorsContainingReferencePc(Node node, final long pc) {		
+	private Collection<NodeDescriptor> getNodesDescriptorsContainingReferencePc(final Aborter aborter,
+			Node node, final long pc) throws AbortedException {
+
 		final Collection<NodeDescriptor> nodeDescriptors = new ArrayList<NodeDescriptor>();	
 		
-		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
-			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {		
+		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+			public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
+				if (aborter.getAbort()) {
+					return TraverseStatus.ABORT;
+				}
+				return TraverseStatus.CONTINUE;
+			}
+			
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {		
 				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
 				if (instruction.getPc() == pc && !instruction.isFnop()) {
 					Stack<Node> newStack = new Stack<Node>();
 					newStack.addAll(ancestors);
 					nodeDescriptors.add(new NodeDescriptor(node, newStack));
 				}
-				return true;
+				return TraverseStatus.CONTINUE;
 			}
 	    });
+		if (aborter.getAbort()) {
+			throw new AbortedException();
+		}
 		return nodeDescriptors;
 	}
 
@@ -45,14 +62,14 @@ public class ReferenceMatcher {
 		final Collection<NodeDescriptor> nodeDescriptors = new ArrayList<NodeDescriptor>();	
 		
 		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
-			public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
+			public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
 				String functionName = ((FunctionNode)node).getFunctionName();				
 				if (name.equals(functionName)) {
 					Stack<Node> newStack = new Stack<Node>();
 					newStack.addAll(ancestors);
 					nodeDescriptors.add(new NodeDescriptor(node, newStack));					
 				}
-				return true;
+				return TraverseStatus.CONTINUE;
 			}
 	    });
 		return nodeDescriptors;

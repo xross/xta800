@@ -7,9 +7,12 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
@@ -63,18 +66,20 @@ public class FunctionNode extends IBufferNode {
     	return new FunctionNode(this);
 	}
 
-	public Node deepCopy(){
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		FunctionNode fn = new FunctionNode();
-		fn.m_functionName = m_functionName;
-		fn.m_branchTarget = m_branchTarget;
-		fn.m_attributes = new NodeAttributes(fn);
-		fn.setUnresolved(isUnresolved());
-		if(m_functionSequence!= null){
-			List<Node> nodes = new LinkedList<Node>();
-			for(Node node : m_functionSequence){
-				nodes.add(node.deepCopy());
+		if (!aborter.getAbort()) {
+			fn.m_functionName = m_functionName;
+			fn.m_branchTarget = m_branchTarget;
+			fn.m_attributes = new NodeAttributes(fn);
+			fn.setUnresolved(isUnresolved());
+			if(m_functionSequence!= null){
+				List<Node> nodes = new LinkedList<Node>();
+				for(Node node : m_functionSequence){
+					nodes.add(node.deepCopy(aborter));
+				}
+				fn.m_functionSequence = nodes;
 			}
-			fn.m_functionSequence = nodes;
 		}
 		return fn;
 	}
@@ -129,7 +134,15 @@ public class FunctionNode extends IBufferNode {
 			return new LinkedList<XtaInstruction>();
 		}
 	}
-		
+
+	public XtaInstruction getStartInstruction() {
+		if (m_functionSequence != null) {
+			return m_functionSequence.get(0).getStartInstruction();
+		} else {
+			return null;
+		}
+	}
+
 	public long getStartPc() {
 		if (m_functionSequence != null){
 			return m_functionSequence.get(0).getStartPc();
@@ -137,17 +150,25 @@ public class FunctionNode extends IBufferNode {
 		return 0;
 	}
 
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundFunctionNode(this, ancestors))
-			return;
-		
-		if (m_functionSequence != null) {
-			ancestors.add(this);
-			for (Node node : m_functionSequence) {
-				node.traverse(ancestors, nodeTraverser);
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundFunctionNode(this, ancestors);
+		if (status == TraverseStatus.CONTINUE) {
+			if (m_functionSequence != null) {
+				ancestors.add(this);
+				for (Node node : m_functionSequence) {
+					status = node.traverse(ancestors, nodeTraverser);
+					if (status != TraverseStatus.CONTINUE) {
+						break;
+					}
+				}
+				ancestors.remove(this);
 			}
-			ancestors.remove(this);
 		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> getIndirectChildren() {
@@ -328,9 +349,9 @@ public class FunctionNode extends IBufferNode {
 		// (which must be the calling instruction..)
 		m_callNode = null;
 		previousNode.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 				m_callNode = node;
-				return true;
+				return TraverseStatus.CONTINUE;
 			}
 		});			
 		return m_callNode;

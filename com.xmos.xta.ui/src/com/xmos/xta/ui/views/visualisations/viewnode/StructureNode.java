@@ -116,12 +116,12 @@ public abstract class StructureNode extends ViewNode {
 	protected boolean hasUnknowns() {
 	    found = false;
 	    m_treeNode.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		if (node.getAttributes().hasUnknowns()) {
 	    			found = true;
-	    			return false;
+	    			return TraverseStatus.NO_CHILDREN;
 	    		}
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
 		return found;

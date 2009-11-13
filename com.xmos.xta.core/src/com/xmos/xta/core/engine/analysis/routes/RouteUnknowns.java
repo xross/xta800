@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Stack;
 
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -27,13 +28,13 @@ public class RouteUnknowns {
 	public Collection<Unknown> getUnknowns(final State unknownState) {
 	    final Collection<Unknown> unknowns = new ArrayList<Unknown>();
 	    m_route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		for (Unknown unknown : node.getAttributes().getUnknowns()) {
 	    			if (unknown.getState() == unknownState) {
 		    			unknowns.add(unknown);
 	    			}
 	    		}
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
 		return unknowns;
@@ -43,11 +44,11 @@ public class RouteUnknowns {
 	// Setting Loop Iterations
 	// ===================================================================== //
 	public void setLoopIterations(CommandSource src, Engine engine,
-			Reference reference, long iterations, boolean sourceLevelIterations, Source source) {
+			Reference reference, long iterations, boolean sourceLevelIterations, Source source) throws AbortedException {
 		
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference, source);
-		}			
+		}
 	}
 
 	public void checkSetLoopIterations(Reference reference, long iterations) throws Exception {
@@ -110,7 +111,7 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Loop Path Iterations
 	// ===================================================================== //
-	public void setLoopPathIterations(Reference reference, long iterations, Source source) {
+	public void setLoopPathIterations(Reference reference, long iterations, Source source) throws AbortedException {
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopPathIterationsNoCheck(node, iterations, reference, source);
 		}		
@@ -179,7 +180,7 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Loop Scope
 	// ===================================================================== //
-	public void setLoopScope(Reference reference, boolean isAbsolute, Source source) {
+	public void setLoopScope(Reference reference, boolean isAbsolute, Source source) throws AbortedException {
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopScopeNoCheck(node, isAbsolute, reference, source);
 		}		
@@ -221,7 +222,7 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Fixed Time Methods
 	// ===================================================================== //	
-	public boolean setFixedTime(Reference reference, TimeUnit timeUnit, Type type, Source source) {
+	public boolean setFixedTime(Reference reference, TimeUnit timeUnit, Type type, Source source) throws AbortedException {
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
 	    	setFixedTime(node, timeUnit, reference, type, source);
@@ -246,7 +247,7 @@ public class RouteUnknowns {
 		return node.getAttributes().getFixedTime();
 	}	
 	
-	public boolean canInstructionPause(Reference reference) {
+	public boolean canInstructionPause(Reference reference) throws AbortedException {
 		boolean canPause = true;
         for (Node node : m_route.getReferencedNodes(reference)) {
         	if (!((InstructionNode)node).getXtaInstruction().canPause()) {
@@ -258,9 +259,9 @@ public class RouteUnknowns {
 	
 	void invalidateCachedStats() {
 		m_route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().invalidateCachedStats();
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });		
 	}
@@ -275,19 +276,19 @@ public class RouteUnknowns {
 	private void refreshDisplayedUnknowns(Node node) {	
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().setDisplayAsUnknown(false);
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
 
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		if (node.getAttributes().hasUnknowns()) {
 	    			setDisplayAsUnknownOnParentNodes(node);
 	    		}
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });	   
 	}	
@@ -302,9 +303,9 @@ public class RouteUnknowns {
 	
 	private void clearPathIterations(Node node) {
 	    node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-	    	public boolean foundConditionalNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundConditionalNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().resetPathIterations();
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });		
 	}	

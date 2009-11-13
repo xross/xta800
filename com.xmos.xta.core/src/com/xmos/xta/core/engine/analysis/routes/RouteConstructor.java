@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -61,7 +62,8 @@ public class RouteConstructor {
 		STARTPOINT_MISSING, 
 		COULD_NOT_FIND_STARTPOINT, 
 		COULD_NOT_FIND_ENDPOINT,
-		SUCCESS
+		SUCCESS,
+		ABORTED
 	}
 	
 	private RouteDescription m_description;
@@ -80,7 +82,9 @@ public class RouteConstructor {
 		}
 	}
 	
-	public RouteConstructor(Engine engine, StructureGraph structureGraph, RouteDescription description, RouteContainer container) {
+	public RouteConstructor(Engine engine, StructureGraph structureGraph,
+			RouteDescription description, RouteContainer container) throws AbortedException {
+
 		m_structureGraph = structureGraph;
 		m_description = description;
 		m_routes = new ArrayList<Route>();
@@ -121,7 +125,7 @@ public class RouteConstructor {
 					NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);
 
 					NodeDescriptor fn;
-					if(startNode.getNode().isFunctionNode()){
+					if (startNode.getNode().isFunctionNode()){
 						fn = startNode;
 					} else {
 						Node currentNode = startNode.getNode();
@@ -139,15 +143,17 @@ public class RouteConstructor {
 					
 					Set<NodeDescriptor> exclusionsWithinFunction = containNodes(fn, m_exclusions);
 					
-					if(!containsSet(exclusionsWithinFunction, seenExclusionsSets)){
+					if (!containsSet(exclusionsWithinFunction, seenExclusionsSets)){
 						seenExclusionsSets.add(exclusionsWithinFunction);
 						
-						if(!exclusionsWithinFunction.isEmpty() || !startNode.getNode().isFunctionNode()){
+						if (!exclusionsWithinFunction.isEmpty() || !startNode.getNode().isFunctionNode()){
 							seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
 								seenEndPoint, endNodeDescriptors, true);	
 						} else {
 							startNode.getNode().setParent(null);
-							m_routes.add(new Route(src, m_engine, startNode.getNode().deepCopy(), m_description, m_container));
+							Node node = startNode.getNode().deepCopy(m_engine);
+							Route route = new Route(src, m_engine, node, m_description, m_container);
+							m_routes.add(route);
 						}
 					}
 				}
@@ -245,8 +251,8 @@ public class RouteConstructor {
 				baseNode = ((InfiniteSelfLoopNode)baseNode).getLoop();
 			} 
 
-			Node newGraph = baseNode.deepCopy();
-			newGraph.setParent(null);			
+			Node newGraph = baseNode.deepCopy(m_engine);
+			newGraph.setParent(null);
 			
 			if (!alreadyContainRoute(newGraph)) {
 				m_routes.add(new Route(src, m_engine, newGraph, m_description, m_container));
@@ -257,7 +263,7 @@ public class RouteConstructor {
 	
 	private boolean explore(NodeDescriptor startInstruction, NodeDescriptor currentNode, 
 			Collection<NodeDescriptor> workingSet, Collection<NodeDescriptor> endInstructions, 
-			NodeDescriptor previous, boolean isFunction, Collection<NodeDescriptor> realEndNodes) {	
+			NodeDescriptor previous, boolean isFunction, Collection<NodeDescriptor> realEndNodes) throws AbortedException {	
 
 		if (DEBUG_ROUTE_CONSTRUCTION)
 			System.out.printf("explore: nodeId: %s\n", currentNode);
@@ -350,7 +356,7 @@ public class RouteConstructor {
 			NodeDescriptor currentNode, 
 			NodeDescriptor originalParent, 
 			NodeDescriptor replacementNode, boolean isFunction, 
-			Collection<NodeDescriptor> realEndNodes) {
+			Collection<NodeDescriptor> realEndNodes) throws AbortedException {
 		
 		if (DEBUG_ROUTE_CONSTRUCTION)
 			System.out.printf("-- exploreWhatsNext: nodeId: %s\n", currentNode);
@@ -382,7 +388,7 @@ public class RouteConstructor {
 			NodeDescriptor currentNode, NodeDescriptor parent, 
 			Collection<NodeDescriptor> currentNodesExclusions, 
 			Set<NodeDescriptor> containedEndPoints, boolean isFunction, 
-			Collection<NodeDescriptor> realEndNodes ) {
+			Collection<NodeDescriptor> realEndNodes ) throws AbortedException {
 		
 		boolean seenEndPoint = false;
 		assert (!currentNode.getImmediateChildren().isEmpty());
@@ -490,9 +496,9 @@ public class RouteConstructor {
 		final List<String> newNodeList = new LinkedList<String>();
 		
 		newGraph.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		newNodeList.add(node.getTypeName());
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });	 
 		
@@ -500,14 +506,14 @@ public class RouteConstructor {
 			final List<String> nodeList = new LinkedList<String>();
 			
 			route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-		    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+		    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 		    		if(node.isInstructionNode()){
 		    			nodeList.add(node.getTypeName()+node.getStartPc());
 		    		} else {
 		    			
 		    			nodeList.add(node.getTypeName());
 		    		}
-		        	return true;
+		        	return TraverseStatus.CONTINUE;
 		    	}
 		    });	 
 			
@@ -538,7 +544,8 @@ public class RouteConstructor {
 		addNodeToWorkingSet(workingSet, nullNode);
 	}
 
-	private NodeDescriptor makeBasicBlocks(NodeDescriptor startInstruction, Collection<NodeDescriptor> endNodes, Collection<NodeDescriptor> workingSet) {
+	private NodeDescriptor makeBasicBlocks(NodeDescriptor startInstruction, Collection<NodeDescriptor> endNodes,
+			Collection<NodeDescriptor> workingSet) throws AbortedException {
 		
 		// First search the working set to find the node that contains the start instruction
 		NodeDescriptor beginingOfFirstBlock = lookupStartInstruction(startInstruction, workingSet);
@@ -659,18 +666,18 @@ public class RouteConstructor {
 		}
 	}
 	
-	private void createExclusions() {
+	private void createExclusions() throws AbortedException {
 		m_exclusions = new ArrayList<NodeDescriptor>();
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		for (Reference reference : m_engine.getExclusions()) {
 			for (Node threadNode : m_structureGraph.getThreads()) {
-				m_exclusions.addAll(referenceMatcher.getNodeDescriptors(threadNode, reference));
+				m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, threadNode, reference));
 			}
 		}
 
 		for (Reference reference : m_engine.getExclusions()) {
-			for (Node threadNode : m_structureGraph.getUnlinkedFunctions()) {				
-				m_exclusions.addAll(referenceMatcher.getNodeDescriptors(threadNode, reference));
+			for (Node threadNode : m_structureGraph.getUnlinkedFunctions()) {
+				m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, threadNode, reference));
 			}
 		}
 	}
@@ -680,25 +687,25 @@ public class RouteConstructor {
 			Node node = route.getNode();
 			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 				// Sets all the pausing instructions to unknown.
-				public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
 						NodeAttributes nodeAttributes = node.getAttributes();						
 						nodeAttributes.addUnknown(UnknownFactory.Type.INSTRUCTION_TIME);
 					}
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the loop iterations to unknown.
-				public boolean foundLoopNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundLoopNode(Node node, Stack<Node> ancestors) {
 					NodeAttributes nodeAttributes = node.getAttributes();
 					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the self loop iterations to unknown.
-				public boolean foundSelfLoopNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundSelfLoopNode(Node node, Stack<Node> ancestors) {
 					NodeAttributes nodeAttributes = node.getAttributes();
 					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 		    });
 		    refreshDisplayedUnknowns(node);			
@@ -730,7 +737,7 @@ public class RouteConstructor {
 		for (Route route : m_routes) {
 			Node node = route.getNode();
 			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-				public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 
 					// Checks for threading instructions...
@@ -757,13 +764,13 @@ public class RouteConstructor {
 							engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
 									"interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
 					}					
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 			});
 		}
 	}
 
-	private void applyAssertions(CommandSource src) {
+	private void applyAssertions(CommandSource src) throws AbortedException {
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : m_routes) {			
 			for (FunctionTimeInfo info : m_engine.getFunctionTimeAssertions()) {			
@@ -798,19 +805,19 @@ public class RouteConstructor {
 	private void refreshDisplayedUnknowns(Node node) {	
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().setDisplayAsUnknown(false);
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
 
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
 	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		if (node.getAttributes().hasUnknowns()) {
 	    			setDisplayAsUnknownOnParentNodes(node);
 	    		}
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });	   
 	}
@@ -859,26 +866,26 @@ public class RouteConstructor {
 		return true;
 	}
 	
-	private Collection<NodeDescriptor> getReferencedNodeDescriptors(Reference reference) {
+	private Collection<NodeDescriptor> getReferencedNodeDescriptors(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Set<NodeDescriptor> referencedNodeDescriptors = new TreeSet<NodeDescriptor>();
 		
-		for (Node thread : m_structureGraph.getThreads()) {	
+		for (Node thread : m_structureGraph.getThreads()) {
 			referencedNodeDescriptors.addAll(
-					referenceMatcher.getNodeDescriptors(thread, reference));
+					referenceMatcher.getNodeDescriptors(m_engine, thread, reference));
 		}
 		for (Node thread : m_structureGraph.getUnlinkedFunctions()) {
 			referencedNodeDescriptors.addAll(
-					referenceMatcher.getNodeDescriptors(thread, reference));
+					referenceMatcher.getNodeDescriptors(m_engine, thread, reference));
 		}
 		return referencedNodeDescriptors;		
 	}
 
-	private Collection<NodeDescriptor> findStartDescriptors() {
+	private Collection<NodeDescriptor> findStartDescriptors() throws AbortedException {
     	return getReferencedNodeDescriptors(m_description.getStartPoint());
 	}
 	
-	private Collection<NodeDescriptor> findEndNodeDescriptors() {
+	private Collection<NodeDescriptor> findEndNodeDescriptors() throws AbortedException {
 		Set<NodeDescriptor> endNodeDescriptors = new TreeSet<NodeDescriptor>();
 		
 		for (Reference endPoint : m_description.getEndPoint()){
@@ -891,7 +898,7 @@ public class RouteConstructor {
 		return endNodeDescriptors;
 	}
 	
-	private Set<NodeDescriptor> containNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) {
+	private Set<NodeDescriptor> containNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) throws AbortedException {
 		Collection<NodeDescriptor> contained = getContainedNodes(start);
 		Set<NodeDescriptor> foundNodes = new TreeSet<NodeDescriptor>();
 		for (NodeDescriptor end : ends) {
@@ -928,7 +935,7 @@ public class RouteConstructor {
 		// The parent is a better start node than the child if the parent starts 
 		// with the same PC as the child. Note: be careful of FNOPs		
 		if ((parent.getStartPc() != child.getStartPc()) || 
-			parent.getInstructions().getFirst().isFnop()) {
+			parent.getStartInstruction().isFnop()) {
 			return false;
 		}
 		
@@ -944,16 +951,26 @@ public class RouteConstructor {
 		return true;
 	}
 	
-	private Collection<NodeDescriptor> getContainedNodes(NodeDescriptor nodeDescriptor) {
+	private Collection<NodeDescriptor> getContainedNodes(NodeDescriptor nodeDescriptor) throws AbortedException {
 		final Collection<NodeDescriptor> nodeDescriptors = new ArrayList<NodeDescriptor>();
 		
 		if (!nodeDescriptor.getNode().isInstructionNode()) {
-			nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
-				public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {	
+			nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {
+				public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
+					if (m_engine.getAbort()) {
+						return TraverseStatus.ABORT;
+					}
+					return TraverseStatus.CONTINUE;
+				}
+				
+				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {	
 					nodeDescriptors.add(new NodeDescriptor(node, ancestors));
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 		    });			
+		}
+		if (m_engine.getAbort()) {
+			throw new AbortedException();
 		}
 		return nodeDescriptors;
 	}
@@ -965,19 +982,19 @@ public class RouteConstructor {
 		
 		m_containsExclusions = false;		
 		nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
-			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {	
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {	
 				NodeDescriptor nodeDescriptor = new NodeDescriptor(node, ancestors);
 				if (m_exclusions.contains(nodeDescriptor)) {
 					m_containsExclusions = true;
 				}
-				return true;
+				return TraverseStatus.CONTINUE;
 			}
 	    });			
 		return m_containsExclusions;
 	}
 	
 	private WorkingSet convertWorkingSet(Collection<NodeDescriptor> workingSet, 
-			NodeDescriptor start, final NodeDescriptor startInstruction) {
+			NodeDescriptor start, final NodeDescriptor startInstruction) throws AbortedException {
 		
 		assert(workingSet.contains(start));
 		
@@ -988,7 +1005,7 @@ public class RouteConstructor {
 		
 		// Duplicates all the nodes in the working set.
 		for (NodeDescriptor nodeDescriptor : workingSet) {
-			Node node = nodeDescriptor.getNode().deepCopy();
+			Node node = nodeDescriptor.getNode().deepCopy(m_engine);
 			nodes.add(node);
 			nodeMap.put(nodeDescriptor, node);
 			
@@ -1025,7 +1042,7 @@ public class RouteConstructor {
 		return new WorkingSet(startNode, nodes);
 	}
 	
-	private void displayNodeDescriptorWorkingSet(Collection<NodeDescriptor> workingSet) {
+	private void displayNodeDescriptorWorkingSet(Collection<NodeDescriptor> workingSet) throws AbortedException {
 		System.out.printf("== displayNodeDescriptorWorkingSet: size: %d\n", workingSet.size());
 		for (NodeDescriptor nodeDescriptor : workingSet) {			
 			System.out.printf("=> %s\n", nodeDescriptor);
@@ -1049,7 +1066,9 @@ public class RouteConstructor {
 		}
 	}
 	
-	private boolean checkNoExclusionsLeftInSet(Collection<NodeDescriptor> newWorkingSet, Collection<NodeDescriptor> workingSet) {
+	private boolean checkNoExclusionsLeftInSet(Collection<NodeDescriptor> newWorkingSet,
+			Collection<NodeDescriptor> workingSet) throws AbortedException {
+		
 		// Newly formed functions must contain no exclusions unless the exclusion
 		// is on the first instruction of the function and the first instruction
 		// is the start instruction.		
@@ -1074,7 +1093,7 @@ public class RouteConstructor {
 		return true;
 	}
 	
-	private boolean checkNodesNotContainedInNode(Collection<NodeDescriptor> nodes, NodeDescriptor node) {
+	private boolean checkNodesNotContainedInNode(Collection<NodeDescriptor> nodes, NodeDescriptor node) throws AbortedException {
 		for (NodeDescriptor nodeDescriptor : getContainedNodes(node)){
 			if (nodes.contains(nodeDescriptor)) {
 				return false;
@@ -1094,7 +1113,7 @@ public class RouteConstructor {
 		m_index = 0;
 		
 		nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
-			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {	
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {	
 				++m_index;
 
 				NodeDescriptor nd = new NodeDescriptor(node, ancestors);
@@ -1103,7 +1122,7 @@ public class RouteConstructor {
 					m_startNodeFound = true;
 					m_startNodeIndex = m_index;
 				}
-				return true;
+				return TraverseStatus.CONTINUE;
 			}
 	    });	
 		
@@ -1113,19 +1132,21 @@ public class RouteConstructor {
 			m_index = 0;
 			
 			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
-			    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+			    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 			        ++m_index;
 			        
 			        if (m_index == m_startNodeIndex) {
 			    	    m_startInstructionNode = node;
 			    	}
-				    return true;
+				    return TraverseStatus.CONTINUE;
 			    }
 			});
 		}		
 	}
 	
-	private NodeDescriptor lookupStartInstruction(NodeDescriptor startInstruction, Collection<NodeDescriptor> workingSet) {
+	private NodeDescriptor lookupStartInstruction(NodeDescriptor startInstruction,
+			Collection<NodeDescriptor> workingSet) throws AbortedException {
+		
 		// First search the working set to find the node that contains the start instruction
 		NodeDescriptor beginingOfFirstBlock = null;
 		

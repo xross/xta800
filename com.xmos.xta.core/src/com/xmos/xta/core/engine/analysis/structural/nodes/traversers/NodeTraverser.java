@@ -5,14 +5,19 @@ import java.util.Stack;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public interface NodeTraverser {
-    boolean foundBlockNode(Node node, Stack<Node> ancestors);
-    boolean foundFunctionNode(Node node, Stack<Node> ancestors);
-    boolean foundInstructionNode(Node node, Stack<Node> ancestors);
-    boolean foundSequenceNode(Node node, Stack<Node> ancestors);
-    boolean foundLoopNode(Node node, Stack<Node> ancestors);
-    boolean foundInfiniteLoopNode(Node node, Stack<Node> ancestors);
-    boolean foundSelfLoopNode(Node node, Stack<Node> ancestors);
-    boolean foundConditionalNode(Node node, Stack<Node> ancestors);
-    boolean foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors);
-    boolean foundEndNode(Node node, Stack<Node> ancestors);
+
+	enum TraverseStatus {
+		CONTINUE, ABORT, NO_CHILDREN
+	}
+
+	TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundLoopNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundInfiniteLoopNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundSelfLoopNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundConditionalNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundEndNode(Node node, Stack<Node> ancestors);
 }

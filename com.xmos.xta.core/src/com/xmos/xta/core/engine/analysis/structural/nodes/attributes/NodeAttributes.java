@@ -376,9 +376,9 @@ public class NodeAttributes {
 
 	void clearUnknowns(Node node) {
 		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		node.getAttributes().clearUnknowns();
-	        	return true;
+	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
 	}

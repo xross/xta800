@@ -18,6 +18,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
@@ -158,7 +159,9 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      	    	if (!reference.resolve(engine)) {
      	    		assert(false);
      	    	}
-     			nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
+     			try {
+					nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
+				} catch (AbortedException e) { }
      			if(!nodes.isEmpty()){
      				new InstructionTime(m_parent.getShell(), nodes);
      			}

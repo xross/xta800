@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class EndNode extends IBufferNode {
@@ -18,7 +22,7 @@ public class EndNode extends IBufferNode {
 		m_nodeAttributes = new NodeAttributes(this);
 	}
 	
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		return new EndNode();
 	}
 	
@@ -38,6 +42,10 @@ public class EndNode extends IBufferNode {
 		return new LinkedList<XtaInstruction>();
 	}
 
+	public XtaInstruction getStartInstruction() {
+		return null;
+	}
+
 	public Set<Integer> getPCs() {
 		return new TreeSet<Integer>();
 	}
@@ -54,9 +62,12 @@ public class EndNode extends IBufferNode {
 		return new EndNode();
 	}
 
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundEndNode(this, ancestors))
-			return;
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundEndNode(this, ancestors);
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {

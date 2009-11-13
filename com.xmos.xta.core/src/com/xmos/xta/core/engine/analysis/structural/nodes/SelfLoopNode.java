@@ -7,9 +7,12 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.SelfLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
@@ -39,9 +42,9 @@ public class SelfLoopNode extends Node{
 		return new SelfLoopNode(this);
 	}
 
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		SelfLoopNode ln = new SelfLoopNode();
-		ln.m_loop = m_loop.deepCopy();
+		ln.m_loop = m_loop.deepCopy(aborter);
 		ln.m_attributes = new SelfLoopNodeAttributes(ln);
 		return ln;
 	}
@@ -58,17 +61,27 @@ public class SelfLoopNode extends Node{
 		return insts;
 	}
 
+	public XtaInstruction getStartInstruction() {
+		return m_loop.getStartInstruction();
+	}
+
 	public long getStartPc() {
 		return m_loop.getStartPc();
 	}
 
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundSelfLoopNode(this, ancestors))
-			return;
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundSelfLoopNode(this, ancestors);
 
-		ancestors.push(this);
-		m_loop.traverse(ancestors, nodeTraverser);			
-		ancestors.pop();
+		if (status == TraverseStatus.CONTINUE) {
+			ancestors.push(this);
+			status = m_loop.traverse(ancestors, nodeTraverser);			
+			ancestors.pop();
+		}
+		
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> getIndirectChildren() {

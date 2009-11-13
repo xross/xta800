@@ -45,17 +45,17 @@ public class StructureGraph {
 	public void removeLinks() {	
 		for (Node node : getThreads()) {
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					node.freeMemory();
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 		    });
 		}	
 		for (Node node : getUnlinkedFunctions()) {
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					node.freeMemory();
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 		    });
 		}	
@@ -65,12 +65,12 @@ public class StructureGraph {
     	m_searchNode = null;
 		for (Node node : getThreads()) {					
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					if (node.getId() == nodeId) {
 						m_searchNode = node;
-						return false;
+						return TraverseStatus.NO_CHILDREN;
 					}
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 		    });
 		}
@@ -80,12 +80,12 @@ public class StructureGraph {
         
         for (Node node : getUnlinkedFunctions()) {					
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public boolean foundNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					if (node.getId() == nodeId) {
 						m_searchNode = node;
-						return false;
+						return TraverseStatus.NO_CHILDREN;
 					}
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 		    });
 		}

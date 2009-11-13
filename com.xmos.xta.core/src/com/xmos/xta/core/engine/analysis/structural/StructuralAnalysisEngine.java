@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
@@ -64,7 +65,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	public boolean analyse(CommandSource src, Engine engine, TreeMap<String, LinkedList<InstructionNode>> treeMap, 
-			Map<Long, TreeSet<Node>> pcToEndPoints, Sections sections, int nodeId, int coreId) {
+			Map<Long, TreeSet<Node>> pcToEndPoints, Sections sections, int nodeId, int coreId) throws AbortedException {
 		m_functionStartPcs = new TreeMap<Long, FunctionNode>();
 		return buildStructureGraphs(src, engine, treeMap, pcToEndPoints, sections, nodeId, coreId);
 	}
@@ -140,7 +141,7 @@ public class StructuralAnalysisEngine {
 
 	private boolean buildStructureGraphs(CommandSource src, Engine engine, TreeMap<String,
 			LinkedList<InstructionNode>> treeMap, Map<Long, TreeSet<Node>> pcToEndPoints,
-			Sections sections, int nodeId, int coreId) {
+			Sections sections, int nodeId, int coreId) throws AbortedException {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
@@ -246,11 +247,11 @@ public class StructuralAnalysisEngine {
 			final TreeSet<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>();
 			
 			fn.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-	   		    public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
+	   		    public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
 	   		    	if(node != fn){
 	   		    		unlinkedFunctions.add((FunctionNode)node);
 	   		    	}
-	   		    	return true;
+	   		    	return TraverseStatus.CONTINUE;
 	   		    }   			
 	   		});
 
@@ -275,7 +276,7 @@ public class StructuralAnalysisEngine {
 		while(!done){
 			done =true;
 			fn.traverse(new Stack<Node>(),  new DefaultNodeTraverser() {
-				public boolean foundSequenceNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors) {
 					for(Node child : node.getIndirectChildren()){
 						if(child.isSequenceNode()){
 							int insertPathAt =node.getIndirectChildren().indexOf(child);
@@ -284,13 +285,13 @@ public class StructuralAnalysisEngine {
 								node.getIndirectChildren().add(insertPathAt++, pathChild);
 							}
 							done = false;
-							return false;
+							return TraverseStatus.NO_CHILDREN;
 						}
 					}
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 				
-				public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
 					for(Node child : node.getIndirectChildren()){
 						if(child.isSequenceNode()){
 							int insertPathAt =node.getIndirectChildren().indexOf(child);
@@ -299,10 +300,10 @@ public class StructuralAnalysisEngine {
 								node.getIndirectChildren().add(insertPathAt++, pathChild);
 							}
 							done = false;
-							return false;
+							return TraverseStatus.NO_CHILDREN;
 						}
 					}
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 		    });
 			setParent(fn);
@@ -605,7 +606,9 @@ public class StructuralAnalysisEngine {
 		}
 	}
 	
-	private void linkFunctions(Engine engine, Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects) {
+	private void linkFunctions(Engine engine, Map<FunctionNode, 
+			TreeSet<FunctionNode>> allFunctionObjects) throws AbortedException {
+		
 		int totalWork = 0;
 		Set<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>(m_structureGraph.getFunctions());
 		for (FunctionNode fn : allFunctionObjects.keySet()) {
@@ -655,7 +658,7 @@ public class StructuralAnalysisEngine {
 									//copying link
 									List<Node> nodes = new LinkedList<Node>();
 									for (Node node : leaf.getFunction()) {
-										nodes.add(node.deepCopy());
+										nodes.add(node.deepCopy(engine));
 									}
 									fnLink.setFunction(leaf.getFunctionName(), nodes);
 								}
@@ -693,9 +696,9 @@ public class StructuralAnalysisEngine {
 	private void setConfig(final Config config, final Architecture architecture, Collection<FunctionNode> nodes) {
 		for (Node node : nodes) {
 			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-				public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 					((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);				
-					return true;
+					return TraverseStatus.CONTINUE;
 				}
 			});					
 		}
@@ -762,9 +765,9 @@ public class StructuralAnalysisEngine {
 		final Collection<Node> nodes = new ArrayList<Node>();
 		
 		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
-			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {		
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {		
 				nodes.add(node);
-				return true;
+				return TraverseStatus.CONTINUE;
 			}
 	    });
 		return nodes;

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -33,14 +35,15 @@ public abstract class Node implements Comparable<Node>{
 	public abstract String getTypeName();
 	public abstract NodeAttributes getAttributes();	
 	public abstract Node shallowCopy();
-	public abstract Node deepCopy();
+	public abstract Node deepCopy(Aborter abort) throws AbortedException;
 	public abstract List<Node> getIndirectChildren();
 	public abstract List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors);
 	public abstract Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor);
 	public abstract Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor);
-	public abstract void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser);
+	public abstract NodeTraverser.TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser);
 	public abstract Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors);
 	public abstract LinkedList<XtaInstruction> getInstructions();	
+	public abstract XtaInstruction getStartInstruction();	
 	public abstract TimeDistributionBuckets getTimeSpread();	
 	public abstract long getStartPc();
 	public abstract void replaceChild(Node oldNode, Node newNode);

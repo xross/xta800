@@ -102,7 +102,7 @@ public class SelectedRouteViewer {
 			Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
 			if (selectedRoute != null) {								
 				selectedRoute.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-					public boolean foundNode(Node node, Stack<Node> ancestors) {
+					public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 						if (node.isBlockNode()) {
 							Collection<XtaInstruction> instructionsCovered = node.getInstructions();
 							for (XtaInstruction instruction : instructionsCovered) {
@@ -112,7 +112,7 @@ public class SelectedRouteViewer {
 							    }
 							}
 						}
-						return true;
+						return TraverseStatus.CONTINUE;
 					}
 				});
 			}
@@ -185,11 +185,11 @@ public class SelectedRouteViewer {
 	    final Collection<Node> nonBlockNodes = new ArrayList<Node>();
 	    if (m_rootNode != null) {
 	    	m_rootNode.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-		    	public boolean foundNode(Node node, Stack<Node> ancestors) {
+		    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 		    		if (!node.isBlockNode()) {
 		    			nonBlockNodes.add(node);
 		    		}
-		        	return true;
+		        	return TraverseStatus.CONTINUE;
 		    	}
 		    });
 	    }

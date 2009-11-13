@@ -230,12 +230,12 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
    		final Collection<XtaInstruction> fnops = new Vector<XtaInstruction>();
    		for (Node node : m_selectedNodes) {
        		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-       		    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+       		    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
     				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
        		    	if (instruction.isFnop()) {   		    		
        	   		    	fnops.add(instruction);
        		    	}
-       		    	return true;
+       		    	return TraverseStatus.CONTINUE;
        		    }   			
        		});    		
     	}

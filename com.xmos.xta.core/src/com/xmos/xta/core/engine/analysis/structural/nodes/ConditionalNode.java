@@ -9,10 +9,13 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.ConditionalNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
@@ -44,10 +47,10 @@ public class ConditionalNode extends Node {
 		return new ConditionalNode(this);
 	}
 
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		ConditionalNode sn = new ConditionalNode();
 		for (Node option : m_options) {
-			Node clone = option.deepCopy();
+			Node clone = option.deepCopy(aborter);
 			sn.m_options.add(clone);
 		}
 		sn.m_attributes = new ConditionalNodeAttributes(sn);
@@ -64,12 +67,21 @@ public class ConditionalNode extends Node {
     
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		for(Node node : m_options){
+		for (Node node : m_options){
 			list.addAll(node.getInstructions());
 		}
 		return list;		
 	}
-	
+
+	public XtaInstruction getStartInstruction() {
+		Iterator<Node> iter = m_options.iterator();
+		if (iter.hasNext()) {
+			return iter.next().getStartInstruction();
+		} else {
+			return null;
+		}
+	}
+
 	public long getStartPc() {
 		return 0;
 	}
@@ -78,15 +90,23 @@ public class ConditionalNode extends Node {
 		return m_options;
 	}
 	
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundConditionalNode(this, ancestors))
-			return;
-		
-		ancestors.push(this);
-		for (Node node : m_options) {
-			node.traverse(ancestors, nodeTraverser);			
-		}		
-		ancestors.pop();
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundConditionalNode(this, ancestors);
+		if (status == TraverseStatus.CONTINUE) {
+			ancestors.push(this);
+			for (Node node : m_options) {
+				status = node.traverse(ancestors, nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}		
+			ancestors.pop();
+		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> getIndirectChildren() {

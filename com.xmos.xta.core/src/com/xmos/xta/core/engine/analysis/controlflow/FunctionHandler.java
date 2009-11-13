@@ -43,7 +43,7 @@ public class FunctionHandler {
 		for (InstructionNode instruction : m_instDecoder.getInstructions()) {
 			
 			assert(instruction.getInstructions().size() == 1);
-			XtaInstruction inst = instruction.getInstructions().getFirst();
+			XtaInstruction inst = instruction.getStartInstruction();
 			if(inst.isLink()){
 				
 				if(instruction.getNextNodesSize() > 0){

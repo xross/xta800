@@ -153,7 +153,7 @@ public class NodeDescriptor implements Comparable<NodeDescriptor>{
     	}
     	
     	if (m_node.getInstructions().size() > 0) {
-        	str += String.format(" (%s, 0x%x)]", m_node, m_node.getInstructions().getFirst().getPc());    		
+        	str += String.format(" (%s, 0x%x)]", m_node, m_node.getStartInstruction().getPc());    		
     	} else {
         	str += String.format(" (%s)]", m_node);    		    		
     	}

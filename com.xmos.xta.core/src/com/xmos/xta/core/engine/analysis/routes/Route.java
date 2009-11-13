@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Stack;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
@@ -15,10 +16,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Instruction
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.references.Reference;
-
-class AbortedException extends Exception {
-	private static final long serialVersionUID = 1L;
-}
 
 public class Route {
 	private static int s_routeCount;
@@ -34,6 +31,7 @@ public class Route {
 	private RouteUnknowns m_unknowns;
 	private Node m_node;
 	private Node m_searchNode;
+	private Engine m_engine;
 
 	public static void resetRouteCount() {
 		s_routeCount = 0;
@@ -44,6 +42,7 @@ public class Route {
 		m_container = container;
 		m_routeId = s_routeCount++;
 		m_node = node;
+		m_engine = engine;
 
 		Architecture architecture = engine.getXeLoader().getArchitecture();
 		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeId(), engine.getCoreId());
@@ -90,15 +89,15 @@ public class Route {
     	} else {
         	m_searchNode = null;			
         	m_node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-    			public boolean foundNode(Node node, Stack<Node> ancestors) {
+    			public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
     				if (node.getId() == nodeId) {
     					m_searchNode = node;
-    					return false;
+    					return TraverseStatus.NO_CHILDREN;
     				}
-    				return true;
+    				return TraverseStatus.CONTINUE;
     			}
     		});
-            return m_searchNode;   	    		
+            return m_searchNode;
     	}    	
     }
     
@@ -132,11 +131,11 @@ public class Route {
 		return node;
 	}
 
-	public Collection<Node> getReferencedNodes(Reference reference) {
+	public Collection<Node> getReferencedNodes(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
 		
-		for (NodeDescriptor nodeDescriptor : referenceMatcher.getNodeDescriptors(m_node, reference)) {
+		for (NodeDescriptor nodeDescriptor : referenceMatcher.getNodeDescriptors(m_engine, m_node, reference)) {
 			referencedNodes.add(nodeDescriptor.getNode());
 		}
 		return referencedNodes;		
@@ -154,9 +153,9 @@ public class Route {
 	
 	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
 		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-			public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 				((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);				
-				return true;
+				return TraverseStatus.CONTINUE;
 			}
 		});
 	}

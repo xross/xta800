@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class NullNode extends IBufferNode {
@@ -15,7 +19,7 @@ public class NullNode extends IBufferNode {
 		super();
 	}
 	
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		return new NullNode();
 	}
 	
@@ -36,6 +40,10 @@ public class NullNode extends IBufferNode {
 		return new LinkedList<XtaInstruction>();
 	}
 
+	public XtaInstruction getStartInstruction() {
+		return null;
+	}
+
 	public Set<Integer> getPCs() {
 		return new TreeSet<Integer>();
 	}
@@ -52,8 +60,8 @@ public class NullNode extends IBufferNode {
 		return new NullNode();
 	}
 
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		return;
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		return TraverseStatus.CONTINUE;
 	}
 	
 	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {

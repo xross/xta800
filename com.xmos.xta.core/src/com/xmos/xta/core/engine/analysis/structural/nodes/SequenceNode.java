@@ -7,8 +7,11 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
@@ -39,10 +42,10 @@ public class SequenceNode extends Node {
 		return new SequenceNode(this);
 	}
 
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		SequenceNode pn = new SequenceNode();
 		for (Node path : m_nodes) {
-			Node clone = path.deepCopy();
+			Node clone = path.deepCopy(aborter);
 			pn.m_nodes.add(clone);
 		}
 		pn.m_attributes = new NodeAttributes(pn);
@@ -67,6 +70,10 @@ public class SequenceNode extends Node {
 		return list;
 	}
 
+	public XtaInstruction getStartInstruction() {
+		return m_nodes.get(0).getStartInstruction();
+	}
+
 	public String getFunctionName() {
 		return "";
 	}
@@ -75,15 +82,24 @@ public class SequenceNode extends Node {
 		return m_nodes.get(0).getStartPc();
 	}
 
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundSequenceNode(this, ancestors))
-			return;
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundSequenceNode(this, ancestors);
 
-		ancestors.push(this);
-		for (Node node : m_nodes) {
-			node.traverse(ancestors, nodeTraverser);
+		if (status == TraverseStatus.CONTINUE) {
+			ancestors.push(this);
+			for (Node node : m_nodes) {
+				status = node.traverse(ancestors, nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}
+			ancestors.pop();
 		}
-		ancestors.pop();
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> getIndirectChildren() {

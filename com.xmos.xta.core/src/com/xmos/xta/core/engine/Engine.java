@@ -61,7 +61,7 @@ import com.xmos.xta.core.engine.sections.SrcStringInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
-public class Engine implements Notifier {
+public class Engine implements Notifier, Aborter {
 	public static final int ROUTE_ID_LAST     = -1;
 	public static final int ROUTE_ID_INVALID  = -2;
 	public static final int ROUTE_ID_GLOBAL   = -3;
@@ -448,10 +448,12 @@ public class Engine implements Notifier {
 		if (!resolveRefernece(reference)) {
 			return false;
 		}
-		for (Route route : getRoute(routeId)) {
-			 if (route.getRouteUnknowns().canInstructionPause(reference))
-				 return true;			
-		}		
+		try {
+			for (Route route : getRoute(routeId)) {
+					if (route.getRouteUnknowns().canInstructionPause(reference))
+						 return true;
+			}		
+		} catch (AbortedException e) { }			
 		return false;
 	}
 		
@@ -745,9 +747,11 @@ public class Engine implements Notifier {
 	public void setPathTime(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
 	    PathTimeInfo info = new PathTimeInfo(from, to, timeUnit);
 		RouteAssertions assertions = new RouteAssertions();
-		for (Route route : getRoute(routeId)) {
-			assertions.applyPathAssertion(this, src, route, info, Source.EXPLICIT);
-		}
+		try {
+			for (Route route : getRoute(routeId)) {
+					assertions.applyPathAssertion(this, src, route, info, Source.EXPLICIT);
+			}
+		} catch (AbortedException e) { }
 	}
 			
 	// ===================================================================== //
@@ -961,13 +965,15 @@ public class Engine implements Notifier {
 	public boolean applyInstructionTimeToRoutes(Collection<Route> routes, 
 			InstructionTimeInfo info, Source source) {
 		
-		for (Route route : routes) {
-		    if (!route.getRouteUnknowns().canInstructionPause(info.getReference()))
-		    	return false;		    	
-		}
-		for (Route route : routes) {
-		    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit(), Type.INSTRUCTION_TIME, source);
-		}
+	    try {
+			for (Route route : routes) {
+					if (!route.getRouteUnknowns().canInstructionPause(info.getReference()))
+						return false;
+			}
+			for (Route route : routes) {
+			    route.getRouteUnknowns().setFixedTime(info.getReference(), info.getTimeUnit(), Type.INSTRUCTION_TIME, source);
+			}
+		} catch (AbortedException e) { }		    	
 		return true;
 	}
 	
@@ -1208,8 +1214,12 @@ public class Engine implements Notifier {
 			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 			
-			if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
-					pcToEndPoints, sections, nodeId, coreId)) {
+			try {
+				if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
+						pcToEndPoints, sections, nodeId, coreId)) {
+					return false;
+				}
+			} catch (AbortedException e) {
 				return false;
 			}
 
@@ -1237,6 +1247,9 @@ public class Engine implements Notifier {
 			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
 			return false;
 
+		} catch (final AbortedException e) {
+			return false;
+			
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
 			return false;
@@ -1285,29 +1298,29 @@ public class Engine implements Notifier {
 			notify(src, Notifier.NOTIFY_ERROR, "could not determine the startpoint");
 			return false;
 			
+		} else if (error == RouteError.ABORTED ) {
+			System.gc();
+			return false;
+			
 		} else {
-			if (!getAbort()){
-				int currentSize = m_routes.size();
-				m_numRoutesLastAnalysed = 0;
-				for (Route route : routeConstructor.getRoutes()) {
-					m_routes.add(route);
-					++m_numRoutesLastAnalysed;
-				}
-				if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
-    				routeContainer.add(routeConstructor.getRoutes());
-	    			m_routeContainers.add(routeContainer);		
-
-					if (!temporaryRoute) {
-    					setSelectedRoute(src, m_routes.get(currentSize));					
-					    notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
-					}
-				} else {
-					notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
-				}
-				return true;
-			} else {
-				return false;
+			int currentSize = m_routes.size();
+			m_numRoutesLastAnalysed = 0;
+			for (Route route : routeConstructor.getRoutes()) {
+				m_routes.add(route);
+				++m_numRoutesLastAnalysed;
 			}
+			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
+				routeContainer.add(routeConstructor.getRoutes());
+    			m_routeContainers.add(routeContainer);		
+
+				if (!temporaryRoute) {
+					setSelectedRoute(src, m_routes.get(currentSize));					
+				    notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
+				}
+			} else {
+				notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
+			}
+			return true;
 		}		
 	}
 

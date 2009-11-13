@@ -5,43 +5,43 @@ import java.util.Stack;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class DefaultNodeTraverser implements NodeTraverser {
-	public boolean foundBlockNode(Node node, Stack<Node> ancestors) {
-    	return true;
+	public TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
     
-    public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
-    	return true;
+    public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
     
-    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
-    	return true;
+    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
     
-    public boolean foundSequenceNode(Node node, Stack<Node> ancestors) {
-    	return true;
+    public TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
     
-    public boolean foundLoopNode(Node node, Stack<Node> ancestors) {
-    	return true;
+    public TraverseStatus foundLoopNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
     
-    public boolean foundInfiniteLoopNode(Node node, Stack<Node> ancestors) {
-    	return true;
+    public TraverseStatus foundInfiniteLoopNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
 
-    public boolean foundSelfLoopNode(Node node, Stack<Node> ancestors) {
-    	return true;
+    public TraverseStatus foundSelfLoopNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
     
-    public boolean foundConditionalNode(Node node, Stack<Node> ancestors) {
-    	return true;
+    public TraverseStatus foundConditionalNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
     }
 
-	public boolean foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors) {
-		return true;
+	public TraverseStatus foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors) {
+		return TraverseStatus.CONTINUE;
 	}
 	
-	public boolean foundEndNode(Node node, Stack<Node> ancestors) {
-		return true;
+	public TraverseStatus foundEndNode(Node node, Stack<Node> ancestors) {
+		return TraverseStatus.CONTINUE;
 	}
 }

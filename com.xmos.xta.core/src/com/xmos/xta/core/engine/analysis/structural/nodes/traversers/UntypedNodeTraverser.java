@@ -5,43 +5,44 @@ import java.util.Stack;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public abstract class UntypedNodeTraverser implements NodeTraverser {
-    public abstract boolean foundNode(Node node, Stack<Node> ancestors);
+    public abstract TraverseStatus foundNode(Node node, Stack<Node> ancestors);
         
-	public boolean foundBlockNode(Node node, Stack<Node> ancestors) {
+	public TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
     
-    public boolean foundFunctionNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
     
-    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
     
-    public boolean foundSequenceNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
     
-    public boolean foundLoopNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundLoopNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
 
-    public boolean foundInfiniteLoopNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundInfiniteLoopNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
     
-    public boolean foundSelfLoopNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundSelfLoopNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
-    public boolean foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors) {
+
+    public TraverseStatus foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
-    public boolean foundConditionalNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundConditionalNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
     
-    public boolean foundEndNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundEndNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
 }

@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
@@ -55,13 +58,13 @@ public class InfiniteLoopNode extends Node {
 		return new InfiniteLoopNode(this);
 	}
 	
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		InfiniteLoopNode ln = new InfiniteLoopNode();
 		for (Node loop : m_loops) {
-			Node clone = loop.deepCopy();
+			Node clone = loop.deepCopy(aborter);
 			ln.m_loops.add(clone);
 		}
-		ln.m_loopHeader = m_loopHeader.deepCopy();
+		ln.m_loopHeader = m_loopHeader.deepCopy(aborter);
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
 		ln.m_attributes = new InfiniteLoopNodeAttributes(ln);
 		return ln;
@@ -95,20 +98,32 @@ public class InfiniteLoopNode extends Node {
 		return insts;
 	}
 
+	public XtaInstruction getStartInstruction() {
+		return m_loops.get(0).getStartInstruction();
+	}
+
 	public long getStartPc() {
 		return m_loopHeader.getStartPc();
 	}
 
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		if (!nodeTraverser.foundInfiniteLoopNode(this, ancestors))
-			return;
-
-		ancestors.push(this);			
-		m_loopHeader.traverse(ancestors, nodeTraverser);			
-		for (Node node : m_loops) {
-			node.traverse(ancestors, nodeTraverser);
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this, ancestors);
+		if (status == TraverseStatus.CONTINUE) {
+			ancestors.push(this);			
+			m_loopHeader.traverse(ancestors, nodeTraverser);			
+			for (Node node : m_loops) {
+				status = node.traverse(ancestors, nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}
+			ancestors.pop();
 		}
-		ancestors.pop();
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> getIndirectChildren() {

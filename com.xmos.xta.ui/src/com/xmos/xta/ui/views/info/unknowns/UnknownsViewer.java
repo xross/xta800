@@ -41,9 +41,9 @@ public class UnknownsViewer extends InfoViewer {
 		final Set<Node> allInstructionNodes = new TreeSet<Node>();
    		for (Node node : selectedNodes) {
        		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-       		    public boolean foundInstructionNode(Node node, Stack<Node> ancestors) {
+       		    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
        		    	allInstructionNodes.add(node);
-       		    	return true;
+       		    	return TraverseStatus.CONTINUE;
        		    }
        		});    		
     	}

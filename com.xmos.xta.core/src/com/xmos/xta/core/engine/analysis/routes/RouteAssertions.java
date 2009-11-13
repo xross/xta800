@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.xmos.xta.core.console.BasicConsole;
 import com.xmos.xta.core.console.commands.print.StructureDisplayer;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -40,7 +41,7 @@ public class RouteAssertions {
 	}
 
 	public void applyPathAssertion(Engine engine, CommandSource src, 
-			Route route, PathTimeInfo info, Source source) {
+			Route route, PathTimeInfo info, Source source) throws AbortedException {
 		
 		Reference fromRef = ReferenceFactory.createReference(
 				info.getFrom(), ReferenceClass.ENDPOINT_REF);

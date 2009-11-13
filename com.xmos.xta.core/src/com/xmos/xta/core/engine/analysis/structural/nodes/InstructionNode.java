@@ -8,10 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
@@ -42,7 +45,7 @@ public class InstructionNode extends Node {
 		return in;
 	}
 
-	public Node deepCopy() {
+	public Node deepCopy(Aborter aborter) throws AbortedException {
 		InstructionNode in = new InstructionNode(this);
 		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;
@@ -66,6 +69,10 @@ public class InstructionNode extends Node {
 		return inst;
 	}
 
+	public XtaInstruction getStartInstruction() {
+		return m_inst;
+	}
+
 	public Set<Long> getPCs() {
 		Set<Long> pcs = new TreeSet<Long>();
 		pcs.add(m_inst.getPc());
@@ -80,8 +87,12 @@ public class InstructionNode extends Node {
 		return false;
 	}
 
-	public void traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
-		nodeTraverser.foundInstructionNode(this, ancestors);
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundInstructionNode(this, ancestors);
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> getIndirectChildren() {
