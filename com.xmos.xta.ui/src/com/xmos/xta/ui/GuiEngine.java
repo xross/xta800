@@ -53,7 +53,7 @@ public class GuiEngine {
 	private static Reference s_endPoint;
 	private static Reference s_codePoint;
 	private static String s_runMode;
-	private static List<Node> s_selectedNodes;
+	private static Map<Integer, List<Node>> s_selectedNodes;
 	private static Node s_focusNodes;
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
 	private static String s_commandLineXeFile;
@@ -70,7 +70,7 @@ public class GuiEngine {
         s_notifier = new GuiNotifier();
         s_broadcaster = new Broadcaster();        
         s_log = new GuiLog();
-        s_selectedNodes = new ArrayList<Node>();
+        s_selectedNodes = new HashMap<Integer, List<Node>>();
         s_sourcePcs = new ArrayList<Long>();
         s_showPcPosition = false;
         s_focusNodes = null;
@@ -171,7 +171,11 @@ public class GuiEngine {
 	}
 	
 	public static List<Node> getSelectedNodes() {
-		return s_selectedNodes;
+		int routeId = s_engine.getSelectedRouteId();
+		if (s_selectedNodes.containsKey(routeId)) {
+			return s_selectedNodes.get(routeId);
+		}
+		return new ArrayList<Node>();
 	}	
 
 	public static String getCommandLineXeFile() {
@@ -185,19 +189,26 @@ public class GuiEngine {
 	public static void setSelectedNodes(List<Node> selectedNodes) {
 		assert(selectedNodes != null);
 		boolean selectionChanged = false;
-		if (selectedNodes.size() != s_selectedNodes.size()) {
+		int routeId = s_engine.getSelectedRouteId();
+		
+		if (!s_selectedNodes.containsKey(routeId)) {
 			selectionChanged = true;
 		} else {
-			for (Node node : selectedNodes) {
-				if (!s_selectedNodes.contains(node)) {
-					selectionChanged = true;
-					break;
+			List<Node> currentSelection = s_selectedNodes.get(routeId);
+			if (selectedNodes.size() != currentSelection.size()) {
+				selectionChanged = true;
+			} else {
+				for (Node node : selectedNodes) {
+					if (!currentSelection.contains(node)) {
+						selectionChanged = true;
+						break;
+					}
 				}
 			}
 		}
 		
 		if (selectionChanged) {
-			s_selectedNodes = selectedNodes;
+			s_selectedNodes.put(routeId, selectedNodes);
 			broadcast(Broadcaster.BROADCAST_SELECTION_CHANGED, "");
 		}
 	}
@@ -256,6 +267,17 @@ public class GuiEngine {
 			for (Integer routeId : remove) {
 				routeIdMap.remove(routeId);
 			}
+		}
+
+		// Remove unwanted selections
+		List<Integer> remove = new ArrayList<Integer>();
+		for (Integer routeId : s_selectedNodes.keySet()) {
+			if (s_engine.getRoute(routeId).size() == 0) {
+				remove.add(routeId);
+			}
+		}
+		for (Integer routeId : remove) {
+			s_selectedNodes.remove(routeId);
 		}
 	}
 
@@ -387,7 +409,6 @@ public class GuiEngine {
 		s_endPoint = null;
 		s_focusNodes = null;
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
-		setSelectedNodes(new ArrayList<Node>());
 	}
 	
 	/**

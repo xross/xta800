@@ -65,6 +65,7 @@ public class SelectedRouteViewer {
 	}
 
 	public void initialise() {
+		List<Node> selectedNodes = GuiEngine.getSelectedNodes();
 		clear();
 		
 		Route selectedRoute = GuiEngine.getEngine().getSelectedRoute();
@@ -76,6 +77,8 @@ public class SelectedRouteViewer {
 			
 			m_viewer.setInput(hiddenRouteNode);
 			m_viewer.expandToLevel(2);
+			
+			m_viewer.setSelection(new StructuredSelection(selectedNodes), true);
 		} else {
 			m_rootNode = null;
 		}

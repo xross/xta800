@@ -78,6 +78,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 					showCodePoint(pcs.get(0));
 				}
 			}
+			
 		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_OPEN_DISASSEMBLY)) {
 			m_selectedNodes = GuiEngine.getSelectedNodes();
 			updateFoldingStructure();

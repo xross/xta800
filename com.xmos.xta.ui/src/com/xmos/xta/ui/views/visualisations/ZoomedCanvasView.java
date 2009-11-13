@@ -672,7 +672,6 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 		Route route = GuiEngine.getEngine().getSelectedRoute();
 		if (route != null) {
 			updateSelection(GuiEngine.getSelectedNodes());
-
 			GuiRouteProperties routeProperties = GuiEngine.getRouteProperties(route.getRouteId(), getName());
 			m_viewNode = routeProperties.getViewNode();
 			if (m_viewNode == null) {
