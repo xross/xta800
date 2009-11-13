@@ -22,10 +22,12 @@ public class FunctionNode extends IBufferNode {
 	private List<Node> m_functionSequence;
 	private static int functionId;
 	private Node m_branchTarget;
+	private Set<Node> m_functionEndNodes;
 	
 	public FunctionNode() {
 		super();
 		m_attributes = new NodeAttributes(this);
+		m_functionEndNodes = new TreeSet<Node>();
 	}
 	
 	public FunctionNode(Node branchTarget) {
@@ -87,6 +89,14 @@ public class FunctionNode extends IBufferNode {
 	public String getTypeName() {
         return "function";
     }
+	
+	public void setFunctionEndNodes(Set<Node> functionEndNodes){
+		m_functionEndNodes = functionEndNodes;
+	}
+	
+	public Set<Node> getFunctionEndNodes(){
+		return m_functionEndNodes;
+	}
 		
     public NodeAttributes getAttributes() {
     	return m_attributes;

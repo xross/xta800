@@ -136,6 +136,9 @@ public class RouteDescription {
 				long pc = fn.getStartPc();
 
 				TreeSet<Node> endInstructions = sg.getPcToEndPoints().get(pc);
+				
+				//TreeSet<Node> endInstructions = fn.getFunctionEndNodes();
+				
 				for (Node endPoint : endInstructions){
 					
 					String to = "";

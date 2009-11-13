@@ -1214,12 +1214,8 @@ public class Engine implements Notifier, Aborter {
 			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 			
-			try {
-				if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
-						pcToEndPoints, sections, nodeId, coreId)) {
-					return false;
-				}
-			} catch (AbortedException e) {
+			if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
+					pcToEndPoints, sections, nodeId, coreId)) {
 				return false;
 			}
 
@@ -1247,7 +1243,7 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
 			return false;
 
-		} catch (final AbortedException e) {
+		} catch (AbortedException e) {
 			return false;
 			
 		} catch (Exception e) {
