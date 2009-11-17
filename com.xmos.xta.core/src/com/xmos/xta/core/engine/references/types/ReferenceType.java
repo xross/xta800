@@ -228,4 +228,11 @@ public abstract class ReferenceType {
 		}
 		return false;
 	}
+	
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + (int)m_pc;
+        hash = hash * 31 + m_ref.hashCode();
+        return hash;
+    }
 }

@@ -2,11 +2,9 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.Config;
@@ -19,7 +17,6 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.sections.BranchInfo;
 
 public class RouteDescription {
 	private String m_description;
@@ -33,7 +30,7 @@ public class RouteDescription {
 	private int m_nodeId;
 	private int m_coreId;
 	private Collection<Reference> m_exclusions;
-	private Map<Long, Set<Long>> m_branches;
+	private Map<Reference, List<Reference>> m_branches;
 	private Assertions m_assertions;
 	private Config m_config;
 
@@ -57,8 +54,7 @@ public class RouteDescription {
 		m_exclusions.addAll(exclusions);
 		m_assertions = new Assertions(assertions);
 		m_config = new Config(config);
-		
-		initialiseBranches(engine, nodeId, config);
+		m_branches = engine.getUserBranches();
 	}
 
 	public RouteDescription(Reference function, Engine engine, int nodeId, int coreId, 
@@ -76,6 +72,7 @@ public class RouteDescription {
 		m_exclusions.addAll(exclusions);
 		m_assertions = new Assertions(assertions);		
 		m_config = new Config(config);
+		m_branches = engine.getUserBranches();
 		
 		StructureGraph sg = engine.getStructureGraph();
         findEndpoints(sg, sg.getThreads());
@@ -84,35 +81,8 @@ public class RouteDescription {
         for (Reference to : m_to) {
         	to.resolve(engine);
         }
-
-        initialiseBranches(engine, nodeId, config);
 	}
 	
-	private void initialiseBranches(Engine engine, int nodeId, Config config) {
-		m_branches = new HashMap<Long, Set<Long>>();
-		Map<Long, Set<BranchInfo>> currentBranches = engine.getBranches();
-		
-		for (Long fromPc : currentBranches.keySet()) {
-			Set<BranchInfo> toPcs = currentBranches.get(fromPc);
-			for (BranchInfo info : toPcs) {
-				if (info.isUser()) {
-					addBranch(fromPc, info.getPc());
-				}
-			}
-		}
-	}
-
-	private void addBranch(Long fromPc, long toPc) {
-		Set<Long> toPcs;
-		if (m_branches.containsKey(fromPc)) {
-			toPcs = m_branches.get(fromPc);
-		} else {
-			toPcs = new HashSet<Long>();
-			m_branches.put(fromPc, toPcs);
-		}
-		toPcs.add(toPc);
-	}
-
 	public String getDescription() {
 		return m_description;
 	}
@@ -157,7 +127,7 @@ public class RouteDescription {
 		return m_exclusions;
 	}
 
-	public Map<Long, Set<Long>> getBranches() {
+	public Map<Reference, List<Reference>> getBranches() {
 		return m_branches;
 	}
 

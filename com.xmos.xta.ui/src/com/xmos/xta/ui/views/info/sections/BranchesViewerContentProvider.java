@@ -6,27 +6,28 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
 
 class BranchesViewerContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
-		Map<Long, Set<BranchInfo>> branchesMap = ((Engine)inputElement).getBranches();
+		Map<Reference, Set<BranchInfo>> branchesMap = ((Engine)inputElement).getBranches();
 		
 		List<BranchesContent> content = new ArrayList<BranchesContent>();
-		for (Long fromPc : branchesMap.keySet()) {			
-			content.add(new BranchesContent(fromPc, branchesMap.get(fromPc)));
+		for (Reference fromRef : branchesMap.keySet()) {			
+			content.add(new BranchesContent(fromRef, branchesMap.get(fromRef)));
 		}				
 		return content.toArray();
 	}
 }
 
 class BranchesContent {
-	long m_fromPc;
-	Set<BranchInfo> m_toPcs;
+	Reference m_fromRef;
+	Set<BranchInfo> m_toRefs;
 	
-	BranchesContent(long fromPc, Set<BranchInfo> toPcs) {
-		m_fromPc = fromPc;
-		m_toPcs = toPcs;
+	BranchesContent(Reference fromRef, Set<BranchInfo> toRefs) {
+		m_fromRef = fromRef;
+		m_toRefs = toRefs;
 	}
 }

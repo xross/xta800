@@ -774,7 +774,7 @@ public class RouteConstructor {
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : m_routes) {			
 			for (FunctionTimeInfo info : m_engine.getFunctionTimeAssertions()) {			
-				assertions.applyFunctionAssertion(m_engine, src, route, info, Source.BINARY);
+				assertions.applyFunctionAssertion(src, route, info, Source.BINARY);
 			}
 			for (PathTimeInfo info : m_engine.getPathTimeAssertions()) {			
 				assertions.applyPathAssertion(m_engine, src, route, info, Source.BINARY);

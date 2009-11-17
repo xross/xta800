@@ -12,57 +12,48 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Branches extends Section {	
-	private HashMap<Long, Set<BranchInfo>> m_branches;
+	private HashMap<Reference, Set<BranchInfo>> m_branches;
 
 	Branches(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 
-		m_branches = new HashMap<Long, Set<BranchInfo>>(); 
+		m_branches = new HashMap<Reference, Set<BranchInfo>>(); 
 	}
 	
-	boolean add(CommandSource src, long fromPc, Collection<Long> toPcs, boolean isUser) {
+	boolean add(CommandSource src, Reference from, Collection<Reference> to, boolean isUser) {
 		Set<BranchInfo> pcs = null;
-		if (!m_branches.containsKey(fromPc)) {
+		if (!m_branches.containsKey(from)) {
 			pcs = new TreeSet<BranchInfo>();
-			m_branches.put(fromPc, pcs);
+			m_branches.put(from, pcs);
 
 		} else {
-		    pcs = m_branches.get(fromPc);
+		    pcs = m_branches.get(from);
 		}	
 
-		for (long newPc : toPcs) {
+		for (Reference ref : to) {
 			for (BranchInfo info : pcs) {
-				if (info.getPc() == newPc) {
+				if (info.getRef().equals(ref)) {
 					getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-							"unable to add duplicate branch: 0x%x, 0x%x", fromPc, newPc));					
-					return false;				
+							"unable to add duplicate branch: %s, %s", from.toString(), ref.toString()));					
+					return false;
 				}
 			}
 		}
-		for (long newPc : toPcs) {
-			pcs.add(new BranchInfo(newPc, isUser));
+		for (Reference ref : to) {
+			pcs.add(new BranchInfo(ref, isUser));
 		}
 		return true;
 	}
 	
 	boolean remove(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {
 		boolean hit = false;
-		for (Long fromPc : m_branches.keySet()) {
-			if (fromRef.matches(fromPc)) {
-				Set<BranchInfo> toRemove = new HashSet<BranchInfo>();
-				for (BranchInfo info : m_branches.get(fromPc)) {
-					if (info.isUser()) {
-						for (Reference toRef : toRefs) {
-							if (toRef.matches(info.getPc())) {
-								toRemove.add(info);
-								hit = true;
-							}
-						}
-					}
-				}
-				remove(fromPc, toRemove);
+		for (Reference ref : m_branches.keySet()) {
+			if (ref.equals(fromRef)) {
+				hit |= removeFrom(m_branches.get(ref), toRefs);
 			}
 		}
 		if (!hit) {
@@ -76,16 +67,24 @@ public class Branches extends Section {
 		return hit;
 	}
 
-	private void remove(long fromPc, Set<BranchInfo> toRemove) {
-		assert(m_branches.containsKey(fromPc));
-		Set<BranchInfo> toPcs = m_branches.get(fromPc);
-		toPcs.removeAll(toRemove);
-		if (toPcs.isEmpty()) {
-			m_branches.remove(toPcs);
+	private boolean removeFrom(Set<BranchInfo> set, Collection<Reference> toRefs) {
+		boolean hit = false;
+		Set<BranchInfo> toRemove = new HashSet<BranchInfo>();
+		for (BranchInfo info : set) {
+			if (info.isUser()) {
+				for (Reference toRef : toRefs) {
+					if (info.getRef().equals(toRef)) {
+						toRemove.add(info);
+						hit = true;
+					}
+				}
+			}
 		}
+		set.removeAll(toRemove);
+		return hit;
 	}
 
-	Map<Long, Set<BranchInfo>> get() {
+	Map<Reference, Set<BranchInfo>> get() {
 		return m_branches;
 	}
 		
@@ -105,9 +104,11 @@ public class Branches extends Section {
 	        	long toPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
 	        	
-	        	Collection<Long> toPcs = new HashSet<Long>();
-	        	toPcs.add(toPc);
-	    		add(src, fromPc, toPcs, false);
+	        	Collection<Reference> toRefs = new HashSet<Reference>();
+	    		Reference toRef = ReferenceFactory.createReference(String.format("0x%x", toPc), ReferenceClass.PC_REF);
+	        	toRefs.add(toRef);
+	    		Reference fromRef = ReferenceFactory.createReference(String.format("0x%x", fromPc), ReferenceClass.PC_REF);
+	    		add(src, fromRef, toRefs, false);
 	        }        
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(

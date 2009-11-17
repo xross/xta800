@@ -32,6 +32,6 @@ public class LoopPathInfo implements AssertionInfo {
     }	
     	
 	public boolean equals(Object o) {
-		return m_reference.toString().equals(((LoopPathInfo)o).m_reference.toString());
+		return ((LoopPathInfo)o).m_reference.equals(m_reference);
 	}			
 }

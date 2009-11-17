@@ -21,6 +21,6 @@ public class BranchesViewer extends BaseViewer {
 
 	@Override
 	protected long getPc(Object object) {
-		return ((BranchesContent)object).m_fromPc;
+		return ((BranchesContent)object).m_fromRef.getPc();
 	}
 }

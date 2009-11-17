@@ -21,12 +21,12 @@ class BranchesViewerLabelProvider extends BaseViewerLabelProvider implements ITa
 		
 		BranchesContent branches = (BranchesContent)element;	
 		if (m_columnNames[columnIndex].equals(FROMPC)) {
-			return String.format("0x%x", branches.m_fromPc);
+			return String.format("%s", branches.m_fromRef.getPcString());
 			
     	} else if (m_columnNames[columnIndex].equals(TOPCS)) {
     		String toPcs = "";
-    		for (BranchInfo info : branches.m_toPcs) {
-    			toPcs += "0x" + Long.toHexString(info.getPc()) + ", ";
+    		for (BranchInfo info : branches.m_toRefs) {
+    			toPcs += String.format("%s, ", info.getRef().getPcString());
     		}
 	        return toPcs;
         }
@@ -39,9 +39,9 @@ class BranchesViewerLabelProvider extends BaseViewerLabelProvider implements ITa
 		BranchesContent p2 = (BranchesContent)e2;
 		int res = 0;
 		if (column.equals(FROMPC)) {
-			res = p1.m_fromPc > p2.m_fromPc ? 1 : -1;
+			res = p1.m_fromRef.getPc() > p2.m_fromRef.getPc() ? 1 : -1;
 		} else if (column.equals(TOPCS)) {
-			res = p1.m_toPcs.size() > p2.m_toPcs.size() ? 1 : -1;
+			res = p1.m_toRefs.size() > p2.m_toRefs.size() ? 1 : -1;
 		} else {
 			assert(false);
 		}

@@ -6,7 +6,7 @@ import java.util.List;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
-public class Reference {		
+public class Reference implements Comparable<Reference>  {		
 	private ReferenceType m_base;
 	private List<ReferenceType> m_backTrail;
 	
@@ -114,7 +114,13 @@ public class Reference {
     public int hashCode() {
         int hash = 1;
         hash = hash * 31 + m_base.hashCode();
-        hash = hash * 31 + (m_backTrail == null ? 0 : m_backTrail.hashCode());
+        if (m_backTrail == null) {
+        	hash = hash * 31;
+        } else {
+        	for (ReferenceType entry : m_backTrail) {
+            	hash = hash * 31 + entry.hashCode();
+        	}
+        }
         return hash;
     }
     
@@ -128,5 +134,9 @@ public class Reference {
 	
 	public boolean matches(long pc) {
 		return m_base.matches(pc);
+	}
+
+	public int compareTo(Reference o) {
+		return toString().compareTo(o.toString());
 	}
 }

@@ -35,11 +35,11 @@ public class PathTimeInfo implements AssertionInfo {
     }
 
     public String getValue() {
-    	return m_timeUnit.getDescription(false);
+    	return m_timeUnit.getDescription(true);
     }
     
 	public boolean equals(Object o) {
-		if (m_from.equals(((PathTimeInfo)o).m_from) && m_to.equals(((PathTimeInfo)o).m_to)) {
+		if (((PathTimeInfo)o).m_from.equals(m_from) && ((PathTimeInfo)o).m_to.equals(m_to)) {
 			return true;
 		}
 		return false;

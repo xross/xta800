@@ -18,21 +18,13 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactor
 import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
 import com.xmos.xta.core.engine.assertions.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class RouteAssertions {
 	private static final boolean DEBUG_ROUTE_ASSERTIONS = false;
 	
-	public void applyFunctionAssertion(Engine engine, CommandSource src, 
-			Route route, FunctionTimeInfo info, Source source) {
+	public void applyFunctionAssertion(CommandSource src, Route route, FunctionTimeInfo info, Source source) {
+		Reference reference = info.getFunction();
 		
-		Reference reference = ReferenceFactory.createReference(
-				info.getFunction(), ReferenceClass.FUNCTION_REF);	
-		
-		if (!reference.resolve(engine))
-			return;
-			
 		for (Node node : route.getReferencedFunctionNodes(reference)) {
 			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), 
 					reference, Type.FUNCTION_TIME, source);	

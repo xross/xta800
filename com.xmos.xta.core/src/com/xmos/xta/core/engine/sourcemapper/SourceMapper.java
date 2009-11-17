@@ -32,7 +32,7 @@ public class SourceMapper {
 	
 	private InstructionDecoder m_instructionDecoder;
 	private Set<InstructionNode> m_starts;
-	private TreeMap<String, LinkedList<InstructionNode>> m_functionNames;
+	private Map<String, List<InstructionNode>> m_functionNames;
 	private Map<Long, AssemblyLine> m_pcToAsm;
 	private Map<Long, Function> m_pcToFunction;
 	private Map<String, String> m_functionToFile;
@@ -41,7 +41,7 @@ public class SourceMapper {
 	
     public SourceMapper(Engine engine, XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, InstructionDecoder instructionDecoder, 
-			TreeMap<String, LinkedList<InstructionNode>> treeMap, Map<String, Long> labels) {
+			Map<String, List<InstructionNode>> treeMap, Map<String, Long> labels) {
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;

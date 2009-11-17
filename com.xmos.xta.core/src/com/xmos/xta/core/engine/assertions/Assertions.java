@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.assertions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.NodeCoreCollection;
@@ -9,20 +10,20 @@ import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Assertions {
-	private NodeCoreCollection<ArrayList<FunctionTimeInfo>> m_functionTimes;
-	private NodeCoreCollection<ArrayList<PathTimeInfo>> m_pathTimes;
-	private NodeCoreCollection<ArrayList<LoopInfo>> m_loops;
-	private NodeCoreCollection<ArrayList<LoopPathInfo>> m_loopPaths;
-	private NodeCoreCollection<ArrayList<LoopScopeInfo>> m_loopScopes;
-	private NodeCoreCollection<ArrayList<InstructionTimeInfo>> m_instructionTimes;
+	private NodeCoreCollection<List<FunctionTimeInfo>> m_functionTimes;
+	private NodeCoreCollection<List<PathTimeInfo>> m_pathTimes;
+	private NodeCoreCollection<List<LoopInfo>> m_loops;
+	private NodeCoreCollection<List<LoopPathInfo>> m_loopPaths;
+	private NodeCoreCollection<List<LoopScopeInfo>> m_loopScopes;
+	private NodeCoreCollection<List<InstructionTimeInfo>> m_instructionTimes;
     
     public Assertions() {
-    	m_functionTimes    = new NodeCoreCollection<ArrayList<FunctionTimeInfo>>();
-    	m_pathTimes        = new NodeCoreCollection<ArrayList<PathTimeInfo>>();
-    	m_instructionTimes = new NodeCoreCollection<ArrayList<InstructionTimeInfo>>();
-    	m_loops            = new NodeCoreCollection<ArrayList<LoopInfo>>();
-    	m_loopPaths        = new NodeCoreCollection<ArrayList<LoopPathInfo>>();
-    	m_loopScopes       = new NodeCoreCollection<ArrayList<LoopScopeInfo>>();
+    	m_functionTimes    = new NodeCoreCollection<List<FunctionTimeInfo>>();
+    	m_pathTimes        = new NodeCoreCollection<List<PathTimeInfo>>();
+    	m_instructionTimes = new NodeCoreCollection<List<InstructionTimeInfo>>();
+    	m_loops            = new NodeCoreCollection<List<LoopInfo>>();
+    	m_loopPaths        = new NodeCoreCollection<List<LoopPathInfo>>();
+    	m_loopScopes       = new NodeCoreCollection<List<LoopScopeInfo>>();
 	}
 
     public Assertions(Assertions assertions) {    	
@@ -94,99 +95,95 @@ public class Assertions {
     	return get(m_loopScopes, nodeId, coreId);
     }
     
-	public void addFunctionTime(int nodeId, int coreId, String function, TimeUnit timeUnit) {
+	public void addFunctionTime(int nodeId, int coreId, Reference function, TimeUnit timeUnit) {
 		FunctionTimeInfo info = new FunctionTimeInfo(function, timeUnit);
-		ArrayList<FunctionTimeInfo> list = get(m_functionTimes, nodeId, coreId);		
+		List<FunctionTimeInfo> list = get(m_functionTimes, nodeId, coreId);		
 		list.remove(info);
 		list.add(info);
 	}
 
 	public void addPathTime(int nodeId, int coreId, Reference from, Reference to, TimeUnit timeUnit) {
 		PathTimeInfo info = new PathTimeInfo(from, to, timeUnit);
-		ArrayList<PathTimeInfo> list = get(m_pathTimes, nodeId, coreId);		
+		List<PathTimeInfo> list = get(m_pathTimes, nodeId, coreId);		
 		list.remove(info);
 		list.add(info);
 	}
 
 	public void addInstructionTime(int nodeId, int coreId, Reference reference, TimeUnit timeUnit) {
 		InstructionTimeInfo info = new InstructionTimeInfo(reference, timeUnit);
-		ArrayList<InstructionTimeInfo> list = get(m_instructionTimes, nodeId, coreId);		
+		List<InstructionTimeInfo> list = get(m_instructionTimes, nodeId, coreId);		
 		list.remove(info);
 		list.add(info);
 	}
 	
 	public void addLoop(int nodeId, int coreId, Reference reference, long iterations) {
 		LoopInfo info = new LoopInfo(reference, iterations);
-		ArrayList<LoopInfo> list = get(m_loops, nodeId, coreId);		
+		List<LoopInfo> list = get(m_loops, nodeId, coreId);		
 		list.remove(info);
 		list.add(info);
 	}
 
 	public void addLoopPath(int nodeId, int coreId, Reference reference, long iterations) {
 		LoopPathInfo info = new LoopPathInfo(reference, iterations);
-		ArrayList<LoopPathInfo> list = get(m_loopPaths, nodeId, coreId);		
+		List<LoopPathInfo> list = get(m_loopPaths, nodeId, coreId);		
 		list.remove(info);
 		list.add(info);
 	}
 
 	public void addLoopScope(int nodeId, int coreId, Reference reference, boolean absolute) {
 		LoopScopeInfo info = new LoopScopeInfo(reference, absolute);
-		ArrayList<LoopScopeInfo> list = get(m_loopScopes, nodeId, coreId);		
+		List<LoopScopeInfo> list = get(m_loopScopes, nodeId, coreId);		
 		list.remove(info);
 		list.add(info);
 	}
 
-	public void removeFunctionTime(int nodeId, int coreId, String function) {
-		get(m_functionTimes, nodeId, coreId).remove(new FunctionTimeInfo(function, null));
+	public void removeFunctionTime(int nodeId, int coreId, Reference function) {
+		removeAll(get(m_functionTimes, nodeId, coreId),
+				new FunctionTimeInfo(function, null));
 	}
 
 	public void removePathTime(int nodeId, int coreId, Reference from, Reference to) {
-		get(m_pathTimes, nodeId, coreId).remove(new PathTimeInfo(from, to, null));
+		removeAll(get(m_pathTimes, nodeId, coreId),
+				new PathTimeInfo(from, to, null));
 	}
 	
 	public void removeInstructionTime(int nodeId, int coreId, Reference reference) {
-		get(m_instructionTimes, nodeId, coreId).remove(new InstructionTimeInfo(reference, null));
+		removeAll(get(m_instructionTimes, nodeId, coreId),
+				new InstructionTimeInfo(reference, null));
 	}
 	
 	public void removeLoop(int nodeId, int coreId, Reference reference) {
-		get(m_loops, nodeId, coreId).remove(new LoopInfo(reference, 0));
+		removeAll(get(m_loops, nodeId, coreId),
+				new LoopInfo(reference, 0));
 	}
 
 	public void removeLoopPath(int nodeId, int coreId, Reference reference) {
-		get(m_loopPaths, nodeId, coreId).remove(new LoopPathInfo(reference, 0));
+		removeAll(get(m_loopPaths, nodeId, coreId),
+				new LoopPathInfo(reference, 0));
 	}
 
 	public void removeLoopScope(int nodeId, int coreId, Reference reference) {
-		get(m_loopScopes, nodeId, coreId).remove(new LoopScopeInfo(reference, false));
+		removeAll(get(m_loopScopes, nodeId, coreId),
+				new LoopScopeInfo(reference, false));
 	}
 
-	public void clearFunctionTimes(int nodeId, int coreId) {
-		get(m_functionTimes, nodeId, coreId).clear();
-	}
-
-	public void clearInstructionTimes(int nodeId, int coreId) {
-		get(m_instructionTimes, nodeId, coreId).clear();
-	}
-	
-	public void clearLoops(int nodeId, int coreId) {
-		get(m_loops, nodeId, coreId).clear();
-	}
-
-	public void clearLoopPaths(int nodeId, int coreId) {
-		get(m_loopPaths, nodeId, coreId).clear();
-	}
-
-	public void clearLoopScopes(int nodeId, int coreId) {
-		get(m_loopScopes, nodeId, coreId).clear();
-	}
-	
-	private <T> ArrayList<T> get(NodeCoreCollection<ArrayList<T>> list, int nodeId, int coreId) {
+	private <T> List<T> get(NodeCoreCollection<List<T>> list, int nodeId, int coreId) {
 		if (list.get(nodeId, coreId) == null) {
 			list.add(nodeId, coreId, new ArrayList<T>());
 		}
         return list.get(nodeId, coreId);		
 	}
-	
+
+	private <T> void removeAll(List<T> infos, T item) {
+		List<T> toRemove = new ArrayList<T>();
+		for (T info : infos) {
+			if (item.equals(info)) {
+				toRemove.add(info);
+			}
+		}
+		infos.removeAll(toRemove);
+	}
+
 	private void updateScript(StringBuffer script, 
 			Collection<? extends AssertionInfo> newList, 
 			Collection<? extends AssertionInfo> oldList,
@@ -200,8 +197,8 @@ public class Assertions {
 		}		
 	}
 	
-	private <T> NodeCoreCollection<ArrayList<T>> copy(NodeCoreCollection<ArrayList<T>> oldList) {
-    	NodeCoreCollection<ArrayList<T>> newList = new NodeCoreCollection<ArrayList<T>>();
+	private <T> NodeCoreCollection<List<T>> copy(NodeCoreCollection<List<T>> oldList) {
+    	NodeCoreCollection<List<T>> newList = new NodeCoreCollection<List<T>>();
     	for (Pair<Integer, Integer> pair : oldList.getEntries()) {
     		newList.add(pair.first, pair.second, 
                 new ArrayList<T>(oldList.get(pair.first, pair.second)));

@@ -117,9 +117,9 @@ public class Sections {
 		return true;
 	}	
 	
-	public boolean addToBranches(CommandSource src, int nodeId, int coreId, long fromPc, Collection<Long> toPcs) {
+	public boolean addToBranches(CommandSource src, int nodeId, int coreId, Reference from, Collection<Reference> to) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
-		return branches.add(src, fromPc, toPcs, true);
+		return branches.add(src, from, to, true);
 	}
 
 	public boolean removeFromBranches(CommandSource src, int nodeId, int coreId,
@@ -129,7 +129,7 @@ public class Sections {
 		return branches.remove(src, fromRef, toRefs);			
 	}	
 
-	public Map<Long, Set<BranchInfo>> getBranches(int nodeId, int coreId) {
+	public Map<Reference, Set<BranchInfo>> getBranches(int nodeId, int coreId) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
 		return branches.get();
 	}

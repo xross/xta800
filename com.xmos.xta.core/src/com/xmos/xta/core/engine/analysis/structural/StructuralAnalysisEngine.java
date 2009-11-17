@@ -61,7 +61,7 @@ public class StructuralAnalysisEngine {
 		setUpPatternMatcher();
 	}
 
-	public boolean analyse( CommandSource src, Engine engine, TreeMap<String, LinkedList<InstructionNode>> functionNameToStartInstruction, 
+	public boolean analyse( CommandSource src, Engine engine, Map<String, List<InstructionNode>> functionNameToStartInstruction, 
 			Map<Long, TreeSet<Node>> pcToEndPoints, Sections sections, int nodeId,int coreId) 
 	{
 		m_functionStartPcs = new TreeMap<Long, FunctionNode>();
@@ -141,7 +141,7 @@ public class StructuralAnalysisEngine {
 
 	private boolean buildStructureGraphs(CommandSource src, Engine engine, 
 			Collection<InstructionNode> functionsAndThreads, 
-			TreeMap<String,LinkedList<InstructionNode>> functionNameToStartInstruction, 
+			Map<String,List<InstructionNode>> functionNameToStartInstruction, 
 			Map<Long, TreeSet<Node>> pcToEndPoints,
 			Sections sections, 
 			int nodeId, 
@@ -216,7 +216,7 @@ public class StructuralAnalysisEngine {
 			Map<Long, FunctionNode> startPcs,
 			Engine engine, 
 			boolean isFunction, 
-			TreeMap<String, LinkedList<InstructionNode>> treeMap,
+			Map<String, List<InstructionNode>> treeMap,
 			Map<FunctionNode, 
 			TreeSet<FunctionNode>> allFunctionObjects, 
 			int nodeId, 
@@ -332,7 +332,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private String getFunctionName(Node graphStart,
-			TreeMap<String, LinkedList<InstructionNode>> treeMap) {
+			Map<String, List<InstructionNode>> treeMap) {
 		for(String functionName : treeMap.keySet()){
 			for(InstructionNode fnInst : treeMap.get(functionName)){
 				if(fnInst.getStartPc() == graphStart.getStartPc()){

@@ -166,25 +166,25 @@ public class Branch extends Command {
 			return;
 		}
 		
-		Map<Long, Set<BranchInfo>> branches = engine.getBranches();
+		Map<Reference, Set<BranchInfo>> branches = engine.getBranches();
 		
-		for (Long fromPc : branches.keySet()) {
-			String toPcs = getPcs(branches, fromPc, false);
-			if (toPcs.length() > 0) {
-	    	    console.display(String.format("- 0x%x =>%s (binary)\n", fromPc, toPcs));
+		for (Reference fromRef : branches.keySet()) {
+			String to = getTo(branches, fromRef, false);
+			if (to.length() > 0) {
+	    	    console.display(String.format("- %s =>%s (binary)\n", fromRef.toString(), to));
 			}
-			toPcs = getPcs(branches, fromPc, true);
-			if (toPcs.length() > 0) {
-	    	    console.display(String.format("- 0x%x =>%s (user)\n", fromPc, toPcs));
+			to = getTo(branches, fromRef, true);
+			if (to.length() > 0) {
+	    	    console.display(String.format("- %s =>%s (user)\n", fromRef.toString(), to));
 			}
 		}
 	}
 
-	private String getPcs(Map<Long, Set<BranchInfo>> branches, Long fromPc, boolean isUser) {
+	private String getTo(Map<Reference, Set<BranchInfo>> branches, Reference fromRef, boolean isUser) {
 		String result = "";
-		for (BranchInfo info : branches.get(fromPc)) {
+		for (BranchInfo info : branches.get(fromRef)) {
 			if (isUser == info.isUser()) {
-				result += String.format(" 0x%x", info.getPc());
+				result += String.format(" %s", info.getRef().toString());
 			}
 		}
 		return result;
