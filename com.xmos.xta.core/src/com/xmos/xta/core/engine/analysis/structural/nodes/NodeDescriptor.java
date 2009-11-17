@@ -95,11 +95,17 @@ public class NodeDescriptor implements Comparable<NodeDescriptor>{
     
     public int hashCode() { 
         int hash = 1;
-        hash = hash * 31 + m_node.hashCode();
-        hash = hash * 31 + (m_ancestors == null ? 0 : m_ancestors.hashCode());
+        hash = hash * 31 + m_node.getId();
+        if (m_ancestors == null) {
+        	hash = hash * 31;
+        } else {
+        	for (Node ancestor : m_ancestors) {
+                hash = hash * 31 + ancestor.getId();        		
+        	}        	
+        }
         return hash;
     }
-    
+
     public void addPreviousNode(NodeDescriptor previous) {
     	m_previous.add(previous);
     }

@@ -365,7 +365,10 @@ sub BuildEclipse
                  "-Dbuilder=$buildDirProperties/build_config -quiet";
 
   system("$buildCmd >> $buildOutput");
+    die() if ($? != 0);
+
   system($tailCmd . " $buildOutput");
+    die() if ($? != 0);
 
   # Installs the zip file into the export directory.
   unlink("$TOOLS_XTA/export/$target");
