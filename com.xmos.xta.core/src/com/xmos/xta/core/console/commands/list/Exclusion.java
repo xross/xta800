@@ -131,8 +131,8 @@ public class Exclusion extends Command {
         	    
 	    if (exclusions.size() > 0) {
 	    	for (Reference exclusion : exclusions) {
-	    	    console.display(String.format("- 0x%x: %s\n", 
-	    	    		exclusion.getPc(), exclusion.getRef()));
+	    	    console.display(String.format("- %s: %s\n", 
+	    	    		exclusion.getPcString(), exclusion.getRef()));
 	    	}    	    	
 	    } else {
 	    	console.display("none\n");

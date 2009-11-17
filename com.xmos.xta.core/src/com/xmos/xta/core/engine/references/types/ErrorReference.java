@@ -26,5 +26,13 @@ public class ErrorReference extends ReferenceType {
 	
 	public boolean isPortable() {
 		return false;
-	}	
+	}
+
+	public boolean matches(String s) {
+		return false;
+	}
+
+	public boolean matches(long pc) {
+		return false;
+	}
 }

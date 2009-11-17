@@ -52,6 +52,7 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.Sections;
@@ -305,9 +306,7 @@ public class Engine implements Notifier, Aborter {
 					m_coreId, m_executableFile));
 			return false;
 
-		} else if (!resolveRefernece(functionRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"unresolved reference: %s", functionName));
+		} else if (!resolveOrError(src, functionRef)) {
 			return false;
 						
 		} else {
@@ -329,18 +328,14 @@ public class Engine implements Notifier, Aborter {
 					m_coreId, m_executableFile));
 			return false;
 			
-		} else if (!resolveRefernece(fromRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"unresolved reference: %s", from));
+		} else if (!resolveOrError(src, fromRef)) {
 			return false;
 			
-		} else if (!resolveRefernece(toRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"unresolved reference: %s", to));
+		} else if (!resolveOrError(src, toRef)) {
 			return false;
 			
 		} else {		
-			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, 
+			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, this,
 					m_nodeId, m_coreId, m_exclusions, m_assertions, m_config);
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
@@ -445,7 +440,7 @@ public class Engine implements Notifier, Aborter {
 	public boolean canInstructionPause(int routeId, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
+		if (!resolveReference(reference)) {
 			return false;
 		}
 		try {
@@ -603,7 +598,16 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void addPathTime(CommandSource src, String from, String to, TimeUnit timeUnit) {
-		m_assertions.addPathTime(m_nodeId, m_coreId, from, to, timeUnit);
+		Reference fromRef = ReferenceFactory.createReference(from, ReferenceClass.ENDPOINT_REF);
+		if (!resolveOrError(src, fromRef)) {
+			return;
+		}
+		Reference toRef = ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF);
+		if (!resolveOrError(src, toRef)) {
+			return;
+		}
+
+		m_assertions.addPathTime(m_nodeId, m_coreId, fromRef, toRef, timeUnit);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}	
 
@@ -649,11 +653,16 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void removePathTime(CommandSource src, String from, String to) {
-		if (from.equals("*") && to.equals("*")) {
-			m_assertions.clearPathTimes(m_nodeId, m_coreId);
-		} else {		
-			m_assertions.removePathTime(m_nodeId, m_coreId, from, to);
-		}		
+		Reference fromRef = ReferenceFactory.createReference(from, ReferenceClass.ENDPOINT_REF);
+		if (!resolveOrError(src, fromRef)) {
+			return;
+		}
+		Reference toRef = ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF);
+		if (!resolveOrError(src, toRef)) {
+			return;
+		}
+
+		m_assertions.removePathTime(m_nodeId, m_coreId, fromRef, toRef);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}	
 
@@ -740,16 +749,25 @@ public class Engine implements Notifier, Aborter {
 		FunctionTimeInfo info = new FunctionTimeInfo(functionName, timeUnit);
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : getRoute(routeId)) {
-			assertions.applyFunctionAssertion(this, src, route, info, Source.EXPLICIT);
+			assertions.applyFunctionAssertion(this, src, route, info, Source.USER);
 		}		
 	}
 
 	public void setPathTime(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
-	    PathTimeInfo info = new PathTimeInfo(from, to, timeUnit);
+		Reference fromRef = ReferenceFactory.createReference(from, ReferenceClass.ENDPOINT_REF);
+		if (!resolveOrError(src, fromRef)) {
+			return;
+		}
+		Reference toRef = ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF);
+		if (!resolveOrError(src, toRef)) {
+			return;
+		}
+
+		PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);
 		RouteAssertions assertions = new RouteAssertions();
 		try {
 			for (Route route : getRoute(routeId)) {
-					assertions.applyPathAssertion(this, src, route, info, Source.EXPLICIT);
+				assertions.applyPathAssertion(this, src, route, info, Source.USER);
 			}
 		} catch (AbortedException e) { }
 	}
@@ -759,8 +777,7 @@ public class Engine implements Notifier, Aborter {
 	// ===================================================================== //		
 	public void setLoop(CommandSource src, int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
+		if (!resolveOrError(src, reference)) {
 			return;
 		}
 		Collection<Route> routes = getRoute(routeId);
@@ -769,7 +786,7 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 		try {
-			applyLoopToRoutes(src, routes, new LoopInfo(reference, iterations), Source.EXPLICIT);
+			applyLoopToRoutes(src, routes, new LoopInfo(reference, iterations), Source.USER);
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;
@@ -779,7 +796,7 @@ public class Engine implements Notifier, Aborter {
 
 	public void setLoop(CommandSource src, Node node, long iterations) {
 		try {
-			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations, Source.EXPLICIT);
+			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations, Source.USER);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} catch (Exception e) {
@@ -819,8 +836,7 @@ public class Engine implements Notifier, Aborter {
 	// ===================================================================== //			
 	public void setLoopPath(CommandSource src, int routeId, String refString, long iterations) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
+		if (!resolveOrError(src, reference)) {
 			return;
 		}		
 		Collection<Route> routes = getRoute(routeId);
@@ -829,7 +845,7 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 		try {
-			applyLoopPathToRoutes(routes, new LoopPathInfo(reference, iterations), Source.EXPLICIT);
+			applyLoopPathToRoutes(routes, new LoopPathInfo(reference, iterations), Source.USER);
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;
@@ -839,7 +855,7 @@ public class Engine implements Notifier, Aborter {
 
 	public void setLoopPath(CommandSource src, Node node, long iterations) {
 		try {
-			m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations, Source.EXPLICIT);
+			m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations, Source.USER);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 			
 		} catch (Exception e) {
@@ -879,8 +895,7 @@ public class Engine implements Notifier, Aborter {
 	// ===================================================================== //			
 	public void setLoopScope(CommandSource src, int routeId, String refString, boolean absolute) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));
+		if (!resolveOrError(src, reference)) {
 			return;
 		}
 		Collection<Route> routes = getRoute(routeId);
@@ -889,7 +904,7 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 		try {
-			applyLoopScopeToRoutes(routes, new LoopScopeInfo(reference, absolute), Source.EXPLICIT);
+			applyLoopScopeToRoutes(routes, new LoopScopeInfo(reference, absolute), Source.USER);
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;			
@@ -899,7 +914,7 @@ public class Engine implements Notifier, Aborter {
 
 	public void setLoopScope(CommandSource src, Node node, boolean absolute) {
 		try {
-		    m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute, Source.EXPLICIT);
+		    m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute, Source.USER);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		
     	} catch (Exception e) {
@@ -939,14 +954,14 @@ public class Engine implements Notifier, Aborter {
 	// ===================================================================== //			
 	public boolean setInstructionTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF);
-		if (!resolveRefernece(reference)) {
+		if (!resolveReference(reference)) {
 			return false;
 		}
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.isEmpty()) {
 			return false;
 		}
-		if (applyInstructionTimeToRoutes(routes, new InstructionTimeInfo(reference, timeUnit), Source.EXPLICIT)) {
+		if (applyInstructionTimeToRoutes(routes, new InstructionTimeInfo(reference, timeUnit), Source.USER)) {
 		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 		    return true;
 		}
@@ -954,7 +969,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void setInstructionTime(CommandSource src, Node node, TimeUnit timeUnit) {
-		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.EXPLICIT);
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.USER);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
@@ -983,12 +998,11 @@ public class Engine implements Notifier, Aborter {
 	public boolean addExclusion(CommandSource src, String refString) {
 		Reference reference = ReferenceFactory.createReference(
 				refString, ReferenceClass.ANY_REF);
-		if (!resolveRefernece(reference)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("failed to add exclusion at reference: %s", refString));			
+		if (!resolveOrError(src, reference)) {
 			return false;
 		}
-		if (alreadyExcluded(reference.getPc())) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for PC: 0x%x", reference.getPc()));			
+		if (alreadyExcluded(reference)) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for PC: %s", reference.getPcString()));			
 			return false;
 		}
 		m_exclusions.add(reference);
@@ -996,9 +1010,9 @@ public class Engine implements Notifier, Aborter {
 		return true;
 	}
 	
-	private boolean alreadyExcluded(long pc) {
-		for (Reference ref : m_exclusions) {
-			if (ref.getPc() == pc) {
+	private boolean alreadyExcluded(Reference ref) {
+		for (Reference exclusion : m_exclusions) {
+			if (exclusion.equals(ref)) {
 				return true;
 			}
 		}
@@ -1010,10 +1024,8 @@ public class Engine implements Notifier, Aborter {
 			m_exclusions.clear();
 
 		} else {
-			Reference reference = ReferenceFactory.createReference(
-					refString, ReferenceClass.ANY_REF);
-			if (!resolveRefernece(reference)) {
-				notify(src, Notifier.NOTIFY_ERROR, String.format("failed to remove exclusion at reference: %s", refString));			
+			Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
+			if (!resolveOrError(src, reference)) {
 				return false;
 			}
 			Iterator<Reference> iter = m_exclusions.iterator();
@@ -1036,15 +1048,13 @@ public class Engine implements Notifier, Aborter {
 	// Section Methods
 	// ===================================================================== //
 	public boolean addBranch(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {
-		if (!resolveRefernece(fromRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", fromRef.getRef()));
+		if (!resolveOrError(src, fromRef)) {
 			return false;
 		}
 		
 		Collection<Long> toRefPcs = new HashSet<Long>();
 		for (Reference toRef : toRefs) {
-			if (!resolveRefernece(toRef)) {
-				notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", toRef.getRef()));
+			if (!resolveOrError(src, toRef)) {
 				return false;
 			}
 			toRefPcs.add(toRef.getPc());
@@ -1057,20 +1067,25 @@ public class Engine implements Notifier, Aborter {
 		return false;
 	}
 
-	public boolean removeBranch(CommandSource src, Reference fromRef) {
-		if (!resolveRefernece(fromRef)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", fromRef.getRef()));
+	public boolean removeBranch(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {
+		if (!resolveOrError(src, fromRef))
 			return false;
+		
+		for (Reference toRef : toRefs) {
+			if (!resolveOrError(src, toRef)) {
+				return false;
+			}
 		}
 		
-		if (m_sections.removeFromBranches(src, m_nodeId, m_coreId, fromRef.getPc())) {	
+		if (m_sections.removeFromBranches(src, m_nodeId, m_coreId, fromRef, toRefs)) {
 			m_structuralGraphUpToDate.add(m_nodeId, m_coreId, false);
-			return true;			
+			return true;
 		}
 		return false;
 	}
 
-	public Map<Long, TreeSet<Long>> getBranches() {
+
+	public Map<Long, Set<BranchInfo>> getBranches() {
 		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 
@@ -1432,8 +1447,15 @@ public class Engine implements Notifier, Aborter {
 		treeMap.put(name, list);
 	}
 	
-	private boolean resolveRefernece(Reference ref) {
+	private boolean resolveReference(Reference ref) {
 		return ref.resolve(this);
+	}
+	private boolean resolveOrError(CommandSource src, Reference ref) {
+		if (!resolveReference(ref)) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("unresolved reference: %s", ref.getRef()));
+			return false;
+		}
+		return true;
 	}
 	
 	private boolean isReloaded(File executableFile) {
@@ -1452,12 +1474,9 @@ public class Engine implements Notifier, Aborter {
     
 	private void updateAssertions(CommandSource src, String refString, AssertionUpdate update) {		
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-		if (resolveRefernece(reference)) {
+		if (resolveOrError(src, reference)) {
 			update.run(reference);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-			
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find reference: %s", refString));			
 		}
 	}    
 	

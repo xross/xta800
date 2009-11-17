@@ -723,7 +723,7 @@ public class RouteConstructor {
 			for (Route route : m_routes) {
 				try {
 					route.getRouteUnknowns().setLoopIterations(src, m_engine, 
-							reference, srcLevelLoopInfo.getNumIterations(), true, Source.IMPLICIT);
+							reference, srcLevelLoopInfo.getNumIterations(), true, Source.BINARY);
 				} catch (Exception e) {}				
 			}
 		}		
@@ -774,30 +774,30 @@ public class RouteConstructor {
 		RouteAssertions assertions = new RouteAssertions();
 		for (Route route : m_routes) {			
 			for (FunctionTimeInfo info : m_engine.getFunctionTimeAssertions()) {			
-				assertions.applyFunctionAssertion(m_engine, src, route, info, Source.IMPLICIT);
+				assertions.applyFunctionAssertion(m_engine, src, route, info, Source.BINARY);
 			}
 			for (PathTimeInfo info : m_engine.getPathTimeAssertions()) {			
-				assertions.applyPathAssertion(m_engine, src, route, info, Source.IMPLICIT);
+				assertions.applyPathAssertion(m_engine, src, route, info, Source.BINARY);
 			}
 		}		
 		for (LoopInfo info : m_engine.getLoopAssertions()) {
 			try {
-				m_engine.applyLoopToRoutes(src, m_routes, info, Source.IMPLICIT);
+				m_engine.applyLoopToRoutes(src, m_routes, info, Source.BINARY);
 			} catch (Exception e) {}
 		}
 		for (LoopPathInfo info : m_engine.getLoopPathAssertions()) {
 			try {
-				m_engine.applyLoopPathToRoutes(m_routes, info, Source.IMPLICIT);
+				m_engine.applyLoopPathToRoutes(m_routes, info, Source.BINARY);
 			} catch (Exception e) {}
 		}
 		for (LoopScopeInfo info : m_engine.getLoopScopeAssertions()) {
 			try {
-				m_engine.applyLoopScopeToRoutes(m_routes, info, Source.IMPLICIT);
+				m_engine.applyLoopScopeToRoutes(m_routes, info, Source.BINARY);
 			} catch (Exception e) {}
 		}
 		for (InstructionTimeInfo info : m_engine.getInstructionTimeAssertions()) {
 			try {
-				m_engine.applyInstructionTimeToRoutes(m_routes, info, Source.IMPLICIT);
+				m_engine.applyInstructionTimeToRoutes(m_routes, info, Source.BINARY);
 			} catch (Exception e) {}
 		}
 	}

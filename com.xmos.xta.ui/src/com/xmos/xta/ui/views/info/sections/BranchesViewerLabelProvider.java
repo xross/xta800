@@ -3,6 +3,7 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
+import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
 class BranchesViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
@@ -24,8 +25,8 @@ class BranchesViewerLabelProvider extends BaseViewerLabelProvider implements ITa
 			
     	} else if (m_columnNames[columnIndex].equals(TOPCS)) {
     		String toPcs = "";
-    		for (Long toPc : branches.m_toPcs) {
-    			toPcs += "0x" + Long.toHexString(toPc) + ", ";
+    		for (BranchInfo info : branches.m_toPcs) {
+    			toPcs += "0x" + Long.toHexString(info.getPc()) + ", ";
     		}
 	        return toPcs;
         }

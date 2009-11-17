@@ -23,6 +23,7 @@ public abstract class ReferenceType {
 		ENDPOINT,
 		SRCLABEL,
 		CALL,
+		EVERYTHING,
 		ERROR
 	}
 	
@@ -215,5 +216,16 @@ public abstract class ReferenceType {
 			}
 		}
 		return false;
-	}	
+	}
+	
+	public boolean matches(String s) {
+		return false;
+	}
+	
+	public boolean matches(long pc) {
+		if (m_pc == pc) {
+			return true;
+		}
+		return false;
+	}
 }

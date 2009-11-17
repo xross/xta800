@@ -14,15 +14,15 @@ import com.xmos.xta.core.console.commands.list.List.Operation;
 
 public class Remove extends CommandContainer {
 	static private Command[] m_options = { 
-		new Branch(Operation.REMOVE),		
-		new Exclusion(Operation.REMOVE),		
+		new Branch(Operation.REMOVE),
+		new Exclusion(Operation.REMOVE),
+		new FunctionTime(Operation.REMOVE),
+		new InstructionTime(Operation.REMOVE),
 		new Loop(Operation.REMOVE),
 		new LoopPath(Operation.REMOVE),
-		new LoopScope(Operation.REMOVE), 
-		new InstructionTime(Operation.REMOVE), 
-		new FunctionTime(Operation.REMOVE), 
-		new PathTime(Operation.REMOVE), 		
-		new Route(),	
+		new LoopScope(Operation.REMOVE),
+		new PathTime(Operation.REMOVE),
+		new Route(),
 	};
 	
 	public Remove() { super("remove"); }

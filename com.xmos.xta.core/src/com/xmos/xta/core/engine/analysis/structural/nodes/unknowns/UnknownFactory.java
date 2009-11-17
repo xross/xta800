@@ -16,7 +16,7 @@ public class UnknownFactory {
     }	
 	
     public static Unknown createUnknown(Node node, Type type, State state) {    	
-        return create(node, type, state, Source.EXPLICIT, new Reference[]{});	
+        return create(node, type, state, Source.USER, new Reference[]{});	
     }
     
     public static Unknown createKnown(Node node, Type type, State state, Source source, Reference[] references) {

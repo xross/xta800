@@ -3,9 +3,8 @@ package com.xmos.xta.core.console.commands.list;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -15,6 +14,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.sections.BranchInfo;
 
 public class Branch extends Command {
 	private String m_fromRefString;
@@ -28,25 +28,16 @@ public class Branch extends Command {
 	}
 
 	public Branch(String fromRefString, Collection<String> toRefStrings, Operation operation) {
-		assert(operation == Operation.ADD);
 		m_operation = operation;
 		m_fromRefString = fromRefString;
 		m_toRefStrings = toRefStrings;
 	}
 
-	Branch(String fromRefString, Operation operation) {
-		assert(operation == Operation.REMOVE);
-		m_operation = operation;
-		m_fromRefString = fromRefString;
-		m_toRefStrings = new HashSet<String>();
-	}
-	
 	public int numArgs() {
     	switch (m_operation) {
     	case ADD:
-            return 1 + m_toRefStrings.size();         
     	case REMOVE:
-            return 1;
+            return 1 + m_toRefStrings.size();         
     	case LIST:
             return 0;
         default:
@@ -87,14 +78,12 @@ public class Branch extends Command {
 	public String commandLine() {
     	switch (m_operation) {
     	case ADD:
+    	case REMOVE:
     		String str = "branch " + m_fromRefString;
     		for (String toRefString : m_toRefStrings) {
     			str += " " + toRefString;
     		}
     		return str; 
-    		
-    	case REMOVE:
-    		return "branch " + m_fromRefString;
     		
     	case LIST:
     		return "branches";
@@ -110,7 +99,7 @@ public class Branch extends Command {
     	case ADD:
             return "branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list";         
     	case REMOVE:
-            return "branch <from LABEL_REF>: Removes the given from reference from the branches list";
+            return "branch <from LABEL_REF|*> <to LABEL_REF|*> <to LABEL_REF|*>: Removes the given from/to references from the branches list";
     	case LIST:
             return "branches: Lists the branches";
         default:
@@ -124,7 +113,8 @@ public class Branch extends Command {
 			return null;
 				
     	switch (m_operation) {
-    	case ADD:    		
+    	case ADD:
+    	case REMOVE:
     		int i = 2;
     		Collection<String> toRefStrings = new ArrayList<String>();
     		while (!areArgsDone(args, index + i)) {
@@ -132,9 +122,6 @@ public class Branch extends Command {
     			++i;
     		}		    		
     		return new Branch(args[index + 1], toRefStrings, m_operation);  
-    		
-    	case REMOVE:
-    		return new Branch(args[index + 1], m_operation);   
     		
     	case LIST:
     		return new Branch(m_operation);            
@@ -151,22 +138,22 @@ public class Branch extends Command {
 
 		Reference fromRef = ReferenceFactory.createReference(m_fromRefString, ReferenceClass.LABEL_REF);
 		
+		Collection<Reference> toRefs = new ArrayList<Reference>(); 
+		for (String toRefString : m_toRefStrings) {
+			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF);
+			toRefs.add(ref);
+		}
+
     	switch (m_operation) {
     	case ADD:
-    		Collection<Reference> toRefs = new ArrayList<Reference>(); 
-    		for (String toRefString : m_toRefStrings) {
-    			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF);
-    			toRefs.add(ref);
-    		}
-
     		engine.addBranch(getSrc(), fromRef, toRefs);
 			break;			
     	case REMOVE:
-			engine.removeBranch(getSrc(), fromRef);
+			engine.removeBranch(getSrc(), fromRef, toRefs);
 			break;			
     	case LIST:
-    		listBranches(engine, console);        	
-    		break;    		
+    		listBranches(engine, console);
+    		break;
         default:
            	assert(false);
        		break;
@@ -179,17 +166,27 @@ public class Branch extends Command {
 			return;
 		}
 		
-    	Iterator<Map.Entry<Long, TreeSet<Long>>> iter = engine.getBranches().entrySet().iterator();        
-    	while (iter.hasNext()) {
-    	    Map.Entry<Long, TreeSet<Long>> pair = iter.next();
-    	    Long fromPc = pair.getKey();
-    	    TreeSet<Long> toPcs = pair.getValue();
-    	    
-    	    console.display(String.format("- 0x%x =>", fromPc));
-    	    for (Long toPc : toPcs) {
-        	    console.display(String.format(" 0x%x", toPc));    	    	
-    	    }
-    	    console.display("\n");
-    	}		
+		Map<Long, Set<BranchInfo>> branches = engine.getBranches();
+		
+		for (Long fromPc : branches.keySet()) {
+			String toPcs = getPcs(branches, fromPc, false);
+			if (toPcs.length() > 0) {
+	    	    console.display(String.format("- 0x%x =>%s (binary)\n", fromPc, toPcs));
+			}
+			toPcs = getPcs(branches, fromPc, true);
+			if (toPcs.length() > 0) {
+	    	    console.display(String.format("- 0x%x =>%s (user)\n", fromPc, toPcs));
+			}
+		}
+	}
+
+	private String getPcs(Map<Long, Set<BranchInfo>> branches, Long fromPc, boolean isUser) {
+		String result = "";
+		for (BranchInfo info : branches.get(fromPc)) {
+			if (isUser == info.isUser()) {
+				result += String.format(" 0x%x", info.getPc());
+			}
+		}
+		return result;
 	}
 }

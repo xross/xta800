@@ -2,11 +2,12 @@ package com.xmos.xta.core.engine.sections;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.Map;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.references.Reference;
 
 public class Sections {	
 	private XeLoader m_xeLoader;
@@ -118,15 +119,17 @@ public class Sections {
 	
 	public boolean addToBranches(CommandSource src, int nodeId, int coreId, long fromPc, Collection<Long> toPcs) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
-		return branches.add(src, fromPc, toPcs);
+		return branches.add(src, fromPc, toPcs, true);
 	}
 
-	public boolean removeFromBranches(CommandSource src, int nodeId, int coreId, long fromPc) {
+	public boolean removeFromBranches(CommandSource src, int nodeId, int coreId,
+			Reference fromRef, Collection<Reference> toRefs) {
+		
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
-		return branches.remove(src, fromPc);			
+		return branches.remove(src, fromRef, toRefs);			
 	}	
-	
-	public Map<Long, TreeSet<Long>> getBranches(int nodeId, int coreId) {
+
+	public Map<Long, Set<BranchInfo>> getBranches(int nodeId, int coreId) {
 		Branches branches = (Branches)getSection(m_branches, nodeId, coreId);
 		return branches.get();
 	}

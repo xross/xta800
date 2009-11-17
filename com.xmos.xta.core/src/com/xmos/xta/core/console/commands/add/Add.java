@@ -16,11 +16,11 @@ public class Add extends CommandContainer {
 	static private Command[] m_options = { 
 		new Branch(Operation.ADD),
 		new Exclusion(Operation.ADD),	
+		new FunctionTime(Operation.ADD), 
+		new InstructionTime(Operation.ADD), 
 		new Loop(Operation.ADD),
 		new LoopPath(Operation.ADD),
 		new LoopScope(Operation.ADD), 
-		new InstructionTime(Operation.ADD), 
-		new FunctionTime(Operation.ADD), 
 		new PathTime(Operation.ADD), 				
 	};
 	

@@ -5,15 +5,15 @@ import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Config extends CommandContainer {
 	static private Command[] m_options = {
-		new Proc(), 
-		new Freq(), 
-		new Threads(), 
-		new SrcPaths(), 
-		new Verbosity(),
 		new Case(),
+		new Freq(), 
+		new Proc(), 
+		new SrcPaths(), 
+		new Threads(), 
 		new TimeOut(),
-		new WarnAsErrors(),
 		new TimingErrors(),
+		new Verbosity(),
+		new WarnAsErrors(),
 	};
 	
 	public Config() { super("config"); }

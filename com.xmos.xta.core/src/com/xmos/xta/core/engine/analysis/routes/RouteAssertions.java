@@ -43,16 +43,9 @@ public class RouteAssertions {
 	public void applyPathAssertion(Engine engine, CommandSource src, 
 			Route route, PathTimeInfo info, Source source) throws AbortedException {
 		
-		Reference fromRef = ReferenceFactory.createReference(
-				info.getFrom(), ReferenceClass.ENDPOINT_REF);
-		Reference toRef = ReferenceFactory.createReference(
-				info.getTo(), ReferenceClass.ENDPOINT_REF);
+		Reference fromRef = info.getFrom();
+		Reference toRef = info.getTo();
 
-		if (!fromRef.resolve(engine))
-			return;
-		if (!toRef.resolve(engine))
-			return;
-				
 		Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
 		Collection<Node> toNodes = route.getReferencedNodes(toRef);
 		

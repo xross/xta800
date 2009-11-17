@@ -5,8 +5,8 @@ import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Analyse extends CommandContainer {
 	static private Command[] m_options = { 
-		new Path(), 
 		new Function(), 
+		new Path(), 
 	};
 	
 	public Analyse() { super("analyse"); }

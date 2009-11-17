@@ -31,18 +31,18 @@ public class TimeDistribution extends Command {
     }        
 
     public String name() {
-    	return "td";
+    	return "distribution";
     }        
 
     public String commandLine() {
     	if (m_nodeIdSet) {
-        	return "td " + getRouteId(m_routeId) + " " + m_nodeId;
+        	return "distribution " + getRouteId(m_routeId) + " " + m_nodeId;
     	}
-    	return "td " + getRouteId(m_routeId);
+    	return "distribution " + getRouteId(m_routeId);
     }
     
     public String description(Engine engine, boolean detailed) {
-        return "td <route id> [node id]: Display time distribution for the given route/node";      	
+        return "distribution <route id> [node id]: Display time distribution for the given route/node";      	
     }
 
     public Command clone(String[] args, int index) {

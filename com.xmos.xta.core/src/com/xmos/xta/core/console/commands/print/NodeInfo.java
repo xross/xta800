@@ -27,15 +27,15 @@ public class NodeInfo extends Command {
     }        
 
     public String name() {
-    	return "node_info";
+    	return "nodeinfo";
     }        
 
     public String commandLine() {
-   	    return "node_info " + getRouteId(m_routeId) + " " + getNodeId(m_nodeId);
+   	    return "nodeinfo " + getRouteId(m_routeId) + " " + getNodeId(m_nodeId);
     }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "node_info <route id> <node id>: Show detailed information for the given node in the given route";
+    	return "nodeinfo <route id> <node id>: Show detailed information for the given node in the given route";
     }
 
     public Command clone(String[] args, int index) {

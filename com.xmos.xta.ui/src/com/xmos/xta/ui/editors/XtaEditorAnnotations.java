@@ -137,10 +137,9 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		Engine engine = GuiEngine.getEngine();
 		if (ref.resolve(engine)) {
-			long refPc = ref.getPc();
 			Collection<Reference> exclusions = GuiEngine.getEngine().getExclusions();
 			for (Reference exclusion : exclusions) {
-				if (exclusion.getPc() == refPc) {
+				if (exclusion.equals(ref)) {
 					return true;
 				}
 			}

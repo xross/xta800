@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.analysis.controlflow;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 
 import com.xmos.libs.isa.Instruction;
 import com.xmos.libs.xeloader.MemoryImage;
@@ -14,11 +14,12 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
 
 public class SuccessorAdder {
 	private InstructionDecoder m_instDecoder;
-	private Map<Long, TreeSet<Long>> m_branchMap;
+	private Map<Long, Set<BranchInfo>> m_branchMap;
 	private MemoryImage m_mi;
 	private long m_cpPointer;
 	private Collection<InstructionNode> m_threadEnds;
@@ -61,12 +62,12 @@ public class SuccessorAdder {
 	}
 
 	private void addUserSuccessors(CommandSource src, Node instruction, XtaInstruction inst, boolean debug) {
-		TreeSet<Long> nextPcs = m_branchMap.get(inst.getPc());
+		Set<BranchInfo> nextPcs = m_branchMap.get(inst.getPc());
 
 		//FIXME - this should not be allowed for instruction that are not branches
 		if (nextPcs != null) {
-			for (long pc : nextPcs) {
-				connect(src, instruction, pc, true, debug);
+			for (BranchInfo info : nextPcs) {
+				connect(src, instruction, info.getPc(), true, debug);
 			}
 		}
 	}

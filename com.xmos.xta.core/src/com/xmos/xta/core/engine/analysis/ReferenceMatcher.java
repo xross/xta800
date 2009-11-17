@@ -20,7 +20,7 @@ public class ReferenceMatcher {
 	public Collection<NodeDescriptor> getNodeDescriptors(Aborter aborter,
 			Node node, Reference reference) throws AbortedException {
 		
-		Collection<NodeDescriptor> nodeDescriptors = getNodesDescriptorsContainingReferencePc(aborter, node, reference.getPc());
+		Collection<NodeDescriptor> nodeDescriptors = getNodesDescriptorsContainingReferencePc(aborter, node, reference);
 		return checkBackTrail(nodeDescriptors, reference);
 	}
 
@@ -30,7 +30,7 @@ public class ReferenceMatcher {
 	}
 	
 	private Collection<NodeDescriptor> getNodesDescriptorsContainingReferencePc(final Aborter aborter,
-			Node node, final long pc) throws AbortedException {
+			Node node, final Reference reference) throws AbortedException {
 
 		final Collection<NodeDescriptor> nodeDescriptors = new ArrayList<NodeDescriptor>();	
 		
@@ -44,7 +44,7 @@ public class ReferenceMatcher {
 			
 			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {		
 				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
-				if (instruction.getPc() == pc && !instruction.isFnop()) {
+				if (reference.matches(instruction.getPc()) && !instruction.isFnop()) {
 					Stack<Node> newStack = new Stack<Node>();
 					newStack.addAll(ancestors);
 					nodeDescriptors.add(new NodeDescriptor(node, newStack));

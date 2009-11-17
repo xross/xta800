@@ -15,16 +15,20 @@ public class ReferenceTypeFactory {
 		m_referenceClasses = new HashMap<ReferenceClass, ReferenceType[]>();
 
 		m_referenceClasses.put(ReferenceClass.PC_REF, new ReferenceType[] {
+				new EverythingReference(null),
 				new PcReference(null)});
 
 		m_referenceClasses.put(ReferenceClass.FUNCTION_REF, new ReferenceType[] {
+				new EverythingReference(null),
 				new FunctionReference(null)});
 		
 		m_referenceClasses.put(ReferenceClass.LABEL_REF, new ReferenceType[] {
+				new EverythingReference(null),
 				new PcReference(null), 
 				new LabelReference(null)});
 		
 		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF, new ReferenceType[] {
+				new EverythingReference(null),
 				new PcReference(null), 
 				new LabelReference(null), 
 				new EndpointReference(null), 
@@ -34,6 +38,7 @@ public class ReferenceTypeFactory {
 				new CallPcReference(null)});
 
 		m_referenceClasses.put(ReferenceClass.ANY_REF, new ReferenceType[] {
+				new EverythingReference(null),
 				new PcReference(null), 
 				new LabelReference(null), 
 				new EndpointReference(null), 

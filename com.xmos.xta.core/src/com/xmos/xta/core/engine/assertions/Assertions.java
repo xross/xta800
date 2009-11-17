@@ -101,7 +101,7 @@ public class Assertions {
 		list.add(info);
 	}
 
-	public void addPathTime(int nodeId, int coreId, String from, String to, TimeUnit timeUnit) {
+	public void addPathTime(int nodeId, int coreId, Reference from, Reference to, TimeUnit timeUnit) {
 		PathTimeInfo info = new PathTimeInfo(from, to, timeUnit);
 		ArrayList<PathTimeInfo> list = get(m_pathTimes, nodeId, coreId);		
 		list.remove(info);
@@ -140,7 +140,7 @@ public class Assertions {
 		get(m_functionTimes, nodeId, coreId).remove(new FunctionTimeInfo(function, null));
 	}
 
-	public void removePathTime(int nodeId, int coreId, String from, String to) {
+	public void removePathTime(int nodeId, int coreId, Reference from, Reference to) {
 		get(m_pathTimes, nodeId, coreId).remove(new PathTimeInfo(from, to, null));
 	}
 	
@@ -164,10 +164,6 @@ public class Assertions {
 		get(m_functionTimes, nodeId, coreId).clear();
 	}
 
-	public void clearPathTimes(int nodeId, int coreId) {
-		get(m_pathTimes, nodeId, coreId).clear();
-	}
-	
 	public void clearInstructionTimes(int nodeId, int coreId) {
 		get(m_instructionTimes, nodeId, coreId).clear();
 	}

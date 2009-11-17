@@ -95,10 +95,9 @@ public class SelectedRouteViewer {
 	public void selectNodes() {
 		// This method selects all the nodes in the tree that 
 		// contains the given pc in one of their children..		
-		Reference codePoint = GuiEngine.getCodePoint();
+		final Reference codePoint = GuiEngine.getCodePoint();
 		Engine engine = GuiEngine.getEngine();
 		if (codePoint.resolve(engine)) {
-			final long pc = codePoint.getPc();
 			final List<Node> selectedNodes = new ArrayList<Node>();
 
 			// Add the nodes hitting the pc
@@ -109,7 +108,7 @@ public class SelectedRouteViewer {
 						if (node.isBlockNode()) {
 							Collection<XtaInstruction> instructionsCovered = node.getInstructions();
 							for (XtaInstruction instruction : instructionsCovered) {
-							    if (instruction.getPc() == pc) {
+							    if (codePoint.matches(instruction.getPc())) {
 							    	selectedNodes.add(node);
 							    	break;
 							    }

@@ -11,14 +11,14 @@ public abstract class Unknown {
 	}
 
 	public enum Source {
-		EXPLICIT,
-		IMPLICIT,
+		USER,
+		BINARY,
 	}
 
 	private Node m_node;
 	private Type m_type;
-	private State m_state; 	
-    private Source m_source; 
+	private State m_state;
+    private Source m_source;
     private Reference[] m_references;
 
     public abstract String getDescription();

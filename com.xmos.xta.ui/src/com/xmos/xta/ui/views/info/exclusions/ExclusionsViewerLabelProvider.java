@@ -21,7 +21,7 @@ class ExclusionsViewerLabelProvider extends BaseViewerLabelProvider implements I
 		
 		Reference reference = (Reference)element;	
 		if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%x", reference.getPc());
+			return String.format("%s", reference.getPcString());
 			
     	} else if (m_columnNames[columnIndex].equals(DESCRIPTION)) {    		
 		    return reference.getRef();

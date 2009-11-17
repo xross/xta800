@@ -24,15 +24,15 @@ public class RouteInfo extends Command {
     }        
 
     public String name() {
-    	return "route_info";
+    	return "routeinfo";
     }        
 
     public String commandLine() {
-   	    return "route_info " + getRouteId(m_routeId);
+   	    return "routeinfo " + getRouteId(m_routeId);
     }        
     
     public String description(Engine engine, boolean detailed) {
-    	return "route_info <route id>: Show detailed information for the given route";
+    	return "routeinfo <route id>: Show detailed information for the given route";
     }
 
     public Command clone(String[] args, int index) {

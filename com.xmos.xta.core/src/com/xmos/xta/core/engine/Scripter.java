@@ -2,6 +2,10 @@ package com.xmos.xta.core.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
@@ -21,6 +25,7 @@ public class Scripter {
 	private int m_currentNodeId;
 	private int m_currentCoreId;
 	private Collection<Reference> m_currentExclusions;
+	private Map<Long, Set<Long>> m_currentBranches;
 	private Assertions m_currentAssertions;
 	
 	public Scripter(Engine engine) {
@@ -30,6 +35,7 @@ public class Scripter {
 		m_currentCoreId = 0;
 		m_currentExclusions = new ArrayList<Reference>();
 		m_currentAssertions = new Assertions();
+		m_currentBranches = new HashMap<Long, Set<Long>>();
 	}
 
 	public String createScript() {
@@ -46,6 +52,7 @@ public class Scripter {
 
        		routeComment(routeContainer, script);
         	globalConfig(routeContainer, script);
+        	addBranches(routeContainer, script);
         	addAssertions(routeContainer, script);
         	addExclusions(routeContainer, script);
         	analyseRoutes(routeContainer, script);
@@ -96,6 +103,27 @@ public class Scripter {
 		m_currentAssertions = assertions;
 	}
     
+    private void addBranches(RouteContainer routeContainer, StringBuffer script) {	
+    	Map<Long, Set<Long>> branches = routeContainer.getDescription().getBranches();
+    	
+    	if (!m_currentBranches.equals(branches)) {
+    		if (!m_currentBranches.isEmpty()) {
+        	    script.append("remove branch *\n");
+        		m_currentBranches.clear();
+    		}
+    		for (Long fromPc : branches.keySet()) {
+    			Set<Long> toPcs = new HashSet<Long>(); 
+            	script.append(String.format("add branch 0x%x", fromPc));
+    			for (Long toPc : branches.get(fromPc)) {
+                	script.append(String.format(" 0x%x", toPc));
+                	toPcs.add(toPc);
+    			}
+            	script.append(String.format("\n"));
+        		m_currentBranches.put(fromPc, toPcs);
+    		}
+    	}    	
+    }
+
     private void addExclusions(RouteContainer routeContainer, StringBuffer script) {	
     	Collection<Reference> exclusions = routeContainer.getDescription().getExclusions();
     	

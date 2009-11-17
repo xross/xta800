@@ -23,12 +23,17 @@ public class Reference {
     	str += m_base.getRef();
     	return str;
 	}
-
+	
+	public String getPcString() {
+		assert(m_base != null);
+		return String.format("0x%x", m_base.getPc());
+	}
+	
 	public long getPc() {
 		assert(m_base != null);
 		return m_base.getPc();
 	}
-	
+
 	public boolean getResolved() {
 		assert(m_base != null);
 		return m_base.getResolved();		
@@ -82,7 +87,7 @@ public class Reference {
 	}
 	
     public boolean equals(Object obj) {
-    	if(obj == null)
+    	if (obj == null)
     	return false;
                
         if(!(obj instanceof Reference))
@@ -92,7 +97,8 @@ public class Reference {
     	// all of its back trail pc's, match.
     	Reference reference = (Reference)obj;
                
-        if (getPc() != reference.getPc())
+		assert(m_base != null);
+        if (!reference.matches(m_base.getPc()))
     	    return false;
 
         if (m_backTrail.size() != reference.getBackTrail().size()) 
@@ -115,4 +121,12 @@ public class Reference {
     public String toString() {
     	return getRef();
     }
+
+	public boolean matches(String s) {
+		return m_base.matches(s);
+	}
+	
+	public boolean matches(long pc) {
+		return m_base.matches(pc);
+	}
 }

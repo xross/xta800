@@ -24,7 +24,7 @@ public class LoopPathUnknown extends Unknown {
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() == Source.IMPLICIT) {
+    	if (getSource() == Source.BINARY) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
 		Node condNode = getNode().getEnclosingCondNode();

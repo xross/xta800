@@ -45,4 +45,8 @@ public class FunctionReference extends ReferenceType {
 	public boolean isPortable() {
 		return true;
 	}	
+
+	public boolean matches(String s) {
+		return getRef().equals(s);
+	}
 }
