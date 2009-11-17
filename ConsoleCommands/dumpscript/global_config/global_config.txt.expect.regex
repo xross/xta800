@@ -6,4 +6,4 @@ load .*test\.xe
 analyse function main
 
 config threads 1
-config freq 100
+config freq 100.0

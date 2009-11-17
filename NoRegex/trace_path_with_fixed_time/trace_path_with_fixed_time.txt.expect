@@ -1,0 +1,7 @@
+  0.0: (20.0ns) 0x1000a main + 2               in (2r)      r0, res[r0] (P)
+  20.0: (20.0ns) 0x1000c main + 4               add (2rus)   r0, r0, i 0x0
+  40.0: (20.0ns) 0x1000e main + 6               add (2rus)   r0, r0, i 0x0
+  60.0: (20.0ns) 0x10010 main + 8               add (2rus)   r0, r0, i 0x0
+  80.0: (321.5ns) fixed path time
+* 401.5: (20.0ns) 0x10012 main + 10              in (2r)      r0, res[r0] (P)
+
