@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -nostartfiles test.s -o $genDir/test.xe
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print node_info - - " .
+       "print nodeinfo - - " .
        "-exit > $genDir/infinite_loop_with_padding.txt 2>&1");
 

@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "-print route_info - " .
+       "-print routeinfo - " .
        "-exit > $genDir/route_info.txt 2>&1");
 

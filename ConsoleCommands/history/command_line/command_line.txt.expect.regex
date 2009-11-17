@@ -33,9 +33,9 @@
 31: print trace -
 32: print structure -
 33: print summary
-34: print node_info - 0
-35: print route_info 0
-36: remove branch branch1
+34: print nodeinfo - 0
+35: print routeinfo 0
+36: remove branch branch1 branch1
 37: set loop - a 99
 38: set instructiontime - test.xc:12 99.0 ns
 39: set instructiontime - label1 99 cycles

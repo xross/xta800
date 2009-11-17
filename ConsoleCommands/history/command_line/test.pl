@@ -50,10 +50,10 @@ system("@ARGV  " .
        "-print trace - " .
        "-print structure - " .
        "-print summary " .
-       "-print node_info - 0 " .
-       "-print route_info 0 " .
+       "-print nodeinfo - 0 " .
+       "-print routeinfo 0 " .
 
-       "-remove branch branch1 " .
+       "-remove branch branch1 branch1 " .
 
        "-set loop - a 99 " .
        "-set instructiontime - test.xc:12 99 ns " .

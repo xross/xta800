@@ -1,0 +1,14 @@
+- 0x1000a => 0x10012 (binary)
+- 0x10008 => 0x1000c (binary)
+test1
+- 0x1000a => 0x10012 (binary)
+- source1 => source2 target2 target3 target4 (user)
+- 0x10008 => 0x1000c (binary)
+- 0x1000a => 0x10012 (binary)
+- 0x10008 => 0x1000c (binary)
+test2
+- 0x1000a => 0x10012 (binary)
+- source1 => source2 target2 target3 target4 (user)
+- 0x10008 => 0x1000c (binary)
+- 0x1000a => 0x10012 (binary)
+- 0x10008 => 0x1000c (binary)

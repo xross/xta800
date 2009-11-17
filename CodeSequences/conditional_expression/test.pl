@@ -13,6 +13,6 @@ if (!$noBuild) {
 
 system("@ARGV load $genDir/test.xe " .
        "analyse function test " .
-       "-print node_info - - " .
+       "-print nodeinfo - - " .
        "-exit > $genDir/conditional_expression.txt 2>&1");
 

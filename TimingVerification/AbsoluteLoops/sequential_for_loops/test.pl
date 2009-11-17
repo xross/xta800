@@ -30,7 +30,7 @@ system("@ARGV load $genDir/test.xe " .
         "-set loopscope - inner_loop_3 a " .
         "-set loop - inner_loop_4 18 " .
         "-set loopscope - inner_loop_4 a " .
-        "-print node_info - - " .
+        "-print nodeinfo - - " .
         "-exit > $genDir/$suite.in 2>&1");
 
 absolutetime::createFiles($suite, $genDir);

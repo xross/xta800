@@ -1,0 +1,14 @@
+list branches
+add branch source1 source2 target2 target3 target4
+echo test1
+list branches
+remove branch * *
+list branches
+add branch source1 source2
+add branch source1 target2
+add branch source1 target3
+add branch source1 target4
+echo test2
+list branches
+remove branch * *
+list branches

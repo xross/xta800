@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "-add branch 100 100 " .
-       "-remove branch 100 " .
-       "exit > $genDir/invalid_references.txt 2>&1");
+       "-remove branch 100 100 " .
+       "-exit > $genDir/invalid_references.txt 2>&1");
 

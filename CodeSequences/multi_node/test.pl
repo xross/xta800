@@ -11,6 +11,6 @@ if (!$noBuild) {
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function f " .
-       "print node_info - - " .
+       "print nodeinfo - - " .
        "-exit > $genDir/multi_node.txt 2>&1");
 

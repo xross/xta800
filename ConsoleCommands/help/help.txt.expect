@@ -2,15 +2,15 @@
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
+  [-]dumpscript: Dump script which represents the current state
   [-]echo "text": prints the text to the console
-  [-]exit: Quits the shell (Standalone mode only)
+  [-]exit: Quits the application
   [-]help [command/option]: Displays help message for the given command/option
   [-]history: Displays the command history
   [-]load <xe file>: Loads the given xmos executable file
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
   [-]print <option> <arg0> <arg1>...: Display analysis information
   [-]pwd: Displays the current working directory
-  [-]dumpscript: Dump script which represents the current state
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
   [-]set <option> <arg0> <arg1>...: Set path information
   [-]source <file name>: Sources the given command file
@@ -19,66 +19,66 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
+      option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of assertions
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of assertions
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
       option: loop <ANY_REF> <iterations>: Adds the given loop count assertion to the list of assertions
       option: looppath <ANY_REF> <iterations>: Adds the given loop path count assertion to the list of assertions
       option: loopscope <ANY_REF> <scope>: Adds the given loop scope assertion to the list of assertions
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of assertions
-          mode: ns:     nanoseconds
-          mode: mhz:    megahertz
-          mode: cycles: processor thread cycles
-      option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of assertions
-          mode: ns:     nanoseconds
-          mode: mhz:    megahertz
-          mode: cycles: processor thread cycles
       option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of assertions
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
       option: function <FUNCTION_REF>: Analyse the given function
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
-      option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
-      option: freq <core frequency>: Sets the core frequency in Mhz (currently: 400.000000)
-      option: threads <num threads>: Sets number of threads currently executing (currently: 8)
-      option: srcpaths <paths>: Sets the (semicolon separated) source search path
-      option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: case <BEST/WORST>: Sets the case (currently: WORST)
+      option: freq <core frequency>: Sets the core frequency in Mhz (currently: 400.000000)
+      option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
+      option: srcpaths <paths>: Sets the (semicolon separated) source search path
+      option: threads <num threads>: Sets number of threads currently executing (currently: 8)
       option: timeout <seconds>: Sets the tools timeout on load
-      option: Werror <on/off>: treat warnings as errors or not (currently: off)
       option: Terror <on/off>: treat timing failures as errors or not (currently: on)
+      option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
+      option: Werror <on/off>: treat warnings as errors or not (currently: off)
   [-]echo "text": prints the text to the console
-  [-]exit: Quits the shell (Standalone mode only)
+  [-]exit: Quits the application
   [-]help [command/option]: Displays help message for the given command/option
       options: PC_REF, FUNCTION_REF, LABEL_REF, ENDPOINT_REF, ANY_REF
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
-      option: labels: Lists the labels
-      option: srclabels: Lists the source labels
-      option: endpoints: Lists the endpoints
-      option: calls: Lists the calls
-      option: allsrclabels: Lists all the possible locations for source labels
-      option: allendpoints: Lists all the possible locations for endpoints
-      option: allcalls: Lists all the possible locations for calls
-      option: threadstartpoints: Lists the thread start points
-      option: threadstoppoints: Lists the thread stop points
-      option: srccommands : Displays the command list embedded in the loaded executable
-      option: srcloops : Displays the loop counts embedded in the loaded executable
-      option: unknowns <route id>: Displays the list of unknowns for the given route
-      option: functions: Lists the functions in the loaded application
-      option: sources: Lists the source files
-      option: knowns <route id>: Displays the list of knowns set for the given route
       option: branches: Lists the branches
+      option: calls: Lists the calls
+      option: allcalls: Lists all the possible locations for calls
+      option: endpoints: Lists the endpoints
+      option: allendpoints: Lists all the possible locations for endpoints
       option: exclusions: Displays the exclusions
+      option: functions: Lists the functions in the loaded application
+      option: functiontimes: Displays the function time assertions
+      option: instructiontime: Displays the instruction time assertions
+      option: knowns <route id>: Displays the list of knowns set for the given route
+      option: labels: Lists the labels
       option: loops: Displays the loop assertions
       option: looppaths: Displays the loop path assertions
       option: loopscopes: Displays the loop scope assertions
-      option: instructiontime: Displays the instruction time assertions
-      option: functiontimes: Displays the function time assertions
       option: pathtimes: Displays the path time assertions
+      option: sources: Lists the source files
+      option: srccommands : Displays the command list embedded in the loaded executable
+      option: srcloops : Displays the loop counts embedded in the loaded executable
+      option: srclabels: Lists the source labels
+      option: allsrclabels: Lists all the possible locations for source labels
+      option: threadstartpoints: Lists the thread start points
+      option: threadstoppoints: Lists the thread stop points
+      option: unknowns <route id>: Displays the list of unknowns for the given route
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary (verbosity -2|-1|0)
@@ -87,28 +87,36 @@
       option: src <route id> [node id]: Display annotated source file(s) for given route/node
       option: mix <route id> [node id]: Display annotated source file(s) + assembly instructions for the given route/node
       option: trace <route id> [node id]: Display instruction trace for the worst case path of the given route/node
-      option: route_info <route id>: Show detailed information for the given route
-      option: node_info <route id> <node id>: Show detailed information for the given node in the given route
+      option: routeinfo <route id>: Show detailed information for the given route
+      option: nodeinfo <route id> <node id>: Show detailed information for the given node in the given route
       option: warnings: Print all timing warnings
-      option: td <route id> [node id]: Display time distribution for the given route/node
+      option: distribution <route id> [node id]: Display time distribution for the given route/node
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
-      option: branch <from LABEL_REF>: Removes the given from reference from the branches list
+      option: branch <from LABEL_REF|*> <to LABEL_REF|*> <to LABEL_REF|*>: Removes the given from/to references from the branches list
       option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
+      option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of assertions
+      option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of assertions
       option: loop <ANY_REF|*>: Removes the given loop count assertion to the list of assertions
       option: looppath <ANY_REF|*>: Removes the given loop path count assertion to the list of assertions
       option: loopscope <ANY_REF|*>: Removes the given loop scope assertion to the list of assertions
-      option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of assertions
-      option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of assertions
       option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of assertions
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
+      option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
+      option: instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
+          mode: ns:     nanoseconds
+          mode: mhz:    megahertz
+          mode: cycles: processor thread cycles
       option: loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified
       option: looppath <route id> <ANY_REF> <iterations>: Sets the number of iterations for the path identified
       option: loopscope <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
+      option: pathtime <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
@@ -116,24 +124,20 @@
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
-      option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
-          mode: ns:     nanoseconds
-          mode: mhz:    megahertz
-          mode: cycles: processor thread cycles
-      option: pathtime <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route
-          mode: ns:     nanoseconds
-          mode: mhz:    megahertz
-          mode: cycles: processor thread cycles
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   Any of the following are permitted:
+    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
   Any of the following are permitted:
+    EverythingReference: Matches everything: '*'
     Function: Any function
   Any of the following are permitted:
+    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section
   Any of the following are permitted:
+    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section
     Endpoint: Endpoint specified using the source level pragma mechanism
@@ -142,6 +146,7 @@
     CallFileLine: Call specified in the format: 'file name:line number'
     CallPc: Call specified in the format: 0x*
   Any of the following are permitted:
+    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section
     Endpoint: Endpoint specified using the source level pragma mechanism

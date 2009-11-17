@@ -86,7 +86,7 @@ close(OUTFILE);
 system("@ARGV load $genDir/test.xe " .
         "-config threads 4 " .
         "-analyse function test " .
-        "-print node_info - - " .
+        "-print nodeinfo - - " .
         "-exit > $genDir/$suite.in 2>&1");
 
 open(INFILE, "$genDir/$suite.in") or die "Can not open input file";
