@@ -13,7 +13,7 @@ import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 
 public class ScriptEditor extends TextEditor implements IPropertyChangeListener {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     public static final String ID = "com.xmos.xta.ui.editors.script.ScriptEditor";
     public static final String EDITORNAME = "Script";
