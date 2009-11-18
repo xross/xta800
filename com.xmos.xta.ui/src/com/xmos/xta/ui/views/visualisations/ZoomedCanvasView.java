@@ -155,6 +155,13 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 	    m_renderControl.refresh();		
 	}
 
+	public void dispose() {
+		if (DEBUG) System.out.println(m_name + ": dispose()");			
+		m_renderControl.signalDone();
+		GuiEngine.removeBroadcastListener(this);
+		m_cursor.dispose();
+	}
+
 	protected abstract ViewNode buildViewNode(Node node, int depth);
 	protected abstract ZoomedCanvasProperties createCanvasProperties();
 	protected abstract RendererControl createRenderControl(Display display);
@@ -196,13 +203,6 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
         }
 	}
 	
-	public void dispose() {
-		if (DEBUG) System.out.println(m_name + ": dispose()");			
-		m_renderControl.signalDone();
-		GuiEngine.removeBroadcastListener(this);
-		m_cursor.dispose();
-	}
-
 	public void setFocus() {
 		if (DEBUG) System.out.println(m_name + ": setFocus");
 	}

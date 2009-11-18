@@ -26,6 +26,14 @@ public class VisualisationsView extends ViewPart {
 		m_tabMap = new HashMap<TabItem, ControlMonitor>();
 	}
 
+	public void dispose() {
+		super.dispose();
+		for (ControlMonitor monitor : m_tabMap.values()) {
+			monitor.dispose();
+		}
+		m_tabMap.clear();
+	}
+	
 	public void createPartControl(Composite parent) {
 		m_folders = new TabFolder(parent, SWT.BORDER);
 		

@@ -93,6 +93,7 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 		
 	public void dispose() {
 		GuiEngine.removeBroadcastListener(this);
+		m_canvas.dispose();
 	}
 
 	public void setFocus() {

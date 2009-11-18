@@ -1,7 +1,9 @@
 package com.xmos.xta.ui.views.visualisations;
 
 public interface ControlMonitor {
-    void setExportJpgEnabled();
+	void dispose();
+
+	void setExportJpgEnabled();
     void setZoomFitEnabled();
     void setZoomInEnabled();
     void setZoomOutEnabled();

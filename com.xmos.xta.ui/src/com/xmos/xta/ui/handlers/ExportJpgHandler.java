@@ -15,6 +15,11 @@ public class ExportJpgHandler extends AbstractHandler implements IPropertyChange
     public ExportJpgHandler() {
     	GuiEngine.addBroadcastListener(this);
     }
+
+    public void dispose() {
+    	GuiEngine.removeBroadcastListener(this);
+    	super.dispose();
+    }
     
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		VisualisationsView control = (VisualisationsView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(VisualisationsView.ID);

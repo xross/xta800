@@ -16,6 +16,11 @@ public class ZoomFitHandler extends AbstractHandler implements IPropertyChangeLi
     	GuiEngine.addBroadcastListener(this);
     }
 
+    public void dispose() {
+    	GuiEngine.removeBroadcastListener(this);
+    	super.dispose();
+    }
+
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		VisualisationsView control = (VisualisationsView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(VisualisationsView.ID);
 		control.zoomFit();
