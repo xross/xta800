@@ -424,10 +424,12 @@ public class GuiConsole extends Console {
 	private void clearLine() {
         int lastRowIndex = m_text.getLineAtOffset(m_text.getCharCount() - 1);
 		int rowStartIndex = m_text.getOffsetAtLine(lastRowIndex) + m_prompt.length();
-		int lastCharIndex = m_text.getCharCount() - rowStartIndex;
+		int len = m_text.getCaretOffset() - rowStartIndex;
 				
 		m_text.setCaretOffset(rowStartIndex);
-		m_text.replaceTextRange(rowStartIndex, lastCharIndex, "");
+		if (len > 0) {
+			m_text.replaceTextRange(rowStartIndex, len, "");
+		}
 	}
 
 	private void complete() {
