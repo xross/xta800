@@ -25,6 +25,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.Broadcaster;
@@ -88,8 +89,12 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("FilesView: propertyChange: %s\n", event.getProperty());	
 		
-		m_editorInputs.clear();
-		m_filesViewer.getViewer().refresh();
+		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+			if (!GuiEngine.getEngine().wasReload()) {
+				m_editorInputs.clear();
+				m_filesViewer.getViewer().refresh();
+			}
+		}
 	}
 
 	private void openEditor(DebugFile debugFile) {
