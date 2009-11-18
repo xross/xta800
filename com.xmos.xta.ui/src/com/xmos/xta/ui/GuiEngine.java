@@ -370,7 +370,7 @@ public class GuiEngine {
 		}
 
 		try {
-			IEditorInput input = GuiEngine.getScriptInput();
+			IEditorInput input = getScriptInput();
 		    page.openEditor(input, ScriptEditor.ID);
 
 		} catch (PartInitException e) {}		
