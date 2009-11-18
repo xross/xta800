@@ -118,6 +118,11 @@ public class GuiConsole extends Console {
 					m_text.append("\n");
 					event.doit = false;
 					
+        		} else if (((event.stateMask & SWT.CTRL) != 0) &&
+        				(event.character == eventChar('u'))) {
+        			clearLine();
+        			event.doit = false;
+
 				} else if (event.keyCode == SWT.SHIFT) {
 					
 				} else if (event.keyCode == SWT.END) {
@@ -130,12 +135,17 @@ public class GuiConsole extends Console {
 					checkRow();
 				}
 			}
+
 		});
                 
         m_completor = new XtaCompletor(GuiEngine.getEngine());
         m_completionHandler = new TabCompletionHandler();        
         m_text.setFocus();
         m_hasEscaped = false;
+	}
+
+	private int eventChar(char c) {
+		return (c - 'a' + 1);
 	}
 
     public void execute() {
@@ -391,7 +401,7 @@ public class GuiConsole extends Console {
         }
 	}
 	
-	private void home(KeyEvent event) {		
+	private void home(KeyEvent event) {
 		int currentIndex = m_text.getCaretOffset();
         int currentRowIndex = m_text.getLineAtOffset(currentIndex);
 		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);
@@ -409,6 +419,15 @@ public class GuiConsole extends Console {
 				m_text.setSelection(rowStartIndex, currentIndex);
 			}			
 		}		
+	}
+
+	private void clearLine() {
+        int lastRowIndex = m_text.getLineAtOffset(m_text.getCharCount() - 1);
+		int rowStartIndex = m_text.getOffsetAtLine(lastRowIndex) + m_prompt.length();
+		int lastCharIndex = m_text.getCharCount() - rowStartIndex;
+				
+		m_text.setCaretOffset(rowStartIndex);
+		m_text.replaceTextRange(rowStartIndex, lastCharIndex, "");
 	}
 
 	private void complete() {
