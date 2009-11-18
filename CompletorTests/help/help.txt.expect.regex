@@ -7,8 +7,8 @@ xta 2>he  help pr  print
       option: src <route id> \[node id\]: Display annotated source file\(s\) for given route/node
       option: mix <route id> \[node id\]: Display annotated source file\(s\) \+ assembly instructions for the given route/node
       option: trace <route id> \[node id\]: Display instruction trace for the worst case path of the given route/node
-      option: route_info <route id>: Show detailed information for the given route
-      option: node_info <route id> <node id>: Show detailed information for the given node in the given route
+      option: routeinfo <route id>: Show detailed information for the given route
+      option: nodeinfo <route id> <node id>: Show detailed information for the given node in the given route
       option: warnings: Print all timing warnings
-      option: td <route id> \[node id\]: Display time distribution for the given route/node
+      option: distribution <route id> \[node id\]: Display time distribution for the given route/node
 xta 3>exit

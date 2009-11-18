@@ -1,4 +1,4 @@
-load C:\peter\git\software\verif_tests_sw\Tools\xta\ConsoleCommands\dumpscript\add_branch\csim__xs1b__default\test.xe
+load .*test\.xe
 
 #
 # Route: test
@@ -14,16 +14,16 @@ analyse function test
 #
 # Route: test
 #
-remove branch *
+remove branch \*
 add branch source1 source2 target2 target3 target4
 analyse function test
 
 #
 # Route: test
 #
-remove branch *
+remove branch \*
 add branch source2 target2 target3 target4
 add branch source1 source2 target2 target3 target4
 analyse function test
 
-remove branch *
+remove branch \*
