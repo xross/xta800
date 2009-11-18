@@ -29,7 +29,7 @@ public class InstructionTimeInfo implements AssertionInfo {
     }
 
     public String getValue() {
-    	return m_timeUnit.getDescription(false);
+    	return m_timeUnit.getDescription(true);
     }	
     	
 	public boolean equals(Object o) {

@@ -48,6 +48,7 @@ import com.xmos.xta.core.engine.assertions.LoopPathInfo;
 import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
 import com.xmos.xta.core.engine.assertions.PathTimeInfo;
 import com.xmos.xta.core.engine.instructions.DataCollection;
+import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
@@ -1033,18 +1034,35 @@ public class Engine implements Notifier, Aborter {
 		if (!resolveOrError(src, fromRef)) {
 			return false;
 		}
+		checkInstructionIsBranch(src, fromRef);
 		
 		for (Reference toRef : toRefs) {
 			if (!resolveOrError(src, toRef)) {
 				return false;
 			}
-		}			
+		}
 		
 		if (m_sections.addToBranches(src, m_nodeId, m_coreId, fromRef, toRefs)) {
 			m_structuralGraphUpToDate.add(m_nodeId, m_coreId, false);			
 			return true;			
 		}		
 		return false;
+	}
+
+	private void checkInstructionIsBranch(CommandSource src, Reference ref) {
+		InstructionNode node = m_sourceMapper.get(m_nodeId, m_coreId).getInstructionNode(ref.getPc());
+		if (node == null) {
+			notify(src, Notifier.NOTIFY_WARNING,
+					String.format("adding branch from non-existant instruction at %s",
+					ref.toString()));
+		}
+
+		XtaInstruction inst = node.getXtaInstruction();
+		if (!inst.isBranch()) {
+			notify(src, Notifier.NOTIFY_WARNING,
+					String.format("adding branch from instruction which is not a branch: %s",
+					inst.toString()));
+		}
 	}
 
 	public boolean removeBranch(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {

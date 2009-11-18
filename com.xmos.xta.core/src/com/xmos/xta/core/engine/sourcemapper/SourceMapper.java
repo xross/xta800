@@ -207,7 +207,11 @@ public class SourceMapper {
 	public String getFunctionFileName(String string) {
 		return m_functionToFile.get(string);
 	}
-    
+
+	public InstructionNode getInstructionNode(long pc) {
+		return m_instructionDecoder.getNode(pc);
+	}
+
     private void mapSourceFileLines(DebugEngine debugEngine, SourceFile sourceFile) {
     	for (SourceLine sourceLine : sourceFile.getSourceLines()) {
     		long lineNumber = sourceLine.getLineNumber();
