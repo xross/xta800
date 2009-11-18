@@ -48,6 +48,7 @@ import com.xmos.xta.core.engine.assertions.LoopPathInfo;
 import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
 import com.xmos.xta.core.engine.assertions.PathTimeInfo;
 import com.xmos.xta.core.engine.instructions.DataCollection;
+import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
@@ -1058,7 +1059,8 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		XtaInstruction inst = node.getXtaInstruction();
-		if (!inst.isBranch()) {
+		InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+		if (!inst.isBranch() && !mnenonics.isWait(inst)) {
 			notify(src, Notifier.NOTIFY_WARNING,
 					String.format("adding branch from instruction which is not a branch: %s",
 					inst.toString()));
