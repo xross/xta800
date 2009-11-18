@@ -15,3 +15,4 @@ add functiontime f 888.010000 ns
 add functiontime b 222.010000 ns
 analyse function h
 
+remove functiontime \*
