@@ -72,7 +72,7 @@ public class Load extends Command {
 		
             if (command == null) {
             	command = new Invalid(commandString, 
-            		    String.format("Invalid command in source file '%s'\n", commandString), src);
+            		    String.format("invalid command in source file '%s'\n", commandString), src);
             }
 
 		    command.execute(shell, engine, console);
