@@ -38,6 +38,7 @@ import com.xmos.xta.ui.views.console.ConsoleView;
 
 public class ActionLoad extends ActionDelegate implements IPropertyChangeListener, 
 										IWorkbenchWindowPulldownDelegate {
+	protected static final int FILE_LIST_SIZE = 10;
 	private IAction m_action;
 	private SelectionListener m_listListener;
 	
@@ -105,23 +106,26 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 	        	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
 	        	String[] files = fileHistory.split(";");
 	        	List<String> fileList = new LinkedList<String>();
-	        	for(String file : files){
-	        		fileList.add(file);
+	        	for (String file : files) {
+	        		if (file.length() > 0) {
+	        			fileList.add(file);
+	        		}
 	        	}
 	        		        	
 	        	fileList.remove(xeFile.toString());
-	        	if(success)
+	        	if (success) {
 	        		fileList.add(xeFile.toString());
-	        	StringBuffer sb = new StringBuffer();
-	        	int count = 0;
-	        	for(String file : fileList){
-	        		sb.append(file +";");
-	        		count++;
-	        		if(count > 10)
-	        			break;
+	        	}
+	        	while (fileList.size() > FILE_LIST_SIZE) {
+	        		fileList.remove(0);
 	        	}
 	        	
-	        	plugin.getPreferenceStore().setValue("FileHistory", sb.toString()  );
+	        	StringBuffer sb = new StringBuffer();
+	        	for (String file : fileList){
+	        		sb.append(file +";");
+	        	}
+	        	
+	        	plugin.getPreferenceStore().setValue("FileHistory", sb.toString());
 				return Status.OK_STATUS;
 			}
 		};
@@ -162,14 +166,14 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
      	
      	List<String> fileStrings = new ArrayList<String>();
      	
-     	for(String file : files){
+     	for (String file : files){
      		fileStrings.add(file);
      	}
      	
      	Collections.reverse(fileStrings);
      	
-    	for(String file : fileStrings){
-    		if(file.length() > 0 ){
+    	for (String file : fileStrings){
+    		if (file.length() > 0 ){
 	        	MenuItem item = new MenuItem(menu, SWT.NONE);
 	    		item.setText(file);
 	    		item.addSelectionListener(m_listListener);
