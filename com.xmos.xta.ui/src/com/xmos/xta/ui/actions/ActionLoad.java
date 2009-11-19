@@ -22,8 +22,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 import org.eclipse.ui.PartInitException;
@@ -36,8 +34,6 @@ import com.xmos.xta.core.engine.sections.SrcStringInfo;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiProgressMonitor;
 import com.xmos.xta.ui.XtaPlugin;
-import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
-import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 import com.xmos.xta.ui.views.console.ConsoleView;
 
 public class ActionLoad extends ActionDelegate implements IPropertyChangeListener, 
@@ -135,25 +131,10 @@ public class ActionLoad extends ActionDelegate implements IPropertyChangeListene
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
-			if (!GuiEngine.getEngine().wasReload()) {
-		        closeEditors();				
-			}
 	        runSrcLevelCommands();
 		}
 	}
 
-    private void closeEditors() {
-		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		
-		// Need to close any xta editors already open..
-		for (IEditorReference editorReference : page.getEditorReferences()) {
-			if (editorReference.getId().equals(XtaSourceEditor.ID) || 
-				editorReference.getId().equals(XtaDisassemblyEditor.ID)) {
-				page.closeEditor(editorReference.getEditor(false), false);
-			}
-		}
-    }
-    
     private void runSrcLevelCommands() {  
 	    ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().
             getActiveWorkbenchWindow().getActivePage().findView(ConsoleView.ID);

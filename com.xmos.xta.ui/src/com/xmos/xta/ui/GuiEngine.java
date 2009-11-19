@@ -226,9 +226,7 @@ public class GuiEngine {
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			resetGuiState();
 			refreshGuiRouteProperties();
-			if (!s_engine.wasReload()) {
-				s_disassemblyInputs.clear();				
-			}
+			s_disassemblyInputs.clear();				
 			
 		} else if (message.equals(Notifier.NOTIFY_SET_FUNCTION_NAME)) {
 			s_functionName = argument;

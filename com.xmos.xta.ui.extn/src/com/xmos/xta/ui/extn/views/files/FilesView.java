@@ -1,9 +1,5 @@
 package com.xmos.xta.ui.extn.views.files;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -24,16 +20,11 @@ import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
-import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.sourcemapper.SourceFile;
-import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.GuiFileFinder;
 import com.xmos.xta.ui.editors.XtaEditor;
 import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
-import com.xmos.xta.ui.editors.source.InputSource;
 import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
@@ -42,13 +33,9 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
     
     private FilteredTree m_filesViewer;
 
-    // Keep a map to ensure source files can't be opened twice
-    private Map<String, IEditorInput> m_editorInputs;
-        
 	public FilesView() {
 		if (DEBUG) System.out.printf("FilesView()\n");			
 		GuiEngine.addBroadcastListener(this);
-		m_editorInputs = new HashMap<String, IEditorInput>();
 	}
 	
 	public void dispose() {
@@ -91,7 +78,6 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 		
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			if (!GuiEngine.getEngine().wasReload()) {
-				m_editorInputs.clear();
 				m_filesViewer.getViewer().refresh();
 			}
 		}
@@ -106,7 +92,7 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
     			return;
     		}
     			
-			IEditorInput input = getInput(debugFile.getFullFileName());
+			IEditorInput input = FileViewEditorManager.getInput(debugFile.getFullFileName());
 			if (input == null)
 				return;
 			
@@ -115,38 +101,11 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 
 			// Cause an update in the new editor which will do the highlighting
 			GuiEngine.broadcast(Broadcaster.BROADCAST_SELECTION_CHANGED, "");
+
+			m_filesViewer.getViewer().refresh();
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private IEditorInput getInput(String fileName) {
-		if (m_editorInputs.containsKey(fileName)) {
-			return m_editorInputs.get(fileName);
-		} else {
-			SourceFile sourceFile = getSourceFile(fileName);
-			if (sourceFile != null) {
-				IEditorInput input = new InputSource(sourceFile); 
-				m_editorInputs.put(fileName, input);
-				return input;
-			} else {
-				return null;
-			}
-		}
-	}
-
-	private SourceFile getSourceFile(String fileName) {
-		Engine engine = GuiEngine.getEngine();
-		SourceMapper sourceMapper = engine.getSourceMapper();
-		SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
-		if (sourceFile.getDebugFile().getFile() == null) {
-			File file = sourceMapper.findFileForSourceFile(sourceFile, new GuiFileFinder());
-			if (file == null)
-				return null;
-
-			engine.updateSourceMappers(fileName, file);
-			m_filesViewer.getViewer().refresh();
-		}
-		return sourceFile;
-	}
 }

@@ -67,7 +67,8 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	    	}
 			showCodePoint(codePoint.getPc());
 			
-		}  else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
+		}  else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) || 
+					event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			refreshInput();
 
 		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_SOURCE_PCS)) {

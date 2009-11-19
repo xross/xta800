@@ -21,6 +21,12 @@ public class FilesViewStartup implements IStartup, IPropertyChangeListener {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().showView(FilesView.ID);
 			} catch (PartInitException e) {}
+
+			if (GuiEngine.getEngine().wasReload()) {
+				FileViewEditorManager.refresh();
+			} else {
+				FileViewEditorManager.clear();
+			}
 		}
-	}		
+	}
 }

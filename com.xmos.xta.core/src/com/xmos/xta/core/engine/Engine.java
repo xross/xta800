@@ -280,9 +280,9 @@ public class Engine implements Notifier, Aborter {
 		m_xeLoader = xeLoader;
 		m_xnLoader = xnLoader;
 		m_sections = sections;
-		m_nodeId = -1; // Ensure the change happens
-		setNodeId(src, 0);
-		m_coreId = 0;			
+		m_nodeId = -1; // Ensure setNodeId does something
+		m_coreId = 0;
+		setNodeId(src, 0, false);
 		m_routes.clear();
 		m_routeContainers.clear();
 		m_numRoutesLastAnalysed = 0;
@@ -358,13 +358,16 @@ public class Engine implements Notifier, Aborter {
 		return false;
 	}
 
-	public void setNodeId(CommandSource src, int nodeId) {
+	public void setNodeId(CommandSource src, int nodeId, boolean doNotify) {
 		if (nodeId != m_nodeId) {
 			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeId, m_coreId)) {
 				m_nodeId = nodeId;
 				m_config.m_frequency = (double)m_xnLoader.getFrequencyHz(m_nodeId) / 1000000;
 				m_selectedRoute = null;
-				notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
+
+				if (doNotify) {
+					notify(src, Notifier.NOTIFY_SET_NODE_CORE, "");
+				}
 				
 			} else {
 				notify(src, Notifier.NOTIFY_ERROR, String.format("Error initialising node: %d", nodeId));
@@ -548,7 +551,7 @@ public class Engine implements Notifier, Aborter {
 			RouteTiming routeTiming = route.getRouteTiming();
 			int nodeId = routeTiming.getNodeId();
 			if (nodeId != m_nodeId)
-				setNodeId(src, nodeId);
+				setNodeId(src, nodeId, true);
 	
 			int coreId = routeTiming.getCoreId();
 			if (coreId != m_coreId)

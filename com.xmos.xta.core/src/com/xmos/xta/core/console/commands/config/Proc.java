@@ -59,7 +59,7 @@ public class Proc extends Command {
 		if (!isPresent(engine, m_nodeId, m_coreId, console))
 			return;
 		
-        engine.setNodeId(getSrc(), m_nodeId);
+        engine.setNodeId(getSrc(), m_nodeId, true);
         engine.setCoreId(getSrc(), m_coreId);
     }    
 }
