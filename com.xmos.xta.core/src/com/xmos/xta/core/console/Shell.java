@@ -237,10 +237,14 @@ public class Shell {
 	
 	private void postCommandExecute(Command command) {
     	m_engine.setNotifier(m_savedNotifier);
-    	m_engine.setMonitor(null);                           		            			
+    	m_engine.setMonitor(null);
 
     	if (command.getFileRedirect() != null) {
-    		m_console.closeRedirectFile();    		
-    	}    	
+    		m_console.closeRedirectFile();
+    	}
+    	
+    	if (m_console.hasEscaped()) {
+    		m_commands.clear();
+    	}
 	}
 }

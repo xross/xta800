@@ -76,6 +76,6 @@ public class Load extends Command {
             }
 
 		    command.execute(shell, engine, console);
-	    }		
+	    }
     }
 }

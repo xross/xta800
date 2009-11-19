@@ -103,7 +103,7 @@ public class GuiConsole extends Console {
         			
         		} else if (event.keyCode == SWT.BS) {
 					if (checkCursor()) {
-    					event.doit = false;				
+    					event.doit = false;
 					}
 				} else if (event.keyCode == SWT.HOME) {
   					event.doit = false;
