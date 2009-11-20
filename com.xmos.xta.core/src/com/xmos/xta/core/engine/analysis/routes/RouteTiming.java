@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -127,7 +128,8 @@ public class RouteTiming {
 					Status status = new Status();
 					double slackTime = getSlackTime(status);
 					assert(status.isComplete());											
-				    description += String.format("Slack: %.1fns, ", slackTime);						
+				    description += String.format("Slack: %s, ",
+				    		Conversion.getTimeString(slackTime));						
 					
 				} else {
 					Status status = new Status();
@@ -139,11 +141,13 @@ public class RouteTiming {
 			    		description += "Violation: Unresolved, ";
 			    		
 			    	} else {
-					    description += String.format("Violation: %.1fns, ", violationTime);
+					    description += String.format("Violation: %s, ",
+					    		Conversion.getTimeString(violationTime));
 			    	}
 				}
 
-				description += String.format("Required: %.1fns, ", m_maxTime.getNs());
+				description += String.format("Required: %s, ",
+						Conversion.getTimeString(m_maxTime.getNs()));
 				
 				Status worstTimeStatus = new Status();
 				double worstTime = getWorstTime(worstTimeStatus);
@@ -154,19 +158,20 @@ public class RouteTiming {
 		    		description += "Worst: Unresolved, ";
 		    		
 		    	} else {
-				    description += String.format("Worst: %.1fns, ", worstTime);
+				    description += String.format("Worst: %s, ", 
+				    		Conversion.getTimeString(worstTime));
 		    	}
 
 				Status minFrequencyStatus = new Status();
 				int minFrequency = getMinFrequency(minFrequencyStatus);
 		    	if (minFrequencyStatus.isInfinite()) {
-		    		description += "Min Frequency: Infinity\n";
+		    		description += "Min Core Frequency: Infinity\n";
 		    		
 		    	} else if (minFrequencyStatus.isUnresolved()) {
-		    		description += "Min Frequency: Unresolved\n";
+		    		description += "Min Core Frequency: Unresolved\n";
 
 		    	} else {
-				    description += String.format("Min Frequency: %d Mhz\n", minFrequency);
+				    description += String.format("Min Core Frequency: %d mhz\n", minFrequency);
 				}
 				
 			} else if (level == Level.COMPLETE) {
@@ -182,21 +187,25 @@ public class RouteTiming {
 		    		description += "Worst Case:  Unresolved\n";
 		    		
 		    	} else {
-		    		description += String.format("Worst Case Timing:  %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
-		        			worstTime, getMhz(worstTime), getWorstCycles(new Status()));    	    		
+		    		description += String.format("Worst Case Timing:  %8s,%8.2f mhz,%8d thread cycles\n", 
+		    				Conversion.getTimeString(worstTime),
+		    				getMhz(worstTime),
+		    				getWorstCycles(new Status()));    	    		
 		    	}
 		    	
 				if (isTimingSpecified()) {  			
-					description += String.format("Required:    %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
-							m_maxTime.getNs(), 
+					description += String.format("Required:    %8s,%8.2f mhz,%8d thread cycles\n", 
+							Conversion.getTimeString(m_maxTime.getNs()), 
 							m_maxTime.getMhz(),
 							m_maxTime.getCycles());
 
 					if (passedTiming()) {
 						assert(status.isComplete());						
 		                double slackTime = getSlackTime(new Status());
-		                description += String.format("Slack:      %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
-		                		slackTime, getMhz(slackTime), getSlackCycles(new Status()));
+		                description += String.format("Slack:      %8s,%8.2f mhz,%8d thread cycles\n", 
+		                		Conversion.getTimeString(slackTime),
+		                		getMhz(slackTime),
+		                		getSlackCycles(new Status()));
 		    	    } else {
 				    	if (status.isInfinite()) {
 				    		description += "Violation:  Infinity\n";
@@ -206,8 +215,10 @@ public class RouteTiming {
 				    		
 				    	} else {
 			                double violationTime = getViolationTime(new Status());
-			                description += String.format("Failed, Violation:  %8.1f ns,%8.2f mhz,%8d thread cycles\n", 
-			                		violationTime, getMhz(violationTime), getViolationCycles(new Status()));    						    		
+			                description += String.format("Failed, Violation:  %8s,%8.2f mhz,%8d thread cycles\n", 
+			                		Conversion.getTimeString(violationTime),
+			                		getMhz(violationTime),
+			                		getViolationCycles(new Status()));    						    		
 				    	}
 		    	    }
 					

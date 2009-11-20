@@ -42,6 +42,6 @@ public class Invalid extends Command {
 		if (src.m_lineNum > 0) {
 			console.display(src.m_fileName + ":" + src.m_lineNum + ": ");
 		}
-		console.display("error: " + m_errorMessage + "\n");
+		console.display("error: " + m_errorMessage);
     }    
 }

@@ -1,5 +1,6 @@
 package com.xmos.xta.core.console.commands.print;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
@@ -112,10 +113,10 @@ public class Summary extends Command {
 		
 		if (numUnspecified == 0) {
 			if (numFails > 0) {
-			    console.display(String.format("Fail, %d/%d, Max Violation: %.1fns\n", 
-			    		numFails, total, maxViolationTime));
+			    console.display(String.format("Fail, %d/%d, Max Violation: %s\n", 
+			    		numFails, total, Conversion.getTimeString(maxViolationTime)));
 			} else {
-				console.display(String.format("Pass, Min Frequency: %d Mhz\n", 
+				console.display(String.format("Pass, Min Core Frequency: %d mhz\n", 
 			    		minFrequency));			
 			}
 		} else {

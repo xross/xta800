@@ -1,5 +1,7 @@
 package com.xmos.xta.core.engine;
 
+import com.xmos.libs.util.Conversion;
+
 public class TimeUnit {
 	public enum Units {
 		NS,
@@ -23,15 +25,23 @@ public class TimeUnit {
 	}
 	
 	public static String[] getUnits() {
-		return new String[] {"ns", "mhz", "cycles"};
+		return new String[] {"ns", "us", "ms", "mhz", "cycles"};
 	}
 	
 	public TimeUnit(String value, String units) {
 		try {
-		   	if (units.equals("ns")) {	
+		   	if (units.equals("ns")) {
 		   		m_ns = Double.parseDouble(value);
 		   		m_units = Units.NS;
 	   	   		    
+	   	   	} else if (units.equals("us")) {
+	   	   		m_ns = Double.parseDouble(value) * 1000.0;
+		   		m_units = Units.NS;
+	   	    		    
+	   	   	} else if (units.equals("ms")) {
+	   	   		m_ns = Double.parseDouble(value) * 1000000.0;
+		   		m_units = Units.NS;
+	   	    		    
 	   	   	} else if (units.equals("mhz")) {
 	   	   	    m_mhz = Double.parseDouble(value);
 		   		m_units = Units.MHZ;
@@ -90,9 +100,7 @@ public class TimeUnit {
 	public String getDescription(boolean precise) {
        	switch (m_units) {
        	case NS:
-           	return precise ? 
-           			String.format("%f ns", m_ns) : 
-           		    String.format("%.1f ns", m_ns);
+       		return Conversion.getTimeString(precise, m_ns);
        	case MHZ:
            	return precise ? 
            		    String.format("%f mhz", m_mhz) : 
@@ -101,12 +109,12 @@ public class TimeUnit {
            	return String.format("%d cycles", m_cycles);
        	}
        	assert(false);
-       	return "";		
+       	return "";
 	}
 
 	public String getValueStr() {
        	switch (m_units) {
-       	case NS:     return String.format("%.1f", m_ns); 
+       	case NS:     return Conversion.getValueString(false, m_ns); 
        	case MHZ:    return String.format("%.1f", m_mhz); 
        	case CYCLES: return String.format("%d", m_cycles); 
        	}
@@ -116,7 +124,7 @@ public class TimeUnit {
 
 	public String getUnitsStr() {
        	switch (m_units) {
-       	case NS:     return "ns"; 
+       	case NS:     return Conversion.getUnitsString(m_ns); 
        	case MHZ:    return "mhz"; 
        	case CYCLES: return "cycles"; 
        	}

@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.unknowns;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
@@ -21,10 +22,10 @@ public class InstructionTimeUnknown extends Unknown {
 					instruction.getNmenonic());	
 				
 		case KNOWN:
-			return String.format("Time for instruction (0x%x: %s) set to %.1fns",
+			return String.format("Time for instruction (0x%x: %s) set to %s",
 					instruction.getPc(),
 					instruction.getNmenonic(),
-						getNode().getAttributes().getFixedTime().getNs());
+					Conversion.getTimeString(getNode().getAttributes().getFixedTime().getNs()));
 		}	
 		assert(false);
 		return "";

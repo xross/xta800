@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.unknowns;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
@@ -16,8 +17,9 @@ public class FunctionTimeUnknown extends Unknown {
 					getNode().getId());
 				
 		case KNOWN:
-			return String.format("Time taken for function (node id: %d) is set to %.1fns", 
-					getNode().getId(), getNode().getAttributes().getFixedTime().getNs());
+			return String.format("Time taken for function (node id: %d) is set to %s", 
+					getNode().getId(),
+					Conversion.getTimeString(getNode().getAttributes().getFixedTime().getNs()));
 		}
 		assert(false);
 		return "";

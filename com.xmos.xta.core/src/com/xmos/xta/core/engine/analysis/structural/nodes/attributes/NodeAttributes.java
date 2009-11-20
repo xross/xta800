@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -128,11 +129,11 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    double value = getTimeTaken(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:     return String.format("%.1fns", value);
+	    case COMPLETED:     return Conversion.getTimeString(value);
 	    case INFINITE:      return String.format("Infinity");
 	    case UNRESOLVED:    return String.format("Unresolved");
 	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO:          return String.format("%.1fns", value);
+	    case ZERO:          return Conversion.getTimeString(value);
 	    }
 	    assert(false);
 	    return "";
