@@ -4,6 +4,7 @@ use warnings;
 use File::Basename;
 use File::Copy;
 use Cwd;
+use POSIX qw(ceil floor);
 
 sub atoi {
   my $t = 0;
@@ -130,6 +131,8 @@ if($xtaNumFnops >= $xsimNumFNOPs and $xtaNumFnops <= $xsimNumFNOPs*2 ){
 }
 
 my $fnopAdjustedTime = $xtaTotalTimeTaken - ((($xtaNumFnops- $xsimNumFNOPs) * 10 ) / $scale);
+
+$fnopAdjustedTime = (floor($fnopAdjustedTime * 10) + 1) / 10;
 
 $t = sprintf("Time: %.1f\nInstructions: %d\nFNOPs acceptable: %s\n", $fnopAdjustedTime, $xtaNumInstructions, $fnopsWithinAcceptableBounds);
 print OUTFILE $t;
