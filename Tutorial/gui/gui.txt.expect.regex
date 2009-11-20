@@ -1,7 +1,7 @@
 Route\(0\) path: core0\.xc:26 to core0\.xc:26
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d[mun]s, Required: \d+\.\d[mun]s, Worst: \d+\.\d[mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(2\) path: core1\.xc:85 to core1\.xc:85
-    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.0[mun]s, Required: \d+\.0[mun]s, Worst: \d+\.0[mun]s, Min Core Frequency: \d+ mhz
+    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Fail, \d+/2, Max Violation: \d+\.0 [mun]s
+Fail, \d+/2, Max Violation: \d+\.\d [mun]s
