@@ -44,6 +44,7 @@
       option: case <BEST/WORST>: Sets the case (currently: WORST)
       option: freq <core frequency>: Sets the core frequency in Mhz (currently: 400.000000)
       option: proc <node id> <core id>: All following analysis on given node and core (default: 0,0)
+      option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
       option: threads <num threads>: Sets number of threads currently executing (currently: 8)
       option: timeout <seconds>: Sets the tools timeout on load

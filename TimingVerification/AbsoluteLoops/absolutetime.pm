@@ -91,9 +91,9 @@ sub createFiles($$) {
       if ($line =~ m/Time taken:       (.*) ([mun]s) \//) {
           $xtaTotalTimeTaken = $1;
           if ($2 eq "ms") {
-            $scale = 1000000;
+            $scale = 1000000.0;
           } elsif ($2 eq "us") {
-            $scale = 1000;
+            $scale = 1000.0;
           }
       }
       if ($line =~ m/Num Instructions: (.*) \//) {
