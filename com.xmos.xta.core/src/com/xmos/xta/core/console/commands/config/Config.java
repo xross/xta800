@@ -8,6 +8,7 @@ public class Config extends CommandContainer {
 		new Case(),
 		new Freq(), 
 		new Proc(), 
+		new Scale(), 
 		new SrcPaths(), 
 		new Threads(), 
 		new TimeOut(),
