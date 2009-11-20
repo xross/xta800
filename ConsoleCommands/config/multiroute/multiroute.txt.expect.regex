@@ -1,6 +1,6 @@
-function\(\d+\) +: 120.0ns / 120.0ns main
-.    block\(\d+\) +: 120.0ns \(x 1\) / 120.0ns \(x 1\) 
+function\(\d+\) +: 120.0 [mun]s / 120.0 [mun]s main
+.    block\(\d+\) +: 120.0 [mun]s \(x 1\) / 120.0 [mun]s \(x 1\) 
 
-function\(\d+\) +: 120.0ns / 120.0ns main
-.    block\(\d+\) +: 120.0ns \(x 1\) / 120.0ns \(x 1\) 
+function\(\d+\) +: 120.0 [mun]s / 120.0 [mun]s main
+.    block\(\d+\) +: 120.0 [mun]s \(x 1\) / 120.0 [mun]s \(x 1\) 
 

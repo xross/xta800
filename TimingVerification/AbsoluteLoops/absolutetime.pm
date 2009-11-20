@@ -64,10 +64,15 @@ sub createFiles($$) {
           $foundFunction = 2; 
       }    
   }
-  $xsimTime = (($xsimEndCycles - $xsimStartCycles) *10 ) /4;
+  $xsimTime = (($xsimEndCycles - $xsimStartCycles) *10 ) / 4;
+  if ($xsimTime >= 1000000.0) {
+    $xsimTime = $xsimTime / 1000000.0;
+  } elsif ($xsimTime >= 1000.0) {
+    $xsimTime = $xsimTime / 1000.0;
+  }
   
   my $s = %_;
-  $s = sprintf("Time: %d\nInstructions: %d\nFNOPs acceptable: TRUE\n", $xsimTime, $xsimNumInstructions);
+  $s = sprintf("Time: %.1f\nInstructions: %d\nFNOPs acceptable: TRUE\n", $xsimTime, $xsimNumInstructions);
   print OUTFILE $s;
   
   close(INFILE);
@@ -79,17 +84,23 @@ sub createFiles($$) {
   my $xtaTotalTimeTaken = 0;
   my $xtaNumInstructions = 0;
   my $xtaNumFnops = 0;
+  my $scale = 1;
   
   while(<INFILE>) {
       my $line = $_;
-      if($line =~ m/Time taken:       (.*)\.0ns \//) {
-          $xtaTotalTimeTaken = atoi($1);
+      if ($line =~ m/Time taken:       (.*) ([mun]s) \//) {
+          $xtaTotalTimeTaken = $1;
+          if ($2 eq "ms") {
+            $scale = 1000000;
+          } elsif ($2 eq "us") {
+            $scale = 1000;
+          }
       }
-      if($line =~ m/Num Instructions: (.*) \//) {
-          $xtaNumInstructions = atoi($1);
+      if ($line =~ m/Num Instructions: (.*) \//) {
+          $xtaNumInstructions = $1;
       }
       if($line =~ m/Num Fnops:        (.*) \//) {
-          $xtaNumFnops = atoi($1);
+          $xtaNumFnops = $1;
       }
   }
   my $t = %_;
@@ -101,9 +112,9 @@ sub createFiles($$) {
       $fnopsWithinAcceptableBounds = "FALSE xta: " . $xtaNumFnops . " xsim: " . $xsimNumFNOPs;
   }
   
-  my $fnopAdjustedTime = $xtaTotalTimeTaken - (($xtaNumFnops- $xsimNumFNOPs) * 10 );
+  my $fnopAdjustedTime = $xtaTotalTimeTaken - ((($xtaNumFnops- $xsimNumFNOPs) * 10 ) / $scale);
   
-  $t = sprintf("Time: %d\nInstructions: %d\nFNOPs acceptable: %s\n", $fnopAdjustedTime, $xtaNumInstructions, $fnopsWithinAcceptableBounds);
+  $t = sprintf("Time: %.1f\nInstructions: %d\nFNOPs acceptable: %s\n", $fnopAdjustedTime, $xtaNumInstructions, $fnopsWithinAcceptableBounds);
   print OUTFILE $t;
   
   close(INFILE);

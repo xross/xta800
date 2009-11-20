@@ -1,45 +1,45 @@
-function\(\d+\) +: \d+.0ns / \d+.0ns fix_fft_64_inverse
-.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.  \* selfloop\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .  \* seq\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .  \* selfloop\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .    cond\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / 0.0ns \(x 1\) 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.  \* selfloop\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .  \* seq\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .  \* loop\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .    .    .    seq\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .    .    .    cond\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / 0.0ns \(x 1\) 
-.    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .    .    block\(\d+\) +: 0.0ns \(x 0\) / 0.0ns \(x 0\) 
-.    .    .    cond\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / 0.0ns \(x 1\) 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .  \* cond\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .  \* seq\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    .  \* selfloop\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    .    .  \* seq\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    .    .    .  \* cond\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    .    .    .    .  \* seq\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    .    .    .    .    .  \* selfloop\(\d+\) +: \d+.0ns / 0.0ns 
-.    .    .    .    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / 0.0ns \(x 0\) 
-.    .    .    .    .    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / 0.0ns \(x 0\) 
-.    .    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / \d+.0ns \(x 1\) 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s fix_fft_64_inverse
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.  \* selfloop\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .  \* seq\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .  \* selfloop\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    cond\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / 0.0 [mun]s \(x 1\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.  \* selfloop\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .  \* seq\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .  \* loop\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    seq\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    .    .    cond\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / 0.0 [mun]s \(x 1\) 
+.    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) / 0.0 [mun]s \(x 0\) 
+.    .    .    cond\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / 0.0 [mun]s \(x 1\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .  \* cond\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .  \* seq\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .  \* selfloop\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    .    .  \* seq\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    .    .  \* cond\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    .    .    .    .  \* seq\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    .    .    .    .  \* selfloop\(\d+\) +: \d+\.\d [mun]s / 0.0 [mun]s 
+.    .    .    .    .    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 

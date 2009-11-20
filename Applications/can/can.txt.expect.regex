@@ -1,4 +1,4 @@
 Route\(0\) path: dataReceiveLoop to dataReceiveLoop
-    Fail with \d+ unknowns, Num Paths: 8, Violation: 50.0ns, Required: 250.0ns, Worst: 300.0ns, Min Frequency: 480 Mhz
+    Fail with \d+ unknowns, Num Paths: 8, Violation: 50.0 [mun]s, Required: 250.0 [mun]s, Worst: 300.0 [mun]s, Min Core Frequency: 480 mhz
 
-Fail, 1/1, Max Violation: 50.0ns
+Fail, 1/1, Max Violation: 50.0 [mun]s

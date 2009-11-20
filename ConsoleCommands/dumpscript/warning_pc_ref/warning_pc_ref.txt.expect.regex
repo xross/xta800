@@ -4,6 +4,6 @@ load .*test\.xe
 # Route: main
 #
 analyse function main
-# Warning: The following line contains a non-portable reference.
+# Warning: The following line contai[mun]s a non-portable reference.
 set loop - 0x10008 10
 

@@ -1,1 +1,1 @@
-xta: warning: Overriding loop iterations already set at source level \(loop starting at 0x[0-9a-z]+\)
+xta: warning: Overriding loop iteratio[mun]s already set at source level \(loop starting at 0x[0-9a-z]+\)

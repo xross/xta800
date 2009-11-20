@@ -1,8 +1,8 @@
-  0.0: \(20.0ns\) 0x[0-9a-z]+ foo \+ 0                mkmsk \(rus\)  r0, i 0x1
-  20.0: \(20.0ns\) 0x[0-9a-z]+ foo \+ 2                retsp \(u6\)   i 0x0
-  40.0: \(20.0ns\) 0x[0-9a-z]+                        --FNOP--     
-  60.0: \(20.0ns\) 0x[0-9a-z]+ test \+ 16              add \(3r\)     r4, r4, r0
-  80.0: \(20.0ns\) 0x[0-9a-z]+ test \+ 18              ldc \(ru6\)    r4, i 0xa
-  100.0: \(20.0ns\) 0x[0-9a-z]+ test \+ 20              brft \(ru6\)   r4, i 0x2
-  120.0: \(20.0ns\) 0x[0-9a-z]+ test \+ 24              blrb \(u10\)   i 0x2a
+  0.0: \(20.0[mun]s\) 0x[0-9a-z]+ foo \+ 0                mkmsk \(rus\)  r0, i 0x1
+  20.0: \(20.0[mun]s\) 0x[0-9a-z]+ foo \+ 2                retsp \(u6\)   i 0x0
+  40.0: \(20.0[mun]s\) 0x[0-9a-z]+                        --FNOP--     
+  60.0: \(20.0[mun]s\) 0x[0-9a-z]+ test \+ 16              add \(3r\)     r4, r4, r0
+  80.0: \(20.0[mun]s\) 0x[0-9a-z]+ test \+ 18              ldc \(ru6\)    r4, i 0xa
+  100.0: \(20.0[mun]s\) 0x[0-9a-z]+ test \+ 20              brft \(ru6\)   r4, i 0x2
+  120.0: \(20.0[mun]s\) 0x[0-9a-z]+ test \+ 24              blrb \(u10\)   i 0x2a
 

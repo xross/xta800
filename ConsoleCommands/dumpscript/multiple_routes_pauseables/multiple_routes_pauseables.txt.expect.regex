@@ -5,8 +5,8 @@ load .*test\.xe
 #
 add exclusion the_great_outdoors
 analyse path x x
-set instructiontime 0 x 100.0 ns
-set instructiontime 1 x 200.0 ns
-set instructiontime 2 x 300.0 ns
-set instructiontime 3 x 400.0 ns
+set instructiontime 0 x 100.0 [mun]s
+set instructiontime 1 x 200.0 [mun]s
+set instructiontime 2 x 300.0 [mun]s
+set instructiontime 3 x 400.0 [mun]s
 

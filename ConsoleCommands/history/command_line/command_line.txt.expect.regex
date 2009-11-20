@@ -22,11 +22,11 @@
 20: list endpoints
 21: list allsrclabels
 22: list allendpoints
-23: list functions
+23: list functio[mun]s
 24: list sources
-25: list exclusions
+25: list exclusio[mun]s
 26: list unknowns -
-27: list knowns -
+27: list know[mun]s -
 28: print asm -
 29: print src -
 30: print mix -
@@ -37,7 +37,7 @@
 35: print routeinfo 0
 36: remove branch branch1 branch1
 37: set loop - a 99
-38: set instructiontime - test.xc:12 99.0 ns
+38: set instructiontime - test.xc:12 99.0 [mun]s
 39: set instructiontime - label1 99 cycles
 40: set instructiontime - 0x1000 99 cycles
 41: source invalid.txt

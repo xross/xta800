@@ -1,13 +1,13 @@
-function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns main
-.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    function\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns test
-.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    .    selfloop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    seq\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    loop\(\d+\)\s+: \d+.\d+ns / \d+.\d+ns 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 30\) / \d+.\d+ns \(x 30\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 25\) / \d+.\d+ns \(x 25\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ns \(x 5\) / \d+.\d+ns \(x 5\) 
-.    .    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
-.    block\(\d+\)\s+: \d+.\d+ns \(x 1\) / \d+.\d+ns \(x 1\) 
+function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s main
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s test
+.    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    selfloop\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    seq\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    loop\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 30\) / \d+\.\d [mun]s \(x 30\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 25\) / \d+\.\d [mun]s \(x 25\) 
+.    .    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 5\) / \d+\.\d [mun]s \(x 5\) 
+.    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 

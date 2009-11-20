@@ -1,9 +1,9 @@
-Time taken for function \(node id: \d+\) is set to 999.0ns, pc: 0x[0-9a-z]+, backtrace: main:g:f:
+Time taken for function \(node id: \d+\) is set to 999.0 [mun]s, pc: 0x[0-9a-z]+, backtrace: main:g:f:
 load .*test\.xe
 
 #
 # Route: main
 #
 analyse function main
-set functiontime - f 999.0 ns
+set functiontime - f 999.0 [mun]s
 

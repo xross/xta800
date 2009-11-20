@@ -10,7 +10,7 @@ set instructiontime - inst 1000 cycles
 # Route: main
 #
 analyse function main
-set instructiontime - inst 2000.0 ns
+set instructiontime - inst 2.0 us
 
 #
 # Route: main

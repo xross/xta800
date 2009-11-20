@@ -1,4 +1,4 @@
-  0.0: \(20.0ns\) 0x10004 main \+ 0               lss \(3r\)     r0, r1, r2
-  20.0: \(20.0ns\) 0x10006 main \+ 2               brft \(ru6\)   r0, i 0x2
-  40.0: \(20.0ns\) 0x1000a main \+ 6               retsp \(u6\)   i 0x0
+  0.0: \(20.0[mun]s\) 0x10004 main \+ 0               lss \(3r\)     r0, r1, r2
+  20.0: \(20.0[mun]s\) 0x10006 main \+ 2               brft \(ru6\)   r0, i 0x2
+  40.0: \(20.0[mun]s\) 0x1000a main \+ 6               retsp \(u6\)   i 0x0
 

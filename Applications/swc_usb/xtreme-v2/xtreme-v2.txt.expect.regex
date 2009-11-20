@@ -6,12 +6,12 @@ xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d
 xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
 xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
 Route\(0\) path: ReadDataPidByte to NextRxWord
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 133.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 133.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(1\) path: NextRxWord to NextRxWord
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 67.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 67.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(2\) path: StoreTailDataOut to ReadToken_PID
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 200.0ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 200.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Pass, Min Frequency: \d+ Mhz
+Pass, Min Core Frequency: \d+ mhz

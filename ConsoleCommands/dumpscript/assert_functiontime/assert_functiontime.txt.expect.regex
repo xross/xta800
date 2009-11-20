@@ -3,16 +3,16 @@ load .*test\.xe
 #
 # Route: g
 #
-add functiontime f 999.010000 ns
-add functiontime a 111.010000 ns
+add functiontime f 999.010000 [mun]s
+add functiontime a 111.010000 [mun]s
 analyse function g
 
 #
 # Route: h
 #
 remove functiontime \*
-add functiontime f 888.010000 ns
-add functiontime b 222.010000 ns
+add functiontime f 888.010000 [mun]s
+add functiontime b 222.010000 [mun]s
 analyse function h
 
 remove functiontime \*

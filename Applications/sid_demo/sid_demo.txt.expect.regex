@@ -1,4 +1,4 @@
 Route\(0\) function: cpuParse
-    Fail, Num Paths: \d+, Violation: \d+.0ns, Required: 1000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+    Fail, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Fail, 1/1, Max Violation: 8020.0ns
+Fail, 1/1, Max Violation: \d+\.\d [mun]s

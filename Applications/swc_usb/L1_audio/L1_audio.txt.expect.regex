@@ -3,9 +3,9 @@ xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9
 xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
 xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9a-z]+ bau \(1r\) r11
 Route\(0\) path: left_output to right_output
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 5208.3ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 5208.3[mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(1\) path: right_output to left_output
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d+ns, Required: 5208.3ns, Worst: \d+\.\d+ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 5208.3[mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Pass, Min Frequency: \d+ Mhz
+Pass, Min Core Frequency: \d+ mhz

@@ -2,15 +2,15 @@ Route\(0\) function: ledreformat_process_mbi5026
     No Timing Specified
 
 Route\(1\) path: watchdog to watchdog
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(2\) path: recieve_local_node to recieve_local_node
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(3\) path: recieve_external_0 to recieve_external_0
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(4\) path: recieve_external_1 to recieve_external_1
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0ns, Required: 10000.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Fail, Timing Unspecified

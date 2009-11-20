@@ -1,5 +1,5 @@
 function\(\d+\) +: Infinity / Infinity test
-.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .    infiniteloop\(\d+\) +: Infinity / Infinity 
 .    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
 .    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 

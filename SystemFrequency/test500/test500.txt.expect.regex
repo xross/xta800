@@ -1,13 +1,13 @@
 Route\(0\) function: f
-    Pass, Num Paths: 1, Slack: 16.0ns, Required: 48.0ns, Worst: 32.0ns, Min Frequency: 333 Mhz
+    Pass, Num Paths: 1, Slack: 16.0 ns, Required: 48.0 ns, Worst: 32.0 ns, Min Core Frequency: 333 mhz
 
 Route\(1\) function: f
-    Pass, Num Paths: 1, Slack: 20.0ns, Required: 60.0ns, Worst: 40.0ns, Min Frequency: 266 Mhz
+    Pass, Num Paths: 1, Slack: 20.0 ns, Required: 60.0 ns, Worst: 40.0 ns, Min Core Frequency: 266 mhz
 
 Route\(2\) function: f
-    Pass, Num Paths: 1, Slack: 16000000.0ns, Required: 48000000.0ns, Worst: 32000000.0ns, Min Frequency: 0 Mhz
+    Pass, Num Paths: 1, Slack: 16.0 ms, Required: 48.0 ms, Worst: 32.0 ms, Min Core Frequency: 0 mhz
 
 Route\(3\) function: f
-    Pass, Num Paths: 1, Slack: 16000.0ns, Required: 48000.0ns, Worst: 32000.0ns, Min Frequency: 0 Mhz
+    Pass, Num Paths: 1, Slack: 16.0 us, Required: 48.0 us, Worst: 32.0 us, Min Core Frequency: 0 mhz
 
-Pass, Min Frequency: 333 Mhz
+Pass, Min Core Frequency: 333 mhz

@@ -1,8 +1,8 @@
-f: 2000.0 ns
+f: 2.0 us
 none
-start to stop: 2000.0 ns
+start to stop: 2.0 us
 none
-inst: 2000.0 ns
+inst: 2.0 us
 none
 l: 20
 none

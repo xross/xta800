@@ -35,7 +35,7 @@ Loaded executable: test.xe
 Node: 0, Core: 0 \(No debug information found\)
 No routes analysed
 Route\(0\) function: main
-    Pass with 2 unknowns, Num Paths: 1, Slack: \d+.0ns, Required: \d+.0ns, Worst: \d+.0ns, Min Frequency: \d+ Mhz
+    Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Pass, Min Frequency: \d+ Mhz
+Pass, Min Core Frequency: \d+ mhz
 RETURN CODE OK

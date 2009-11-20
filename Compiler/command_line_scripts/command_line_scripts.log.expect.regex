@@ -1,21 +1,21 @@
-function\(\d+\) +: \d+.0ns / \d+.0ns main
-.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    function\(\d+\) +: \d+.0ns / \d+.0ns f
-.    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    cond\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / \d+.0ns \(x 0\) 
-.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    function\(\d+\) +: \d+.0ns / \d+.0ns f
-.    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    cond\(\d+\) +: \d+.0ns / \d+.0ns 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    .    block\(\d+\) +: \d+.0ns \(x 0\) / \d+.0ns \(x 0\) 
-.    block\(\d+\) +: \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
+function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s main
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s f
+.    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    cond\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 0\) 
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s f
+.    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    cond\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 0\) 
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 
-function\(\d+\)  : \d+.0ns / \d+.0ns f
-.    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    cond\(\d+\)      : \d+.0ns / \d+.0ns 
-.    .    block\(\d+\)     : \d+.0ns \(x 1\) / \d+.0ns \(x 1\) 
-.    .    block\(\d+\)     : \d+.0ns \(x 0\) / \d+.0ns \(x 0\) 
+function\(\d+\)  : \d+\.\d [mun]s / \d+\.\d [mun]s f
+.    block\(\d+\)     : \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    cond\(\d+\)      : \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    block\(\d+\)     : \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    block\(\d+\)     : \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 0\) 
 

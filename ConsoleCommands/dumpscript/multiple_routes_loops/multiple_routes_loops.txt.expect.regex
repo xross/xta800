@@ -5,12 +5,12 @@ load .*test\.xe
 #
 add exclusion the_great_outdoors
 analyse path x x
-# Warning: The following line contains a non-portable reference.
+# Warning: The following line contai[mun]s a non-portable reference.
 set loop 0 0x[0-9a-fA-F]{5} 10
-# Warning: The following line contains a non-portable reference.
+# Warning: The following line contai[mun]s a non-portable reference.
 set loop 1 0x[0-9a-fA-F]{5} 20
-# Warning: The following line contains a non-portable reference.
+# Warning: The following line contai[mun]s a non-portable reference.
 set loop 2 0x[0-9a-fA-F]{5} 30
-# Warning: The following line contains a non-portable reference.
+# Warning: The following line contai[mun]s a non-portable reference.
 set loop 3 0x[0-9a-fA-F]{5} 40
 

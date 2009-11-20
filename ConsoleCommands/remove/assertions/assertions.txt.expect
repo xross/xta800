@@ -1,11 +1,11 @@
-f: 1000.0 ns
-g: 2000.0 ns
+f: 1.0 us
+g: 2.0 us
 none
-start1 to stop1: 1000.0 ns
-start2 to stop2: 2000.0 ns
+start1 to stop1: 1.0 us
+start2 to stop2: 2.0 us
 none
-inst1: 1000.0 ns
-inst2: 2000.0 ns
+inst1: 1.0 us
+inst2: 2.0 us
 none
 l1: 10
 l2: 20

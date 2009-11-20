@@ -4,7 +4,7 @@ load .*test\.xe
 # Route: x1 => x2
 #
 analyse path x1 x2
-set required - 100.000000 ns
+set required - 100.000000 [mun]s
 
 #
 # Route: x1 => x2
