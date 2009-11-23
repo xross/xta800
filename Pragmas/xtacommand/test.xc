@@ -2,6 +2,7 @@
 #pragma xta command "analyse function function_a"
 #pragma xta command "echo function_b..."
 #pragma xta command "analyse function function_b"
+#pragma xta command "I am an invalid command string"
 
 extern int function_c();
 extern int function_d();
