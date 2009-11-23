@@ -3,12 +3,16 @@ package com.xmos.xta.core.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.xmos.xta.core.engine.CommandSource;
+
 public class RouteContainer {
+	private CommandSource m_src;
     private RouteDescription m_description;
     private List<Route> m_routes;
     private List<Boolean> m_exists;
     
-    public RouteContainer(RouteDescription description) {
+    public RouteContainer(CommandSource src, RouteDescription description) {
+    	m_src = src;
     	m_description = description;
     	m_routes = new ArrayList<Route>();
     	m_exists = new ArrayList<Boolean>();
@@ -18,6 +22,10 @@ public class RouteContainer {
     	return m_description;
     }
     
+    public CommandSource getCommandSrc() {
+    	return m_src;
+    }
+
     public void add(List<Route> routes) {
     	m_routes.addAll(routes);
     	for (int i = 0; i < m_routes.size(); ++i) {

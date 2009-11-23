@@ -134,7 +134,8 @@ public class Shell {
 		Command command = m_commands.peek();
 		assert(command != null);
 		
-		if (command.getSrc().getType() != Type.FILE) {
+		if ((command.getSrc().getType() != Type.FILE) && 
+			(command.getSrc().getType() != Type.SRC_LEVEL_COMMAND)) {
     	    m_commandHistory.add(command);
 		}
         m_commands.remove(command);

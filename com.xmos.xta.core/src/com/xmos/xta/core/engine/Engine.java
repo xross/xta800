@@ -20,6 +20,7 @@ import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
+import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
 import com.xmos.xta.core.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionHandler;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
@@ -1310,7 +1311,7 @@ public class Engine implements Notifier, Aborter {
 				return false;
 		}
 
-        RouteContainer routeContainer = new RouteContainer(routeDescription); 
+        RouteContainer routeContainer = new RouteContainer(src, routeDescription); 
 		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(m_nodeId, m_coreId), routeDescription, routeContainer);				
 		RouteError error = routeConstructor.analyse(src);		
 
@@ -1515,10 +1516,16 @@ public class Engine implements Notifier, Aborter {
 			int commandNum = 0;
 			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands();			
 		    for (SrcStringInfo cmdInfo : srcStringInfos) {
+	            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
+	            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
+	            CommandPosition position = CommandPosition.MIDDLE;
+	            if (commandNum == 0) {
+	            	position = CommandPosition.FIRST;
+	            } else if (commandNum == (srcStringInfos.size() - 1)) {
+	            	position = CommandPosition.LAST;
+	            }
+	            commandRunner.run(cmdInfo.getString(), commandSource, position); 
 	            ++commandNum;	            
-	            CommandSource commandSource = new CommandSource(cmdInfo.getFileName(), cmdInfo.getLineNumber());
-	            boolean isFinal = commandNum == srcStringInfos.size();	    	            
-	            commandRunner.run(cmdInfo.getString(), commandSource, isFinal); 
 		    }
 		}				
 	}

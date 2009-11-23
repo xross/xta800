@@ -30,6 +30,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
@@ -380,10 +381,10 @@ public class GuiEngine {
 	}
 
 	public static void runCommandInConsole(String command) {
-		runCommandInConsole(command, s_consoleViaGuiSrc, false);
+		runCommandInConsole(command, s_consoleViaGuiSrc, CommandPosition.MIDDLE);
 	}
 
-	public static void runCommandInConsole(String command, CommandSource src, boolean isFinal) {
+	public static void runCommandInConsole(String command, CommandSource src, CommandPosition position) {
 		ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 		        getActivePage().findView(ConsoleView.ID);
 	
@@ -392,7 +393,7 @@ public class GuiEngine {
 		        getActivePage().showView(ConsoleView.ID);
 	    } catch (PartInitException e) {}
 	
-	    console.runCommand(command, src, isFinal);		
+	    console.runCommand(command, src, position);		
 	}
 	
 	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {

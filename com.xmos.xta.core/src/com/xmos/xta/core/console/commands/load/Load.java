@@ -53,7 +53,7 @@ public class Load extends Command {
     
     public void execute(final Shell shell, final Engine engine, final Console console) {    	
 		engine.loadExecutable(getSrc(), new File(m_executableName), new CommandRunner() {
-			public void run(String command, CommandSource src, boolean isFinal) {
+			public void run(String command, CommandSource src, CommandPosition position) {
 				runSectionCommand(shell, engine, console, command, src);
 			}			
 		});

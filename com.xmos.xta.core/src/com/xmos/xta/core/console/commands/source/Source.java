@@ -12,6 +12,7 @@ import com.xmos.xta.core.console.commands.Invalid;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.CommandSource.Type;
 
 public class Source extends Command {
 	private String m_fileName;
@@ -84,7 +85,7 @@ public class Source extends Command {
                         	
                             String[] tokens = commandString.trim().split("\\s+");
                             
-                    		CommandSource src = new CommandSource(m_fileName, lineNumber);
+                    		CommandSource src = new CommandSource(Type.FILE, m_fileName, lineNumber);
                             Command command = CommandFactory.buildCommand(src,
                             		tokens, 0, shell.getCommandHistory(), console);
                             
