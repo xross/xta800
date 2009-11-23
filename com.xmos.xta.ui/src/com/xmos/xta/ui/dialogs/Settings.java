@@ -146,7 +146,7 @@ public class Settings extends Dialog {
 	private void setScale(boolean scale) {
 		if (scale != Conversion.getScale()) {
 			Conversion.setScale(scale);
-			GuiEngine.getEngine().notify(GuiEngine.s_guiCommandSrc, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_SCALE);
+			GuiEngine.getEngine().notify(GuiEngine.s_guiSrc, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_SCALE);
 		}
 	}
 
