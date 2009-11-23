@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import com.xmos.libs.util.Conversion;
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.ui.GuiEngine;
 
@@ -24,6 +26,7 @@ public class Settings extends Dialog {
     private Text m_coreMhzText;
     private Spinner m_threadSpinner;
     private Button m_caseButton;
+    private Button m_scaleButton;
   
     private double m_oldFrequency;
     private int m_oldNumThreads;
@@ -120,6 +123,16 @@ public class Settings extends Dialog {
 				setCase(m_caseButton.getSelection());
 			}
 		});
+
+		Group scaleGroup = XtaDialog.createGroup(controls, "Scale results", 1, 1);
+		m_scaleButton = new Button(scaleGroup, SWT.CHECK);
+		m_scaleButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		m_scaleButton.setSelection(Conversion.getScale());
+		m_scaleButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setScale(m_scaleButton.getSelection());
+			}
+		});
 	}
 		
 	private boolean isWorstCase() {
@@ -128,6 +141,13 @@ public class Settings extends Dialog {
 
 	private void setCase(boolean isWorstCase) {
 		GuiEngine.getEngine().setCase(GuiEngine.s_guiSrc, isWorstCase ? Case.WORST : Case.BEST);
+	}
+
+	private void setScale(boolean scale) {
+		if (scale != Conversion.getScale()) {
+			Conversion.setScale(scale);
+			GuiEngine.getEngine().notify(GuiEngine.s_guiCommandSrc, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_SCALE);
+		}
 	}
 
 	private void enable(boolean enable) {
