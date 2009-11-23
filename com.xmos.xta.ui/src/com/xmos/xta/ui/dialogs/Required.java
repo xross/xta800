@@ -52,7 +52,7 @@ class RequiredImpl implements XtaImpl {
     	if (id == IDialogConstants.OK_ID) {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
-    		GuiEngine.getEngine().setRequiredTime(GuiEngine.s_guiCommandSrc, m_routeId, timeUnit);
+    		GuiEngine.getEngine().setRequiredTime(GuiEngine.s_guiSrc, m_routeId, timeUnit);
     	}
     }    
     

@@ -63,7 +63,8 @@ public class GuiEngine {
 	private static List<Long> s_sourcePcs;
 	private static boolean s_showPcPosition;
 	
-	public static final CommandSource s_guiCommandSrc = new CommandSource(Type.GUI);  
+	public static final CommandSource s_guiSrc           = new CommandSource(Type.GUI);  
+	public static final CommandSource s_consoleViaGuiSrc = new CommandSource(Type.CONSOLE_VIA_GUI);  
 
 	static {
         s_engine = new Engine(new Config());
@@ -103,7 +104,7 @@ public class GuiEngine {
 	}
 	
 	public static void notify(String message, String argument) {
-		s_notifier.notify(s_guiCommandSrc, message, argument);
+		s_notifier.notify(s_guiSrc, message, argument);
 	}
 	
 	public static void runFunction(final String functionName) {
@@ -111,7 +112,7 @@ public class GuiEngine {
 			Job job = new Job("Analyse: " + functionName) {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(new GuiProgressMonitor(monitor));
-					s_engine.analyseRoute(s_guiCommandSrc, functionName, false);
+					s_engine.analyseRoute(s_guiSrc, functionName, false);
 					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}
@@ -136,7 +137,7 @@ public class GuiEngine {
 			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
 				protected IStatus run(IProgressMonitor monitor) {
 					s_engine.setMonitor(new GuiProgressMonitor(monitor));
-					s_engine.analyseRoute(s_guiCommandSrc, startRef, endRef, false);
+					s_engine.analyseRoute(s_guiSrc, startRef, endRef, false);
 					s_engine.setMonitor(null);
 					return Status.OK_STATUS;
 				}
@@ -379,15 +380,19 @@ public class GuiEngine {
 	}
 
 	public static void runCommandInConsole(String command) {
+		runCommandInConsole(command, s_consoleViaGuiSrc, false);
+	}
+
+	public static void runCommandInConsole(String command, CommandSource src, boolean isFinal) {
 		ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-		getActivePage().findView(ConsoleView.ID);
+		        getActivePage().findView(ConsoleView.ID);
 	
 	    try {
 		    PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 		        getActivePage().showView(ConsoleView.ID);
 	    } catch (PartInitException e) {}
 	
-	    console.runCommand(command);		
+	    console.runCommand(command, src, isFinal);		
 	}
 	
 	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {

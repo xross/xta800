@@ -719,7 +719,7 @@ public class RouteConstructor {
 					String.format("0x%x", srcLevelLoopInfo.getPc()), 
 					ReferenceClass.PC_REF);
 
-			CommandSource src = new CommandSource(Type.INTERNAL);
+			CommandSource src = new CommandSource(Type.COMPILER);
 			for (Route route : m_routes) {
 				try {
 					route.getRouteUnknowns().setLoopIterations(src, m_engine, 

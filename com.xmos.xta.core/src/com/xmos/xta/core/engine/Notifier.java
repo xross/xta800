@@ -22,7 +22,7 @@ public interface Notifier {
 	public static final String NOTIFY_UPDATE_STATE      = "UpdateState";
 	public static final String NOTIFY_UPDATE_EXCLUSIONS = "UpdateExclusions";
 	public static final String NOTIFY_UPDATE_UNKNOWNS   = "UpdateUnknowns";
-
+	
 	public static final String STATE_NUM_THREADS = "NumThreads";
 	public static final String STATE_FREQUENCY   = "Frequency";
 	public static final String STATE_CASE        = "Case";

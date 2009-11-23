@@ -14,7 +14,7 @@ public abstract class Console {
 		
 	public abstract void display(String str);
 	public abstract void displayPrompt(String str);	
-	public abstract String getNextLine(Vector<Command> commandHistory);	
+	public abstract ConsoleCommand getNextLine(Vector<Command> commandHistory);	
 	public abstract void clearScreen();
 	public abstract boolean hasEscaped();	
 

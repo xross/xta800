@@ -8,9 +8,9 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.console.commands.Invalid;
+import com.xmos.xta.core.engine.CommandRunner;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.sections.SrcStringInfo;
 
 public class Load extends Command {
 	private String m_executableName;
@@ -51,31 +51,29 @@ public class Load extends Command {
         return new Load(executableName);        
     }
     
-    public void execute(Shell shell, Engine engine, Console console) {    	
-		if (engine.loadExecutable(getSrc(), new File(m_executableName))) {
-		    runSectionCommands(shell, engine, console);
-		}
+    public void execute(final Shell shell, final Engine engine, final Console console) {    	
+		engine.loadExecutable(getSrc(), new File(m_executableName), new CommandRunner() {
+			public void run(String command, CommandSource src, boolean isFinal) {
+				runSectionCommand(shell, engine, console, command, src);
+			}			
+		});
     }
 
 	public String toString() {
 		return commandLine();
 	}
 
-    private void runSectionCommands(Shell shell, Engine engine, Console console) {
-	    for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands()) {
-	    	String commandString = cmdInfo.getString();
-            String[] tokens = commandString.trim().split("\\s+");
+    private void runSectionCommand(Shell shell, Engine engine, Console console, String commandStr, CommandSource src) {
+        String[] tokens = commandStr.trim().split("\\s+");
             
-            CommandSource src = new CommandSource(cmdInfo.getFileName(), cmdInfo.getLineNumber());
-            Command command = CommandFactory.buildCommand(src,
+        Command command = CommandFactory.buildCommand(src,
         		tokens, 0, new Vector<Command>(), console);
 		
-            if (command == null) {
-            	command = new Invalid(commandString, 
-            		    String.format("invalid command in source file '%s'\n", commandString), src);
-            }
+        if (command == null) {
+          	command = new Invalid(commandStr, 
+         		    String.format("invalid command in source file '%s'\n", commandStr), src);
+        }
 
-		    command.execute(shell, engine, console);
-	    }
+	    command.execute(shell, engine, console);
     }
 }

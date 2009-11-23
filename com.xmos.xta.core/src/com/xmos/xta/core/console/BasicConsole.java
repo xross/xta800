@@ -4,6 +4,8 @@ import java.util.Scanner;
 import java.util.Vector;
 
 import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.CommandSource.Type;
 
 public class BasicConsole extends Console {
 
@@ -17,9 +19,11 @@ public class BasicConsole extends Console {
 		System.out.printf("%s", str);
 	}
 
-	public String getNextLine(Vector<Command> commandHistory) {
+	public ConsoleCommand getNextLine(Vector<Command> commandHistory) {
     	Scanner in = new Scanner(System.in);
-        return in.nextLine();
+        String command = in.nextLine();        
+        CommandSource src = new CommandSource(Type.CONSOLE);        
+        return new ConsoleCommand(command, src);
 	}
 		
 	public void clearScreen() {		

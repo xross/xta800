@@ -40,7 +40,7 @@ public class Settings extends Dialog {
 	}
 
 	public void setFrequency(double frequency) {
-		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiCommandSrc, frequency);
+		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiSrc, frequency);
 	}
 
 	public int getNumThreads() {
@@ -48,7 +48,7 @@ public class Settings extends Dialog {
 	}
 
 	public void setNumThreads(int numThreads) {
-		GuiEngine.getEngine().setNumThreads(GuiEngine.s_guiCommandSrc, numThreads);
+		GuiEngine.getEngine().setNumThreads(GuiEngine.s_guiSrc, numThreads);
 	}	
     
     protected void configureShell(Shell newShell) {
@@ -127,7 +127,7 @@ public class Settings extends Dialog {
 	}
 
 	private void setCase(boolean isWorstCase) {
-		GuiEngine.getEngine().setCase(GuiEngine.s_guiCommandSrc, isWorstCase ? Case.WORST : Case.BEST);
+		GuiEngine.getEngine().setCase(GuiEngine.s_guiSrc, isWorstCase ? Case.WORST : Case.BEST);
 	}
 
 	private void enable(boolean enable) {

@@ -15,22 +15,22 @@ public class GuiConsoleNotifier implements Notifier {
 	public void notify(CommandSource src, String message, String argument) {
 		if (message.equals(NOTIFY_ERROR)) {
 			m_console.display("xta: ");		
-			if (src.m_lineNum > 0) {
-				m_console.display(src.m_fileName + ":" + src.m_lineNum + ": ");
+			if (src.getLineNum() > 0) {
+				m_console.display(src.getFileName() + ":" + src.getLineNum() + ": ");
 			}
 			m_console.display("error: " + argument + "\n");		
 			
 		} else if (message.equals(NOTIFY_WARNING)) {
 			m_console.display("xta: ");		
-			if (src.m_lineNum > 0) {
-				m_console.display(src.m_fileName + ":" + src.m_lineNum + ": ");
+			if (src.getLineNum() > 0) {
+				m_console.display(src.getFileName() + ":" + src.getLineNum() + ": ");
 			}
 			m_console.display("warning: " + argument + "\n");		
 			
 		} else if (message.equals(NOTIFY_INFO)) {
 			m_console.display("xta: ");		
-			if (src.m_lineNum > 0) {
-				m_console.display(src.m_fileName + ":" + src.m_lineNum + ": ");
+			if (src.getLineNum() > 0) {
+				m_console.display(src.getFileName() + ":" + src.getLineNum() + ": ");
 			}
 			m_console.display("info: " + argument + "\n");
 

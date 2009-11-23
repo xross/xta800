@@ -1,16 +1,15 @@
 package com.xmos.xta.core.console;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Vector;
 
+import jline.ConsoleReader;
+
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.completors.XtaCompletor;
+import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-
-import jline.ConsoleOperations;
-import jline.ConsoleReader;
+import com.xmos.xta.core.engine.CommandSource.Type;
 
 public class JLineConsole extends Console {
 	private ConsoleReader m_reader;
@@ -34,7 +33,7 @@ public class JLineConsole extends Console {
 		m_prompt = str;
 	}	
 	
-	public String getNextLine(Vector<Command> commandHistory) {
+	public ConsoleCommand getNextLine(Vector<Command> commandHistory) {
 		String line = null;
 		while (line == null) {
 			try {
@@ -49,7 +48,8 @@ public class JLineConsole extends Console {
 		    }
 		}
 		m_hasEscaped = false;
-		return line;
+
+		return new ConsoleCommand(line, new CommandSource(Type.CONSOLE));
 	}
 
 	public void clearScreen() {		
@@ -76,19 +76,5 @@ public class JLineConsole extends Console {
 		m_reader = new ConsoleReader();
 		m_reader.setBellEnabled(false);
 	  	m_reader.addCompletor(new XtaCompletor(m_engine));
-	  	
-//	  	m_reader.addTriggeredAction(ConsoleOperations.CTRL_C, new ControlCListener(this));
 	}
-	
-/*	class ControlCListener implements ActionListener {
-		private JLineConsole m_console;
-		
-		ControlCListener(JLineConsole console) {
-			m_console = console;
-		}
-		
-		public void actionPerformed(ActionEvent e) {
-			m_console.setHasEscaped();
-		}
-	}*/
 }

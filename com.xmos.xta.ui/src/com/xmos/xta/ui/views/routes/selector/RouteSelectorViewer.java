@@ -102,7 +102,7 @@ public class RouteSelectorViewer {
 				if (GuiEngine.getEngine().getRoutes().size() > 0) {
 	            	manager.add(new Action("delete all") {
 						public void run() {
-							GuiEngine.getEngine().removeAllRoutes(GuiEngine.s_guiCommandSrc);
+							GuiEngine.getEngine().removeAllRoutes(GuiEngine.s_guiSrc);
 						}
 					});
 				}
@@ -140,7 +140,7 @@ public class RouteSelectorViewer {
 					}
 					
 					if ((newId != currentSelectedId) && (newId != Engine.ROUTE_ID_INVALID)) {
-						engine.setSelectedRouteId(GuiEngine.s_guiCommandSrc, newId);
+						engine.setSelectedRouteId(GuiEngine.s_guiSrc, newId);
 	            	}
 		        }
 			}
@@ -162,7 +162,7 @@ public class RouteSelectorViewer {
 		ISelection selection = m_viewer.getSelection();
         for (Object object : ((IStructuredSelection)selection).toList()) {
             if (object instanceof RouteNode) {
-         	    GuiEngine.getEngine().removeRoute(GuiEngine.s_guiCommandSrc, ((RouteNode)object).getRoute().getRouteId());
+         	    GuiEngine.getEngine().removeRoute(GuiEngine.s_guiSrc, ((RouteNode)object).getRoute().getRouteId());
         	}
         }
 	}
@@ -226,7 +226,7 @@ public class RouteSelectorViewer {
 	private static void addShowRouteInfoInConsole(IMenuManager manager, final List<RouteNode> selectedNodes) {
 		Action action = new Action("Show route info in console") {
 			public void run() {
-				GuiEngine.runCommandInConsole("print route_info " + getRouteId());
+				GuiEngine.runCommandInConsole("print routeinfo " + getRouteId());
 			}
 		};
 		manager.add(action);

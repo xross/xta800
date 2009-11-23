@@ -113,7 +113,7 @@ public class Shell {
     
     private void processCommandLine(String[] args) {
 	    for (int i = 0; i < args.length; ++i) {
-            CommandSource src = new CommandSource(Type.CMD);
+            CommandSource src = new CommandSource(Type.COMMAND_LINE);
 	    	Command command = CommandFactory.buildCommand(src, args, i, m_commandHistory, m_console);
 	    	if (command == null) {
 	    		usage();
@@ -134,7 +134,7 @@ public class Shell {
 		Command command = m_commands.peek();
 		assert(command != null);
 		
-		if (command.getSrc().m_type != Type.FILE) {
+		if (command.getSrc().getType() != Type.FILE) {
     	    m_commandHistory.add(command);
 		}
         m_commands.remove(command);
@@ -146,23 +146,24 @@ public class Shell {
     		m_prompt = "xta " + (m_commandHistory.size() + 1) + ">";
     		m_console.displayPrompt(m_prompt);    	
     		
-            String[] lines = m_console.getNextLine(m_commandHistory).split("\n");
+    		ConsoleCommand consoleCommand = m_console.getNextLine(m_commandHistory);    		    		
+    		
+            String[] lines = consoleCommand.getStr().split("\n");
             for (String line : lines) {
                 line = line.trim();
-                
+
                 if (line.startsWith("#")) {
                 	// Ignore comment lines...
-                	                
+ 
                 } else if (line.length() > 0) {            	
                     String[] tokens = line.trim().split("\\s+");                
                     ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
                     tokens = tokenGroups.toArray(tokens);
                     
-                    CommandSource src = new CommandSource(Type.CONSOLE);
-                    Command command = CommandFactory.buildCommand(src, tokens, 0, m_commandHistory, m_console);
+                    Command command = CommandFactory.buildCommand(consoleCommand.getSrc(), tokens, 0, m_commandHistory, m_console);
 
                     if (!commandIsValid(command, tokens)) {
-                    	command = new Invalid(line, "Invalid command (Try 'help'..)\n", src);
+                    	command = new Invalid(line, "Invalid command (Try 'help'..)\n", consoleCommand.getSrc());
                     }
                     m_commands.offer(command);
                 }

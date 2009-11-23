@@ -65,7 +65,7 @@ public class CommandFactory {
     		if (arg.equals(command.name())) {
     			Command cloned = command.clone(args, index);
     			if (cloned == null) {
-    		    	console.display("xta: " + src.m_fileName + ":" + src.m_lineNum + ": error: " +
+    		    	console.display("xta: " + src.getFileName() + ":" + src.getLineNum() + ": error: " +
     		    			"invalid argument(s) to '" + command.name() + 
     		    			"' command (Try 'help " + command.name() + "'..)\n");    	    				
     			} else {

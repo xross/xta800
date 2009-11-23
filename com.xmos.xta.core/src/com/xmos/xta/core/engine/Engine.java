@@ -232,7 +232,7 @@ public class Engine implements Notifier, Aborter {
 		return routes;
 	}
 	
-	public boolean loadExecutable(CommandSource src, File executableFile) {		
+	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {		
     	try {
     		executableFile = executableFile.getCanonicalFile();
 		} catch (IOException e) {
@@ -289,8 +289,10 @@ public class Engine implements Notifier, Aborter {
 		m_selectedRoute = null;
 		m_assertions.clear();
 		Route.resetRouteCount();
-
+		
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
+		
+		runSrcLevelCommands(src, commandRunner);
 		return true;
 	}
 	
@@ -1506,6 +1508,19 @@ public class Engine implements Notifier, Aborter {
 	
 	private static interface AssertionUpdate {
 		void run(Reference reference);
+	}
+	
+	private void runSrcLevelCommands(CommandSource src, CommandRunner commandRunner) {
+		if (commandRunner != null) {
+			int commandNum = 0;
+			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands();			
+		    for (SrcStringInfo cmdInfo : srcStringInfos) {
+	            ++commandNum;	            
+	            CommandSource commandSource = new CommandSource(cmdInfo.getFileName(), cmdInfo.getLineNumber());
+	            boolean isFinal = commandNum == srcStringInfos.size();	    	            
+	            commandRunner.run(cmdInfo.getString(), commandSource, isFinal); 
+		    }
+		}				
 	}
 }
 

@@ -132,13 +132,13 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      	
      	setAction(AddExclusionID, new Action("Add to exclusion list") {
      		public void run() {
-     	    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiCommandSrc, m_clickCodeRefString);		
+     	    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiSrc, m_clickCodeRefString);		
      		}
      	});
 
      	setAction(RemoveExclusionID, new Action("Remove from exclusion list") {
      		public void run() {
-     	    	GuiEngine.getEngine().removeExclusion(GuiEngine.s_guiCommandSrc, m_clickCodeRefString);		
+     	    	GuiEngine.getEngine().removeExclusion(GuiEngine.s_guiSrc, m_clickCodeRefString);		
      		}
      	});
      	

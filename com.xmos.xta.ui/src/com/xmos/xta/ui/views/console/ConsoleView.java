@@ -1,23 +1,19 @@
 package com.xmos.xta.ui.views.console;
 
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.core.engine.CommandSource;
 
-public class ConsoleView extends ViewPart implements IPropertyChangeListener {
+public class ConsoleView extends ViewPart {
     public static final String ID = "com.xmos.xta.ui.views.console.Console";
 
     private GuiConsole m_guiConsole;
     
 	public ConsoleView() {
-		GuiEngine.addBroadcastListener(this);
 	}
 
 	public void dispose() {
-		GuiEngine.removeBroadcastListener(this);
 		super.dispose();
 	}
 	
@@ -32,11 +28,8 @@ public class ConsoleView extends ViewPart implements IPropertyChangeListener {
 
 	public void setFocus() {
 	}
-
-	public void propertyChange(PropertyChangeEvent event) {
-	}
 	
-    public synchronized void runCommand(String command) {
-		m_guiConsole.sendCommand(command);
+    public synchronized void runCommand(String command, CommandSource src, boolean isFinal) {
+		m_guiConsole.sendCommand(command, src, isFinal);
     }
 }

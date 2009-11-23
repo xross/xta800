@@ -73,10 +73,10 @@ class FunctionTimeImpl implements XtaImpl {
 			for (Object object : ((IStructuredSelection)m_function.getViewer().getSelection()).toArray()) {
 				if (object instanceof String) {
 		    		if (m_assert.getSelection()) {
-		    		    m_engine.addFunctionTime(GuiEngine.s_guiCommandSrc, (String)object, timeUnit);
+		    		    m_engine.addFunctionTime(GuiEngine.s_guiSrc, (String)object, timeUnit);
 		    		}
 		    		if (m_route != null) {
-		    		    m_engine.setFunctionTime(GuiEngine.s_guiCommandSrc, m_route.getRouteId(), (String)object, timeUnit);
+		    		    m_engine.setFunctionTime(GuiEngine.s_guiSrc, m_route.getRouteId(), (String)object, timeUnit);
 		    		}					
 				}
 			}

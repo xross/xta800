@@ -84,7 +84,7 @@ public class ExclusionsViewer extends BaseViewer {
 		ISelection selection = getViewer().getSelection(); 
 		for (Object object : ((IStructuredSelection)selection).toList()) {
 			Reference ref = (Reference)object;			
-			GuiEngine.getEngine().removeExclusion(GuiEngine.s_guiCommandSrc, ref.getRef());
+			GuiEngine.getEngine().removeExclusion(GuiEngine.s_guiSrc, ref.getRef());
 		}
 	}
 

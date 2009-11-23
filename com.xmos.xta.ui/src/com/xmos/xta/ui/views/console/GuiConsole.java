@@ -22,18 +22,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.core.console.Console;
+import com.xmos.xta.core.console.ConsoleCommand;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.completors.XtaCompletor;
-import com.xmos.xta.ui.XtaPlugin;
+import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.XtaPlugin;
 
 public class GuiConsole extends Console {	
     public static final boolean DEBUG = false;
 
     private Shell m_shell;
 	private StyledText m_text;
-	private LinkedBlockingQueue<CommandString> m_commandQueue;
+	private LinkedBlockingQueue<CommandInfo> m_commandQueue;
 	private LinkedBlockingQueue<Integer> m_characterQueue;	
 	private Vector<Command> m_commandHistory;
 	private int m_commandHistoryIndex;
@@ -43,16 +46,18 @@ public class GuiConsole extends Console {
 	private Completor m_completor;
     private TabCompletionHandler m_completionHandler;
     private boolean m_hasEscaped;
+    private boolean m_displayPrompt;
 
 	public GuiConsole(Composite parent) {
 		if (DEBUG) System.out.printf("GuiConsole()\n");		
-				
+
 		m_shell = new Shell(this, GuiEngine.getEngine(), new GuiConsoleNotifier(this));		        		
-		m_commandQueue = new LinkedBlockingQueue<CommandString>();
+		m_commandQueue = new LinkedBlockingQueue<CommandInfo>();
 		m_characterQueue = new LinkedBlockingQueue<Integer>();		
         m_text = new StyledText(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 		m_display = PlatformUI.getWorkbench().getDisplay();						
-             
+		m_displayPrompt = true;
+		
         Font font = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NONE);
         m_text.setFont(font);
         m_text.addKeyListener(new KeyListener() {
@@ -143,11 +148,7 @@ public class GuiConsole extends Console {
         m_text.setFocus();
         m_hasEscaped = false;
 	}
-
-	private int eventChar(char c) {
-		return (c - 'a' + 1);
-	}
-
+	
     public void execute() {
 		int returnCode = m_shell.execute();
 		System.exit(returnCode);        
@@ -171,36 +172,48 @@ public class GuiConsole extends Console {
 	public void displayPrompt(String str) {
 		if (DEBUG) System.out.printf("GuiConsole: Enterning: displayPrompt: %s\n", str);			
 		
-		m_prompt = str;
-        m_display.syncExec(new Runnable() {
-    		public void run() {
-	    		m_text.append(m_prompt);
-		    	m_text.setSelection(m_text.getCharCount());
-		    }
-    	});
+    	m_prompt = m_displayPrompt ? str : "";		
+	    m_display.syncExec(new Runnable() {
+	        public void run() {
+		    	m_text.append(m_prompt);
+	    	   	m_text.setSelection(m_text.getCharCount());
+			}
+	    });
+		m_displayPrompt = true;
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: displayPrompt\n");			
 	}
 	
-	public String getNextLine(Vector<Command> commandHistory) {
+	public ConsoleCommand getNextLine(Vector<Command> commandHistory) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: getNextLine\n");			
 		
 		m_commandHistory = commandHistory;
 		resetCommandIndex();
 
-		String command = "";
-		CommandString commandString;
+		String str = "";
+		CommandSource src = null;
 		try {
-			commandString = m_commandQueue.take();
-			if (commandString.getEcho()) {
-				display(String.format("%s\n", commandString.getStr()));
-			}
-			command = commandString.getStr();
+			CommandInfo commandInfo = m_commandQueue.take();			
+			str = commandInfo.getConsoleCommand().getStr();
+			src = commandInfo.getConsoleCommand().getSrc();
+			
+			switch (src.getType()) {
+			case FILE:
+				if (!commandInfo.isFinal()) {
+				    m_displayPrompt = false;
+				}
+				break;
+
+			case CONSOLE_VIA_GUI:
+				display(String.format("%s\n", str));
+				break;				
+			} 
+			
 		} catch (InterruptedException e) {}
 
 		m_hasEscaped = false;
-		
-		if (DEBUG) System.out.printf("GuiConsole: Leaving: getNextLine: %s\n", command);			
-		return command;
+
+		if (DEBUG) System.out.printf("GuiConsole: Leaving: getNextLine: %s\n", str);
+		return new ConsoleCommand(str, src);
 	}
 	
 	public int readCharacter() {
@@ -215,11 +228,11 @@ public class GuiConsole extends Console {
 		return character;
 	}	
 	
-	public void sendCommand(String command) {
+	public void sendCommand(String command, CommandSource src, boolean isFinal) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: sendCommand\n");
 		
 		try {
-			m_commandQueue.put(new CommandString(command, true));
+			m_commandQueue.put(new CommandInfo(new ConsoleCommand(command, src), isFinal));
 		} catch (InterruptedException e) {}
 
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: sendCommand\n");
@@ -329,6 +342,10 @@ public class GuiConsole extends Console {
         setCaretToEnd();
 	}
 	
+	private int eventChar(char c) {
+		return (c - 'a' + 1);
+	}
+	
 	private void handleEnter() {
 		setCaretToEnd();
 		
@@ -336,8 +353,10 @@ public class GuiConsole extends Console {
 		int idx = text.lastIndexOf(m_prompt) + m_prompt.length();
 
 		try {
-			m_commandQueue.put(new CommandString(text.substring(idx != -1 ? idx : 1, m_text.getCharCount()), false));
-		} catch (InterruptedException e) {}					
+			String commandStr = text.substring(idx != -1 ? idx : 1, m_text.getCharCount());
+			m_commandQueue.put(new CommandInfo(new ConsoleCommand(commandStr, new CommandSource(Type.CONSOLE)), false));
+
+		} catch (InterruptedException e) {}
 	}
 
 	private void handleCharacter(int character) {
@@ -442,17 +461,23 @@ public class GuiConsole extends Console {
             m_completionHandler.complete(this, candidates, position);		
         }
 	}
-
-	static private class CommandString {
-		private String m_str;
-		private boolean m_echo;
+	
+	private static class CommandInfo {
+		private ConsoleCommand m_consoleCommand;
+		private boolean m_isFinal;
 		
-		CommandString(String str, boolean echo) {
-			m_str = str;
-			m_echo = echo;
-		}		
-		String getStr()   { return m_str; }
-		boolean getEcho() { return m_echo; }
-	}	
+		CommandInfo(ConsoleCommand consoleCommand, boolean isFinal) {
+			m_consoleCommand = consoleCommand;
+			m_isFinal = isFinal;
+		}
+		
+		ConsoleCommand getConsoleCommand() {
+			return m_consoleCommand;
+		}
+		
+		boolean isFinal() {
+			return m_isFinal;
+		}
+	}
 }
 

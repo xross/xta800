@@ -68,7 +68,7 @@ public class Views {
 	private static void addShowNodeInConsole(IMenuManager manager, final List<Node> selectedNodes) {
 		Action action = new Action("Show node info in console") {
 			public void run() {
-				GuiEngine.runCommandInConsole("print node_info " + 
+				GuiEngine.runCommandInConsole("print nodeinfo " + 
 						getRouteId() + " " + getFirstNode(selectedNodes).getId());			    
 			}
 		};
@@ -147,7 +147,7 @@ public class Views {
 	    Action action = new Action("Add to exclusion list") {
 		    public void run() {
 		    	XtaInstruction instruction = instructions.get(0);
-		    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiCommandSrc, "0x" + Long.toHexString(instruction.getPc())); 
+		    	GuiEngine.getEngine().addExclusion(GuiEngine.s_guiSrc, "0x" + Long.toHexString(instruction.getPc())); 
 		    }
 	    };
 	    manager.add(action);

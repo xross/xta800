@@ -39,9 +39,9 @@ public class Invalid extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	CommandSource src = getSrc();
     	console.display("xta: ");		
-		if (src.m_lineNum > 0) {
-			console.display(src.m_fileName + ":" + src.m_lineNum + ": ");
+		if (src.getLineNum() > 0) {
+			console.display(src.getFileName() + ":" + src.getLineNum() + ": ");
 		}
 		console.display("error: " + m_errorMessage);
-    }    
+    }
 }

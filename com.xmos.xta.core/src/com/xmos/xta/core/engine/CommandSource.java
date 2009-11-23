@@ -2,16 +2,17 @@ package com.xmos.xta.core.engine;
 
 public class CommandSource {
 	public enum Type {
-		CONSOLE,
-		GUI,
-		CMD,
-		FILE,
-		INTERNAL
+		CONSOLE,        // Commands typed in via the console.
+		GUI,            // Actions run via the gui.
+		FILE,           // Commands embedded in the source.
+		COMMAND_LINE,   // Commands passed on the command line.
+		COMPILER,       // Actions prompted via the compiler.
+		CONSOLE_VIA_GUI // Actions passed to the gui console via the gui. 
 	}
 	
-	public String m_fileName;
-	public long m_lineNum;
-	public Type m_type;
+	private String m_fileName;
+	private long m_lineNum;
+	private Type m_type;
 
 	public CommandSource(String fileName, long lineNum) {
 		m_fileName = fileName;
@@ -30,18 +31,34 @@ public class CommandSource {
 			m_fileName = "gui";
 			break;
 			
-		case CMD:
+		case COMMAND_LINE:
 			m_fileName = "cmd";
 			break;
 			
-		case INTERNAL:
+		case COMPILER:
 			m_fileName = "internal";
 			break;
 
+		case CONSOLE_VIA_GUI:
+			m_fileName = "gui";
+			break;
+			
 		case FILE:
 		default:
 			assert(false);
 		}		    
 		m_lineNum = 0;
+	}
+	
+	public Type getType() {
+		return m_type;
+	}
+	
+	public String getFileName() {
+		return m_fileName;
+	}
+	
+	public long getLineNum() {
+		return m_lineNum;
 	}
 }

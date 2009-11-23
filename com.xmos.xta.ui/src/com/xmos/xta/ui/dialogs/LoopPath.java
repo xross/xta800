@@ -66,10 +66,10 @@ class LoopPathImpl implements XtaImpl {
     public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {  
     		if (m_assert.getSelection()) {
-    		    GuiEngine.getEngine().addLoopPath(GuiEngine.s_guiCommandSrc, m_reference.getText(), m_iterations);
+    		    GuiEngine.getEngine().addLoopPath(GuiEngine.s_guiSrc, m_reference.getText(), m_iterations);
     		}
     		if (m_node != null) {
-    		    GuiEngine.getEngine().setLoopPath(GuiEngine.s_guiCommandSrc, m_node, m_iterations);
+    		    GuiEngine.getEngine().setLoopPath(GuiEngine.s_guiSrc, m_node, m_iterations);
     		}
     	}
     }

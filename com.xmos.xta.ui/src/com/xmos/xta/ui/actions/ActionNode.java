@@ -44,7 +44,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 				try {
 		        	int nodeId = Integer.parseInt(selected); 
 		        	if (nodeId != m_currentNodeId) {
-		        		GuiEngine.getEngine().setNodeId(GuiEngine.s_guiCommandSrc, nodeId, true);
+		        		GuiEngine.getEngine().setNodeId(GuiEngine.s_guiSrc, nodeId, true);
 		        		updateCurrentNodeId(nodeId);
 		        	}
 		        } catch (NumberFormatException exception) {
