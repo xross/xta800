@@ -27,6 +27,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.completors.XtaCompletor;
 import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.XtaPlugin;
@@ -197,8 +198,13 @@ public class GuiConsole extends Console {
 			src = commandInfo.getConsoleCommand().getSrc();
 			
 			switch (src.getType()) {
-			case FILE:
-				if (!commandInfo.isFinal()) {
+			case SRC_LEVEL_COMMAND:
+				CommandPosition position = commandInfo.getPosition();
+				if (position == CommandPosition.FIRST) {
+					display("\n");
+				}
+				
+				if (position != CommandPosition.LAST) {
 				    m_displayPrompt = false;
 				}
 				break;
@@ -228,11 +234,11 @@ public class GuiConsole extends Console {
 		return character;
 	}	
 	
-	public void sendCommand(String command, CommandSource src, boolean isFinal) {
+	public void sendCommand(String command, CommandSource src, CommandPosition position) {
 		if (DEBUG) System.out.printf("GuiConsole: Entering: sendCommand\n");
 		
 		try {
-			m_commandQueue.put(new CommandInfo(new ConsoleCommand(command, src), isFinal));
+			m_commandQueue.put(new CommandInfo(new ConsoleCommand(command, src), position));
 		} catch (InterruptedException e) {}
 
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: sendCommand\n");
@@ -354,7 +360,10 @@ public class GuiConsole extends Console {
 
 		try {
 			String commandStr = text.substring(idx != -1 ? idx : 1, m_text.getCharCount());
-			m_commandQueue.put(new CommandInfo(new ConsoleCommand(commandStr, new CommandSource(Type.CONSOLE)), false));
+			m_commandQueue.put(
+					new CommandInfo(
+							new ConsoleCommand(commandStr, 
+									new CommandSource(Type.CONSOLE)), CommandPosition.MIDDLE));
 
 		} catch (InterruptedException e) {}
 	}
@@ -464,19 +473,19 @@ public class GuiConsole extends Console {
 	
 	private static class CommandInfo {
 		private ConsoleCommand m_consoleCommand;
-		private boolean m_isFinal;
+		private CommandPosition m_position;
 		
-		CommandInfo(ConsoleCommand consoleCommand, boolean isFinal) {
+		CommandInfo(ConsoleCommand consoleCommand, CommandPosition position) {
 			m_consoleCommand = consoleCommand;
-			m_isFinal = isFinal;
+			m_position = position;
 		}
 		
 		ConsoleCommand getConsoleCommand() {
 			return m_consoleCommand;
 		}
 		
-		boolean isFinal() {
-			return m_isFinal;
+		CommandPosition getPosition() {
+			return m_position;
 		}
 	}
 }

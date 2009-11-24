@@ -27,6 +27,7 @@ import org.eclipse.ui.actions.ActionDelegate;
 import com.xmos.xta.core.engine.CommandRunner;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiProgressMonitor;
 import com.xmos.xta.ui.XtaPlugin;
@@ -90,8 +91,8 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 				Engine engine = GuiEngine.getEngine();
 				engine.setMonitor(new GuiProgressMonitor(monitor));
 				boolean success = engine.loadExecutable(GuiEngine.s_guiSrc, xeFile, new CommandRunner() {
-					public void run(String command, CommandSource src, boolean isFinal) {
-						runSrcLevelCommand(command, src, isFinal);
+					public void run(String command, CommandSource src, CommandPosition position) {
+						runSrcLevelCommand(command, src, position);
 					}
 				});				
 				
@@ -131,10 +132,10 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 		job.schedule();		        		
 	}
 
-    private void runSrcLevelCommand(final String commandStr, final CommandSource src, final boolean isFinal) {  
+    private void runSrcLevelCommand(final String commandStr, final CommandSource src, final CommandPosition position) {  
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
-				GuiEngine.runCommandInConsole(commandStr, src, isFinal);
+				GuiEngine.runCommandInConsole(commandStr, src, position);
 			}
     	});			    	
     }

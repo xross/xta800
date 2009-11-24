@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
@@ -44,7 +45,8 @@ public class Scripter {
     	script.append(String.format("load %s\n", m_engine.getExecutable().toString()));
     	    	    	
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
-        	if (routeContainer.numExistingRoutes() <= 0)
+        	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
+        	    (routeContainer.numExistingRoutes() <= 0))
         		continue;
     		
        		script.append("\n");

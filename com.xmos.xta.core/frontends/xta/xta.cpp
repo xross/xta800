@@ -15,10 +15,14 @@ using namespace std;
 
 bool needToRun(int argc, char **argv);
 bool xeContainsXtaCommands(char *xeName);
+void checkJavaVersion(int major, int minor);
+int getInt(const char *str, int offset, int &number);
 
 int main(int argc, char **argv)
 {
   string jar;
+
+  checkJavaVersion(1, 5);
 
   const char *jarName = "xta.jar";
   
@@ -142,4 +146,46 @@ bool xeContainsXtaCommands(char *xeName)
   SAFE_DELETE(xmosUtils->errorHandler);
   SAFE_DELETE(xmosUtils);
   return containsXtaCommands;
+}
+
+void checkJavaVersion(int major, int minor)
+{
+  string output;
+  if (runAndCaptureStdout("java -version 2>&1", output) != 0) {
+    fprintf(stderr, "xta: error: java not available\n");
+    exit(1);
+  }
+
+  int javaMajorVersion = 0;
+  int javaMinorVersion = 0;
+  int offset = getInt(output.c_str(), 14, javaMajorVersion); // Start after java version "
+  getInt(output.c_str(), offset + 1, javaMinorVersion); // Skip '.'
+  
+  if ((javaMajorVersion < major) || (javaMinorVersion < minor)) {
+    fprintf(stderr, "xta: error: java version must be %d.%d or newer\n", major, minor);
+    exit(1);
+  }
+}
+
+int getInt(const char *str, int offset, int &number)
+{
+  int len = strlen(str);
+  
+  if (offset >= len) {
+    return offset;
+  }
+
+  char buf[BUFFER_SIZE];
+  const char *ptr = str + offset;
+  
+  int i = 0;
+  while ((*ptr >= '0') && (*ptr <= '9') &&
+         (i < BUFFER_SIZE) && (offset + i < len)) {
+    buf[i] = *ptr;
+    i++;
+    ptr++;
+  }
+  buf[i] = '\0';
+  number = strtoul(buf, NULL, 0);
+  return offset + i;
 }
