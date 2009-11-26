@@ -29,17 +29,26 @@ public class Shell {
     private Vector<Command> m_commandHistory;
     private String m_prompt;
 	private int m_numTimingViolations;
+	private boolean m_executeArgsOnly;
 		
 	public Shell(Console console, Engine engine, Notifier notifier, String[] args) {
 	    initialise(console, engine, notifier);
-    	processCommandLine(args);	   
+        CommandSource src = new CommandSource(Type.COMMAND_LINE);
+    	processCommands(args, src);
 	}
 
 	public Shell(Console console, Engine engine, Notifier notifier) {
 	    initialise(console, engine, notifier);
 	}
 
-    public int execute() {    	
+	public void execute(String commandStr, CommandSource src) {
+		m_executeArgsOnly = true;
+        String[] tokens = commandStr.trim().split("\\s+");
+    	processCommands(tokens, src);
+    	execute();
+	}
+
+    public int execute() {
     	while (!isComplete()) {
     		Command command = getNextCommand();    		
            	preCommandExecute(command);
@@ -49,7 +58,7 @@ public class Shell {
     	return m_numTimingViolations;
     }
     
-    public void exit(int numTimingViolations) {        
+	public void exit(int numTimingViolations) {        
     	m_state = State.EXIT;
     	m_numTimingViolations = numTimingViolations;
     }
@@ -109,14 +118,18 @@ public class Shell {
 		m_state = State.RUNNING;
 	    m_commands = new LinkedList<Command>();
 	    m_commandHistory = new Vector<Command>();
+	    m_executeArgsOnly = false;
     }
     
-    private void processCommandLine(String[] args) {
+    private void processCommands(String[] args, CommandSource src) {
 	    for (int i = 0; i < args.length; ++i) {
-            CommandSource src = new CommandSource(Type.COMMAND_LINE);
 	    	Command command = CommandFactory.buildCommand(src, args, i, m_commandHistory, m_console);
 	    	if (command == null) {
-	    		usage();
+	    		if (!m_executeArgsOnly) {
+	    			usage();
+	    		} else {
+	    			return;
+	    		}
 	    	}
 	    	
 	    	m_commands.offer(command);
@@ -124,7 +137,7 @@ public class Shell {
 	    	i += (command.getFileRedirect() != null) ? 
 	    			command.numArgs() + 2 : 
 	    			command.numArgs();
-	    }	
+	    }
     }
     
     private Command getNextCommand() {
@@ -212,7 +225,8 @@ public class Shell {
 	}
         
     private boolean isComplete() {
-    	return m_state == State.EXIT;
+    	return ((m_executeArgsOnly && (m_commands.size() == 0)) ||
+    	        (m_state == State.EXIT));
     }
            
 	private void usage() {
@@ -234,12 +248,15 @@ public class Shell {
     
     	if (command.getFileRedirect() != null) {
     		m_console.openRedirectFile(command.getFileRedirect(), command.getFileRedirectMode());
-    	}    	
+    	}
 	}
 	
 	private void postCommandExecute(Command command) {
     	m_engine.setNotifier(m_savedNotifier);
-    	m_engine.setMonitor(null);
+    	
+    	if (!m_executeArgsOnly) {
+    		m_engine.setMonitor(null);
+    	}
 
     	if (command.getFileRedirect() != null) {
     		m_console.closeRedirectFile();

@@ -6,7 +6,7 @@ import com.xmos.xta.core.engine.Notifier;
 public class ConsoleNotifier implements Notifier {
 	private Console m_console;
 	
-	ConsoleNotifier(Console console) {
+	public ConsoleNotifier(Console console) {
 		m_console = console;
 	}
 	

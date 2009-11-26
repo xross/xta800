@@ -26,11 +26,11 @@ import org.eclipse.ui.internal.PartSite;
 import org.eclipse.ui.internal.PartStack;
 import org.eclipse.ui.internal.WorkbenchPage;
 
+import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
@@ -381,10 +381,10 @@ public class GuiEngine {
 	}
 
 	public static void runCommandInConsole(String command) {
-		runCommandInConsole(command, s_consoleViaGuiSrc, CommandPosition.MIDDLE);
+		runCommandInConsole(command, s_consoleViaGuiSrc);
 	}
 
-	public static void runCommandInConsole(String command, CommandSource src, CommandPosition position) {
+	public static void runCommandInConsole(String command, CommandSource src) {
 		ConsoleView console = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 		        getActivePage().findView(ConsoleView.ID);
 	
@@ -393,9 +393,30 @@ public class GuiEngine {
 		        getActivePage().showView(ConsoleView.ID);
 	    } catch (PartInitException e) {}
 	
-	    console.runCommand(command, src, position);		
+	    console.runCommand(command, src);
 	}
 	
+	private static Console tmpConsole; 
+	public static Console getConsole() {
+		tmpConsole = null;
+		
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			public void run() {      
+				ConsoleView consoleView = (ConsoleView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+				getActivePage().findView(ConsoleView.ID);
+
+				try {
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().showView(ConsoleView.ID);
+				} catch (PartInitException e) {}
+
+				tmpConsole = consoleView.getConsole(); 
+			}
+		});
+		
+		return tmpConsole;
+	}
+
 	private static Map<Integer, GuiRouteProperties> getRouteIdMap(String name) {
 		if (s_routeProperties.containsKey(name)) {
 			return s_routeProperties.get(name);

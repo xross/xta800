@@ -21,13 +21,16 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
 
+import com.xmos.xta.core.console.Console;
+import com.xmos.xta.core.console.ConsoleNotifier;
+import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.engine.CommandRunner;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
+import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiProgressMonitor;
 import com.xmos.xta.ui.XtaPlugin;
@@ -87,15 +90,17 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 	public void loadFile(String xeFileName) {
        	final File xeFile = new File(xeFileName);
         Job job = new Job("Load: " + xeFileName) {
-			protected IStatus run(IProgressMonitor monitor) {
-				Engine engine = GuiEngine.getEngine();
+			protected IStatus run(final IProgressMonitor monitor) {
+				final Engine engine = GuiEngine.getEngine();
 				engine.setMonitor(new GuiProgressMonitor(monitor));
+
 				boolean success = engine.loadExecutable(GuiEngine.s_guiSrc, xeFile, new CommandRunner() {
-					public void run(String command, CommandSource src, CommandPosition position) {
-						runSrcLevelCommand(command, src, position);
+					public void run(String command, CommandSource src, int commandNum) {
+						runSrcLevelCommand(command, src, commandNum);
 					}
-				});				
+				});
 				
+				GuiEngine.broadcast(Broadcaster.BROADCAST_SYNC_CONSOLE, "");
 				engine.setMonitor(null);
 	        	if (success && (m_action != null)) {	        		
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
@@ -132,18 +137,21 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 		job.schedule();		        		
 	}
 
-    private void runSrcLevelCommand(final String commandStr, final CommandSource src, final CommandPosition position) {  
-		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-			public void run() {
-				GuiEngine.runCommandInConsole(commandStr, src, position);
-			}
-    	});			    	
+    private void runSrcLevelCommand(String commandStr, CommandSource src, int commandNum) {
+    	Console console = GuiEngine.getConsole();
+    	if (commandNum == 0) {
+    		console.display("\n");
+    	}
+	    Notifier notifier = new ConsoleNotifier(console);
+
+		Shell shell = new Shell(console, GuiEngine.getEngine(), notifier);
+		shell.execute(commandStr, src);
     }
 
 	public Menu getMenu(Control parent) {
 		Menu menu = new Menu(parent);
 		
-		XtaPlugin plugin = XtaPlugin.getDefault();        
+		XtaPlugin plugin = XtaPlugin.getDefault();
      	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
      	
      	String[] files = fileHistory.split(";");

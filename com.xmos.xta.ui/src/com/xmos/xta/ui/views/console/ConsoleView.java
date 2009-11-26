@@ -3,8 +3,8 @@ package com.xmos.xta.ui.views.console;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
-import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
 
 public class ConsoleView extends ViewPart {
     public static final String ID = "com.xmos.xta.ui.views.console.Console";
@@ -30,7 +30,11 @@ public class ConsoleView extends ViewPart {
 	public void setFocus() {
 	}
 	
-    public synchronized void runCommand(String command, CommandSource src, CommandPosition position) {
-		m_guiConsole.sendCommand(command, src, position);
+    public synchronized void runCommand(String command, CommandSource src) {
+		m_guiConsole.sendCommand(command, src);
     }
+
+	public Console getConsole() {
+		return m_guiConsole;
+	}
 }

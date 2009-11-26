@@ -20,7 +20,6 @@ import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
-import com.xmos.xta.core.engine.CommandRunner.CommandPosition;
 import com.xmos.xta.core.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionHandler;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
@@ -1514,18 +1513,22 @@ public class Engine implements Notifier, Aborter {
 	private void runSrcLevelCommands(CommandSource src, CommandRunner commandRunner) {
 		if (commandRunner != null) {
 			int commandNum = 0;
-			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands();			
+			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands();
+			
+			startAnalysis("Running source-level commands", srcStringInfos.size());
+
 		    for (SrcStringInfo cmdInfo : srcStringInfos) {
 	            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
 	            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
-	            CommandPosition position = CommandPosition.MIDDLE;
-	            if (commandNum == 0) {
-	            	position = CommandPosition.FIRST;
-	            } else if (commandNum == (srcStringInfos.size() - 1)) {
-	            	position = CommandPosition.LAST;
-	            }
-	            commandRunner.run(cmdInfo.getString(), commandSource, position); 
-	            ++commandNum;	            
+
+	            String command = cmdInfo.getString();
+				provideFeedback(command);
+	            commandRunner.run(command, commandSource, commandNum); 
+	            ++commandNum;
+	            provideWorkDone(1);
+
+	            if (getAbort())
+	            	break;
 		    }
 		}				
 	}
