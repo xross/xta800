@@ -12,6 +12,6 @@ system("xcc -target=$target -march=$arch -std=c99 test.c -o $genDir/test.xe > $g
 }
 system("@ARGV load $genDir/test.xe " .
        "-analyse function main " .
-       "-print summary " .
+       "-print structure - " .
        "-exit > $genDir/quicksort.txt 2>&1");
 
