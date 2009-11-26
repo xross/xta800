@@ -69,19 +69,19 @@ public class FunctionNode extends IBufferNode {
 	}
 
 	public Node deepCopy(Aborter aborter) throws AbortedException {
+		aborter.getAbort();
+
 		FunctionNode fn = new FunctionNode();
-		if (!aborter.getAbort()) {
-			fn.m_functionName = m_functionName;
-			fn.m_branchTarget = m_branchTarget;
-			fn.m_attributes = new NodeAttributes(fn);
-			fn.setUnresolved(isUnresolved());
-			if(m_functionSequence!= null){
-				List<Node> nodes = new LinkedList<Node>();
-				for(Node node : m_functionSequence){
-					nodes.add(node.deepCopy(aborter));
-				}
-				fn.m_functionSequence = nodes;
+		fn.m_functionName = m_functionName;
+		fn.m_branchTarget = m_branchTarget;
+		fn.m_attributes = new NodeAttributes(fn);
+		fn.setUnresolved(isUnresolved());
+		if(m_functionSequence!= null){
+			List<Node> nodes = new LinkedList<Node>();
+			for(Node node : m_functionSequence){
+				nodes.add(node.deepCopy(aborter));
 			}
+			fn.m_functionSequence = nodes;
 		}
 		return fn;
 	}

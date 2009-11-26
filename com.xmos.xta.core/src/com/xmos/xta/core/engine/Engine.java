@@ -350,14 +350,15 @@ public class Engine implements Notifier, Aborter {
 		m_notifier = notifier;
 	}
 
-	public boolean getAbort() {		
+	public void getAbort() throws AbortedException {		
 		if (m_timeOut > 0 && (System.currentTimeMillis() - m_loadStartTime)/1000 > m_timeOut) {
-			return true;
+			throw new AbortedException();
 		}
-		if (m_progressMonitor != null)
-			return m_progressMonitor.isCanceled();
-		
-		return false;
+		if (m_progressMonitor != null) {
+			if (m_progressMonitor.isCanceled()) {
+				throw new AbortedException();
+			}
+		}
 	}
 
 	public void setNodeId(CommandSource src, int nodeId, boolean doNotify) {
@@ -502,7 +503,13 @@ public class Engine implements Notifier, Aborter {
 			m_progressMonitor.beginTask(task, functionCount);
 		}	
 	}
-	
+
+	public void setAnalysisName(String name) {
+		if (m_progressMonitor != null) {
+			m_progressMonitor.setTaskName(name);
+		}	
+	}
+
 	public void provideWorkDone(int work) {
 		if (m_progressMonitor != null) {
 			m_progressMonitor.worked(work);
@@ -1254,8 +1261,12 @@ public class Engine implements Notifier, Aborter {
 			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
 			
-			if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
-					pcToEndPoints, sections, nodeId, coreId)) {
+			try {
+				if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
+						pcToEndPoints, sections, nodeId, coreId)) {
+					return false;
+				}
+			} catch (AbortedException e) {
 				return false;
 			}
 
@@ -1515,20 +1526,22 @@ public class Engine implements Notifier, Aborter {
 			int commandNum = 0;
 			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands();
 			
-			startAnalysis("Running source-level commands", srcStringInfos.size());
+			startAnalysis("Running commands", srcStringInfos.size());
 
 		    for (SrcStringInfo cmdInfo : srcStringInfos) {
 	            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
 	            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
-
 	            String command = cmdInfo.getString();
-				provideFeedback(command);
+	            setAnalysisName("Running commands: '" + command + "'");
 	            commandRunner.run(command, commandSource, commandNum); 
 	            ++commandNum;
 	            provideWorkDone(1);
 
-	            if (getAbort())
-	            	break;
+	            try {
+					getAbort();
+				} catch (AbortedException e) {
+					break;
+				}
 		    }
 		}				
 	}

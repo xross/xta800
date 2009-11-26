@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
@@ -62,7 +63,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	public boolean analyse( CommandSource src, Engine engine, Map<String, List<InstructionNode>> functionNameToStartInstruction, 
-			Map<Long, TreeSet<Node>> pcToEndPoints, Sections sections, int nodeId,int coreId) 
+			Map<Long, TreeSet<Node>> pcToEndPoints, Sections sections, int nodeId,int coreId) throws AbortedException 
 	{
 		m_functionStartPcs = new TreeMap<Long, FunctionNode>();
 		
@@ -77,7 +78,9 @@ public class StructuralAnalysisEngine {
 		return m_structureGraph;
 	}
 
-	public boolean createStructure(Collection<Node> workingSet, Node treeStart, Engine engine, String jobPrefix) {		
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart,
+									Engine engine, String jobPrefix) throws AbortedException {
+		
 		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) 
 			return true;
 		
@@ -100,9 +103,8 @@ public class StructuralAnalysisEngine {
 					Collections.reverse(postOrder);
 				}
 				for (Node node : postOrder) {
-					if (engine.getAbort()) {
-						return false;
-					}
+					engine.getAbort();
+
 					if (pm.isMatch(node, workingSet, treeStart)) {
 						treeStart = pm.getTreeStart();
 						assert(workingSet.contains(treeStart));
@@ -145,7 +147,7 @@ public class StructuralAnalysisEngine {
 			Map<Long, TreeSet<Node>> pcToEndPoints,
 			Sections sections, 
 			int nodeId, 
-			int coreId) {
+			int coreId) throws AbortedException {
 		
 		Map<FunctionNode, TreeSet<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, TreeSet<FunctionNode>>();
 		
@@ -220,7 +222,7 @@ public class StructuralAnalysisEngine {
 			Map<FunctionNode, 
 			TreeSet<FunctionNode>> allFunctionObjects, 
 			int nodeId, 
-			int coreId) 
+			int coreId) throws AbortedException 
 	{
 
 		Collection<FunctionNode> graphs = new TreeSet<FunctionNode>();

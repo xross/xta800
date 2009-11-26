@@ -236,7 +236,7 @@ public class RouteConstructor {
 			
 			if (DEBUG_ROUTE_CONSTRUCTION)
 			    System.out.println(StructuralAnalysisEngine.dumpTree("After", ws.m_set));
-						
+
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();				
 			sae.createStructure(ws.m_set, ws.m_start, m_engine, "Analysing route");
 			assert(cfgSanityCheckNodes(ws.m_set));			
@@ -957,7 +957,9 @@ public class RouteConstructor {
 		if (!nodeDescriptor.getNode().isInstructionNode()) {
 			nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {
 				public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
-					if (m_engine.getAbort()) {
+					try {
+						m_engine.getAbort();
+					} catch (AbortedException e) {
 						return TraverseStatus.ABORT;
 					}
 					return TraverseStatus.CONTINUE;
@@ -969,9 +971,8 @@ public class RouteConstructor {
 				}
 		    });			
 		}
-		if (m_engine.getAbort()) {
-			throw new AbortedException();
-		}
+		
+		m_engine.getAbort();
 		return nodeDescriptors;
 	}
 

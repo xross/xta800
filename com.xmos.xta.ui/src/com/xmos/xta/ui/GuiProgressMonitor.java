@@ -15,6 +15,10 @@ public class GuiProgressMonitor implements ProgressMonitor {
 		m_monitor.beginTask(name, totalWork);
 	}
 
+	public void setTaskName(String name) {
+		m_monitor.setTaskName(name);
+	}
+
 	public boolean isCanceled() {
 		return m_monitor.isCanceled();
 	}

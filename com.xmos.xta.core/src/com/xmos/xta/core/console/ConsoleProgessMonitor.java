@@ -12,6 +12,9 @@ public class ConsoleProgessMonitor implements ProgressMonitor {
 	public void beginTask(String name, int totalWork) {
 	}
 
+	public void setTaskName(String name) {
+	}
+
 	public boolean isCanceled() {
 		return false;
 	}
@@ -22,4 +25,5 @@ public class ConsoleProgessMonitor implements ProgressMonitor {
 
 	public void worked(int work) {
 	}
+
 }

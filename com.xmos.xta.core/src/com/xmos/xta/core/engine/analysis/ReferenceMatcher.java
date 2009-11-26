@@ -36,7 +36,9 @@ public class ReferenceMatcher {
 		
 		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 			public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
-				if (aborter.getAbort()) {
+				try {
+					aborter.getAbort();
+				} catch (AbortedException e) {
 					return TraverseStatus.ABORT;
 				}
 				return TraverseStatus.CONTINUE;
@@ -52,9 +54,8 @@ public class ReferenceMatcher {
 				return TraverseStatus.CONTINUE;
 			}
 	    });
-		if (aborter.getAbort()) {
-			throw new AbortedException();
-		}
+		
+		aborter.getAbort();
 		return nodeDescriptors;
 	}
 
