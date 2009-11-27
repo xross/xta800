@@ -750,9 +750,11 @@ public class Engine implements Notifier, Aborter {
 		}
 		FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);
 		RouteAssertions assertions = new RouteAssertions();
-		for (Route route : getRoute(routeId)) {
-			assertions.applyFunctionAssertion(src, route, info, Source.USER);
-		}		
+		try {
+			for (Route route : getRoute(routeId)) {
+				assertions.applyFunctionAssertion(src, route, info, Source.USER);
+			}		
+		} catch (AbortedException e) {	}
 	}
 
 	public void setPathTime(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
@@ -1230,7 +1232,7 @@ public class Engine implements Notifier, Aborter {
 			if (!fh.addFunctions()) 
 				return false;
 			
-			Map<Long, TreeSet<Node>> pcToEndPoints = th.addTerminators(threadStartNodes);
+			Map<Long, Set<Node>> pcToEndPoints = th.addTerminators(threadStartNodes);
 			pcToEndPoints.putAll(fh.getFunctionsToEndPoints());
 			
 			Set<InstructionNode> starts = new TreeSet<InstructionNode>();
@@ -1238,7 +1240,8 @@ public class Engine implements Notifier, Aborter {
 			starts.addAll(threadStartNodes);
 			
 			ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
-					newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(), threadStartNodes, sections.getLabels(nodeId, coreId));
+					newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(),
+					threadStartNodes, sections.getLabels(nodeId, coreId));
 			
 			setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
 
@@ -1419,12 +1422,12 @@ public class Engine implements Notifier, Aborter {
 		return false;
 	}
 	
-	private void ensureAllFunctionsAreNamed(SymbolTable symbolTable,
-			Map<String, List<InstructionNode>> treeMap,
-			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts, Map<String, Long> labelToPc ) {
+	private void ensureAllFunctionsAreNamed(
+			SymbolTable symbolTable, Map<String, List<InstructionNode>> treeMap,
+			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts,
+			Map<String, Long> labelToPc) {
 		
 		Map<Long, String> pcToLabel = new HashMap<Long, String>();
-		
 		for (String label : labelToPc.keySet()) {
 			pcToLabel.put(labelToPc.get(label), label);
 		}

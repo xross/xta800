@@ -22,7 +22,7 @@ import com.xmos.xta.core.engine.references.Reference;
 public class RouteAssertions {
 	private static final boolean DEBUG_ROUTE_ASSERTIONS = false;
 	
-	public void applyFunctionAssertion(CommandSource src, Route route, FunctionTimeInfo info, Source source) {
+	public void applyFunctionAssertion(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
 		Reference reference = info.getFunction();
 		
 		for (Node node : route.getReferencedFunctionNodes(reference)) {

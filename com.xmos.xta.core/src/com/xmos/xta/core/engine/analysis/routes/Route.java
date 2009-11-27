@@ -141,11 +141,11 @@ public class Route {
 		return referencedNodes;		
 	} 
 
-	public Collection<Node> getReferencedFunctionNodes(Reference reference) {
+	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
 		
-		for (NodeDescriptor nodeDescriptor : referenceMatcher.getFunctionNodeDescriptors(m_node, reference)) {
+		for (NodeDescriptor nodeDescriptor : referenceMatcher.getFunctionNodeDescriptors(m_engine, m_node, reference)) {
 			referencedNodes.add(nodeDescriptor.getNode());
 		}
 		return referencedNodes;		

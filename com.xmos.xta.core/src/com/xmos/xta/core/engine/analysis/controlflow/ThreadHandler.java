@@ -25,9 +25,9 @@ public class ThreadHandler {
 
 	public Set<InstructionNode> getThreadNodes(CommandSource src, Collection<Long> threadPcs, String type) {
 		Set<InstructionNode> nodes = new TreeSet<InstructionNode>();
-		for (long pc : threadPcs){
+		for (long pc : threadPcs) {
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
-			if (threadNode != null){
+			if (threadNode != null) {
 				nodes.add(threadNode);
 			} else {
 				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
@@ -38,12 +38,12 @@ public class ThreadHandler {
 	}
 	
 
-	public Set<InstructionNode> ensureThreadStartExists(CommandSource src, Set<InstructionNode> threadStarts){
-		if(threadStarts == null  || threadStarts.isEmpty()){
+	public Set<InstructionNode> ensureThreadStartExists(CommandSource src, Set<InstructionNode> threadStarts) {
+		if (threadStarts == null  || threadStarts.isEmpty()) {
 			m_notifier.notify(src, Notifier.NOTIFY_WARNING,
 					"no thread starts found, assuming master thread starts at 0x10000");
 			InstructionNode threadNode = m_instDecoder.getNode(0x10000);
-			if (threadNode != null){
+			if (threadNode != null) {
 				threadStarts.add(threadNode);
 			} else {
 				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
@@ -53,36 +53,37 @@ public class ThreadHandler {
 		return threadStarts;
 	}
 	
-	public Map<Long, TreeSet<Node>> addTerminators(Collection<InstructionNode> threadStarts){
-		
-		Map<Long, TreeSet<Node>> threadToEndPoints = new TreeMap<Long, TreeSet<Node>>();
-		for(InstructionNode threadStart : threadStarts){
+	public Map<Long, Set<Node>> addTerminators(Collection<InstructionNode> threadStarts) {
+		Map<Long, Set<Node>> threadToEndPoints = new TreeMap<Long, Set<Node>>();
+		for (InstructionNode threadStart : threadStarts) {
 			TreeSet<Node> terminals  = new TreeSet<Node>();
 			findTerminals(threadStart, new TreeSet<Node>(), terminals);
 			NullNode nullNode = new NullNode();
 			threadToEndPoints.put(threadStart.getStartPc(), terminals);
 			int nullNodeCount = 0;
 			int count = 0;
-			for(Node terminal : terminals){
-				if(!terminal.isNullNode()){
+			for (Node terminal : terminals) {
+				if (!terminal.isNullNode()) {
 					count ++;
 				} else {
 					nullNode = (NullNode) terminal;
 					nullNodeCount++;
 				}
 			}
-			if(nullNodeCount == 1){
-				if(count > 0){
-					for(Node terminal : terminals){
-						if(!terminal.isNullNode())
-						CommonMethods.connect(nullNode, terminal);
+			if (nullNodeCount == 1) {
+				if (count > 0) {
+					for (Node terminal : terminals) {
+						if (!terminal.isNullNode()) {
+							CommonMethods.connect(nullNode, terminal);
+						}
 					}
 				}
 			} else {
-				if(count > 1){
-					for(Node terminal : terminals){
-						if(!terminal.isNullNode())
-						CommonMethods.connect(nullNode, terminal);
+				if (count > 1) {
+					for (Node terminal : terminals) {
+						if (!terminal.isNullNode()) {
+							CommonMethods.connect(nullNode, terminal);
+						}
 					}
 				}
 			}
@@ -93,13 +94,13 @@ public class ThreadHandler {
 	private void findTerminals(Node node, Set<Node> seen, Set<Node> terminals) {
 		seen.add(node);
 		
-		if(node.getNextNodesSize() == 0){
+		if (node.getNextNodesSize() == 0) {
 			assert(!terminals.contains(node));
 			terminals.add(node);
 		}
 		
-		for(Node next : node.getNextNodes()){
-			if(!seen.contains(next)){
+		for (Node next : node.getNextNodes()) {
+			if (!seen.contains(next)) {
 				findTerminals(next, seen, terminals);
 			}
 		}	

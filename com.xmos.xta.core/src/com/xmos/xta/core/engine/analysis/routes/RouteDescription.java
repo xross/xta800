@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
@@ -144,12 +144,11 @@ public class RouteDescription {
 			if (fn.getFunctionName().equals(m_functionName)) {
 				long pc = fn.getStartPc();
 
-				TreeSet<Node> endInstructions = sg.getPcToEndPoints().get(pc);
+				Set<Node> endInstructions = sg.getPcToEndPoints().get(pc);
 				
 				//TreeSet<Node> endInstructions = fn.getFunctionEndNodes();
 				
-				for (Node endPoint : endInstructions){
-					
+				for (Node endPoint : endInstructions) {
 					String to = "";
 			    	for (ReferenceType backTrail : m_function.getBackTrail()) {
 			    		to += backTrail.getRef() + ",";

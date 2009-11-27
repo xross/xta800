@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,22 +24,24 @@ public class FunctionNode extends IBufferNode {
 	private static int functionId;
 	private Node m_branchTarget;
 	private Set<Node> m_functionEndNodes;
+	private List<FunctionNode> m_callingFunctions;
 	
 	public FunctionNode() {
 		super();
 		m_attributes = new NodeAttributes(this);
 		m_functionEndNodes = new TreeSet<Node>();
+		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 	
 	public FunctionNode(Node branchTarget) {
 		super();
 		m_branchTarget = branchTarget;
 		m_attributes = new NodeAttributes(this);
+		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 	
 	public FunctionNode(Node function, String functionName) {
 		super();
-		
 		if (function.isSequenceNode()){
 			m_functionSequence = function.getIndirectChildren();
 		} else {
@@ -54,6 +57,7 @@ public class FunctionNode extends IBufferNode {
 		
 		m_branchTarget = m_functionSequence.get(0);
 		m_attributes = new NodeAttributes(this);
+		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 	
 	public FunctionNode(FunctionNode fn){
@@ -62,6 +66,7 @@ public class FunctionNode extends IBufferNode {
 		m_branchTarget = fn.m_branchTarget;
 		m_attributes = new NodeAttributes(this);
 		setUnresolved(fn.isUnresolved());
+		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 	
 	public Node shallowCopy() {
@@ -76,13 +81,15 @@ public class FunctionNode extends IBufferNode {
 		fn.m_branchTarget = m_branchTarget;
 		fn.m_attributes = new NodeAttributes(fn);
 		fn.setUnresolved(isUnresolved());
-		if(m_functionSequence!= null){
+		if (m_functionSequence != null) {
 			List<Node> nodes = new LinkedList<Node>();
-			for(Node node : m_functionSequence){
+			for (Node node : m_functionSequence){
 				nodes.add(node.deepCopy(aborter));
 			}
 			fn.m_functionSequence = nodes;
 		}
+
+		fn.m_callingFunctions = new ArrayList<FunctionNode>();
 		return fn;
 	}
 
@@ -183,7 +190,7 @@ public class FunctionNode extends IBufferNode {
 
 	public List<Node> getIndirectChildren() {
 		List<Node> children = null;
-		if(m_functionSequence!= null){
+		if (m_functionSequence!= null) {
 			children =  m_functionSequence;
 		} else {
 			children = new LinkedList<Node>();
@@ -365,5 +372,13 @@ public class FunctionNode extends IBufferNode {
 			}
 		});			
 		return m_callNode;
+	}
+
+	public void addCallingFunction(FunctionNode f) {
+		m_callingFunctions.add(f);
+	}
+
+	public List<FunctionNode> getCallingFunction() {
+		return m_callingFunctions;
 	}
 }

@@ -15,7 +15,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
-public abstract class Node implements Comparable<Node>{
+public abstract class Node implements Comparable<Node> {
 	public static int s_numNodes;
 	
 	private int m_id;

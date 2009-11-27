@@ -20,11 +20,11 @@ public class FunctionHandler {
 	private Collection<FunctionNode> m_functions;
 	private Map<InstructionNode, FunctionNode> m_instToFunc;
 	private Collection<Node> m_pseudoFunctions;
-	private Map<Long, TreeSet<Node>> functionToEndPoints;
+	private Map<Long, Set<Node>> m_functionToEndPoints;
 	
 	public FunctionHandler(InstructionDecoder instDecoder) {
 		m_instDecoder = instDecoder;
-		functionToEndPoints = new TreeMap<Long, TreeSet<Node>>();
+		m_functionToEndPoints = new TreeMap<Long, Set<Node>>();
 	}
 	
 	public Collection<InstructionNode> getKnownFuncStarts(){
@@ -44,11 +44,10 @@ public class FunctionHandler {
 			
 			assert(instruction.getInstructions().size() == 1);
 			XtaInstruction inst = instruction.getStartInstruction();
-			if(inst.isLink()){
-				
-				if(instruction.getNextNodesSize() > 0){
+			if (inst.isLink()) {
+				if (instruction.getNextNodesSize() > 0) {
 					Collection<FunctionNode> newFunctions = new TreeSet<FunctionNode>();
-					for(Node next : instruction.getNextNodes()){
+					for (Node next : instruction.getNextNodes()) {
 						InstructionNode instNode  = (InstructionNode)next;
 						FunctionNode fn = new FunctionNode(instNode);
 						m_instToFunc.put(instNode, fn);
@@ -58,12 +57,13 @@ public class FunctionHandler {
 						
 					}
 					instruction.clearNextNodes();
-					for(Node f : newFunctions){
+					for (Node f : newFunctions) {
 						CommonMethods.connect(f, instruction);
 						CommonMethods.connect(instruction.getBranchLinkReturn(), f);
 						f.addBranchTarget(instruction.getBranchLinkReturn());
 					}
 					m_functions.addAll(newFunctions);
+
 				} else {
 					FunctionNode fn = new FunctionNode();
 					CommonMethods.connect(fn, instruction);
@@ -75,45 +75,46 @@ public class FunctionHandler {
 			} 
 		}
 
-		for(InstructionNode node : m_instToFunc.keySet()){
-			if(!canReturn(node)){
+		for (InstructionNode node : m_instToFunc.keySet()) {
+			if (!canReturn(node)) {
 				CommonMethods.disconnect(m_instToFunc.get(node).getNextNode(), m_instToFunc.get(node));
 			}
 		}				
 
-		for(InstructionNode functionStart : getKnownFuncStarts()){
-			
+		for (InstructionNode functionStart : getKnownFuncStarts()) {
 			NullNode nullNode = new NullNode();
 			TreeSet<Node> terminals = new TreeSet<Node>();
 			findTerminals(functionStart, terminals);
-			functionToEndPoints.put(functionStart.getStartPc(), terminals);
+			m_functionToEndPoints.put(functionStart.getStartPc(), terminals);
 			
 			int count = 0;
 			int nullNodeCount = 0;
-			for(Node terminal : terminals){
-				if(!terminal.isNullNode()){
+			for (Node terminal : terminals) {
+				if (!terminal.isNullNode()) {
 					count ++;
 				} else {
 					nullNode = (NullNode) terminal;
 					nullNodeCount++;
 				}
 			}
-			for(Node terminal : terminals){
-				if(terminal.isInstructionNode()){
+			for (Node terminal : terminals) {
+				if (terminal.isInstructionNode()) {
 					InstructionNode inst = (InstructionNode)terminal;
-					if(!inst.getXtaInstruction().getReturn()){
+					if (!inst.getXtaInstruction().getReturn()) {
 						inst.setUnresolved(true);
 					}
 				}
-				if(nullNodeCount == 1){
-					if(count > 0){
-						if(!terminal.isNullNode())
+				if (nullNodeCount == 1) {
+					if (count > 0) {
+						if (!terminal.isNullNode()) {
 							CommonMethods.connect(nullNode, terminal);
+						}
 					}
 				} else {
 					if(count > 1){
-						if(!terminal.isNullNode())
+						if(!terminal.isNullNode()) {
 							CommonMethods.connect(nullNode, terminal);
+						}
 					}
 				}
 				
@@ -125,8 +126,8 @@ public class FunctionHandler {
 		return true;
 	}
 	
-	public Map<Long, TreeSet<Node>> getFunctionsToEndPoints(){
-		return functionToEndPoints;
+	public Map<Long, Set<Node>> getFunctionsToEndPoints() {
+		return m_functionToEndPoints;
 	}
 
 	private void findTerminals(InstructionNode start, Set<Node> terminals) {
@@ -134,9 +135,9 @@ public class FunctionHandler {
 		LinkedList<Node> workingSet = new LinkedList<Node>();
 		seen.add(start);
 		workingSet.add(start);
-		while(!workingSet.isEmpty()){
+		while (!workingSet.isEmpty()) {
 			Node currentNode = workingSet.getLast();
-			if(currentNode.getNextNodesSize() == 0){
+			if (currentNode.getNextNodesSize() == 0) {
 				terminals.add(currentNode);
 				workingSet.remove(currentNode);
 			} else {
@@ -155,7 +156,7 @@ public class FunctionHandler {
 		Set<Node> seen = new TreeSet<Node>();
 		seen.add(start);
 		workingSet.add(start);
-		while(!workingSet.isEmpty()){
+		while (!workingSet.isEmpty()) {
 			Node currentNode = workingSet.getLast();
 			if (currentNode.getNextNodesSize() == 0){
 				if (currentNode.isFunctionNode()) 
