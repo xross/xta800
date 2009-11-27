@@ -52,8 +52,6 @@ public class RouteConstructor {
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1;
 
-	private static final boolean OLD = false;
-	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
@@ -672,23 +670,8 @@ public class RouteConstructor {
 	private void createExclusions() throws AbortedException {
 		m_exclusions = new ArrayList<NodeDescriptor>();
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
-		
-		if (OLD) {
-			for (Reference reference : m_engine.getExclusions()) {
-				for (Node threadNode : m_structureGraph.getThreads()) {
-					m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, threadNode, reference));
-				}
-			}
-
-			for (Reference reference : m_engine.getExclusions()) {
-				for (Node threadNode : m_structureGraph.getUnlinkedFunctions()) {
-					m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, threadNode, reference));
-				}
-			}
-		} else {
-			for (Reference reference : m_engine.getExclusions()) {
-				m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
-			}
+		for (Reference reference : m_engine.getExclusions()) {
+			m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
 		}
 	}
 
@@ -879,19 +862,7 @@ public class RouteConstructor {
 	private Collection<NodeDescriptor> getReferencedNodeDescriptors(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Set<NodeDescriptor> referencedNodeDescriptors = new TreeSet<NodeDescriptor>();
-		if (OLD) {
-			for (Node thread : m_structureGraph.getThreads()) {
-				referencedNodeDescriptors.addAll(
-						referenceMatcher.getNodeDescriptors(m_engine, thread, reference));
-			}
-			for (Node thread : m_structureGraph.getUnlinkedFunctions()) {
-				referencedNodeDescriptors.addAll(
-						referenceMatcher.getNodeDescriptors(m_engine, thread, reference));
-			}
-		} else {
-			referencedNodeDescriptors.addAll(
-					referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
-		}
+		referencedNodeDescriptors.addAll(referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
 		return referencedNodeDescriptors;		
 	}
 
