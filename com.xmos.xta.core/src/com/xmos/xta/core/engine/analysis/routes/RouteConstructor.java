@@ -52,6 +52,8 @@ public class RouteConstructor {
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1;
 
+	private static final boolean OLD = false;
+	
 	enum RouteStatus {
 		COMPLETED, ABORTED, ERROR
 	}
@@ -117,9 +119,11 @@ public class RouteConstructor {
 		switch (m_description.getMode()) {
 			case FUNCTION:
 				if (m_engine.getRecursiveFunctions().contains(m_description.getFunctionName())) {
-					m_engine.notify(src, Notifier.NOTIFY_ERROR, "Cannot analyse function " + m_description.getFunctionName() +" as it is recursive");
+					m_engine.notify(src, Notifier.NOTIFY_ERROR,
+							"Cannot analyse function " + m_description.getFunctionName() + " as it is recursive");
 					break;
 				}
+				
 				Set<Set<NodeDescriptor>> seenExclusionsSets = new HashSet<Set<NodeDescriptor>>();
 				for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
 					NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);
@@ -150,7 +154,6 @@ public class RouteConstructor {
 							seenEndPoint = makeSubRoute(src, startNodeDescriptor, startNode,
 								seenEndPoint, endNodeDescriptors, true);	
 						} else {
-							startNode.getNode().setParent(null);
 							Node node = startNode.getNode().deepCopy(m_engine);
 							Route route = new Route(src, m_engine, node, m_description, m_container);
 							m_routes.add(route);
@@ -670,8 +673,22 @@ public class RouteConstructor {
 		m_exclusions = new ArrayList<NodeDescriptor>();
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
 		
-		for (Reference reference : m_engine.getExclusions()) {
-			m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, reference));
+		if (OLD) {
+			for (Reference reference : m_engine.getExclusions()) {
+				for (Node threadNode : m_structureGraph.getThreads()) {
+					m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, threadNode, reference));
+				}
+			}
+
+			for (Reference reference : m_engine.getExclusions()) {
+				for (Node threadNode : m_structureGraph.getUnlinkedFunctions()) {
+					m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, threadNode, reference));
+				}
+			}
+		} else {
+			for (Reference reference : m_engine.getExclusions()) {
+				m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
+			}
 		}
 	}
 
@@ -862,7 +879,19 @@ public class RouteConstructor {
 	private Collection<NodeDescriptor> getReferencedNodeDescriptors(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Set<NodeDescriptor> referencedNodeDescriptors = new TreeSet<NodeDescriptor>();
-		referencedNodeDescriptors.addAll(referenceMatcher.getNodeDescriptors(m_engine, reference));
+		if (OLD) {
+			for (Node thread : m_structureGraph.getThreads()) {
+				referencedNodeDescriptors.addAll(
+						referenceMatcher.getNodeDescriptors(m_engine, thread, reference));
+			}
+			for (Node thread : m_structureGraph.getUnlinkedFunctions()) {
+				referencedNodeDescriptors.addAll(
+						referenceMatcher.getNodeDescriptors(m_engine, thread, reference));
+			}
+		} else {
+			referencedNodeDescriptors.addAll(
+					referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
+		}
 		return referencedNodeDescriptors;		
 	}
 

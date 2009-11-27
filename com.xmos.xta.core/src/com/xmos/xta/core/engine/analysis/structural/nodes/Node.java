@@ -99,7 +99,7 @@ public abstract class Node implements Comparable<Node> {
 	}
 
 	public void setId(int id) {
-		m_id = id;;
+		m_id = id;
 	}
 	
 	public int compareTo(Node node) {

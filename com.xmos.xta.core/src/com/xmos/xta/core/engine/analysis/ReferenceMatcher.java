@@ -10,6 +10,7 @@ import java.util.Stack;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -29,8 +30,11 @@ public class ReferenceMatcher {
 		return checkBackTrail(nodeDescriptors, reference);
 	}
 
-	public Collection<NodeDescriptor> getNodeDescriptors(Engine engine, Reference reference) throws AbortedException {
-		Collection<NodeDescriptor> nodeDescriptors = getNodesDescriptorsContainingReferencePc(engine, reference);
+	public Collection<NodeDescriptor> getNodeDescriptors(Engine engine, StructureGraph structureGraph,
+			Reference reference) throws AbortedException {
+		
+		Collection<NodeDescriptor> nodeDescriptors = getNodesDescriptorsContainingReferencePc(
+				engine, structureGraph, reference);
 		return checkBackTrail(nodeDescriptors, reference);
 	}
 
@@ -43,11 +47,11 @@ public class ReferenceMatcher {
 	}
 
 	private Collection<NodeDescriptor> getNodesDescriptorsContainingReferencePc(Engine engine, 
-			Reference reference) throws AbortedException {
+			StructureGraph structureGraph, Reference reference) throws AbortedException {
 		
 		final Collection<NodeDescriptor> nodeDescriptors = new ArrayList<NodeDescriptor>();
 		long pc = reference.getPc();
-		Set<InstructionNode> nodes = engine.getStructureGraph().getPcToInstructionNodes().get(pc);
+		Set<InstructionNode> nodes = structureGraph.getPcToInstructionNodes().get(pc);
 		if (nodes != null) {
 			for (InstructionNode inst : nodes) {
 				LinkedList<Node> ancestors = new LinkedList<Node>();
