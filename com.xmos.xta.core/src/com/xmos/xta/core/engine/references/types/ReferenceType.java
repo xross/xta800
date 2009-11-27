@@ -235,4 +235,8 @@ public abstract class ReferenceType {
         hash = hash * 31 + m_ref.hashCode();
         return hash;
     }
+
+	public boolean checkBackTrailMatches() {
+		return true;
+	}
 }

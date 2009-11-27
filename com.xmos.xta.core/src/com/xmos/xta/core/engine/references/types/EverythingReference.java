@@ -35,6 +35,10 @@ public class EverythingReference extends ReferenceType {
 		return true;
 	}
 	
+	public boolean checkBackTrailMatches() {
+		return false;
+	}
+
 	public boolean matches(long pc) {
 		return true;
 	}

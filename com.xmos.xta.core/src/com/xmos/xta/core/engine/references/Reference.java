@@ -101,12 +101,14 @@ public class Reference implements Comparable<Reference>  {
         if (!reference.matches(m_base.getPc()))
     	    return false;
 
-        if (m_backTrail.size() != reference.getBackTrail().size()) 
-    	    return false;
-
-        for (int i = 0; i < m_backTrail.size(); ++i) {
-    	    if (m_backTrail.get(i).getPc() != getBackTrail().get(i).getPc())
-    	        return false;
+        if (reference.checkBackTrailMatches()) {
+	        if (m_backTrail.size() != reference.getBackTrail().size()) 
+	    	    return false;
+	
+	        for (int i = 0; i < m_backTrail.size(); ++i) {
+	    	    if (m_backTrail.get(i).getPc() != getBackTrail().get(i).getPc())
+	    	        return false;
+	        }
         }
     	return true;
     }	
@@ -134,6 +136,10 @@ public class Reference implements Comparable<Reference>  {
 	
 	public boolean matches(long pc) {
 		return m_base.matches(pc);
+	}
+
+	public boolean checkBackTrailMatches() {
+		return m_base.checkBackTrailMatches();
 	}
 
 	public int compareTo(Reference o) {
