@@ -1005,7 +1005,7 @@ public class Engine implements Notifier, Aborter {
 			return false;
 		}
 		if (alreadyExcluded(reference)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for PC: %s", reference.getPcString()));			
+			notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for ref: %s", reference.getRef()));			
 			return false;
 		}
 		m_exclusions.add(reference);
@@ -1065,19 +1065,23 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	private void checkInstructionIsBranch(CommandSource src, Reference ref) {
-		InstructionNode node = m_sourceMapper.get(m_nodeId, m_coreId).getInstructionNode(ref.getPc());
-		if (node == null) {
-			notify(src, Notifier.NOTIFY_WARNING,
-					String.format("adding branch from non-existant instruction at %s",
-					ref.toString()));
-		}
-
-		XtaInstruction inst = node.getXtaInstruction();
-		InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-		if (!inst.isBranch() && !mnenonics.isWait(inst)) {
-			notify(src, Notifier.NOTIFY_WARNING,
-					String.format("adding branch from instruction which is not a branch: %s",
-					inst.toString()));
+		for (long pc : ref.getPcs()) {
+			InstructionNode node = m_sourceMapper.get(m_nodeId, m_coreId).getInstructionNode(pc);
+			if (node == null) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from non-existant instruction at %s (0x%x)",
+						ref.toString(), pc));
+				return;
+			}
+	
+			XtaInstruction inst = node.getXtaInstruction();
+			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from instruction which is not a branch: %s (0x%x)",
+						inst.toString(), pc));
+				return;
+			}
 		}
 	}
 
@@ -1121,11 +1125,11 @@ public class Engine implements Notifier, Aborter {
 		return m_sections.getBranches(m_nodeId, m_coreId);
 	}
 	
-	public Map<String, Long> getLabels() {
+	public Map<String, Set<Long>> getLabels() {
 		return m_sections.getLabels(m_nodeId, m_coreId);
 	}
 	
-	public Map<String, CodePointInfo> getSrcLabels() {
+	public List<CodePointInfo> getSrcLabels() {
 		return m_sections.getSrcLabels(m_nodeId, m_coreId);
 	}
 
@@ -1133,7 +1137,7 @@ public class Engine implements Notifier, Aborter {
 		return m_sections.getSrcLabelTable(m_nodeId, m_coreId);
 	}
 	
-	public Map<String, CodePointInfo> getEndpoints() {
+	public List<CodePointInfo> getEndpoints() {
 		return m_sections.getEndpoints(m_nodeId, m_coreId);
 	}
 		
@@ -1141,7 +1145,7 @@ public class Engine implements Notifier, Aborter {
 		return m_sections.getEndpointTable(m_nodeId, m_coreId);
 	}
 	
-	public Map<String, CodePointInfo> getCalls() {
+	public List<CodePointInfo> getCalls() {
 		return m_sections.getCalls(m_nodeId, m_coreId);
 	}
 		
@@ -1425,11 +1429,13 @@ public class Engine implements Notifier, Aborter {
 	private void ensureAllFunctionsAreNamed(
 			SymbolTable symbolTable, Map<String, List<InstructionNode>> treeMap,
 			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts,
-			Map<String, Long> labelToPc) {
+			Map<String, Set<Long>> labelToPc) {
 		
 		Map<Long, String> pcToLabel = new HashMap<Long, String>();
 		for (String label : labelToPc.keySet()) {
-			pcToLabel.put(labelToPc.get(label), label);
+			for (Long pc : labelToPc.get(label)) {
+				pcToLabel.put(pc, label);
+			}
 		}
 		
 		for (InstructionNode inst : funcStarts){

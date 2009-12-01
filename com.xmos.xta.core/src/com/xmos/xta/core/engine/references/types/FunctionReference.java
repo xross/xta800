@@ -27,7 +27,7 @@ public class FunctionReference extends ReferenceType {
     	    int nodeId = engine.getNodeId();
     	    int coreId = engine.getCoreId();        	        	
             SymbolTable symbolTable = engine.getXeLoader().getSymbolTable(nodeId, coreId);            
-		    setPc(symbolTable.symbolAddress(functionName));
+		    addPc(symbolTable.symbolAddress(functionName));
 	        setResolved(true);
 	        return true;	        
         }	    

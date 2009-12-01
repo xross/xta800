@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Position;
@@ -51,7 +52,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		int charOffset = text.getCaretOffset();
 		try {
 			long lineNumber = m_editor.getDocument().getLineOfOffset(charOffset) + 1;
-			List<Long> pcs = new ArrayList<Long>(getPcsForLine(lineNumber));
+			Set<Long> pcs = new TreeSet<Long>(getPcsForLine(lineNumber));
 			GuiEngine.setSourcePcs(pcs, showPosition);
 		} catch (BadLocationException ex) {
 		}
@@ -71,8 +72,9 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 
 			if (ref.resolve(engine)) {
-    			long linePc = ref.getPc();
-    			addPcToLineEntry(linePc, lineNumber);
+				for (long pc : ref.getPcs()) {
+					addPcToLineEntry(pc, lineNumber);
+				}
     		}
     	}
 	}
@@ -96,8 +98,8 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		ArrayList<Annotation> allAnnotations = new ArrayList<Annotation>(annotations);
 		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
 		
-        long startPointIndex = getStartPointIndex();
-        long endPointIndex = getEndPointIndex();
+        Set<Long> startPointIndexes = getStartPointIndexes();
+        Set<Long> endPointIndexes = getEndPointIndexes();
 
         m_endPointLineIndexes.clear();
 
@@ -109,7 +111,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	        	if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper())) {
 	        		long index = info.getLineNumber() - 1;
 	        		m_endPointLineIndexes.add(index);
-	        		if (index != endPointIndex && index != startPointIndex) {
+	        		if (!endPointIndexes.contains(index) && !startPointIndexes.contains(index)) {
 	        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
 	        		}
 	        	}
@@ -119,7 +121,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	        	if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper())) {
 	        		long index = info.getLineNumber() - 1;
 	        		m_endPointLineIndexes.add(index);
-	        		if (index != endPointIndex && index != startPointIndex) {
+	        		if (!endPointIndexes.contains(index) && !startPointIndexes.contains(index)) {
 	        			addAnnotationForIndex(index, EndpointID, allAnnotations, allPositions);
 	        		}
 	        	}
@@ -156,20 +158,22 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     	return hit;
     }
 
-	public long getIndexForRef(Reference ref) {
+	public Set<Long> getIndexesForRef(Reference ref) {
+		Set<Long> indexes = new TreeSet<Long>();
 		if (ref != null) {
 			if (ref.getResolved()) {
 				if (FileNameMatcher.isMatch(ref.getFileName(), getFileName(), 
-						GuiEngine.getEngine().getSourceMapper())) {					
-					return ref.getLineNum() - 1;
+						GuiEngine.getEngine().getSourceMapper())) {				
+					indexes.add(ref.getLineNum() - 1);
 					
 				} else {
-					long pc = ref.getPc();
-					return getIndexForPc(pc);
+					for (long pc : ref.getPcs()) {
+						indexes.add(getIndexForPc(pc));
+					}
 				}
 			}			
 		}
-		return -1;
+		return indexes;
 	}
 
 	Collection<Long> getIndexesForPc(long pc) {

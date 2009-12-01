@@ -1,9 +1,8 @@
 package com.xmos.xta.core.engine.sections;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.regex.PatternSyntaxException;
 
 import com.xmos.libs.util.ByteArrayManipulation;
@@ -13,51 +12,42 @@ import com.xmos.xta.core.engine.Notifier;
 
 public class CodePoints extends Section  {
 	private String m_sectionName;
-	private TreeMap<String, CodePointInfo> m_codePoints;
-	private String m_type;
+	private List<CodePointInfo> m_codePoints;
 	
-	CodePoints(int nodeId, int coreId, String sectionName, Notifier notifier, String type) {
+	CodePoints(int nodeId, int coreId, String sectionName, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 		m_sectionName = sectionName;
-		m_codePoints = new TreeMap<String, CodePointInfo>();
-		m_type = type;
+		m_codePoints = new ArrayList<CodePointInfo>();
 	}
 	
 	boolean add(CommandSource src, String label, int pc) {
-		if (!m_codePoints.containsKey(label)) {										
-			m_codePoints.put(label, new CodePointInfo(pc, label, "", "", 0));
-			return true;
-		} else {
-			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"label already exists: %s", label));
-			return false;
-		}		
+		m_codePoints.add(new CodePointInfo(pc, label, "", "", 0));
+		return true;
 	}
 	
 	boolean remove(CommandSource src, String label) {
-		List<String> matches = new ArrayList<String>();
-		for (String mapEntry : m_codePoints.keySet()) {
+		boolean found = false;
+		Iterator<CodePointInfo> iter = m_codePoints.iterator();
+		while (iter.hasNext()) {
+			CodePointInfo codePointInfo = iter.next();
 			try {
-				if (mapEntry.matches(label)) {
-					matches.add(mapEntry);
+				if (codePointInfo.getLabel().matches(label)) {
+					iter.remove();
+					found = true;
 				}
 			} catch (PatternSyntaxException e) {
 			}
 		}
 
-		if (matches.size() > 0) {
-			for (String toRemove : matches) {
-				m_codePoints.remove(toRemove);
-			}
-			return true;
-		} else {
+		if (!found) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"unable to remove label: %s", label));
 			return false;
-		}		
+		}
+		return true;
 	}
 	
-	Map<String, CodePointInfo> get() {
+	List<CodePointInfo> get() {
 		return m_codePoints;
 	}
 	
@@ -92,12 +82,7 @@ public class CodePoints extends Section  {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 	        		        		
-	        		if (validateCodePoint(src, codePoint, location)) {
-	            		m_codePoints.put(codePoint, new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));        	        		
-	        		} else {
-	        			m_codePoints.clear();
-	        			return false;
-	        		}
+            		m_codePoints.add(new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));        	        		
 	        	}			
 		    }
         } catch (Exception e) {
@@ -106,14 +91,5 @@ public class CodePoints extends Section  {
         	return false;
         }
         return true;
-	}
-	
-	private boolean validateCodePoint(CommandSource src, String codePoint, int location) {
-		if (m_codePoints.containsKey(codePoint)) {
-			getNotifier().notify(src, Notifier.NOTIFY_ERROR, 
-					String.format("duplicate %s: %s at pc: 0x%x", m_type, codePoint, location));
-			return false; 				
-		}
-		return true;
 	}
 }

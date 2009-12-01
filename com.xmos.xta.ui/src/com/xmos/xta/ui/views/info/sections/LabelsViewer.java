@@ -1,5 +1,7 @@
 package com.xmos.xta.ui.views.info.sections;
 
+import java.util.Set;
+
 import org.eclipse.jface.viewers.TableViewer;
 
 import com.xmos.xta.ui.views.info.BaseViewer;
@@ -19,7 +21,7 @@ public class LabelsViewer extends BaseViewer {
 		return new LabelsViewerLabelProvider();
 	}
 
-	protected long getPc(Object object) {
-		return ((LabelsContent)object).m_pc;
+	protected Set<Long> getPcs(Object object) {
+		return ((LabelsContent)object).m_pcs;
 	}
 }

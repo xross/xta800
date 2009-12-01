@@ -13,7 +13,7 @@ public class EndpointReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference) {
 		if (checkTypeString(reference, Type.ENDPOINT, 1) &&
-		    engine.getEndpoints().containsKey(getLabel(reference))) {
+		    isValid(engine.getEndpoints(), getLabel(reference))) {
 			return new EndpointReference(reference);
 		}
 		return null;
@@ -23,22 +23,29 @@ public class EndpointReference extends ReferenceType {
 		String ref = getRef();
 		String label = getLabel(ref);
 		
-		if (engine.getEndpoints().containsKey(label)) {			
-			CodePointInfo info = engine.getEndpoints().get(label);
-			setPc(info.getPc());
-			
-			Map<Long, CodePointTableInfo> endpointTable = engine.getEndpointTable();
-			if (!endpointTable.containsKey(info.getPc()))
-				return false;
-				
-		    CodePointTableInfo endpoint = endpointTable.get(info.getPc());			
-			setFileName(endpoint.getFileName());
-        	setLineNum(endpoint.getLineNumber());
+		boolean found = false;
+		for (CodePointInfo info : engine.getEndpoints()) {
+			if (info.getLabel().equals(label)) {
+				addPc(info.getPc());
 
-			setResolved(true);
-			return true;
+				Map<Long, CodePointTableInfo> endpointTable = engine.getEndpointTable();
+				if (!endpointTable.containsKey(info.getPc()))
+					return false;
+
+				if (!found) {
+				    CodePointTableInfo endpoint = endpointTable.get(info.getPc());			
+					setFileName(endpoint.getFileName());
+		        	setLineNum(endpoint.getLineNumber());
+				}
+				
+				found = true;
+			}
 		}
-		return false;
+
+		if (found) {
+			setResolved(true);
+		}
+		return found;
 	}
 
 	public String name() {

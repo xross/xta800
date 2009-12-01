@@ -5,6 +5,6 @@ import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
 
 class SrcLabelsViewerContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
-		return ((Engine)inputElement).getSrcLabels().values().toArray();
+		return ((Engine)inputElement).getSrcLabels().toArray();
 	}
 }

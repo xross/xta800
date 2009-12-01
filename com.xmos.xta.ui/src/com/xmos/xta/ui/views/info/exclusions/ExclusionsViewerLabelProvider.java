@@ -36,7 +36,7 @@ class ExclusionsViewerLabelProvider extends BaseViewerLabelProvider implements I
 		Reference p2 = (Reference)e2;
 		int res = 0;
 		if (column.equals(PC)) {
-			res = p1.getPc() > p2.getPc() ? 1 : -1;
+			res = comparePcSets(p1.getPcs(), p2.getPcs());
 		} else if (column.equals(DESCRIPTION)) {
 			res = p1.getRef().compareTo(p2.getRef());
 		} else {

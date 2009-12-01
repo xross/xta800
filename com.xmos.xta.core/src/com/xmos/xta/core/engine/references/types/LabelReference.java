@@ -1,5 +1,8 @@
 package com.xmos.xta.core.engine.references.types;
 
+import java.util.Map;
+import java.util.Set;
+
 import com.xmos.xta.core.engine.Engine;
 
 public class LabelReference extends ReferenceType {
@@ -19,8 +22,11 @@ public class LabelReference extends ReferenceType {
 		String ref = getRef();
 		String label = getLabel(ref);
 		
-	    if (engine.getLabels().containsKey(label)) {
-		    setPc(engine.getLabels().get(label));
+	    Map<String, Set<Long>> labels = engine.getLabels();
+		if (labels.containsKey(label)) {
+	    	for (Long pc : labels.get(label)) {
+	    		addPc(pc);
+	    	}
 	        setResolved(true);
 	        return true;
 	    }

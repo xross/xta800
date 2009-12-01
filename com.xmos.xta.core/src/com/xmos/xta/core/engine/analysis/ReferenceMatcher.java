@@ -50,12 +50,14 @@ public class ReferenceMatcher {
 			StructureGraph structureGraph, Reference reference) throws AbortedException {
 		
 		final Collection<NodeDescriptor> nodeDescriptors = new ArrayList<NodeDescriptor>();
-		long pc = reference.getPc();
-		Set<InstructionNode> nodes = structureGraph.getPcToInstructionNodes().get(pc);
-		if (nodes != null) {
-			for (InstructionNode inst : nodes) {
-				LinkedList<Node> ancestors = new LinkedList<Node>();
-				getAllNodeDescriptors(inst, inst.getParent(), nodeDescriptors, ancestors);
+		Set<Long> pcs = reference.getPcs();
+		for (long pc : pcs) {
+			Set<InstructionNode> nodes = structureGraph.getPcToInstructionNodes().get(pc);
+			if (nodes != null) {
+				for (InstructionNode inst : nodes) {
+					LinkedList<Node> ancestors = new LinkedList<Node>();
+					getAllNodeDescriptors(inst, inst.getParent(), nodeDescriptors, ancestors);
+				}
 			}
 		}
 		return nodeDescriptors;

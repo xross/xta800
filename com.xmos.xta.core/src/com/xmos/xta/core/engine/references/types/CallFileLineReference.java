@@ -23,18 +23,22 @@ public class CallFileLineReference extends ReferenceType {
 		String fileName = getFileName(ref);
         long lineNumber = getLineNumber(ref);		
 
+        boolean found = false;
 		for (CodePointTableInfo info : engine.getCallTable().values()) {
             if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper()) &&
             	(info.getLineNumber() == lineNumber)) {
-            	setPc(info.getPc());
+            	addPc(info.getPc());
             	setFileName(fileName);
             	setLineNum(lineNumber);
 
-    			setResolved(true);
-    			return true;
+            	found = true;
             }			
 		}		
-		return false;
+
+		if (found) {
+			setResolved(true);
+		}
+		return found;
 	}		      
 
 	public String name() {

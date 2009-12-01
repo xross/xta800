@@ -53,14 +53,14 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 	}
 
 	private boolean isStartPoint(long lineNum) {
-		if (lineNum == m_editor.getAnnotations().getStartPointIndex())
+		if (m_editor.getAnnotations().getStartPointIndexes().contains(lineNum))
 			return true;
 
 		return false;
 	}
 
 	private boolean isEndPoint(long lineNum) {
-		if (lineNum == m_editor.getAnnotations().getEndPointIndex())
+		if (m_editor.getAnnotations().getEndPointIndexes().contains(lineNum))
 			return true;
 
 		return false;

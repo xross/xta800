@@ -2,8 +2,10 @@ package com.xmos.xta.core.engine.sections;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.Map;
+
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
@@ -71,9 +73,9 @@ public class Sections {
 			for (int core : m_xeLoader.getCoreIds(node)) {
 				m_branches.add(new Branches(node, core, m_notifier));
 				m_labels.add(new Labels(node, core, m_notifier));
-				m_srcLabels.add(new CodePoints(node, core, ".xtalabel", m_notifier, "label"));
-				m_endpoints.add(new CodePoints(node, core, ".xtaendpoint", m_notifier, "endpoint"));
-				m_calls.add(new CodePoints(node, core, ".xtacall", m_notifier, "call"));
+				m_srcLabels.add(new CodePoints(node, core, ".xtalabel", m_notifier));
+				m_endpoints.add(new CodePoints(node, core, ".xtaendpoint", m_notifier));
+				m_calls.add(new CodePoints(node, core, ".xtacall", m_notifier));
 				m_srcLabelTables.add(new SrcLabelTable(node, core, ".xtalabeltable", m_notifier));
 				m_endpointTables.add(new CodePointTable(node, core, ".xtaendpointtable", m_notifier));
 				m_callTables.add(new CodePointTable(node, core, ".xtacalltable", m_notifier));
@@ -134,12 +136,12 @@ public class Sections {
 		return branches.get();
 	}
 
-	public Map<String, Long> getLabels(int nodeId, int coreId) {
+	public Map<String, Set<Long>> getLabels(int nodeId, int coreId) {
 	    Labels labels = (Labels)getSection(m_labels, nodeId, coreId);
 	    return labels.get();
 	}
 	
-	public Map<String, CodePointInfo> getSrcLabels(int nodeId, int coreId) {
+	public List<CodePointInfo> getSrcLabels(int nodeId, int coreId) {
 		CodePoints codePoints = (CodePoints)getSection(m_srcLabels, nodeId, coreId);
 	    return codePoints.get();
 	}
@@ -149,7 +151,7 @@ public class Sections {
 		return srcLabelTable.get();
 	}	
 
-	public Map<String, CodePointInfo> getEndpoints(int nodeId, int coreId) {
+	public List<CodePointInfo> getEndpoints(int nodeId, int coreId) {
 		CodePoints codePoints = (CodePoints)getSection(m_endpoints, nodeId, coreId);
 	    return codePoints.get();
 	}
@@ -159,7 +161,7 @@ public class Sections {
 		return endpointTable.get();		
 	}	
 
-	public Map<String, CodePointInfo> getCalls(int nodeId, int coreId) {
+	public List<CodePointInfo> getCalls(int nodeId, int coreId) {
 		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeId, coreId);
 	    return codePoints.get();
 	}

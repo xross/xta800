@@ -1,5 +1,7 @@
 package com.xmos.xta.ui.views.info.sections;
 
+import java.util.Set;
+
 import org.eclipse.jface.viewers.TableViewer;
 
 import com.xmos.xta.ui.views.info.BaseViewer;
@@ -20,7 +22,7 @@ public class BranchesViewer extends BaseViewer {
 	}
 
 	@Override
-	protected long getPc(Object object) {
-		return ((BranchesContent)object).m_fromRef.getPc();
+	protected Set<Long> getPcs(Object object) {
+		return ((BranchesContent)object).m_fromRef.getPcs();
 	}
 }

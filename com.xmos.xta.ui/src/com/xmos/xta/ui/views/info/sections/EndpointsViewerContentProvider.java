@@ -5,6 +5,6 @@ import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
 
 class EndpointsViewerContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
-		return ((Engine)inputElement).getEndpoints().values().toArray();
+		return ((Engine)inputElement).getEndpoints().toArray();
 	}
 }

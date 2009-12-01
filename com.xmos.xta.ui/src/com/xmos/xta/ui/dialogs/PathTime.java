@@ -1,6 +1,7 @@
 package com.xmos.xta.ui.dialogs;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -22,6 +23,7 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.ui.GuiEngine;
 
 public class PathTime extends XtaDialog {
@@ -105,8 +107,13 @@ class PathTimeImpl implements XtaImpl {
     }
     
     private String[] getValidEndpoints() {
-		Collection<String> validEndpoints = m_engine.getEndpoints().keySet();
-		validEndpoints.addAll(m_engine.getCalls().keySet());
+		Collection<String> validEndpoints = new HashSet<String>();
+		for (CodePointInfo info : m_engine.getEndpoints()) {
+			validEndpoints.add(info.getLabel());
+		}
+		for (CodePointInfo info : m_engine.getCalls()) {
+			validEndpoints.add(info.getLabel());
+		}
         return (String[])validEndpoints.toArray(new String[0]);    	
     }
     

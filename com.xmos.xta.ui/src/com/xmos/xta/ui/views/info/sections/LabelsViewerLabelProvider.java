@@ -3,6 +3,7 @@ package com.xmos.xta.ui.views.info.sections;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
 class LabelsViewerLabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
@@ -23,7 +24,7 @@ class LabelsViewerLabelProvider extends BaseViewerLabelProvider implements ITabl
 			return labels.m_label;
 			
     	} else if (m_columnNames[columnIndex].equals(PC)) {
-			return String.format("0x%x", labels.m_pc);
+			return Conversion.pcSetToString(labels.m_pcs);
         }
 		assert(false);
 		return "";
@@ -34,7 +35,7 @@ class LabelsViewerLabelProvider extends BaseViewerLabelProvider implements ITabl
 		LabelsContent p2 = (LabelsContent)e2;
 		int res = 0;
 		if (column.equals(PC)) {
-			res = p1.m_pc > p2.m_pc ? 1 : -1;
+			res = comparePcSets(p1.m_pcs, p2.m_pcs);
 		} else if (column.equals(LABEL)) {
 			res = p1.m_label.compareTo(p2.m_label);
 		} else {

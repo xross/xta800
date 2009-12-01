@@ -2,6 +2,7 @@ package com.xmos.xta.ui.views.info;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -29,7 +30,7 @@ public abstract class BaseViewer implements Viewer {
 
 	protected abstract BaseViewerContentProvider createContentProvider();
 	protected abstract BaseViewerLabelProvider createLabelProvider();
-	protected abstract long getPc(Object object);
+	protected abstract Set<Long> getPcs(Object object);
 	
 	public BaseViewer(TableViewer viewer) {
 		m_viewer = viewer;
@@ -78,7 +79,7 @@ public abstract class BaseViewer implements Viewer {
 
 				m_selectedPcs.clear();
 				for (Object object : ((IStructuredSelection)selection).toList()) {
-					m_selectedPcs.add(getPc(object));
+					m_selectedPcs.addAll(getPcs(object));
 				}
 			}
 		});		

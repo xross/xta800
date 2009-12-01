@@ -151,7 +151,7 @@ public class InstructionNode extends Node {
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		
-		if (referenceTypes.peek().getPc() == m_inst.getPc()) {
+		if (referenceTypes.peek().getPcs().contains(m_inst.getPc())) {
 			referenceTypes.pop();
 			if (referenceTypes.empty()) {
 				return true;

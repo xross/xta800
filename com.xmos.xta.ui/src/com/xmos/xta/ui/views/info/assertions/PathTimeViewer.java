@@ -1,5 +1,8 @@
 package com.xmos.xta.ui.views.info.assertions;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.eclipse.jface.viewers.TableViewer;
 
 import com.xmos.xta.core.engine.Engine;
@@ -20,8 +23,8 @@ public class PathTimeViewer extends BaseViewer {
 		return new LabelProvider();
 	}
 
-	protected long getPc(Object object) {
-		return 0;
+	protected Set<Long> getPcs(Object object) {
+		return new TreeSet<Long>();
 	}
 }
 

@@ -58,12 +58,18 @@ public abstract class StructureNode extends ViewNode {
 		boolean isWorstCase = isWorstCase();
 		boolean isBestCase = isBestCase();
 		boolean isInfinite = false;
+		int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
+    	int midX = getLeftMidX();
 
+		if (getChildren().size() == 0) {
+			// The EndNode has no children
+	    	drawConnection(display, gc, m_pixelOffsetX, midY, m_pixelOffsetX + getPixelsX(),
+	    			midY, isBestCase, isWorstCase);
+			return;
+		}
 		assert(getChildren().size() > 0);
     	ViewNode firstChild = getChildren().get(0);
 		
-		int midY = scaleY(m_pixelOffsetY + (getPixelsY() / 2));
-    	int midX = getLeftMidX();
 		int childMidY = scaleY(firstChild.getPixelOffsetY() + (firstChild.getPixelsY() / 2));
 		int childLeftX = scaleX(firstChild.getPixelOffsetX());
     	drawConnection(display, gc, m_renderX, midY, midX, midY,

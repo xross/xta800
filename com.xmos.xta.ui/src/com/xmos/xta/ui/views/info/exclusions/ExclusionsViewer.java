@@ -1,5 +1,7 @@
 package com.xmos.xta.ui.views.info.exclusions;
 
+import java.util.Set;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -89,7 +91,7 @@ public class ExclusionsViewer extends BaseViewer {
 	}
 
  	@Override
-	protected long getPc(Object object) {
-		return ((Reference)object).getPc();
+	protected Set<Long> getPcs(Object object) {
+		return ((Reference)object).getPcs();
 	}
 }

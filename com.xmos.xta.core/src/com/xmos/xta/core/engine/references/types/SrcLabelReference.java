@@ -10,7 +10,7 @@ public class SrcLabelReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference) {
 		if (checkTypeString(reference, Type.SRCLABEL, 1) &&
-		    engine.getSrcLabels().containsKey(getLabel(reference))) {
+		    isValid(engine.getSrcLabels(), getLabel(reference))) {
 			return new SrcLabelReference(reference);
 		}
 		return null;
@@ -20,12 +20,14 @@ public class SrcLabelReference extends ReferenceType {
 		String ref = getRef();
 		String label = getLabel(ref);
 		
-		if (engine.getSrcLabels().containsKey(label)) {			
-			CodePointInfo info = engine.getSrcLabels().get(label);
-			setPc(info.getPc());
-			return true;
+		boolean found = false;
+		for (CodePointInfo info : engine.getSrcLabels()) {
+			if (info.getLabel().equals(label)) {			
+				addPc(info.getPc());
+				found = true;
+			}
 		}
-		return false;
+		return found;
 	}
 	
 	public String name() {

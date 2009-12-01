@@ -2,7 +2,10 @@ package com.xmos.xta.core.engine.references;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
@@ -26,12 +29,12 @@ public class Reference implements Comparable<Reference>  {
 	
 	public String getPcString() {
 		assert(m_base != null);
-		return String.format("0x%x", m_base.getPc());
+		return Conversion.pcSetToString(m_base.getPcs());
 	}
 	
-	public long getPc() {
+	public Set<Long> getPcs() {
 		assert(m_base != null);
-		return m_base.getPc();
+		return m_base.getPcs();
 	}
 
 	public boolean getResolved() {
@@ -98,22 +101,36 @@ public class Reference implements Comparable<Reference>  {
     	Reference reference = (Reference)obj;
                
 		assert(m_base != null);
-        if (!reference.matches(m_base.getPc()))
-    	    return false;
+		if (reference.checkPcsMatch()) {
+			if (!match(reference.getPcs(), m_base.getPcs())) {
+				return false;
+			}
+		}
 
         if (reference.checkBackTrailMatches()) {
-	        if (m_backTrail.size() != reference.getBackTrail().size()) 
+	        if (m_backTrail.size() != reference.getBackTrail().size()) { 
 	    	    return false;
+	        }
 	
 	        for (int i = 0; i < m_backTrail.size(); ++i) {
-	    	    if (m_backTrail.get(i).getPc() != getBackTrail().get(i).getPc())
+	    	    if (!match(m_backTrail.get(i).getPcs(), getBackTrail().get(i).getPcs())) {
 	    	        return false;
+	    	    }
 	        }
         }
     	return true;
     }	
     
-    public int hashCode() {
+    private boolean match(Set<Long> set1, Set<Long> set2) {
+    	Set<Long> intersection = new TreeSet<Long>(set1);
+    	intersection.retainAll(set2);
+    	if (intersection.isEmpty()) {
+    		return false;
+    	}
+    	return true;
+	}
+
+	public int hashCode() {
         int hash = 1;
         hash = hash * 31 + m_base.hashCode();
         if (m_backTrail == null) {
@@ -135,7 +152,14 @@ public class Reference implements Comparable<Reference>  {
 	}
 	
 	public boolean matches(long pc) {
-		return m_base.matches(pc);
+		if (m_base.getPcs().contains(pc)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean checkPcsMatch() {
+		return m_base.checkPcsMatch();
 	}
 
 	public boolean checkBackTrailMatches() {

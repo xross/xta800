@@ -1,6 +1,7 @@
 package com.xmos.xta.ui.editors.disassembly;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -10,6 +11,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.ui.GuiEngine;
 
 public class BranchTargetHyperlinkDetector implements IHyperlinkDetector {
@@ -40,9 +42,9 @@ public class BranchTargetHyperlinkDetector implements IHyperlinkDetector {
 		IRegion hyperLinkRegion = new Region(lineInfo.getOffset() + begin + 1, text.length());
 		
 		String pcString;
-		Map<String, Long> labels = GuiEngine.getEngine().getLabels();
+		Map<String, Set<Long>> labels = GuiEngine.getEngine().getLabels();
 		if (labels.containsKey(text)) {
-			pcString = "0x" + Long.toHexString(labels.get(text));
+			pcString = Conversion.pcSetToString(labels.get(text));
 		} else {
 			pcString = text;
 		}

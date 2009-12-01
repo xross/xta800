@@ -1,5 +1,8 @@
 package com.xmos.xta.ui.views.info.sections;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.eclipse.jface.viewers.TableViewer;
 
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
@@ -21,7 +24,9 @@ public class AllEndpointsViewer extends BaseViewer {
 	}
 
 	@Override
-	protected long getPc(Object object) {
-		return ((CodePointTableInfo)object).getPc();
+	protected Set<Long> getPcs(Object object) {
+		Set<Long> pcs = new TreeSet<Long>();
+		pcs.add(((CodePointTableInfo)object).getPc());
+		return pcs;
 	}
 }

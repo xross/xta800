@@ -3,7 +3,9 @@ package com.xmos.xta.core.engine.sections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 
 import com.xmos.libs.elfhandler.ElfHandler;
@@ -14,22 +16,21 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public class Labels extends Section  {	
-	private TreeMap<String, Long> m_labels;
+	private TreeMap<String, Set<Long>> m_labels;
 	
 	Labels(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
-		m_labels = new TreeMap<String, Long>(); 
+		m_labels = new TreeMap<String, Set<Long>>(); 
 	}
 	
 	boolean add(CommandSource src, String label, long pc) {
-		if (!m_labels.containsKey(label)) {										
-			m_labels.put(label, pc);
-			return true;
-		} else {
-			getNotifier().notify(src , Notifier.NOTIFY_ERROR, String.format(
-					"label already exists: %s", label));
-			return false;
-		}		
+		Set<Long> pcs = m_labels.get(label);
+		if (pcs == null) {									
+			pcs = new TreeSet<Long>();
+			m_labels.put(label, pcs);
+		}
+		pcs.add(pc);
+		return true;
 	}
 	
 	boolean remove(CommandSource src, String label) {
@@ -55,7 +56,7 @@ public class Labels extends Section  {
 		}		
 	}
 	
-	Map<String, Long> get() {
+	Map<String, Set<Long>> get() {
 		return m_labels;
 	}
 	
@@ -68,7 +69,7 @@ public class Labels extends Section  {
             	int sectionIndex = symbol.getShndx();        	
             	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {        		
             		if (symbol.getName().charAt(0) != '.') {
-            	        m_labels.put(symbol.getName(), (long)symbol.getValue());
+            			add(src, symbol.getName(), (long)symbol.getValue());
             		}
             	}
         	}

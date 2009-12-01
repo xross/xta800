@@ -1,5 +1,8 @@
 package com.xmos.xta.ui.views.info.sections;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.eclipse.jface.viewers.TableViewer;
 
 import com.xmos.xta.ui.views.info.BaseViewer;
@@ -20,7 +23,9 @@ public class ThreadStopPointsViewer extends BaseViewer {
 	}
 
 	@Override
-	protected long getPc(Object object) {
-		return (Long)object;
+	protected Set<Long> getPcs(Object object) {
+		Set<Long> pcs = new TreeSet<Long>();
+		pcs.add((Long)object);
+		return pcs;
 	}
 }

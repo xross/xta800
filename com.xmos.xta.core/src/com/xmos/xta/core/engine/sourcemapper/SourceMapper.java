@@ -37,11 +37,11 @@ public class SourceMapper {
 	private Map<Long, Function> m_pcToFunction;
 	private Map<String, String> m_functionToFile;
 	
-	private Map<String, Long> m_labels;
+	private Map<String, Set<Long>> m_labels;
 	
     public SourceMapper(Engine engine, XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, InstructionDecoder instructionDecoder, 
-			Map<String, List<InstructionNode>> treeMap, Map<String, Long> labels) {
+			Map<String, List<InstructionNode>> treeMap, Map<String, Set<Long>> labels) {
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;
@@ -191,13 +191,20 @@ public class SourceMapper {
         return m_functions;
     }
 	
-	public boolean isProfilablePc(long pc) {
-		for (Function function : m_functions){
-			if (function.containsPc(pc)){
-				return true;
+	public boolean areProfilablePcs(Set<Long> pcs) {
+		for (long pc : pcs) {
+			boolean found = false;
+			for (Function function : m_functions){
+				if (function.containsPc(pc)){
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	public Function getFunction(long pc) {

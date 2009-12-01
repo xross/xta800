@@ -7,7 +7,7 @@ public class PcReference extends ReferenceType {
 	PcReference(String ref) {
 		super(ref, Type.PC);				
 		if (ref != null) {
-		    setPc(getPcString(ref));
+		    addPc(getPcString(ref));
 		}
 	}
 
@@ -24,7 +24,7 @@ public class PcReference extends ReferenceType {
 		if (sourceMapper == null) 
 			return false;
 
-		if (sourceMapper.isProfilablePc(getPc())) {
+		if (sourceMapper.areProfilablePcs(getPcs())) {
 	        setResolved(true);
 	        return true;
 	    }

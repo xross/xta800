@@ -28,7 +28,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
             	((lineNumber >= info.getLineNumberStart()) &&
             	 (lineNumber <= info.getLineNumberEnd()))) {
             	
-            	setPc(info.getPc());
+            	addPc(info.getPc());
             	setFileName(fileName);
             	setLineNum(lineNumber);
             	setResolved(true);

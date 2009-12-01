@@ -7,7 +7,7 @@ public class CallPcReference extends ReferenceType {
 	CallPcReference(String ref) {
 		super(ref, Type.CALL);
 		if (ref != null) {
-		    setPc(getPcString(ref));
+		    addPc(getPcString(ref));
 		}		
 	}
 
@@ -24,7 +24,7 @@ public class CallPcReference extends ReferenceType {
 		if (sourceMapper == null) 
 			return false;
 
-		if (sourceMapper.isProfilablePc(getPc())) {
+		if (sourceMapper.areProfilablePcs(getPcs())) {
 	        setResolved(true);
 	        return true;
 	    }

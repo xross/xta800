@@ -74,7 +74,9 @@ public class SuccessorAdder {
 
 		//FIXME - this should not be allowed for instruction that are not branches
 		for (BranchInfo target : targets) {
-			connect(src, instruction, target.getRef().getPc(), true, debug);
+			for (long pc : target.getRef().getPcs()) {
+				connect(src, instruction, pc, true, debug);
+			}
 		}
 	}
 

@@ -65,7 +65,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	    	if (codePoint == null || !codePoint.getResolved()) {
 	    		return;
 	    	}
-			showCodePoint(codePoint.getPc());
+			showCodePoint(codePoint.getPcs());
 			
 		}  else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) || 
 					event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
@@ -74,10 +74,8 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_SOURCE_PCS)) {
 			updateHighlighting();
 			if (GuiEngine.showSourcePcsPosition()) {
-				List<Long> pcs = GuiEngine.getSourcePcs();
-				if (pcs.size() > 0) {
-					showCodePoint(pcs.get(0));
-				}
+				Set<Long> pcs = GuiEngine.getSourcePcs();
+				showCodePoint(pcs);
 			}
 			
 		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_OPEN_DISASSEMBLY)) {
@@ -151,14 +149,16 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return true;
     }
     
-	public long getIndexForRef(Reference ref) {
+	public Set<Long> getIndexesForRef(Reference ref) {
+		Set<Long> pcs = new TreeSet<Long>();
 		if (ref != null) {
 			if (ref.getResolved()) {
-			    long pc = ref.getPc();
-			    return getIndexForPc(pc);
+				for (long pc : ref.getPcs()) {
+					pcs.add(getIndexForPc(pc));
+				}
 			}			
 		}
-		return -1;
+		return pcs;
 	}
 
     public long getIndexForPc(long pc) {

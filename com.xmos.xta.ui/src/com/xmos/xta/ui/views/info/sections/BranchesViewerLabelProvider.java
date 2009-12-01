@@ -39,7 +39,7 @@ class BranchesViewerLabelProvider extends BaseViewerLabelProvider implements ITa
 		BranchesContent p2 = (BranchesContent)e2;
 		int res = 0;
 		if (column.equals(FROMPC)) {
-			res = p1.m_fromRef.getPc() > p2.m_fromRef.getPc() ? 1 : -1;
+			res = comparePcSets(p1.m_fromRef.getPcs(), p2.m_fromRef.getPcs());
 		} else if (column.equals(TOPCS)) {
 			res = p1.m_toRefs.size() > p2.m_toRefs.size() ? 1 : -1;
 		} else {

@@ -41,12 +41,12 @@ public class SrcLabels extends Command {
 	}
 	
 	private void listSrcLabels(Engine engine, Console console) {
-		if (engine.getSrcLabels().entrySet().size() == 0){
+		if (engine.getSrcLabels().size() == 0){
 			console.display("none\n");
 			return;
 		}
 
-		for (CodePointInfo info : engine.getSrcLabels().values()) {
+		for (CodePointInfo info : engine.getSrcLabels()) {
     	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
     	    
     	    if (!info.getCompilationDir().equals("")) {

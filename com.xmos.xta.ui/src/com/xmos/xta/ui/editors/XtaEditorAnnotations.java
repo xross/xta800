@@ -57,7 +57,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	public abstract String getLineDescription(long clickLineIndex);
 
 	public abstract void updateAll();
-	public abstract long getIndexForRef(Reference ref);
+	public abstract Set<Long> getIndexesForRef(Reference ref);
 	public abstract long getIndexForPc(long pc);
 	public abstract boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 
     		Map<Annotation, Position> annotationPositions);
@@ -112,11 +112,13 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_FOCUS)) {
 			Node focusNode = GuiEngine.getFocus();
 			if (focusNode != null) {
+				Set<Long> pcs = new TreeSet<Long>();
 				for (XtaInstruction instruction : focusNode.getInstructions()) {
-					boolean hit = showCodePoint(instruction.getPc());
-					if (hit) {
-						return;
-					}
+					pcs.add(instruction.getPc());
+				}
+				boolean hit = showCodePoint(pcs);
+				if (hit) {
+					return;
 				}
 			}
 			
@@ -176,22 +178,24 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		final HashMap<Annotation, Position> allPositions = new HashMap<Annotation, Position>(positions);
 		
 		if (canAnnotate()) {
-	        long startPointIndex = getStartPointIndex();
-	        long endPointIndex = getEndPointIndex();
+	        Set<Long> startPointIndexes = getStartPointIndexes();
+	        Set<Long> endPointIndexes = getEndPointIndexes();
 	
-	        if ((startPointIndex != -1) && (startPointIndex == endPointIndex)) {
-	        	addAnnotationForIndex(startPointIndex, StartStopAnnotationID, allAnnotations, allPositions);
-	        } else {
-	        	if (startPointIndex != -1) {
+	        for (long startPointIndex : startPointIndexes) {
+	        	if (endPointIndexes.contains(startPointIndex)) {
+		        	addAnnotationForIndex(startPointIndex, StartStopAnnotationID, allAnnotations, allPositions);
+	        	} else {
 	            	addAnnotationForIndex(startPointIndex, StartAnnotationID, allAnnotations, allPositions);
 	        	}
-	        	if (endPointIndex != -1) {
-	            	addAnnotationForIndex(endPointIndex, StopAnnotationID, allAnnotations, allPositions);
-	        	}
+	        }
+	        for (long endPointIndex : endPointIndexes) {
+            	addAnnotationForIndex(endPointIndex, StopAnnotationID, allAnnotations, allPositions);
 	        }
 	
 	        for (Reference exclusion : GuiEngine.getEngine().getExclusions()) {
-				addAnnotationsForPc(exclusion.getPc(), ExcludedAnnotationID, allAnnotations, allPositions);
+	        	for (long pc : exclusion.getPcs()) {
+	        		addAnnotationsForPc(pc, ExcludedAnnotationID, allAnnotations, allPositions);
+	        	}
 			}
 		}
     	
@@ -275,29 +279,29 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
     }
 
 	public boolean isStartPointSetForIndex(long index) {
-		long startPointLineIndex = getStartPointIndex();
-		if ((startPointLineIndex != -1) && (startPointLineIndex == index)) {
+		Set<Long> startPointLineIndexes = getStartPointIndexes();
+		if (startPointLineIndexes.contains(index)) {
 			return true;
 		}
 	    return false;	
 	}
 
 	public boolean isEndPointSetForIndex(long index) {
-		long endPointIndex = getEndPointIndex();
-		if ((endPointIndex != -1) && (endPointIndex == index)) {
+		Set<Long> endPointLineIndexes = getEndPointIndexes();
+		if (endPointLineIndexes.contains(index)) {
 			return true;
 		}
 	    return false;	
 	}
 
-	public long getStartPointIndex() {
+	public Set<Long> getStartPointIndexes() {
 		Reference ref = GuiEngine.getStartPoint();
-		return getIndexForRef(ref);
+		return getIndexesForRef(ref);
 	}
 
-    public long getEndPointIndex() {
+    public Set<Long> getEndPointIndexes() {
 		Reference ref = GuiEngine.getEndPoint();
-		return getIndexForRef(ref);
+		return getIndexesForRef(ref);
 	}
 
 	protected void showLocation(int charOffset, long index, boolean expand) {
@@ -315,15 +319,17 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		viewer.setTopIndex((int)topIndex);
 	}
 
-	public boolean showCodePoint(long pc) {
-    	long index = getIndexForPc(pc);
-    	if (index >= 0) { 
-			try {
-				IDocument document = m_editor.getDocument();
-				int charOffset = document.getLineOffset((int)index);
-				showLocation(charOffset, index, true);
-				return true;
-			} catch (BadLocationException e) {}
+	public boolean showCodePoint(Set<Long> pcs) {
+		for (long pc : pcs) {
+	    	long index = getIndexForPc(pc);
+	    	if (index >= 0) { 
+				try {
+					IDocument document = m_editor.getDocument();
+					int charOffset = document.getLineOffset((int)index);
+					showLocation(charOffset, index, true);
+					return true;
+				} catch (BadLocationException e) {}
+			}
 		}
 		return false;
 	}

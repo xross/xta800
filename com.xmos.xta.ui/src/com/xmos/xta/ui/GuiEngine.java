@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -61,7 +63,7 @@ public class GuiEngine {
 	
 	/* Ensure there is only one disassembly editor at once */
 	private static Map<String, IEditorInput> s_disassemblyInputs;
-	private static List<Long> s_sourcePcs;
+	private static Set<Long> s_sourcePcs;
 	private static boolean s_showPcPosition;
 	
 	public static final CommandSource s_guiSrc           = new CommandSource(Type.GUI);  
@@ -73,7 +75,7 @@ public class GuiEngine {
         s_broadcaster = new Broadcaster();        
         s_log = new GuiLog();
         s_selectedNodes = new HashMap<Integer, List<Node>>();
-        s_sourcePcs = new ArrayList<Long>();
+        s_sourcePcs = new TreeSet<Long>();
         s_showPcPosition = false;
         s_focusNodes = null;
         s_commandLineXeFile = null;
@@ -317,7 +319,7 @@ public class GuiEngine {
 		return input;
 	}
 
-	public static void setSourcePcs(List<Long> pcs, boolean showPosition) {
+	public static void setSourcePcs(Set<Long> pcs, boolean showPosition) {
 		if (!pcs.equals(s_sourcePcs) || showPosition) {
 			s_sourcePcs = pcs;
 			s_showPcPosition = showPosition;
@@ -325,7 +327,7 @@ public class GuiEngine {
 		}
 	}
 
-	public static List<Long> getSourcePcs() {
+	public static Set<Long> getSourcePcs() {
 		return s_sourcePcs;
 	}
 

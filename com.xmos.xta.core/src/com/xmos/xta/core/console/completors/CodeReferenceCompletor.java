@@ -27,14 +27,14 @@ public class CodeReferenceCompletor implements Completor {
             Collection<CodePointInfo> srcLabelInfos = new ArrayList<CodePointInfo>();
             switch (m_type) {
             case ALLREFS:
-            	srcLabelInfos.addAll(m_engine.getEndpoints().values());
-            	srcLabelInfos.addAll(m_engine.getSrcLabels().values());
-            	srcLabelInfos.addAll(m_engine.getCalls().values());
+            	srcLabelInfos.addAll(m_engine.getEndpoints());
+            	srcLabelInfos.addAll(m_engine.getSrcLabels());
+            	srcLabelInfos.addAll(m_engine.getCalls());
             	break;
 
             case ENDPOINT:
-            	srcLabelInfos.addAll(m_engine.getEndpoints().values());
-            	srcLabelInfos.addAll(m_engine.getCalls().values());
+            	srcLabelInfos.addAll(m_engine.getEndpoints());
+            	srcLabelInfos.addAll(m_engine.getCalls());
             	break;
             	
             case LABEL:

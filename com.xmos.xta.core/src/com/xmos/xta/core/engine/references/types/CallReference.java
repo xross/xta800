@@ -13,7 +13,7 @@ public class CallReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference) {
 		if (checkTypeString(reference, Type.CALL, 1) &&
-			engine.getCalls().containsKey(getLabel(reference))) {
+			isValid(engine.getCalls(), getLabel(reference))) {
 			return new CallReference(reference);
 		}	
 		return null;
@@ -22,23 +22,30 @@ public class CallReference extends ReferenceType {
 	public boolean resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
-		
-		if (engine.getCalls().containsKey(label)) {			
-			CodePointInfo info = engine.getCalls().get(label);
-			setPc(info.getPc());
-			
-			Map<Long, CodePointTableInfo> callTable = engine.getCallTable();
-			if (!callTable.containsKey(info.getPc()))
-				return false;
-				
-		    CodePointTableInfo call = callTable.get(info.getPc());			
-			setFileName(call.getFileName());
-        	setLineNum(call.getLineNumber());
 
-			setResolved(true);
-			return true;
+		boolean found = false;
+		for (CodePointInfo info : engine.getCalls()) {
+			if (info.getLabel().equals(label)) {
+				addPc(info.getPc());
+			
+				Map<Long, CodePointTableInfo> callTable = engine.getCallTable();
+				if (!callTable.containsKey(info.getPc()))
+					return false;
+				
+				if (!found) {
+				    CodePointTableInfo call = callTable.get(info.getPc());			
+					setFileName(call.getFileName());
+		        	setLineNum(call.getLineNumber());
+				}
+
+				found = true;
+			}
 		}
-		return false;
+
+		if (found) {
+			setResolved(true);
+		}
+		return found;
 	}
 
 	public String name() {

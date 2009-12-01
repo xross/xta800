@@ -2,7 +2,9 @@ package com.xmos.xta.core.console.commands.list;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
+import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
@@ -48,10 +50,11 @@ public class Labels extends Command {
 			return;
 		}
 		
-    	Iterator<Map.Entry<String, Long>> iter = engine.getLabels().entrySet().iterator();        
+    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels().entrySet().iterator();        
     	while (iter.hasNext()) {
-    	    Map.Entry<String, Long> pair = iter.next();
-    	    console.display(String.format("Label: %s, pc: 0x%x\n", pair.getKey(), pair.getValue()));
+    	    Map.Entry<String, Set<Long>> pair = iter.next();
+    	    console.display(String.format("Label: %s, pcs: %s\n",
+    	    		pair.getKey(), Conversion.pcSetToString(pair.getValue())));
     	}		
 	}
 }

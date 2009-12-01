@@ -41,12 +41,12 @@ public class Calls extends Command {
 	}
 	
 	private void listCalls(Engine engine, Console console) {
-		if (engine.getCalls().entrySet().size() == 0){
+		if (engine.getCalls().size() == 0){
 			console.display("none\n");
 			return;
 		}
 
-		for (CodePointInfo info : engine.getCalls().values()) {
+		for (CodePointInfo info : engine.getCalls()) {
     	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
     	    
     	    if (!info.getCompilationDir().equals("")) {

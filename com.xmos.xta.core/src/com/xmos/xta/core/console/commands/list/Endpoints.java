@@ -41,12 +41,12 @@ public class Endpoints extends Command {
 	}
 	
 	private void listEndpoints(Engine engine, Console console) {
-		if (engine.getEndpoints().entrySet().size() == 0){
+		if (engine.getEndpoints().size() == 0){
 			console.display("none\n");
 			return;
 		}
 
-		for (CodePointInfo info : engine.getEndpoints().values()) {
+		for (CodePointInfo info : engine.getEndpoints()) {
     	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
     	    
     	    if (!info.getCompilationDir().equals("")) {

@@ -334,7 +334,7 @@ public class FunctionNode extends IBufferNode {
 
     				Node callNode = findCallNode(parent);
 					if (callNode != null) {
-						if (referenceType.getPc() == callNode.getStartPc()) {
+						if (referenceType.getPcs().contains(callNode.getStartPc())) {
 							referenceTypes.pop();
 							if (referenceTypes.empty()) {
 								return true;

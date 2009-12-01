@@ -3,12 +3,14 @@ package com.xmos.xta.core.engine.sourcemapper;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class AssemblyLine implements Line {	
 	
-	private Map<String, Long> m_labels;
+	private Map<String, Set<Long>> m_labels;
 	private static final int WIDTH = 20;
 	
 	public static String getLeadingWhiteSpace(){
@@ -37,7 +39,7 @@ public class AssemblyLine implements Line {
 	
 	private InstructionNode m_instructionNode;
 	
-	public AssemblyLine(InstructionNode instructionNode, Map<String, Long> labels) {
+	public AssemblyLine(InstructionNode instructionNode, Map<String, Set<Long>> labels) {
 		m_instructionNode = instructionNode;
 		m_labels = labels;
 	}
@@ -58,19 +60,18 @@ public class AssemblyLine implements Line {
 	public String getPreText(){
 		
 		String preText = "";
-		
-		for(String key : m_labels.keySet()){
-    		if(m_instructionNode.getXtaInstruction().getPc() == m_labels.get(key)){
+		for (String key : m_labels.keySet()) {
+    		if (m_labels.get(key).contains(m_instructionNode.getXtaInstruction().getPc())) {
     			preText = key+":";
     			break;
     		}
     	}
 		
-		if(preText.length() > WIDTH){
+		if (preText.length() > WIDTH){
 			preText = preText.substring(0, WIDTH);
 		}
 		
-		for(int i=preText.length(); i< WIDTH; i++){
+		for (int i = preText.length(); i< WIDTH; i++){
 			preText += " ";
 		}
 		
@@ -125,19 +126,19 @@ public class AssemblyLine implements Line {
 	        
 	        String target = functionName;
 	        
-	        if(functionName.startsWith("0x")){
-	        	for(String key : m_labels.keySet()){
-	        		if(inst.getBranchPcRelativeTargetPc() == m_labels.get(key)){
+	        if (functionName.startsWith("0x")) {
+	        	for (String key : m_labels.keySet()) {
+	        		if (m_labels.get(key).contains(inst.getBranchPcRelativeTargetPc())) {
 	        			target = key;
 	        			break;
 	        		}
 	        	}
 	        } 
-	        if(target == null){
+	        if (target == null) {
 	        	target = functionName;
 	        }
 	        
-	        if(operandString.contains("i ")){
+	        if (operandString.contains("i ")) {
 	        	operandString = operandString.substring(0, operandString.indexOf("i "));
 	        }
 	        operandString = operandString.trim();

@@ -1,9 +1,13 @@
 package com.xmos.xta.core.engine.references.types;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.FileNameMatcher;
+import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
@@ -11,7 +15,7 @@ import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 public abstract class ReferenceType {
 	private String m_ref;
 	private boolean m_resolved;
-	private long m_pc;
+	private Set<Long> m_pcs;
 	private String m_fileName;
 	private long m_lineNum;	
 	private Type m_type;
@@ -29,7 +33,7 @@ public abstract class ReferenceType {
 	
 	ReferenceType(String ref, Type type) {
 		m_ref = ref;
-		m_pc = 0;
+		m_pcs = new TreeSet<Long>();
 		m_resolved = false;
 		m_fileName = "";
 		m_lineNum = 0;
@@ -58,12 +62,12 @@ public abstract class ReferenceType {
     	m_resolved = resolved;
     }
     
-	public long getPc() {
-		return m_pc;
+	public Set<Long> getPcs() {
+		return m_pcs;
 	}	
 
-	public void setPc(long pc) {
-	    m_pc = pc;
+	public void addPc(long pc) {
+	    m_pcs.add(pc);
 	}
 
 	public String getFileName() {
@@ -222,21 +226,29 @@ public abstract class ReferenceType {
 		return false;
 	}
 	
-	public boolean matches(long pc) {
-		if (m_pc == pc) {
-			return true;
-		}
-		return false;
-	}
-	
     public int hashCode() {
         int hash = 1;
-        hash = hash * 31 + (int)m_pc;
+        for (long pc : m_pcs) {
+        	hash = hash * 31 + (int)pc;
+        }
         hash = hash * 31 + m_ref.hashCode();
         return hash;
     }
 
-	public boolean checkBackTrailMatches() {
+	public boolean checkPcsMatch() {
 		return true;
+	}
+
+    public boolean checkBackTrailMatches() {
+		return true;
+	}
+
+	public boolean isValid(List<CodePointInfo> list, String label) {
+		for (CodePointInfo info : list) {
+			if (info.getLabel().equals(label)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
