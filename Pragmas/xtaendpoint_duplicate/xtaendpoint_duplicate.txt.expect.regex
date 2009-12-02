@@ -1,2 +1,4 @@
-xta: error: duplicate endpoint: SAME at pc: 0x[0-9a-fA-F]+
-xta: error: no executable loaded
+Label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 9
+Label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 8
+Label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 12
+Label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 15

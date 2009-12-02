@@ -1,7 +1,7 @@
 Route\(0\) path: receive_loop to receive_loop
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 320.0 [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 320.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Route\(1\) path: eop_detected to packet_start
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.5 [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.5 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Pass, Min Core Frequency: \d+ mhz
