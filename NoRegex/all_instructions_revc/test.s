@@ -6,6 +6,9 @@
 _start:
   bl main
   clre
+
+stop:
+.xtabranch stop
   waiteu
 
 .type main, @function

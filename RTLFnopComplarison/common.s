@@ -7,6 +7,8 @@ _exit:
   ldc r3, 0
   bl _DoSyscall
   clrsr 1
+stop:
+.xtabranch stop
   waiteu
 
 _DoSyscall:

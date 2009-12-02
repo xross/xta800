@@ -7,6 +7,8 @@ _start:
   bl main
   clre
 .xtathreadstop
+stop:
+.xtabranch stop
   waiteu
 
 .type rems, @function
