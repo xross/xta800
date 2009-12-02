@@ -1069,8 +1069,8 @@ public class Engine implements Notifier, Aborter {
 			InstructionNode node = m_sourceMapper.get(m_nodeId, m_coreId).getInstructionNode(pc);
 			if (node == null) {
 				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from non-existant instruction at %s (0x%x)",
-						ref.toString(), pc));
+						String.format("adding branch from non-existant instruction at %s",
+						ref.toString()));
 				return;
 			}
 	
@@ -1078,8 +1078,8 @@ public class Engine implements Notifier, Aborter {
 			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
 				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from instruction which is not a branch: %s (0x%x)",
-						inst.toString(), pc));
+						String.format("adding branch from instruction which is not a branch: %s",
+						inst.toString()));
 				return;
 			}
 		}

@@ -53,6 +53,8 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 	private static final int LEFT_MOUSE_BUTTON = 1;
 	private static final int RIGHT_MOUSE_BUTTON = 3;
 
+	private static final double MAX_SCALE = 5;
+
     private ViewNode m_viewNode;
     protected ZoomedCanvasProperties m_canvasProperties;
     private Canvas m_canvas;
@@ -348,7 +350,7 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 		
 		// Don't zoom any more than the maximum width
 		double scale = m_renderControl.getScale();
-		if (scale < 5) {
+		if (scale < MAX_SCALE) {
 			updateScrollPositions();
 			m_renderControl.setScale(scale * 1.2);
 			updateScrollBars();
@@ -364,13 +366,16 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 	public void zoomFit() {
 		double xScale = (double)m_renderControl.getCanvasWidth() / (double)m_renderControl.getPixelsX();
 		double yScale = (double)m_renderControl.getCanvasHeight() / (double)m_renderControl.getPixelsY();
+		double scale = 0;
 		m_hScrollPosition = 0;
 		m_vScrollPosition = 0;
 		if (m_canvasProperties.scaleY()) {
-			m_renderControl.setScale((xScale < yScale) ? xScale : yScale);
+			scale = (xScale < yScale) ? xScale : yScale;
 		} else {
-			m_renderControl.setScale(xScale);
+			scale = xScale;
 		}
+		m_renderControl.setScale(scale > MAX_SCALE ? MAX_SCALE : scale);
+		
 		updateScrollBars();
 	}
 

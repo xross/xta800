@@ -19,6 +19,7 @@ import com.xmos.xta.core.engine.instructions.XtaInstructionDecoder;
 public class InstructionDecoder {
 	private int m_nodeId;
 	private int m_coreId;
+	private long m_endPc;
 	private Map<Long, InstructionNode> m_decodedInstructions;
 	private List<InstructionNode> m_orderedInstructions;	
 	private XeLoader m_xeLoader;
@@ -28,6 +29,7 @@ public class InstructionDecoder {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
+		m_endPc = Long.MIN_VALUE;
 		m_decodedInstructions = new HashMap<Long, InstructionNode>();
 		m_orderedInstructions = new LinkedList<InstructionNode>();
 		m_dataCollection = dataCollection;
@@ -66,6 +68,10 @@ public class InstructionDecoder {
 		            assert(prev == null);
 		            pc += inst.getNumBytes();
 				}
+
+				if (pc > m_endPc) {
+					m_endPc = pc;
+				}
 			}
 		}
 	}
@@ -76,5 +82,9 @@ public class InstructionDecoder {
 	
 	public InstructionNode getNode(long pc){
 		return m_decodedInstructions.get(pc);
+	}
+	
+	public long getEndPc() {
+		return m_endPc;
 	}
 }

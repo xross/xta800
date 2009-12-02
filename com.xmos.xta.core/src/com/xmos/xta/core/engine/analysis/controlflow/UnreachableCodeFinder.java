@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,7 +23,7 @@ public class UnreachableCodeFinder {
 	 * and threads don't have invalid predecessors.
 	 */
 	public void analyseReachable(InstructionDecoder id, Collection<InstructionNode> threadStarts, 
-			Collection<InstructionNode> functionStarts){
+			Collection<InstructionNode> functionStarts) {
 		m_unreachable.clear();
 		m_unreachable.addAll(id.getInstructions());
 		Set<Node> reachable = new TreeSet<Node>();
@@ -47,16 +47,16 @@ public class UnreachableCodeFinder {
 		}
 	}
 
-	private void explore(Node node, Collection<Node> seen){
-		List<Node> toDo = new LinkedList<Node>();
+	private void explore(Node node, Collection<Node> seen) {
+		List<Node> toDo = new ArrayList<Node>();
 		toDo.add(node);
 		
-		while(!toDo.isEmpty()){
+		while (!toDo.isEmpty()) {
 			Node currentNode = toDo.get(0);
-			if(!seen.contains(currentNode)){
+			if (!seen.contains(currentNode)) {
 				seen.add(currentNode);
-				for(Node next : currentNode.getNextNodes()){
-					if(!seen.contains(next)){
+				for (Node next : currentNode.getNextNodes()) {
+					if (!seen.contains(next)) {
 						toDo.add(next);
 					}
 				}
@@ -64,8 +64,5 @@ public class UnreachableCodeFinder {
 			
 			toDo.remove(currentNode);
 		}
-		
 	}
-	
-	
 }

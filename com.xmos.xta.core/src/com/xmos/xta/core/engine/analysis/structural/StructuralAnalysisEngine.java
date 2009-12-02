@@ -402,12 +402,12 @@ public class StructuralAnalysisEngine {
 
 	private boolean haltsProcessor(Node basicBlock) {
 		LinkedList<XtaInstruction> instruction = basicBlock.getInstructions();
-		if(instruction.size() > 1){
+		if (instruction.size() > 1) {
 			InstructionMnemonics im = new InstructionMnemonics(m_arch);
-			if(im.isClre(instruction.get(instruction.size()-2)) && im.isWait(instruction.getLast())){
+			if (im.isClre(instruction.get(instruction.size() - 2)) && im.isWait(instruction.getLast())) {
 				return true;
-			} 
-		} 
+			}
+		}
 		return false;
 	}
 

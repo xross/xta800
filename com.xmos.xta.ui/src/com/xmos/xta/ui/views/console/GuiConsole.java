@@ -156,7 +156,7 @@ public class GuiConsole extends Console implements IPropertyChangeListener {
 	}
 	
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Broadcaster.BROADCAST_SYNC_CONSOLE)) {
+		if (event.getProperty().equals(Broadcaster.BROADCAST_SRC_COMMANDS_DONE)) {
 			if (!caretAtEnd()) {
 		        displayPrompt(m_prompt);
 				setCaretToEnd();

@@ -100,7 +100,7 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 					}
 				});
 				
-				GuiEngine.broadcast(Broadcaster.BROADCAST_SYNC_CONSOLE, "");
+				GuiEngine.broadcast(Broadcaster.BROADCAST_SRC_COMMANDS_DONE, "");
 				engine.setMonitor(null);
 	        	if (success && (m_action != null)) {	        		
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());

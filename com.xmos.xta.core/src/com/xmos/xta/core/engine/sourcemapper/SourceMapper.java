@@ -255,26 +255,11 @@ public class SourceMapper {
 	private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
     	Set<Long> addresses = new TreeSet<Long>();
 		for (Pair<Long, Long> range : addressRanges) {
-			int asmLineNum = 0;
-			boolean active = false;
-			
-			while (!active && asmLineNum < m_instructions.size()) {
-				AssemblyLine line = m_instructions.get(asmLineNum);
-				if (line.getPc() == range.first) {
-					active = true;
-				} else {
-					asmLineNum++;
-				}
-			}
-
-			assert(active);
-			while (active && asmLineNum < m_instructions.size()) {
-				AssemblyLine line = m_instructions.get(asmLineNum);
-				if (line.getPc() == range.second) {
-					active = false;
-				} else {
-					addresses.add((long)line.getPc());
-					asmLineNum++;
+			long endPc = m_instructionDecoder.getEndPc();
+			for (long pc = range.first; (pc < range.second) && (pc <= endPc); pc += 2) {
+				InstructionNode node = m_instructionDecoder.getNode(pc);
+				if (node != null) {
+					addresses.add(pc);
 				}
 			}
 		}
@@ -296,12 +281,12 @@ public class SourceMapper {
     	
     	Map<Long, Function> pcToFunction = new HashMap<Long, Function>();
     	
-    	for(InstructionNode inst : m_starts){
+    	for (InstructionNode inst : m_starts){
     		int startIndex = instList.indexOf(inst);
     		List<AssemblyLine> functionAssemby = new ArrayList<AssemblyLine>();
     		functionAssemby.add(m_instructions.get(startIndex));
     		int index = startIndex +1;
-    		while(index < instList.size() && !m_starts.contains(instList.get(index))){
+    		while (index < instList.size() && !m_starts.contains(instList.get(index))){
     			functionAssemby.add(m_instructions.get(index));
     			index++;
     		}

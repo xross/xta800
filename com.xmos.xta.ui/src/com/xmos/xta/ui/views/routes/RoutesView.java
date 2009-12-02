@@ -96,6 +96,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener {
 				   event.getProperty().equals(Notifier.NOTIFY_UPDATE_UNKNOWNS)) {
 			refreshTrees();
 			
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SRC_COMMANDS_DONE)) {
+			initialiseTrees();
+			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
 			m_selectedRouteViewer.initialise();
 

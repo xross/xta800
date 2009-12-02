@@ -29,7 +29,7 @@ public class Broadcaster {
 	public static final String BROADCAST_ZOOM_OUT_DISABLED   = "ZoomOutDisabled";
 	public static final String BROADCAST_ZOOM_RESET_ENABLED  = "ZoomResetEnabled";
 	public static final String BROADCAST_ZOOM_RESET_DISABLED = "ZoomResetDisabled";
-	public static final String BROADCAST_SYNC_CONSOLE        = "SyncConsole";
+	public static final String BROADCAST_SRC_COMMANDS_DONE   = "SrcCommandsDone";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
 

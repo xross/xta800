@@ -124,6 +124,7 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
 				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			initialiseTree();
+			refresh();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_UPDATE_FOLDING)) {
 			refresh();

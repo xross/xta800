@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -159,7 +158,7 @@ public class ConditionalNode extends Node {
 	}
 	
 	public List<Node> getAllUnsetOptions() {
-		List<Node> unsetOptions = new ArrayList<Node>();
+		List<Node> unsetOptions = new LinkedList<Node>();
 		for (Node option : m_options) {
 			if (!getAttributes().getSetOption(option)) {
 				unsetOptions.add(option);				
@@ -169,7 +168,7 @@ public class ConditionalNode extends Node {
 	}
 
 	public List<Node> getAllSetOptions() {
-		List<Node> setOptions = new ArrayList<Node>();
+		List<Node> setOptions = new LinkedList<Node>();
 		for (Node option : m_options) {
 			if (getAttributes().getSetOption(option)) {
 				setOptions.add(option);

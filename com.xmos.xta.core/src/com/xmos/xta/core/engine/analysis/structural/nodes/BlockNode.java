@@ -47,7 +47,7 @@ public class BlockNode extends IBufferNode {
 		List<InstructionNode> insts;
 		if (COPY_INSTRUCTIONS){
 			insts = new LinkedList<InstructionNode>();
-			for(InstructionNode inst : m_insts){
+			for (InstructionNode inst : m_insts){
 				insts.add((InstructionNode) inst.deepCopy(aborter));
 			}
 		} else {

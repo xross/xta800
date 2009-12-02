@@ -494,35 +494,31 @@ public class RouteConstructor {
 	}
 
 	private boolean alreadyContainRoute(Node newGraph) {
-		final List<String> newNodeList = new LinkedList<String>();
-		
-		newGraph.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-	    		newNodeList.add(node.getTypeName());
-	        	return TraverseStatus.CONTINUE;
-	    	}
-	    });	 
-		
+		final List<String> newNodeList = createRouteDescription(newGraph);
+
 		for (Route route : m_routes){			
-			final List<String> nodeList = new LinkedList<String>();
-			
-			route.getNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-		    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-		    		if(node.isInstructionNode()){
-		    			nodeList.add(node.getTypeName()+node.getStartPc());
-		    		} else {
-		    			
-		    			nodeList.add(node.getTypeName());
-		    		}
-		        	return TraverseStatus.CONTINUE;
-		    	}
-		    });	 
-			
-			if(newNodeList.containsAll(nodeList)){
+			List<String> nodeList = createRouteDescription(route.getNode());
+			if (newNodeList.containsAll(nodeList)){
 				return true;
-			}	
+			}
 		}
 		return false;
+	}
+
+	private List<String> createRouteDescription(Node node) {
+		final List<String> nodeList = new LinkedList<String>();
+		
+		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+	    		if(node.isInstructionNode()){
+	    			nodeList.add(node.getTypeName()+node.getStartPc());
+	    		} else {
+	    			nodeList.add(node.getTypeName());
+	    		}
+	        	return TraverseStatus.CONTINUE;
+	    	}
+	    });
+		return nodeList;
 	}
 
 	private void addTerminator(Collection<NodeDescriptor> workingSet) {

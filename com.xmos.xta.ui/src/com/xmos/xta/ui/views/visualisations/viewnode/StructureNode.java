@@ -63,8 +63,8 @@ public abstract class StructureNode extends ViewNode {
 
 		if (getChildren().size() == 0) {
 			// The EndNode has no children
-	    	drawConnection(display, gc, m_pixelOffsetX, midY, m_pixelOffsetX + getPixelsX(),
-	    			midY, isBestCase, isWorstCase);
+	    	drawConnection(display, gc, scaleX(m_pixelOffsetX), midY,
+	    			scaleX(m_pixelOffsetX + getPixelsX()), midY, isBestCase, isWorstCase);
 			return;
 		}
 		assert(getChildren().size() > 0);
