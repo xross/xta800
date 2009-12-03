@@ -6,19 +6,19 @@ import java.util.List;
 public class TimeDistributionBuckets {
 	public static final int BUCKET_COUNT = 80;
 	
-	private double m_buckets [];
+	private double m_buckets[];
 	private double m_lowest;
 	private double m_highest;
 	private boolean m_isInfinite;
 	
 	public TimeDistributionBuckets(){
-		m_buckets = new double [BUCKET_COUNT];
+		m_buckets = new double[BUCKET_COUNT];
 		m_isInfinite = false;
 	}
 	public TimeDistributionBuckets(TimeDistributionBuckets b){
-		m_buckets = new double [BUCKET_COUNT];
+		m_buckets = new double[BUCKET_COUNT];
 		
-		for(int i =0;i< BUCKET_COUNT; i++) {
+		for (int i =0; i < BUCKET_COUNT; i++) {
 			m_buckets[i] = b.m_buckets[i];
 		}
 		m_isInfinite = b.m_isInfinite;
@@ -27,7 +27,7 @@ public class TimeDistributionBuckets {
 	}
 	
 	public TimeDistributionBuckets(long time){
-		m_buckets = new double [BUCKET_COUNT];
+		m_buckets = new double[BUCKET_COUNT];
 		m_lowest = time;
 		m_highest = time;
 		m_buckets[timeToBucket(time)] = 1;
@@ -37,10 +37,13 @@ public class TimeDistributionBuckets {
 	private void normalise(){
 		double total = 0;
 
-		for(int i=0;i<BUCKET_COUNT;i++){
+		if (m_isInfinite)
+			return;
+		
+		for (int i=0; i < BUCKET_COUNT;i++) {
 			total += m_buckets[i];
 		}
-		for(int i=0;i<BUCKET_COUNT;i++){
+		for (int i=0; i < BUCKET_COUNT;i++) {
 			m_buckets[i] = m_buckets[i]/total;
 		}
 	}
@@ -51,12 +54,12 @@ public class TimeDistributionBuckets {
 	 * i.e. a sequence
 	 */
 	public void add (List<TimeDistributionBuckets> list){
-		if(list.size() == 2){
+		if (list.size() == 2) {
 			add(list.get(0), list.get(1));
 		} else {
 			TimeDistributionBuckets time = list.get(0);
 			int i = 1;
-			while(i < list.size()){
+			while (i < list.size()){
 				TimeDistributionBuckets t = new TimeDistributionBuckets();
 				t.add(time, list.get(i));
 				i++;
@@ -72,9 +75,8 @@ public class TimeDistributionBuckets {
 		
 	}
 	
-	
 	public void add (TimeDistributionBuckets b0, TimeDistributionBuckets b1){
-		if(b0.isInfinite() || b1.isInfinite()) {
+		if (b0.isInfinite() || b1.isInfinite()) {
 			setInfinite();
 			m_buckets = new double [BUCKET_COUNT];
 			return;
@@ -214,7 +216,7 @@ public class TimeDistributionBuckets {
 	
 	public double getMaxBucket() {
 		double max = 0.0;
-		for(double i : m_buckets){
+		for (double i : m_buckets){
 			max = Math.max(max, i);
 		}
 		return max;

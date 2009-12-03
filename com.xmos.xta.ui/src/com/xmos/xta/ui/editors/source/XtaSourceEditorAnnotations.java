@@ -197,6 +197,9 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
 		String fileName = sourceMapper.getDebugFileName(getFileName());		
 		SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
+		if (sourceFile == null)
+			return null;
+			
 		return sourceFile.getLineForPc(pc);
 	}
 

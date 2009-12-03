@@ -212,7 +212,7 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 		gc.setBackground(m_display.getSystemColor(SWT.COLOR_WHITE));
 		gc.fillRectangle(0, 0, m_canvas.getClientArea().width,m_canvas.getClientArea().height );
 		
-		if (m_tdb != null){
+		if (m_tdb != null && !m_tdb.isInfinite()) {
 			double currentX=SIDE_BORDER_X;
 			double maxBucket = m_tdb.getMaxBucket();
 			double stepX = ((double)(m_canvas.getClientArea().width- 2*SIDE_BORDER_X))/(double)TimeDistributionBuckets.BUCKET_COUNT;
