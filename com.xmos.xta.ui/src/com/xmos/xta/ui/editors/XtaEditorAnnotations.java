@@ -180,6 +180,9 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		if (canAnnotate()) {
 	        Set<Long> startPointIndexes = getStartPointIndexes();
 	        Set<Long> endPointIndexes = getEndPointIndexes();
+	        
+	        startPointIndexes.remove(Long.valueOf(-1));
+	        endPointIndexes.remove(Long.valueOf(-1));
 	
 	        for (long startPointIndex : startPointIndexes) {
 	        	if (endPointIndexes.contains(startPointIndex)) {
@@ -189,7 +192,9 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	        	}
 	        }
 	        for (long endPointIndex : endPointIndexes) {
-            	addAnnotationForIndex(endPointIndex, StopAnnotationID, allAnnotations, allPositions);
+	        	if (!startPointIndexes.contains(endPointIndex)) {
+	        		addAnnotationForIndex(endPointIndex, StopAnnotationID, allAnnotations, allPositions);
+	        	}
 	        }
 	
 	        for (Reference exclusion : GuiEngine.getEngine().getExclusions()) {
