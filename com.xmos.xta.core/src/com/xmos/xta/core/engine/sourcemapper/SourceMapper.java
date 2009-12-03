@@ -17,6 +17,7 @@ import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -41,7 +42,7 @@ public class SourceMapper {
 	
     public SourceMapper(Engine engine, XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, InstructionDecoder instructionDecoder, 
-			Map<String, List<InstructionNode>> treeMap, Map<String, Set<Long>> labels) {
+			Map<String, List<InstructionNode>> treeMap, Map<String, Set<Long>> labels) throws AbortedException {
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;
@@ -52,7 +53,7 @@ public class SourceMapper {
         initialise(engine, xeLoader, nodeId, coreId);
 	}
 
-    public void initialise(Engine engine, XeLoader xeLoader, int nodeId, int coreId) {
+    public void initialise(Engine engine, XeLoader xeLoader, int nodeId, int coreId) throws AbortedException {
         m_pcToFile = new TreeMap <Long, SourceFile>();
         m_instructions = createAssemblyLines();
         m_functions = createFunctions();
@@ -69,7 +70,9 @@ public class SourceMapper {
         return null;
     }
   
-    private List<SourceFile> createSourceFiles(Engine engine, XeLoader xeLoader, int nodeId, int coreId) {
+    private List<SourceFile> createSourceFiles(Engine engine, XeLoader xeLoader,
+    		int nodeId, int coreId) throws AbortedException {
+    	
     	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
 
     	DebugInfo di = xeLoader.getDebugInfo(nodeId, coreId);     	
@@ -77,8 +80,12 @@ public class SourceMapper {
             
         if (DEBUG) System.out.printf("createSourceFiles: node: %d, core: %d\n", nodeId, coreId);            
             
-      	for (DebugFile debugFile : de.getDebugFiles()) {
+		Collection<DebugFile> debugFiles = de.getDebugFiles();
+		engine.startAnalysis("Processing sources", debugFiles.size());				
+      	for (DebugFile debugFile : debugFiles) {
 			File file = new File(debugFile.getFullFileName());
+    		engine.provideFeedback(file.getName());
+    		
 			boolean done = false;
 			while (!done) {
 				if (file.exists()) {
@@ -97,6 +104,8 @@ public class SourceMapper {
 					done = true;
 				}
 			}
+			engine.provideWorkDone(1);
+			engine.getAbort();
 		}
 
         return sourceFiles;
@@ -314,9 +323,9 @@ public class SourceMapper {
     
     private String getFunctionName(InstructionNode inst) {
     	
-    	for(String functionName : m_functionNames.keySet()){
-    		for(InstructionNode fnInst : m_functionNames.get(functionName)){
-				if(fnInst.getStartPc() == inst.getStartPc()){
+    	for (String functionName : m_functionNames.keySet()) {
+    		for (InstructionNode fnInst : m_functionNames.get(functionName)) {
+				if (fnInst.getStartPc() == inst.getStartPc()) {
 					return functionName;
 				}
     		}

@@ -54,7 +54,6 @@ public class FunctionHandler {
 						newFunctions.add(fn);
 						
 						next.removePrevNode(instruction);
-						
 					}
 					instruction.clearNextNodes();
 					for (Node f : newFunctions) {

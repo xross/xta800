@@ -180,7 +180,7 @@ public class GuiConsole extends Console implements IPropertyChangeListener {
 			    	m_text.setSelection(m_text.getCharCount());
 			    }
 	    	});
-		}			
+		}
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: display\n");
 	}
 
@@ -190,8 +190,10 @@ public class GuiConsole extends Console implements IPropertyChangeListener {
     	m_prompt = str;		
 	    m_display.syncExec(new Runnable() {
 	        public void run() {
-		    	m_text.append(m_prompt);
-	    	   	m_text.setSelection(m_text.getCharCount());
+	    		if (!m_text.isDisposed()) {
+			    	m_text.append(m_prompt);
+		    	   	m_text.setSelection(m_text.getCharCount());
+	    		}
 			}
 	    });
 		if (DEBUG) System.out.printf("GuiConsole: Leaving: displayPrompt\n");			

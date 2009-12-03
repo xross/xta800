@@ -61,6 +61,7 @@ import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
+import com.xmos.xta.core.engine.sourcemapper.Function;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
@@ -186,8 +187,13 @@ public class Engine implements Notifier, Aborter {
 	public Collection<String> getNonSystemFunctionNames() {
 		if (!m_xeLoader.isLoaded(m_nodeId, m_coreId))
 			return new HashSet<String>();
-			
-		Collection<String> functionNames = m_xeLoader.getFunctionNames(m_nodeId, m_coreId);
+		
+		Collection<Function> functions = getSourceMapper().getFunctions();
+		Collection<String> functionNames = new LinkedList<String>();
+		for (Function function : functions) {
+			functionNames.add(function.getText());
+		}
+		
 		Set<String> systemFunctions = new HashSet<String>();
 		Collection<String> systems = m_sections.getSystems(m_nodeId, m_coreId);
 		for (String functionName : functionNames) {
@@ -238,20 +244,23 @@ public class Engine implements Notifier, Aborter {
 		} catch (IOException e) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("failed to resolve executable path: %s", executableFile.getName()));
 			return false;			
-		}		
+		}
 		
+		setAnalysisName("Loading XE");
 		XeLoader xeLoader = new XeLoader();
 		if (!xeLoader.loadExecutable(executableFile)) {
 			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' could not be loaded.");
 			return false;			
 		}
 
+		setAnalysisName("Loading XN");
 		XnLoader xnLoader = new XnLoader();
 		if (!xnLoader.loadExecutable(executableFile)) {
 			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' did not contain a valid XN.");
 			return false;			
 		}
 
+		setAnalysisName("Loading sections");
 		Sections sections = new Sections();
 		if (!sections.load(src, xeLoader, this)) {
 			return false;
@@ -498,9 +507,9 @@ public class Engine implements Notifier, Aborter {
 		}		
 	}
 	
-	public void startAnalysis(String task, int functionCount) {
+	public void startAnalysis(String task, int workToDo) {
 		if (m_progressMonitor != null) {
-			m_progressMonitor.beginTask(task, functionCount);
+			m_progressMonitor.beginTask(task, workToDo);
 		}	
 	}
 
@@ -1206,7 +1215,7 @@ public class Engine implements Notifier, Aborter {
 			//System.out.println("node " + nodeId + " core " + coreId + " is up to date");
 			
 		} else {
-			provideFeedback(String.format("Processing node: %d, core: %d", nodeId, coreId));
+			setAnalysisName(String.format("Processing node: %d, core: %d", nodeId, coreId));
 			
 			InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config, m_dataCollection);
 			try {
@@ -1249,9 +1258,13 @@ public class Engine implements Notifier, Aborter {
 			
 			setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
 
-			provideFeedback(String.format("Processing sources..."));				
-			SourceMapper sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
-					id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
+			SourceMapper sourceMapper;
+			try {
+				sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
+						id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
+			} catch (AbortedException e) {
+				return false;
+			}
 			
 			for (FileLocation fileLocation : m_userSpecifedFileLocations) {
 				if ((fileLocation.m_nodeId == nodeId) && (fileLocation.m_coreId == coreId)) {
@@ -1264,6 +1277,7 @@ public class Engine implements Notifier, Aborter {
 			UnreachableCodeFinder uca = new UnreachableCodeFinder();
 			uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 			
+			setAnalysisName("Creating control flow graph");				
 			ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts());
 			
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
