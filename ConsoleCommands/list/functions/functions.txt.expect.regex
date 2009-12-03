@@ -4,21 +4,25 @@
 - .* \(0x[0-9a-fA-F]{5}\)
 [^^^]
 - test0 \(0x[0-9a-fA-F]{5}\)
+- wakeCore \(0x[0-9a-fA-F]{5}\)
 - a1 \(0x[0-9a-fA-F]{5}\)
 - b1 \(0x[0-9a-fA-F]{5}\)
 - c1 \(0x[0-9a-fA-F]{5}\)
 - .* \(0x[0-9a-fA-F]{5}\)
 [^^^]
 - test1 \(0x[0-9a-fA-F]{5}\)
+- waitForScratch \(0x[0-9a-fA-F]{5}\)
 - a2 \(0x[0-9a-fA-F]{5}\)
 - b2 \(0x[0-9a-fA-F]{5}\)
 - c2 \(0x[0-9a-fA-F]{5}\)
 - .* \(0x[0-9a-fA-F]{5}\)
 [^^^]
 - test2 \(0x[0-9a-fA-F]{5}\)
+- waitForScratch \(0x[0-9a-fA-F]{5}\)
 - a3 \(0x[0-9a-fA-F]{5}\)
 - b3 \(0x[0-9a-fA-F]{5}\)
 - c3 \(0x[0-9a-fA-F]{5}\)
 - .* \(0x[0-9a-fA-F]{5}\)
 [^^^]
 - test3 \(0x[0-9a-fA-F]{5}\)
+- waitForScratch \(0x[0-9a-fA-F]{5}\)
