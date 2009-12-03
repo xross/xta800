@@ -2,7 +2,6 @@ package com.xmos.xta.core.engine.references.types;
 
 import java.util.Collection;
 
-import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.xta.core.engine.Engine;
 
 public class FunctionReference extends ReferenceType {
@@ -24,13 +23,10 @@ public class FunctionReference extends ReferenceType {
 		
         Collection<String> functionNames = engine.getFunctionNames();
         if (functionNames.contains(functionName)) {        	        	
-    	    int nodeId = engine.getNodeId();
-    	    int coreId = engine.getCoreId();        	        	
-            SymbolTable symbolTable = engine.getXeLoader().getSymbolTable(nodeId, coreId);            
-		    addPc(symbolTable.symbolAddress(functionName));
+		    addPc(engine.getFunctionPc(functionName));
 	        setResolved(true);
-	        return true;	        
-        }	    
+	        return true;
+        }
 	    return false;
 	}	
 	

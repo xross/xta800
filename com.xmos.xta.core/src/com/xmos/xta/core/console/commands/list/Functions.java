@@ -1,8 +1,6 @@
 package com.xmos.xta.core.console.commands.list;
 
 import java.util.Collection;
-import com.xmos.libs.xeloader.SymbolTable;
-import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
@@ -36,16 +34,10 @@ public class Functions extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			
         
-	    int nodeId = engine.getNodeId();
-	    int coreId = engine.getCoreId();
-	    
         Collection<String> functionNames = engine.getNonSystemFunctionNames();
         if (functionNames.size() > 0) {
-            XeLoader xeLoader = engine.getXeLoader();
-            SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
-            
             for (String functionName : functionNames) {
-            	long functionAddress = symbolTable.symbolAddress(functionName);
+            	long functionAddress = engine.getFunctionPc(functionName);
                 console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
             }        	
         } else {
