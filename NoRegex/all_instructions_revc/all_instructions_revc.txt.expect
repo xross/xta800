@@ -20,8 +20,15 @@ xta: warning: No branch targets set on instruction (main+26) 0x10020 blacp (lu10
 xta: warning: No branch targets set on instruction (main+30) 0x10024 blat (u6) i 0xfc
 xta: warning: No branch targets set on instruction (main+32) 0x10026 blat (lu6) i 0x3fffc
 xta: warning: No branch targets set on instruction (main+84) 0x1005a bru (1r) r0
+xta: warning: No branch targets set on instruction (main+116) 0x1007a dcall (0r) 
 xta: warning: No branch targets set on instruction (main+132) 0x1008a dret (0r) 
+xta: warning: No branch targets set on instruction (main+220) 0x100e2 kcall (u6) i 0x3f
+xta: warning: No branch targets set on instruction (main+222) 0x100e4 kcall (lu6) i 0xffff
+xta: warning: No branch targets set on instruction (main+226) 0x100e8 kcall (1r) r0
 xta: warning: No branch targets set on instruction (main+240) 0x100f6 kret (0r) 
+xta: warning: No branch targets set on instruction (main+546) 0x10228 waitef (1r) r0
+xta: warning: No branch targets set on instruction (main+548) 0x1022a waitet (1r) r0
+xta: warning: No branch targets set on instruction (main+550) 0x1022c waiteu (0r) 
   0.0: (20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
   20.0: (20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, i 0x1
   40.0: (20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0

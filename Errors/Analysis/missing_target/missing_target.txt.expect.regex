@@ -1,4 +1,4 @@
-xta: warning: target \(0x10010\) of: \(main\+\d+\) 0x10008 blrf \(lu10\) i 0x4 not found in executable sectio[mun]s
+xta: warning: target \(0x10010\) of: \(main\+\d+\) 0x10008 blrf \(lu10\) i 0x4 not found in executable sections
 Current node: 0
 Current core: 0
 Frequency: 400

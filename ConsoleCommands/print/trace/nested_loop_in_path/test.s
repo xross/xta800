@@ -9,6 +9,8 @@ _start:
   bl main
   clre
 .xtathreadstop
+stop:
+.xtabranch stop
   waiteu
 
 .align 4

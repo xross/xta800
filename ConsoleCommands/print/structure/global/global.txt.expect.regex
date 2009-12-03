@@ -1,4 +1,5 @@
-function\(\d+\)\s+: n/a / n/a unnamed_thread_at_0x10000
+xta: warning: No branch targets set on instruction \(\?\?\?\+0\) 0x10004 waiteu \(0r\) 
+function\(\d+\)\s+: n/a / n/a \?\?\?
 .    block\(\d+\)\s+: n/a \(x 1\) / n/a \(x 1\) 
 .    function\(\d+\)\s+: n/a / n/a main
 .    .    block\(\d+\)\s+: n/a \(x 1\) / n/a \(x 1\) 
