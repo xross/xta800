@@ -202,6 +202,9 @@ public class ConditionalNode extends Node {
 		Node caseNode = iter.next();		
 		Status s = new Status();
 		double caseTime = caseNode.getAttributes().getTimeTaken(c, s, ignoreIterationsAboveCond);
+		if (c == Case.WORST && s.isUnresolved()) {
+			return caseNode;
+		}
 
 		while (iter.hasNext()) {
 			Node node = iter.next();
@@ -209,14 +212,16 @@ public class ConditionalNode extends Node {
 			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
 			switch (c) {
 			case WORST:
-				if (time > caseTime) {
+				if (status.isUnresolved()) {
+					return node;
+				} else if ((time > caseTime)) {
 				    caseNode = node;
 				    caseTime = time;
 				}
 				break;
 				
 			case BEST:
-				if (time <= caseTime && status.getStatus() != Status.S.ZERO) {
+				if (time <= caseTime && !status.isZero() && !status.isUnresolved()) {
 				    caseNode = node;
 				    caseTime = time;
 				}

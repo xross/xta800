@@ -31,6 +31,7 @@ public class FunctionNode extends IBufferNode {
 		m_attributes = new NodeAttributes(this);
 		m_functionEndNodes = new TreeSet<Node>();
 		m_callingFunctions = new ArrayList<FunctionNode>();
+		setUnresolved(true);
 	}
 	
 	public FunctionNode(Node branchTarget) {
@@ -278,7 +279,7 @@ public class FunctionNode extends IBufferNode {
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbSequence = new LinkedList<TimeDistributionBuckets>();
-		if(m_functionSequence != null && !m_functionSequence.isEmpty()){
+		if (m_functionSequence != null && !m_functionSequence.isEmpty()) {
 			for(Node node : m_functionSequence){
 				tsbSequence.add(node.getTimeSpread());
 			}
