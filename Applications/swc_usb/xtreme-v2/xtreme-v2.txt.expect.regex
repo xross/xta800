@@ -1,10 +1,36 @@
 xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
 xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
 xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
 xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bau \(1r\) r11
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waitet \(1r\) r10
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waitef \(1r\) r11
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waitet \(1r\) r11
+xta: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
 xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
 xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
 xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ bru \(1r\) r8
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waitet \(1r\) r10
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waitef \(1r\) r11
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waitet \(1r\) r11
+xta: cmds.txt:\d+: warning: No branch targets set on instruction \(XUD_Error\+\d+\) 0x[0-9a-z]+ waiteu \(0r\) 
 Route\(0\) path: ReadDataPidByte to NextRxWord
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 133.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
