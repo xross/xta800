@@ -1,0 +1,9 @@
+#ifndef __IAP_storageLingo_CMDS_H__
+#define __IAP_storageLingo_CMDS_H__
+CMD_storageLingo_GetiPodCaps,
+CMD_storageLingo_OpeniPodFeatureFile,
+CMD_storageLingo_WriteiPodFileData,
+CMD_storageLingo_CloseiPodFile,
+CMD_storageLingo_GetiPodFreeSpace,
+CMD_storageLingo_RetDeviceCaps,
+#endif

@@ -1,0 +1,227 @@
+#include <xs1.h>
+#include <xclib.h>
+#include "global.h"
+#include "audioManager.h"
+
+/*
+ * Audio Manager thread for S/PDIF output only
+ */
+
+#if defined I2SOUTPUT
+
+#define increment(v,a) { v = (v+a) & MASK; }
+#define numElementsInBuffer(rptr, wptr) ((AUDIO_BUF_SIZE + wptr - rptr) & MASK)
+
+int iflash_state = 0;
+int running = 0;
+signed short audiodata[AUDIO_BUF_SIZE];
+#pragma unsafe arrays
+void audioManager(
+    streaming_chanend cAudioStreaming, streaming chanend cSOFGen, streaming chanend cAudioMixer,
+    s_audio &audioports)
+{
+  
+  int rptr = 0;
+  int wptr = 0;
+  int count = 0;
+  int volume = 0;
+  int freqcount = 112896;
+  int nelements;
+  
+  set_thread_fast_mode_on();
+  
+  // Tell EP manager we do not require notification on device disconnect
+  cAudioStreaming <: 0;
+  
+  // Init buf
+  for (int i=0; i<AUDIO_BUF_SIZE; i++)
+    audiodata[i] = 0;
+  
+  cSOFGen <: 1;
+  
+  while (1)
+  {
+      // Left Channel
+      audioports.p_sdout <: bitrev(audiodata[rptr] << 16);
+#ifdef LR_CLK_1B_PORT
+      audioports.p_lrclk <: 0x80000000;
+#endif
+#pragma xta endpoint "audio_left_o0"
+      audioports.p_bclk <: 0xCCCCCCCC;
+      nelements = numElementsInBuffer(rptr, wptr);
+      count += 2560;
+      if (count > freqcount)
+      {
+        select
+        {
+        case cSOFGen :> int _:
+          cSOFGen <: 1;
+          break;
+        default:
+          break;
+        }
+        count -= freqcount;
+      }
+      
+      for (int i=0; i<3; i++)
+      {
+#pragma xta endpoint "audio_left_o1"
+        audioports.p_bclk <: 0xCCCCCCCC;
+        {
+          unsigned val;
+          select
+          {
+#ifdef USE_STREAMING_CHANNELS
+            case cAudioStreaming :> val:
+#else
+            case inuint_byref(cAudioStreaming, val):              
+#endif
+
+	      // @!@!@ Start adding in ifirm work.
+	      // State machine to capture XMOS magic.
+	      // Mono stream?
+	      
+
+              audiodata[wptr] = ((int)val * volume) >> 8;
+              running = (nelements > 128);
+              increment(wptr, (nelements < AUDIO_BUF_SIZE - 2 ));
+#ifdef AUDIO_BUFFER_CHECKS
+              if (nelements > AUDIO_BUF_SIZE - 2 )
+              {
+                printstr("Audio buffer overflow");
+              }
+#endif
+              break;
+            default:
+              break;
+          }
+        }
+      }
+
+      
+      // Right Channel
+      audioports.p_sdout <: bitrev(audiodata[rptr+1] << 16);
+#ifdef LR_CLK_1B_PORT
+      audioports.p_lrclk <: 0x7FFFFFFF;
+#endif
+      
+      // BCLK0
+#pragma xta endpoint "audio_right_o0"
+      audioports.p_bclk <: 0xCCCCCCCC;
+      if (running && nelements > 0)
+      {
+        increment(rptr,2);
+      }
+#ifdef AUDIO_BUFFER_CHECKS
+      else if (running)
+      {
+        printstrln("Audio buffer underflow");
+      }
+#endif
+      else
+      {
+        running = 0;
+      }
+      for (int i=0; i<3; i++)
+      {
+        {
+          select
+          {
+            case cAudioMixer :> int cmd:
+        #pragma xta label "audio_freqadjust"
+              switch (cmd)
+              {
+              case 0:
+              {
+                int val;
+                cAudioMixer :> val;
+                switch (val)
+                {
+                case 0:
+                  freqcount = 112896;
+                  break;
+                case 1:
+                  freqcount = 122880;
+                  break;
+                }
+              }
+              break;
+              case 1:
+              {
+        #pragma xta label "audio_wipebuf"
+                for (int i=0; i<AUDIO_BUF_SIZE; i++)
+                  audiodata[i] = 0;
+              }
+              break;
+              case 4:
+        #pragma xta label "audio_voladjust"
+                cAudioMixer :> volume;
+                if (volume == 255)
+                  volume = 256;
+                break;
+              }
+            break;
+          default:
+            break;
+          }
+        }
+#pragma xta endpoint "audio_right_o1"
+        audioports.p_bclk <: 0xCCCCCCCC;
+        {
+          unsigned val;
+          select
+          {
+#ifdef USE_STREAMING_CHANNELS
+            case cAudioStreaming :> val:
+#else
+            case inuint_byref(cAudioStreaming, val):              
+#endif
+              audiodata[wptr] = ((int)val * volume) >> 8;
+              running = (nelements > 128);
+              increment(wptr, (nelements < AUDIO_BUF_SIZE - 2 ));
+#ifdef AUDIO_BUFFER_CHECKS
+              if (nelements > AUDIO_BUF_SIZE - 2 )
+              {
+                printstr("Audio buffer overflow");
+              }
+#endif
+              break;
+            default:
+              break;
+          }
+        }
+      }
+  }
+}
+
+
+// XTA Commands
+#pragma xta command "config verbosity -10"
+#pragma xta command "add exclusion audio_wipebuf"
+#pragma xta command "add exclusion audio_freqadjust"
+#pragma xta command "analyse path audio_left_o0 audio_left_o1"
+#pragma xta command "set required - 2600 ns"
+#pragma xta command "add exclusion audio_right_o0"
+#pragma xta command "analyse path audio_left_o1 audio_left_o1"
+#pragma xta command "set required - 2600 ns"
+#pragma xta command "remove exclusion audio_right_o0"
+#pragma xta command "add exclusion audio_left_o1"
+#pragma xta command "analyse path audio_left_o1 audio_right_o0"
+#pragma xta command "set required - 2600 ns"
+#pragma xta command "remove exclusion audio_left_o1"
+#pragma xta command "analyse path audio_right_o0 audio_right_o1"
+#pragma xta command "set required - 2600 ns"
+#pragma xta command "add exclusion audio_left_o0"
+#pragma xta command "analyse path audio_right_o1 audio_right_o1"
+#pragma xta command "set required - 2600 ns"
+#pragma xta command "remove exclusion audio_left_o0"
+#pragma xta command "add exclusion audio_right_o1"
+#pragma xta command "analyse path audio_right_o1 audio_left_o0"
+#pragma xta command "set required - 2600 ns"
+#pragma xta command "remove exclusion audio_right_o1"
+#pragma xta command "remove exclusion audio_wipebuf"
+#pragma xta command "remove exclusion audio_freqadjust"
+#pragma xta command "print summary"
+#pragma xta command "exit"
+
+#endif

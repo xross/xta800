@@ -1,0 +1,51 @@
+IPOD(tm) DOCK - DIGITAL AUDIO
+-------------------------
+
+VERSION: 0.91
+
+DESCRIPTION:
+
+The XMOS iPod Dock Reference Design allows bit-perfect digital audio streaming from iPod or iPhone(tm) devices over USB, yielding superior audio quality.
+The complete source code, together with the free XDE and XMOS reconfigurable devices allow the implementer to select the exact mix of interfaces and processing required. 
+DSP algorithms can be implemented using the available bandwidth of the XCore processors.
+
+REQUIRED TOOLS:
+
+XMOS Desktop Development Tools 9.9.0 or above
+
+REQUIRED HARDWARE:
+
+XMOS Digital iPod dock 1v1 or above
+
+APPLICATION NOTE:
+
+Please see the following documents for more information:
+
+iPod Dock Reference Design Application Note
+iPod Dock Reference Design Hardware Manual
+
+INSTALLATION AND RUNNING THE DEMO (COMMAND LINE):
+
+From an enviroment that can access the XMOS Desktop Development tools.
+Unzip the zipfile and from the top level directory run:
+
+       xmake all
+
+INSTALLATION AND RUNNING THE DEMO (XDE):
+
+To install, open the XDE Eclipse IDE and perform the following steps:
+
+   * Select the "Import" item from the "File" menu
+   * Select "General" -> "Existing Projects into Workspace" and click "Next"
+   * Click on "Browse" next to "Select archive file" and select the
+     button server zipfile 
+   * Make sure the project you want to import is ticks in the
+     "Projects:" list
+   * Click on "Finish"
+
+To build, select the project in the Project Explorer window and click
+on build icon.
+
+To run, click on the run icon. To configure the project to run on a
+particular device or in the simulator click on the drop down arrow
+next to the run icon and select "Run Configurations"
