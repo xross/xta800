@@ -290,19 +290,19 @@ public class SourceMapper {
     	
     	Map<Long, Function> pcToFunction = new HashMap<Long, Function>();
     	
-    	for (InstructionNode inst : m_starts){
+    	for (InstructionNode inst : m_starts) {
     		int startIndex = instList.indexOf(inst);
-    		List<AssemblyLine> functionAssemby = new ArrayList<AssemblyLine>();
-    		functionAssemby.add(m_instructions.get(startIndex));
+    		List<AssemblyLine> functionAssembly = new ArrayList<AssemblyLine>();
+    		functionAssembly.add(m_instructions.get(startIndex));
     		int index = startIndex +1;
-    		while (index < instList.size() && !m_starts.contains(instList.get(index))){
-    			functionAssemby.add(m_instructions.get(index));
+    		while (index < instList.size() && !m_starts.contains(instList.get(index))) {
+    			functionAssembly.add(m_instructions.get(index));
     			index++;
     		}
-    		String fnName = getFunctionName(inst);
-    		Function function = new Function(fnName, functionAssemby);
     		
-    		for (Line assembly : functionAssemby){
+    		String fnName = getFunctionName(inst);
+    		Function function = new Function(fnName, functionAssembly);
+    		for (Line assembly : functionAssembly) {
     			m_pcToFunction.put(assembly.getLineNumber(), function);
     		}
     		
