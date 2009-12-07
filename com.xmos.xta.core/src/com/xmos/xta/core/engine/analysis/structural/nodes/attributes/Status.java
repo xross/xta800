@@ -52,4 +52,20 @@ public class Status {
 			m_status = S.NOT_AVALIABLE;
 		}
 	}
+	
+	public String getString() {
+	    switch (m_status) {
+	    case INFINITE:
+	    	return "Infinity";
+	    case UNRESOLVED:
+	    	return "Unresolved";
+	    case NOT_AVALIABLE:
+	    	return "n/a";
+	    case COMPLETED:
+	    case ZERO:
+	    default:
+	    	assert(false);
+	    	return "";
+	    }
+	}
 }

@@ -129,56 +129,40 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    double value = getTimeTaken(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:     return Conversion.getTimeString(value);
-	    case INFINITE:      return String.format("Infinity");
-	    case UNRESOLVED:    return String.format("Unresolved");
-	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO:          return Conversion.getTimeString(value);
+		    case COMPLETED:     return Conversion.getTimeString(value);
+		    case ZERO:          return Conversion.getTimeString(value);
+		    default:            return status.getString();
 	    }
-	    assert(false);
-	    return "";
 	}
 	
 	private String getNumCyclesStr(Case c) {
 	    Status status = new Status();
 	    long value = getNumCycles(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:     return String.format("%d", value);
-	    case INFINITE:      return String.format("Infinity");
-	    case UNRESOLVED:    return String.format("Unresolved");
-	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO:          return String.format("%d", value);
+		    case COMPLETED:     return String.format("%d", value);
+		    case ZERO:          return String.format("%d", value);
+		    default:            return status.getString();
 	    }
-	    assert(false);
-	    return "";
 	}
 
 	private String getNumInstructionsStr(Case c) {
 	    Status status = new Status();
 	    long value = getNumInstructions(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:     return String.format("%d", value);
-	    case INFINITE:      return String.format("Infinity");
-	    case UNRESOLVED:    return String.format("Unresolved");
-	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO:          return String.format("%d", value);
+		    case COMPLETED:     return String.format("%d", value);
+		    case ZERO:          return String.format("%d", value);
+		    default:            return status.getString();
 	    }
-	    assert(false);
-	    return "";
 	}
 
 	private String getNumFNopsStr(Case c) {
 	    Status status = new Status();
 	    long value = getNumFNops(c, status, null);	    
 	    switch (status.getStatus()) {
-	    case COMPLETED:     return String.format("%d", value);
-	    case INFINITE:      return String.format("Infinity");
-	    case UNRESOLVED:    return String.format("Unresolved");
-	    case NOT_AVALIABLE: return String.format("n/a");
-	    case ZERO:          return String.format("%d", value);
+		    case COMPLETED:     return String.format("%d", value);
+		    case ZERO:          return String.format("%d", value);
+		    default:            return status.getString();
 	    }
-	    assert(false);
-	    return "";
 	}
 	
 	private String getTotalIterationsStr(Case c) {

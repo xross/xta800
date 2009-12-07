@@ -134,11 +134,8 @@ public class RouteTiming {
 				} else {
 					Status status = new Status();
 					double violationTime = getViolationTime(status);
-			    	if (status.isInfinite()) {
-			    		description += "Violation: Infinity, ";
-			    		
-			    	} else if (status.isUnresolved()) {
-			    		description += "Violation: Unresolved, ";
+			    	if (status.isInfinite() || status.isUnresolved()) {
+			    		description += String.format("Violation: %s, ", status.getString());
 			    		
 			    	} else {
 					    description += String.format("Violation: %s, ",
@@ -151,11 +148,8 @@ public class RouteTiming {
 				
 				Status worstTimeStatus = new Status();
 				double worstTime = getWorstTime(worstTimeStatus);
-		    	if (worstTimeStatus.isInfinite()) {
-		    		description += "Worst: Infinity, ";
-		    		
-		    	} else if (worstTimeStatus.isUnresolved()) {
-		    		description += "Worst: Unresolved, ";
+		    	if (worstTimeStatus.isInfinite() || worstTimeStatus.isUnresolved()) {
+		    		description += String.format("Worst: %s, ", worstTimeStatus.getString());
 		    		
 		    	} else {
 				    description += String.format("Worst: %s, ", 
@@ -164,12 +158,9 @@ public class RouteTiming {
 
 				Status minFrequencyStatus = new Status();
 				int minFrequency = getMinFrequency(minFrequencyStatus);
-		    	if (minFrequencyStatus.isInfinite()) {
-		    		description += "Min Core Frequency: Infinity\n";
+		    	if (minFrequencyStatus.isInfinite() || minFrequencyStatus.isUnresolved()) {
+		    		description += String.format("Min Core Frequency: %s\n", minFrequencyStatus.getString());
 		    		
-		    	} else if (minFrequencyStatus.isUnresolved()) {
-		    		description += "Min Core Frequency: Unresolved\n";
-
 		    	} else {
 				    description += String.format("Min Core Frequency: %d mhz\n", minFrequency);
 				}
@@ -180,11 +171,8 @@ public class RouteTiming {
 		    	Status status = new Status();
 		    	double worstTime = getWorstTime(status);
 		    	
-		    	if (status.isInfinite()) {
-		    		description += "Worst Case:  Infinity\n";
-		    		
-		    	} else if (status.isUnresolved()) {
-		    		description += "Worst Case:  Unresolved\n";
+		    	if (status.isInfinite() || status.isUnresolved()) {
+		    		description += String.format("Worst Case:  %s\n", status.getString());
 		    		
 		    	} else {
 		    		description += String.format("Worst Case Timing:  %8s,%8.2f mhz,%8d thread cycles\n", 
@@ -207,11 +195,8 @@ public class RouteTiming {
 		                		getMhz(slackTime),
 		                		getSlackCycles(new Status()));
 		    	    } else {
-				    	if (status.isInfinite()) {
-				    		description += "Violation:  Infinity\n";
-				    		
-				    	} else if (status.isUnresolved()) {
-				    		description += "Violation:  Unresolved\n";
+				    	if (status.isInfinite() || status.isUnresolved()) {
+				    		description += String.format("Violation:  %s\n", status.getString());
 				    		
 				    	} else {
 			                double violationTime = getViolationTime(new Status());

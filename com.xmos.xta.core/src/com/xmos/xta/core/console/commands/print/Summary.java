@@ -81,6 +81,7 @@ public class Summary extends Command {
 		
     private void displayOverallSummary(Console console, Engine engine) {
 		double maxViolationTime = 0.0;
+		Status maxViolationStatus = new Status();
 		
 		int numFails = 0;
 		int numUnspecified = 0;
@@ -103,7 +104,8 @@ public class Summary extends Command {
 					if ((status.isComplete() || status.isZero()) && (violationTime > maxViolationTime)) {
 						maxViolationTime = violationTime;
 					}
-					++numFails;				
+					maxViolationStatus.mergeStatus(status.getStatus());
+					++numFails;
 				}
 			} else {
 				++numUnspecified;
@@ -113,8 +115,13 @@ public class Summary extends Command {
 		
 		if (numUnspecified == 0) {
 			if (numFails > 0) {
-			    console.display(String.format("Fail, %d/%d, Max Violation: %s\n", 
-			    		numFails, total, Conversion.getTimeString(maxViolationTime)));
+				if (maxViolationStatus.isComplete() || maxViolationStatus.isZero()) {
+				    console.display(String.format("Fail, %d/%d, Max Violation: %s\n", 
+				    		numFails, total, Conversion.getTimeString(maxViolationTime)));
+				} else {
+				    console.display(String.format("Fail, %d/%d, Max Violation: %s\n", 
+				    		numFails, total, maxViolationStatus.getString()));
+				}
 			} else {
 				console.display(String.format("Pass, Min Core Frequency: %d mhz\n", 
 			    		minFrequency));			
