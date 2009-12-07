@@ -325,19 +325,27 @@ sub UpdateBuildNumber
 {
   if (defined($BUILD_NUM)) 
   {
-    # Reads in the plugin.xml and patches the build number..
-    open(my $infp, "+<com.xmos.xta.ui${SLASH}plugin.xml") 
-      or die("Cannot open file: com.xmos.xta.ui${SLASH}plugin.xml for reading");
-    my @lines = <$infp>;
-
-    seek $infp,0,0;
-    foreach my $line (@lines)
-    {
-      $line =~ s/\(build ....\)/\(build $BUILD_NUM\)/g;
-      print $infp $line;
-    }
-    close $infp;
+    UpdateBuildNumberInFile("<com.xmos.xta.ui${SLASH}plugin.xml");
+    UpdateBuildNumberInFile("<com.xmos.xta.core${SLASH}version.xml");
   }
+}
+
+sub UpdateBuildNumberInFile
+{
+  my $file = shift;
+
+  # Reads in the plugin.xml and patches the build number..
+  open(my $infp, "+$file") 
+    or die("Cannot open file: $file for reading");
+  my @lines = <$infp>;
+
+  seek $infp,0,0;
+  foreach my $line (@lines)
+  {
+    $line =~ s/\(build ....\)/\(build $BUILD_NUM\)/g;
+    print $infp $line;
+  }
+  close $infp;
 }
 
 sub BuildEclipse

@@ -10,6 +10,7 @@
   </target>
 
   <target name="compile" depends="init" description="compile the source">
+    <copy file="version.xml" todir="${build}"/>
     <depend srcdir="${src}" destdir="${build}"
            closure="true" />
     <javac srcdir="${src}" destdir="${build}"
@@ -33,7 +34,7 @@
 
     <jar jarfile="../export/jars/xta.jar"
          basedir="${build}"
-         includes="com/xmos/xta/**"
+         includes="com/xmos/xta/**, version.xml"
          manifest="manifests/xta">
          <zipfileset src="../../infr_libs_java/com.xmos.libs/jars/jline-0.9.94.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/dwarfhandler.jar"/>

@@ -39,10 +39,10 @@ public class Version extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-    	InputStream inputStream = getClass().getResourceAsStream("/plugin.xml");
+    	InputStream inputStream = getClass().getResourceAsStream("/version.xml");
     	if (inputStream == null) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   					"unable to locate version information (missing plugin.xml)"));
+   					"unable to locate version information (missing version.xml)"));
         	return;
     	}    	
     	String versionString = getVersionString(inputStream);
