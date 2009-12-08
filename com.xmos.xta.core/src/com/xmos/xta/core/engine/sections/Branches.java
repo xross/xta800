@@ -1,9 +1,9 @@
 package com.xmos.xta.core.engine.sections;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map;
 import com.xmos.libs.util.ByteArrayManipulation;
@@ -16,12 +16,12 @@ import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Branches extends Section {	
-	private HashMap<Reference, Set<BranchInfo>> m_branches;
+	private Map<Reference, Set<BranchInfo>> m_branches;
 
 	Branches(int nodeId, int coreId, Notifier notifier) {
 		super(nodeId, coreId, notifier);
 
-		m_branches = new HashMap<Reference, Set<BranchInfo>>(); 
+		m_branches = new TreeMap<Reference, Set<BranchInfo>>(); 
 	}
 	
 	boolean add(CommandSource src, Reference from, Collection<Reference> to, boolean isUser) {
