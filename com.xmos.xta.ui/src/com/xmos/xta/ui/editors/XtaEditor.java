@@ -94,6 +94,7 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      	
      	m_showStartPointAction = new Action("Show start point") {
      		public void run() {
+     			GuiEngine.setCodePoint(GuiEngine.getStartPoint());
 				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
      		}
      	};
@@ -101,6 +102,7 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedEditor
      	
      	m_showEndPointAction = new Action("Show end point") {
      		public void run() {
+     			GuiEngine.setCodePoint(GuiEngine.getEndPoint());
 				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
      		}
      	};
