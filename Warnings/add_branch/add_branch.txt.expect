@@ -1,6 +1,6 @@
-- 0x1000a => 0x10014 (binary)
 - 0x10008 => 0x1000c (binary)
+- 0x1000a => 0x10014 (binary)
 xta: cmds.txt:2: warning: adding branch from instruction which is not a branch: (test+4) 0x1000c ldc (ru6) r0, i 0x0
-- target1 => source1 (user)
-- 0x1000a => 0x10014 (binary)
 - 0x10008 => 0x1000c (binary)
+- 0x1000a => 0x10014 (binary)
+- target1 => source1 (user)

@@ -1,29 +1,29 @@
 start
-- 0x1000a => 0x10012 (binary)
 - 0x10008 => 0x1000c (binary)
+- 0x1000a => 0x10012 (binary)
 add1
+- 0x10008 => 0x1000c (binary)
 - 0x1000a => 0x10012 (binary)
 - source1 => source2 target2 target3 target4 (user)
-- 0x10008 => 0x1000c (binary)
 add2
+- 0x10008 => 0x1000c (binary)
 - 0x1000a => 0x10012 (binary)
-- source2 => target1 target2 target3 (user)
 - source1 => source2 target2 target3 target4 (user)
-- 0x10008 => 0x1000c (binary)
+- source2 => target1 target2 target3 (user)
 remove1
+- 0x10008 => 0x1000c (binary)
 - 0x1000a => 0x10012 (binary)
 - source2 => target1 target2 target3 (user)
-- 0x10008 => 0x1000c (binary)
 add1again
+- 0x10008 => 0x1000c (binary)
 - 0x1000a => 0x10012 (binary)
-- source2 => target1 target2 target3 (user)
 - source1 => source2 target3 target4 (user)
-- 0x10008 => 0x1000c (binary)
+- source2 => target1 target2 target3 (user)
 removetargets
+- 0x10008 => 0x1000c (binary)
 - 0x1000a => 0x10012 (binary)
-- source2 => target1 (user)
 - source1 => source2 target4 (user)
-- 0x10008 => 0x1000c (binary)
+- source2 => target1 (user)
 removeall
-- 0x1000a => 0x10012 (binary)
 - 0x10008 => 0x1000c (binary)
+- 0x1000a => 0x10012 (binary)
