@@ -23,8 +23,9 @@ if (!$noBuild) {
 system("@ARGV load $genDir/test.xe " .
         "-config threads 4 " .
         "-analyse function test " .
-        "-set loop - inner_loop 18 " .
+        "-set loop - inner_loop 15 " .
         "-set loopscope - inner_loop a " .
+        "-set loop - outer_loop 3 " .
         "-print nodeinfo - - " .
         "-exit > $genDir/$suite.in 2>&1");
 
