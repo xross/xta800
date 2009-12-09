@@ -27,6 +27,10 @@ public class SrcLabelReference extends ReferenceType {
 				found = true;
 			}
 		}
+
+		if (found) {
+			setResolved(true);
+		}
 		return found;
 	}
 	
