@@ -80,7 +80,7 @@ public abstract class ReferenceType {
 	    
     	String[] subStrings = tableLabel.split(",");
 	    List<String> backTrail = new LinkedList<String>();
-	    for (int i = subStrings.length - 2; i >= 0; i--) {
+	    for (int i = 0; i < subStrings.length - 1; i++) {
 	    	backTrail.add(subStrings[i]);
 	    }
 	    m_pcBackTrails.put(pc, backTrail);

@@ -177,9 +177,18 @@ public class ReferenceMatcher {
 		Stack<ReferenceType> stack = new Stack<ReferenceType>();
 		
 		for (ReferenceType referenceType : reference.getBackTrail()) {
-			if ((pcBackTrail.size() > 0) && pcBackTrail.get(0).equals(referenceType.getRef())) {
+			int hit = -1;
+			for (int i = 0; i < pcBackTrail.size(); i++) {
+				if (pcBackTrail.get(i).equals(referenceType.getRef())) {
+					hit = i;
+					break;
+				}
+			}
+			for (int i = 0; i <= hit; i++) {
 				pcBackTrail.remove(0);
-			} else {
+			}
+
+			if (hit == -1) {
 				stack.push(referenceType);
 			}
 		}							
