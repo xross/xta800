@@ -261,13 +261,13 @@ func1:
 .L6:
 .LDBG45:                             # line (8)
           setc      res[r2], 0x1
-.xtaendpoint "start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
+.xtaendpoint "read1,start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
 .L13:
           in        r1, res[r2] 
 .LDBG35:
 .L7:
 .LDBG46:                             # line (11)
-.xtaendpoint "stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
+.xtaendpoint "read1,stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
 .L14:
           in        r0, res[r2] 
 .LDBG36:
@@ -342,13 +342,13 @@ func2:
 .L15:
 .LDBG74:                             # line (8)
           setc      res[r2], 0x1
-.xtaendpoint "start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
+.xtaendpoint "read2,start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
 .L22:
           in        r1, res[r2] 
 .LDBG64:
 .L16:
 .LDBG75:                             # line (11)
-.xtaendpoint "stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
+.xtaendpoint "read2,stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
 .L23:
           in        r0, res[r2] 
 .LDBG65:
@@ -426,13 +426,13 @@ main:
 .L24:
 .LDBG125:                            # line (8)
           setc      res[r1], 0x1
-.xtaendpoint "read1,start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
+.xtaendpoint "func1,read1,start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
 .L45:
           in        r0, res[r1] 
 .LDBG109:
 .L25:
 .LDBG126:                            # line (11)
-.xtaendpoint "read1,stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
+.xtaendpoint "func1,read1,stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
 .L46:
           in        r0, res[r1] 
 .LDBG110:
@@ -460,13 +460,13 @@ main:
 .L32:
 .LDBG132:                            # line (8)
           setc      res[r1], 0x1
-.xtaendpoint "read2,start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
+.xtaendpoint "func2,read2,start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
 .L47:
           in        r0, res[r1] 
 .LDBG112:
 .L33:
 .LDBG133:                            # line (11)
-.xtaendpoint "read2,stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
+.xtaendpoint "func2,read2,stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
 .L48:
           in        r0, res[r1] 
 .LDBG113:
@@ -491,13 +491,13 @@ main:
 .L40:
 .LDBG138:                            # line (8)
           setc      res[r1], 0x1
-.xtaendpoint "start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
+.xtaendpoint "read3,start", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 7
 .L49:
           in        r0, res[r1] 
 .LDBG115:
 .L41:
 .LDBG139:                            # line (11)
-.xtaendpoint "stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
+.xtaendpoint "read3,stop", "C:\\peter\\git\\software\\verif_tests_sw\\Tools\\xta\\Pragmas\\xtaendpoint_backtrail", "test2.xc", 10
 .L50:
           in        r0, res[r1] 
 .LDBG116:

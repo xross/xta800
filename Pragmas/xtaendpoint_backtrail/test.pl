@@ -19,7 +19,17 @@ system("@ARGV load $genDir/test.xe " .
        "set required - 100 ns " .
        "analyse path read2,start read2,stop " .
        "set required - 100 ns " .
+       "analyse path read3,start read3,stop " .
+       "set required - 100 ns " .
        "analyse path read1,start read2,stop " .
+       "set required - 100 ns " .
+       "analyse path func1,read1,start func1,read1,stop " .
+       "set required - 100 ns " .
+       "analyse path func2,read2,start func2,read2,stop " .
+       "set required - 100 ns " .
+       "analyse path func1,read1,start func2,read2,stop " .
+       "set required - 100 ns " .
+       "analyse path func1,read1,start read3,stop " .
        "set required - 100 ns " .
        "print summary " .
        "exit > $genDir/xtaendpoint_backtrail.txt 2>&1");
