@@ -1,0 +1,31 @@
+Label: read1,start, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 7
+Label: read1,stop, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
+Label: read2,start, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 7
+Label: read2,stop, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
+Label: start, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 7
+Label: stop, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
+pc: 0x1000c, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 8
+pc: 0x1000e, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
+pc: 0x10016, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 8
+pc: 0x10018, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
+pc: 0x10020, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 8
+pc: 0x10022, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
+Route\(0\) path: start to stop
+    Pass with 1 unknown, Num Paths: 1, Slack: 80.0 ns, Required: 100.0 ns, Worst: 20.0 ns, Min Core Frequency: 80 mhz
+
+Route\(1\) path: start to stop
+    Pass with 1 unknown, Num Paths: 1, Slack: 80.0 ns, Required: 100.0 ns, Worst: 20.0 ns, Min Core Frequency: 80 mhz
+
+Route\(2\) path: start to stop
+    Pass with 1 unknown, Num Paths: 1, Slack: 80.0 ns, Required: 100.0 ns, Worst: 20.0 ns, Min Core Frequency: 80 mhz
+
+Route\(3\) path: read1,start to read1,stop
+    Pass with 1 unknown, Num Paths: 1, Slack: 80.0 ns, Required: 100.0 ns, Worst: 20.0 ns, Min Core Frequency: 80 mhz
+
+Route\(4\) path: read2,start to read2,stop
+    Pass with 1 unknown, Num Paths: 1, Slack: 80.0 ns, Required: 100.0 ns, Worst: 20.0 ns, Min Core Frequency: 80 mhz
+
+Route\(5\) path: read1,start to read2,stop
+    Fail with 4 unknowns, Num Paths: 1, Violation: 20.0 ns, Required: 100.0 ns, Worst: 120.0 ns, Min Core Frequency: 480 mhz
+
+Fail, 1/6, Max Violation: 20.0 ns
