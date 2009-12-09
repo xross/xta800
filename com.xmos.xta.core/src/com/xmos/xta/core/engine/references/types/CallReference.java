@@ -25,8 +25,8 @@ public class CallReference extends ReferenceType {
 
 		boolean found = false;
 		for (CodePointInfo info : engine.getCalls()) {
-			if (info.getLabel().equals(label)) {
-				addPc(info.getPc());
+			if (labelsMatch(info.getLabel(), label)) {
+				addPc(info.getPc(), info.getLabel());
 			
 				Map<Long, CodePointTableInfo> callTable = engine.getCallTable();
 				if (!callTable.containsKey(info.getPc()))

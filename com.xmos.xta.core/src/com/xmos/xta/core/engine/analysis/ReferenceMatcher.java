@@ -74,10 +74,11 @@ public class ReferenceMatcher {
 			stack.addAll(nextAncestors);
 			NodeDescriptor descriptor = new NodeDescriptor(inst, stack);
 			nodeDescriptors.add(descriptor);
-		}
-		
-		for (FunctionNode g : callingFunctions) {
-			getAllNodeDescriptors(inst, g, nodeDescriptors, nextAncestors);
+			
+		} else {
+			for (FunctionNode g : callingFunctions) {
+				getAllNodeDescriptors(inst, g, nodeDescriptors, nextAncestors);
+			}
 		}
 	}
 
@@ -90,7 +91,7 @@ public class ReferenceMatcher {
 		}
 		
 		if (node != null) {
-			List<FunctionNode> callingFunctions = ((FunctionNode)node).getCallingFunction();
+			List<FunctionNode> callingFunctions = ((FunctionNode)node).getCallingFunctions();
 			if (callingFunctions.isEmpty()) {
 				ancestors.add(0, node);
 			}
@@ -158,7 +159,7 @@ public class ReferenceMatcher {
 		Collection<NodeDescriptor> matchingNodeDescriptors = new ArrayList<NodeDescriptor>();
 		
 		for (NodeDescriptor nodeDescriptor : nodeDescriptors) {
-			Stack<ReferenceType> stack = createBackTrailStack(reference);
+			Stack<ReferenceType> stack = createBackTrailStack(reference, nodeDescriptor.getNode().getStartPc());
 			if (stack.empty()) {
 				matchingNodeDescriptors.add(nodeDescriptor);
 				
@@ -171,11 +172,16 @@ public class ReferenceMatcher {
 		return matchingNodeDescriptors;
 	}
 	
-	private Stack<ReferenceType> createBackTrailStack(Reference reference) {
+	private Stack<ReferenceType> createBackTrailStack(Reference reference, long pc) {
+		List<String> pcBackTrail = new LinkedList<String>(reference.getPcBackTrail(pc));
 		Stack<ReferenceType> stack = new Stack<ReferenceType>();
 		
 		for (ReferenceType referenceType : reference.getBackTrail()) {
-			stack.push(referenceType);
+			if ((pcBackTrail.size() > 0) && pcBackTrail.get(0).equals(referenceType.getRef())) {
+				pcBackTrail.remove(0);
+			} else {
+				stack.push(referenceType);
+			}
 		}							
 		return stack;
 	}

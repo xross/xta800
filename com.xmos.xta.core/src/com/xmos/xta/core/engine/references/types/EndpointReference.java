@@ -25,15 +25,16 @@ public class EndpointReference extends ReferenceType {
 		
 		boolean found = false;
 		for (CodePointInfo info : engine.getEndpoints()) {
-			if (info.getLabel().equals(label)) {
-				addPc(info.getPc());
+	    	if (labelsMatch(info.getLabel(), label)) {
+				long pc = info.getPc();
+				addPc(pc, info.getLabel());
 
 				Map<Long, CodePointTableInfo> endpointTable = engine.getEndpointTable();
-				if (!endpointTable.containsKey(info.getPc()))
+				if (!endpointTable.containsKey(pc))
 					return false;
 
 				if (!found) {
-				    CodePointTableInfo endpoint = endpointTable.get(info.getPc());			
+				    CodePointTableInfo endpoint = endpointTable.get(pc);			
 					setFileName(endpoint.getFileName());
 		        	setLineNum(endpoint.getLineNumber());
 				}

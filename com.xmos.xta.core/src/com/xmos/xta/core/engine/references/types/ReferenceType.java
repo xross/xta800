@@ -1,8 +1,10 @@
 package com.xmos.xta.core.engine.references.types;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.Engine;
@@ -16,6 +18,7 @@ public abstract class ReferenceType {
 	private String m_ref;
 	private boolean m_resolved;
 	private Set<Long> m_pcs;
+	private Map<Long, List<String>> m_pcBackTrails;
 	private String m_fileName;
 	private long m_lineNum;	
 	private Type m_type;
@@ -34,6 +37,7 @@ public abstract class ReferenceType {
 	ReferenceType(String ref, Type type) {
 		m_ref = ref;
 		m_pcs = new TreeSet<Long>();
+		m_pcBackTrails = new TreeMap<Long, List<String>>();
 		m_resolved = false;
 		m_fileName = "";
 		m_lineNum = 0;
@@ -68,6 +72,18 @@ public abstract class ReferenceType {
 
 	public void addPc(long pc) {
 	    m_pcs.add(pc);
+	    m_pcBackTrails.put(pc, new LinkedList<String>());
+	}
+
+	public void addPc(long pc, String tableLabel) {
+	    m_pcs.add(pc);
+	    
+    	String[] subStrings = tableLabel.split(",");
+	    List<String> backTrail = new LinkedList<String>();
+	    for (int i = subStrings.length - 2; i >= 0; i--) {
+	    	backTrail.add(subStrings[i]);
+	    }
+	    m_pcBackTrails.put(pc, backTrail);
 	}
 
 	public String getFileName() {
@@ -243,12 +259,23 @@ public abstract class ReferenceType {
 		return true;
 	}
 
-	public boolean isValid(List<CodePointInfo> list, String label) {
+	protected boolean isValid(List<CodePointInfo> list, String label) {
 		for (CodePointInfo info : list) {
-			if (info.getLabel().equals(label)) {
+			if (labelsMatch(info.getLabel(), label)) {
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	protected boolean labelsMatch(String tableLabel, String label) {
+    	String[] subRefs = tableLabel.split(",");
+    	assert(subRefs.length > 0);
+		return subRefs[subRefs.length - 1].equals(label);
+	}
+
+	public List<String> getPcBackTrail(long pc) {
+		assert(m_pcBackTrails.get(pc) != null);
+		return m_pcBackTrails.get(pc);
 	}
 }

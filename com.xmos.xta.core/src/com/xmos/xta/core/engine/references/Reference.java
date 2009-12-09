@@ -65,9 +65,10 @@ public class Reference implements Comparable<Reference>  {
 		if (!m_base.resolve(engine))
 			return false;
 			
+		// Resolve backtrail, but don't check it at the moment. The label may contain
+		// a backtrail which ignores the reference.
 		for (ReferenceType referenceType : m_backTrail) {
-			if (!referenceType.resolve(engine))
-				return false;
+			referenceType.resolve(engine);
 		}
 		return true;
 	}
@@ -168,5 +169,9 @@ public class Reference implements Comparable<Reference>  {
 
 	public int compareTo(Reference o) {
 		return toString().compareTo(o.toString());
+	}
+
+	public List<String> getPcBackTrail(long pc) {
+		return m_base.getPcBackTrail(pc);
 	}
 }

@@ -22,8 +22,8 @@ public class SrcLabelReference extends ReferenceType {
 		
 		boolean found = false;
 		for (CodePointInfo info : engine.getSrcLabels()) {
-			if (info.getLabel().equals(label)) {			
-				addPc(info.getPc());
+			if (labelsMatch(info.getLabel(), label)) {			
+				addPc(info.getPc(), info.getLabel());
 				found = true;
 			}
 		}

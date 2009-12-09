@@ -305,6 +305,10 @@ public abstract class Node implements Comparable<Node> {
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
 		
+		if (!referenceTypes.peek().getResolved()) {
+			return false;
+		}
+		
 		if (referenceTypes.peek().getType() != ReferenceType.Type.CALL) {
 			// Builds up a stack of all the children up to the calling node...
 			Stack<Node> children = new Stack<Node>();

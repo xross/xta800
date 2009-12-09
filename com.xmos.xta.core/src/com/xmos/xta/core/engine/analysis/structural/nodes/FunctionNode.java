@@ -379,7 +379,7 @@ public class FunctionNode extends IBufferNode {
 		m_callingFunctions.add(f);
 	}
 
-	public List<FunctionNode> getCallingFunction() {
+	public List<FunctionNode> getCallingFunctions() {
 		return m_callingFunctions;
 	}
 }

@@ -1399,8 +1399,7 @@ public class Engine implements Notifier, Aborter {
 		}		
 	}
 
-	private void setBranchTargets(InstructionDecoder id,
-			Map<String, List<InstructionNode>> treeMap) {
+	private void setBranchTargets(InstructionDecoder id, Map<String, List<InstructionNode>> treeMap) {
 
 		for (InstructionNode inst : id.getInstructions()) {
 			if (inst.getXtaInstruction().getBranchPcRelative()) {
