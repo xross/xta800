@@ -25,7 +25,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.TimeDistributionBuckets;
 import com.xmos.xta.ui.Broadcaster;
@@ -215,18 +217,20 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 		if (m_tdb != null && !m_tdb.isInfinite()) {
 			double currentX=SIDE_BORDER_X;
 			double maxBucket = m_tdb.getMaxBucket();
-			double stepX = ((double)(m_canvas.getClientArea().width- 2*SIDE_BORDER_X))/(double)TimeDistributionBuckets.BUCKET_COUNT;
+			double stepX = ((double)(m_canvas.getClientArea().width- 2*SIDE_BORDER_X)) 
+			               / (double)TimeDistributionBuckets.BUCKET_COUNT;
 			int barWidth = (int)stepX;
-			if(stepX < 1.0) barWidth = 1;
+			if (stepX < 1.0) {
+				barWidth = 1;
+			}
 				
-				
-			for(int i=0;i<TimeDistributionBuckets.BUCKET_COUNT;i++){
+			for (int i = 0; i < TimeDistributionBuckets.BUCKET_COUNT; i++) {
 				int x = (int)((255.0/(double)TimeDistributionBuckets.BUCKET_COUNT)*(double)i);
 				Color c = new Color(m_display, x, 255-x, 0);
 				gc.setBackground(c);
 				//gc.setBackground(m_display.getSystemColor(SWT.COLOR_DARK_BLUE));
 				int height = m_canvas.getClientArea().height - TIMELINE_Y;
-				double currentY = (m_tdb.getBucket(i)/maxBucket) * height;
+				double currentY = (m_tdb.getBucket(i) / maxBucket) * height;
 				if(currentY > 0 && currentY < 1) currentY =1.0;
 				gc.fillRectangle((int)currentX, height + 2 - (int)currentY, barWidth,(int)currentY );
 				currentX += stepX;
@@ -239,25 +243,28 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 					m_canvas.getClientArea().width- SIDE_BORDER_X, m_canvas.getClientArea().height - TIMELINE_Y + TIMELINE_Y/8);
 			gc.drawLine(SIDE_BORDER_X-4,4, SIDE_BORDER_X-4, m_canvas.getClientArea().height - TIMELINE_Y + TIMELINE_Y/8);
 			
-			long lowestBucket = m_tdb.getLowestBucketCycles();
-			long highestBucket = m_tdb.getHighestBucketCycles();
-			//long lowestBucket = (long) m_treeNode.getAttributes().getTimeTaken(Case.BEST, new Status(), null);
-			//long highestBucket = (long) m_treeNode.getAttributes().getTimeTaken(Case.WORST, new Status(), null);
+			Config config = GuiEngine.getEngine().getConfig();
+			TimeUnit lowest = new TimeUnit(config, m_tdb.getLowestBucketCycles(), TimeUnit.Units.CYCLES);
+			TimeUnit highest = new TimeUnit(config, m_tdb.getHighestBucketCycles(), TimeUnit.Units.CYCLES);
 			
-			double bucketInc = (double)(highestBucket -lowestBucket) / DIVISIONS; 
+			double bucketInc = (highest.getNs() - lowest.getNs()) / DIVISIONS;
 			currentX=SIDE_BORDER_X;
 			stepX = ((double)(m_canvas.getClientArea().width- 2*SIDE_BORDER_X))/DIVISIONS;
-			for(int i=0;i<=DIVISIONS; i++){
+
+			double time = lowest.getNs();
+			for (int i=0;i<=DIVISIONS; i++) {
 				gc.drawLine((int)currentX, m_canvas.getClientArea().height - TIMELINE_Y,
 						(int)currentX, m_canvas.getClientArea().height - TIMELINE_Y + TIMELINE_Y/4 );
-				if(i == DIVISIONS){
-					gc.drawString("" + round((lowestBucket + bucketInc*i)), 
-							(int)currentX, m_canvas.getClientArea().height - TIMELINE_Y + TIMELINE_Y/4 + 3);
+				if (i == DIVISIONS) {
+					gc.drawString("" + round(time), 
+						(int)currentX, m_canvas.getClientArea().height - TIMELINE_Y + TIMELINE_Y/4 + 3);
 				} else {
-					gc.drawString("" + round((lowestBucket + bucketInc*i)), (int)currentX, m_canvas.getClientArea().height - TIMELINE_Y + TIMELINE_Y/4 + 3);
+					gc.drawString("" + round(time),
+						(int)currentX, m_canvas.getClientArea().height - TIMELINE_Y + TIMELINE_Y/4 + 3);
 					
 				}
 				currentX +=stepX;
+				time += bucketInc;
 			}
 		}
     }

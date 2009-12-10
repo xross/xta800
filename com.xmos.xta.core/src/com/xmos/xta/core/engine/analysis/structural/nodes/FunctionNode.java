@@ -280,7 +280,7 @@ public class FunctionNode extends IBufferNode {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbSequence = new LinkedList<TimeDistributionBuckets>();
 		if (m_functionSequence != null && !m_functionSequence.isEmpty()) {
-			for(Node node : m_functionSequence){
+			for (Node node : m_functionSequence) {
 				tsbSequence.add(node.getTimeSpread());
 			}
 		} else {
