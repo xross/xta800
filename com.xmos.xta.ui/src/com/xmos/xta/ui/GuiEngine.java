@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -50,7 +54,6 @@ public class GuiEngine {
 	private static Engine s_engine;
 	private static GuiNotifier s_notifier;	
 	private static Broadcaster s_broadcaster;
-	private static GuiLog s_log;
 	private static String s_functionName;
 	private static Reference s_startPoint;
 	private static Reference s_endPoint;
@@ -73,7 +76,6 @@ public class GuiEngine {
         s_engine = new Engine(new Config());
         s_notifier = new GuiNotifier();
         s_broadcaster = new Broadcaster();        
-        s_log = new GuiLog();
         s_selectedNodes = new HashMap<Integer, List<Node>>();
         s_sourcePcs = new TreeSet<Long>();
         s_showPcPosition = false;
@@ -88,11 +90,6 @@ public class GuiEngine {
 		assert(s_engine != null);
 		return s_engine;		
 	}
-	
-	public static GuiLog getLog() {
-		assert(s_log != null);
-		return s_log;		
-	}	
 	
 	public static void addBroadcastListener(final IPropertyChangeListener listener) {
 		s_broadcaster.addListener(listener);
@@ -219,13 +216,13 @@ public class GuiEngine {
 	
 	public static void updateGuiState(String message, String argument) {
 		if (message.equals(Notifier.NOTIFY_ERROR)) {
-			s_log.add(GuiLog.Level.ERROR, argument);
+			log(IMarker.PROBLEM, argument, IMarker.SEVERITY_ERROR);
 			
 		} else if (message.equals(Notifier.NOTIFY_WARNING)) {
-			s_log.add(GuiLog.Level.WARNING, argument);
-			
+			log(IMarker.PROBLEM, argument, IMarker.SEVERITY_WARNING);
+		
 		} else if (message.equals(Notifier.NOTIFY_INFO)) {
-			s_log.add(GuiLog.Level.INFO, argument);
+			log(IMarker.MESSAGE, argument, IMarker.SEVERITY_INFO);
 
 		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			resetGuiState();
@@ -258,6 +255,17 @@ public class GuiEngine {
 		}
 	}
 	
+	private static void log(String type, String argument, int severity) {
+		try {
+			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+			IMarker marker = workspaceRoot.createMarker(type);
+			marker.setAttribute(IMarker.MESSAGE, argument);
+			marker.setAttribute(IMarker.SEVERITY, severity);
+			marker.setAttribute(IMarker.LINE_NUMBER, 0);
+		} catch (CoreException e) {
+		}
+	}
+
 	private static void refreshGuiRouteProperties() {
 		for (Map<Integer, GuiRouteProperties> routeIdMap : s_routeProperties.values()) {
 			List<Integer> remove = new ArrayList<Integer>();

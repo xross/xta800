@@ -184,12 +184,13 @@ public class ReferenceMatcher {
 					break;
 				}
 			}
-			for (int i = 0; i <= hit; i++) {
-				pcBackTrail.remove(0);
-			}
 
 			if (hit == -1) {
 				stack.push(referenceType);
+			} else {
+				for (int i = 0; i <= hit; i++) {
+					pcBackTrail.remove(0);
+				}
 			}
 		}							
 		return stack;

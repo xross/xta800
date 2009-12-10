@@ -14,7 +14,6 @@ import com.xmos.xta.ui.views.info.assertions.LoopScopeViewer;
 import com.xmos.xta.ui.views.info.assertions.LoopViewer;
 import com.xmos.xta.ui.views.info.assertions.PathTimeViewer;
 import com.xmos.xta.ui.views.info.exclusions.ExclusionsViewer;
-import com.xmos.xta.ui.views.info.log.LogViewer;
 import com.xmos.xta.ui.views.info.sections.AllCallsViewer;
 import com.xmos.xta.ui.views.info.sections.AllEndpointsViewer;
 import com.xmos.xta.ui.views.info.sections.AllSrcLabelsViewer;
@@ -33,7 +32,6 @@ import com.xmos.xta.ui.views.info.unknowns.KnownsViewer;
 import com.xmos.xta.ui.views.info.unknowns.UnknownsViewer;
 
 public class ViewerFactory {
-	private static final String LOG                 = "Log";
 	private static final String UNKNOWNS            = "Unknowns";	
 	private static final String KNOWNS              = "Knowns";		
 	private static final String EXCLUSIONS          = "Exclusions";
@@ -62,15 +60,13 @@ public class ViewerFactory {
 	private static final String SOURCE_FILES        = "Source files";
 	private static final String SYSTEM_FUNCTIONS    = "System functions";
 
-	Viewer createDefaultViewer(Composite composite) {
-    	return new LogViewer(createNewViewer(LOG, composite));
+	Viewer createDefaultViewer(Composite composite, IWorkbenchPartSite site) {
+    	return new UnknownsViewer(createNewViewer(UNKNOWNS, composite), composite, site);
 	}
 	
 	Viewer createViewer(String name, Composite composite, IWorkbenchPartSite site) {
 		// Top level
-	    if (name.equals(LOG) || name.equals("")) {
-	    	return new LogViewer(createNewViewer(LOG, composite));				    	
-	    } else if (name.equals(UNKNOWNS)) {
+		if (name.equals(UNKNOWNS)) {
 	    	return new UnknownsViewer(createNewViewer(UNKNOWNS, composite), composite, site);						
 	    } else if (name.equals(KNOWNS)) {
 	    	return new KnownsViewer(createNewViewer(KNOWNS, composite), composite, site);		
@@ -130,10 +126,9 @@ public class ViewerFactory {
 	}
 
 	TreeItem initialiseTree(Tree tree) {
-		TreeItem log = new TreeItem(tree, 0);
-		log.setText(LOG);
+		TreeItem unknowns = new TreeItem(tree, 0);
+		unknowns.setText(UNKNOWNS);
 		
-		new TreeItem(tree, 0).setText(UNKNOWNS);
 		new TreeItem(tree, 0).setText(KNOWNS);		
 		new TreeItem(tree, 0).setText(EXCLUSIONS);
 		
@@ -163,7 +158,7 @@ public class ViewerFactory {
 		new TreeItem(binaryInfo, 0).setText(SOURCE_FILES);
 		new TreeItem(binaryInfo, 0).setText(SYSTEM_FUNCTIONS);		
 
-		return log;
+		return unknowns;
 	}
 
 	private TableViewer createNewViewer(String displayText, Composite composite) {

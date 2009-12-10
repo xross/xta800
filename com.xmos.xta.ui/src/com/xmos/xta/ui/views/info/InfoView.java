@@ -58,7 +58,7 @@ public class InfoView extends ViewPart implements IPropertyChangeListener {
 		tree.setLayoutData(treeData);
 
 	    // Create the default info viewer and attach its left edge to the sash.
-		m_currentViewer = viewerFactory.createDefaultViewer(composite);				
+		m_currentViewer = viewerFactory.createDefaultViewer(composite, getSite());				
 
 		final FormData controlData = new FormData();
 		controlData.top    = new FormAttachment(0, 0);

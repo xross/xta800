@@ -17,7 +17,7 @@ public class GuiNotifier implements Notifier {
 	public void notify(CommandSource src, String message, String argument) {		
 		if (message.equals(NOTIFY_ERROR)) {
 			displayMessageBox("Error", argument);
-
+			
 		} else if (message.equals(HOLD_MESSAGES)) {
 			m_holdMessages = true;
 
