@@ -10,7 +10,7 @@ my $noBuild = shift(@ARGV);
 my $directory = "g1";
 
 if (!$noBuild) {
-    system("xcc -target=$target -march=$arch -Wall -g -O3 link.S top.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
+    system("xcc -save-temps -target=$target -march=$arch -Wall -g -O3 link.S top.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
 }
 
 my $filename = "trace";
