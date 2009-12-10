@@ -1,5 +1,7 @@
-analyse function producer
-print structure -
-analyse function consumer
-print structure -
+analyse path producer producer
+set required - 150 ns
+set required - 150 ns
+analyse path consumer consumer
+set required - 150 ns
+print summary
 exit
