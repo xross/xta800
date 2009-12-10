@@ -140,16 +140,15 @@
   Any of the following are permitted:
     EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
-    Label: Any source or assembly level symbol defined with respect to an executable section
     Endpoint: Endpoint specified using the source level pragma mechanism
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
     Call: Call specified using the source level pragma mechanism
     CallFileLine: Call specified in the format: 'file name:line number'
     CallPc: Call specified in the format: 0x*
+    Label: Any source or assembly level symbol defined with respect to an executable section
   Any of the following are permitted:
     EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
-    Label: Any source or assembly level symbol defined with respect to an executable section
     Endpoint: Endpoint specified using the source level pragma mechanism
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
     Call: Call specified using the source level pragma mechanism
@@ -157,3 +156,4 @@
     CallPc: Call specified in the format: 0x*
     SrcLabel: Source label specified using the source level pragma mechanism
     SrcLabelFileLine: Source label specified in the format: 'file name:line number'
+    Label: Any source or assembly level symbol defined with respect to an executable section
