@@ -24,7 +24,7 @@ public class GuiNotifier implements Notifier {
 		} else if (message.equals(RELEASE_MESSAGES)) {
 			m_holdMessages = false;
 			if (m_heldMessageCount > 0) {
-				displayMessageBox("Warning", "Multiple warnings detected\n(See Info/Log for details)");
+				displayMessageBox("Warning", "Multiple warnings detected\n(See Problems view for details)");
 				m_heldMessageCount = 0;
 			}
 
