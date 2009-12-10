@@ -30,24 +30,24 @@ public class ReferenceTypeFactory {
 		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF, new ReferenceType[] {
 				new EverythingReference(null),
 				new PcReference(null), 
-				new LabelReference(null), 
 				new EndpointReference(null), 
 				new EndpointFileLineReference(null),
 				new CallReference(null), 
 				new CallFileLineReference(null),
-				new CallPcReference(null)});
+				new CallPcReference(null), 
+				new LabelReference(null)});
 
 		m_referenceClasses.put(ReferenceClass.ANY_REF, new ReferenceType[] {
 				new EverythingReference(null),
 				new PcReference(null), 
-				new LabelReference(null), 
 				new EndpointReference(null), 
 				new EndpointFileLineReference(null),		
 		        new CallReference(null), 
 		        new CallFileLineReference(null),
 		        new CallPcReference(null),
 		        new SrcLabelReference(null), 
-		        new SrcLabelFileLineReference(null)});
+		        new SrcLabelFileLineReference(null), 
+				new LabelReference(null)});
 	}
 	private static Engine m_engine;
 
