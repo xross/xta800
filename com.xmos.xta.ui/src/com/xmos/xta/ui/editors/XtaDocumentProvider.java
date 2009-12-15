@@ -27,13 +27,13 @@ public class XtaDocumentProvider extends AbstractDocumentProvider {
 	}
 
 	protected IDocument createDocument(Object element) throws CoreException {
-		if (DEBUG) System.out.printf("XtaDocumentProvider: createDocument\n");			                    
-		if (element instanceof IEditorInput) {			
+		if (DEBUG) System.out.printf("XtaDocumentProvider: createDocument\n");
+		if (element instanceof IEditorInput) {
 			m_document = new Document();
-            Input contents = (Input)((IEditorInput)element).getAdapter(Input.class);						
+            Input contents = (Input)((IEditorInput)element).getAdapter(Input.class);
 			IDocumentPartitioner partitioner = new XtaDocumentPartitioner(contents);
 			partitioner.connect(m_document);
-			m_document.setDocumentPartitioner(partitioner);									                        	
+			m_document.setDocumentPartitioner(partitioner);
 			return m_document;
 		}
 		return null;

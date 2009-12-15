@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -215,16 +211,7 @@ public class GuiEngine {
 	}
 	
 	public static void updateGuiState(String message, String argument) {
-		if (message.equals(Notifier.NOTIFY_ERROR)) {
-			log(IMarker.PROBLEM, argument, IMarker.SEVERITY_ERROR);
-			
-		} else if (message.equals(Notifier.NOTIFY_WARNING)) {
-			log(IMarker.PROBLEM, argument, IMarker.SEVERITY_WARNING);
-		
-		} else if (message.equals(Notifier.NOTIFY_INFO)) {
-			log(IMarker.MESSAGE, argument, IMarker.SEVERITY_INFO);
-
-		} else if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+		if (message.equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			resetGuiState();
 			refreshGuiRouteProperties();
 			s_disassemblyInputs.clear();				
@@ -255,17 +242,6 @@ public class GuiEngine {
 		}
 	}
 	
-	private static void log(String type, String argument, int severity) {
-		try {
-			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-			IMarker marker = workspaceRoot.createMarker(type);
-			marker.setAttribute(IMarker.MESSAGE, argument);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			marker.setAttribute(IMarker.LINE_NUMBER, 0);
-		} catch (CoreException e) {
-		}
-	}
-
 	private static void refreshGuiRouteProperties() {
 		for (Map<Integer, GuiRouteProperties> routeIdMap : s_routeProperties.values()) {
 			List<Integer> remove = new ArrayList<Integer>();
