@@ -17,7 +17,6 @@ public class Broadcaster {
 	public static final String BROADCAST_SET_FOCUS           = "SetFocus";
 	public static final String BROADCAST_SET_SOURCE_PCS      = "SetSourcePcs";
 	public static final String BROADCAST_PERSPECTIVE_CHANGED = "PerspectiveChanged";
-	public static final String BROADCAST_OPEN_DISASSEMBLY    = "OpenDisassembly";
 	public static final String BROADCAST_REFRESH_SCRIPT      = "RefreshScript";
 	public static final String BROADCAST_EXPORT_JPG_ENABLED  = "ExportJpgEnabled";
 	public static final String BROADCAST_EXPORT_JPG_DISABLED = "ExportJpgDisabled";

@@ -5,10 +5,11 @@ Bundle-SymbolicName: com.xmos.xta.ui;singleton:=true
 Bundle-Version: 1.0.0
 Export-Package: com.xmos.xta.ui,
  com.xmos.xta.ui.actions,
+ com.xmos.xta.ui.annotations,
  com.xmos.xta.ui.dialogs,
  com.xmos.xta.ui.editors,
- com.xmos.xta.ui.editors.disassembly,
- com.xmos.xta.ui.editors.source
+ com.xmos.xta.ui.editors.source,
+ com.xmos.xta.ui.input
 Require-Bundle: com.xmos.libs;bundle-version="1.0.0",
  com.xmos.xta.core;bundle-version="1.0.0",
  org.eclipse.core.runtime;bundle-version="3.4.0",

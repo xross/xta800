@@ -75,8 +75,8 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) { 
 	        updateState();
-    		updateCurrentCoreId(0);	        
-	         		
+    		updateCurrentCoreId(0);
+
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
 

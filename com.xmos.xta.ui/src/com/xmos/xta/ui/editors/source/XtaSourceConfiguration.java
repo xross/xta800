@@ -11,7 +11,7 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
 import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
 import com.xmos.xta.ui.editors.XtaEditor;
-import com.xmos.xta.ui.editors.XtaRulerAnnotationHover;
+import com.xmos.xta.ui.annotations.XtaRulerAnnotationHover;
 
 public class XtaSourceConfiguration extends SourceViewerConfiguration {
     public static final boolean DEBUG = false;
@@ -36,7 +36,7 @@ public class XtaSourceConfiguration extends SourceViewerConfiguration {
     
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
     	if (DEBUG) System.out.printf("XtaSourceConfiguration: getAnnotationHover\n");	
-		return new XtaRulerAnnotationHover(m_editor);
+		return new XtaRulerAnnotationHover(m_editor.getAnnotations());
 	}
 	
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {

@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors.disassembly;
+package com.xmos.xta.ui.annotations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,6 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.ui.IEditorInput;
 
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -32,21 +31,20 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sourcemapper.AssemblyLine;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.editors.Input;
-import com.xmos.xta.ui.editors.InputLine;
-import com.xmos.xta.ui.editors.InputSection;
-import com.xmos.xta.ui.editors.XtaAnnotatedEditor;
 import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
-import com.xmos.xta.ui.editors.XtaEditorAnnotations;
+import com.xmos.xta.ui.input.Input;
+import com.xmos.xta.ui.input.InputDisassembly;
+import com.xmos.xta.ui.input.InputLine;
+import com.xmos.xta.ui.input.InputSection;
 
-public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
+public class XtaDisassemblyAnnotations extends XtaAnnotations {
     protected static final String fnopString = AssemblyLine.getLeadingWhiteSpace() + " FNOP\n";
 
     private Annotation[] m_previousProjectionAnnotations;
 	protected Set<XtaInstruction> m_previousFnops;
     
-    public XtaDisassemblyEditorAnnotations(XtaAnnotatedEditor editor) {
-    	super(editor);
+    public XtaDisassemblyAnnotations(XtaAnnotatedObject source) {
+    	super(source);
         m_previousFnops = new TreeSet<XtaInstruction>();
     }
 
@@ -67,22 +65,17 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	    	}
 			showCodePoint(codePoint.getPcs());
 			
-		}  else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) || 
-					event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
+		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE) || 
+				   event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) {
 			refreshInput();
 
-		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_SOURCE_PCS)) {
+		} else if (event.getProperty().equals(Broadcaster.BROADCAST_SET_SOURCE_PCS)) {
 			updateHighlighting();
 			if (GuiEngine.showSourcePcsPosition()) {
 				Set<Long> pcs = GuiEngine.getSourcePcs();
 				showCodePoint(pcs);
 			}
 			
-		}  else if (event.getProperty().equals(Broadcaster.BROADCAST_OPEN_DISASSEMBLY)) {
-			m_selectedNodes = GuiEngine.getSelectedNodes();
-			updateFoldingStructure();
-			updateAll();
-	        collapseFolding();
 		}
 		
 		super.propertyChange(event);
@@ -215,8 +208,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	
 	private void refreshInput() {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: refreshInput\n");
-		IEditorInput input = GuiEngine.getDisassemblyInput();
-		m_editor.refreshInput(input);
+		m_source.refreshInput(GuiEngine.getDisassemblyInput());
         m_previousProjectionAnnotations = new Annotation[0];
         updateFoldingStructure();
         collapseFolding();
@@ -268,12 +260,12 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     	m_previousFnops = toKeep;
     	m_previousFnops.addAll(toAdd);
     	
-	    ((InputDisassembly)m_editor.getEditorInput()).updateLineNumberMapping();
+	    ((InputDisassembly)m_source.getEditorInput()).updateLineNumberMapping();
 	}
         
     private void removeFnop(long pc) {
 		int fnopsRemoved = 0;
-		IDocument document = m_editor.getDocument();
+		IDocument document = m_source.getDocument();
     	for (InputSection inputSection : getSections()) {
     		inputSection.setIndex(inputSection.getIndex() - fnopsRemoved);
     		
@@ -295,7 +287,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
     private void addFnop(long pc) {
     	boolean fnopsAdded = false;
 
-    	IDocument document = m_editor.getDocument();    	
+    	IDocument document = m_source.getDocument();    	
     	for (InputSection inputSection : getSections()) {
     		if (fnopsAdded) {
     			inputSection.incrementIndex();
@@ -319,7 +311,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	}
 	
 	private Input getInput() {
-		IDocument document = m_editor.getDocument();
+		IDocument document = m_source.getDocument();
 		if (document == null) {
 			return null;
 		}
@@ -331,7 +323,7 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 	}
 	
 	private ArrayList<InputSection> getSections() {
-		IDocument document = m_editor.getDocument();
+		IDocument document = m_source.getDocument();
 		if (document == null)
 			return new ArrayList<InputSection>();
 		
@@ -341,22 +333,10 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
 		return xtaDocumentPartitioner.getInput().getSections();
 	}
 
-    private boolean isSection(long index) {
-    	for (InputSection inputSection : getSections()) {
-    		long sectionIndex = inputSection.getIndex();
-			if (sectionIndex == index) {
-    			return true;
-    		} else if (sectionIndex > index) {
-    			return false;
-    		}
-    	}
-		return false;
-	}
-
 	private ProjectionAnnotationModel updateFoldingStructure() {
 	    if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: updateFoldingStructure\n"); 
 
-	    IDocument document = m_editor.getDocument();
+	    IDocument document = m_source.getDocument();
 	    ArrayList<Position> positions = new ArrayList<Position>();
 		try {
 			for (Position position : document.getPositions(XtaDocumentPartitioner.SECTION)) {
@@ -376,14 +356,14 @@ public class XtaDisassemblyEditorAnnotations extends XtaEditorAnnotations {
             annotations[i] = annotation;
         }
        
-        ProjectionAnnotationModel model = m_editor.getProjectionAnnotationModel();
+        ProjectionAnnotationModel model = m_source.getProjectionAnnotationModel();
         model.modifyAnnotations(m_previousProjectionAnnotations, annotationPositions, null);
         m_previousProjectionAnnotations = annotations;        
         return model;
     }
 
 	private void collapseFolding() {
-        ProjectionAnnotationModel model = m_editor.getProjectionAnnotationModel();
-        model.collapseAll(0, m_editor.getDocument().getLength());
+        ProjectionAnnotationModel model = m_source.getProjectionAnnotationModel();
+        model.collapseAll(0, m_source.getDocument().getLength());
 	}
 }

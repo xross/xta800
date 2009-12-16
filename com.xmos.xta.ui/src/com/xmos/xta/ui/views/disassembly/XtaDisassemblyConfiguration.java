@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors.disassembly;
+package com.xmos.xta.ui.views.disassembly;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
@@ -9,17 +9,18 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
+import com.xmos.xta.ui.annotations.XtaAnnotations;
+import com.xmos.xta.ui.annotations.XtaRulerAnnotationHover;
 import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
-import com.xmos.xta.ui.editors.XtaRulerAnnotationHover;
 
 public class XtaDisassemblyConfiguration extends SourceViewerConfiguration {
     public static final boolean DEBUG = false;
 
-	private XtaDisassemblyEditor m_editor;    
+	private XtaAnnotations m_annotations;    
 	
-    XtaDisassemblyConfiguration(XtaDisassemblyEditor editor) {
+    XtaDisassemblyConfiguration(XtaAnnotations annotations) {
 		if (DEBUG) System.out.printf("XtaDisassemblyConfiguration()\n");		
-		m_editor = editor;
+		m_annotations = annotations;
     }
     
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
@@ -39,7 +40,7 @@ public class XtaDisassemblyConfiguration extends SourceViewerConfiguration {
     
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
     	if (DEBUG) System.out.printf("XtaDisassemblyConfiguration: getAnnotationHover\n");	
-		return new XtaRulerAnnotationHover(m_editor);
+		return new XtaRulerAnnotationHover(m_annotations);
 	}
 	
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {

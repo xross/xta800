@@ -11,12 +11,14 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
 
+import com.xmos.xta.ui.input.Input;
+
 public class XtaDocumentProvider extends AbstractDocumentProvider {
     public static final boolean DEBUG = false;
     
     private Document m_document;
     
-    XtaDocumentProvider() {
+    public XtaDocumentProvider() {
 		if (DEBUG) System.out.printf("XtaDocumentProvider()\n");			                    
     }
 

@@ -15,18 +15,8 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.EditorSashContainer;
-import org.eclipse.ui.internal.EditorStack;
-import org.eclipse.ui.internal.ILayoutContainer;
-import org.eclipse.ui.internal.LayoutPart;
-import org.eclipse.ui.internal.PartPane;
-import org.eclipse.ui.internal.PartSashContainer;
-import org.eclipse.ui.internal.PartSite;
-import org.eclipse.ui.internal.PartStack;
-import org.eclipse.ui.internal.WorkbenchPage;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
@@ -38,14 +28,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.ui.editors.XtaEditor;
-import com.xmos.xta.ui.editors.disassembly.InputDisassembly;
-import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
 import com.xmos.xta.ui.editors.script.InputScript;
 import com.xmos.xta.ui.editors.script.ScriptEditor;
+import com.xmos.xta.ui.input.InputDisassembly;
 import com.xmos.xta.ui.views.console.ConsoleView;
 
-@SuppressWarnings("restriction")
 public class GuiEngine {
 	private static Engine s_engine;
 	private static GuiNotifier s_notifier;	
@@ -61,7 +48,7 @@ public class GuiEngine {
 	private static String s_commandLineXeFile;
 	
 	/* Ensure there is only one disassembly editor at once */
-	private static Map<String, IEditorInput> s_disassemblyInputs;
+	private static Map<String, InputDisassembly> s_disassemblyInputs;
 	private static Set<Long> s_sourcePcs;
 	private static boolean s_showPcPosition;
 	
@@ -79,7 +66,7 @@ public class GuiEngine {
         s_commandLineXeFile = null;
         s_engine.setNotifier(s_notifier);
         s_routeProperties = new HashMap<String, Map<Integer, GuiRouteProperties>>();        
-        s_disassemblyInputs = new HashMap<String, IEditorInput>();
+        s_disassemblyInputs = new HashMap<String, InputDisassembly>();
 	}
 
 	public static Engine getEngine() {
@@ -288,9 +275,9 @@ public class GuiEngine {
 		return s_focusNodes;
 	}
 
-	public static IEditorInput getDisassemblyInput() {
+	public static InputDisassembly getDisassemblyInput() {
 		String nodeCoreId = String.format("%d:%d", s_engine.getNodeId(), s_engine.getCoreId());
-		IEditorInput input = s_disassemblyInputs.get(nodeCoreId);
+		InputDisassembly input = s_disassemblyInputs.get(nodeCoreId);
 		if (input == null) {
 			input = new InputDisassembly();
 			s_disassemblyInputs.put(nodeCoreId, input);
@@ -317,30 +304,6 @@ public class GuiEngine {
 
 	public static boolean showSourcePcsPosition() {
 		return s_showPcPosition;
-	}
-
-	public static void openDisassembly() {
-		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		
-		// Check whether there is actually anything to do
-		IEditorReference[] editorReferences = page.getEditorReferences();
-		for (IEditorReference editorRef : editorReferences) {
-			if (editorRef.getPartName().equals(XtaDisassemblyEditor.EDITORNAME)) {
-				return;
-			}
-		}
-
-		try {
-			IEditorInput input = GuiEngine.getDisassemblyInput();
-			XtaEditor editor = (XtaEditor)page.openEditor(input, XtaDisassemblyEditor.ID);
-	    	editor.setName(XtaDisassemblyEditor.EDITORNAME);
-	    	splitEditorArea();
-
-
-		} catch (PartInitException e) {}
-		
-		// Cause an update in the new editor which will do the highlighting
-		GuiEngine.broadcast(Broadcaster.BROADCAST_OPEN_DISASSEMBLY, "");		
 	}
 
 	public static void openScriptEditor() {
@@ -420,74 +383,5 @@ public class GuiEngine {
 		s_endPoint = null;
 		s_focusNodes = null;
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
-	}
-	
-	/**
-	 * Split the editor area if there is at least two editors in it.
-	 */
-	private static void splitEditorArea() {
-		IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IWorkbenchPart part = workbenchPage.getActivePart();
-		PartPane partPane = ((PartSite) part.getSite()).getPane();
-		LayoutPart layoutPart = partPane.getPart();
-
-		IEditorReference[] editorReferences = workbenchPage.getEditorReferences();
-		// Do it only if we have more that one editor
-		if (editorReferences.length < 2) {
-			return;
-		}
-		
-		// Don't bother if there are already more than 1
-		int numSashes = getNumSashes(layoutPart);
-		if (numSashes > 1) {
-			return;
-		}
-		
-		// Get PartPane that correspond to the active editor
-		PartPane currentEditorPartPane = ((PartSite) workbenchPage.getActiveEditor().getSite()).getPane();
-		EditorSashContainer editorSashContainer = null;
-		ILayoutContainer rootLayoutContainer = layoutPart.getContainer();
-		if (rootLayoutContainer instanceof LayoutPart) {
-			ILayoutContainer editorSashLayoutContainer = ((LayoutPart) rootLayoutContainer).getContainer();
-			if (editorSashLayoutContainer instanceof EditorSashContainer) {
-				editorSashContainer = ((EditorSashContainer) editorSashLayoutContainer);
-			}
-		}
-		/*
-		 * Create a new part stack (i.e. a workbook) to home the
-		 * currentEditorPartPane which hold the active editor
-		 */
-		PartStack newPart = createStack(editorSashContainer);
-		editorSashContainer.stack(currentEditorPartPane, newPart);
-		if (rootLayoutContainer instanceof LayoutPart) {
-			ILayoutContainer cont = ((LayoutPart) rootLayoutContainer).getContainer();
-			if (cont instanceof PartSashContainer) {
-				// "Split" the editor area by adding the new part
-				((PartSashContainer) cont).add(newPart);
-			}
-		}
-	}
-
-	private static int getNumSashes(LayoutPart layoutPart) {
-		ILayoutContainer rootLayoutContainer = layoutPart.getContainer();
-		if (rootLayoutContainer instanceof LayoutPart) {
-			ILayoutContainer cont = ((LayoutPart) rootLayoutContainer).getContainer();
-			if (cont instanceof PartSashContainer) {
-				return ((PartSashContainer) cont).getChildren().length;
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * A method to create a part stack container (a new workbook)
-	 *
-	 * @param editorSashContainer the <code>EditorSashContainer</code> to set for the returned <code>PartStack</code>
-	 * @return a new part stack container
-	 */
-	private static PartStack createStack(EditorSashContainer editorSashContainer) {
-		WorkbenchPage workbenchPage = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		EditorStack newWorkbook = EditorStack.newEditorWorkbook(editorSashContainer, workbenchPage);
-		return newWorkbook;
 	}
 }

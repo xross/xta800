@@ -13,6 +13,10 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TypedRegion;
 
+import com.xmos.xta.ui.input.Input;
+import com.xmos.xta.ui.input.InputLine;
+import com.xmos.xta.ui.input.InputSection;
+
 public class XtaDocumentPartitioner implements IDocumentPartitioner,
                                                IDocumentPartitionerExtension {
     public static final boolean DEBUG = false;

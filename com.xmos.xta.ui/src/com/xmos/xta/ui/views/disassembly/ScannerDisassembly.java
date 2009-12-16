@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors.disassembly;
+package com.xmos.xta.ui.views.disassembly;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors.source;
+package com.xmos.xta.ui.annotations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,16 +28,14 @@ import com.xmos.xta.core.engine.sourcemapper.SourceLine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.XtaPerspective;
-import com.xmos.xta.ui.editors.XtaAnnotatedEditor;
-import com.xmos.xta.ui.editors.XtaEditorAnnotations;
 
-public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
+public class XtaSourceAnnotations extends XtaAnnotations {
 
     private Collection<Long> m_endPointLineIndexes;
     private Map<Long, Set<Long>> m_pcToSourceLineIndex;
 
-    public XtaSourceEditorAnnotations(XtaAnnotatedEditor editor) {
-    	super(editor);
+    public XtaSourceAnnotations(XtaAnnotatedObject source) {
+    	super(source);
         m_endPointLineIndexes = new HashSet<Long>();
         m_pcToSourceLineIndex = new HashMap<Long, Set<Long>>();
     }
@@ -48,10 +46,10 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	}
 	
 	public void updateSourcePcs(boolean showPosition) {
-		StyledText text = m_editor.getViewer().getTextWidget();
-		int charOffset = text.getCaretOffset();
 		try {
-			long lineNumber = m_editor.getDocument().getLineOfOffset(charOffset) + 1;
+			StyledText text = m_source.getViewer().getTextWidget();
+			int charOffset = text.getCaretOffset();
+			long lineNumber = m_source.getDocument().getLineOfOffset(charOffset) + 1;
 			Set<Long> pcs = new TreeSet<Long>(getPcsForLine(lineNumber));
 			GuiEngine.setSourcePcs(pcs, showPosition);
 		} catch (BadLocationException ex) {
@@ -63,10 +61,10 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 
 		m_pcToSourceLineIndex.clear();
 		
-		if (!engine.getXeLoader().isLoaded() || m_editor.isDirty())
+		if (!engine.getXeLoader().isLoaded() || m_source.isDirty())
 			return;
 
-		for (long lineNumber = 1; lineNumber < m_editor.getDocument().getNumberOfLines(); lineNumber++) {
+		for (long lineNumber = 1; lineNumber < m_source.getDocument().getNumberOfLines(); lineNumber++) {
 			String fileName = engine.getSourceMapper().getDebugFileName(getFileName());
     		String refString = String.format("%s:%d", fileName, lineNumber);
     		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
@@ -134,7 +132,7 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
     public boolean canAnnotate() {
 		if (!GuiEngine.getEngine().getXeLoader().isLoaded())
 			return false;
-		if (m_editor.isDirty())
+		if (m_source.isDirty())
 			return false;
 
 		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -265,6 +263,6 @@ public class XtaSourceEditorAnnotations extends XtaEditorAnnotations {
 	}
 	
 	private String getFileName() {
-		return m_editor.getFileName();
+		return m_source.getFileName();
 	}
 }

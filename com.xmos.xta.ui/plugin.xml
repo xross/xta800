@@ -30,13 +30,6 @@
             name="ScriptEditor">
       </editor>
       <editor
-            class="com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor"
-            default="false"
-            icon="icons/xta16x16.png"
-            id="com.xmos.xta.ui.editors.XtaDisassemblyEditor"
-            name="XtaDisassemblyEditor">
-      </editor>
-      <editor
             class="com.xmos.xta.ui.editors.source.XtaSourceEditor"
             default="false"
             icon="icons/xta16x16.png"
@@ -78,6 +71,13 @@
             icon="icons/visualisations.png"
             id="com.xmos.xta.ui.views.visualisations.Visualisations"
             name="Visualisations"
+            restorable="true">
+      </view>
+      <view
+            class="com.xmos.xta.ui.views.disassembly.DisassemblyView"
+            icon="icons/open_disassembly.png"
+            id="com.xmos.xta.ui.views.disassembly.Disassembly"
+            name="Disassembly"
             restorable="true">
       </view>
    </extension>
@@ -421,14 +421,6 @@
                icon="icons/open_script_editor.png"
                id="com.xmos.xta.ui.actions.openscripteditor"
                label="Open/Refresh Script Editor"
-               style="push"
-               toolbarPath="Normal/controls">
-         </action>
-         <action
-               class="com.xmos.xta.ui.actions.ActionOpenDisassembly"
-               icon="icons/open_disassembly.png"
-               id="com.xmos.xta.ui.actions.opendisassembly"
-               label="Open Disassembly"
                style="push"
                toolbarPath="Normal/controls">
          </action>

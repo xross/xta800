@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.annotations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,8 +32,10 @@ import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
+import com.xmos.xta.ui.input.InputSection;
 
-public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
+public abstract class XtaAnnotations implements IPropertyChangeListener {
     public static final boolean DEBUG = false;
     
     public static final String HighlightAnnotationID = "com.xmos.xta.ui.highlight";
@@ -50,7 +52,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
     private Annotation[] m_previousUnknownAnnotations;
     protected List<Node> m_selectedNodes;    
 
-	protected XtaAnnotatedEditor m_editor;
+	protected XtaAnnotatedObject m_source;
 
     // Abstract methods
 	public abstract boolean isValidEndPoint(long lineNumber);
@@ -65,14 +67,19 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	public abstract Collection<Long> getPcsForLine(long lineNumber);
 	public abstract boolean canAnnotate();
 
-    public XtaEditorAnnotations(XtaAnnotatedEditor editor) {
+    public XtaAnnotations(XtaAnnotatedObject source) {
 		if (DEBUG) System.out.printf("XtaEditor()\n");
-		m_editor = editor;
+		m_source = source;
 		GuiEngine.addBroadcastListener(this);
 
     	m_selectedNodes = new ArrayList<Node>();
     	m_isDisposed = false;
     }
+
+	public void dispose() {
+		GuiEngine.removeBroadcastListener(this);
+		m_isDisposed = true;
+	}
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("XtaEditor: propertyChange: %s\n", event.getProperty());	
@@ -207,7 +214,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
         if (!m_isDisposed) {
 			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 				public void run() {      
-					m_editor.getAnnotationModel().replaceAnnotations(m_previousHighlightAnnotations, allPositions);
+					m_source.getAnnotationModel().replaceAnnotations(m_previousHighlightAnnotations, allPositions);
 				}
 			});
         }
@@ -218,7 +225,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
     protected void addAnnotationForIndex(long index, String type, List<Annotation> annotations,
     		Map<Annotation, Position> annotationPositions) {
 
-		ISourceViewer sourceViewer = m_editor.getViewer();
+		ISourceViewer sourceViewer = m_source.getViewer();
 		if (sourceViewer == null)
 			return;
 		
@@ -249,7 +256,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {      
-				m_editor.getAnnotationModel().
+				m_source.getAnnotationModel().
 					replaceAnnotations(m_previousUnknownAnnotations, annotationPositions);        
 			}
 		});
@@ -310,11 +317,11 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	}
 
 	protected void showLocation(int charOffset, long index, boolean expand) {
-		ISourceViewer viewer = m_editor.getViewer();
+		ISourceViewer viewer = m_source.getViewer();
 		if (viewer == null)
 			return;
 
-		ProjectionAnnotationModel model = m_editor.getProjectionAnnotationModel();
+		ProjectionAnnotationModel model = m_source.getProjectionAnnotationModel();
 		if (model != null) {
 			model.expandAll(charOffset, 1);
 			viewer.setRangeIndication(charOffset, 0, true);
@@ -329,7 +336,7 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 	    	long index = getIndexForPc(pc);
 	    	if (index >= 0) { 
 				try {
-					IDocument document = m_editor.getDocument();
+					IDocument document = m_source.getDocument();
 					int charOffset = document.getLineOffset((int)index);
 					showLocation(charOffset, index, true);
 					return true;
@@ -339,8 +346,26 @@ public abstract class XtaEditorAnnotations implements IPropertyChangeListener {
 		return false;
 	}
 	
-	public void dispose() {
-		GuiEngine.removeBroadcastListener(this);
-		m_isDisposed = true;
+	private ArrayList<InputSection> getSections() {
+		IDocument document = m_source.getDocument();
+		if (document == null)
+			return new ArrayList<InputSection>();
+		
+		XtaDocumentPartitioner xtaDocumentPartitioner =
+			(XtaDocumentPartitioner)document.getDocumentPartitioner();
+
+		return xtaDocumentPartitioner.getInput().getSections();
+	}
+
+    public boolean isSection(long index) {
+    	for (InputSection inputSection : getSections()) {
+    		long sectionIndex = inputSection.getIndex();
+			if (sectionIndex == index) {
+    			return true;
+    		} else if (sectionIndex > index) {
+    			return false;
+    		}
+    	}
+		return false;
 	}
 }

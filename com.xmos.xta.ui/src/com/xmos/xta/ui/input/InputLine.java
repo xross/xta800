@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.input;
 
 public class InputLine {
 	private InputSection m_section;

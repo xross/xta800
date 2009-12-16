@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.annotations;
 
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -7,10 +7,10 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 
 public class XtaRulerAnnotationHover implements IAnnotationHover {
 
-	private XtaEditor m_editor;
+	private XtaAnnotations m_annotations;
 	
-	public XtaRulerAnnotationHover(XtaEditor editor) {
-		m_editor = editor;
+	public XtaRulerAnnotationHover(XtaAnnotations annotations) {
+		m_annotations = annotations;
 	}
 	
 	public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
@@ -37,7 +37,7 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 			return "End point set.";
 		}
 		
-		if (m_editor.getAnnotations().isValidEndPoint(lineNumber)) {
+		if (m_annotations.isValidEndPoint(lineNumber)) {
 			return "A valid start/end point for timing.";
 		}
 		
@@ -46,21 +46,21 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 
 	private String getWarningString(long lineNumber) {
 		String warning = "";
-		for (Unknown unknown : m_editor.getAnnotations().getUnknownsForLine(lineNumber)) {
+		for (Unknown unknown : m_annotations.getUnknownsForLine(lineNumber)) {
 			warning += unknown.getDescription() + "\n";
 		}
 		return warning;
 	}
 
 	private boolean isStartPoint(long lineNum) {
-		if (m_editor.getAnnotations().getStartPointIndexes().contains(lineNum))
+		if (m_annotations.getStartPointIndexes().contains(lineNum))
 			return true;
 
 		return false;
 	}
 
 	private boolean isEndPoint(long lineNum) {
-		if (m_editor.getAnnotations().getEndPointIndexes().contains(lineNum))
+		if (m_annotations.getEndPointIndexes().contains(lineNum))
 			return true;
 
 		return false;

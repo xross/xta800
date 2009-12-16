@@ -17,7 +17,7 @@ import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiFileFinder;
 import com.xmos.xta.ui.editors.XtaEditor;
-import com.xmos.xta.ui.editors.source.InputSource;
+import com.xmos.xta.ui.input.InputSource;
 import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 
 public class FileViewEditorManager {

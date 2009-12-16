@@ -24,7 +24,6 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.editors.XtaEditor;
-import com.xmos.xta.ui.editors.disassembly.XtaDisassemblyEditor;
 import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 
 public class FilesView extends ViewPart implements IPropertyChangeListener {
@@ -87,11 +86,6 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
         try {
     		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
-    		if (debugFile.getFileName().equals(XtaDisassemblyEditor.EDITORNAME)) {
-    			GuiEngine.openDisassembly();
-    			return;
-    		}
-    			
 			IEditorInput input = FileViewEditorManager.getInput(debugFile.getFullFileName());
 			if (input == null)
 				return;

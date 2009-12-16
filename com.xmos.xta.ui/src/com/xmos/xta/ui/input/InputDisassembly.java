@@ -1,11 +1,9 @@
-package com.xmos.xta.ui.editors.disassembly;
+package com.xmos.xta.ui.input;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.editors.Input;
-import com.xmos.xta.ui.editors.InputSection;
 import com.xmos.xta.ui.editors.XtaDocumentPartitioner;
 import com.xmos.xta.core.engine.sourcemapper.AssemblyLine;
 import com.xmos.xta.core.engine.sourcemapper.Function;
@@ -19,9 +17,13 @@ public class InputDisassembly implements IEditorInput {
     
     public InputDisassembly() {	
 		if (DEBUG) System.out.printf("InputDisassembly()\n");	
+		m_input = new Input(s_headerType, s_lineType);
+
+		if (!GuiEngine.getEngine().getXeLoader().isLoaded()) {
+			return;
+		}
 		
 		int lineIndex = 0;
-		m_input = new Input(s_headerType, s_lineType);
         for (Function function : GuiEngine.getEngine().getSourceMapper().getFunctions()) {        	
     		String headerRef = String.format("-");
         	m_input.addHeader(function.getText() + ":", headerRef, lineIndex, 0);        	

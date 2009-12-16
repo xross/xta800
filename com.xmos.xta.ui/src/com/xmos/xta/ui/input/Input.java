@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.editors;
+package com.xmos.xta.ui.input;
 
 import java.util.ArrayList;
 import java.util.HashMap;

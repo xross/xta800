@@ -9,7 +9,9 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
 
+import com.xmos.xta.ui.annotations.XtaSourceAnnotations;
 import com.xmos.xta.ui.editors.XtaEditor;
+import com.xmos.xta.ui.input.InputSource;
 
 
 public class XtaSourceEditor extends XtaEditor {
@@ -17,7 +19,7 @@ public class XtaSourceEditor extends XtaEditor {
 
     public XtaSourceEditor() {
     	setSourceViewerConfiguration(new XtaSourceConfiguration(this));
-    	m_annotations = new XtaSourceEditorAnnotations(this);
+    	m_annotations = new XtaSourceAnnotations(this);
     }
 
     public void createPartControl(Composite parent) {
