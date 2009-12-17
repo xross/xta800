@@ -19,20 +19,20 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
-      option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of assertions
+      option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
-      option: instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of assertions
+      option: instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
-      option: loop <ANY_REF> <iterations>: Adds the given loop count assertion to the list of assertions
-      option: looppath <ANY_REF> <iterations>: Adds the given loop path count assertion to the list of assertions
-      option: loopscope <ANY_REF> <scope>: Adds the given loop scope assertion to the list of assertions
+      option: loop <ANY_REF> <iterations>: Adds the given loop count define to the list of defines
+      option: looppath <ANY_REF> <iterations>: Adds the given loop path count define to the list of defines
+      option: loopscope <ANY_REF> <scope>: Adds the given loop scope define to the list of defines
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of assertions
+      option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of defines
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
@@ -64,14 +64,14 @@
       option: allendpoints: Lists all the possible locations for endpoints
       option: exclusions: Displays the exclusions
       option: functions: Lists the functions in the loaded application
-      option: functiontimes: Displays the function time assertions
-      option: instructiontime: Displays the instruction time assertions
+      option: functiontimes: Displays the function time defines
+      option: instructiontime: Displays the instruction time defines
       option: knowns <route id>: Displays the list of knowns set for the given route
       option: labels: Lists the labels
-      option: loops: Displays the loop assertions
-      option: looppaths: Displays the loop path assertions
-      option: loopscopes: Displays the loop scope assertions
-      option: pathtimes: Displays the path time assertions
+      option: loops: Displays the loop defines
+      option: looppaths: Displays the loop path defines
+      option: loopscopes: Displays the loop scope defines
+      option: pathtimes: Displays the path time defines
       option: sources: Lists the source files
       option: srccommands : Displays the command list embedded in the loaded executable
       option: srcloops : Displays the loop counts embedded in the loaded executable
@@ -96,12 +96,12 @@
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF|*> <to LABEL_REF|*> <to LABEL_REF|*>: Removes the given from/to references from the branches list
       option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
-      option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of assertions
-      option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of assertions
-      option: loop <ANY_REF|*>: Removes the given loop count assertion to the list of assertions
-      option: looppath <ANY_REF|*>: Removes the given loop path count assertion to the list of assertions
-      option: loopscope <ANY_REF|*>: Removes the given loop scope assertion to the list of assertions
-      option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of assertions
+      option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
+      option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines
+      option: loop <ANY_REF|*>: Removes the given loop count define to the list of defines
+      option: looppath <ANY_REF|*>: Removes the given loop path count define to the list of defines
+      option: loopscope <ANY_REF|*>: Removes the given loop scope define to the list of defines
+      option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]set <option> <arg0> <arg1>...: Set path information
       option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
