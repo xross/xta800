@@ -46,7 +46,12 @@ public class ScannerDisassembly extends RuleBasedScanner {
         String[] specialKeywords = {
         	"sp", "dp", "ps", "pc", 
         	"cp", "et", "ed", "sed",
-        	"spc", "ssr", "kep", "et", 
+        	"spc", "ssr", "kep", "et",
+        	"CT_END", "CT_PAUSE", "CT_ACK",
+        	"CT_NACK", "CT_READN", "CT_READ1",
+        	"CT_READ2", "CT_READ4", "CT_READ8",
+        	"CT_WRITEN", "CT_WRITE1", "CT_WRITE2",
+    		"CT_WRITE4", "CT_WRITE8", "CT_CALL"
         };
             
         ArrayList<String> resource = new ArrayList<String>();

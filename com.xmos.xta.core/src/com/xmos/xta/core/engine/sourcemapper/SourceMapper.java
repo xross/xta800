@@ -89,15 +89,14 @@ public class SourceMapper {
 			boolean done = false;
 			while (!done) {
 				if (file.exists()) {
-
 					try {
 						file = file.getCanonicalFile();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
 					addSourceFile(de, debugFile, file, sourceFiles);
 					done = true;
+
 				} else {
 					file = findFileInSrcPaths(engine.getSrcPaths(), debugFile.getFileName());
 					addSourceFile(de, debugFile, file, sourceFiles);

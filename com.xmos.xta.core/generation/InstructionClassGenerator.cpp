@@ -177,11 +177,6 @@ void InstructionClassGenerator::generateGetOperandStringMethod(const DbInstructi
 
       string arg = "";
 
-      // Deals with the scaling of the immediate values.
-      const string *scale = oper->getScale();
-      if (*scale != "0")
-        arg += "(";
-
       // Deals with the mapping of the immediate values.
       DbResource *res = oper->getResource();
       const string *mapsToCode = res->getMapsToCode();
@@ -202,9 +197,6 @@ void InstructionClassGenerator::generateGetOperandStringMethod(const DbInstructi
       {
         arg += *oper->getField()->getDecode();
       }
-
-      if (*scale != "0")
-          arg += " << " + *scale + ")";
 
       args.push_back(arg);
     }
