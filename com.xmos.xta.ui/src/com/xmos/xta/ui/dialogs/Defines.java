@@ -12,11 +12,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-public class Assertions extends Dialog implements ButtonEnabler {
+public class Defines extends Dialog implements ButtonEnabler {
 	private CTabFolder m_folder;
 	private Map<Control, XtaImpl> m_controls;
 	
-	public Assertions(Shell parentShell) {
+	public Defines(Shell parentShell) {
 		super(parentShell);
 		m_controls = new HashMap<Control, XtaImpl>();		
     	open();		
@@ -34,7 +34,7 @@ public class Assertions extends Dialog implements ButtonEnabler {
 
     protected void configureShell(Shell newShell) {
     	super.configureShell(newShell);
-    	XtaDialog.configureShell(newShell, "Add assertion", 380, 120);    	
+    	XtaDialog.configureShell(newShell, "Add define", 380, 120);    	
     }
 
     protected Control createDialogArea(Composite parent) {

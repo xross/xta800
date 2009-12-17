@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.info.assertions;
+package com.xmos.xta.ui.views.info.defines;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,6 +30,6 @@ public class LoopPathViewer extends BaseViewer {
 
 class LoopPathTimeContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
-		return ((Engine)inputElement).getLoopPathAssertions().toArray();
+		return ((Engine)inputElement).getLoopPathDefines().toArray();
 	}
 }

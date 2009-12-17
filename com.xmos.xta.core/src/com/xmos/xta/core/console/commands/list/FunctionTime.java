@@ -8,7 +8,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
-import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
+import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
 
 public class FunctionTime extends Command {
 	private Operation m_operation;	
@@ -85,16 +85,16 @@ public class FunctionTime extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case ADD:
-    		descString = "functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of assertions";
+    		descString = "functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines";
            	if (detailed) {    	    	
            		descString += "\n" + TimeUnit.getHelp();
            	}
         	break;
     	case REMOVE:
-    		descString = "functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of assertions";
+    		descString = "functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines";
         	break;
     	case LIST:
-        	descString = "functiontimes: Displays the function time assertions";
+        	descString = "functiontimes: Displays the function time defines";
         	break;
     	}
     	return descString;   		    	            
@@ -136,7 +136,7 @@ public class FunctionTime extends Command {
     		break;
     		
     	case LIST:
-    		Collection<FunctionTimeInfo> infos = engine.getFunctionTimeAssertions();
+    		Collection<FunctionTimeInfo> infos = engine.getFunctionTimeDefines();
     	    if (infos.isEmpty()) {
     	    	console.display("none\n");
     	    	return;

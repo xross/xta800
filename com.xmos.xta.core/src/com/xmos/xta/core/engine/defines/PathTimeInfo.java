@@ -1,9 +1,9 @@
-package com.xmos.xta.core.engine.assertions;
+package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
 
-public class PathTimeInfo implements AssertionInfo {
+public class PathTimeInfo implements DefineInfo {
 	private Reference m_from;
 	private Reference m_to;
 	private TimeUnit m_timeUnit;

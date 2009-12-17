@@ -8,7 +8,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
-import com.xmos.xta.core.engine.assertions.PathTimeInfo;
+import com.xmos.xta.core.engine.defines.PathTimeInfo;
 
 public class PathTime extends Command {
 	private Operation m_operation;	
@@ -88,16 +88,16 @@ public class PathTime extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case ADD:
-    		descString = "pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of assertions";
+    		descString = "pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of defines";
            	if (detailed) {    	    	
            		descString += "\n" + TimeUnit.getHelp();
            	}
         	break;
     	case REMOVE:
-    		descString = "pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of assertions";
+    		descString = "pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines";
         	break;
     	case LIST:
-        	descString = "pathtimes: Displays the path time assertions";
+        	descString = "pathtimes: Displays the path time defines";
         	break;
     	}
     	return descString;   		    	        
@@ -139,7 +139,7 @@ public class PathTime extends Command {
     		break;
     		
     	case LIST:
-    		Collection<PathTimeInfo> infos = engine.getPathTimeAssertions();
+    		Collection<PathTimeInfo> infos = engine.getPathTimeDefines();
     	    if (infos.isEmpty()) {
     	    	console.display("none\n");
     	    	return;

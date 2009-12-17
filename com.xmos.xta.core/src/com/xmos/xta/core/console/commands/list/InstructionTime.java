@@ -8,7 +8,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.TimeUnit;
-import com.xmos.xta.core.engine.assertions.InstructionTimeInfo;
+import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
 
 public class InstructionTime extends Command {
 	private Operation m_operation;	
@@ -86,16 +86,16 @@ public class InstructionTime extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case ADD:
-    		descString = "instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of assertions";
+    		descString = "instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines";
            	if (detailed) {    	    	
            		descString += "\n" + TimeUnit.getHelp();
            	}
         	break;
     	case REMOVE:
-    		descString = "instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of assertions";
+    		descString = "instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines";
         	break;
     	case LIST:
-        	descString = "instructiontime: Displays the instruction time assertions";
+        	descString = "instructiontime: Displays the instruction time defines";
         	break;
     	}
     	return descString;   		    	                
@@ -137,7 +137,7 @@ public class InstructionTime extends Command {
     		break;
     		
     	case LIST:
-    		Collection<InstructionTimeInfo> infos = engine.getInstructionTimeAssertions();
+    		Collection<InstructionTimeInfo> infos = engine.getInstructionTimeDefines();
     	    if (infos.isEmpty()) {
     	    	console.display("none\n");
     	    	return;

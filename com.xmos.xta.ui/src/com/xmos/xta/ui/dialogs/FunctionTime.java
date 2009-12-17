@@ -39,7 +39,7 @@ class FunctionTimeImpl implements XtaImpl {
 	private FilteredTree m_function;	
 	private Text m_value;
 	private Combo m_units;
-	private Button m_assert;
+	private Button m_define;
 	private ButtonEnabler m_enabler;
 
     public FunctionTimeImpl(Route route) {
@@ -56,11 +56,11 @@ class FunctionTimeImpl implements XtaImpl {
 	    createFunctionControl(container);	    
 	    m_value = XtaDialog.createValueControl(container, this);
 	    m_units = XtaDialog.createUnitsControl(container, this);
-	    m_assert = XtaDialog.createAssertControl(container);
+	    m_define = XtaDialog.createDefineControl(container);
 
 	    if (m_route == null) {
-	    	m_assert.setSelection(true);
-	    	m_assert.setEnabled(false);	    	
+	    	m_define.setSelection(true);
+	    	m_define.setEnabled(false);	    	
 	    }	   
     	return container;
     }
@@ -72,7 +72,7 @@ class FunctionTimeImpl implements XtaImpl {
 
 			for (Object object : ((IStructuredSelection)m_function.getViewer().getSelection()).toArray()) {
 				if (object instanceof String) {
-		    		if (m_assert.getSelection()) {
+		    		if (m_define.getSelection()) {
 		    		    m_engine.addFunctionTime(GuiEngine.s_guiSrc, (String)object, timeUnit);
 		    		}
 		    		if (m_route != null) {

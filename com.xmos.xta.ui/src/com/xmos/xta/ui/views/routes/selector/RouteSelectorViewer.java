@@ -194,7 +194,7 @@ public class RouteSelectorViewer {
 	}
 
 	private static void addSetPathTiming(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
-		Action action = new Action("Set/assert path timing") {
+		Action action = new Action("Set/define path timing") {
 		    public void run() {
 			    new PathTime(shell, getFirstNode(selectedNodes).getRoute());
 		    }
@@ -204,7 +204,7 @@ public class RouteSelectorViewer {
 	}
 
 	private static void addSetFunctionTiming(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
-		Action action = new Action("Set/assert function timing") {
+		Action action = new Action("Set/define function timing") {
 		    public void run() {
 			    new FunctionTime(shell, getFirstNode(selectedNodes).getRoute());
 		    }

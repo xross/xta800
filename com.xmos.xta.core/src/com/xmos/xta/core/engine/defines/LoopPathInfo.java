@@ -1,12 +1,12 @@
-package com.xmos.xta.core.engine.assertions;
+package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
 
-public class LoopInfo implements AssertionInfo {
+public class LoopPathInfo implements DefineInfo {
 	private Reference m_reference;
 	private long m_iterations;
 
-	public LoopInfo(Reference reference, long iterations) {
+	public LoopPathInfo(Reference reference, long iterations) {
 		m_reference = reference;
 		m_iterations = iterations;
 	}
@@ -32,6 +32,6 @@ public class LoopInfo implements AssertionInfo {
     }	
     	
 	public boolean equals(Object o) {
-		return ((LoopInfo)o).m_reference.equals(m_reference);
-	}		
+		return ((LoopPathInfo)o).m_reference.equals(m_reference);
+	}			
 }

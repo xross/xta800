@@ -37,7 +37,7 @@ class InstructionTimeImpl implements XtaImpl {
     private List<Node> m_nodes;    
     private Text m_value;
 	private Combo m_units;
-	private Button m_assert;
+	private Button m_define;
 	private Text m_reference;
 	private ButtonEnabler m_enabler;
 	
@@ -56,7 +56,7 @@ class InstructionTimeImpl implements XtaImpl {
 
 	    m_value = XtaDialog.createValueControl(container, this);	    
 	    m_units = XtaDialog.createUnitsControl(container, this);
-	    createAssertControls(container);	    
+	    createDefineControls(container);	    
 
 	    if (m_nodes != null) {
 	        m_value.setText(GuiEngine.getEngine().getInstructionTime(m_nodes.get(0)).getValueStr());	
@@ -68,14 +68,14 @@ class InstructionTimeImpl implements XtaImpl {
     public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
-    		assert (timeUnit.isValid());
+    		assert(timeUnit.isValid());
     		
     		if (m_nodes == null) {
 				GuiEngine.getEngine().addInstructionTime(GuiEngine.s_guiSrc, m_reference.getText(), timeUnit);
     			
     		} else {
         		for (Node node : m_nodes) {
-        			if (m_assert.getSelection()) {
+        			if (m_define.getSelection()) {
         				GuiEngine.getEngine().addInstructionTime(GuiEngine.s_guiSrc, node.getReferenceStr(), timeUnit);
         			}
    				    GuiEngine.getEngine().setInstructionTime(GuiEngine.s_guiSrc, node, timeUnit);
@@ -104,14 +104,14 @@ class InstructionTimeImpl implements XtaImpl {
 		m_enabler.enable(allValid);
     }    
 	    
-	private void createAssertControls(Composite container) {		
-		Group group = XtaDialog.createGroup(container, "set as assertion", 2, 2);
+	private void createDefineControls(Composite container) {		
+		Group group = XtaDialog.createGroup(container, "add as define", 2, 2);
 		
-		m_assert = new Button(group, SWT.CHECK);
-		m_assert.setSelection(false);
-		m_assert.addSelectionListener(new SelectionAdapter() {
+		m_define = new Button(group, SWT.CHECK);
+		m_define.setSelection(false);
+		m_define.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				m_reference.setEnabled(m_assert.getSelection());
+				m_reference.setEnabled(m_define.getSelection());
 			}			
 		});
 		
@@ -133,8 +133,8 @@ class InstructionTimeImpl implements XtaImpl {
 			m_reference.setEditable(false);
 			
 		} else {
-			m_assert.setSelection(true);
-			m_assert.setEnabled(false);
+			m_define.setSelection(true);
+			m_define.setEnabled(false);
 			m_reference.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
 					updateButtonStatus();

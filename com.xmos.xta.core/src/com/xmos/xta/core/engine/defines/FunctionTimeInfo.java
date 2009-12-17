@@ -1,9 +1,9 @@
-package com.xmos.xta.core.engine.assertions;
+package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
 
-public class FunctionTimeInfo implements AssertionInfo {
+public class FunctionTimeInfo implements DefineInfo {
 	private Reference m_function;
 	private TimeUnit m_timeUnit;
 

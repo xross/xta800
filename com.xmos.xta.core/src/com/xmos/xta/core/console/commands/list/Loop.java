@@ -7,7 +7,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.assertions.LoopInfo;
+import com.xmos.xta.core.engine.defines.LoopInfo;
 
 public class Loop extends Command {	
 	private Operation m_operation;
@@ -85,13 +85,13 @@ public class Loop extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case ADD:
-    		descString = "loop <ANY_REF> <iterations>: Adds the given loop count assertion to the list of assertions";
+    		descString = "loop <ANY_REF> <iterations>: Adds the given loop count define to the list of defines";
         	break;
     	case REMOVE:
-    		descString = "loop <ANY_REF|*>: Removes the given loop count assertion to the list of assertions";
+    		descString = "loop <ANY_REF|*>: Removes the given loop count define to the list of defines";
         	break;
     	case LIST:
-        	descString = "loops: Displays the loop assertions";
+        	descString = "loops: Displays the loop defines";
         	break;
     	}
     	return descString;   		
@@ -135,7 +135,7 @@ public class Loop extends Command {
     		break;
     		
     	case LIST:
-    		Collection<LoopInfo> infos = engine.getLoopAssertions();
+    		Collection<LoopInfo> infos = engine.getLoopDefines();
     	    if (infos.isEmpty()) {
     	    	console.display("none\n");
     	    	return;

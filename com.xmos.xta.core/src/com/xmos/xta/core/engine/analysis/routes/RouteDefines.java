@@ -15,14 +15,14 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
-import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
-import com.xmos.xta.core.engine.assertions.PathTimeInfo;
+import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
+import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
 
-public class RouteAssertions {
-	private static final boolean DEBUG_ROUTE_ASSERTIONS = false;
+public class RouteDefines {
+	private static final boolean DEBUG_ROUTE_DEFINES = false;
 	
-	public void applyFunctionAssertion(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
+	public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
 		Reference reference = info.getFunction();
 		
 		for (Node node : route.getReferencedFunctionNodes(reference)) {
@@ -32,7 +32,7 @@ public class RouteAssertions {
 		route.getRouteUnknowns().invalidateCachedStats();		
 	}
 
-	public void applyPathAssertion(Engine engine, CommandSource src, 
+	public void applyPathDefine(Engine engine, CommandSource src, 
 			Route route, PathTimeInfo info, Source source) throws AbortedException {
 		
 		Reference fromRef = info.getFrom();
@@ -41,7 +41,7 @@ public class RouteAssertions {
 		Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
 		Collection<Node> toNodes = route.getReferencedNodes(toRef);
 		
-		RouteAssertionPatterns[] patterns = new RouteAssertionPatterns[] {
+		RouteDefinePatterns[] patterns = new RouteDefinePatterns[] {
 				new SameBlockPattern(),
 				new DifferentBlockPattern()
 		};
@@ -59,13 +59,13 @@ public class RouteAssertions {
 				Node toBlock = to.getParent();
 				assert(toBlock instanceof BlockNode);
 
-				for (RouteAssertionPatterns pattern : patterns) {
+				for (RouteDefinePatterns pattern : patterns) {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
 
-						if (DEBUG_ROUTE_ASSERTIONS) display("BEFORE", route);						
+						if (DEBUG_ROUTE_DEFINES) display("BEFORE", route);						
 						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, timeUnit, source);						
 						RouteConstructor.setParent(route.getNode());
-						if (DEBUG_ROUTE_ASSERTIONS) display("AFTER", route);
+						if (DEBUG_ROUTE_DEFINES) display("AFTER", route);
 						
 						success = true;
 						break;
@@ -74,7 +74,7 @@ public class RouteAssertions {
 			}
 
 			if (!success) {
-				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path assertion: %s, to route: %s", 
+				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s", 
 						info, route.getRouteDescription().getDescription()));				
 			}
 			route.getRouteUnknowns().invalidateCachedStats();

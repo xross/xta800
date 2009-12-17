@@ -12,7 +12,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.assertions.Assertions;
+import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
@@ -31,7 +31,7 @@ public class RouteDescription {
 	private int m_coreId;
 	private Collection<Reference> m_exclusions;
 	private Map<Reference, List<Reference>> m_branches;
-	private Assertions m_assertions;
+	private Defines m_defines;
 	private Config m_config;
 
 	public enum RouteMode {
@@ -39,7 +39,7 @@ public class RouteDescription {
 	};
 
 	public RouteDescription(Reference from, Reference to, Engine engine, int nodeId, int coreId, 
-			Collection<Reference> exclusions, Assertions assertions, Config config) {
+			Collection<Reference> exclusions, Defines defines, Config config) {
 
 		m_mode = RouteMode.PATH;
 		m_description = String.format("path: %s to %s", from.getRef(), to.getRef());
@@ -52,13 +52,13 @@ public class RouteDescription {
 		m_coreId = coreId;		
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);
-		m_assertions = new Assertions(assertions);
+		m_defines = new Defines(defines);
 		m_config = new Config(config);
 		m_branches = engine.getUserBranches();
 	}
 
 	public RouteDescription(Reference function, Engine engine, int nodeId, int coreId, 
-			Collection<Reference> exclusions, Assertions assertions, Config config) {
+			Collection<Reference> exclusions, Defines defines, Config config) {
 
 		m_mode = RouteMode.FUNCTION;
 		m_description = String.format("function: %s", function.getRef());
@@ -70,7 +70,7 @@ public class RouteDescription {
 		m_coreId = coreId;				
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);
-		m_assertions = new Assertions(assertions);		
+		m_defines = new Defines(defines);		
 		m_config = new Config(config);
 		m_branches = engine.getUserBranches();
 		
@@ -131,8 +131,8 @@ public class RouteDescription {
 		return m_branches;
 	}
 
-	public Assertions getAssertions() {
-		return m_assertions;
+	public Defines getDefines() {
+		return m_defines;
 	}
 
 	public Config getConfig() {

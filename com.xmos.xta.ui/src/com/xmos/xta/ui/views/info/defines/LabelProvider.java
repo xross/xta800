@@ -1,9 +1,9 @@
-package com.xmos.xta.ui.views.info.assertions;
+package com.xmos.xta.ui.views.info.defines;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 
-import com.xmos.xta.core.engine.assertions.AssertionInfo;
+import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
 class LabelProvider extends BaseViewerLabelProvider implements ITableLabelProvider {
@@ -17,10 +17,10 @@ class LabelProvider extends BaseViewerLabelProvider implements ITableLabelProvid
     }
     
 	public String getColumnText(Object element, int columnIndex) {
-		assert(element instanceof AssertionInfo);
+		assert(element instanceof DefineInfo);
 		assert((columnIndex >= 0) && (columnIndex < m_columnNames.length));
 		
-		AssertionInfo info = (AssertionInfo)element;
+		DefineInfo info = (DefineInfo)element;
 		if (m_columnNames[columnIndex].equals(DESCRIPTION)) {
 			return info.getDescription();
 			
@@ -32,11 +32,11 @@ class LabelProvider extends BaseViewerLabelProvider implements ITableLabelProvid
 	}
 
 	public int compare(Object e1, Object e2, String column) {
-		assert(e1 instanceof AssertionInfo);
-		assert(e2 instanceof AssertionInfo);		
+		assert(e1 instanceof DefineInfo);
+		assert(e2 instanceof DefineInfo);		
 		
-		AssertionInfo p1 = (AssertionInfo)e1;
-		AssertionInfo p2 = (AssertionInfo)e2;
+		DefineInfo p1 = (DefineInfo)e1;
+		DefineInfo p2 = (DefineInfo)e2;
 		int res = 0;
 		if (column.equals(DESCRIPTION)) {
 			res = p1.getDescription().compareTo(p2.getDescription());

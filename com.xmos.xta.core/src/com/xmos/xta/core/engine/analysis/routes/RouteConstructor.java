@@ -33,12 +33,12 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNode
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
-import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
-import com.xmos.xta.core.engine.assertions.LoopInfo;
-import com.xmos.xta.core.engine.assertions.LoopPathInfo;
-import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
-import com.xmos.xta.core.engine.assertions.PathTimeInfo;
-import com.xmos.xta.core.engine.assertions.InstructionTimeInfo;
+import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
+import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
+import com.xmos.xta.core.engine.defines.LoopInfo;
+import com.xmos.xta.core.engine.defines.LoopPathInfo;
+import com.xmos.xta.core.engine.defines.LoopScopeInfo;
+import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
@@ -173,7 +173,7 @@ public class RouteConstructor {
 		setUnknowns();	
 		setSrcLoopCounts();	
 		checkSupportedInstructions(src);
-		applyAssertions(src);
+		applyDefines(src);
 
 		switch (m_description.getMode()) {
 		case FUNCTION:
@@ -759,32 +759,32 @@ public class RouteConstructor {
 		}
 	}
 
-	private void applyAssertions(CommandSource src) throws AbortedException {
-		RouteAssertions assertions = new RouteAssertions();
+	private void applyDefines(CommandSource src) throws AbortedException {
+		RouteDefines defines = new RouteDefines();
 		for (Route route : m_routes) {			
-			for (FunctionTimeInfo info : m_engine.getFunctionTimeAssertions()) {			
-				assertions.applyFunctionAssertion(src, route, info, Source.BINARY);
+			for (FunctionTimeInfo info : m_engine.getFunctionTimeDefines()) {			
+				defines.applyFunctionDefine(src, route, info, Source.BINARY);
 			}
-			for (PathTimeInfo info : m_engine.getPathTimeAssertions()) {			
-				assertions.applyPathAssertion(m_engine, src, route, info, Source.BINARY);
+			for (PathTimeInfo info : m_engine.getPathTimeDefines()) {			
+				defines.applyPathDefine(m_engine, src, route, info, Source.BINARY);
 			}
 		}		
-		for (LoopInfo info : m_engine.getLoopAssertions()) {
+		for (LoopInfo info : m_engine.getLoopDefines()) {
 			try {
 				m_engine.applyLoopToRoutes(src, m_routes, info, Source.BINARY);
 			} catch (Exception e) {}
 		}
-		for (LoopPathInfo info : m_engine.getLoopPathAssertions()) {
+		for (LoopPathInfo info : m_engine.getLoopPathDefines()) {
 			try {
 				m_engine.applyLoopPathToRoutes(m_routes, info, Source.BINARY);
 			} catch (Exception e) {}
 		}
-		for (LoopScopeInfo info : m_engine.getLoopScopeAssertions()) {
+		for (LoopScopeInfo info : m_engine.getLoopScopeDefines()) {
 			try {
 				m_engine.applyLoopScopeToRoutes(m_routes, info, Source.BINARY);
 			} catch (Exception e) {}
 		}
-		for (InstructionTimeInfo info : m_engine.getInstructionTimeAssertions()) {
+		for (InstructionTimeInfo info : m_engine.getInstructionTimeDefines()) {
 			try {
 				m_engine.applyInstructionTimeToRoutes(m_routes, info, Source.BINARY);
 			} catch (Exception e) {}

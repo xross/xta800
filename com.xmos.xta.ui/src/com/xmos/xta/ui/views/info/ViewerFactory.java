@@ -7,12 +7,12 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 
-import com.xmos.xta.ui.views.info.assertions.FunctionTimeViewer;
-import com.xmos.xta.ui.views.info.assertions.InstructionTimeViewer;
-import com.xmos.xta.ui.views.info.assertions.LoopPathViewer;
-import com.xmos.xta.ui.views.info.assertions.LoopScopeViewer;
-import com.xmos.xta.ui.views.info.assertions.LoopViewer;
-import com.xmos.xta.ui.views.info.assertions.PathTimeViewer;
+import com.xmos.xta.ui.views.info.defines.FunctionTimeViewer;
+import com.xmos.xta.ui.views.info.defines.InstructionTimeViewer;
+import com.xmos.xta.ui.views.info.defines.LoopPathViewer;
+import com.xmos.xta.ui.views.info.defines.LoopScopeViewer;
+import com.xmos.xta.ui.views.info.defines.LoopViewer;
+import com.xmos.xta.ui.views.info.defines.PathTimeViewer;
 import com.xmos.xta.ui.views.info.exclusions.ExclusionsViewer;
 import com.xmos.xta.ui.views.info.sections.AllCallsViewer;
 import com.xmos.xta.ui.views.info.sections.AllEndpointsViewer;
@@ -36,7 +36,7 @@ public class ViewerFactory {
 	private static final String KNOWNS              = "Knowns";		
 	private static final String EXCLUSIONS          = "Exclusions";
 
-	private static final String ASSERTIONS          = "Assertions";
+	private static final String DEFINES             = "Defines";
 	private static final String FUNCTION_TIME       = "Function Time";				
 	private static final String PATH_TIME           = "Path Time";				
 	private static final String INSTRUCTION_TIME    = "Instruction Time";				
@@ -73,8 +73,8 @@ public class ViewerFactory {
 	    } else if (name.equals(EXCLUSIONS)) {
 	    	return new ExclusionsViewer(createNewViewer(EXCLUSIONS, composite), site);		    
 
-	    // Assertions
-	    } else if (name.equals(ASSERTIONS)) {
+	    // Defines
+	    } else if (name.equals(DEFINES)) {
 	    	return new NullViewer(composite);
 	    } else if (name.equals(FUNCTION_TIME)) {
 	    	return new FunctionTimeViewer(createNewViewer(FUNCTION_TIME, composite));		    	
@@ -132,14 +132,14 @@ public class ViewerFactory {
 		new TreeItem(tree, 0).setText(KNOWNS);		
 		new TreeItem(tree, 0).setText(EXCLUSIONS);
 		
-		TreeItem assertionInfo = new TreeItem(tree, 0);
-		assertionInfo.setText(ASSERTIONS);		
-		new TreeItem(assertionInfo, 0).setText(FUNCTION_TIME);				
-		new TreeItem(assertionInfo, 0).setText(PATH_TIME);				
-		new TreeItem(assertionInfo, 0).setText(INSTRUCTION_TIME);				
-		new TreeItem(assertionInfo, 0).setText(LOOP);				
-		new TreeItem(assertionInfo, 0).setText(LOOP_PATH);				
-		new TreeItem(assertionInfo, 0).setText(LOOP_SCOPE);						
+		TreeItem defineInfo = new TreeItem(tree, 0);
+		defineInfo.setText(DEFINES);		
+		new TreeItem(defineInfo, 0).setText(FUNCTION_TIME);				
+		new TreeItem(defineInfo, 0).setText(PATH_TIME);				
+		new TreeItem(defineInfo, 0).setText(INSTRUCTION_TIME);				
+		new TreeItem(defineInfo, 0).setText(LOOP);				
+		new TreeItem(defineInfo, 0).setText(LOOP_PATH);				
+		new TreeItem(defineInfo, 0).setText(LOOP_SCOPE);						
 		
 		TreeItem binaryInfo = new TreeItem(tree, 0);
 		binaryInfo.setText(BINARY_INFO);		

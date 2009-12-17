@@ -7,7 +7,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
+import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 
 public class LoopScope extends Command {	
 	private Operation m_operation;	
@@ -85,7 +85,7 @@ public class LoopScope extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case ADD:
-    		descString = "loopscope <ANY_REF> <scope>: Adds the given loop scope assertion to the list of assertions";
+    		descString = "loopscope <ANY_REF> <scope>: Adds the given loop scope define to the list of defines";
         	if (detailed) {
             	descString += "\n";
         		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";                
@@ -93,10 +93,10 @@ public class LoopScope extends Command {
         	}
         	break;
     	case REMOVE:
-    		descString = "loopscope <ANY_REF|*>: Removes the given loop scope assertion to the list of assertions";
+    		descString = "loopscope <ANY_REF|*>: Removes the given loop scope define to the list of defines";
         	break;
     	case LIST:
-        	descString = "loopscopes: Displays the loop scope assertions";
+        	descString = "loopscopes: Displays the loop scope defines";
         	break;
     	}
     	return descString;   		    	
@@ -146,7 +146,7 @@ public class LoopScope extends Command {
     		break;
     		
     	case LIST:
-    		Collection<LoopScopeInfo> infos = engine.getLoopScopeAssertions();
+    		Collection<LoopScopeInfo> infos = engine.getLoopScopeDefines();
     	    if (infos.isEmpty()) {
     	    	console.display("none\n");
     	    	return;

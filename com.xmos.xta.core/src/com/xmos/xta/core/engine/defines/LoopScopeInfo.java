@@ -1,8 +1,8 @@
-package com.xmos.xta.core.engine.assertions;
+package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
 
-public class LoopScopeInfo implements AssertionInfo {
+public class LoopScopeInfo implements DefineInfo {
 	private Reference m_reference;
 	private boolean m_absolute;
 

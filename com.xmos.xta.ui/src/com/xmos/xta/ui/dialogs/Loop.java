@@ -31,7 +31,7 @@ class LoopImpl implements XtaImpl {
 	private Node m_node;
 	private long m_iterations;
 	private int m_minIterations;
-	private Button m_assert;	
+	private Button m_define;	
 	private Text m_reference;
 	private ButtonEnabler m_enabler;
 
@@ -59,13 +59,13 @@ class LoopImpl implements XtaImpl {
     	Composite container = new Composite(parent, SWT.NONE);    	
     	XtaDialog.configureContainer(container);
 		createNumIterationsControl(container);
-		createAssertControls(container);	
+		createDefineControls(container);	
     	return container;
     }
 	
     public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
-    		if (m_assert.getSelection()) {
+    		if (m_define.getSelection()) {
     			GuiEngine.getEngine().addLoop(GuiEngine.s_guiSrc, m_reference.getText(), m_iterations);
     		}
     		if (m_node != null) {
@@ -107,14 +107,14 @@ class LoopImpl implements XtaImpl {
 		});
     }
     
-	private void createAssertControls(Composite container) {
-		Group group = XtaDialog.createGroup(container, "set as assertion", 2, 2);
+	private void createDefineControls(Composite container) {
+		Group group = XtaDialog.createGroup(container, "add as define", 2, 2);
 		
-		m_assert = new Button(group, SWT.CHECK);
-		m_assert.setSelection(false);
-		m_assert.addSelectionListener(new SelectionAdapter() {
+		m_define = new Button(group, SWT.CHECK);
+		m_define.setSelection(false);
+		m_define.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				m_reference.setEnabled(m_assert.getSelection());
+				m_reference.setEnabled(m_define.getSelection());
 			}			
 		});
 		
@@ -126,8 +126,8 @@ class LoopImpl implements XtaImpl {
 			m_reference.setEnabled(false);
 			m_reference.setEditable(false);
 		} else {
-			m_assert.setSelection(true);
-			m_assert.setEnabled(false);
+			m_define.setSelection(true);
+			m_define.setEnabled(false);
 			m_reference.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
 					updateButtonStatus();

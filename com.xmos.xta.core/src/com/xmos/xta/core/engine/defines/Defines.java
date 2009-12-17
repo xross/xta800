@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.assertions;
+package com.xmos.xta.core.engine.defines;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.NodeCoreCollection;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
 
-public class Assertions {
+public class Defines {
 	private NodeCoreCollection<List<FunctionTimeInfo>> m_functionTimes;
 	private NodeCoreCollection<List<PathTimeInfo>> m_pathTimes;
 	private NodeCoreCollection<List<LoopInfo>> m_loops;
@@ -17,7 +17,7 @@ public class Assertions {
 	private NodeCoreCollection<List<LoopScopeInfo>> m_loopScopes;
 	private NodeCoreCollection<List<InstructionTimeInfo>> m_instructionTimes;
     
-    public Assertions() {
+    public Defines() {
     	m_functionTimes    = new NodeCoreCollection<List<FunctionTimeInfo>>();
     	m_pathTimes        = new NodeCoreCollection<List<PathTimeInfo>>();
     	m_instructionTimes = new NodeCoreCollection<List<InstructionTimeInfo>>();
@@ -26,39 +26,39 @@ public class Assertions {
     	m_loopScopes       = new NodeCoreCollection<List<LoopScopeInfo>>();
 	}
 
-    public Assertions(Assertions assertions) {    	
-    	m_functionTimes    = copy(assertions.m_functionTimes);
-    	m_pathTimes        = copy(assertions.m_pathTimes);
-    	m_instructionTimes = copy(assertions.m_instructionTimes);
-    	m_loops            = copy(assertions.m_loops);
-    	m_loopPaths        = copy(assertions.m_loopPaths);
-    	m_loopScopes       = copy(assertions.m_loopScopes);
+    public Defines(Defines defines) {    	
+    	m_functionTimes    = copy(defines.m_functionTimes);
+    	m_pathTimes        = copy(defines.m_pathTimes);
+    	m_instructionTimes = copy(defines.m_instructionTimes);
+    	m_loops            = copy(defines.m_loops);
+    	m_loopPaths        = copy(defines.m_loopPaths);
+    	m_loopScopes       = copy(defines.m_loopScopes);
     }
     	
-	public void updateScript(Assertions assertions, StringBuffer script, int nodeId, int coreId) {		
-		if (!getFunctionTimes(nodeId, coreId).equals(assertions.getFunctionTimes(nodeId, coreId))) {			
+	public void updateScript(Defines defines, StringBuffer script, int nodeId, int coreId) {		
+		if (!getFunctionTimes(nodeId, coreId).equals(defines.getFunctionTimes(nodeId, coreId))) {			
 			updateScript(script, getFunctionTimes(nodeId, coreId), 
-					assertions.getFunctionTimes(nodeId, coreId), "functiontime", "*");
+					defines.getFunctionTimes(nodeId, coreId), "functiontime", "*");
 		}
-		if (!getPathTimes(nodeId, coreId).equals(assertions.getPathTimes(nodeId, coreId))) {
+		if (!getPathTimes(nodeId, coreId).equals(defines.getPathTimes(nodeId, coreId))) {
 			updateScript(script, getPathTimes(nodeId, coreId), 
-					assertions.getPathTimes(nodeId, coreId), "pathtime", "* *");
+					defines.getPathTimes(nodeId, coreId), "pathtime", "* *");
 		}
-		if (!getInstructionTimes(nodeId, coreId).equals(assertions.getInstructionTimes(nodeId, coreId))) {
+		if (!getInstructionTimes(nodeId, coreId).equals(defines.getInstructionTimes(nodeId, coreId))) {
 			updateScript(script, getInstructionTimes(nodeId, coreId), 
-					assertions.getInstructionTimes(nodeId, coreId), "instructiontime", "*");
+					defines.getInstructionTimes(nodeId, coreId), "instructiontime", "*");
 		}
-		if (!getLoops(nodeId, coreId).equals(assertions.getLoops(nodeId, coreId))) {
+		if (!getLoops(nodeId, coreId).equals(defines.getLoops(nodeId, coreId))) {
 			updateScript(script, getLoops(nodeId, coreId), 
-					assertions.getLoops(nodeId, coreId), "loop", "*");
+					defines.getLoops(nodeId, coreId), "loop", "*");
 		}
-		if (!getLoopPaths(nodeId, coreId).equals(assertions.getLoopPaths(nodeId, coreId))) {
+		if (!getLoopPaths(nodeId, coreId).equals(defines.getLoopPaths(nodeId, coreId))) {
 			updateScript(script, getLoopPaths(nodeId, coreId), 
-					assertions.getLoopPaths(nodeId, coreId), "looppath", "*");
+					defines.getLoopPaths(nodeId, coreId), "looppath", "*");
 		}
-		if (!getLoopScopes(nodeId, coreId).equals(assertions.getLoopScopes(nodeId, coreId))) {
+		if (!getLoopScopes(nodeId, coreId).equals(defines.getLoopScopes(nodeId, coreId))) {
 			updateScript(script, getLoopScopes(nodeId, coreId), 
-					assertions.getLoopScopes(nodeId, coreId), "loopscope", "*");
+					defines.getLoopScopes(nodeId, coreId), "loopscope", "*");
 		}
 	}
 
@@ -185,14 +185,14 @@ public class Assertions {
 	}
 
 	private void updateScript(StringBuffer script, 
-			Collection<? extends AssertionInfo> newList, 
-			Collection<? extends AssertionInfo> oldList,
+			Collection<? extends DefineInfo> newList, 
+			Collection<? extends DefineInfo> oldList,
 			String command, String removeStr) {
 		
 		if (!oldList.isEmpty()) {
 		    script.append("remove " + command + " " + removeStr + "\n");
 		}
-		for (AssertionInfo info : newList) {			
+		for (DefineInfo info : newList) {			
 			script.append("add " + command + " " + info.getDescription() + " " + info.getValue() + "\n");
 		}		
 	}

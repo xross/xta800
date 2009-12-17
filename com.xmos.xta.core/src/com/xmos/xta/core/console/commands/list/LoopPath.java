@@ -7,7 +7,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.list.List.Operation;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.assertions.LoopPathInfo;
+import com.xmos.xta.core.engine.defines.LoopPathInfo;
 
 public class LoopPath extends Command {
 	private Operation m_operation;	
@@ -85,13 +85,13 @@ public class LoopPath extends Command {
     	String descString = "";
     	switch (m_operation) {
     	case ADD:
-    		descString = "looppath <ANY_REF> <iterations>: Adds the given loop path count assertion to the list of assertions";
+    		descString = "looppath <ANY_REF> <iterations>: Adds the given loop path count define to the list of defines";
         	break;
     	case REMOVE:
-    		descString = "looppath <ANY_REF|*>: Removes the given loop path count assertion to the list of assertions";
+    		descString = "looppath <ANY_REF|*>: Removes the given loop path count define to the list of defines";
         	break;
     	case LIST:
-        	descString = "looppaths: Displays the loop path assertions";
+        	descString = "looppaths: Displays the loop path defines";
         	break;
     	}
     	return descString;   		
@@ -135,7 +135,7 @@ public class LoopPath extends Command {
     		break;
     		
     	case LIST:
-    		Collection<LoopPathInfo> infos = engine.getLoopPathAssertions();
+    		Collection<LoopPathInfo> infos = engine.getLoopPathDefines();
     	    if (infos.isEmpty()) {
     	    	console.display("none\n");
     	    	return;

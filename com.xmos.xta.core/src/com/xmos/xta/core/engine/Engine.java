@@ -28,7 +28,7 @@ import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.core.engine.analysis.controlflow.UnreachableCodeFinder;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.analysis.routes.RouteAssertions;
+import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription;
@@ -41,13 +41,13 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
-import com.xmos.xta.core.engine.assertions.Assertions;
-import com.xmos.xta.core.engine.assertions.FunctionTimeInfo;
-import com.xmos.xta.core.engine.assertions.InstructionTimeInfo;
-import com.xmos.xta.core.engine.assertions.LoopInfo;
-import com.xmos.xta.core.engine.assertions.LoopPathInfo;
-import com.xmos.xta.core.engine.assertions.LoopScopeInfo;
-import com.xmos.xta.core.engine.assertions.PathTimeInfo;
+import com.xmos.xta.core.engine.defines.Defines;
+import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
+import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
+import com.xmos.xta.core.engine.defines.LoopInfo;
+import com.xmos.xta.core.engine.defines.LoopPathInfo;
+import com.xmos.xta.core.engine.defines.LoopScopeInfo;
+import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.instructions.DataCollection;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
@@ -89,7 +89,7 @@ public class Engine implements Notifier, Aborter {
 	private ProgressMonitor m_progressMonitor;
 	private String m_srcPaths;
 	private Sections m_sections;
-	private Assertions m_assertions;
+	private Defines m_defines;
 	private Collection<String> m_functionsVisited;
 	private int m_timeOut;
 	private int m_numErrors;
@@ -120,7 +120,7 @@ public class Engine implements Notifier, Aborter {
 		m_srcPaths = ".";
 		m_progressMonitor = null;
 		m_sections = new Sections();
-		m_assertions = new Assertions();
+		m_defines = new Defines();
 		m_timeOut = -1;
 		m_numErrors = 0;
 		m_dataCollection = new DataCollection();
@@ -300,7 +300,7 @@ public class Engine implements Notifier, Aborter {
 		m_routeContainers.clear();
 		m_numRoutesLastAnalysed = 0;
 		m_selectedRoute = null;
-		m_assertions.clear();
+		m_defines.clear();
 		Route.resetRouteCount();
 		
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
@@ -327,7 +327,7 @@ public class Engine implements Notifier, Aborter {
 						
 		} else {
 			RouteDescription routeDescription = new RouteDescription(functionRef, this, 
-					m_nodeId, m_coreId, m_exclusions, m_assertions, m_config);			
+					m_nodeId, m_coreId, m_exclusions, m_defines, m_config);			
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
@@ -350,7 +350,7 @@ public class Engine implements Notifier, Aborter {
 			
 		} else {		
 			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, this,
-					m_nodeId, m_coreId, m_exclusions, m_assertions, m_config);
+					m_nodeId, m_coreId, m_exclusions, m_defines, m_config);
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
@@ -613,14 +613,14 @@ public class Engine implements Notifier, Aborter {
 	}
 	
 	// ===================================================================== //
-	// Assertion Methods
+	// Defines Methods
 	// ===================================================================== //			
 	public void addFunctionTime(CommandSource src, String functionName, TimeUnit timeUnit) {
 		Reference functionRef = ReferenceFactory.createReference(functionName, ReferenceClass.FUNCTION_REF);
 		if (!resolveOrError(src, functionRef)) {
 			return;
 		}
-		m_assertions.addFunctionTime(m_nodeId, m_coreId, functionRef, timeUnit);
+		m_defines.addFunctionTime(m_nodeId, m_coreId, functionRef, timeUnit);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
@@ -634,38 +634,38 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 
-		m_assertions.addPathTime(m_nodeId, m_coreId, fromRef, toRef, timeUnit);
+		m_defines.addPathTime(m_nodeId, m_coreId, fromRef, toRef, timeUnit);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}	
 
 	public void addInstructionTime(CommandSource src, String refString, final TimeUnit timeUnit) {
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.addInstructionTime(m_nodeId, m_coreId, reference, timeUnit);
+				m_defines.addInstructionTime(m_nodeId, m_coreId, reference, timeUnit);
 			}			
 		});
 	}
 	
 	public void addLoop(CommandSource src, String refString, final long iterations) {
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.addLoop(m_nodeId, m_coreId, reference, iterations);
+				m_defines.addLoop(m_nodeId, m_coreId, reference, iterations);
 			}			
 		});
 	}
 
 	public void addLoopPath(CommandSource src, String refString, final long iterations) {
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.addLoopPath(m_nodeId, m_coreId, reference, iterations);
+				m_defines.addLoopPath(m_nodeId, m_coreId, reference, iterations);
 			}			
 		});
 	}
 
 	public void addLoopScope(CommandSource src, String refString, final boolean absolute) {		
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.addLoopScope(m_nodeId, m_coreId, reference, absolute);
+				m_defines.addLoopScope(m_nodeId, m_coreId, reference, absolute);
 			}			
 		});
 	}
@@ -675,7 +675,7 @@ public class Engine implements Notifier, Aborter {
 		if (!resolveOrError(src, functionRef)) {
 			return;
 		}
-	    m_assertions.removeFunctionTime(m_nodeId, m_coreId, functionRef);
+		m_defines.removeFunctionTime(m_nodeId, m_coreId, functionRef);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
@@ -689,68 +689,68 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 
-		m_assertions.removePathTime(m_nodeId, m_coreId, fromRef, toRef);
+		m_defines.removePathTime(m_nodeId, m_coreId, fromRef, toRef);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}	
 
 	public void removeInstructionTime(CommandSource src, String refString) {	
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.removeInstructionTime(m_nodeId, m_coreId, reference);
+				m_defines.removeInstructionTime(m_nodeId, m_coreId, reference);
 			}			
 		});
 	}
 	
 	public void removeLoop(CommandSource src, String refString) {
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.removeLoop(m_nodeId, m_coreId, reference);
+				m_defines.removeLoop(m_nodeId, m_coreId, reference);
 			}			
 		});
 	}
 
 	public void removeLoopPath(CommandSource src, String refString) {
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.removeLoopPath(m_nodeId, m_coreId, reference);
+				m_defines.removeLoopPath(m_nodeId, m_coreId, reference);
 			}			
 		});
 	}
 
 	public void removeLoopScope(CommandSource src, String refString) {		
-		updateAssertions(src, refString, new AssertionUpdate() {
+		updateDefines(src, refString, new DefinesUpdate() {
 			public void run(Reference reference) {
-				m_assertions.removeLoopScope(m_nodeId, m_coreId, reference);
+				m_defines.removeLoopScope(m_nodeId, m_coreId, reference);
 			}			
 		});
 	}
 	
-	public Collection<FunctionTimeInfo> getFunctionTimeAssertions() {
-		return m_assertions.getFunctionTimes(m_nodeId, m_coreId);
+	public Collection<FunctionTimeInfo> getFunctionTimeDefines() {
+		return m_defines.getFunctionTimes(m_nodeId, m_coreId);
 	}
 
-	public Collection<PathTimeInfo> getPathTimeAssertions() {
-		return m_assertions.getPathTimes(m_nodeId, m_coreId);
+	public Collection<PathTimeInfo> getPathTimeDefines() {
+		return m_defines.getPathTimes(m_nodeId, m_coreId);
 	}
 
-	public Collection<InstructionTimeInfo> getInstructionTimeAssertions() {
-		return m_assertions.getInstructionTimes(m_nodeId, m_coreId);
+	public Collection<InstructionTimeInfo> getInstructionTimeDefines() {
+		return m_defines.getInstructionTimes(m_nodeId, m_coreId);
 	}
 	
-	public Collection<LoopInfo> getLoopAssertions() {
-		return m_assertions.getLoops(m_nodeId, m_coreId);
+	public Collection<LoopInfo> getLoopDefines() {
+		return m_defines.getLoops(m_nodeId, m_coreId);
 	}
 
-	public Collection<LoopPathInfo> getLoopPathAssertions() {
-		return m_assertions.getLoopPaths(m_nodeId, m_coreId);
+	public Collection<LoopPathInfo> getLoopPathDefines() {
+		return m_defines.getLoopPaths(m_nodeId, m_coreId);
 	}
 
-	public Collection<LoopScopeInfo> getLoopScopeAssertions() {
-		return m_assertions.getLoopScopes(m_nodeId, m_coreId);
+	public Collection<LoopScopeInfo> getLoopScopeDefines() {
+		return m_defines.getLoopScopes(m_nodeId, m_coreId);
 	}
 	
-	Assertions getAssertions() {
-		return m_assertions;
+	Defines getDefines() {
+		return m_defines;
 	}
 	
 	// ===================================================================== //
@@ -762,10 +762,10 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 		FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);
-		RouteAssertions assertions = new RouteAssertions();
+		RouteDefines defines = new RouteDefines();
 		try {
 			for (Route route : getRoute(routeId)) {
-				assertions.applyFunctionAssertion(src, route, info, Source.USER);
+				defines.applyFunctionDefine(src, route, info, Source.USER);
 			}		
 		} catch (AbortedException e) {	}
 	}
@@ -781,10 +781,10 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);
-		RouteAssertions assertions = new RouteAssertions();
+		RouteDefines defines = new RouteDefines();
 		try {
 			for (Route route : getRoute(routeId)) {
-				assertions.applyPathAssertion(this, src, route, info, Source.USER);
+				defines.applyPathDefine(this, src, route, info, Source.USER);
 			}
 		} catch (AbortedException e) { }
 	}
@@ -1537,7 +1537,7 @@ public class Engine implements Notifier, Aborter {
         sourceMapper.setFile(debugEngine, sf, file);    	
     }
     
-	private void updateAssertions(CommandSource src, String refString, AssertionUpdate update) {		
+	private void updateDefines(CommandSource src, String refString, DefinesUpdate update) {		
 		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
 		if (resolveOrError(src, reference)) {
 			update.run(reference);
@@ -1545,7 +1545,7 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 	
-	private static interface AssertionUpdate {
+	private static interface DefinesUpdate {
 		void run(Reference reference);
 	}
 	

@@ -12,7 +12,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Sourc
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
 
-public abstract class RouteAssertionPatterns {
+public abstract class RouteDefinePatterns {
     abstract boolean match(Node fromBlock, Node from, Node toBlock, Node to);
     abstract void apply(Reference fromRef, Reference toRef, Route route, 
     		Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source);	
@@ -30,7 +30,7 @@ public abstract class RouteAssertionPatterns {
 	}	
 }
 
-class SameBlockPattern extends RouteAssertionPatterns {
+class SameBlockPattern extends RouteDefinePatterns {
 	public boolean match(Node fromBlock, Node from, Node toBlock, Node to) {
 		// Are both the from and the to nodes in the same block?
 		if (fromBlock != toBlock)
@@ -69,7 +69,7 @@ class SameBlockPattern extends RouteAssertionPatterns {
 	}	
 }
 
-class DifferentBlockPattern extends RouteAssertionPatterns {
+class DifferentBlockPattern extends RouteDefinePatterns {
 	public boolean match(Node fromBlock, Node from, Node toBlock, Node to) {
 		// Are both the from and to blocks children of the same parent?
 		if (fromBlock.getParent() != toBlock.getParent())		

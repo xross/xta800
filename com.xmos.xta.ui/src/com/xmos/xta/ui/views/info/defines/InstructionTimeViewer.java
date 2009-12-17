@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.info.assertions;
+package com.xmos.xta.ui.views.info.defines;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -10,13 +10,13 @@ import com.xmos.xta.ui.views.info.BaseViewer;
 import com.xmos.xta.ui.views.info.BaseViewerContentProvider;
 import com.xmos.xta.ui.views.info.BaseViewerLabelProvider;
 
-public class LoopViewer extends BaseViewer {
-	public LoopViewer(TableViewer viewer) {
+public class InstructionTimeViewer extends BaseViewer {
+	public InstructionTimeViewer(TableViewer viewer) {
 		super(viewer);
 	}
 
 	protected BaseViewerContentProvider createContentProvider() {
-		return new LoopTimeContentProvider();
+		return new InstructionTimeContentProvider();
 	}
 	
 	protected BaseViewerLabelProvider createLabelProvider() {
@@ -28,8 +28,8 @@ public class LoopViewer extends BaseViewer {
 	}
 }
 
-class LoopTimeContentProvider extends BaseViewerContentProvider {
+class InstructionTimeContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
-		return ((Engine)inputElement).getLoopAssertions().toArray();
+		return ((Engine)inputElement).getInstructionTimeDefines().toArray();
 	}
 }

@@ -10,16 +10,16 @@ import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.dialogs.Assertions;
+import com.xmos.xta.ui.dialogs.Defines;
 
-public class ActionAddAssertion extends ActionDelegate implements IPropertyChangeListener,
-                                                                  IWorkbenchWindowActionDelegate {
+public class ActionAddDefine extends ActionDelegate implements IPropertyChangeListener,
+                                                               IWorkbenchWindowActionDelegate {
 	private static int s_numInstances = 0;
 	
 	private IAction m_action;
 	private int m_instanceId;
 	
-	public ActionAddAssertion() {
+	public ActionAddDefine() {
 		GuiEngine.addBroadcastListener(this);
 		m_instanceId = s_numInstances;
 		++s_numInstances;
@@ -40,7 +40,7 @@ public class ActionAddAssertion extends ActionDelegate implements IPropertyChang
 	}
 
 	public void run(IAction action) {
-		new Assertions(PlatformUI.getWorkbench().getDisplay().getActiveShell()); 
+		new Defines(PlatformUI.getWorkbench().getDisplay().getActiveShell()); 
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {

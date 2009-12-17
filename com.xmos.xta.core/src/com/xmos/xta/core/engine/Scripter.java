@@ -15,7 +15,7 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
-import com.xmos.xta.core.engine.assertions.Assertions;
+import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Scripter {
@@ -26,7 +26,7 @@ public class Scripter {
 	private int m_currentCoreId;
 	private Collection<Reference> m_currentExclusions;
 	private Map<Reference, List<Reference>> m_currentBranches;
-	private Assertions m_currentAssertions;
+	private Defines m_currentDefines;
 	
 	public Scripter(Engine engine) {
 		m_engine = engine;
@@ -34,7 +34,7 @@ public class Scripter {
 		m_currentNodeId = 0;
 		m_currentCoreId = 0;
 		m_currentExclusions = new ArrayList<Reference>();
-		m_currentAssertions = new Assertions();
+		m_currentDefines = new Defines();
 		m_currentBranches = new HashMap<Reference, List<Reference>>();
 	}
 
@@ -58,7 +58,7 @@ public class Scripter {
        		routeComment(routeContainer, script);
         	globalConfig(routeContainer, script);
         	addBranches(description.getBranches(), script);
-        	addAssertions(description.getAssertions(), nodeId, coreId, script);
+        	addDefines(description.getDefines(), nodeId, coreId, script);
         	addExclusions(description.getExclusions(), script);
         	analyseRoutes(routeContainer, script);
         	removeRoutes(routeContainer, script);
@@ -76,7 +76,7 @@ public class Scripter {
 		int coreId = m_engine.getCoreId();
 		updateGlobalConfig(script, m_engine.getConfig(), nodeId, coreId);
     	addBranches(m_engine.getUserBranches(), script);
-		addAssertions(m_engine.getAssertions(), nodeId, coreId, script);
+    	addDefines(m_engine.getDefines(), nodeId, coreId, script);
 		addExclusions(m_engine.getExclusions(), script);
 
     	return script.toString();
@@ -105,9 +105,9 @@ public class Scripter {
     			routeContainer.getDescription().getCoreId());
     }
     
-	private void addAssertions(Assertions assertions, int nodeId, int coreId, StringBuffer script) {
-   		assertions.updateScript(m_currentAssertions, script, nodeId, coreId);
-		m_currentAssertions = assertions;
+	private void addDefines(Defines defines, int nodeId, int coreId, StringBuffer script) {
+		defines.updateScript(m_currentDefines, script, nodeId, coreId);
+		m_currentDefines = defines;
 	}
     
     private void addBranches(Map<Reference, List<Reference>> branches, StringBuffer script) {	

@@ -39,7 +39,7 @@ class PathTimeImpl implements XtaImpl {
 	private Combo m_to;
 	private Text m_value;
 	private Combo m_units;
-	private Button m_assert;
+	private Button m_define;
 	private ButtonEnabler m_enabler;
 	
     public PathTimeImpl(Route route) {
@@ -57,11 +57,11 @@ class PathTimeImpl implements XtaImpl {
 	    createToControl(container);	    
 	    m_value = XtaDialog.createValueControl(container, this);
 	    m_units = XtaDialog.createUnitsControl(container, this);
-	    m_assert = XtaDialog.createAssertControl(container);
+	    m_define = XtaDialog.createDefineControl(container);
 
 	    if (m_route == null) {
-	    	m_assert.setSelection(true);
-	    	m_assert.setEnabled(false);	    	
+	    	m_define.setSelection(true);
+	    	m_define.setEnabled(false);	    	
 	    }	   	    
     	return container;
     }
@@ -71,7 +71,7 @@ class PathTimeImpl implements XtaImpl {
     		TimeUnit timeUnit = new TimeUnit(m_value.getText(), m_units.getText());
     		assert (timeUnit.isValid());
     		
-    		if (m_assert.getSelection()) {
+    		if (m_define.getSelection()) {
     		    m_engine.addPathTime(GuiEngine.s_guiSrc, m_from.getText(), m_to.getText(), timeUnit);    			
     		}
     		if (m_route != null) {

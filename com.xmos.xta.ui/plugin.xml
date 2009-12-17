@@ -433,10 +433,10 @@
                toolbarPath="Normal/controls">
          </action>
          <action
-               class="com.xmos.xta.ui.actions.ActionAddAssertion"
-               icon="icons/add_assertion.png"
-               id="com.xmos.xta.ui.actions.assertion"
-               label="Add Assertion"
+               class="com.xmos.xta.ui.actions.ActionAddDefine"
+               icon="icons/add_define.png"
+               id="com.xmos.xta.ui.actions.define"
+               label="Add Define"
                style="push"
                toolbarPath="Normal/controls">
          </action>            

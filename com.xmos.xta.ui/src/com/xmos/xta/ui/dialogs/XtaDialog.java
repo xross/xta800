@@ -124,11 +124,11 @@ public abstract class XtaDialog extends Dialog implements ButtonEnabler {
 		return combo;
 	}
 	
-    static Button createAssertControl(Composite container) {
+    static Button createDefineControl(Composite container) {
 		Group group = createGroup(container, null, 2, 2);
 		Button button = new Button(group, SWT.CHECK);
 		Label label = new Label(group, SWT.NONE);
-		label.setText("set as assertion");
+		label.setText("add as define");
 		return button;
 	}	
 }
