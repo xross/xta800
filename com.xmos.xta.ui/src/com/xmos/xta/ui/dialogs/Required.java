@@ -39,11 +39,8 @@ class RequiredImpl implements XtaImpl {
     	Composite container = new Composite(parent, SWT.NONE);
 	    XtaDialog.configureContainer(container);
 	    
-	    m_value = XtaDialog.createValueControl(container, this);
-	    m_value.setText(m_routeTiming.getMaxTime().getValueStr());
-	    
-	    m_units = XtaDialog.createUnitsControl(container, this);
-	    m_units.setText(m_routeTiming.getMaxTime().getUnitsStr());
+	    m_value = XtaDialog.createValueControl(container, this, m_routeTiming.getMaxTime().getValueStr());
+	    m_units = XtaDialog.createUnitsControl(container, this, m_routeTiming.getMaxTime().getUnitsStr());
 
     	return container;
     }

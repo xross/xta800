@@ -1,5 +1,9 @@
 package com.xmos.xta.ui.dialogs;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -15,15 +19,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.TimeUnit;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.GuiEngine;
 
 public abstract class XtaDialog extends Dialog implements ButtonEnabler {
+	public static final String SEPARATOR_CHAR = ";";
+
 	private XtaImpl m_impl;
 	private String m_title;
 	
@@ -99,10 +108,11 @@ public abstract class XtaDialog extends Dialog implements ButtonEnabler {
 	    return group;
 	}  
 	
-    static Text createValueControl(Composite container, final XtaImpl impl) {
+    static Text createValueControl(Composite container, final XtaImpl impl, String initialValue) {
 		Group group = createGroup(container, "value", 1, 1);
 		Text text = new Text(group, SWT.SINGLE | SWT.CENTER | SWT.BORDER);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		text.setText(initialValue);
 		text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				impl.updateButtonStatus();
@@ -111,11 +121,12 @@ public abstract class XtaDialog extends Dialog implements ButtonEnabler {
 		return text;
     }    
 	
-    static Combo createUnitsControl(Composite container, final XtaImpl impl) {
+    static Combo createUnitsControl(Composite container, final XtaImpl impl, String initialValue) {
 		Group group = createGroup(container, "units", 1, 1);
 		Combo combo = new Combo(group, SWT.SINGLE | SWT.CENTER);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setItems(TimeUnit.getUnits());
+		combo.setText(initialValue);
 		combo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				impl.updateButtonStatus();
@@ -124,11 +135,55 @@ public abstract class XtaDialog extends Dialog implements ButtonEnabler {
 		return combo;
 	}
 	
+	static Text createReference(Composite container, final XtaImpl impl) {
+		Group group = XtaDialog.createGroup(container, "reference", 1, 2);
+
+		Text reference = new Text(group, SWT.BORDER);
+		reference.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		reference.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				impl.updateButtonStatus();
+			}
+		});
+		return reference;
+	}
+	
     static Button createDefineControl(Composite container) {
-		Group group = createGroup(container, null, 2, 2);
+		Group group = createGroup(container, "add as define", 1, 1);
 		Button button = new Button(group, SWT.CHECK);
-		Label label = new Label(group, SWT.NONE);
-		label.setText("add as define");
 		return button;
+	}
+
+	static List<String> getReferences(String text) {
+		String[] strings = text.split(SEPARATOR_CHAR);
+		List<String> references = new ArrayList<String>();
+		for (String string : strings) {
+			references.add(string.trim());;    	
+		}			
+		return references;
 	}	
+
+	static boolean checkReferences(String text) {
+		boolean allValid = true;
+		String[] references = text.split(XtaDialog.SEPARATOR_CHAR);
+		for (String reference : references) {
+			Reference ref = ReferenceFactory.createReference(reference.trim(), ReferenceClass.ANY_REF);    	
+			if (!ref.resolve(GuiEngine.getEngine())) {
+				allValid = false;
+				break;
+			}			
+		}
+		return allValid;
+	}
+
+	public static String getReferencesText(Collection<Node> m_nodes) {
+		String text = "";
+		for (Node node : m_nodes) {
+			if (text.length() > 0) {
+				text += XtaDialog.SEPARATOR_CHAR;
+			}				
+			text += node.getReferenceStr();
+		}
+		return text;
+	}
 }

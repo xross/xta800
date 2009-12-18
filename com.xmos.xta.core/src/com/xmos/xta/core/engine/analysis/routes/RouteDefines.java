@@ -29,7 +29,7 @@ public class RouteDefines {
 			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), 
 					reference, Type.FUNCTION_TIME, source);	
 		}
-		route.getRouteUnknowns().invalidateCachedStats();		
+//		route.getRouteUnknowns().invalidateCachedStats();		
 	}
 
 	public void applyPathDefine(Engine engine, CommandSource src, 

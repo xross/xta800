@@ -291,8 +291,12 @@ public abstract class Node implements Comparable<Node> {
 		getBackTrail(backTrail);
 		for (Long pc : backTrail) {
 			refStr += String.format("CALL:0x%x,", pc);
-		}				
-		refStr += String.format("0x%x", getStartPc());
+		}
+		if (isFunctionNode()) {
+			refStr += ((FunctionNode)this).getFunctionName();
+		} else {
+			refStr += String.format("0x%x", getStartPc());
+		}
 		return refStr;
 	}
 	

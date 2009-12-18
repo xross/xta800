@@ -55,8 +55,8 @@ class PathTimeImpl implements XtaImpl {
 
 	    createFromControl(container);	    
 	    createToControl(container);	    
-	    m_value = XtaDialog.createValueControl(container, this);
-	    m_units = XtaDialog.createUnitsControl(container, this);
+	    m_value = XtaDialog.createValueControl(container, this, "");
+	    m_units = XtaDialog.createUnitsControl(container, this, "");
 	    m_define = XtaDialog.createDefineControl(container);
 
 	    if (m_route == null) {

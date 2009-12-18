@@ -30,6 +30,10 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.dialogs.FunctionTime;
+import com.xmos.xta.ui.dialogs.InstructionTime;
+import com.xmos.xta.ui.dialogs.Loop;
+import com.xmos.xta.ui.dialogs.LoopPath;
+import com.xmos.xta.ui.dialogs.LoopScope;
 import com.xmos.xta.ui.dialogs.PathTime;
 import com.xmos.xta.ui.dialogs.Required;
 
@@ -175,7 +179,11 @@ public class RouteSelectorViewer {
 		addSetTimingRequirements(manager, selectedNodes, shell);
 
 		manager.add(new Separator());
+		addSetLoop(manager, selectedNodes, shell);
+		addSetLoopPath(manager, selectedNodes, shell);
+		addSetLoopScope(manager, selectedNodes, shell);
 		addSetPathTiming(manager, selectedNodes, shell);
+		addSetInstructionTiming(manager, selectedNodes, shell);
 		addSetFunctionTiming(manager, selectedNodes, shell);
 		
 		manager.add(new Separator());
@@ -193,8 +201,38 @@ public class RouteSelectorViewer {
 	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
 	}
 
+	private static void addSetLoop(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		Action action = new Action("Set loop iterations") {
+		    public void run() {
+			    new Loop(shell, getFirstNode(selectedNodes).getRoute());
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+	
+	private static void addSetLoopPath(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		Action action = new Action("Set loop path iterations") {
+		    public void run() {
+			    new LoopPath(shell, getFirstNode(selectedNodes).getRoute());
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+
+	private static void addSetLoopScope(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		Action action = new Action("Set loop scope") {
+		    public void run() {
+			    new LoopScope(shell, getFirstNode(selectedNodes).getRoute());
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+
 	private static void addSetPathTiming(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
-		Action action = new Action("Set/define path timing") {
+		Action action = new Action("Set path time") {
 		    public void run() {
 			    new PathTime(shell, getFirstNode(selectedNodes).getRoute());
 		    }
@@ -203,8 +241,18 @@ public class RouteSelectorViewer {
 	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
 	}
 
+	private static void addSetInstructionTiming(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
+		Action action = new Action("Set instruction time") {
+		    public void run() {
+			    new InstructionTime(shell, getFirstNode(selectedNodes).getRoute());
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(oneNodeSelected(selectedNodes) ? true : false);		
+	}
+
 	private static void addSetFunctionTiming(IMenuManager manager, final List<RouteNode> selectedNodes, final Shell shell) {
-		Action action = new Action("Set/define function timing") {
+		Action action = new Action("Set function time") {
 		    public void run() {
 			    new FunctionTime(shell, getFirstNode(selectedNodes).getRoute());
 		    }

@@ -7,8 +7,6 @@ import java.util.TreeSet;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -91,13 +89,7 @@ public class UnknownsViewer extends InfoViewer {
 		// Create the 'Set Loop Iterations' action
 		m_setLoopIterationsAction = new Action() { 
 			public void run() {
-				ISelection selection = getViewer().getSelection();
-		        if (selection instanceof IStructuredSelection) {	            
-		            final Object object = ((IStructuredSelection)selection).getFirstElement();
-		            if (object instanceof Node) {				
-     			        new Loop(getParent().getShell(), (Node)object);
-		            }
-		        }
+		        new Loop(getParent().getShell(), getSelectedNodes());
 			}
 		};
 		m_setLoopIterationsAction.setText("Set loop iterations");

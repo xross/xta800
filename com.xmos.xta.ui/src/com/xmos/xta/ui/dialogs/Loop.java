@@ -1,9 +1,10 @@
 package com.xmos.xta.ui.dialogs;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -15,79 +16,80 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.GuiEngine;
 
 public class Loop extends XtaDialog {
-    public Loop(Shell parent, Node node) {
-    	super(parent, new LoopImpl(node), "Loop Iterations");
+    public Loop(Shell parent, Collection<Node> nodes) {
+    	super(parent, new LoopImplNode(nodes), "Loop Iterations");
+    }
+
+    public Loop(Shell parent, Route route) {
+    	super(parent, new LoopImplRoute(route), "Loop Iterations");
     }
 }
 
-class LoopImpl implements XtaImpl {
-	private Node m_node;
+abstract class LoopImpl implements XtaImpl {
 	private long m_iterations;
 	private int m_minIterations;
-	private Button m_define;	
-	private Text m_reference;
 	private ButtonEnabler m_enabler;
+	private Button m_define;
 
-    public LoopImpl(Node node) {
-    	m_node = node;    	
+	protected Text m_references;
+	protected Route m_route;
+	protected Collection<Node> m_nodes;
 
-    	if (m_node != null) {
-        	m_iterations = GuiEngine.getEngine().getSetLoop(node);        	
-        	Node loopNode = m_node.getEnclosingLoopNode();
-    		assert(loopNode != null);
-    		if (loopNode.isSelfLoopNode()) {
-    			m_minIterations = 1;
-        	} else { 
-    			m_minIterations = 0;
-        	}    		
-    	} else {
-    		m_iterations = 0;
-    		m_minIterations = 0;
-    	}
-    }
+    public abstract Control createDialogArea(Composite parent, ButtonEnabler enabler);
 
-    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
-    	m_enabler = enabler;
-    	
-    	Composite container = new Composite(parent, SWT.NONE);    	
+	protected Composite createDialogArea(Composite parent, ButtonEnabler enabler, long iterations, int minIterations) {
+    	Composite container = new Composite(parent, SWT.NONE);
     	XtaDialog.configureContainer(container);
-		createNumIterationsControl(container);
-		createDefineControls(container);	
-    	return container;
+    	m_enabler = enabler;
+		m_references = XtaDialog.createReference(container, this);
+		createNumIterationsControl(container, iterations, minIterations);
+
+		if (m_nodes != null || m_route != null) {
+			m_define = XtaDialog.createDefineControl(container);
+		}
+		return container;
+	}
+
+	public boolean doAddDefine() {
+		return m_define.getSelection();
     }
 	
     public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
-    		if (m_define.getSelection()) {
-    			GuiEngine.getEngine().addLoop(GuiEngine.s_guiSrc, m_reference.getText(), m_iterations);
+    		if (doAddDefine()) {
+    			for (String reference : XtaDialog.getReferences(m_references.getText())) {
+    				GuiEngine.getEngine().addLoop(GuiEngine.s_guiSrc, reference, m_iterations);
+    			}
     		}
-    		if (m_node != null) {
-			    GuiEngine.getEngine().setLoop(GuiEngine.s_guiSrc, m_node, m_iterations);
+    		if (m_nodes != null) {
+    			for (Node node : m_nodes) {
+    				GuiEngine.getEngine().setLoop(GuiEngine.s_guiSrc, node, m_iterations);
+    			}
+    		}
+    		if (m_route != null) {
+    			for (String reference : XtaDialog.getReferences(m_references.getText())) {
+    				GuiEngine.getEngine().setLoop(GuiEngine.s_guiSrc, m_route.getRouteId(), reference, m_iterations);
+    			}
     		}
     	}
     }
-        
+
 	public void updateButtonStatus() {
-		Reference ref = ReferenceFactory.createReference(m_reference.getText(), ReferenceClass.ANY_REF);    	
-		if (ref.resolve(GuiEngine.getEngine())) {
-			m_enabler.enable(true);
-		} else {
-			m_enabler.enable(false);
-		}    	
+		m_enabler.enable(XtaDialog.checkReferences(m_references.getText()));
 	}
-    
-    private void createNumIterationsControl(Composite parent) {
+
+    protected void createNumIterationsControl(Composite parent, long iterations, int minIterations) {
+    	m_iterations = iterations;
+    	m_minIterations = minIterations;
+
     	Group group = XtaDialog.createGroup(parent, "num iterations", 1, 2);
-    	    	
     	final Spinner spinner = new Spinner(group, SWT.BORDER);
-    	spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 2, 1));		
+    	spinner.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 2, 1));
     	spinner.setMinimum(m_minIterations);
     	spinner.setMaximum(Integer.MAX_VALUE);
     	spinner.setEnabled(true);
@@ -99,40 +101,59 @@ class LoopImpl implements XtaImpl {
 				if (spinner.getSelection() >= m_minIterations) {
 					m_iterations = spinner.getSelection();
 					m_enabler.enable(true);
-					
 				} else {
 					m_enabler.enable(false);
 				}
 			}
 		});
     }
-    
-	private void createDefineControls(Composite container) {
-		Group group = XtaDialog.createGroup(container, "add as define", 2, 2);
-		
-		m_define = new Button(group, SWT.CHECK);
-		m_define.setSelection(false);
-		m_define.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				m_reference.setEnabled(m_define.getSelection());
-			}			
-		});
-		
-		m_reference = new Text(group, SWT.BORDER);
-		m_reference.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
-		
-		if (m_node != null) {
-		    m_reference.setText(m_node.getReferenceStr());
-			m_reference.setEnabled(false);
-			m_reference.setEditable(false);
-		} else {
-			m_define.setSelection(true);
-			m_define.setEnabled(false);
-			m_reference.addModifyListener(new ModifyListener() {
-				public void modifyText(ModifyEvent e) {
-					updateButtonStatus();
-				}				
-			});
-		}
+}
+
+class LoopImplNode extends LoopImpl {
+    public LoopImplNode(Collection<Node> nodes) {
+    	if (nodes != null) {
+    	    m_nodes = new ArrayList<Node>();
+    	    m_nodes.addAll(nodes);
+    	}
+    }
+
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	Node firstNode = m_nodes.iterator().next();
+    	long iterations = GuiEngine.getEngine().getSetLoop(firstNode);        	
+
+    	int minIterations = 1;
+    	for (Node node : m_nodes) {
+    		Node loopNode = node.getEnclosingLoopNode();
+    		assert(loopNode != null);
+    		if (!loopNode.isSelfLoopNode()) {
+    			minIterations = 0;
+    			break;
+    		}
+    	}
+
+		Composite container = createDialogArea(parent, enabler, iterations, minIterations);
+		m_references.setText(XtaDialog.getReferencesText(m_nodes));
+		m_references.setEditable(false);
+    	return container;
+    }
+}
+
+class LoopImplRoute extends LoopImpl {
+    public LoopImplRoute(Route route) {
+    	m_route = route;
+    }
+
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+		return createDialogArea(parent, enabler, 0, 0);
+    }
+}
+
+class LoopImplDefine extends LoopImpl {
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	return createDialogArea(parent, enabler, 0, 0);
+    }
+	
+	public boolean doAddDefine() {
+		return true;
 	}
 }

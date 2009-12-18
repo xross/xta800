@@ -770,6 +770,13 @@ public class Engine implements Notifier, Aborter {
 		} catch (AbortedException e) {	}
 	}
 
+	public void setFunctionTime(CommandSource src, Node node, TimeUnit timeUnit) {
+		if (node.isFunctionNode()) {
+			Route route = getSelectedRoute();
+			route.getRouteUnknowns().setFixedTime(node, timeUnit, Type.FUNCTION_TIME, Source.USER);
+		}
+	}
+
 	public void setPathTime(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
 		Reference fromRef = ReferenceFactory.createReference(from, ReferenceClass.ENDPOINT_REF);
 		if (!resolveOrError(src, fromRef)) {

@@ -16,6 +16,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.dialogs.FunctionTime;
 import com.xmos.xta.ui.dialogs.InstructionTime;
 import com.xmos.xta.ui.dialogs.Loop;
 import com.xmos.xta.ui.dialogs.LoopPath;
@@ -45,6 +46,8 @@ public class Views {
     	addSetLoopPathIterations(manager, selectedNodes, shell);    	    	
     	addSetLoopScope(manager, selectedNodes, shell);    	    	
     	addSetInstructionTime(manager, selectedNodes, shell);    	    	
+    	addSetFunctionTime(manager, selectedNodes, shell);    	    	
+//    	addSetPathTime(manager, selectedNodes, shell);    	    	
     	addExclusion(manager, selectedNodes);    	    	
 
 	    manager.add(new Separator());
@@ -77,48 +80,51 @@ public class Views {
 	}
 	
 	private static void addSetLoopIterations(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
-		final Node firstNode = getFirstNode(selectedNodes);
-		
 	    Action action = new Action("Set loop iterations") {
 		    public void run() {
-		    	new Loop(shell, firstNode);
+		    	new Loop(shell, selectedNodes);
 		    }
 	    };
 	    manager.add(action);
-	    if (oneNodeSelected(selectedNodes) && GuiEngine.getEngine().canSetLoop(firstNode))
-	    	action.setEnabled(true);
-	    else
-	    	action.setEnabled(false);
+    	action.setEnabled(true);
+	    for (Node node : selectedNodes) {
+		    if (!GuiEngine.getEngine().canSetLoop(node)) {
+		    	action.setEnabled(false);
+		    	break;
+	    	}
+	    }
 	}
 	
 	private static void addSetLoopPathIterations(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
-		final Node firstNode = getFirstNode(selectedNodes);
-
 		Action action = new Action("Set loop path iterations") {
 		    public void run() {
-		    	new LoopPath(shell, firstNode);
+		    	new LoopPath(shell, selectedNodes);
 		    }
 	    };
 	    manager.add(action);
-	    if (oneNodeSelected(selectedNodes) && GuiEngine.getEngine().canSetLoopPath(firstNode))
-	    	action.setEnabled(true);
-	    else
-	    	action.setEnabled(false);		
+	    action.setEnabled(true);
+	    for (Node node : selectedNodes) {
+	    	if (!GuiEngine.getEngine().canSetLoopPath(node)) {
+	    		action.setEnabled(false);
+	    		break;
+	    	}
+	    }
 	}
 
 	private static void addSetLoopScope(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
-		final Node firstNode = getFirstNode(selectedNodes);
-
 		Action action = new Action("Set loop scope") {
 		    public void run() {
-		    	new LoopScope(shell, firstNode);
+		    	new LoopScope(shell, selectedNodes);
 		    }
 	    };
 	    manager.add(action);
-	    if (oneNodeSelected(selectedNodes) && GuiEngine.getEngine().canSetLoopScope(firstNode))
-	    	action.setEnabled(true);
-	    else
-	    	action.setEnabled(false);		
+	    action.setEnabled(true);
+	    for (Node node : selectedNodes) {
+	    	if (!GuiEngine.getEngine().canSetLoopScope(node)) {
+	    		action.setEnabled(false);
+	    		break;
+	    	}
+	    }
 	}
     
 	private static void addSetInstructionTime(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
@@ -135,9 +141,27 @@ public class Views {
 				XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();				
 	    		if (!instruction.canPause()) {
 	    			action.setEnabled(false);
+	    			break;
 	    		}				
 	    	} else {
 	    		action.setEnabled(false);
+	    		break;
+	    	}
+	    }		
+	}
+
+	private static void addSetFunctionTime(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
+		Action action = new Action("Set function time") {
+		    public void run() {
+		    	new FunctionTime(shell, selectedNodes);
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(true);
+	    for (Node node : selectedNodes) {
+	    	if (!node.isFunctionNode()) {
+	    		action.setEnabled(false);
+	    		break;
 	    	}
 	    }		
 	}

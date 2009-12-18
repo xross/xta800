@@ -1,79 +1,88 @@
 package com.xmos.xta.ui.dialogs;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.GuiEngine;
 
 public class LoopScope extends XtaDialog {
-    public LoopScope(Shell parent, Node node) {
-    	super(parent, new LoopScopeImpl(node), "Loop Scope");
+    public LoopScope(Shell parent, Collection<Node> nodes) {
+    	super(parent, new LoopScopeImplNode(nodes), "Loop Scope");
+    }
+
+    public LoopScope(Shell parent, Route route) {
+    	super(parent, new LoopScopeImplRoute(route), "Loop Scope");
     }
 }
 
-class LoopScopeImpl implements XtaImpl {
-	private Node m_node;
+abstract class LoopScopeImpl implements XtaImpl {
 	private boolean m_scope;
-	private Button m_define;	
-	private Text m_reference;
 	private ButtonEnabler m_enabler;
-	
-    public LoopScopeImpl(Node node) {
-    	m_node = node;    	
-    	
-    	if (m_node != null) {
-    	    m_scope = GuiEngine.getEngine().getSetLoopScope(node);
-    	}
-    }
+	private Button m_define;
 
-    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
-    	m_enabler = enabler;
-    	
-    	Composite container = new Composite(parent, SWT.NONE);    	
+	protected Text m_references;
+	protected Route m_route;
+	protected Collection<Node> m_nodes;
+
+    public abstract Control createDialogArea(Composite parent, ButtonEnabler enabler);
+
+	protected Composite createDialogArea(Composite parent, ButtonEnabler enabler, boolean scope) {
+    	Composite container = new Composite(parent, SWT.NONE);
     	XtaDialog.configureContainer(container);
-		createAbsoluteCountControl(container);
-		createDefineControls(container);	
-    	return container;
-    }
+    	m_enabler = enabler;
+		m_references = XtaDialog.createReference(container, this);
+		createNumIterationsControl(container, scope);
 
+		if (m_nodes != null || m_route != null) {
+			m_define = XtaDialog.createDefineControl(container);
+		}
+		return container;
+	}
+
+	public boolean doAddDefine() {
+		return m_define.getSelection();
+    }
+	
     public void buttonPressed(int id) {
     	if (id == IDialogConstants.OK_ID) {
-    		if (m_define.getSelection()) {
-    		    GuiEngine.getEngine().addLoopScope(GuiEngine.s_guiSrc, m_reference.getText(), m_scope);
+    		if (doAddDefine()) {
+    			for (String reference : XtaDialog.getReferences(m_references.getText())) {
+    				GuiEngine.getEngine().addLoopScope(GuiEngine.s_guiSrc, reference, m_scope);
+    			}
     		}
-    		if (m_node != null) {
-    		    GuiEngine.getEngine().setLoopScope(GuiEngine.s_guiSrc, m_node, m_scope);
+    		if (m_nodes != null) {
+    			for (Node node : m_nodes) {
+    				GuiEngine.getEngine().setLoopScope(GuiEngine.s_guiSrc, node, m_scope);
+    			}
+    		}
+    		if (m_route != null) {
+    			for (String reference : XtaDialog.getReferences(m_references.getText())) {
+    				GuiEngine.getEngine().setLoopScope(GuiEngine.s_guiSrc, m_route.getRouteId(), reference, m_scope);
+    			}
     		}
     	}
-    } 
-    
+    }
+
 	public void updateButtonStatus() {
-		Reference ref = ReferenceFactory.createReference(m_reference.getText(), ReferenceClass.ANY_REF);    	
-		if (ref.resolve(GuiEngine.getEngine())) {
-			m_enabler.enable(true);
-		} else {
-			m_enabler.enable(false);
-		}    	
+		m_enabler.enable(XtaDialog.checkReferences(m_references.getText()));
 	}
-	    
-    private void createAbsoluteCountControl(Composite parent) {
-    	Group group = XtaDialog.createGroup(parent, null, 2, 2);
+
+    protected void createNumIterationsControl(Composite parent, boolean scope) {
+    	m_scope = scope;
+    	Group group = XtaDialog.createGroup(parent, "make scope absolute", 1, 1);
     	
 		final Button button = new Button(group, SWT.CHECK);
 		button.setSelection(m_scope);		
@@ -83,37 +92,44 @@ class LoopScopeImpl implements XtaImpl {
 				updateButtonStatus();
 			}			
 		});
-		
-		Label label = new Label(group, SWT.NONE);
-		label.setText("make count absolute");
     }
-    
-	private void createDefineControls(Composite container) {
-		Group group = XtaDialog.createGroup(container, "add as define", 2, 2);
-		
-		m_define = new Button(group, SWT.CHECK);
-		m_define.setSelection(false);
-		m_define.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				m_reference.setEnabled(m_define.getSelection());
-			}			
-		});
-		
-		m_reference = new Text(group, SWT.BORDER);
-		m_reference.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
-		
-		if (m_node != null) {
-		    m_reference.setText(m_node.getReferenceStr());
-			m_reference.setEnabled(false);
-			m_reference.setEditable(false);
-		} else {
-			m_define.setSelection(true);
-			m_define.setEnabled(false);
-			m_reference.addModifyListener(new ModifyListener() {
-				public void modifyText(ModifyEvent e) {
-					updateButtonStatus();
-				}				
-			});
-		}
-	}    
+}
+
+class LoopScopeImplNode extends LoopScopeImpl {
+    public LoopScopeImplNode(Collection<Node> nodes) {
+    	if (nodes != null) {
+    	    m_nodes = new ArrayList<Node>();
+    	    m_nodes.addAll(nodes);
+    	}
+    }
+
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	Node firstNode = m_nodes.iterator().next();
+	    boolean scope = GuiEngine.getEngine().getSetLoopScope(firstNode);
+
+		Composite container = createDialogArea(parent, enabler, scope);
+		m_references.setText(XtaDialog.getReferencesText(m_nodes));
+		m_references.setEditable(false);
+    	return container;
+    }
+}
+
+class LoopScopeImplRoute extends LoopScopeImpl {
+    public LoopScopeImplRoute(Route route) {
+    	m_route = route;
+    }
+
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+		return createDialogArea(parent, enabler, false);
+    }
+}
+
+class LoopScopeImplDefine extends LoopScopeImpl {
+    public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
+    	return createDialogArea(parent, enabler, false);
+    }
+	
+	public boolean doAddDefine() {
+		return true;
+	}
 }

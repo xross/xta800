@@ -42,12 +42,12 @@ public class Defines extends Dialog implements ButtonEnabler {
 	    XtaDialog.configureContainer(container);
 
 	    m_folder = new CTabFolder(container, SWT.BORDER);
-	    createControl("Loop", new LoopImpl(null));
-	    createControl("Loop Path", new LoopPathImpl(null));
-	    createControl("Loop Scope", new LoopScopeImpl(null));
-	    createControl("Function Time", new FunctionTimeImpl(null));
+	    createControl("Loop", new LoopImplDefine());
+	    createControl("Loop Path", new LoopPathImplDefine());
+	    createControl("Loop Scope", new LoopScopeImplDefine());
+	    createControl("Function Time", new FunctionTimeImplDefine());
 	    createControl("Path Time", new PathTimeImpl(null));
-	    createControl("Instruction Time", new InstructionTimeImpl(null));
+	    createControl("Instruction Time", new InstructionTimeImplDefine());
 
     	return container;
     }
