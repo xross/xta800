@@ -226,32 +226,33 @@ public class GuiEngine {
 			
 		} else if (message.equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			refreshGuiRouteProperties();			
+
+		} else if (message.equals(Notifier.NOTIFY_ROUTE_CHANGED)) {
+			int routeId = Integer.parseInt(argument);
+			clearGuiRouteProperties(routeId);
 		}
 	}
 	
 	private static void refreshGuiRouteProperties() {
+		List<Integer> remove = new ArrayList<Integer>();
 		for (Map<Integer, GuiRouteProperties> routeIdMap : s_routeProperties.values()) {
-			List<Integer> remove = new ArrayList<Integer>();
 			for (Integer routeId : routeIdMap.keySet()) {
-				if (s_engine.getRoute(routeId).size() == 0) {
+				if (s_engine.getRoute(routeId).isEmpty()) {
 					remove.add(routeId);
 				}
 			}
-			for (Integer routeId : remove) {
-				routeIdMap.remove(routeId);
-			}
 		}
-
-		// Remove unwanted selections
-		List<Integer> remove = new ArrayList<Integer>();
-		for (Integer routeId : s_selectedNodes.keySet()) {
-			if (s_engine.getRoute(routeId).size() == 0) {
-				remove.add(routeId);
-			}
-		}
+		
 		for (Integer routeId : remove) {
-			s_selectedNodes.remove(routeId);
+			clearGuiRouteProperties(routeId);
 		}
+	}
+
+	private static void clearGuiRouteProperties(int routeId) {
+		for (Map<Integer, GuiRouteProperties> routeIdMap : s_routeProperties.values()) {
+			routeIdMap.remove(routeId);
+		}
+		s_selectedNodes.remove(routeId);
 	}
 
 	public static GuiRouteProperties getRouteProperties(int routeId, String name) {

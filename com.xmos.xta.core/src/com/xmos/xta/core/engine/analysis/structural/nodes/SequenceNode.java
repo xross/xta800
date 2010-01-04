@@ -174,7 +174,7 @@ public class SequenceNode extends Node {
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
-		for(Node node : m_nodes){
+		for (Node node : m_nodes) {
 			tsbPath.add(node.getTimeSpread());
 		}
 		tdb.add(tsbPath);

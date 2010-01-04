@@ -794,6 +794,8 @@ public class Engine implements Notifier, Aborter {
 				defines.applyPathDefine(this, src, route, info, Source.USER);
 			}
 		} catch (AbortedException e) { }
+
+		notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
 	}
 			
 	// ===================================================================== //

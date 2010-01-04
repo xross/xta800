@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -186,13 +187,18 @@ public class BlockNode extends IBufferNode {
 
 		return set;
 	}
-	
+
     public TimeDistributionBuckets getTimeSpread() {
-	    long time = 0;
-	    for(InstructionNode inst : m_insts){
-		    time += inst.getAttributes().getFixedTime().getCycles();
-	    }
-	    return new TimeDistributionBuckets(time);
+		TimeUnit fixedTime = m_attributes.getFixedTime();
+		if (fixedTime != null) {
+			return new TimeDistributionBuckets(fixedTime.getCycles());
+		}
+
+		long time = 0;
+		for (InstructionNode inst : m_insts) {
+			time += inst.getAttributes().getFixedTime().getCycles();
+		}
+    	return new TimeDistributionBuckets(time);
     }
 
 	public void replaceChild(Node oldNode, Node newNode) {

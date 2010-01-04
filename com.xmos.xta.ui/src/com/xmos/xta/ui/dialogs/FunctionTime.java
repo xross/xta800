@@ -70,7 +70,7 @@ abstract class FunctionTimeImpl implements XtaImpl {
 	    	m_define = XtaDialog.createDefineControl(container);
 	    }
 
-	    m_function.getFilterControl().setText(function);
+m_function.getFilterControl().setText(function);
 	    m_function.getFilterControl().addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				updateButtonStatus();
@@ -194,13 +194,13 @@ class FunctionTimeImplRoute extends FunctionTimeImpl {
     }
 
     public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
-		return createDialogArea(parent, enabler, "");
+		return super.createDialogArea(parent, enabler, "");
     }
 }
 
 class FunctionTimeImplDefine extends FunctionTimeImpl {
     public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
-    	return createDialogArea(parent, enabler, "");
+    	return super.createDialogArea(parent, enabler, "");
     }
 	
 	public boolean doAddDefine() {

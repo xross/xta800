@@ -3,6 +3,8 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 import java.util.Collection;
 import java.util.List;
 
+import com.xmos.xta.core.console.Console;
+
 public class TimeDistributionBuckets {
 	public static final int BUCKET_COUNT = 80;
 	
@@ -198,13 +200,13 @@ public class TimeDistributionBuckets {
 	}
 
 	
-	public void print() {
+	public void print(Console console) {
 		System.out.println(m_lowest + " "+ m_highest);
 		double current = m_lowest;
 		double inc = (m_highest - m_lowest) / BUCKET_COUNT;
 		
-		for (double i : m_buckets) {
-			System.out.println(current + "\t" + i);
+		for (double bucket : m_buckets) {
+			console.display(current + "\t" + bucket + "\n");
 			current += inc;
 		}
 	}

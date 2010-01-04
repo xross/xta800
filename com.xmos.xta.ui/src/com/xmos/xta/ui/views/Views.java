@@ -11,6 +11,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
@@ -21,6 +22,7 @@ import com.xmos.xta.ui.dialogs.InstructionTime;
 import com.xmos.xta.ui.dialogs.Loop;
 import com.xmos.xta.ui.dialogs.LoopPath;
 import com.xmos.xta.ui.dialogs.LoopScope;
+import com.xmos.xta.ui.dialogs.PathTime;
 
 public class Views {
 	public static void showView(String viewID) {
@@ -45,9 +47,9 @@ public class Views {
     	addSetLoopIterations(manager, selectedNodes, shell);    	    	
     	addSetLoopPathIterations(manager, selectedNodes, shell);    	    	
     	addSetLoopScope(manager, selectedNodes, shell);    	    	
+    	addSetPathTime(manager, selectedNodes, shell);    	    	
     	addSetInstructionTime(manager, selectedNodes, shell);    	    	
     	addSetFunctionTime(manager, selectedNodes, shell);    	    	
-//    	addSetPathTime(manager, selectedNodes, shell);    	    	
     	addExclusion(manager, selectedNodes);    	    	
 
 	    manager.add(new Separator());
@@ -127,6 +129,32 @@ public class Views {
 	    }
 	}
     
+	private static void addSetPathTime(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
+		Action action = new Action("Set path time") {
+		    public void run() {
+		    	new PathTime(shell, selectedNodes);
+		    }
+	    };
+	    manager.add(action);
+	    action.setEnabled(true);
+	    if (selectedNodes.size() != 2) {
+		    action.setEnabled(false);
+		    return;
+	    }
+	    Node from = selectedNodes.get(0);
+    	Node to = selectedNodes.get(1);
+    	
+    	if (!from.isInstructionNode() || !to.isInstructionNode()) {
+    		action.setEnabled(false);
+    		return;
+    	}
+    	
+    	if (!RouteDefines.matchPathDefine(from, to)) {
+    		action.setEnabled(false);
+    		return;
+    	}
+	}
+
 	private static void addSetInstructionTime(IMenuManager manager, final List<Node> selectedNodes, final Shell shell) {
 		Action action = new Action("Set instruction time") {
 		    public void run() {

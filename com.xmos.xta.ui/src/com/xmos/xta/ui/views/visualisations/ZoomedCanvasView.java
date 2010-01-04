@@ -231,7 +231,8 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 	    	m_renderControl.refresh();
 			
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE) || 
-				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
+				   event.getProperty().equals(Notifier.NOTIFY_REMOVE_ROUTE) ||
+				   event.getProperty().equals(Notifier.NOTIFY_ROUTE_CHANGED)) {
 			initialiseTree();
 			
 		} else if (event.getProperty().equals(Broadcaster.BROADCAST_UPDATE_FOLDING)) {

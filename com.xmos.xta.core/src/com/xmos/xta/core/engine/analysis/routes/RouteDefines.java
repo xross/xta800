@@ -21,6 +21,11 @@ import com.xmos.xta.core.engine.references.Reference;
 
 public class RouteDefines {
 	private static final boolean DEBUG_ROUTE_DEFINES = false;
+
+	private static RouteDefinePatterns[] m_patterns = new RouteDefinePatterns[] {
+			new SameBlockPattern(),
+			new DifferentBlockPattern()
+	};
 	
 	public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
 		Reference reference = info.getFunction();
@@ -29,8 +34,24 @@ public class RouteDefines {
 			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), 
 					reference, Type.FUNCTION_TIME, source);	
 		}
-//		route.getRouteUnknowns().invalidateCachedStats();		
 	}
+
+	public static boolean matchPathDefine(Node from, Node to) {
+		assert(from instanceof InstructionNode);
+		Node fromBlock = from.getParent();
+		assert(fromBlock instanceof BlockNode);
+
+		assert(to instanceof InstructionNode);
+		Node toBlock = to.getParent();
+		assert(toBlock instanceof BlockNode);
+
+		for (RouteDefinePatterns pattern : m_patterns) {
+			if (pattern.match(fromBlock, from, toBlock, to)) {
+				return true;
+			}
+		}
+		return false;
+	}	
 
 	public void applyPathDefine(Engine engine, CommandSource src, 
 			Route route, PathTimeInfo info, Source source) throws AbortedException {
@@ -41,11 +62,6 @@ public class RouteDefines {
 		Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
 		Collection<Node> toNodes = route.getReferencedNodes(toRef);
 		
-		RouteDefinePatterns[] patterns = new RouteDefinePatterns[] {
-				new SameBlockPattern(),
-				new DifferentBlockPattern()
-		};
-
 		TimeUnit timeUnit = new TimeUnit(route.getRouteDescription().getConfig(), info.getTimeUnit());
 		
 		for (Node from : fromNodes) {
@@ -59,7 +75,7 @@ public class RouteDefines {
 				Node toBlock = to.getParent();
 				assert(toBlock instanceof BlockNode);
 
-				for (RouteDefinePatterns pattern : patterns) {
+				for (RouteDefinePatterns pattern : m_patterns) {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
 
 						if (DEBUG_ROUTE_DEFINES) display("BEFORE", route);						
@@ -75,11 +91,12 @@ public class RouteDefines {
 
 			if (!success) {
 				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s", 
-						info, route.getRouteDescription().getDescription()));				
+						info, route.getRouteDescription().getDescription()));
 			}
-			route.getRouteUnknowns().invalidateCachedStats();
-			route.getRouteUnknowns().refreshDisplayedUnknowns();
 		}
+		
+		route.getRouteUnknowns().invalidateCachedStats();
+		route.getRouteUnknowns().refreshDisplayedUnknowns();
 	}	
 
 	private void display(String str, Route route) {

@@ -46,7 +46,7 @@ public class Defines extends Dialog implements ButtonEnabler {
 	    createControl("Loop Path", new LoopPathImplDefine());
 	    createControl("Loop Scope", new LoopScopeImplDefine());
 	    createControl("Function Time", new FunctionTimeImplDefine());
-	    createControl("Path Time", new PathTimeImpl(null));
+	    createControl("Path Time", new PathTimeImplDefine());
 	    createControl("Instruction Time", new InstructionTimeImplDefine());
 
     	return container;

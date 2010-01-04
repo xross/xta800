@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
+import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -277,6 +278,11 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public TimeDistributionBuckets getTimeSpread() {
+		TimeUnit fixedTime = m_attributes.getFixedTime();
+		if (fixedTime != null) {
+			return new TimeDistributionBuckets(fixedTime.getCycles());
+		}
+
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbSequence = new LinkedList<TimeDistributionBuckets>();
 		if (m_functionSequence != null && !m_functionSequence.isEmpty()) {

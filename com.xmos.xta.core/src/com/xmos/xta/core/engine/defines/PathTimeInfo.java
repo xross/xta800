@@ -31,7 +31,7 @@ public class PathTimeInfo implements DefineInfo {
 	}
 	
     public String getDescription() {
-    	return m_from + " " + m_to;
+    	return m_from + " to " + m_to;
     }
 
     public String getValue() {

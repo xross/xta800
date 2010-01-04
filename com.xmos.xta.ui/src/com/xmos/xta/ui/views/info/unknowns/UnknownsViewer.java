@@ -81,7 +81,7 @@ public class UnknownsViewer extends InfoViewer {
 			public void run() {
      			new InstructionTime(getParent().getShell(), getSelectedNodes());
 			}
-		}; 
+		};
 		m_setInstructionTimeAction.setText("Set instruction time");
 		menuMgr.add(m_setInstructionTimeAction);
 		m_setInstructionTimeAction.setEnabled(false);

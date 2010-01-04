@@ -79,9 +79,9 @@ public class TimeDistribution extends Command {
 	    TimeDistributionDisplayer displayer = new TimeDistributionDisplayer(engine, console);
 		for (Route route : engine.getRoute(m_routeId)) {
 			if (m_nodeIdSet) {
-				displayer.display(route.getNode(m_nodeId));						
+				displayer.display(route.getNode(m_nodeId), console);						
 			} else {
-				displayer.display(route.getNode());			
+				displayer.display(route.getNode(), console);
 			}        			
 		}		
    } 

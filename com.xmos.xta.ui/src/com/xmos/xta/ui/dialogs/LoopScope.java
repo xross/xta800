@@ -39,7 +39,7 @@ abstract class LoopScopeImpl implements XtaImpl {
 
     public abstract Control createDialogArea(Composite parent, ButtonEnabler enabler);
 
-	protected Composite createDialogArea(Composite parent, ButtonEnabler enabler, boolean scope) {
+	protected Control createDialogArea(Composite parent, ButtonEnabler enabler, boolean scope) {
     	Composite container = new Composite(parent, SWT.NONE);
     	XtaDialog.configureContainer(container);
     	m_enabler = enabler;
@@ -107,7 +107,7 @@ class LoopScopeImplNode extends LoopScopeImpl {
     	Node firstNode = m_nodes.iterator().next();
 	    boolean scope = GuiEngine.getEngine().getSetLoopScope(firstNode);
 
-		Composite container = createDialogArea(parent, enabler, scope);
+	    Control container = createDialogArea(parent, enabler, scope);
 		m_references.setText(XtaDialog.getReferencesText(m_nodes));
 		m_references.setEditable(false);
     	return container;
