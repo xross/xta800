@@ -11,6 +11,9 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Control;
@@ -84,6 +87,17 @@ public abstract class BaseViewer implements Viewer {
 			}
 		});		
 		update();
+		
+		getViewer().getTable().addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.DEL) {
+					removeSelection();
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+		});
 	}
 		
 	public void update() {
@@ -104,5 +118,9 @@ public abstract class BaseViewer implements Viewer {
 
 	protected TableViewer getViewer() {
 		return m_viewer;
+	}	
+
+	protected void removeSelection() {
+		// Do nothing
 	}	
 }

@@ -22,7 +22,7 @@ class LabelProvider extends BaseViewerLabelProvider implements ITableLabelProvid
 		
 		DefineInfo info = (DefineInfo)element;
 		if (m_columnNames[columnIndex].equals(DESCRIPTION)) {
-			return info.toString();
+			return info.getDescription();
 			
     	} else if (m_columnNames[columnIndex].equals(VALUE)) {    		
 	        return info.getValue();

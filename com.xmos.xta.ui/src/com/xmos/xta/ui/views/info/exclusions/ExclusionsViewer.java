@@ -10,9 +10,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -41,17 +38,6 @@ public class ExclusionsViewer extends BaseViewer {
 			}			
 		});
 		
-		getViewer().getTable().addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.character == SWT.DEL) {
-					removeSelection();
-				}
-			}
-
-			public void keyReleased(KeyEvent e) {
-			}
-		});
-
 		// Create the context menu
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(false);
@@ -82,7 +68,7 @@ public class ExclusionsViewer extends BaseViewer {
 		m_removeExclusionAction.setEnabled(false);
 	} 		
 
- 	private void removeSelection() {
+ 	protected void removeSelection() {
 		ISelection selection = getViewer().getSelection(); 
 		for (Object object : ((IStructuredSelection)selection).toList()) {
 			Reference ref = (Reference)object;			
