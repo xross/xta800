@@ -52,7 +52,7 @@ public class CommandFactory {
 	
     public static Command buildCommand(CommandSource src, String[] args, int index, 
     		Vector<Command> commandHistory, Console console) {
-    	String arg = args[index];    	
+    	String arg = args[index];
         
         if (isPlingCommand(arg)) {
         	Command command = getPingCommand(arg, commandHistory);

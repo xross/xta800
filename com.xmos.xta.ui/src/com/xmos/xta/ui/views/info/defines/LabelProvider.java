@@ -23,8 +23,8 @@ class LabelProvider extends BaseViewerLabelProvider implements ITableLabelProvid
 		DefineInfo info = (DefineInfo)element;
 		if (m_columnNames[columnIndex].equals(DESCRIPTION)) {
 			return info.getDescription();
-			
-    	} else if (m_columnNames[columnIndex].equals(VALUE)) {    		
+
+    	} else if (m_columnNames[columnIndex].equals(VALUE)) {
 	        return info.getValue();
         }
 		assert(false);
@@ -33,7 +33,7 @@ class LabelProvider extends BaseViewerLabelProvider implements ITableLabelProvid
 
 	public int compare(Object e1, Object e2, String column) {
 		assert(e1 instanceof DefineInfo);
-		assert(e2 instanceof DefineInfo);		
+		assert(e2 instanceof DefineInfo);
 		
 		DefineInfo p1 = (DefineInfo)e1;
 		DefineInfo p2 = (DefineInfo)e2;
