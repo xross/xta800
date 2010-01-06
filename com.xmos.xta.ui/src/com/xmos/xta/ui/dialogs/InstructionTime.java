@@ -74,7 +74,7 @@ abstract class InstructionTimeImpl implements XtaImpl {
     		}
     		if (m_route != null) {
     			for (String reference : XtaDialog.getReferences(m_references.getText())) {
-    				GuiEngine.getEngine().addInstructionTime(GuiEngine.s_guiSrc, reference, timeUnit);
+    				GuiEngine.getEngine().setInstructionTime(GuiEngine.s_guiSrc, m_route.getRouteId(), reference, timeUnit);
     			}
     		}    			
     	}
