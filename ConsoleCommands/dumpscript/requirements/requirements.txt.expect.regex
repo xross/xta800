@@ -1,4 +1,4 @@
-load .*test\.xe
+load ".*test\.xe"
 
 #
 # Route: x1 => x2

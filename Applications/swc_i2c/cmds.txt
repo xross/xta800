@@ -58,10 +58,13 @@ analyse path \
     iic_read_sendByte,iic_phy_sendByte_low
 set required - 600.0 ns
 
+add exclusion iic_read_done
+
 analyse path \
     iic_read_sendByte,iic_phy_sendByte_low \
     iic_read_sendByte,iic_phy_sendByte_high
 set required - 1300.0 ns
+remove exclusion iic_read_done
 
 #
 # iic_phy_receiveByte
@@ -76,10 +79,12 @@ analyse path \
     iic_read_receiveByte,iic_phy_receiveByte_low
 set required - 600.0 ns
 
+add exclusion iic_read_done
 analyse path \
     iic_read_receiveByte,iic_phy_receiveByte_low \
     iic_read_receiveByte,iic_phy_receiveByte_high
 set required - 1300.0 ns
+remove exclusion iic_read_done
 
 #
 # iic_checkWriteComplete

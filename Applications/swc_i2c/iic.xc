@@ -369,6 +369,7 @@ XMOS_RTN_t iic_read(uint address, char data[], uint numBytes)
   
   iic_phy_master_stop();
   
+  #pragma xta label "iic_read_done"
   return returnCode;
 }
 

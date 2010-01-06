@@ -1,4 +1,4 @@
-load .*test\.xe
+load ".*test\.xe"
 
 config threads 1
 config freq 100\.0
