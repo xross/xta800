@@ -13,22 +13,22 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 		m_annotations = annotations;
 	}
 	
-	public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
-		String warning = getWarningString(lineNumber);
+	public String getHoverInfo(ISourceViewer sourceViewer, int index) {
+		String warning = getWarningString(index);
 		if (warning != null && !warning.equals("")) {
 			return warning;
 		}
 		
-		String annotation = getAnnotationString(lineNumber);
+		String annotation = getAnnotationString(index);
 		if (annotation != null && !annotation.equals(""))
 			return annotation;
 			
 		return null;
 	}
 
-	private String getAnnotationString(long lineNumber) {
-		boolean isStartPoint = isStartPoint(lineNumber);
-		boolean isEndPoint = isEndPoint(lineNumber);
+	private String getAnnotationString(long index) {
+		boolean isStartPoint = isStartPoint(index);
+		boolean isEndPoint = isEndPoint(index);
 		if (isStartPoint && isEndPoint) {
 			return "Both start and end points set.";
 		} else if (isStartPoint) {
@@ -37,7 +37,7 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 			return "End point set.";
 		}
 		
-		if (m_annotations.isValidEndPoint(lineNumber)) {
+		if (m_annotations.isValidEndPoint(index)) {
 			return "A valid start/end point for timing.";
 		}
 		
@@ -52,15 +52,15 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 		return warning;
 	}
 
-	private boolean isStartPoint(long lineNum) {
-		if (m_annotations.getStartPointIndexes().contains(lineNum))
+	private boolean isStartPoint(long index) {
+		if (m_annotations.getStartPointIndexes().contains(index))
 			return true;
 
 		return false;
 	}
 
-	private boolean isEndPoint(long lineNum) {
-		if (m_annotations.getEndPointIndexes().contains(lineNum))
+	private boolean isEndPoint(long index) {
+		if (m_annotations.getEndPointIndexes().contains(index))
 			return true;
 
 		return false;

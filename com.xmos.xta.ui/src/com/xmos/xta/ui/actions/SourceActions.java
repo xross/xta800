@@ -136,7 +136,7 @@ public class SourceActions  {
 	public void createRulerContextMenu(IMenuManager menu, XtaAnnotations annotations, long clickLineIndex) {
 		m_clickCodeRefString = annotations.getLineDescription(clickLineIndex);
 		if (m_clickCodeRefString != null) {
-			if (annotations.isValidEndPoint(clickLineIndex + 1)) {
+			if (annotations.isValidEndPoint(clickLineIndex)) {
 				if (annotations.isStartPointSetForIndex(clickLineIndex)) {
 				    menu.add(m_actions.get(SourceActions.RemoveFromEndPointID));
 				} else {

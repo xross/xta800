@@ -55,7 +55,7 @@ public abstract class XtaAnnotations implements IPropertyChangeListener {
 	protected XtaAnnotatedObject m_source;
 
     // Abstract methods
-	public abstract boolean isValidEndPoint(long lineNumber);
+	public abstract boolean isValidEndPoint(long index);
 	public abstract String getLineDescription(long clickLineIndex);
 
 	public abstract void updateAll();

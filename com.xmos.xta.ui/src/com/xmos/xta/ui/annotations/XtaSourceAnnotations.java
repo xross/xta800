@@ -236,8 +236,7 @@ public class XtaSourceAnnotations extends XtaAnnotations {
 		return new ArrayList<Long>();
 	}
 
-	public boolean isValidEndPoint(long lineNumber) {
-		long index = lineNumber - 1;
+	public boolean isValidEndPoint(long index) {
 		if (m_endPointLineIndexes.contains(index)) {
 			return true;
 		}

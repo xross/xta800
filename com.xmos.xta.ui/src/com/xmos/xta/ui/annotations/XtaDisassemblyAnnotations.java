@@ -92,8 +92,8 @@ public class XtaDisassemblyAnnotations extends XtaAnnotations {
 		return lineIndexToString(index);
 	}
 
-	public boolean isValidEndPoint(long lineNumber) {
-		if (isSection(lineNumber - 1))
+	public boolean isValidEndPoint(long index) {
+		if (isSection(index))
 			return false;
 		else
 			return true;
