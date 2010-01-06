@@ -223,7 +223,7 @@ public class ConditionalNode extends Node {
 				break;
 				
 			case BEST:
-				if (time <= caseTime && !status.isZero() && !status.isUnresolved()) {
+				if (time < caseTime && !status.isZero() && !status.isUnresolved()) {
 				    caseNode = node;
 				    caseTime = time;
 				}
