@@ -168,12 +168,13 @@ public class Shell {
 
                 if (line.startsWith("#")) {
                 	// Ignore comment lines...
- 
-                } else if (line.length() > 0) {            	
-                    String[] tokens = line.trim().split("\\s+");                
-                    ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
-                    tokens = tokenGroups.toArray(tokens);
-                    
+                	continue;
+                }             	
+
+                String[] tokens = line.trim().split("\\s+");                
+                ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
+                if (tokenGroups.size() > 0) {
+                    tokens = tokenGroups.toArray(new String[0]);
                     Command command = CommandFactory.buildCommand(consoleCommand.getSrc(), tokens, 0, m_commandHistory, m_console);
 
                     if (!commandIsValid(command, tokens)) {
