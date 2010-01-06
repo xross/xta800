@@ -30,15 +30,15 @@ public class XtaRulerAnnotationHover implements IAnnotationHover {
 		boolean isStartPoint = isStartPoint(index);
 		boolean isEndPoint = isEndPoint(index);
 		if (isStartPoint && isEndPoint) {
-			return "Both start and end points set.";
+			return "Both from and to endpoints set.";
 		} else if (isStartPoint) {
-			return "Start point set.";
+			return "From endpoint set.";
 		} else if (isEndPoint) {
-			return "End point set.";
+			return "To endpoint set.";
 		}
 		
 		if (m_annotations.isValidEndPoint(index)) {
-			return "A valid start/end point for timing.";
+			return "A valid endpoint for timing.";
 		}
 		
 		return null;
