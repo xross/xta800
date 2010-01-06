@@ -179,9 +179,14 @@ public class ReferenceMatcher {
 		for (ReferenceType referenceType : reference.getBackTrail()) {
 			int hit = -1;
 			for (int i = 0; i < pcBackTrail.size(); i++) {
-				if (pcBackTrail.get(i).equals(referenceType.getRef())) {
-					hit = i;
-					break;
+				String[] pcBackTrailElements = pcBackTrail.get(i).split("\\(");
+				for (String element : pcBackTrailElements) {
+					element = element.replaceAll("\\)", "");
+
+					if (element.equals(referenceType.getRef())) {
+						hit = i;
+						break;
+					}
 				}
 			}
 

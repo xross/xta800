@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
 
+import com.xmos.libs.util.StringUtil;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.console.commands.Invalid;
@@ -169,10 +170,9 @@ public class Shell {
                 if (line.startsWith("#") || line.length() == 0) {
                 	continue; // Ignore comment and blank lines...
                 }             	
-
                 
                 String[] tokens = line.trim().split("\\s+");                
-                ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
+                ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
                 if (tokenGroups.size() > 0) {
                     tokens = tokenGroups.toArray(new String[0]);
                     Command command = CommandFactory.buildCommand(consoleCommand.getSrc(), tokens, 0, m_commandHistory, m_console);
@@ -199,32 +199,6 @@ public class Shell {
    		return (command.numArgs() == (tokens.length - 1));
     }
     
-	private ArrayList<String> groupQuotedTokens(String[] tokens) {
-        ArrayList<String> s = new ArrayList<String>();                
-
-		boolean multiword = false;
-		String m = "";
-		for (String word : tokens){
-			if (word.startsWith("\"")){
-				multiword = true;
-				word = word.substring(1);
-			} 
-			if (word.endsWith("\"")){
-				multiword = false;
-				word = word.substring(0, word.length()-1);
-				word = m+ " " + word ;
-				word = word.trim();
-				m = "";
-			} 
-			if (multiword){
-				m = m + " " + word;
-			} else {
-				s.add(word);
-			}
-		}
-		return s;
-	}
-        
     private boolean isComplete() {
     	return ((m_executeArgsOnly && (m_commands.size() == 0)) ||
     	        (m_state == State.EXIT));

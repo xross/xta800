@@ -3,7 +3,9 @@ package com.xmos.xta.core.console.commands.source;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import com.xmos.libs.util.StringUtil;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
@@ -84,33 +86,36 @@ public class Source extends Command {
                             multilineCommand = false;
                         	
                             String[] tokens = commandString.trim().split("\\s+");
+                            ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
+                            if (tokenGroups.size() > 0) {
+                                tokens = tokenGroups.toArray(new String[0]);
                             
-                    		CommandSource src = new CommandSource(Type.FILE, m_fileName, lineNumber);
-                            Command command = CommandFactory.buildCommand(src,
-                            		tokens, 0, shell.getCommandHistory(), console);
-                            
-                            boolean invalidCommand = false;
-                            if (command != null) {
-                            	if (command.getFileRedirect() != null) {
-                            		invalidCommand = ((command.numArgs() + 2) != (tokens.length - 1));
-                            		
-                            	} else {
-                            		invalidCommand = (command.numArgs() != (tokens.length - 1));                            		
-                            	}
-                                if (!invalidCommand) {	
-                            	    shell.addCommand(command, location + 1);
-                            	    location++;
-                                }
-                            } else {
-                            	invalidCommand = true;
-                            }
+	                    		CommandSource src = new CommandSource(Type.FILE, m_fileName, lineNumber);
+	                            Command command = CommandFactory.buildCommand(src,
+	                            		tokens, 0, shell.getCommandHistory(), console);
+	                            
+	                            boolean invalidCommand = false;
+	                            if (command != null) {
+	                            	if (command.getFileRedirect() != null) {
+	                            		invalidCommand = ((command.numArgs() + 2) != (tokens.length - 1));
+	                            	} else {
+	                            		invalidCommand = (command.numArgs() != (tokens.length - 1));                            		
+	                            	}
+	                                if (!invalidCommand) {	
+	                            	    shell.addCommand(command, location + 1);
+	                            	    location++;
+	                                }
+	                            } else {
+	                            	invalidCommand = true;
+	                            }
 
-                            if (invalidCommand) {
-                            	String errorMessage = String.format("invalid command\n", m_fileName, lineNumber);
-                            	shell.addCommand(new Invalid(commandString, errorMessage, src), location+1);
-                            	location++;
+	                            if (invalidCommand) {
+	                            	String errorMessage = String.format("invalid command\n", m_fileName, lineNumber);
+	                            	shell.addCommand(new Invalid(commandString, errorMessage, src), location+1);
+	                            	location++;
+	                            }
+	                            commandString = "";
                             }
-                            commandString = "";
                     	}
                     }
                     ++lineNumber;
