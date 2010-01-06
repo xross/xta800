@@ -166,11 +166,11 @@ public class Shell {
             for (String line : lines) {
                 line = line.trim();
 
-                if (line.startsWith("#")) {
-                	// Ignore comment lines...
-                	continue;
+                if (line.startsWith("#") || line.length() == 0) {
+                	continue; // Ignore comment and blank lines...
                 }             	
 
+                
                 String[] tokens = line.trim().split("\\s+");                
                 ArrayList<String> tokenGroups = groupQuotedTokens(tokens);
                 if (tokenGroups.size() > 0) {
