@@ -1,11 +1,13 @@
 package com.xmos.xta.ui.views.visualisations.structure;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.views.Views;
 import com.xmos.xta.ui.views.visualisations.ControlMonitor;
 import com.xmos.xta.ui.views.visualisations.Renderer;
 import com.xmos.xta.ui.views.visualisations.RendererControl;
@@ -91,5 +93,12 @@ public class StructureView extends ZoomedCanvasView implements ControlMonitor {
 
 	public void setZoomResetEnabled() {
 		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_RESET_ENABLED, "");
+	}
+
+	public void menuAboutToShow(IMenuManager manager) {
+    	if (m_toolTip != null  && !m_toolTip.isDisposed()) {
+			m_toolTip.dispose();
+    	}
+    	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
 	}
 }

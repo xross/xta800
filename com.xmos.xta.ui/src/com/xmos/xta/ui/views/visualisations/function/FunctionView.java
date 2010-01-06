@@ -1,5 +1,6 @@
 package com.xmos.xta.ui.views.visualisations.function;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -99,5 +100,9 @@ public class FunctionView extends ZoomedCanvasView implements ControlMonitor {
 
 	public void setZoomResetEnabled() {
 		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_RESET_ENABLED, "");
+	}
+
+	public void menuAboutToShow(IMenuManager manager) {
+		// Do nothing
 	}
 }

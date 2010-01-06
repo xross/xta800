@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -44,7 +43,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiRouteProperties;
-import com.xmos.xta.ui.views.Views;
 import com.xmos.xta.ui.views.visualisations.viewnode.ViewNode;
 
 public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenuListener {
@@ -58,14 +56,14 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
     private ViewNode m_viewNode;
     protected ZoomedCanvasProperties m_canvasProperties;
     private Canvas m_canvas;
-    private List<Node> m_selectedNodes;
-    private Composite m_parent;
+    protected List<Node> m_selectedNodes;
+    protected Composite m_parent;
     private Display m_display;
     private ScrollBar m_hScroll;
     private ScrollBar m_vScroll;
     private int m_hScrollPosition;
     private int m_vScrollPosition;
-    private Shell m_toolTip;
+    protected Shell m_toolTip;
     private Label m_tipLabel;
     private RendererControl m_renderControl;
     private Renderer m_renderer;
@@ -250,13 +248,6 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
     	m_renderControl.setSelection(newNodes);
 	}
 
-	public void menuAboutToShow(IMenuManager manager) {
-    	if (m_toolTip != null  && !m_toolTip.isDisposed()) {
-			m_toolTip.dispose();
-    	}
-    	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
-	}
-
 	public String getName() {
 		return m_name;
 	}
@@ -296,8 +287,6 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 			m_hScroll.getMaximum(), m_hScroll.getThumb(), m_hScroll.getSelection(),
 			m_vScroll.getMaximum(), m_vScroll.getThumb(), m_vScroll.getSelection());
 	}
-
-	
 
 	private void matchScrollBarsToCanvas() {
 		int canvasX = m_renderControl.getCanvasWidth();
