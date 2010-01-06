@@ -22,7 +22,7 @@ public class FunctionRenderer extends Renderer {
 
 	private static final double TIMELINE_MIN_PIXELS_GAP = 50.0;
     private static final double TIMELINE_MAX_PIXELS_GAP = 100.0;
-    private static final int BEST_WORST_SEPARATION = FunctionNode.TEXT_AREA_Y;
+    public static final int BEST_WORST_SEPARATION = FunctionNode.TEXT_AREA_Y;
 
     private int m_timeLineY;
 

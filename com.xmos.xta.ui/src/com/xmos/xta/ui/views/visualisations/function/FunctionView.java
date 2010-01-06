@@ -20,6 +20,7 @@ import com.xmos.xta.ui.views.visualisations.viewnode.FunctionNode;
 import com.xmos.xta.ui.views.visualisations.viewnode.FunctionSequenceNode;
 import com.xmos.xta.ui.views.visualisations.viewnode.ViewNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 
 public class FunctionView extends ZoomedCanvasView implements ControlMonitor {
     public static final boolean DEBUG = false;
@@ -104,5 +105,30 @@ public class FunctionView extends ZoomedCanvasView implements ControlMonitor {
 
 	public void menuAboutToShow(IMenuManager manager) {
 		// Do nothing
+	}
+
+	protected ViewNode getClickNode(int x, int y) {
+    	if (m_viewNode != null) {
+			int offsetX = m_renderControl.getOffsetX();
+        	x = (int)((double)(x + offsetX) / m_renderControl.getScale());
+
+			int offsetY = m_renderControl.getOffsetY();
+			y = y + offsetY - TIMELINE_Y;
+			
+        	int middleY = 0;
+        	middleY += m_viewNode.getPixelsY(Case.WORST) + FunctionRenderer.BEST_WORST_SEPARATION;
+        	
+        	ViewNode viewNode = null;
+        	if (y >= middleY) {
+        		viewNode = m_viewNode.getClickNode(x, y - middleY, Case.BEST);
+        	} else {
+        		viewNode = m_viewNode.getClickNode(x, y, Case.WORST);
+        	}
+        	
+        	if ((viewNode != null) && viewNode.getTreeNode().isFunctionNode()) {
+        		return viewNode;
+        	}
+    	}
+		return null;
 	}
 }

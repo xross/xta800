@@ -53,7 +53,7 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 
 	private static final double MAX_SCALE = 5;
 
-    private ViewNode m_viewNode;
+    protected ViewNode m_viewNode;
     protected ZoomedCanvasProperties m_canvasProperties;
     private Canvas m_canvas;
     protected List<Node> m_selectedNodes;
@@ -65,7 +65,7 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
     private int m_vScrollPosition;
     protected Shell m_toolTip;
     private Label m_tipLabel;
-    private RendererControl m_renderControl;
+    protected RendererControl m_renderControl;
     private Renderer m_renderer;
     private Rectangle m_compositeArea;
     private String m_name;
@@ -163,6 +163,7 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 	}
 
 	protected abstract ViewNode buildViewNode(Node node, int depth);
+	protected abstract ViewNode getClickNode(int x, int y);
 	protected abstract ZoomedCanvasProperties createCanvasProperties();
 	protected abstract RendererControl createRenderControl(Display display);
 	protected abstract Renderer createRenderer(Display display, RendererControl renderControl,
@@ -630,16 +631,6 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
     			}
 		     } 
 	    });
-	}
-
-	private ViewNode getClickNode(int x, int y) {
-    	if (m_viewNode != null) {
-			int offsetX = m_renderControl.getOffsetX();
-			int offsetY = m_renderControl.getOffsetY();
-			return m_viewNode.getClickNode(x + offsetX, y + offsetY);
-    	} else {
-    		return null;
-    	}
 	}
 
 	private void createToolTip(String toolTip, Listener labelListener) {

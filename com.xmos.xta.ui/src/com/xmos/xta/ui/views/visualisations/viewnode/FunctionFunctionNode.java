@@ -22,7 +22,7 @@ public class FunctionFunctionNode extends FunctionNode {
 
 	public int getPixelsY() {
 		// The height of both best and worst case
-		return getChildrenY() + (TEXT_AREA_Y * 2);
+		return super.getPixelsY() + (TEXT_AREA_Y * 2);
 	}
 
 	public int getPixelsY(Case c) {
@@ -50,5 +50,24 @@ public class FunctionFunctionNode extends FunctionNode {
 			gc.drawString(m_treeNode.getFunctionName(), offsetX(startX + m_borderX), scaleY(textBase));
 		}
 		return x;
+	}
+
+	public ViewNode getClickNode(int x, int y, Case c) {
+		for (ViewNode child : getChildren()) {
+			ViewNode node = child.getClickNode(x, y - TEXT_AREA_Y, c);
+			if (node != null) {
+				if (!node.getTreeNode().isFunctionNode()) {
+					return this;
+				} else {
+					return node;
+				}
+			}
+
+			x -= child.getPixelsX(c);
+			if (x < 0) {
+				return null;
+			}
+    	}
+		return null;
 	}
 }

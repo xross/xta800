@@ -15,25 +15,23 @@ public class FunctionConditionalNode extends FunctionNode {
 	}
 
 	public int getPixelsY(Case c) {
-		ViewNode child = getChild(Case.WORST);
+		ViewNode child = getChild(c);
 		if (child != null) {
 			return child.getPixelsY(c);
 		}
 		return 0;
 	}
 
-	public int getChildrenX() {
-		ViewNode child = getChild(Case.WORST);
+	public int getChildrenX(Case c) {
+		ViewNode child = getChild(c);
 		if (child != null) {
-			return child.getPixelsX();
+			return child.getPixelsX(c);
 		}
 		return 0;
 	}
 
-	public int getChildrenY() {
-		int pixelsY = 0;
-		pixelsY += getPixelsY(Case.BEST);
-		pixelsY += getPixelsY(Case.WORST);
+	public int getChildrenY(Case c) {
+		int pixelsY = getPixelsY(c);
 		return pixelsY;
 	}
 
@@ -45,16 +43,10 @@ public class FunctionConditionalNode extends FunctionNode {
 		return x;
 	}
 
-	public ViewNode getClickNode(int x, int y) {
-		ViewNode child = getChild(Case.BEST);
+	public ViewNode getClickNode(int x, int y, Case c) {
+		ViewNode child = getChild(c);
 		if (child != null) {
-			ViewNode clickNode = child.getClickNode(x, y);
-			if (clickNode != null)
-				return clickNode;
-		}
-		child = getChild(Case.BEST);
-		if (child != null) {
-			ViewNode clickNode = child.getClickNode(x, y);
+			ViewNode clickNode = child.getClickNode(x, y, c);
 			if (clickNode != null)
 				return clickNode;
 		}

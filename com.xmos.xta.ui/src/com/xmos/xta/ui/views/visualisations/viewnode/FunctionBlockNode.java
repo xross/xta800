@@ -21,40 +21,21 @@ public class FunctionBlockNode extends FunctionNode {
 		m_width = 0;
 	}
 	
-	public int getPixelsX() {
+	public int getPixelsX(Case c) {
 		Status status = new Status();
-		double worstTime = m_treeNode.getAttributes().getTimeTaken(Case.WORST, status, null);
+		double time = m_treeNode.getAttributes().getTimeTaken(c, status, null);
 		if (status.isInfinite() || status.isUnresolved()) {
-			worstTime = 0;
+			time = 0;
 		}
-		double bestTime = m_treeNode.getAttributes().getTimeTaken(Case.BEST, status, null);
-		if (status.isInfinite() || status.isUnresolved()) {
-			bestTime = 0;
-		}
-		if (bestTime > worstTime) {
-			return (int)bestTime;
-		} else {
-			return (int)worstTime;
-		}
-	}
-
-	public int getPixelsY() {
-		return m_blockHeight;
+		return (int)time;
 	}
 
 	public int getPixelsY(Case c) {
 		return m_blockHeight;
 	}
 
-	public int getChildrenX() {
-		return 0;
-	}
-
-	public int getChildrenY() {
-		return 0;
-	}
-
 	public double draw(Display display, GC gc, Case c, double x, double y) {
+		m_width = getPixelsX(c) * m_canvasProperties.getScale();
         if (!isVisible((int)x, (int)y))
         	return x + m_width;
 
@@ -82,10 +63,6 @@ public class FunctionBlockNode extends FunctionNode {
         return x + m_width;
 	}
 
-	public void updateScaledXy() {
-		m_width = getPixelsX() * m_canvasProperties.getScale();
-	}
-
 	public boolean isVisible(int x, int y) {
 		Rectangle visibleArea = m_canvasProperties.getVisibleArea();
 		if ((x + m_width < visibleArea.x) ||
@@ -106,5 +83,12 @@ public class FunctionBlockNode extends FunctionNode {
 		} else {
 			return time;
 		}
+	}
+
+	public ViewNode getClickNode(int x, int y, Case c) {
+		if (x < getWidth(c) && y < m_blockHeight) {
+			return this;
+		}
+		return null;
 	}
 }

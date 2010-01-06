@@ -9,16 +9,4 @@ public class FunctionSequenceNode extends FunctionNode {
 	public FunctionSequenceNode(Node treeNode, ZoomedCanvasProperties canvasProperties) {
 		super(treeNode, canvasProperties);
 	}
-
-	public ViewNode getClickNode(int x, int y) {
-		// Don't let the hover-over select a sequence
-		if (this.contains(x, y)) {
-			for (ViewNode child : getChildren()) {
-				ViewNode clickNode = child.getClickNode(x, y);
-				if (clickNode != null)
-					return clickNode;
-	    	}
-		}
-		return null;
-	}
 }

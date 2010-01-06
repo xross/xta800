@@ -33,15 +33,19 @@ public abstract class ViewNode {
     public abstract int getPixelOffsetY();
     public abstract int getPixelsX();
     public abstract int getPixelsY();
+    public abstract int getPixelsX(Case c);
     public abstract int getPixelsY(Case c);
     public abstract int getChildrenX();
     public abstract int getChildrenY();
+    public abstract int getChildrenX(Case c);
+    public abstract int getChildrenY(Case c);
     public abstract void draw(Display display, GC gc);
 	public abstract double draw(Display display, GC gc, Case c, double x, double y);
     public abstract void annotateNodes(int offsetX, int offsetY, boolean isBestCase, boolean isWorstCase);
 	public abstract void updateScaledXy();
 	public abstract boolean contains(int x, int y);
 	public abstract ViewNode getClickNode(int x, int y);
+	public abstract ViewNode getClickNode(int x, int y, Case c);
     public abstract boolean isBestCase();
     public abstract boolean isWorstCase();
 

@@ -199,7 +199,9 @@ public class StructureConditionalNode extends StructureNode {
 		for (ViewNode child : getChildren()) {
 			Status status = new Status();
 			Node treeNode = child.getTreeNode();
-			boolean childIsBestCase = treeNode.getAttributes().getTimeTaken(Case.BEST, status, null) > 0;
+			
+			double time = treeNode.getAttributes().getTimeTaken(Case.BEST, status, null);
+			boolean childIsBestCase = (status.isComplete() && (time > 0)) || (!status.isZero());
 			boolean childIsWorstCase = treeNode.getAttributes().getTimeTaken(Case.WORST, status, null) > 0;
 
 			int childX = child.getPixelsX();

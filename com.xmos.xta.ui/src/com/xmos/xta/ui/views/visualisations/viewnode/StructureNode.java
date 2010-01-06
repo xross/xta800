@@ -49,7 +49,22 @@ public abstract class StructureNode extends ViewNode {
     	return 0;
     }
 
+    public int getPixelsX(Case c) {
+    	assert(false);
+    	return 0;
+    }
+
     public int getPixelsY(Case c) {
+    	assert(false);
+    	return 0;
+    }
+
+    public int getChildrenX(Case c) {
+    	assert(false);
+    	return 0;
+    }
+
+    public int getChildrenY(Case c) {
     	assert(false);
     	return 0;
     }
@@ -220,5 +235,10 @@ public abstract class StructureNode extends ViewNode {
 		} else {
 			return null;
 		}
+	}
+
+	public ViewNode getClickNode(int x, int y, Case c) {
+		assert(false); // Don't support this method of access
+		return null;
 	}
 }

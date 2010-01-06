@@ -101,4 +101,14 @@ public class StructureView extends ZoomedCanvasView implements ControlMonitor {
     	}
     	Views.createContextMenu(manager, m_selectedNodes, m_parent.getShell());
 	}
+
+	protected ViewNode getClickNode(int x, int y) {
+    	if (m_viewNode != null) {
+			int offsetX = m_renderControl.getOffsetX();
+			int offsetY = m_renderControl.getOffsetY();
+			return m_viewNode.getClickNode(x + offsetX, y + offsetY);
+    	} else {
+    		return null;
+    	}
+	}
 }

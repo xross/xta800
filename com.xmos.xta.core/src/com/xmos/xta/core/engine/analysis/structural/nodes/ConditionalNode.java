@@ -31,7 +31,7 @@ public class ConditionalNode extends Node {
 	public ConditionalNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
-		if(isOptional)
+		if (isOptional)
 			m_options.add(new BlockNode());
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
@@ -204,6 +204,8 @@ public class ConditionalNode extends Node {
 		double caseTime = caseNode.getAttributes().getTimeTaken(c, s, ignoreIterationsAboveCond);
 		if (c == Case.WORST && s.isUnresolved()) {
 			return caseNode;
+		} else if (c == Case.BEST && s.isZero()) {
+			caseTime = Double.MAX_VALUE;
 		}
 
 		while (iter.hasNext()) {
