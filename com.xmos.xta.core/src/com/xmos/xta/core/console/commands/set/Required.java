@@ -8,16 +8,17 @@ import com.xmos.xta.core.engine.TimeUnit;
 
 public class Required extends Command {
 	private int m_routeId;
-	private TimeUnit m_timeUnit;
+	private String m_value;
+	private String m_mode;
 	
 	public Required() {
 		m_routeId = 0;
-		m_timeUnit = null;
 	}
 	
-	public Required(int routeId, TimeUnit timeUnit) {
+	public Required(int routeId, String value, String mode) {
 		m_routeId = routeId;
-		m_timeUnit = timeUnit;
+		m_value = value;
+		m_mode = mode;
 	}
 
     public int numArgs() {
@@ -29,8 +30,8 @@ public class Required extends Command {
     }        
 
     public String commandLine() {
-       	return String.format("required %s %s", getRouteId(m_routeId), 
-       			m_timeUnit.getDescription(false));
+       	return String.format("required %s %s %s", getRouteId(m_routeId), 
+       			m_value, m_mode);
     }
     
     public String description(Engine engine, boolean detailed) {
@@ -57,7 +58,7 @@ public class Required extends Command {
 
 	    TimeUnit timeUnit = new TimeUnit(value, mode);
 	    if (timeUnit.isValid()) {
-	    	return new Required(routeId, timeUnit);
+	    	return new Required(routeId, value, mode);
 	    }
 	    return null;
     }
@@ -69,6 +70,8 @@ public class Required extends Command {
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;    	
     	
-        engine.setRequiredTime(getSrc(), m_routeId, m_timeUnit);
+	    TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
+	    assert(timeUnit.isValid());
+        engine.setRequiredTime(getSrc(), m_routeId, timeUnit);
     }    
 }
