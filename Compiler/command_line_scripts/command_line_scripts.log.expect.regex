@@ -3,19 +3,19 @@ function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s main
 .    function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s f
 .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .    .    cond\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
-.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 0\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 0\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 1\) 
 .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .    function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s f
 .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .    .    cond\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s 
-.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 0\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 0\) 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 1\) 
 .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 
 function\(\d+\)  : \d+\.\d [mun]s / \d+\.\d [mun]s f
 .    block\(\d+\)     : \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .    cond\(\d+\)      : \d+\.\d [mun]s / \d+\.\d [mun]s 
-.    .    block\(\d+\)     : \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    .    block\(\d+\)     : \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 0\) 
+.    .    block\(\d+\)     : \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 0\) 
+.    .    block\(\d+\)     : \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 1\) 
 
