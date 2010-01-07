@@ -10,20 +10,18 @@ public class PathTime extends Command {
 	private int m_routeId;	
 	private String m_fromRef;
 	private String m_toRef;
-	private TimeUnit m_timeUnit;
+	private String m_value;
+	private String m_mode;
 	
 	public PathTime() {
-		m_routeId = 0;
-		m_fromRef = "";
-		m_toRef = "";
-		m_timeUnit = null;
 	}
 	
-	public PathTime(int routeId, String fromRef, String toRef, TimeUnit timeUnit) {
+	public PathTime(int routeId, String fromRef, String toRef, String value, String mode) {
 		m_routeId = routeId;
 		m_fromRef = fromRef;
 		m_toRef = toRef;	  	
-		m_timeUnit = timeUnit;
+		m_value = value;
+		m_mode = mode;
 	}
 	
     public int numArgs() {
@@ -39,7 +37,7 @@ public class PathTime extends Command {
     }        
 
     public String commandLine() {
-    	return "pathtime " + getRouteId(m_routeId) + " " + m_fromRef + " " + m_toRef + " " + m_timeUnit.getDescription(false);
+    	return "pathtime " + getRouteId(m_routeId) + " " + m_fromRef + " " + m_toRef + " " + m_value + " " + m_mode;
     }
     
     public String description(Engine engine, boolean detailed) {
@@ -63,7 +61,7 @@ public class PathTime extends Command {
 
 	        TimeUnit timeUnit = new TimeUnit(value, mode);
 	        if (timeUnit.isValid()) { 
-	    	    return new PathTime(routeId, fromRef, toRef, timeUnit);
+	    	    return new PathTime(routeId, fromRef, toRef, value, mode);
 	        }
 	    } catch (NumberFormatException e) {}
 	    return null;                
@@ -73,6 +71,8 @@ public class PathTime extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.setPathTime(getSrc(), m_routeId, m_fromRef, m_toRef, m_timeUnit);
+		TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
+		assert(timeUnit.isValid());
+        engine.setPathTime(getSrc(), m_routeId, m_fromRef, m_toRef, timeUnit);
     }    
  }

@@ -2,26 +2,25 @@ package com.xmos.xta.core.console.commands.add;
 
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
-import com.xmos.xta.core.console.commands.list.Branch;
-import com.xmos.xta.core.console.commands.list.Exclusion;
-import com.xmos.xta.core.console.commands.list.FunctionTime;
-import com.xmos.xta.core.console.commands.list.InstructionTime;
-import com.xmos.xta.core.console.commands.list.Loop;
-import com.xmos.xta.core.console.commands.list.LoopPath;
-import com.xmos.xta.core.console.commands.list.LoopScope;
-import com.xmos.xta.core.console.commands.list.PathTime;
-import com.xmos.xta.core.console.commands.list.List.Operation;
+import com.xmos.xta.core.console.commands.add.Branch;
+import com.xmos.xta.core.console.commands.add.Exclusion;
+import com.xmos.xta.core.console.commands.add.FunctionTime;
+import com.xmos.xta.core.console.commands.add.InstructionTime;
+import com.xmos.xta.core.console.commands.add.Loop;
+import com.xmos.xta.core.console.commands.add.LoopPath;
+import com.xmos.xta.core.console.commands.add.LoopScope;
+import com.xmos.xta.core.console.commands.add.PathTime;
 
 public class Add extends CommandContainer {
 	static private Command[] m_options = { 
-		new Branch(Operation.ADD),
-		new Exclusion(Operation.ADD),	
-		new FunctionTime(Operation.ADD), 
-		new InstructionTime(Operation.ADD), 
-		new Loop(Operation.ADD),
-		new LoopPath(Operation.ADD),
-		new LoopScope(Operation.ADD), 
-		new PathTime(Operation.ADD), 				
+		new Branch(),
+		new Exclusion(),	
+		new FunctionTime(), 
+		new InstructionTime(), 
+		new Loop(),
+		new LoopPath(),
+		new LoopScope(), 
+		new PathTime(), 				
 	};
 	
 	public Add() { super("add"); }

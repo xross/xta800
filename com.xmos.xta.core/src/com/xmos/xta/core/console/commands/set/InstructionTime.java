@@ -10,18 +10,17 @@ import com.xmos.xta.core.engine.TimeUnit;
 public class InstructionTime extends Command {
 	private int m_routeId;
 	private String m_refString;
-	private TimeUnit m_timeUnit;
+	private String m_value;
+	private String m_mode;
 	
 	public InstructionTime() {
-		m_routeId = 0;
-		m_refString = null;
-		m_timeUnit = null;
 	}
 	
-	public InstructionTime(int routeId, String refString, TimeUnit timeUnit) {
+	public InstructionTime(int routeId, String refString, String value, String mode) {
 		m_routeId = routeId;
 		m_refString = refString;
-		m_timeUnit = timeUnit;
+		m_value = value;
+		m_mode = mode;
 	}
 
     public int numArgs() {
@@ -37,8 +36,8 @@ public class InstructionTime extends Command {
     }        
 
     public String commandLine() {
-       	return String.format("instructiontime %s %s %s", getRouteId(m_routeId), 
-       			m_refString, m_timeUnit.getDescription(false));
+       	return String.format("instructiontime %s %s %s %s", getRouteId(m_routeId), 
+       			m_refString, m_value, m_mode);
     }
     
     public String description(Engine engine, boolean detailed) {
@@ -67,7 +66,7 @@ public class InstructionTime extends Command {
    		    
 	    TimeUnit timeUnit = new TimeUnit(value, mode);
 	    if (timeUnit.isValid()) {
-	    	return new InstructionTime(routeId, ref, timeUnit);
+	    	return new InstructionTime(routeId, ref, value, mode);
 	    }
 	    return null;
     }
@@ -76,7 +75,9 @@ public class InstructionTime extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	    	
     	
-        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
+		TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
+		assert(timeUnit.isValid());
+        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, timeUnit)) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
    	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
 		}		
