@@ -83,7 +83,7 @@ public class ReferenceMatcher {
 	}
 
 	private List<FunctionNode> getCallingFunctions(Node node, LinkedList<Node> ancestors) {
-		if (node != null) {
+		if (node != null && !node.isUnresolved()) {
 			do {
 				ancestors.add(0, node);
 				node = node.getParent();

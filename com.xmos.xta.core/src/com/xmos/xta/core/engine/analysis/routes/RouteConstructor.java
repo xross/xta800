@@ -116,12 +116,6 @@ public class RouteConstructor {
 
 		switch (m_description.getMode()) {
 			case FUNCTION:
-				if (m_engine.getRecursiveFunctions().contains(m_description.getFunctionName())) {
-					m_engine.notify(src, Notifier.NOTIFY_ERROR,
-							"Cannot analyse function " + m_description.getFunctionName() + " as it is recursive");
-					break;
-				}
-				
 				Set<Set<NodeDescriptor>> seenExclusionsSets = new HashSet<Set<NodeDescriptor>>();
 				for (NodeDescriptor startNodeDescriptor : startNodeDescriptors) {
 					NodeDescriptor startNode = getStartNodeDescriptor(startNodeDescriptor);

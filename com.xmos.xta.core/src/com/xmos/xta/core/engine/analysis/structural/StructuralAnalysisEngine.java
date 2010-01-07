@@ -504,14 +504,20 @@ public class StructuralAnalysisEngine {
 	private void detectRecursion(Map<FunctionNode, Set<FunctionNode>> allFunctionObjects,
 			Collection<String> recursiveFunctions) {
 
+		Map<Long, FunctionNode> pcToFunctionStartNode = new HashMap<Long, FunctionNode>();
+		for (FunctionNode f : allFunctionObjects.keySet()) {
+			pcToFunctionStartNode.put(f.getStartPc(), f);
+		}
+
 		for (FunctionNode fn : allFunctionObjects.keySet()){
-			search(fn, new HashSet<String>(), allFunctionObjects, recursiveFunctions);
+			search(fn, new HashSet<String>(), allFunctionObjects, recursiveFunctions, pcToFunctionStartNode);
 		}
 	}
 	
 	private void search(FunctionNode fn, Set<String> seen, 
 			Map<FunctionNode, Set<FunctionNode>> allFunctionObjects,
-			Collection<String> recursiveFunctions) {
+			Collection<String> recursiveFunctions,
+			Map<Long, FunctionNode> pcToFunctionStartNode) {
 		
 		if (allFunctionObjects.get(fn) != null) {
 			seen.add(fn.getFunctionName());
@@ -522,11 +528,17 @@ public class StructuralAnalysisEngine {
 						recursiveFunctions.add(g.getFunctionName());
 					}
 					toRemove.add(g);
+
+					// Remove backwards link
+					FunctionNode link = pcToFunctionStartNode.get(g.getBranchTarget().getStartPc());
+					link.removeCallingFunction(g);
+
 					g.setFunction(null, null);
 					g.setFunctionName("Recursive Call");
 					g.setUnresolved(true);
+
 				} else {
-					search(g, seen, allFunctionObjects, recursiveFunctions);
+					search(g, seen, allFunctionObjects, recursiveFunctions, pcToFunctionStartNode);
 				}
 			}
 			allFunctionObjects.get(fn).removeAll(toRemove);

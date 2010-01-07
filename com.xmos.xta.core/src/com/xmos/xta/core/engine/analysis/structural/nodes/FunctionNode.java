@@ -388,4 +388,9 @@ public class FunctionNode extends IBufferNode {
 	public List<FunctionNode> getCallingFunctions() {
 		return m_callingFunctions;
 	}
+
+	public void removeCallingFunction(FunctionNode g) {
+		assert(m_callingFunctions.contains(g));
+		m_callingFunctions.remove(g);		
+	}
 }

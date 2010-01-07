@@ -204,7 +204,7 @@ public class ConditionalNode extends Node {
 		double caseTime = caseNode.getAttributes().getTimeTaken(c, s, ignoreIterationsAboveCond);
 		if (c == Case.WORST && s.isUnresolved()) {
 			return caseNode;
-		} else if (c == Case.BEST && s.isZero()) {
+		} else if (c == Case.BEST && (s.isZero() || s.isUnresolved())) {
 			caseTime = Double.MAX_VALUE;
 		}
 
