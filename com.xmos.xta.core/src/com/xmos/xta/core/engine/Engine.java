@@ -69,7 +69,8 @@ public class Engine implements Notifier, Aborter {
 	public static final int ROUTE_ID_LAST     = -1;
 	public static final int ROUTE_ID_INVALID  = -2;
 	public static final int ROUTE_ID_GLOBAL   = -3;
-	public static final int NODE_ID_TOP_LEVEL = -4;
+	public static final int ROUTE_ID_ALL      = -4;
+	public static final int NODE_ID_TOP_LEVEL = -5;
 		
 	private final static boolean LAZY = true;
 	
@@ -230,6 +231,11 @@ public class Engine implements Notifier, Aborter {
 			int toIndex = m_routes.size();
 			int fromIndex = toIndex - m_numRoutesLastAnalysed;
 			routes.addAll(m_routes.subList(fromIndex, toIndex));
+			
+		} else if (routeId == ROUTE_ID_ALL) {
+		    for (Route route : m_routes) {
+				routes.add(route);
+		    }
 			
 		} else {
 		    for (Route route : m_routes) {

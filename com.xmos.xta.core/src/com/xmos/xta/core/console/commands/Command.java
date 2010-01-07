@@ -138,6 +138,8 @@ public abstract class Command {
     		return Engine.ROUTE_ID_LAST;
     	} else if (routeId.equals("#")) {
     		return Engine.ROUTE_ID_GLOBAL;
+    	} else if (routeId.equals("*")) {
+    		return Engine.ROUTE_ID_ALL;
     	}
     	int route = Integer.parseInt(routeId);
     	return route;
@@ -148,6 +150,8 @@ public abstract class Command {
     		return "-";
     	} else if (routeId == Engine.ROUTE_ID_GLOBAL) {
     		return "#";
+    	} else if (routeId == Engine.ROUTE_ID_ALL) {
+    		return "*";
     	}
     	return String.format("%d", routeId);
     }
