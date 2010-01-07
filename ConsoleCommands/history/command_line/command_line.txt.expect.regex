@@ -2,45 +2,51 @@
 [^^^]
 1: add branch 0x10000 0x10000
 2: analyse function main
-3: analyse path label1 label2
-4: analyse path 0x10000 0x10002
-5: config proc 0 0
-6: config freq 999
-7: config threads 99
-8: config case BEST
-9: config case WORST
-10: config srcpaths /test/path/srcpath/
-11: clear
-12: echo
-13: pwd
-14: help
-15: help history
-16: load invalid.xe
-17: list branches
-18: list labels
-19: list srclabels
-20: list endpoints
-21: list allsrclabels
-22: list allendpoints
-23: list functio[mun]s
-24: list sources
-25: list exclusio[mun]s
-26: list unknowns -
-27: list know[mun]s -
-28: print asm -
-29: print src -
-30: print mix -
-31: print trace -
-32: print structure -
-33: print summary
-34: print nodeinfo - 0
-35: print routeinfo 0
-36: remove branch branch1 branch1
-37: set loop - a 99
-38: set instructiontime - test.xc:12 99.0 [mun]s
-39: set instructiontime - label1 99 cycles
-40: set instructiontime - 0x1000 99 cycles
-41: source invalid.txt
-42: status
-43: version
-44: history
+3: set functiontime - main 8801 ns
+4: analyse path label1 label2
+5: analyse path 0x10000 0x10002
+6: set required - 10000 ns
+7: set pathtime - 0x10000 0x10002 5003 us
+8: add functiontime main 10001 ns
+9: add pathtime 0x10000 0x10002 10001 ns
+10: config proc 0 0
+11: config freq 999
+12: config threads 99
+13: config case BEST
+14: config case WORST
+15: config srcpaths /test/path/srcpath/
+16: clear
+17: echo
+18: pwd
+19: help
+20: help history
+21: load invalid.xe
+22: list branches
+23: list labels
+24: list srclabels
+25: list endpoints
+26: list allsrclabels
+27: list allendpoints
+28: list functions
+29: list sources
+30: list exclusions
+31: list unknowns -
+32: list knowns -
+33: print asm -
+34: print src -
+35: print mix -
+36: print trace -
+37: print structure -
+38: print summary
+39: print nodeinfo - 0
+40: print routeinfo 0
+41: remove branch branch1 branch1
+42: set loop - a 99
+43: set instructiontime - test.xc:12 9901 ns
+44: set instructiontime - label1 99 cycles
+45: set instructiontime - 0x1000 50000 cycles
+46: add instructiontime 0x10000 50008 us
+47: source invalid.txt
+48: status
+49: version
+50: history

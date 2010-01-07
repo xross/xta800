@@ -15,8 +15,14 @@ system("@ARGV  " .
        "-add branch 0x10000 0x10000 " .
 
        "-analyse function main " .
+       "-set functiontime - main 8801 ns " .
        "-analyse path label1 label2 " .
        "-analyse path 0x10000 0x10002 " .
+       "-set required - 10000 ns " .
+       "-set pathtime - 0x10000 0x10002 5003 us " .
+       
+       "-add functiontime main 10001 ns " .
+       "-add pathtime 0x10000 0x10002 10001 ns " .
 
        "-config proc 0 0 " .
        "-config freq 999 " .
@@ -56,9 +62,10 @@ system("@ARGV  " .
        "-remove branch branch1 branch1 " .
 
        "-set loop - a 99 " .
-       "-set instructiontime - test.xc:12 99 ns " .
+       "-set instructiontime - test.xc:12 9901 ns " .
        "-set instructiontime - label1 99 cycles " .
-       "-set instructiontime - 0x1000 99 cycles " .
+       "-set instructiontime - 0x1000 50000 cycles " .
+       "-add instructiontime 0x10000 50008 us " .
  
        "-source invalid.txt " .
        "-status " .
