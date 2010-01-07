@@ -109,16 +109,20 @@ public class GuiConsole extends Console implements IPropertyChangeListener {
         			event.doit = false;
         			
         		} else if (event.keyCode == SWT.BS) {
-					if (checkCursor()) {
+					if (cursorBeforePrompt()) {
     					event.doit = false;
 					}
+					
 				} else if (event.keyCode == SWT.HOME) {
   					event.doit = false;
   					
 				} else if (event.keyCode == SWT.ARROW_LEFT) {
-					if (checkCursor()) {
+					if (cursorInPrompt()) {
     					event.doit = false;				
 	    			}
+
+				} else if (event.keyCode == SWT.ARROW_RIGHT) {
+					
 				} else if ((event.keyCode == SWT.CR) || (event.keyCode == SWT.KEYPAD_CR)) {
 					if (DEBUG) System.out.printf("Set Caret to end\n");
 					setCaretToEnd();
@@ -419,12 +423,21 @@ public class GuiConsole extends Console implements IPropertyChangeListener {
 		return (idx == currentIndex);
 	}
 
-	private boolean checkCursor() {
+	private boolean cursorBeforePrompt() {
 		int currentIndex = m_text.getCaretOffset();
-        int currentRowIndex = m_text.getLineAtOffset(currentIndex);
-		int rowStartIndex = m_text.getOffsetAtLine(currentRowIndex);
+		int rowStartIndex = m_text.getOffsetAtLine(m_text.getLineCount() - 1);
 		
-		if (currentIndex <= (rowStartIndex + m_shell.getPrompt().length())) {
+		if (currentIndex > (rowStartIndex + m_shell.getPrompt().length())) {
+			return false;
+		} 
+		return true;
+	}	
+
+	private boolean cursorInPrompt() {
+		int currentIndex = m_text.getCaretOffset();
+		int rowStartIndex = m_text.getOffsetAtLine(m_text.getLineCount() - 1);
+		
+		if ((currentIndex >= rowStartIndex) && (currentIndex <= (rowStartIndex + m_shell.getPrompt().length()))) {
 			return true;
 		} 
 		return false;
