@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.disassembly;
+package com.xmos.xta.ui.views.binary;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -23,7 +23,7 @@ public class XtaSourceEditor extends XtaEditor {
     }
 
     public void createPartControl(Composite parent) {
-		if (DEBUG) System.out.printf("XtaDisassemblyEditor: createPartControl\n"); 
+		if (DEBUG) System.out.printf("XtaSourceEditor: createPartControl\n"); 
     	super.createPartControl(parent);
 
     	StyledText text = getSourceViewer().getTextWidget();

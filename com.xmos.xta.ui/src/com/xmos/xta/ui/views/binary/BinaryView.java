@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.disassembly;
+package com.xmos.xta.ui.views.binary;
 
 import java.util.Iterator;
 
@@ -56,10 +56,10 @@ import com.xmos.xta.ui.annotations.XtaDisassemblyAnnotations;
 import com.xmos.xta.ui.editors.XtaDocumentProvider;
 
 @SuppressWarnings("restriction")
-public class DisassemblyView extends ViewPart implements XtaAnnotatedObject {
-	public final static String ID = "com.xmos.xta.ui.views.disassembly.Disassembly";
-	public final static String ViewContextViewID  = "#DisassemblyViewContext";
-	public final static String RulerContextViewID = "#DisassemblyEditorRulerContext";
+public class BinaryView extends ViewPart implements XtaAnnotatedObject {
+	public final static String ID = "com.xmos.xta.ui.views.binary.Binary";
+	public final static String ViewContextViewID  = "#BinaryViewContext";
+	public final static String RulerContextViewID = "#BinaryEditorRulerContext";
 
 	private final static int VERTICAL_RULER_WIDTH = 12;
 	private final static int LEFT_MOUSE_BUTTON  = 1;
@@ -83,7 +83,7 @@ public class DisassemblyView extends ViewPart implements XtaAnnotatedObject {
 	private MarkerAnnotationPreferences m_annotationPreferences;
 	private SourceViewerDecorationSupport m_sourceViewerDecorationSupport;
 
-	public DisassemblyView() {
+	public BinaryView() {
 		super();
 		m_annotationPreferences = new MarkerAnnotationPreferences();
 		m_annotationAccess = new DefaultMarkerAnnotationAccess();
@@ -189,7 +189,7 @@ public class DisassemblyView extends ViewPart implements XtaAnnotatedObject {
 	}
 
 	private SourceViewer createSourceViewer(Composite parent, IVerticalRuler vertRuler, IOverviewRuler ovRuler) {
-		DisassemblyViewer viewer = new DisassemblyViewer(parent, vertRuler, ovRuler);
+		BinaryViewer viewer = new BinaryViewer(parent, vertRuler, ovRuler);
 		viewer.setRangeIndicator(new DefaultRangeIndicator());
 
 		Font font = JFaceResources.getTextFont();

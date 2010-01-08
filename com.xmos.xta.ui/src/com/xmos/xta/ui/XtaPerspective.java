@@ -4,8 +4,8 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
+import com.xmos.xta.ui.views.binary.BinaryView;
 import com.xmos.xta.ui.views.console.ConsoleView;
-import com.xmos.xta.ui.views.disassembly.DisassemblyView;
 import com.xmos.xta.ui.views.info.InfoView;
 import com.xmos.xta.ui.views.routes.RoutesView;
 import com.xmos.xta.ui.views.visualisations.VisualisationsView;
@@ -26,9 +26,9 @@ public class XtaPerspective implements IPerspectiveFactory {
         		"tree.folder", IPageLayout.LEFT, 0.3f, layout.getEditorArea());        
         addView(layout, treeFolder, RoutesView.ID);
 
-        IFolderLayout disassemblyFolder = layout.createFolder(
-        		"disassembly.folder", IPageLayout.RIGHT, 0.6f, layout.getEditorArea());        
-        addView(layout, disassemblyFolder, DisassemblyView.ID);
+        IFolderLayout binaryFolder = layout.createFolder(
+        		"binary.folder", IPageLayout.RIGHT, 0.6f, layout.getEditorArea());        
+        addView(layout, binaryFolder, BinaryView.ID);
 
         layout.setEditorAreaVisible(true);
 	}

@@ -74,10 +74,10 @@
             restorable="true">
       </view>
       <view
-            class="com.xmos.xta.ui.views.disassembly.DisassemblyView"
+            class="com.xmos.xta.ui.views.binary.BinaryView"
             icon="icons/open_disassembly.png"
-            id="com.xmos.xta.ui.views.disassembly.Disassembly"
-            name="Disassembly"
+            id="com.xmos.xta.ui.views.binary.Binary"
+            name="Binary"
             restorable="true">
       </view>
    </extension>
