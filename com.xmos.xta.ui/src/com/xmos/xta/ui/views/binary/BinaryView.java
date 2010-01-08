@@ -28,7 +28,10 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Font;
@@ -53,6 +56,7 @@ import com.xmos.xta.ui.actions.SourceActions;
 import com.xmos.xta.ui.annotations.XtaAnnotatedObject;
 import com.xmos.xta.ui.annotations.XtaAnnotations;
 import com.xmos.xta.ui.annotations.XtaDisassemblyAnnotations;
+import com.xmos.xta.ui.dialogs.Find;
 import com.xmos.xta.ui.editors.XtaDocumentProvider;
 
 @SuppressWarnings("restriction")
@@ -125,7 +129,7 @@ public class BinaryView extends ViewPart implements XtaAnnotatedObject {
 				}
 			}
 		};
-}
+	}
 
 	public void dispose() {
 		m_annotations.dispose();
@@ -156,7 +160,7 @@ public class BinaryView extends ViewPart implements XtaAnnotatedObject {
 		} catch (BadLocationException e) {}
 	}
 
-	protected void createViewer(Composite parent) {
+	protected void createViewer(final Composite parent) {
 		m_verticalRuler = createVerticalRuler();
 		m_overviewRuler = createOverviewRuler(getSharedColors());
 		
@@ -169,6 +173,21 @@ public class BinaryView extends ViewPart implements XtaAnnotatedObject {
 		m_viewer.setDocument(new Document(), new AnnotationModel());
 
 		refreshInput(GuiEngine.getDisassemblyInput()); 
+		
+		m_viewer.getTextWidget().addKeyListener(new KeyListener() {
+
+			public void keyPressed(KeyEvent e) {
+				if (((e.stateMask & SWT.CTRL) != 0) &&
+    				(e.character == eventChar('f'))) {
+					new Find(parent.getShell(), m_viewer);
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+
+			}
+			
+		});
 	}
 
 	protected IVerticalRuler createVerticalRuler() {
@@ -352,5 +371,9 @@ public class BinaryView extends ViewPart implements XtaAnnotatedObject {
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
+	}
+
+	private int eventChar(char c) {
+		return (c - 'a' + 1);
 	}
 }
