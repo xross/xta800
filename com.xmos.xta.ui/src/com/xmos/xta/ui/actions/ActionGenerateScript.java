@@ -12,14 +12,14 @@ import org.eclipse.ui.actions.ActionDelegate;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
 
-public class ActionOpenScriptEditor extends ActionDelegate implements IPropertyChangeListener, 
+public class ActionGenerateScript extends ActionDelegate implements IPropertyChangeListener, 
                                                           IWorkbenchWindowPulldownDelegate {
 	private static int s_numInstances = 0;
 	
 	private IAction m_action;
 	private int m_instanceId;
 
-	public ActionOpenScriptEditor() {
+	public ActionGenerateScript() {
 		GuiEngine.addBroadcastListener(this);
 
 		m_instanceId = s_numInstances;
@@ -41,7 +41,7 @@ public class ActionOpenScriptEditor extends ActionDelegate implements IPropertyC
 	}
 
 	public void run(IAction action) {
-		GuiEngine.openScriptEditor();
+		GuiEngine.generateAndOpenScript();
 	}
 		
 	public void propertyChange(PropertyChangeEvent event) {

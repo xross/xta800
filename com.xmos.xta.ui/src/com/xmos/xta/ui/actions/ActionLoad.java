@@ -56,9 +56,9 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 	public void init(IAction action) {
 		m_action = action;
 		
-		String xeFileName = GuiEngine.getCommandLineXeFile();
-		if (xeFileName != null) {
-			loadFile(xeFileName);
+		String selectedFile = GuiEngine.getCommandLineXeFile();
+		if (selectedFile != null) {
+			loadFile(selectedFile);
 		}
 	}
 
@@ -69,25 +69,34 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 		m_action = action;
 		
 		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
-        fileDialog.setText("Open Xe File");
-        String[] filterExt = { "*.xe", "*.*" };
+        fileDialog.setText("Open File");
+        String[] filterExt = { "*.xe;*.xta", "*.*" };
         fileDialog.setFilterExtensions(filterExt);
         
         XtaPlugin plugin = XtaPlugin.getDefault();        
         String lastDir = plugin.getPreferenceStore().getString("LastDir");
         
         fileDialog.setFilterPath(lastDir);        
-        String xeFileName = fileDialog.open();
+        String fileName = fileDialog.open();
         
-        if (xeFileName == null)
+        if (fileName == null)
         	return;
                 
-        String path = new File(xeFileName).getParent();
+        String path = new File(fileName).getParent();
         plugin.getPreferenceStore().setValue("LastDir", path);
-        loadFile(xeFileName);
+        loadFile(fileName);
 	}
 	
-	public void loadFile(String xeFileName) {
+	public void loadFile(String fileName) {
+		if (fileName.endsWith(".xta")) {
+        	boolean success = GuiEngine.openScriptFile(fileName);
+            updateFileHistory(fileName, success);
+        } else {
+        	loadXeFile(fileName);
+        }
+	}
+
+   	public void loadXeFile(final String xeFileName) {
        	final File xeFile = new File(xeFileName);
         Job job = new Job("Load: " + xeFileName) {
 			protected IStatus run(final IProgressMonitor monitor) {
@@ -106,35 +115,39 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 	        		m_action.setToolTipText("Currently loaded " + xeFile.getAbsolutePath());
 	        	} 	        		        	
 	        	
-	        	XtaPlugin plugin = XtaPlugin.getDefault(); 
-	        	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
-	        	String[] files = fileHistory.split(";");
-	        	List<String> fileList = new LinkedList<String>();
-	        	for (String file : files) {
-	        		if (file.length() > 0) {
-	        			fileList.add(file);
-	        		}
-	        	}
-	        		        	
-	        	fileList.remove(xeFile.toString());
-	        	if (success) {
-	        		fileList.add(xeFile.toString());
-	        	}
-	        	while (fileList.size() > FILE_LIST_SIZE) {
-	        		fileList.remove(0);
-	        	}
-	        	
-	        	StringBuffer sb = new StringBuffer();
-	        	for (String file : fileList){
-	        		sb.append(file +";");
-	        	}
-	        	
-	        	plugin.getPreferenceStore().setValue("FileHistory", sb.toString());
+	        	updateFileHistory(xeFileName, success);
 				return Status.OK_STATUS;
 			}
 		};
 		job.setUser(true);
-		job.schedule();		        		
+		job.schedule();
+	}
+
+	private void updateFileHistory(String fileName, boolean success) {
+    	XtaPlugin plugin = XtaPlugin.getDefault(); 
+    	String fileHistory = plugin.getPreferenceStore().getString("FileHistory");
+    	String[] files = fileHistory.split(";");
+    	List<String> fileList = new LinkedList<String>();
+    	for (String file : files) {
+    		if (file.length() > 0) {
+    			fileList.add(file);
+    		}
+    	}
+    		        	
+    	fileList.remove(fileName);
+    	if (success) {
+    		fileList.add(fileName);
+    	}
+    	while (fileList.size() > FILE_LIST_SIZE) {
+    		fileList.remove(0);
+    	}
+    	
+    	StringBuffer sb = new StringBuffer();
+    	for (String file : fileList){
+    		sb.append(file +";");
+    	}
+    	
+    	plugin.getPreferenceStore().setValue("FileHistory", sb.toString());
 	}
 
     private void runSrcLevelCommand(String commandStr, CommandSource src, int commandNum) {
