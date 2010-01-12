@@ -29,6 +29,7 @@ public class ThreadHandler {
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null) {
 				nodes.add(threadNode);
+				threadNode.setUnresolved(true);
 			} else {
 				m_notifier.notify(src, Notifier.NOTIFY_WARNING,
 						"failed to find " + type + " at PC 0x" + Long.toHexString(pc));
