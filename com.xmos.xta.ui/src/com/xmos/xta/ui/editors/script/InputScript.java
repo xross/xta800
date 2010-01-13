@@ -1,9 +1,6 @@
 package com.xmos.xta.ui.editors.script;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -48,20 +45,8 @@ public class InputScript implements IEditorInput {
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		if (DEBUG) System.out.printf("InputScript: getAdapter\n");
-		if (adapter == String.class) {
-			String input = "";
-		    try {
-		    	FileReader fstream = new FileReader(m_fileName);
-		    	BufferedReader in = new BufferedReader(fstream);
-
-			    String line = in.readLine();
-			    while (line != null) {
-			    	input += line + "\n";
-			    	line = in.readLine();
-			    }
-				in.close();
-			} catch (IOException e) { }
-			return input;
+		if (adapter == File.class) {
+			return new File(m_fileName);
 		}
 		
 		return null;

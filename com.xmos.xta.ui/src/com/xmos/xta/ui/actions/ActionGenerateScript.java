@@ -11,6 +11,7 @@ import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.GuiScriptManager;
 
 public class ActionGenerateScript extends ActionDelegate implements IPropertyChangeListener, 
                                                           IWorkbenchWindowPulldownDelegate {
@@ -41,7 +42,7 @@ public class ActionGenerateScript extends ActionDelegate implements IPropertyCha
 	}
 
 	public void run(IAction action) {
-		GuiEngine.generateAndOpenScript();
+		GuiScriptManager.generateAndOpenScript();
 	}
 		
 	public void propertyChange(PropertyChangeEvent event) {

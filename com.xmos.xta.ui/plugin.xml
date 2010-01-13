@@ -29,6 +29,9 @@
             icon="icons/xta16x16.png"
             id="com.xmos.xta.ui.editors.script.ScriptEditor"
             name="ScriptEditor">
+         <contentTypeBinding
+               contentTypeId="com.xmos.xta.ui.contentTypeXtaScript">
+         </contentTypeBinding>
       </editor>
       <editor
             class="com.xmos.xta.ui.editors.source.XtaSourceEditor"
@@ -498,6 +501,14 @@
       <startup
             class="com.xmos.xta.ui.GuiPerspectiveMonitor">
       </startup>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            file-extensions="xta"
+            id="com.xmos.xta.ui.contentTypeXtaScript"
+            name="XtaScript">
+      </content-type>
    </extension>
   
 </plugin>

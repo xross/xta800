@@ -32,6 +32,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.GuiScriptManager;
 import com.xmos.xta.ui.GuiProgressMonitor;
 import com.xmos.xta.ui.XtaPlugin;
 
@@ -89,7 +90,7 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 	
 	public void loadFile(String fileName) {
 		if (fileName.endsWith(".xta")) {
-        	boolean success = GuiEngine.openScriptFile(fileName);
+        	boolean success = GuiScriptManager.openScriptFile(fileName);
             updateFileHistory(fileName, success);
         } else {
         	loadXeFile(fileName);
