@@ -152,13 +152,7 @@ sub DoClean
   chdir("../");
 
   SetupVars();
-  system("rm -rf $TOOLS_XTA/export/*.zip");
-  system("rm -rf $TOOLS_XTA/export/xta_bin");
-  system("rm -rf $TOOLS_XTA/export/xta_bin64");
-
-  system("rm -rf $TOOLS_XTA/tmp");
-  system("rm -rf $INSTALLPATH${SLASH}xta_bin");
-  system("rm -rf $INSTALLPATH${SLASH}xta_bin64");
+  rmtree([<"$TOOLS_XTA/export/*.zip">, "$TOOLS_XTA/export/xta_bin", "$TOOLS_XTA/export/xta_bin64", "$TOOLS_XTA/tmp", "$INSTALLPATH${SLASH}xta_bin", "$INSTALLPATH${SLASH}xta_bin64"]);
 
   chdir("$BUILDPATH") or die("oops");
 }
