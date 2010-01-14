@@ -386,8 +386,7 @@ sub BuildEclipse
     or die("Unable to chdir to: $TOOLS_XTA/export\n");
 
   if ($HOST ne "PC" && $HOST ne "Mac") {
-    system("rm -rf xta_bin");
-    system("rm -rf xta_bin64");
+    rmtree(["xta_bin", "xta_bin64"]);
     system("unzip `ls | grep 64` >> $buildOutput; mv xta_bin xta_bin64 >> $buildOutput; unzip `ls | grep -v 64 | grep .zip` >> $buildOutput");
   } else {
     system("unzip -o $target >> $buildOutput");
