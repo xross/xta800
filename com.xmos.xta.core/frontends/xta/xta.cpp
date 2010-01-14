@@ -20,12 +20,9 @@ int getInt(const char *str, int offset, int &number);
 
 int main(int argc, char **argv)
 {
-  string jar;
-
-  checkJavaVersion(1, 5);
-
   const char *jarName = "xta.jar";
   
+  string jar;
   if (findJarInPath(jar, jarName))
   {
     string jvmArgString = "";
@@ -37,6 +34,8 @@ int main(int argc, char **argv)
     getArgString(args, argc, argv);
 
     if (needToRun(argc, argv)) {
+      checkJavaVersion(1, 5);
+      
       string command = "java " + jvmArgString + " -jar \"" + jar + "\"" + args;
       int returnCode = run(command.c_str());
       return returnCode;
