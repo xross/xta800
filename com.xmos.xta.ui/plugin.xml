@@ -24,10 +24,14 @@
          point="org.eclipse.ui.editors">
       <editor
             class="com.xmos.xta.ui.editors.script.ScriptEditor"
-            default="false"
+            default="true"
+            filenames="xta"
             icon="icons/xta16x16.png"
             id="com.xmos.xta.ui.editors.script.ScriptEditor"
             name="ScriptEditor">
+         <contentTypeBinding
+               contentTypeId="com.xmos.xta.ui.contentTypeXtaScript">
+         </contentTypeBinding>
       </editor>
       <editor
             class="com.xmos.xta.ui.editors.source.XtaSourceEditor"
@@ -417,10 +421,10 @@
             label="controls"
             visible="false">
          <action
-               class="com.xmos.xta.ui.actions.ActionOpenScriptEditor"
+               class="com.xmos.xta.ui.actions.ActionGenerateScript"
                icon="icons/open_script_editor.png"
                id="com.xmos.xta.ui.actions.openscripteditor"
-               label="Open/Refresh Script Editor"
+               label="Generate Script"
                style="push"
                toolbarPath="Normal/controls">
          </action>
@@ -474,7 +478,7 @@
                class="com.xmos.xta.ui.actions.ActionLoad"
                icon="icons/load.png"
                id="com.xmos.xta.ui.actions.load"
-               label="Open Xe File"
+               label="Open File in XTA"
                style="pulldown"
                toolbarPath="Normal/controls">
          </action>
@@ -497,6 +501,14 @@
       <startup
             class="com.xmos.xta.ui.GuiPerspectiveMonitor">
       </startup>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            file-extensions="xta"
+            id="com.xmos.xta.ui.contentTypeXtaScript"
+            name="XtaScript">
+      </content-type>
    </extension>
   
 </plugin>
