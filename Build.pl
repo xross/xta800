@@ -152,13 +152,7 @@ sub DoClean
   chdir("../");
 
   SetupVars();
-  system("rm -rf $TOOLS_XTA/export/*.zip");
-  system("rm -rf $TOOLS_XTA/export/xta_bin");
-  system("rm -rf $TOOLS_XTA/export/xta_bin64");
-
-  system("rm -rf $TOOLS_XTA/tmp");
-  system("rm -rf $INSTALLPATH${SLASH}xta_bin");
-  system("rm -rf $INSTALLPATH${SLASH}xta_bin64");
+  rmtree([<"$TOOLS_XTA/export/*.zip">, "$TOOLS_XTA/export/xta_bin", "$TOOLS_XTA/export/xta_bin64", "$TOOLS_XTA/tmp", "$INSTALLPATH${SLASH}xta_bin", "$INSTALLPATH${SLASH}xta_bin64"]);
 
   chdir("$BUILDPATH") or die("oops");
 }
@@ -392,8 +386,7 @@ sub BuildEclipse
     or die("Unable to chdir to: $TOOLS_XTA/export\n");
 
   if ($HOST ne "PC" && $HOST ne "Mac") {
-    system("rm -rf xta_bin");
-    system("rm -rf xta_bin64");
+    rmtree(["xta_bin", "xta_bin64"]);
     system("unzip `ls | grep 64` >> $buildOutput; mv xta_bin xta_bin64 >> $buildOutput; unzip `ls | grep -v 64 | grep .zip` >> $buildOutput");
   } else {
     system("unzip -o $target >> $buildOutput");
