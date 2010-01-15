@@ -12,7 +12,7 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "-analyse function main " .
-       "-set loop - l 10000 " .
+       "-set loop - l 1000 " .
        "-print structure - " .
        "-config scale false " .
        "-print structure - " .

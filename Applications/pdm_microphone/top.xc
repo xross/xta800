@@ -52,7 +52,7 @@ void lcdac(streaming chanend c_lcdac)
 
   // Wait for other side and then synchronize ports
   c_lcdac :> l;
-  p_data:1 <: 0 @ t;
+  t = partout_timestamped(p_data, 1, 0);
   t += (2 * N);
   p_data @ (t + 1) <: 0;
   p_lrclk @ t <: 0;

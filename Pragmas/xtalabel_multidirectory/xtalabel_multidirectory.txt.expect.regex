@@ -12,6 +12,8 @@ pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: main.x
 pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line numbers: 6 - 6
 pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line numbers: 9 - 9
 pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line numbers: 15 - 15
+pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line numbers: 16 - 16
 pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line numbers: 6 - 6
 pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line numbers: 9 - 9
 pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line numbers: 15 - 15
+pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line numbers: 16 - 16

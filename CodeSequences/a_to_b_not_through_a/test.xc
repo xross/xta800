@@ -16,7 +16,7 @@ int test()
     int x=1;
     while ( x > 0) {
         x += foo();
-        if(x = 10){
+        if(x == 10){
             x-=bar();
         }
     } 

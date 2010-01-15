@@ -1,7 +1,9 @@
 Label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
 Label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 2 - 2
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 3 - 3
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 6 - 6
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 7 - 7
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 10 - 10
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 11 - 11
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 13 - 13
