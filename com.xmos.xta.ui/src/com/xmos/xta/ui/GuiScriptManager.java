@@ -18,7 +18,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.Scripter;
 import com.xmos.xta.ui.editors.script.InputScript;
@@ -61,7 +60,9 @@ public class GuiScriptManager {
 			}
 		}
 
-		if (!generateScriptFile(scriptFileName)) {
+	    Scripter scripter = GuiEngine.getEngine().getScripter();
+		String script = scripter.createScript();
+		if (!doSaveAs(scriptFileName, script)) {
 			return;
 		}
 		openScriptFile(scriptFileName);
@@ -98,6 +99,16 @@ public class GuiScriptManager {
 		return scriptFileName;
 	}
 
+	public static boolean doSaveAs(String fileName, String script) {
+		File file = new File(fileName);
+		if (file.exists()) {
+			if (!overwriteFile(fileName)) {
+				return false;
+			}
+		}
+		return writeToFile(fileName, script);
+	}
+
 	public static boolean writeToFile(String fileName, String contents) {
 		try {
 		    FileWriter fstream = new FileWriter(fileName);
@@ -110,17 +121,6 @@ public class GuiScriptManager {
 			return false;
 		}
 	    return true;
-	}
-
-	/**
-	 * Returns true if the script has been successfully created.
-	 */
-	private static boolean generateScriptFile(String scriptFileName) {
-		Engine engine = GuiEngine.getEngine();
-	    Scripter scripter = engine.getScripter();
-		String script = scripter.createScript();
-		
-		return writeToFile(scriptFileName, script);
 	}
 
 	private static IEditorPart getScriptEditor(String scriptFileName) {
@@ -148,6 +148,20 @@ public class GuiScriptManager {
 
 		MessageDialog dialog = new MessageDialog(shell, "Script not saved",
 				null, "Are you sure you want to lose changes?",
+				MessageDialog.WARNING, new String[] {"Yes", "No"}, 0);
+		int result = dialog.open();
+		if (result == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private static boolean overwriteFile(String fileName) {
+		Display display = PlatformUI.getWorkbench().getDisplay();
+		Shell shell = new Shell(display);
+
+		MessageDialog dialog = new MessageDialog(shell, "File exists",
+				null, fileName + " already exists. Do you want to replace it?",
 				MessageDialog.WARNING, new String[] {"Yes", "No"}, 0);
 		int result = dialog.open();
 		if (result == 0) {
