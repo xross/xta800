@@ -33,12 +33,12 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 	
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getNode().isUnresolved()) {
-			status.mergeStatus(S.UNRESOLVED);
-		}
 		if (m_config == null) {
 			status.mergeStatus(S.NOT_AVALIABLE);
 			return 0.0;
+		}
+		if (getNode().isUnresolved()) {
+			status.mergeStatus(S.UNRESOLVED);
 		}
 		return new TimeUnit(m_config, m_numCycles, Units.CYCLES).getNs();
 	}
