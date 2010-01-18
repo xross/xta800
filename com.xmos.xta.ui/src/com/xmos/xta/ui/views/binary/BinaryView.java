@@ -175,7 +175,6 @@ public class BinaryView extends ViewPart implements XtaAnnotatedObject {
 		refreshInput(GuiEngine.getDisassemblyInput()); 
 		
 		m_viewer.getTextWidget().addKeyListener(new KeyListener() {
-
 			public void keyPressed(KeyEvent e) {
 				if (((e.stateMask & SWT.CTRL) != 0) &&
     				(e.character == eventChar('f'))) {
@@ -184,9 +183,7 @@ public class BinaryView extends ViewPart implements XtaAnnotatedObject {
 			}
 
 			public void keyReleased(KeyEvent e) {
-
 			}
-			
 		});
 	}
 
