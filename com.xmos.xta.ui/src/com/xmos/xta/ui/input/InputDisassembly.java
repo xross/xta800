@@ -26,7 +26,12 @@ public class InputDisassembly implements IEditorInput {
 		int lineIndex = 0;
         for (Function function : GuiEngine.getEngine().getSourceMapper().getFunctions()) {        	
     		String headerRef = String.format("-");
-        	m_input.addHeader(function.getText() + ":", headerRef, lineIndex, 0);        	
+    		String headerText = function.getText() + ":";
+    		
+    		if (function.getChildern().size() > 0) {
+    			headerText = "0x" + Long.toHexString(function.getChildern().get(0).getPc()) + " " + headerText;
+    		}
+        	m_input.addHeader(headerText, headerRef, lineIndex, 0);
         	++lineIndex;
 
             InputSection section = m_input.getLastSection();
