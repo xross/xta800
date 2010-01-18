@@ -1,0 +1,11 @@
+<Project projectName="findbugs">
+  <Jar>com.xmos.xta.core/build</Jar>
+  <Jar>com.xmos.xta.ui/build</Jar>
+  <Jar>com.xmos.xta.ui.extn/build</Jar>
+  <SrcDir>com.xmos.xta.core/src</SrcDir>
+  <SrcDir>com.xmos.xta.ui/src</SrcDir>
+  <SrcDir>com.xmos.xta.ui.extn/src</SrcDir>
+  <SuppressionFilter>
+    <LastVersion value="-1" relOp="NEQ"/>
+  </SuppressionFilter>
+</Project>
