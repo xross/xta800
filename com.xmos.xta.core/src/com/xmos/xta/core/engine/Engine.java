@@ -101,6 +101,7 @@ public class Engine implements Notifier, Aborter {
 	private NodeCoreCollection<Map<String, List<InstructionNode>>> m_functionNameToInsts;
 	private Collection<FileLocation> m_userSpecifedFileLocations;	
 	private DataCollection m_dataCollection;
+	private Scripter m_scripter;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -125,6 +126,7 @@ public class Engine implements Notifier, Aborter {
 		m_timeOut = -1;
 		m_numErrors = 0;
 		m_dataCollection = new DataCollection();
+		m_scripter = new Scripter(this);
 		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
 		ReferenceTypeFactory.setEngine(this);
 	}
@@ -312,6 +314,8 @@ public class Engine implements Notifier, Aborter {
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
 		
 		runSrcLevelCommands(src, commandRunner);
+
+		m_scripter.setEngineLoadAndRunDone();
 		return true;
 	}
 	
@@ -378,6 +382,10 @@ public class Engine implements Notifier, Aborter {
 				throw new AbortedException();
 			}
 		}
+	}
+
+	public Scripter getScripter() {
+		return m_scripter;
 	}
 
 	public void setNodeId(CommandSource src, int nodeId, boolean doNotify) {

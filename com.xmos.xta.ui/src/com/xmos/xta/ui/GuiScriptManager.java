@@ -117,7 +117,7 @@ public class GuiScriptManager {
 	 */
 	private static boolean generateScriptFile(String scriptFileName) {
 		Engine engine = GuiEngine.getEngine();
-	    Scripter scripter = new Scripter(engine);
+	    Scripter scripter = engine.getScripter();
 		String script = scripter.createScript();
 		
 		return writeToFile(scriptFileName, script);
