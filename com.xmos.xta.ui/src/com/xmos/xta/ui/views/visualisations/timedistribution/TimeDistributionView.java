@@ -74,12 +74,6 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 			}
 	    });	    
 
-	    composite.addPaintListener(new PaintListener() {
-	        public void paintControl(PaintEvent e) {
-	        	m_canvas.redraw();
-		    }
-	    });
-
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
 	        	drawCanvas(e.gc);

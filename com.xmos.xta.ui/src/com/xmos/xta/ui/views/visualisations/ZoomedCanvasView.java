@@ -130,12 +130,6 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 	    });
 	    m_vScroll.setMaximum(1);
 
-	    composite.addPaintListener(new PaintListener() {
-	        public void paintControl(PaintEvent e) {
-	        	m_renderControl.refresh();
-		    }
-	    });
-
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
 	        	drawCanvas(e.gc);
