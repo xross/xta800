@@ -2,9 +2,10 @@ package com.xmos.xta.core.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.routes.Route;
@@ -17,6 +18,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.sections.BranchInfo;
 
 public class Scripter {
 	private Engine m_engine;
@@ -35,9 +37,18 @@ public class Scripter {
 		m_currentCoreId = 0;
 		m_currentExclusions = new ArrayList<Reference>();
 		m_currentDefines = new Defines();
-		m_currentBranches = new HashMap<Reference, List<Reference>>();
+		m_currentBranches = new TreeMap<Reference, List<Reference>>();
 	}
 
+	public void setEngineLoadAndRunDone() {
+		m_currentConfig = new Config(m_engine.getConfig());
+		m_currentNodeId = m_engine.getNodeId();
+		m_currentCoreId = m_engine.getCoreId();
+		m_currentExclusions = new ArrayList<Reference>(m_engine.getExclusions());
+		m_currentDefines = new Defines(m_engine.getDefines());
+		m_currentBranches = copyBranches(m_engine.getBranches());
+	}
+	
 	public String createScript() {
     	StringBuffer script = new StringBuffer();
  	
@@ -126,7 +137,7 @@ public class Scripter {
             	script.append(String.format("\n"));
         		m_currentBranches.put(fromRef, toRefs);
     		}
-    	}    	
+    	}
     }
 
     private void addExclusions(Collection<Reference> exclusions, StringBuffer script) {	
@@ -136,10 +147,10 @@ public class Scripter {
     		}
         	for (Reference exclusion : exclusions) {
             	script.append(String.format("add exclusion %s\n", exclusion.getRef()));    		
-        	}    		    		
+        	}
     		m_currentExclusions.clear();
     		m_currentExclusions.addAll(exclusions);
-    	}    	
+    	}
     }
 
     private void analyseRoutes(RouteContainer routeContainer, StringBuffer script) {    	
@@ -248,5 +259,18 @@ public class Scripter {
     	if (!portable) {
 			script.append("# Warning: The following line contains a non-portable reference.\n");
 		}
+    }
+
+    private Map<Reference, List<Reference>> copyBranches(Map<Reference, Set<BranchInfo>> map) {
+    	Map<Reference, List<Reference>> copy = new TreeMap<Reference, List<Reference>>();
+
+		for (Reference fromRef : map.keySet()) {
+			List<Reference> toRefs = new ArrayList<Reference>(); 
+			for (BranchInfo to : map.get(fromRef)) {
+            	toRefs.add(to.getRef());
+			}
+			copy.put(fromRef, toRefs);
+		}
+		return copy;
     }
 }
