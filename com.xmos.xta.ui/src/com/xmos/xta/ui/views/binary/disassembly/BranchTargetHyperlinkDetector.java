@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.binary;
+package com.xmos.xta.ui.views.binary.disassembly;
 
 import java.util.Map;
 import java.util.Set;

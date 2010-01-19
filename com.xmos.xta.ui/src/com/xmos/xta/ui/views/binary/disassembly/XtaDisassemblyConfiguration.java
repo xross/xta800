@@ -1,4 +1,4 @@
-package com.xmos.xta.ui.views.binary;
+package com.xmos.xta.ui.views.binary.disassembly;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;

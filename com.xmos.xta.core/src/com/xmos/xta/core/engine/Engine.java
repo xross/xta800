@@ -267,7 +267,7 @@ public class Engine implements Notifier, Aborter {
 
 		setAnalysisName("Loading XN");
 		XnLoader xnLoader = new XnLoader();
-		if (!xnLoader.loadExecutable(executableFile)) {
+		if (!xnLoader.load(executableFile)) {
 			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' did not contain a valid XN.");
 			return false;			
 		}
