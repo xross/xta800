@@ -1,19 +1,13 @@
 package com.xmos.xta.ui.editors.script;
 
-import java.io.File;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
@@ -85,31 +79,11 @@ public class ScriptEditor extends TextEditor implements IPropertyChangeListener 
 		if (newFileName == null) {
 			return;
 		}
-		File file = new File(newFileName);
-		if (file.exists()) {
-			if (!overwriteFile(newFileName)) {
-				return;
-			}
-		}
-
-		String contents = getSourceViewer().getDocument().get();
-		GuiScriptManager.writeToFile(newFileName, contents);
 		
+		String contents = getSourceViewer().getDocument().get();
+		GuiScriptManager.doSaveAs(newFileName, contents);
+
 		IEditorInput newInput = GuiScriptManager.getScriptInput(newFileName);
 		setInput(newInput);
-	}
-
-	private boolean overwriteFile(String fileName) {
-		Display display = PlatformUI.getWorkbench().getDisplay();
-		Shell shell = new Shell(display);
-
-		MessageDialog dialog = new MessageDialog(shell, "File exists",
-				null, fileName + " already exists. Do you want to replace it?",
-				MessageDialog.WARNING, new String[] {"Yes", "No"}, 0);
-		int result = dialog.open();
-		if (result == 0) {
-			return true;
-		}
-		return false;
 	}
 }
