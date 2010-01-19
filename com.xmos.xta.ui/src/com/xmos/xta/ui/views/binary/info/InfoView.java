@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import com.xmos.libs.configloader.ConfigLoader;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
@@ -19,7 +20,7 @@ public class InfoView implements TabbedView, IPropertyChangeListener {
 	public InfoView(Composite parent) {
 		GuiEngine.addBroadcastListener(this);
 		
-		m_text = new Text(parent, SWT.MULTI);
+		m_text = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		m_text.setEditable(false);
 	}
 
@@ -44,6 +45,34 @@ public class InfoView implements TabbedView, IPropertyChangeListener {
 				    }				
 				}
 			}
+			m_text.append("\n");
+			
+			m_text.append("CONFIG INFORMATION\n");
+			m_text.append("==================\n");
+			ConfigLoader configLoader = GuiEngine.getEngine().getXeLoader().getConfigLoader();	
+			for (int nodeNumber : configLoader.getNodeNumbers()) {
+				m_text.append(String.format("Node: %d", nodeNumber));
+				for (String key : configLoader.getNodeAttributes(nodeNumber).keySet()) {
+					m_text.append(String.format(" (%s, %s)", key, configLoader.getNodeAttributes(nodeNumber).get(key)));				
+				}
+				m_text.append("\n");
+				
+				for (int coreNumber : configLoader.getCoreNumbers(nodeNumber)) {
+					m_text.append(String.format("    Core: %d", coreNumber));
+					for (String key : configLoader.getCoreAttributes(nodeNumber, coreNumber).keySet()) {
+						m_text.append(String.format(" (%s, %s)", key, configLoader.getCoreAttributes(nodeNumber, coreNumber).get(key)));				
+					}
+					m_text.append("\n");								
+				}					
+			}				
+			for (int pinNumber : configLoader.getPinNumbers()) {
+				m_text.append(String.format("Pin: %d", pinNumber));
+				for (String key : configLoader.getPinAttributes(pinNumber).keySet()) {
+					m_text.append(String.format(" (%s, %s)", key, configLoader.getPinAttributes(pinNumber).get(key)));				
+				}
+				m_text.append("\n");
+			}				
+			m_text.append("\n");			
 		}		
 	}
 }
