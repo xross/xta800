@@ -5,7 +5,7 @@
     <Declaration>core stdcore[4]</Declaration>
   </Declarations>
   <Nodes>
-    <Node Number="0" Type="XS1-G4B-FB512" RoutingId="0">
+    <Node Number="0" Type="XS1-G4B" RoutingId="0">
       <Core Number="0" Reference="stdcore[0]">
         <Port Location="XS1_PORT_1A" Name="PORT_SPI_MISO"/>
         <Port Location="XS1_PORT_1B" Name="PORT_SPI_SS"/>

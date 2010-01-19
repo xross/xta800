@@ -9,7 +9,7 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
   </Declarations>
 
   <Nodes>
-    <Node Id="0" Type="XS1-G4B-FB512">
+    <Node Id="0" Type="XS1-G4B">
       <Core Number="0" Reference="stdcore[0]">
         <Port Location="XS1_PORT_4A" Name="PORT_CLOCKLED_0"/>
         <Port Location="XS1_PORT_4B" Name="PORT_CLOCKLED_1"/>
