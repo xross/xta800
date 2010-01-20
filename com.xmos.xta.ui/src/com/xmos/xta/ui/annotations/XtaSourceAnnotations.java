@@ -64,17 +64,16 @@ public class XtaSourceAnnotations extends XtaAnnotations {
 		if (!engine.getXeLoader().isLoaded() || m_source.isDirty())
 			return;
 
-		for (long lineNumber = 1; lineNumber < m_source.getDocument().getNumberOfLines(); lineNumber++) {
-			String fileName = engine.getSourceMapper().getDebugFileName(getFileName());
-    		String refString = String.format("%s:%d", fileName, lineNumber);
-    		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-
-			if (ref.resolve(engine)) {
-				for (long pc : ref.getPcs()) {
-					addPcToLineEntry(pc, lineNumber);
-				}
-    		}
-    	}
+		SourceMapper sourceMapper = engine.getSourceMapper();
+		String fileName = sourceMapper.getDebugFileName(getFileName());
+		
+		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {			
+            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper)) {
+            	for (int lineNumber = info.getLineNumberStart(); lineNumber <= info.getLineNumberEnd(); ++lineNumber) {
+                    addPcToLineEntry(info.getPc(), lineNumber);            		
+            	}
+            }			
+		}		
 	}
 
 	private void addPcToLineEntry(long pc, long lineNumber) {
