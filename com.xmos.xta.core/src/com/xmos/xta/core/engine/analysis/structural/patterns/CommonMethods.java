@@ -25,7 +25,7 @@ public class CommonMethods {
 		Collection<Node> newNodes = new TreeSet<Node>();
 		
 		for (Node next : node.getNextNodes()) {
-			Node newNode = node.shallowCopy();
+			Node newNode = node.copyStructure();
 
 			newNodes.add(newNode);
 			next.addPrevNode(newNode);
@@ -63,7 +63,7 @@ public class CommonMethods {
 		for (Node prev : node.getPrevNodes()){
 			
 			//make the new node
-			Node newNode = node.shallowCopy();
+			Node newNode = node.copyStructure();
 			newNodes.add(newNode);
 
 			prev.removeNextNode(node);

@@ -13,6 +13,10 @@ public class DefaultNodeTraverser implements NodeTraverser {
     	return TraverseStatus.CONTINUE;
     }
     
+    public TraverseStatus foundFunctionReferenceNode(Node node, Stack<Node> ancestors) {
+    	return TraverseStatus.CONTINUE;
+    }
+    
     public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
     	return TraverseStatus.CONTINUE;
     }

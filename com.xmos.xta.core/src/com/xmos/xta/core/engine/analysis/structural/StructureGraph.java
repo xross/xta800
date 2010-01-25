@@ -1,89 +1,57 @@
 package com.xmos.xta.core.engine.analysis.structural;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureGraph {
-	private Collection<FunctionNode> m_threads;
-	private Collection<FunctionNode> m_functions;
-	private Collection<FunctionNode> m_unlinkedFunctions;
+
 	private Node m_searchNode;
-	private Map<Long, Set<Node>> m_pcToEndPoints;
-	private Map<Long, Set<InstructionNode>> m_pcToInstructionNodes;
 	
-	public StructureGraph(Collection<FunctionNode> threads, Collection<FunctionNode> functions,
-			Map<Long, Set<Node>> pcToEndPoints, Set<FunctionNode> unlinkedFunctions) {
+	//for each function there is a set of end nodes.
+	private Map<FunctionNode , Set<InstructionNode>> m_functionToEndNodes;
+	private Map<FunctionNode , InstructionNode> m_functionToStartNode;
+	
+	private Map<FunctionNode, Set<FunctionReferenceNode>> m_functionReferencesWithinFunction;
+	private Map<FunctionNode, Set<GraphEdge>> m_functionsToFunctionReferences;
+	
+	public StructureGraph(Map<FunctionNode , Set<InstructionNode>>functionToEndNodes, 
+			Map<FunctionNode , InstructionNode>functionToStartNode, 
+			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction) {
 		super();
-		m_threads = threads;
-		m_functions = functions;
-		m_pcToEndPoints = pcToEndPoints;
-		m_unlinkedFunctions = unlinkedFunctions;
-		removeLinks();
+		m_functionToStartNode = functionToStartNode;
 		
-		mapPcsToInstructionNodes();
-	}
-
-	private void mapPcsToInstructionNodes() {
-		m_pcToInstructionNodes = new TreeMap<Long, Set<InstructionNode>>();
+		m_functionReferencesWithinFunction = functionReferencesWithinFunction;
 		
-		for (FunctionNode node : m_threads) {
-			mapPcsToInstructionNodes(node, "t");
+		m_functionsToFunctionReferences = new HashMap<FunctionNode, Set<GraphEdge>>();
+		for(FunctionNode fn : m_functionReferencesWithinFunction.keySet()){
+			m_functionsToFunctionReferences.put(fn, new HashSet<GraphEdge>());
 		}
-		for (FunctionNode node : m_unlinkedFunctions) {
-			mapPcsToInstructionNodes(node, "uf");
-		}
-	}
-
-	private void mapPcsToInstructionNodes(FunctionNode node, final String name) {
-		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
-			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
-				InstructionNode inst = (InstructionNode)node;
-				if (!inst.getXtaInstruction().isFnop()) {
-					long pc = inst.getXtaInstruction().getPc();
-					Set<InstructionNode> nodes = m_pcToInstructionNodes.get(pc);
-					if (nodes == null) {
-						nodes = new TreeSet<InstructionNode>();
-						m_pcToInstructionNodes.put(pc, nodes);
-					}
-					nodes.add(inst);
+		for(FunctionNode fn : m_functionReferencesWithinFunction.keySet()){
+			for(FunctionReferenceNode frn : m_functionReferencesWithinFunction.get(fn)){
+				if(frn.isKnownFunction()){
+					m_functionsToFunctionReferences.get(frn.getFunctionNode()).add(new GraphEdge(frn, fn));
 				}
-				return TraverseStatus.CONTINUE;
 			}
-	    });
-	}
-
-	public Map<Long, Set<Node>> getPcToEndPoints() {
-		return m_pcToEndPoints;
-	}
-
-	public Map<Long, Set<InstructionNode>> getPcToInstructionNodes() {
-		return m_pcToInstructionNodes;
-	}
-
-	public Collection<FunctionNode> getThreads() {
-		return m_threads;
+		}
+		
+		m_functionToEndNodes = functionToEndNodes;
+		assert(m_functionToEndNodes != null);
+		assert(!m_functionToEndNodes.isEmpty());
 	}
 	
-	public Collection<FunctionNode> getFunctions() {
-		return m_functions;
-	}
-	
-	public Collection<FunctionNode> getUnlinkedFunctions() {
-		return m_unlinkedFunctions;
-	}
-	
+	//TODO --look at why this is a public method
 	public void removeLinks() {	
-		for (Node node : getThreads()) {
+		for (Node node : getFunctions()) {
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					node.freeMemory();
@@ -91,19 +59,27 @@ public class StructureGraph {
 				}
 		    });
 		}	
-		for (Node node : getUnlinkedFunctions()) {
-		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-					node.freeMemory();
-					return TraverseStatus.CONTINUE;
-				}
-		    });
-		}	
+	}
+
+	public Collection<FunctionNode> getFunctions() {
+		return m_functionToEndNodes.keySet();
+	}
+	
+	public Set<InstructionNode> getFunctionsEndNodes(FunctionNode fn){ 
+		assert(m_functionToEndNodes.containsKey(fn));
+		return m_functionToEndNodes.get(fn);
+		
+	}
+	
+	public InstructionNode getFunctionsStartNode(FunctionNode fn){		
+		assert(m_functionToStartNode.containsKey(fn));
+		return m_functionToStartNode.get(fn);
+		
 	}
 	
     public Node getNode(final int nodeId) {
     	m_searchNode = null;
-		for (Node node : getThreads()) {					
+		for (Node node : getFunctions()) {					
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					if (node.getId() == nodeId) {
@@ -114,22 +90,47 @@ public class StructureGraph {
 				}
 		    });
 		}
-		if(m_searchNode != null){
-			return m_searchNode;  
-		}
-        
-        for (Node node : getUnlinkedFunctions()) {					
-		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-					if (node.getId() == nodeId) {
-						m_searchNode = node;
-						return TraverseStatus.NO_CHILDREN;
-					}
-					return TraverseStatus.CONTINUE;
-				}
-		    });
-		}
-        return m_searchNode;   	
+        return m_searchNode;   		
     }
 
+    public Set<Stack<FunctionReferenceNode>> getFunctionCallStack(FunctionNode fn){
+    	
+    	System.out.println("looking for stack for " + fn.getFunctionName());
+    	Stack<FunctionReferenceNode> currentStack = new Stack<FunctionReferenceNode>();
+    	Set<Stack<FunctionReferenceNode>> completeStacks = new HashSet<Stack<FunctionReferenceNode>>();
+    	search(fn, currentStack, completeStacks);
+		return completeStacks;
+    }
+    
+    private void search(FunctionNode fn, Stack<FunctionReferenceNode> currentStack, Set<Stack<FunctionReferenceNode>> completeStacks){
+    	if(m_functionsToFunctionReferences.get(fn).isEmpty()){
+    		completeStacks.add(currentStack);
+    	} else {
+	    	for(GraphEdge ge : m_functionsToFunctionReferences.get(fn)){
+	    		Stack<FunctionReferenceNode> nextStack = new Stack<FunctionReferenceNode>();
+	    		nextStack.addAll(currentStack);
+	    		nextStack.push(ge.getFunctionReferenceNode());
+	    		search(ge.getFunctionNode(), nextStack, completeStacks);
+	    	}
+    	}
+    }
+    
+    class GraphEdge{
+    	private FunctionReferenceNode m_frn;
+    	private FunctionNode m_fn;
+    	
+    	public GraphEdge(FunctionReferenceNode frn, FunctionNode fn){
+    		m_frn = frn;
+    		m_fn = fn;
+    		
+    	//	System.out.println(fn.getFunctionName() + " -> " +frn.getFunctionNode().getFunctionName());
+    	}
+    	public FunctionNode getFunctionNode(){
+    		return m_fn;
+    	}
+    	
+    	public FunctionReferenceNode getFunctionReferenceNode(){
+    		return m_frn;
+    	}
+    }
 }

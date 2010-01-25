@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
@@ -64,7 +65,7 @@ public class ThreadHandler {
 			int nullNodeCount = 0;
 			int count = 0;
 			for (Node terminal : terminals) {
-				if (!terminal.isNullNode()) {
+				if (!(terminal instanceof NullNode)) {
 					count ++;
 				} else {
 					nullNode = (NullNode) terminal;
@@ -74,7 +75,7 @@ public class ThreadHandler {
 			if (nullNodeCount == 1) {
 				if (count > 0) {
 					for (Node terminal : terminals) {
-						if (!terminal.isNullNode()) {
+						if (!(terminal instanceof NullNode)) {
 							CommonMethods.connect(nullNode, terminal);
 						}
 					}
@@ -82,7 +83,7 @@ public class ThreadHandler {
 			} else {
 				if (count > 1) {
 					for (Node terminal : terminals) {
-						if (!terminal.isNullNode()) {
+						if (!(terminal instanceof NullNode)) {
 							CommonMethods.connect(nullNode, terminal);
 						}
 					}

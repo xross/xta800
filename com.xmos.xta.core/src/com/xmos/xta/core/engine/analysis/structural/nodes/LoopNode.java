@@ -54,7 +54,7 @@ public class LoopNode extends Node {
 		m_attributes = new LoopNodeAttributes(this);
 	}
 
-	public LoopNode shallowCopy() {
+	public LoopNode copyStructure() {
 		return new LoopNode(this);
 	}
 	

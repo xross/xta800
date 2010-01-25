@@ -15,6 +15,10 @@ public abstract class UntypedNodeTraverser implements NodeTraverser {
     	return foundNode(node, ancestors);
     }
     
+    public TraverseStatus foundFunctionReferenceNode(Node node, Stack<Node> ancestors) {
+    	return foundNode(node, ancestors);
+    }
+    
     public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }

@@ -19,7 +19,7 @@ import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
+import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 
 public class SourceMapper {

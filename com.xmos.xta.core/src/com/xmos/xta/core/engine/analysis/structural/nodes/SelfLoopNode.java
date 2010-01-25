@@ -38,7 +38,7 @@ public class SelfLoopNode extends Node{
 		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
-	public SelfLoopNode shallowCopy() {
+	public SelfLoopNode copyStructure() {
 		return new SelfLoopNode(this);
 	}
 

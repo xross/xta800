@@ -15,14 +15,13 @@ import java.util.TreeSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflow.ControlFlowGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -41,49 +40,25 @@ public class StructuralAnalysisEngine {
 	
 	private static final boolean REGISTER_CONFIG_ON_GLOBAL_TREE = false;
 	
-	private ControlFlowGraph m_controlFlowGraph;
-	private Map<Long, FunctionNode> m_functionStartPcs;
 	private StructureGraph m_structureGraph;
 	private List<PatternMatcher> m_patternMatchers;
 	private Architecture m_arch;
-	private static BasicBlockData m_basicBlockData = new BasicBlockData();
 	
-	public StructuralAnalysisEngine(ControlFlowGraph controlFlowGraph, XeLoader xeLoader) {
-		m_controlFlowGraph = controlFlowGraph;
+	public StructuralAnalysisEngine(XeLoader xeLoader) {
 		m_arch = xeLoader.getArchitecture();
 		setUpPatternMatcher();
 	}
 
-	public static BasicBlockData getBasicBlockData(){
-		return m_basicBlockData;
-	}
-	
 	public StructuralAnalysisEngine() {
 		setUpPatternMatcher();
-	}
-
-	public boolean analyse(CommandSource src, Engine engine,
-			Map<String, List<InstructionNode>> functionNameToStartInstruction, 
-			Map<Long, Set<Node>> pcToEndPoints, Sections sections,
-			int nodeId,int coreId) throws AbortedException {
-
-		m_functionStartPcs = new TreeMap<Long, FunctionNode>();
-
-		Collection<InstructionNode> functionsAndThreads = new TreeSet<InstructionNode>();
-		functionsAndThreads.addAll(m_controlFlowGraph.getThreadStartInstructions());
-		functionsAndThreads.addAll(m_controlFlowGraph.getFunctionStartInstructions());
-		
-		return buildStructureGraphs(src, engine, functionsAndThreads,
-				functionNameToStartInstruction, pcToEndPoints, sections,
-				nodeId, coreId);
 	}
 
 	public StructureGraph getStructureGraph() {
 		return m_structureGraph;
 	}
 
-	public boolean createStructure(Collection<Node> workingSet, Node treeStart,
-									Engine engine, String jobPrefix) throws AbortedException {
+	public boolean createStructure(Collection<Node> workingSet, Node treeStart, 
+			Engine engine, String jobPrefix) throws AbortedException {
 		
 		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) {
 			return true;
@@ -112,7 +87,7 @@ public class StructuralAnalysisEngine {
 
 					if (pm.isMatch(node, workingSet, treeStart)) {
 						treeStart = pm.getTreeStart();
-						assert(workingSet.contains(treeStart));
+						assert (workingSet.contains(treeStart));
 						assert (connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
 						working = true;
@@ -123,55 +98,38 @@ public class StructuralAnalysisEngine {
 					break;
 			}
 		}
-		
 		return true;
 	}
 
-	private void removeEndNodes(Collection<Node> workingSet) {
-		boolean done = false;
-		while (!done) {
-			done = true;
-			for (Node node : workingSet) {
-				if (node.isEndNode()) {
-					assert(node.getPrevNodesSize() == 1);
-					if (node.getPrevNode().getNextNodesSize() == 1 && node.getNextNodesSize() == 0) {
-						CommonMethods.disconnect(node, node.getPrevNode());
-						workingSet.remove(node);
-						done = false;
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	private boolean buildStructureGraphs(CommandSource src, Engine engine, 
-			Collection<InstructionNode> functionsAndThreads, 
-			Map<String, List<InstructionNode>> functionNameToStartInstruction, 
-			Map<Long, Set<Node>> pcToEndPoints, Sections sections, 
+	public boolean analyse(Engine engine, Set<InstructionNode> functionStartNodes, 
+			Map<String, List<InstructionNode>> functionNameToInstructions, Sections sections, 
 			int nodeId,  int coreId) throws AbortedException {
 		
-		Map<FunctionNode, Set<FunctionNode>> allFunctionObjects = new TreeMap<FunctionNode, Set<FunctionNode>>();
 		
-		Collection<FunctionNode> threads = buildGraph(m_controlFlowGraph.getThreadStartInstructions(), 
-				m_functionStartPcs, engine, false, functionNameToStartInstruction, allFunctionObjects, nodeId, coreId);
-		if (threads == null) {
-			return false;
-		}
+		//for each function node there is a set of function references in this map
+		Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction 
+			= new TreeMap<FunctionNode, Set<FunctionReferenceNode>>();
+	
 		
-		Collection<FunctionNode> functions = buildGraph(m_controlFlowGraph.getFunctionStartInstructions(), 
-				m_functionStartPcs, engine, true, functionNameToStartInstruction, allFunctionObjects, nodeId, coreId);
-		if (functions == null) {
-			return false;
-		}
+		Map<FunctionNode, Set<InstructionNode>> functionToEndNodes = new TreeMap<FunctionNode, Set<InstructionNode>>();
+		Map<FunctionNode, InstructionNode> functionToStartNode = new TreeMap<FunctionNode, InstructionNode>();
+		
+		buildGraph(functionStartNodes, engine, functionNameToInstructions, functionReferencesWithinFunction, 
+				functionToEndNodes, functionToStartNode);
 
 		engine.provideFeedback("Linking functions...");
-		Set<FunctionNode> unlinkedFunctions = linkFunctions(engine, allFunctionObjects);
+		linkFunctions(engine, functionReferencesWithinFunction);
+		
+		//dumpCallTree(functionReferencesWithinFunction);
 		
 		engine.provideFeedback("Analysing call graph...");
-		detectRecursion(allFunctionObjects, sections.getRecursiveFunctions(nodeId, coreId));
+		detectRecursion(functionReferencesWithinFunction, sections.getRecursiveFunctions(nodeId, coreId));
 		
-		m_structureGraph = new StructureGraph(threads, functions, pcToEndPoints, unlinkedFunctions);
+		assert(functionToEndNodes != null);
+		assert(!functionToEndNodes.isEmpty());
+		
+		m_structureGraph = new StructureGraph(functionToEndNodes, functionToStartNode, functionReferencesWithinFunction);
+		
 		
 		if (REGISTER_CONFIG_ON_GLOBAL_TREE) {
 			// If enabled, this allows the printing of the global structure to 
@@ -180,109 +138,98 @@ public class StructuralAnalysisEngine {
 			engine.provideFeedback("Registering config...");
 			Config config = engine.getConfig();
 			Architecture architecture = engine.getXeLoader().getArchitecture();
-			setConfig(config, architecture, m_structureGraph.getThreads());
 			setConfig(config, architecture, m_structureGraph.getFunctions());
-			setConfig(config, architecture, m_structureGraph.getUnlinkedFunctions());			
+
 		}
-		
+		assert(linkSanityCheck(functionReferencesWithinFunction));
 		engine.provideFeedback("Complete");
 		return true;
 	}
 	
-	private Set<FunctionNode> linkFunctions(Engine engine,
-			Map<FunctionNode, Set<FunctionNode>> allFunctionObjects) {
-		
-		Set<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>(allFunctionObjects.keySet());
-		Map<Long, FunctionNode> pcToFunctionStartNode = new HashMap<Long, FunctionNode>();
-		for (FunctionNode f : allFunctionObjects.keySet()) {
-			pcToFunctionStartNode.put(f.getStartPc(), f);
-		}
-		
-		for (FunctionNode f : allFunctionObjects.keySet()) {
-			for (FunctionNode g : allFunctionObjects.get(f)) {
-				if (g.getBranchTarget() != null) {
-					FunctionNode link = pcToFunctionStartNode.get(g.getBranchTarget().getStartPc());
-					unlinkedFunctions.remove(link);
-					g.setFunction(link.getFunctionName(), link.getFunction());
-					link.addCallingFunction(g);
-				} 
+	private void dumpCallTree(
+			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction) {
+		System.out.println("digraph g {");
+		for(FunctionNode fn : functionReferencesWithinFunction.keySet()){
+			for(FunctionReferenceNode frn : functionReferencesWithinFunction.get(fn)){
+				if(frn.isKnownFunction()){
+					System.out.println(fn.getFunctionName() + " -> " + frn.getFunctionName());
+				}
 			}
 		}
+		System.out.println("}");
 		
-		//FIXME the set of unlinked functions contains thread starts
-		return unlinkedFunctions;
-}
+	}
 
-	private Collection<FunctionNode> buildGraph(
-			Collection<InstructionNode> graphStartNodes,
-			Map<Long, FunctionNode> startPcs,
-			Engine engine,  boolean isFunction, 
-			Map<String, List<InstructionNode>> treeMap,
-			Map<FunctionNode, Set<FunctionNode>> allFunctionObjects, 
-			int nodeId, int coreId) throws AbortedException {
+	private void buildGraph (
+			Set<InstructionNode> functionStartNodes,
+			Engine engine,  
+			Map<String, List<InstructionNode>> functionNameToInstructions,
+			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction, 
+			Map<FunctionNode, Set<InstructionNode>> functionToEndNodes, 
+			Map<FunctionNode, InstructionNode> functionToStartNode) throws AbortedException {
 		
-		Collection<FunctionNode> graphs = new TreeSet<FunctionNode>();
-		List<Node> orderedGraphs = new LinkedList<Node>(graphStartNodes);
+		//TODO not sure that sorting is necessary
+		List<Node> orderedGraphs = new LinkedList<Node>(functionStartNodes);
 		Collections.sort(orderedGraphs);
 		
-		if (isFunction) {
-			engine.startAnalysis("Analysing functions", orderedGraphs.size());
-		} else {
-			engine.startAnalysis("Analysing threads", orderedGraphs.size());
-		}
+		engine.startAnalysis("Analysing functions", orderedGraphs.size());
+
 		
 		for (Node graphStart : orderedGraphs) {
-			String functionName = getFunctionName(graphStart, treeMap);
+			String functionName = getFunctionName(graphStart, functionNameToInstructions);
 			String jobName = "Processing " + functionName;
-			//There are the only two sets that need to be ordered as they determine the number of the blocks
+			
 			Collection<Node> currentGraph = new TreeSet<Node>();
-			Collection<Node> basicBlocks = new TreeSet<Node>();
+			Set<FunctionReferenceNode> functionReferences = new TreeSet<FunctionReferenceNode>();
 			
-			collectCurrentGraphNodes(graphStart, currentGraph);
-
-			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph);
-			
-			m_basicBlockData.add(basicBlocks, nodeId, coreId);
-
-			assert(!basicBlocks.isEmpty());
-			
-			FnopAnalyser fa = new FnopAnalyser();
-			
-			fa.analyse(initialBasicBlock, isFunction);
-			fa.addFnopsToBasicBlocks(initialBasicBlock);
-			assert(basicBlocks.contains(initialBasicBlock));
-
-			if (!createStructure(basicBlocks, initialBasicBlock, engine, jobName)) {
-				return null;
+			findAllNodesInCurrentFunction(graphStart, currentGraph);
+			Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
+			for(Node node : currentGraph){
+				if(node instanceof NullNode){
+					
+					for(Node prev : node.getPrevNodes()){
+						if(prev instanceof InstructionNode){
+							endNodes.add((InstructionNode) prev);
+						}
+					}
+					
+				}
 			}
 			
-			assert(basicBlocks.size() == 1);
-			Node decomposedGraph = basicBlocks.iterator().next();
-
-			final FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
+			Collection<Node> basicBlocks = new TreeSet<Node>();
 			
-			final TreeSet<FunctionNode> unlinkedFunctions = new TreeSet<FunctionNode>();
-			fn.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-	   		    public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
-	   		    	if (node != fn) {
-	   		    		unlinkedFunctions.add((FunctionNode)node);
-	   		    	}
-	   		    	return TraverseStatus.CONTINUE;
-	   		    }   			
-	   		});
+			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph, functionReferences);
 
-			allFunctionObjects.put(fn, unlinkedFunctions);
-			graphs.add(fn);						
-			normaliseGraph(fn);
+			/*TODO --make the fnop analyser work efficiently
+			FnopAnalyser fa = new FnopAnalyser();
+			fa.analyse(initialBasicBlock);
+			fa.addFnopsToBasicBlocks(initialBasicBlock);
+			*/
+
+			if (createStructure(basicBlocks, initialBasicBlock, engine, jobName)) {
+				assert(basicBlocks.size() == 1);
+				
+				Node decomposedGraph = basicBlocks.iterator().next();
+
+				FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
+				
+				functionReferencesWithinFunction.put(fn, functionReferences);	
+				functionToEndNodes.put(fn, endNodes);
+				functionToStartNode.put(fn, (InstructionNode)graphStart);
+				normaliseGraph(fn);
+				
+			} else {
+				//report an error
+			}
 			
-			startPcs.put(graphStart.getStartPc(), fn);
 			engine.provideWorkDone(1);
 		}
 		
-		return graphs;
+		return;
 	}
 
 	private boolean done;
+	
 	public void normaliseGraph(Node fn) {
 		
 		setParent(fn);
@@ -327,9 +274,9 @@ public class StructuralAnalysisEngine {
 	}
 
 	private String getFunctionName(Node graphStart,
-			Map<String, List<InstructionNode>> treeMap) {
-		for(String functionName : treeMap.keySet()){
-			for(InstructionNode fnInst : treeMap.get(functionName)){
+			Map<String, List<InstructionNode>> functionNameToInstructions) {
+		for(String functionName : functionNameToInstructions.keySet()){
+			for(InstructionNode fnInst : functionNameToInstructions.get(functionName)){
 				if(fnInst.getStartPc() == graphStart.getStartPc()){
 					return functionName;
 				}
@@ -340,7 +287,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	private Node reduceGraphToBasicBlocks(Collection<Node> basicBlocks, Node initialBasicBlock,
-			Collection<Node> currentGraph) {
+			Collection<Node> currentGraph, Set<FunctionReferenceNode> functionReferences) {
 
 		Set<Node> seen = new TreeSet<Node>();
 		Map<Node, Node> cfgToStructure = new TreeMap<Node, Node>();
@@ -348,7 +295,7 @@ public class StructuralAnalysisEngine {
 		Node treeStart = initialBasicBlock;
 		for (Node node : currentGraph) {
 			if (!seen.contains(node)) {
-				if (node.isInstructionNode()) {
+				if (node instanceof InstructionNode) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
 					if (bbpm.match(node, treeStart, currentGraph)) {
 						seen.addAll(getContainedNodes(bbpm.getBlock()));
@@ -359,19 +306,22 @@ public class StructuralAnalysisEngine {
 						endPoint.put(basicBlock, bbpm.getLastBlock());
 					}
 
-				} else if(node.isFunctionNode()){
+				} else if(node instanceof FunctionReferenceNode){
 					seen.add(node);
-					Node clone = node.shallowCopy();
-					basicBlocks.add(clone);
-					cfgToStructure.put(node, clone);
-					endPoint.put(clone, node);
+					FunctionReferenceNode fnRef = (FunctionReferenceNode)node;
+					FunctionReferenceNode copy = new FunctionReferenceNode(fnRef);
+					functionReferences.add(copy);
+					basicBlocks.add(copy);
+					cfgToStructure.put(node, copy);
+					endPoint.put(copy, node);
+
 				} else {
 					assert(node instanceof NullNode);
 					seen.add(node);
-					Node clone = node.shallowCopy();
-					basicBlocks.add(clone);
-					cfgToStructure.put(node, clone);
-					endPoint.put(clone, node);
+					NullNode copy = new NullNode();
+					basicBlocks.add(copy);
+					cfgToStructure.put(node, copy);
+					endPoint.put(copy, node);
 				}
 			}
 		}
@@ -397,10 +347,13 @@ public class StructuralAnalysisEngine {
 				node.setInfinite(true);
 			}
 		}
+		assert(!basicBlocks.isEmpty());
+		assert(basicBlocks.contains(treeStart));
 		return treeStart;
 	}
 
 	private boolean haltsProcessor(Node basicBlock) {
+		if(basicBlock instanceof FunctionReferenceNode) return false;
 		LinkedList<XtaInstruction> instruction = basicBlock.getInstructions();
 		if (instruction.size() > 1) {
 			InstructionMnemonics im = new InstructionMnemonics(m_arch);
@@ -411,17 +364,15 @@ public class StructuralAnalysisEngine {
 		return false;
 	}
 
-	private void collectCurrentGraphNodes(Node node, Collection<Node> seen) {
+	private void findAllNodesInCurrentFunction(Node node, Collection<Node> currentGraph) {
 		Collection<Node> toDo = new TreeSet<Node>();
 		toDo.add(node);
-		
 		while (toDo.size() > 0) {
 			Collection<Node> nextToDo = new TreeSet<Node>();
 			for (Node doNode : toDo) {
-				seen.add(doNode);
-				
+				currentGraph.add(doNode);
 				for (Node next : doNode.getNextNodes()) {
-					if (!seen.contains(next)) {
+					if (!currentGraph.contains(next)) {
 						nextToDo.add(next);
 					}
 				}
@@ -501,48 +452,89 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 	
-	private void detectRecursion(Map<FunctionNode, Set<FunctionNode>> allFunctionObjects,
-			Collection<String> recursiveFunctions) {
-
+	private void linkFunctions(Engine engine,
+			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction) {
+		
 		Map<Long, FunctionNode> pcToFunctionStartNode = new HashMap<Long, FunctionNode>();
-		for (FunctionNode f : allFunctionObjects.keySet()) {
+		for (FunctionNode f : functionReferencesWithinFunction.keySet()) {
 			pcToFunctionStartNode.put(f.getStartPc(), f);
 		}
-
-		for (FunctionNode fn : allFunctionObjects.keySet()){
-			search(fn, new HashSet<String>(), allFunctionObjects, recursiveFunctions, pcToFunctionStartNode);
-		}
-	}
-	
-	private void search(FunctionNode fn, Set<String> seen, 
-			Map<FunctionNode, Set<FunctionNode>> allFunctionObjects,
-			Collection<String> recursiveFunctions,
-			Map<Long, FunctionNode> pcToFunctionStartNode) {
 		
-		if (allFunctionObjects.get(fn) != null) {
-			seen.add(fn.getFunctionName());
-			Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
-			for (FunctionNode g : allFunctionObjects.get(fn)) {
-				if (seen.contains(g.getFunctionName())) {
-					if (!recursiveFunctions.contains(g.getFunctionName())) {
-						recursiveFunctions.add(g.getFunctionName());
-					}
-					toRemove.add(g);
-
-					// Remove backwards link
-					FunctionNode link = pcToFunctionStartNode.get(g.getBranchTarget().getStartPc());
-					link.removeCallingFunction(g);
-
-					g.setFunction(null, null);
-					g.setFunctionName("Recursive Call");
-					g.setUnresolved(true);
-
-				} else {
-					search(g, seen, allFunctionObjects, recursiveFunctions, pcToFunctionStartNode);
+		for (FunctionNode f : functionReferencesWithinFunction.keySet()) {
+			
+			for (FunctionReferenceNode g : functionReferencesWithinFunction.get(f)) {
+				
+				if(g.isKnownFunction()){
+					FunctionNode link = pcToFunctionStartNode.get(g.getFunctionStartPc());
+					String functionName = link.getFunctionName();
+					
+					g.setFunction(functionName, link);
+					
+					link.addCallingFunction(f);
+					
 				}
 			}
-			allFunctionObjects.get(fn).removeAll(toRemove);
+
+		}	
+		assert(linkSanityCheck(functionReferencesWithinFunction));
+		
+	}
+	private boolean linkSanityCheck(Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction){
+		boolean allLinkedProperly = true;
+		for(Set<FunctionReferenceNode> functionReferences : functionReferencesWithinFunction.values()){
+			for(FunctionReferenceNode fnRef : functionReferences){
+				allLinkedProperly &= fnRef.verifyLinkProcess();
+			}
 		}
+		return allLinkedProperly;
+	}
+	
+	private void detectRecursion(Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
+			Collection<String> recursiveFunctions) {
+
+		//first build up a set of functions that cannot be called (i.e. thread starts)
+		//FIXME this is not necessarily true
+		Set<FunctionNode> nonBranchedToFunctions = new HashSet<FunctionNode>();
+		
+		nonBranchedToFunctions.addAll(functionReferencesWithinFunction.keySet());
+		
+		for (FunctionNode f : functionReferencesWithinFunction.keySet()) {
+			for(FunctionReferenceNode fr : functionReferencesWithinFunction.get(f)){
+				if(fr.isKnownFunction()){
+					nonBranchedToFunctions.remove(fr.getFunctionNode());
+				}
+			}
+		}
+		System.out.println("functions that were not branched to are: " + nonBranchedToFunctions);
+		Set<FunctionReferenceNode> recursiveFunctionNodes = new HashSet<FunctionReferenceNode>();
+		Set<FunctionNode> seen = new HashSet<FunctionNode>();
+		for(FunctionNode start : nonBranchedToFunctions){
+			walk(start, seen, functionReferencesWithinFunction, recursiveFunctionNodes);
+		}
+		
+		System.out.println(recursiveFunctions);
+		assert(linkSanityCheck(functionReferencesWithinFunction));
+	}
+	
+	private void walk(
+			FunctionNode start,
+			Set<FunctionNode> seen,
+			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
+			Set<FunctionReferenceNode> recursiveFunctionReferenceNodes) {
+		seen.add(start);
+		for(FunctionReferenceNode frn : functionReferencesWithinFunction.get(start)){
+			if(frn.isKnownFunction()){
+				FunctionNode next = frn.getFunctionNode();
+				if(seen.contains(start)){
+					recursiveFunctionReferenceNodes.add(frn);
+					//start.setFormsRecursion();
+					//start.setUnresolved(true);
+				} else {
+					walk(next, seen, functionReferencesWithinFunction, recursiveFunctionReferenceNodes);
+				}
+			}
+		}
+		seen.remove(start);
 	}
 
 	private void setParent(Node node) {
@@ -611,6 +603,24 @@ public class StructuralAnalysisEngine {
 		return sb.toString();
 	}
 	
+	//TODO work out what endNodes are for
+	private void removeEndNodes(Collection<Node> workingSet) {
+		boolean done = false;
+		while (!done) {
+			done = true;
+			for (Node node : workingSet) {
+				if (node.isEndNode()) {
+					assert(node.getPrevNodesSize() == 1);
+					if (node.getPrevNode().getNextNodesSize() == 1 && node.getNextNodesSize() == 0) {
+						CommonMethods.disconnect(node, node.getPrevNode());
+						workingSet.remove(node);
+						done = false;
+						break;
+					}
+				}
+			}
+		}
+	}
 	private void setUpPatternMatcher() {
 		m_patternMatchers = new ArrayList<PatternMatcher>();
 		m_patternMatchers.add(new SelfLoopPattern());
@@ -630,5 +640,5 @@ public class StructuralAnalysisEngine {
 			}
 	    });
 		return nodes;
-	}	
+	}
 }

@@ -34,8 +34,19 @@ public abstract class Node implements Comparable<Node> {
 
 	public abstract String getTypeName();
 	public abstract NodeAttributes getAttributes();	
-	public abstract Node shallowCopy();
+	
+	/**
+	 * This copies all the structure of the node and everything within it but leaves all pointers to instruction
+	 * pointing to the same instruction nodes. 
+	 */
+	public abstract Node copyStructure();
+	
+	/**
+	 * This copies all the structure of the node and everything within it and also copies the instruction nodes
+	 */
 	public abstract Node deepCopy(Aborter abort) throws AbortedException;
+	
+	
 	public abstract List<Node> getIndirectChildren();
 	public abstract List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors);
 	public abstract Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor);
@@ -349,13 +360,3 @@ public abstract class Node implements Comparable<Node> {
 	}
 }
 
-class FunctionCallStatus {
-	private boolean m_status;
-	
-	FunctionCallStatus() {
-		m_status = false;
-	}
-	
-	void setStatus(boolean status) { m_status = status; }
-	boolean getStatus()            { return m_status; }
-}

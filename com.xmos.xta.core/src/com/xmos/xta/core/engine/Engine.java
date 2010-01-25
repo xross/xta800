@@ -21,11 +21,10 @@ import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
-import com.xmos.xta.core.engine.analysis.controlflow.ControlFlowGraph;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionHandler;
-import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
+import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
+import com.xmos.xta.core.engine.analysis.controlflow.FunctionConstructor;
+import com.xmos.xta.core.engine.analysis.controlflow.FunctionReferenceNodeAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
-import com.xmos.xta.core.engine.analysis.controlflow.ThreadHandler;
 import com.xmos.xta.core.engine.analysis.controlflow.UnreachableCodeFinder;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
@@ -96,6 +95,7 @@ public class Engine implements Notifier, Aborter {
 	private int m_numErrors;
 	private long m_loadStartTime;
 	private NodeCoreCollection<Boolean> m_structuralGraphUpToDate;
+	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<Map<String, List<InstructionNode>>> m_functionNameToInsts;
@@ -107,6 +107,7 @@ public class Engine implements Notifier, Aborter {
 		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
 		m_functionNameToInsts = new NodeCoreCollection<Map<String, List<InstructionNode>>>();
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
+		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		m_xeLoader = new XeLoader();
 		m_xnLoader = new XnLoader();
 		m_routes = new LinkedList<Route>();
@@ -175,6 +176,10 @@ public class Engine implements Notifier, Aborter {
 		return m_structuralGraph.get(m_nodeId, m_coreId);
 	}
 	
+	public InstructionDecoder getInstructionDecoder(){
+		return m_instructionDecoder.get(m_nodeId, m_coreId);
+	}
+	
 	public Set<String> getFunctionNames() {
 		Map<String, List<InstructionNode>> functionNames = m_functionNameToInsts.get(m_nodeId, m_coreId);
 		if (functionNames != null) {
@@ -202,9 +207,9 @@ public class Engine implements Notifier, Aborter {
 		Set<String> systemFunctions = new HashSet<String>();
 		Collection<String> systems = m_sections.getSystems(m_nodeId, m_coreId);
 		for (String functionName : functionNames) {
-			if (isSystemFunction(systems, functionName)) {
-				systemFunctions.add(functionName);
-			}
+			//if (isSystemFunction(systems, functionName)) {
+			//	systemFunctions.add(functionName);
+			//}
 		}
 		functionNames.removeAll(systemFunctions);
 		return functionNames;
@@ -1192,7 +1197,6 @@ public class Engine implements Notifier, Aborter {
 	public Collection<SrcStringInfo> getSrcLevelCommands() {
 		return m_sections.getSrcLevelCommands(m_nodeId, m_coreId);
 	}
-
 	
 	public Collection<SrcLevelLoopInfo> getSrcLevelLoops() {
 		return m_sections.getSrcLevelLoops(m_nodeId, m_coreId);
@@ -1227,6 +1231,8 @@ public class Engine implements Notifier, Aborter {
 		notify(src, Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<StructureGraph> newStructuralGraph =
 			new NodeCoreCollection<StructureGraph>(m_structuralGraph);
+		NodeCoreCollection<InstructionDecoder> newInstructionDecoder =
+			new NodeCoreCollection<InstructionDecoder>(m_instructionDecoder);
 		NodeCoreCollection<Map<String, List<InstructionNode>>> newFunctionNames =
 			new NodeCoreCollection<Map<String, List<InstructionNode>>>(m_functionNameToInsts);
 		NodeCoreCollection<SourceMapper> newSourceMappers =
@@ -1238,6 +1244,9 @@ public class Engine implements Notifier, Aborter {
 			
 		} else {
 			setAnalysisName(String.format("Processing node: %d, core: %d", nodeId, coreId));
+			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+			
+			//Binary Stage
 			
 			InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config, m_dataCollection);
 			try {
@@ -1246,43 +1255,68 @@ public class Engine implements Notifier, Aborter {
 				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());								
 				return false;
 			} 
+			newInstructionDecoder.add(nodeId, coreId, id);
+			//Control Flow Stage
 			
 			newFunctionNames.add(nodeId, coreId, new TreeMap<String, List<InstructionNode>>());
 			
-			ThreadHandler th = new ThreadHandler(id, this);
-
-			Set<InstructionNode> threadStartNodes = 
-				th.getThreadNodes(src, sections.getThreadStartPoints(nodeId, coreId), "thread start");
-			Set<InstructionNode> threadStopNodes = 
-				th.getThreadNodes(src, sections.getThreadStopPoints(nodeId, coreId), "thread stop");
+			//collect the thread starts
+			//collect the function targets
+			//collect the thread ends
+			//collect the function ends
+			FunctionConstructor fc = new FunctionConstructor(id, this, sections, nodeId, coreId, src, mnenonics);
 			
-			threadStartNodes = th.ensureThreadStartExists(src, threadStartNodes);
-
-			SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, threadStopNodes, xeLoader, this);
-			if (!sa.process(src))
+			try {
+				fc.process();
+			} catch (Exception e) {
+				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());								
 				return false;
-			warnAboutUnsetBranches(xeLoader, sections, src, id, nodeId, coreId);
+			} 
 			
-			FunctionHandler fh = new FunctionHandler(id);
-			if (!fh.addFunctions()) 
-				return false;
+			Set<InstructionNode> functionStartNodes = fc.getFunctionStarts();
+			Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
 			
-			Map<Long, Set<Node>> pcToEndPoints = th.addTerminators(threadStartNodes);
-			pcToEndPoints.putAll(fh.getFunctionsToEndPoints());
+			//add all the successors
+			SuccessorAdder sa = new SuccessorAdder(nodeId, coreId, id, sections, functionEndNodes, this, src, mnenonics, xeLoader);
+			sa.process();
 			
-			Set<InstructionNode> starts = new TreeSet<InstructionNode>();
-			starts.addAll(fh.getKnownFuncStarts());
-			starts.addAll(threadStartNodes);
+			//add function reference nodes
+			FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(id, m_notifier, src, xeLoader, coreId, coreId);
+			frna.process();
+			
+			//add terminators(null nodes) to each of the functions
+			TerminatorAdder ta = new TerminatorAdder(functionStartNodes);
+			ta.process();
+			
+			//name all the functions
 			
 			ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeId, coreId), 
-					newFunctionNames.get(nodeId, coreId), fh.getKnownFuncStarts(),
-					threadStartNodes, sections.getLabels(nodeId, coreId));
+					newFunctionNames.get(nodeId, coreId), functionStartNodes, sections.getLabels(nodeId, coreId));
 			
 			setBranchTargets(id, newFunctionNames.get(nodeId, coreId));
+			
+			UnreachableCodeFinder uca = new UnreachableCodeFinder();
+			uca.analyseReachable(id, functionStartNodes); 
+			
+			//Structural Stage
+		
+			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(xeLoader);
+			try {
+				if (!sae.analyse(this, functionStartNodes, newFunctionNames.get(nodeId, coreId), sections, nodeId, coreId)) {
+					return false;
+				}
+			} catch (AbortedException e) {
+				System.err.println("problem");
+				return false;
+			}
 
+			newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
+			
+			//Source Mapping Stage
+			
 			SourceMapper sourceMapper;
 			try {
-				sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
+				sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, functionStartNodes, 
 						id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 			} catch (AbortedException e) {
 				return false;
@@ -1296,30 +1330,14 @@ public class Engine implements Notifier, Aborter {
 			
 			newSourceMappers.add(nodeId, coreId, sourceMapper);
 			
-			UnreachableCodeFinder uca = new UnreachableCodeFinder();
-			uca.analyseReachable(id, threadStartNodes, fh.getKnownFuncStarts()); 
 			
-			setAnalysisName("Creating control flow graph");				
-			ControlFlowGraph cfg = new ControlFlowGraph(threadStartNodes, fh.getKnownFuncStarts());
-			
-			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(cfg, xeLoader);
-			
-			try {
-				if (!sae.analyse(src, this, newFunctionNames.get(nodeId, coreId),
-						pcToEndPoints, sections, nodeId, coreId)) {
-					return false;
-				}
-			} catch (AbortedException e) {
-				return false;
-			}
-
-			newStructuralGraph.add(nodeId, coreId, sae.getStructureGraph());
 		}
 		
 		m_structuralGraphUpToDate.add(nodeId, coreId, true);
 		m_structuralGraph = newStructuralGraph;
 		m_functionNameToInsts = newFunctionNames;
 		m_sourceMapper = newSourceMappers;
+		m_instructionDecoder = newInstructionDecoder;
 		notify(src, Notifier.RELEASE_MESSAGES, "");
 		return true;
 	}
@@ -1432,39 +1450,9 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 	
-	private void warnAboutUnsetBranches(XeLoader xeLoader, Sections sections, CommandSource src, InstructionDecoder id,
-			int nodeId, int coreId) {
-		SymbolTable symbolTable = xeLoader.getSymbolTable(nodeId, coreId);
-		Collection<String> systemFunctions = sections.getSystems(nodeId, coreId);
-
-		for (InstructionNode inst : id.getInstructions()) {
-			if (inst.getXtaInstruction().isBranch() && (inst.getNextNodesSize() == 0) 
-					&& !inst.getXtaInstruction().getReturn() && !inst.getXtaInstruction().getBranchPcRelative()) {
-				
-				String functionName = symbolTable.functionName(inst.getXtaInstruction().getPc());
-				if (!isSystemFunction(systemFunctions, functionName)) {
-					notify(src, Notifier.NOTIFY_WARNING, "No branch targets set on instruction " + inst.getXtaInstruction());
-				}
-			}
-		}
-	}
-
-	private boolean isSystemFunction(Collection<String> systems, String functionName) {
-		if (functionName.length() == 0) {
-			return false;
-		} else if (functionName.charAt(0) == '_') {
-			return true;
-		} else if (systems.contains(functionName)) {
-			return true;
-		}
-
-		return false;
-	}
-	
 	private void ensureAllFunctionsAreNamed(
 			SymbolTable symbolTable, Map<String, List<InstructionNode>> treeMap,
-			Collection<InstructionNode> funcStarts, Set<InstructionNode> threadStarts,
-			Map<String, Set<Long>> labelToPc) {
+			Set<InstructionNode> funcStarts, Map<String, Set<Long>> labelToPc) {
 		
 		Map<Long, String> pcToLabel = new HashMap<Long, String>();
 		for (String label : labelToPc.keySet()) {
@@ -1498,17 +1486,6 @@ public class Engine implements Notifier, Aborter {
 						assert(false);
 					}
 				}
-			} else {
-				assert(!treeMap.containsKey(name));
-				addToMap(treeMap, inst, name);
-			}
-		}
-		
-		for (InstructionNode inst : threadStarts) {
-			String name = symbolTable.functionName(inst.getStartPc());
-			if (treeMap.containsKey(name)) {
-				name = "unnamed_thread_at_0x" + Long.toHexString(inst.getStartPc());
-				addToMap(treeMap, inst, name);
 			} else {
 				assert(!treeMap.containsKey(name));
 				addToMap(treeMap, inst, name);

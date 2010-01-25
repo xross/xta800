@@ -23,6 +23,7 @@ import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.EndNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -97,6 +98,32 @@ public class RouteConstructor {
 		return m_routes;
 	}
 
+	private void findCallToNode(RouteDescription description){
+		System.err.println("Route mode: " + description.getMode());
+		if(description.getMode() == RouteMode.FUNCTION){
+			System.err.println("Route function: " + description.getFunctionName());
+		} else {
+			System.err.println("Route from: " + description.getFromName());
+			System.err.println("Route to: " + description.getToName());
+		}
+		
+		if(description.getMode() == RouteMode.FUNCTION){
+			FunctionNode fn = description.getFunction(description.getFunctionName(), m_structureGraph);
+			InstructionNode start = m_structureGraph.getFunctionsStartNode(fn);
+			Set<InstructionNode> ends = m_structureGraph.getFunctionsEndNodes(fn);
+			
+			for(Stack<FunctionReferenceNode> stack : m_structureGraph.getFunctionCallStack(fn)){
+				for(FunctionReferenceNode frn : stack){
+					System.out.print(frn.getFunctionName() + ".");
+				}
+				System.out.println();
+			}
+		}
+		
+		
+	}
+	
+	
 	public RouteError analyse(CommandSource src) throws Exception {
 		boolean seenEndPoint = false;
 		
@@ -106,6 +133,7 @@ public class RouteConstructor {
 		if (m_description.getEndPoint() == null) {
 			return RouteError.ENDPOINTS_MISSING;
 		}
+		findCallToNode(m_description);
 		
 		Collection<NodeDescriptor> startNodeDescriptors = findStartDescriptors();
 		Collection<NodeDescriptor> endNodeDescriptors = findEndNodeDescriptors();
@@ -850,6 +878,8 @@ public class RouteConstructor {
 	}
 	
 	private Collection<NodeDescriptor> getReferencedNodeDescriptors(Reference reference) throws AbortedException {
+		
+
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Set<NodeDescriptor> referencedNodeDescriptors = new TreeSet<NodeDescriptor>();
 		referencedNodeDescriptors.addAll(referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
@@ -857,7 +887,8 @@ public class RouteConstructor {
 	}
 
 	private Collection<NodeDescriptor> findStartDescriptors() throws AbortedException {
-    	return getReferencedNodeDescriptors(m_description.getStartPoint());
+		Collection<NodeDescriptor> nodeDescriptors = getReferencedNodeDescriptors(m_description.getStartPoint());
+    	return nodeDescriptors;
 	}
 	
 	private Collection<NodeDescriptor> findEndNodeDescriptors() throws AbortedException {

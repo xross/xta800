@@ -14,7 +14,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
-public class EndNode extends IBufferNode {
+public class EndNode extends Node {
 	private NodeAttributes m_nodeAttributes;
 	
 	public EndNode(){
@@ -58,7 +58,7 @@ public class EndNode extends IBufferNode {
 		return "end";
 	}
 
-	public Node shallowCopy() {
+	public Node copyStructure() {
 		return new EndNode();
 	}
 

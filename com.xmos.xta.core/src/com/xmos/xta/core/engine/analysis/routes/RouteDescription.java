@@ -11,6 +11,7 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.references.Reference;
@@ -75,8 +76,7 @@ public class RouteDescription {
 		m_branches = engine.getUserBranches();
 		
 		StructureGraph sg = engine.getStructureGraph();
-        findEndpoints(sg, sg.getThreads());
-        findEndpoints(sg, sg.getFunctions());
+        findEndpoints(sg);
         
         for (Reference to : m_to) {
         	to.resolve(engine);
@@ -139,15 +139,26 @@ public class RouteDescription {
 		return m_config;
 	}
 	
-	private void findEndpoints(StructureGraph sg, Collection<FunctionNode> functionNodes) {
-		for (FunctionNode fn : functionNodes) {
+	public FunctionNode getFunction(String functionName, StructureGraph sg){
+		for (FunctionNode fn : sg.getFunctions()) {
 			if (fn.getFunctionName().equals(m_functionName)) {
-				long pc = fn.getStartPc();
-
-				Set<Node> endInstructions = sg.getPcToEndPoints().get(pc);
-				
-				//TreeSet<Node> endInstructions = fn.getFunctionEndNodes();
-				
+				return fn;
+			}
+		}
+		assert(false);
+		return null;
+	}
+	
+	/**
+	 * This function is supposed to take a function start and find all the end points
+	 * could be done better with FunctionEndNodes and FunctionStartNodes
+	 * @param sg
+	 * @param functionNodes
+	 */
+	private void findEndpoints(StructureGraph sg) {
+		for (FunctionNode fn : sg.getFunctions()) {
+			if (fn.getFunctionName().equals(m_functionName)) {
+				Set<InstructionNode> endInstructions = sg.getFunctionsEndNodes(fn);
 				for (Node endPoint : endInstructions) {
 					String to = "";
 			    	for (ReferenceType backTrail : m_function.getBackTrail()) {
@@ -156,8 +167,10 @@ public class RouteDescription {
 					to += "0x" + Long.toHexString(endPoint.getStartPc());				
 					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
 				}
+
 				break;
 			}
 		}		
 	}	
+	
 }

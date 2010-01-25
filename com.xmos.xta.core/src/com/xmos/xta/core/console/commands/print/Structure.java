@@ -90,7 +90,7 @@ public class Structure extends Command {
     			nodes = getCollection(engine.getStructureGraph().getNode(m_nodeId));
     		} else {
     			nodes = new TreeSet<Node>();
-    			nodes.addAll(engine.getStructureGraph().getThreads());    			
+    			nodes.addAll(engine.getStructureGraph().getFunctions());    			
     		}			
     		displayer.display(nodes);				
 		

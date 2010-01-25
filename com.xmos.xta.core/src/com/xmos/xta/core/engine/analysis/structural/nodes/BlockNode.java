@@ -17,7 +17,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.instructions.NullInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
-public class BlockNode extends IBufferNode {
+public class BlockNode extends Node {
 	private BlockNodeAttributes m_attributes;	
 	private List<InstructionNode> m_insts;
 
@@ -40,7 +40,7 @@ public class BlockNode extends IBufferNode {
 		m_attributes = new BlockNodeAttributes(this);
 	}
 
-	public BlockNode shallowCopy() {
+	public BlockNode copyStructure() {
 		return new BlockNode(this);
 	}
 	
@@ -154,23 +154,6 @@ public class BlockNode extends IBufferNode {
 		list.add(new NodeDescriptor(m_insts.get(0), ancestors));
 		ancestors.pop();
 		return list;
-	}
-
-	public void insertFnops() {
-		List<InstructionNode> insts = new LinkedList<InstructionNode>();
-		for(InstructionNode inst : m_insts){
-			List<Long> fnops =  m_worstIbufferSequence.getfnops();
-			XtaInstruction xtaInst = inst.getXtaInstruction();
-			for (long pc : fnops){
-				if(xtaInst.getPc() == pc){
-					XtaInstruction fnop = new NullInstruction("--FNOP--", 0, xtaInst.getPc(), 0);
-					InstructionNode fnopNode = new InstructionNode(fnop);
-					insts.add(fnopNode);
-				}
-			}
-			insts.add(inst);
-		}
-		m_insts = insts;
 	}
 
     public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {

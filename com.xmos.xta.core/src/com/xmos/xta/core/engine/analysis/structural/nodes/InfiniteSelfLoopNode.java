@@ -38,7 +38,7 @@ public class InfiniteSelfLoopNode extends Node{
 		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
-	public InfiniteSelfLoopNode shallowCopy() {
+	public InfiniteSelfLoopNode copyStructure() {
 		return new InfiniteSelfLoopNode(this);
 	}
 

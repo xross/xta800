@@ -1,24 +1,16 @@
 package com.xmos.xta.core.engine.analysis.structural;
 
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.xmos.xta.core.engine.analysis.controlflow.InstructionBuffer;
-import com.xmos.xta.core.engine.analysis.structural.nodes.IBufferNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class FnopAnalyser {
 	public static int totalFnops;
 	public FnopAnalyser() {
 	}
 
-	public void analyse(Node startNode, boolean isFunction) {
-		simulateBasicBlock((IBufferNode)startNode, null, isFunction);
+	public void analyse(Node startNode) {
+		//simulateBasicBlock((IBufferNode)startNode, null);
 	}
-
+/*
 	public void addFnopsToBasicBlocks(Node startNode){
 		
 		Set<IBufferNode> nodes = new TreeSet<IBufferNode>();
@@ -40,14 +32,16 @@ public class FnopAnalyser {
 		}
 	}
 
-	private void simulateBasicBlock(IBufferNode block, IBufferNode parent, boolean isFunction) {
+	private void simulateBasicBlock(IBufferNode block, IBufferNode parent) {
 		boolean statesUpdated = false;
 		if (parent == null || parent.isFunctionNode()) {
 			InstructionBuffer ib = new InstructionBuffer(block.getStartPc());
-			if (isFunction) {
-				ib.fetch();
-				statesUpdated = true;
-			}
+			
+			////if (isFunction) {
+			//	ib.fetch();
+			//	statesUpdated = true;
+			//}
+			
 			statesUpdated |= iterateOverBasicBlocks(block, ib, parent);
 		} else {
 			for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
@@ -56,7 +50,7 @@ public class FnopAnalyser {
 		}
 		if (statesUpdated) {
 			for (IBufferNode next : block.getNextIbufferNodes()) {
-				simulateBasicBlock(next, block, isFunction);
+				simulateBasicBlock(next, block);
 			}
 		}
 
@@ -114,5 +108,5 @@ public class FnopAnalyser {
 		}
 		ib.issue(inst.getNumBytes());
 	}
-
+*/
 }

@@ -18,12 +18,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
-public class FunctionNode extends IBufferNode {
+public class FunctionNode extends Node {
 	private NodeAttributes m_attributes;	
 	private String m_functionName;
 	private List<Node> m_functionSequence;
 	private static int functionId;
-	private Node m_branchTarget;
 	private Set<Node> m_functionEndNodes;
 	private List<FunctionNode> m_callingFunctions;
 	
@@ -33,13 +32,6 @@ public class FunctionNode extends IBufferNode {
 		m_functionEndNodes = new TreeSet<Node>();
 		m_callingFunctions = new ArrayList<FunctionNode>();
 		setUnresolved(true);
-	}
-	
-	public FunctionNode(Node branchTarget) {
-		super();
-		m_branchTarget = branchTarget;
-		m_attributes = new NodeAttributes(this);
-		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 	
 	public FunctionNode(Node function, String functionName) {
@@ -56,8 +48,6 @@ public class FunctionNode extends IBufferNode {
 		} else {
 			m_functionName = functionName;
 		}
-		
-		m_branchTarget = m_functionSequence.get(0);
 		m_attributes = new NodeAttributes(this);
 		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
@@ -65,13 +55,21 @@ public class FunctionNode extends IBufferNode {
 	public FunctionNode(FunctionNode fn){
 		m_functionName = fn.m_functionName;
 		m_functionSequence = fn.m_functionSequence;
-		m_branchTarget = fn.m_branchTarget;
 		m_attributes = new NodeAttributes(this);
 		setUnresolved(fn.isUnresolved());
 		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 	
-	public Node shallowCopy() {
+	public String toString(){
+		if(m_functionName!= null){
+			return m_functionName;
+		} else {
+			return getDescription();
+		}
+		
+	}
+	
+	public Node copyStructure() {
     	return new FunctionNode(this);
 	}
 
@@ -80,7 +78,6 @@ public class FunctionNode extends IBufferNode {
 
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
-		fn.m_branchTarget = m_branchTarget;
 		fn.m_attributes = new NodeAttributes(fn);
 		fn.setUnresolved(isUnresolved());
 		if (m_functionSequence != null) {
@@ -110,10 +107,6 @@ public class FunctionNode extends IBufferNode {
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-
-	public boolean isFunctionKnown() {
-		return m_branchTarget != null;
-	}
 	
 	public void setFunction(String functionName, List<Node> fn) {
 		m_functionSequence = fn;
@@ -122,10 +115,6 @@ public class FunctionNode extends IBufferNode {
 
 	public List<Node> getFunction() {
 		return m_functionSequence;
-	}
-	
-	public Node getBranchTarget() {
-		return m_branchTarget;
 	}
 	
 	public String getDescription() {
@@ -201,6 +190,7 @@ public class FunctionNode extends IBufferNode {
 	}
 	
 	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
+
 		assert (m_functionSequence.contains(nodeDescriptor.getNode()));
 		
 		int index = m_functionSequence.indexOf(nodeDescriptor.getNode());
@@ -261,9 +251,6 @@ public class FunctionNode extends IBufferNode {
 	    list.add(new NodeDescriptor(m_functionSequence.get(0), ancestors));
 		ancestors.pop();
 		return list;
-	}
-	
-	public void insertFnops() {
 	}
 
 	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {

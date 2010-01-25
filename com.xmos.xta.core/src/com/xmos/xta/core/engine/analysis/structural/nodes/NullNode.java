@@ -14,7 +14,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
-public class NullNode extends IBufferNode {
+public class NullNode extends Node {
 	public NullNode(){
 		super();
 	}
@@ -56,7 +56,7 @@ public class NullNode extends IBufferNode {
 		return "null";
 	}
 
-	public Node shallowCopy() {
+	public Node copyStructure() {
 		return new NullNode();
 	}
 

@@ -38,7 +38,7 @@ public class SequenceNode extends Node {
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public Node shallowCopy() {
+	public Node copyStructure() {
 		return new SequenceNode(this);
 	}
 

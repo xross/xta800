@@ -35,7 +35,7 @@ public class InstructionNode extends Node {
 	}
 	
 	
-	public Node shallowCopy() {
+	public Node copyStructure() {
 		return new InstructionNode(this);
 	}
 

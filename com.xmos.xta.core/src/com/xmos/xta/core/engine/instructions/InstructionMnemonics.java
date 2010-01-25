@@ -25,6 +25,15 @@ public class InstructionMnemonics {
 	}
 	*/
 	
+	
+	public boolean isFreet(Instruction inst) {
+		switch (m_arch) {
+		case REVB: return inst.getClass() == xs1bXtaInstruction_freet_0r.class;
+		case REVC: return inst.getClass() == xs1bXtaInstruction_freet_0r.class;
+		}
+		return false;
+	}
+	
 	public boolean isSsync(Instruction inst) {
 		switch (m_arch) {
 		case REVB: return inst.getClass() == xs1bXtaInstruction_ssync_0r.class;

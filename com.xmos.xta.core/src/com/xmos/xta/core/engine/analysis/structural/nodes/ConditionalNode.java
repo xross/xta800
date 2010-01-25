@@ -42,7 +42,7 @@ public class ConditionalNode extends Node {
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
-	public Node shallowCopy() {
+	public Node copyStructure() {
 		return new ConditionalNode(this);
 	}
 

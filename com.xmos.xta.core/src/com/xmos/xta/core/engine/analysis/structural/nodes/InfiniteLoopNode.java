@@ -54,7 +54,7 @@ public class InfiniteLoopNode extends Node {
 		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
-	public InfiniteLoopNode shallowCopy() {
+	public InfiniteLoopNode copyStructure() {
 		return new InfiniteLoopNode(this);
 	}
 	
