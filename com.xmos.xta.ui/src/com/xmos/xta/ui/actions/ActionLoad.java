@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
@@ -42,11 +43,7 @@ public class ActionLoad extends ActionDelegate implements IWorkbenchWindowPulldo
 	private SelectionListener m_listListener;
 	
 	public ActionLoad() {
-		m_listListener = new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				assert(false);
-			}
-
+		m_listListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				String selectedFile = ((MenuItem)e.getSource()).getText();
 				loadFile(selectedFile);

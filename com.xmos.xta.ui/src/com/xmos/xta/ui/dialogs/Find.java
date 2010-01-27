@@ -13,8 +13,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -122,10 +122,7 @@ public class Find extends Dialog {
 		final Button forwardButton = new Button(directionGroup, SWT.RADIO);
 		forwardButton.setText("Forward");
 		forwardButton.setSelection(m_forwardSearch);
-		forwardButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
+		forwardButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				m_forwardSearch = forwardButton.getSelection();
 			}
@@ -142,10 +139,7 @@ public class Find extends Dialog {
 		final Button caseButton = new Button(optionsGroup, SWT.CHECK);
 		caseButton.setText("Case sensitive");
 		caseButton.setSelection(m_caseSensitive);
-		caseButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
+		caseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				m_caseSensitive = caseButton.getSelection();
 			}
@@ -154,10 +148,7 @@ public class Find extends Dialog {
 		final Button wrapSearchButton = new Button(optionsGroup, SWT.CHECK);
 		wrapSearchButton.setText("Wrap search");
 		wrapSearchButton.setSelection(m_wrapSearch);
-		wrapSearchButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
+		wrapSearchButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				m_wrapSearch = wrapSearchButton.getSelection();
 			}
@@ -166,10 +157,7 @@ public class Find extends Dialog {
 		final Button wholeWordButton = new Button(optionsGroup, SWT.CHECK);
 		wholeWordButton.setText("Whole word");
 		wholeWordButton.setSelection(m_wholeWord);
-		wholeWordButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
+		wholeWordButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				m_wholeWord = wholeWordButton.getSelection();
 			}
@@ -178,10 +166,7 @@ public class Find extends Dialog {
 		final Button regExpButton = new Button(optionsGroup, SWT.CHECK);
 		regExpButton.setText("Regular expressions");
 		regExpButton.setSelection(m_regexSearch);
-		regExpButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
+		regExpButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				m_regexSearch = regExpButton.getSelection();
 			}

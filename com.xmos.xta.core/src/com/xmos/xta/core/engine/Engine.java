@@ -265,13 +265,6 @@ public class Engine implements Notifier, Aborter {
 			return false;			
 		}
 
-		setAnalysisName("Loading XN");
-		XnLoader xnLoader = new XnLoader();
-		if (!xnLoader.load(executableFile)) {
-			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' did not contain a valid XN.");
-			return false;			
-		}
-
 		setAnalysisName("Loading sections");
 		Sections sections = new Sections();
 		if (!sections.load(src, xeLoader, this)) {
@@ -299,7 +292,7 @@ public class Engine implements Notifier, Aborter {
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
-		m_xnLoader = xnLoader;
+		m_xnLoader = xeLoader.getXnLoader();
 		m_sections = sections;
 		m_nodeId = -1; // Ensure setNodeId does something
 		m_coreId = 0;

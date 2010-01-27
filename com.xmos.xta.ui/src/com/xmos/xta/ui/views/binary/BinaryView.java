@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.ui.views.binary.disassembly.DisassemblyView;
+import com.xmos.xta.ui.views.binary.graphics.GraphicsView;
 import com.xmos.xta.ui.views.binary.info.InfoView;
 
 public class BinaryView extends ViewPart {
@@ -31,6 +32,11 @@ public class BinaryView extends ViewPart {
 		createTab("Info", new controlBuilder() {
 			public TabbedView create(Composite composite) {
 				return new InfoView(composite);
+			}			
+		});		
+		createTab("Graphical", new controlBuilder() {
+			public TabbedView create(Composite composite) {
+				return new GraphicsView(composite);
 			}			
 		});		
 		m_folders.setSelection(0);

@@ -19,8 +19,6 @@ import org.eclipse.ui.PlatformUI;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.FileNameMatcher;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
