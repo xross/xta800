@@ -1,5 +1,8 @@
 package com.xmos.xta.ui.views.binary.graphics.objects;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
@@ -9,10 +12,16 @@ import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 
 public class GraphicsCore extends GraphicsObject {
 
+	private String m_name;
 	private int m_number;
+	private Map<String, GraphicsPort> m_ports;
+	private GraphicsPorts m_portsNode;
 
-    public GraphicsCore(int number) {
+    public GraphicsCore(String name, int number) {
+    	m_name = name;
     	m_number = number;
+    	m_ports = new TreeMap<String, GraphicsPort>();
+    	m_portsNode = new GraphicsPorts();
     }
 
     public void addInfo(Display display, ProgInfoEntry info) {
@@ -36,7 +45,7 @@ public class GraphicsCore extends GraphicsObject {
 	    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 	    	gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
 	    	
-	    	String label = String.format("Core %d", m_number);
+	    	String label = getName();
 	    	int labelX = label.length() * gc.getFontMetrics().getAverageCharWidth();
 	    	if (labelX < width) {
 		    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
@@ -57,7 +66,11 @@ public class GraphicsCore extends GraphicsObject {
 
 	@Override
 	public String getName() {
-		return String.format("Core %d", m_number);
+		if (m_name.length() > 0) {
+			return m_name;
+		} else {
+			return String.format("Core %d", m_number);
+		}
 	}
 
 	@Override
@@ -77,5 +90,21 @@ public class GraphicsCore extends GraphicsObject {
 			y += GraphicsUtils.getTextHeight();
 		}
 		return y;
+	}
+
+	public void addPort(String name, GraphicsPort port) {
+		m_ports.put(name, port);
+		if (m_portsNode.numChildren() == 0) {
+			addChild(m_portsNode);
+		}
+		m_portsNode.addChild(port);
+	}
+
+	public GraphicsPort getPort(String name) {
+		return m_ports.get(name);
+	}
+
+	public GraphicsPorts getPorts() {
+		return m_portsNode;
 	}
 }

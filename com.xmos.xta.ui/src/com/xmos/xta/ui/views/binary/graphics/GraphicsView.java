@@ -1,48 +1,56 @@
 package com.xmos.xta.ui.views.binary.graphics;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.State;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
 
 import com.xmos.libs.configloader.ConfigLoader;
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
-import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.handlers.SummaryHandler;
 import com.xmos.xta.ui.views.ControlMonitor;
 import com.xmos.xta.ui.views.binary.BinaryView;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsCore;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsDevice;
+import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsLink;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsNode;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsObject;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsPin;
+import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsPort;
+import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsPortBit;
 import com.xmos.xta.ui.views.binary.graphics.tree.GraphicsTreeViewer;
 
 public class GraphicsView extends ControlMonitor implements IPropertyChangeListener {
     
 	private Display m_display;
 
+	private SashForm m_left;
 	private GraphicsOptions m_options;
 	private GraphicsCanvas m_graphicsCanvas;
 	private GraphicsTreeViewer m_treeViewer;
 	private GraphicsDevice m_device;
 	private GraphicsObject m_selectedObject;
-	private static final int NUM_SIDES = 4;
 	private boolean m_summary;
 
 	public GraphicsView(final Composite parent) {
@@ -52,16 +60,14 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		parent.setLayout(new FillLayout());
 
 	    SashForm form = new SashForm(parent, SWT.HORIZONTAL);
-	    SashForm left = new SashForm(form, SWT.VERTICAL);
-	    m_treeViewer = new GraphicsTreeViewer(left);
-	    m_options = new GraphicsOptions(left, this);
+	    m_left = new SashForm(form, SWT.VERTICAL);
+	    m_treeViewer = new GraphicsTreeViewer(m_left);
 
 	    Composite bottom = new Composite(form, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	    bottom.setLayout(new FillLayout());
 	    m_graphicsCanvas = new GraphicsCanvas(bottom);
 
 	    form.setWeights(new int[] {1, 3});
-	    left.setWeights(new int[] {3, 1});
 
 	    GraphicsUtils.initialise(m_display);
 	    initialise();
@@ -69,18 +75,15 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		
 		m_treeViewer.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection sel = event.getSelection();
-				if (sel instanceof IStructuredSelection) {
-					IStructuredSelection selection = ((IStructuredSelection)sel);
-					if (selection.size() == 1) {
-						m_selectedObject = (GraphicsObject) selection.getFirstElement();
-						refresh();
-					} 
-		        }
+				m_selectedObject = m_treeViewer.getSelectedObject();
+				refresh();
 			}
 		});
 		
-		m_summary = true;
+		ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+		Command command = service.getCommand(SummaryHandler.COMMAND_ID);
+		State state = command.getState(SummaryHandler.STATE_ID);
+		m_summary = (Boolean) state.getValue();
 	}
 
 	public void dispose() {
@@ -95,8 +98,15 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 
 	private void initialise() {
 		m_selectedObject = buildGraphicsObject();
-		m_options.setGraphicsObject(m_device);
-		m_treeViewer.setGraphicsObject(m_device);
+		
+		if (m_options != null) {
+		    m_options.dispose();
+		}
+	    m_options = new GraphicsOptions(m_left, this, m_device);
+	    m_left.setWeights(new int[] {3, 1});
+	    m_left.layout(true);
+	    
+		m_treeViewer.setRoot(m_device);
 		m_graphicsCanvas.setGraphicsObject(m_device, m_summary);
 	}
 
@@ -111,6 +121,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 			return null;
 		}
 		
+		XnLoader xnLoader = xeLoader.getXnLoader();
 		ConfigLoader configLoader = xeLoader.getConfigLoader();
 		m_device = new GraphicsDevice("Device");
 		
@@ -119,24 +130,24 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 			m_device.addNode(nodeNumber, node);
 			
 			for (int coreNumber : configLoader.getCoreNumbers(nodeNumber)) {
-				GraphicsCore core = new GraphicsCore(coreNumber);
+				String coreName = xnLoader.getCoreName(nodeNumber, coreNumber);
+				GraphicsCore core = new GraphicsCore(coreName, coreNumber);
 				node.addCore(coreNumber, core);
+				
+				addCorePorts(configLoader, xnLoader, core, nodeNumber, coreNumber);
 			}					
 		}
 		
-		Pair<Integer, Integer> fontMetrics = getFontMetrics();
-		int averageCharWidth = fontMetrics.first;
-		int fontHeight = fontMetrics.second;
-		
 		Collection<Integer> pinNumbers = configLoader.getPinNumbers();
-		int pinsPerSide = (pinNumbers.size() + (NUM_SIDES - 1)) / NUM_SIDES;
 		for (int pinNumber : pinNumbers) {
-			int side = chooseSide(pinsPerSide, pinNumber);
-			
 			Map<String, String> attributes = configLoader.getPinAttributes(pinNumber);
-			GraphicsPin pin = new GraphicsPin(m_display, averageCharWidth, fontHeight,
-					side, pinNumber, attributes.get("name"));
-			m_device.addPin(side, pin);
+			String pinName = attributes.get("name");
+			GraphicsPin pin = new GraphicsPin(pinName);
+			
+			addPinPorts(configLoader, xnLoader, pin, pinNumber);
+			addPinLink(configLoader, pin, pinNumber);
+			
+			m_device.addPin(pinName, pin);
 		}
 		
 		ProgInfoLoader progInfoLoader = xeLoader.getProgInfoLoader();
@@ -148,28 +159,93 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		return m_device;
 	}
 
-	private int chooseSide(int pinsPerSide, int pinNumber) {
-		if (pinNumber < pinsPerSide) {
-			return SWT.TOP;
-		} else if (pinNumber < (pinsPerSide * 2)) {
-			return SWT.RIGHT;
-		} else if (pinNumber < (pinsPerSide * 3)) {
-			return SWT.BOTTOM;
-		} else {
-			return SWT.LEFT;
+	private void addCorePorts(ConfigLoader configLoader, XnLoader xnLoader, GraphicsCore core,
+			int nodeNumber, int coreNumber) {
+		List<String> portNames = new LinkedList<String>();
+		portNames.addAll(configLoader.getPortNames(nodeNumber, coreNumber));
+		Collections.sort(portNames);
+		
+		if (portNames.size() == 0) {
+			return;
+		}
+		
+		for (String portName : portNames) {
+			Map<String, String> attributes = configLoader.getPortAttributes(nodeNumber, coreNumber, portName);
+			if (attributes.keySet().isEmpty()) {
+				continue;
+			}
+			
+			try {
+				Map<String, String> xnNames = xnLoader.getPortNames(nodeNumber, coreNumber);
+				String xnName = xnNames.get(portName);
+				
+				GraphicsPort port = new GraphicsPort(portName, xnName, nodeNumber, coreNumber);
+				core.addPort(portName, port);
+				
+				addPortPins(configLoader, port, portName, nodeNumber, coreNumber);
+				
+			} catch (NumberFormatException e) {}
 		}
 	}
 
-	private Pair<Integer, Integer> getFontMetrics() {
-		Image image = new Image(m_display, 1, 1);
-        GC gc = new GC(image);
-        int averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
-		int fontHeight = gc.getFontMetrics().getHeight();
-        gc.dispose();
+	private void addPortPins(ConfigLoader configLoader, GraphicsPort port, String portName,
+			int nodeNumber, int coreNumber) {
 		
-		return new Pair<Integer, Integer>(averageCharWidth, fontHeight);
+		int numPins = configLoader.getNumPortPins(nodeNumber, coreNumber, portName);
+		
+		for (int pinNum = 0; pinNum < numPins; pinNum++) {
+			Map<String, String> attributes = configLoader.getPortPinAttributes(nodeNumber, coreNumber, portName, pinNum);
+			if (attributes.keySet().isEmpty()) {
+				continue;
+			}
+			
+			GraphicsPin pin = new GraphicsPin(attributes.get("name"), pinNum);
+			port.addChild(pin);
+		}
 	}
-	
+
+	private void addPinPorts(ConfigLoader configLoader, XnLoader xnLoader, GraphicsPin pin, int pinNumber) {
+		Set<Integer> priorities = configLoader.getPinPortPriorities(pinNumber);
+		
+		for (int priority : priorities) {
+			Map<String, String> attributes = configLoader.getPinPortAttributes(pinNumber, priority);
+			if (attributes.keySet().isEmpty()) {
+				continue;
+			}
+			
+			try {
+				String name = attributes.get("name");
+				int node = Integer.parseInt(attributes.get("node"));
+				int core = Integer.parseInt(attributes.get("core"));
+				int bitNum = Integer.parseInt(attributes.get("bitNum"));
+				
+				Map<String, String> xnNames = xnLoader.getPortNames(node, core);
+				String xnName = xnNames.get(name);
+				
+				GraphicsPortBit port = new GraphicsPortBit(name, xnName, node, core, bitNum);
+				pin.addChild(port);
+				
+			} catch (NumberFormatException e) {}
+		}
+	}
+
+	private void addPinLink(ConfigLoader configLoader, GraphicsPin pin, int pinNumber) {
+		Map<String, String> attributes = configLoader.getPinLinkAttributes(pinNumber);
+		if (attributes.keySet().isEmpty()) {
+			return;
+		}
+		
+		try {
+			int node = Integer.parseInt(attributes.get("node"));
+			int number = Integer.parseInt(attributes.get("number"));
+			int bitNum = Integer.parseInt(attributes.get("bitNum"));
+			String dir = "dir_" + attributes.get("dir");
+			GraphicsLink link = new GraphicsLink(node, number, bitNum, dir);
+			pin.addChild(link);
+			
+		} catch (NumberFormatException e) {}
+	}
+
 	public void setPie(boolean enable) {
 		if (enable) {
 			GraphicsUtils.setChartType(GraphicsUtils.CHART_PIE);

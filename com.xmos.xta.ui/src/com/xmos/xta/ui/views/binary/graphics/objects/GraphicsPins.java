@@ -1,12 +1,18 @@
 package com.xmos.xta.ui.views.binary.graphics.objects;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 
 public class GraphicsPins extends GraphicsObject {
 
+	private Map<String, GraphicsPin> m_pins;
+	
     public GraphicsPins() {
+    	m_pins = new TreeMap<String, GraphicsPin>();
     }
 
 	@Override
@@ -40,5 +46,14 @@ public class GraphicsPins extends GraphicsObject {
 
 	public GraphicsObject getObject(int x, int y, boolean summary) {
 		return null;
+	}
+
+	public void addPin(String name, GraphicsPin pin) {
+		m_pins.put(name, pin);
+		addChild(pin);
+	}
+
+	public GraphicsPin getPin(String name) {
+		return m_pins.get(name);
 	}
 }

@@ -1,6 +1,5 @@
 package com.xmos.xta.ui.views.binary.graphics.objects;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;

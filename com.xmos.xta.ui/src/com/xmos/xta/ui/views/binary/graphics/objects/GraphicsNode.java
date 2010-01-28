@@ -95,7 +95,7 @@ public class GraphicsNode extends GraphicsObject {
     	int height = getPixelsY(summary);
     	gc.fillRoundRectangle(x, y, width, height, CORNER_ROUNDING, CORNER_ROUNDING);
 
-    	String label = String.format("Node %d", m_number);
+    	String label = getName();
     	int labelX = label.length() * gc.getFontMetrics().getAverageCharWidth();
     	if (labelX < width) {
 	    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -144,5 +144,17 @@ public class GraphicsNode extends GraphicsObject {
 		int numCores = m_cores.size();
 		assert(numCores == 4 || numCores == 1);
 		return numCores;
+	}
+
+	public GraphicsPort getPort(int coreNumber, String name) {
+		GraphicsCore core = m_cores.get(coreNumber);
+		if (core != null) {
+			return core.getPort(name);
+		}
+		return null;
+	}
+
+	public GraphicsCore getCore(int coreNumber) {
+		return m_cores.get(coreNumber);
 	}
 }
