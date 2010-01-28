@@ -15,8 +15,8 @@ public class GraphicsDevice extends GraphicsObject {
 
     static final int NAME_PADDING = 5;
     static final int CORNER_ROUNDING = 7;
-    private static final int BORDER_X = 10;
-    private static final int BORDER_Y = 10;
+    private static final int BORDER_X = 5;
+    private static final int BORDER_Y = 5;
 
     private GraphicsPins m_graphicsPins;
     private Map<Integer, List<GraphicsPin>> m_pins;

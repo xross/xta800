@@ -24,7 +24,8 @@ import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.views.binary.TabbedView;
+import com.xmos.xta.ui.views.ControlMonitor;
+import com.xmos.xta.ui.views.binary.BinaryView;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsCore;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsDevice;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsNode;
@@ -32,7 +33,7 @@ import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsObject;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsPin;
 import com.xmos.xta.ui.views.binary.graphics.tree.GraphicsTreeViewer;
 
-public class GraphicsView implements TabbedView, IPropertyChangeListener {
+public class GraphicsView extends ControlMonitor implements IPropertyChangeListener {
     
 	private Display m_display;
 
@@ -42,27 +43,25 @@ public class GraphicsView implements TabbedView, IPropertyChangeListener {
 	private GraphicsDevice m_device;
 	private GraphicsObject m_selectedObject;
 	private static final int NUM_SIDES = 4;
+	private boolean m_summary;
 
 	public GraphicsView(final Composite parent) {
+		super(BinaryView.ID, true);
+		
 		m_display = parent.getDisplay();
 		parent.setLayout(new FillLayout());
 
 	    SashForm form = new SashForm(parent, SWT.HORIZONTAL);
-	    Composite left = new Composite(form, SWT.BORDER);
-	    left.setLayout(new FillLayout());
+	    SashForm left = new SashForm(form, SWT.VERTICAL);
 	    m_treeViewer = new GraphicsTreeViewer(left);
+	    m_options = new GraphicsOptions(left, this);
 
-	    SashForm right = new SashForm(form, SWT.VERTICAL);
-	    Composite top = new Composite(right, SWT.BORDER);
-	    top.setLayout(new FillLayout());
-	    m_options = new GraphicsOptions(top, this);
-
-	    Composite bottom = new Composite(right, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	    Composite bottom = new Composite(form, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	    bottom.setLayout(new FillLayout());
 	    m_graphicsCanvas = new GraphicsCanvas(bottom);
 
 	    form.setWeights(new int[] {1, 3});
-	    right.setWeights(new int[] {1, 4});
+	    left.setWeights(new int[] {3, 1});
 
 	    initialise();
 		GuiEngine.addBroadcastListener(this);
@@ -79,6 +78,8 @@ public class GraphicsView implements TabbedView, IPropertyChangeListener {
 		        }
 			}
 		});
+		
+		m_summary = true;
 	}
 
 	public void dispose() {
@@ -93,13 +94,13 @@ public class GraphicsView implements TabbedView, IPropertyChangeListener {
 
 	private void initialise() {
 		m_selectedObject = buildGraphicsObject();
-		m_graphicsCanvas.setGraphicsObject(m_device, m_options.getSummary());
 		m_options.setGraphicsObject(m_device);
 		m_treeViewer.setGraphicsObject(m_device);
+		m_graphicsCanvas.setGraphicsObject(m_device, m_summary);
 	}
 
 	public void refresh() {
-		m_graphicsCanvas.setGraphicsObject(m_selectedObject, m_options.getSummary());
+		m_graphicsCanvas.setGraphicsObject(m_selectedObject, m_summary);
 	}
 
 	private GraphicsObject buildGraphicsObject() {
@@ -166,5 +167,19 @@ public class GraphicsView implements TabbedView, IPropertyChangeListener {
         gc.dispose();
 		
 		return new Pair<Integer, Integer>(averageCharWidth, fontHeight);
+	}
+	
+	public void setPie(boolean enable) {
+		if (enable) {
+			GraphicsUtils.setChartType(GraphicsUtils.CHART_PIE);
+		} else {
+			GraphicsUtils.setChartType(GraphicsUtils.CHART_BAR);
+		}
+		refresh();
+	}
+
+	public void setSummary(boolean enable) {
+		m_summary = enable;
+		refresh();
 	}
 }

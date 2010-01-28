@@ -5,10 +5,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import com.xmos.xta.ui.Broadcaster;
-import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.ui.views.Views;
-import com.xmos.xta.ui.views.visualisations.ControlMonitor;
 import com.xmos.xta.ui.views.visualisations.Renderer;
 import com.xmos.xta.ui.views.visualisations.RendererControl;
 import com.xmos.xta.ui.views.visualisations.ZoomedCanvasProperties;
@@ -19,9 +17,8 @@ import com.xmos.xta.ui.views.visualisations.viewnode.StructureFunctionNode;
 import com.xmos.xta.ui.views.visualisations.viewnode.StructureLoopNode;
 import com.xmos.xta.ui.views.visualisations.viewnode.StructureSequenceNode;
 import com.xmos.xta.ui.views.visualisations.viewnode.ViewNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
-public class StructureView extends ZoomedCanvasView implements ControlMonitor {
+public class StructureView extends ZoomedCanvasView {
     public static final String ID = "com.xmos.xta.ui.views.structure.Structure";
 
 	public StructureView(Composite parent) {
@@ -73,26 +70,6 @@ public class StructureView extends ZoomedCanvasView implements ControlMonitor {
 
 	protected ZoomedCanvasProperties createCanvasProperties() {
 		return new ZoomedCanvasProperties(true);
-	}
-	
-	public void setExportJpgEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_EXPORT_JPG_ENABLED, "");
-	}
-
-	public void setZoomFitEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_FIT_ENABLED, "");
-	}
-
-	public void setZoomInEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_IN_ENABLED, "");
-	}
-
-	public void setZoomOutEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_OUT_ENABLED, "");
-	}
-
-	public void setZoomResetEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_RESET_ENABLED, "");
 	}
 
 	public void menuAboutToShow(IMenuManager manager) {

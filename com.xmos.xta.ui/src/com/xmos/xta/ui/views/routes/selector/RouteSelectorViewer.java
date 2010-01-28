@@ -19,11 +19,8 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 
 import com.xmos.xta.core.engine.Engine;
@@ -43,28 +40,19 @@ public class RouteSelectorViewer {
 	
     public RouteSelectorViewer(Composite parent) {
     	m_parent = parent;
+		m_viewer = new TreeViewer(m_parent);
+
+		m_viewer.setContentProvider(new RouteSelectorContentProvider());
+	    m_viewer.setLabelProvider(new RouteSelectorLabelProvider());
+		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
+
+	    createContextMenus();
     }
     
     public TreeViewer getViewer() {
     	return m_viewer;
     }
     
-    public void create(Sash sash) {
-		m_viewer = new TreeViewer(m_parent);
-		FormData data = new FormData();
-	    data.top = new FormAttachment(sash, 0);
-	    data.bottom = new FormAttachment(100, 0);
-	    data.left = new FormAttachment(0, 0);
-	    data.right = new FormAttachment(100, 0);
-	    m_viewer.getControl().setLayoutData(data);
-	    
-	    m_viewer.setContentProvider(new RouteSelectorContentProvider());
-	    m_viewer.setLabelProvider(new RouteSelectorLabelProvider());
-		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
-
-	    createContextMenus();
-	}
-	
     public void initialise() {	
 		RouteNode hiddenRouteNode = new RouteNode(null, null);		
 		for (Route route : GuiEngine.getEngine().getRoutes()) {

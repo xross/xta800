@@ -43,9 +43,10 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiRouteProperties;
+import com.xmos.xta.ui.views.ControlMonitor;
 import com.xmos.xta.ui.views.visualisations.viewnode.ViewNode;
 
-public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenuListener {
+public abstract class ZoomedCanvasView extends ControlMonitor implements IPropertyChangeListener, IMenuListener {
     public static final boolean DEBUG = false;
 
 	private static final int LEFT_MOUSE_BUTTON = 1;
@@ -71,6 +72,8 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
     private String m_name;
 
 	public ZoomedCanvasView(String name, Composite parent) {
+		super(VisualisationsView.ID, true);
+
 		m_name = name;
 		if (DEBUG) System.out.println(m_name + "()");			
 		GuiEngine.addBroadcastListener(this);
@@ -163,7 +166,7 @@ public abstract class ZoomedCanvasView implements IPropertyChangeListener, IMenu
 	protected abstract Renderer createRenderer(Display display, RendererControl renderControl,
 			ZoomedCanvasProperties canvasProperties, Canvas canvas);
 		
-	public void exportJpg(){
+	public void exportJpg() {
 		
 		BufferedOutputStream bufferedOutput = null;
         try {

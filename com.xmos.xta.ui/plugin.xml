@@ -91,37 +91,91 @@
       <menuContribution
             locationURI="toolbar:com.xmos.xta.ui.views.visualisations.Visualisations">
          <command
-               commandId="com.xmos.xta.ui.zoomin.command"
+               commandId="com.xmos.xta.ui.visualisations.zoomin.command"
                icon="icons/zoomin.png"
-               id="com.xmos.xta.ui.zoomin.command"
+               id="com.xmos.xta.ui.visualisations.zoomin.command"
                label="Zoom In"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.ui.zoomout.command"
+               commandId="com.xmos.xta.ui.visualisations.zoomout.command"
                icon="icons/zoomout.png"
-               id="com.xmos.xta.ui.zoomout.command"
+               id="com.xmos.xta.ui.visualisations.zoomout.command"
                label="Zoom Out"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.ui.zoomreset.command"
+               commandId="com.xmos.xta.ui.visualisations.zoomreset.command"
                icon="icons/zoomreset.png"
-               id="com.xmos.xta.ui.zoomreset.command"
+               id="com.xmos.xta.ui.visualisations.zoomreset.command"
                label="Reset Zoom"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.ui.zoomfit.command"
+               commandId="com.xmos.xta.ui.visualisations.zoomfit.command"
                icon="icons/zoomfit.png"
                id="com.xmos.xta.ui.zoomfit.command"
                label="Zoom to fit"
                style="push">
          </command>
          <command
-               commandId="com.xmos.xta.ui.exportjpg.command"
+               commandId="com.xmos.xta.ui.visualisations.exportjpg.command"
                icon="icons/filesave.png"
-               id="com.xmos.xta.ui.exportjpg.command"
+               id="com.xmos.xta.ui.visualisations.exportjpg.command"
+               label="Export as jpg"
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:com.xmos.xta.ui.views.binary.Binary">
+         <command
+               commandId="com.xmos.xta.ui.binary.pie.command"
+               icon="icons/pie.png"
+               id="com.xmos.xta.ui.binary.pie.command"
+               label="Pie chart"
+               style="toggle"
+               tooltip="Draw as pie chart">
+         </command>
+         <command
+               commandId="com.xmos.xta.ui.binary.summary.command"
+               icon="icons/summary.png"
+               id="com.xmos.xta.ui.binary.summary.command"
+               label="Summary"
+               style="toggle"
+               tooltip="Show summary">
+         </command>
+         <command
+               commandId="com.xmos.xta.ui.binary.zoomin.command"
+               icon="icons/zoomin.png"
+               id="com.xmos.xta.ui.binary.zoomin.command"
+               label="Zoom In"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.ui.binary.zoomout.command"
+               icon="icons/zoomout.png"
+               id="com.xmos.xta.ui.binary.zoomout.command"
+               label="Zoom Out"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.ui.binary.zoomreset.command"
+               icon="icons/zoomreset.png"
+               id="com.xmos.xta.ui.binary.zoomreset.command"
+               label="Reset Zoom"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.ui.binary.zoomfit.command"
+               icon="icons/zoomfit.png"
+               id="com.xmos.xta.ui.binary.zoomfit.command"
+               label="Zoom to fit"
+               style="push">
+         </command>
+         <command
+               commandId="com.xmos.xta.ui.binary.exportjpg.command"
+               icon="icons/filesave.png"
+               id="com.xmos.xta.ui.binary.exportjpg.command"
                label="Export as jpg"
                style="push">
          </command>
@@ -130,29 +184,72 @@
    <extension
          point="org.eclipse.ui.commands">
 	<command
-            defaultHandler="com.xmos.xta.ui.handlers.ZoomInHandler"
-            id="com.xmos.xta.ui.zoomin.command"
-            name="com.xmos.xta.ui.zoomin.command">
+            defaultHandler="com.xmos.xta.ui.views.visualisations.handlers.ZoomInHandler"
+            id="com.xmos.xta.ui.visualisations.zoomin.command"
+            name="com.xmos.xta.ui.visualisations.zoomin.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.ui.handlers.ZoomOutHandler"
-            id="com.xmos.xta.ui.zoomout.command"
-            name="com.xmos.xta.ui.zoomout.command">
+            defaultHandler="com.xmos.xta.ui.views.visualisations.handlers.ZoomOutHandler"
+            id="com.xmos.xta.ui.visualisations.zoomout.command"
+            name="com.xmos.xta.ui.visualisations.zoomout.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.ui.handlers.ZoomResetHandler"
-            id="com.xmos.xta.ui.zoomreset.command"
-            name="com.xmos.xta.ui.zoomreset.command">
+            defaultHandler="com.xmos.xta.ui.views.visualisations.handlers.ZoomResetHandler"
+            id="com.xmos.xta.ui.visualisations.zoomreset.command"
+            name="com.xmos.xta.ui.visualisations.zoomreset.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.ui.handlers.ZoomFitHandler"
-            id="com.xmos.xta.ui.zoomfit.command"
-            name="com.xmos.xta.ui.zoomfit.command">
+            defaultHandler="com.xmos.xta.ui.views.visualisations.handlers.ZoomFitHandler"
+            id="com.xmos.xta.ui.visualisations.zoomfit.command"
+            name="com.xmos.xta.ui.visualisations.zoomfit.command">
       </command>
       <command
-            defaultHandler="com.xmos.xta.ui.handlers.ExportJpgHandler"
-            id="com.xmos.xta.ui.exportjpg.command"
-            name="com.xmos.xta.ui.exportjpg.command">
+            defaultHandler="com.xmos.xta.ui.views.visualisations.handlers.ExportJpgHandler"
+            id="com.xmos.xta.ui.visualisations.exportjpg.command"
+            name="com.xmos.xta.ui.visualisations.exportjpg.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.ui.views.binary.handlers.ZoomInHandler"
+            id="com.xmos.xta.ui.binary.zoomin.command"
+            name="com.xmos.xta.ui.binary.zoomin.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.ui.views.binary.handlers.ZoomOutHandler"
+            id="com.xmos.xta.ui.binary.zoomout.command"
+            name="com.xmos.xta.ui.binary.zoomout.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.ui.views.binary.handlers.ZoomResetHandler"
+            id="com.xmos.xta.ui.binary.zoomreset.command"
+            name="com.xmos.xta.ui.binary.zoomreset.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.ui.views.binary.handlers.ZoomFitHandler"
+            id="com.xmos.xta.ui.binary.zoomfit.command"
+            name="com.xmos.xta.ui.binary.zoomfit.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.ui.views.binary.handlers.ExportJpgHandler"
+            id="com.xmos.xta.ui.binary.exportjpg.command"
+            name="com.xmos.xta.ui.binary.exportjpg.command">
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.ui.views.binary.handlers.PieHandler"
+            id="com.xmos.xta.ui.binary.pie.command"
+            name="com.xmos.xta.ui.binary.pie.command">
+         <state
+               class="org.eclipse.jface.commands.ToggleState"
+               id="com.xmos.xta.ui.binary.pie.command.toggleState">
+         </state>
+      </command>
+      <command
+            defaultHandler="com.xmos.xta.ui.views.binary.handlers.SummaryHandler"
+            id="com.xmos.xta.ui.binary.summary.command"
+            name="com.xmos.xta.ui.binary.summary.command">
+         <state
+               class="org.eclipse.jface.commands.ToggleState"
+               id="com.xmos.xta.ui.binary.summary.command.toggleState">
+         </state>
       </command>
    </extension>
    <extension

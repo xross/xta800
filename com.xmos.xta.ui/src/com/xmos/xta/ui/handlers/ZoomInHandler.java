@@ -9,10 +9,13 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.views.visualisations.VisualisationsView;
+import com.xmos.xta.ui.views.ViewControls;
 
 public class ZoomInHandler extends AbstractHandler implements IPropertyChangeListener {
-    public ZoomInHandler() {
+	private String m_view;
+
+	public ZoomInHandler(String view) {
+		m_view = view;
     	GuiEngine.addBroadcastListener(this);
     }
 
@@ -22,17 +25,19 @@ public class ZoomInHandler extends AbstractHandler implements IPropertyChangeLis
     }
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		VisualisationsView control = (VisualisationsView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(VisualisationsView.ID);
+		ViewControls control = (ViewControls)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(m_view);
 		control.zoomIn();
 		return null;
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_IN_ENABLED)) {
-			setBaseEnabled(true);
-			
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_IN_DISABLED)) {
-			setBaseEnabled(false);
+		if (event.getOldValue().equals(m_view)) {
+			if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_IN_ENABLED)) {
+				setBaseEnabled(true);
+				
+			} else if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_IN_DISABLED)) {
+				setBaseEnabled(false);
+			}
 		}
 	}	
 }

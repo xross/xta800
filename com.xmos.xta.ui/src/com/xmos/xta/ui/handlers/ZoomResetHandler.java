@@ -9,10 +9,13 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.views.visualisations.VisualisationsView;
+import com.xmos.xta.ui.views.ViewControls;
 
 public class ZoomResetHandler extends AbstractHandler implements IPropertyChangeListener {
-    public ZoomResetHandler() {
+	private String m_view;
+	
+    public ZoomResetHandler(String view) {
+    	m_view = view;
     	GuiEngine.addBroadcastListener(this);
     }
 
@@ -22,17 +25,19 @@ public class ZoomResetHandler extends AbstractHandler implements IPropertyChange
     }
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		VisualisationsView control = (VisualisationsView)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(VisualisationsView.ID);
+		ViewControls control = (ViewControls)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(m_view);
 		control.zoomReset();
 		return null;
 	}
 	
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_RESET_ENABLED)) {
-			setBaseEnabled(true);
-			
-		} else if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_RESET_DISABLED)) {
-			setBaseEnabled(false);
+		if (event.getOldValue().equals(m_view)) {
+			if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_RESET_ENABLED)) {
+				setBaseEnabled(true);
+				
+			} else if (event.getProperty().equals(Broadcaster.BROADCAST_ZOOM_RESET_DISABLED)) {
+				setBaseEnabled(false);
+			}
 		}
 	}			
 }

@@ -27,6 +27,10 @@ public class Broadcaster {
 	public static final String BROADCAST_ZOOM_OUT_DISABLED   = "ZoomOutDisabled";
 	public static final String BROADCAST_ZOOM_RESET_ENABLED  = "ZoomResetEnabled";
 	public static final String BROADCAST_ZOOM_RESET_DISABLED = "ZoomResetDisabled";
+	public static final String BROADCAST_PIE_ENABLED         = "PieEnabled";
+	public static final String BROADCAST_PIE_DISABLED        = "PieDisabled";
+	public static final String BROADCAST_SUMMARY_ENABLED     = "SummaryEnabled";
+	public static final String BROADCAST_SUMMARY_DISABLED    = "SummaryDisabled";
 	public static final String BROADCAST_SRC_COMMANDS_DONE   = "SrcCommandsDone";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
@@ -51,7 +55,7 @@ public class Broadcaster {
 		final List<IPropertyChangeListener> listeners = getListeners();
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
-				PropertyChangeEvent event = new PropertyChangeEvent(this, message, null, null);				
+				PropertyChangeEvent event = new PropertyChangeEvent(this, message, argument, null);				
 				for (IPropertyChangeListener listener : listeners) {
 					listener.propertyChange(event);
 				}

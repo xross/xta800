@@ -12,11 +12,13 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.ui.views.ControlMonitor;
+import com.xmos.xta.ui.views.ViewControls;
 import com.xmos.xta.ui.views.visualisations.function.FunctionView;
 import com.xmos.xta.ui.views.visualisations.structure.StructureView;
 import com.xmos.xta.ui.views.visualisations.timedistribution.TimeDistributionView;
 
-public class VisualisationsView extends ViewPart {
+public class VisualisationsView extends ViewPart implements ViewControls {
 	public static final String ID = "com.xmos.xta.ui.views.visualisations.Visualisations";
 	
 	private TabFolder m_folders;
@@ -55,15 +57,22 @@ public class VisualisationsView extends ViewPart {
 
 		m_folders.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {				
-			    ControlMonitor controlMonitor = getSelectedTab();
-			    controlMonitor.setExportJpgEnabled();
-			    controlMonitor.setZoomFitEnabled();
-			    controlMonitor.setZoomInEnabled();
-			    controlMonitor.setZoomOutEnabled();
-			    controlMonitor.setZoomResetEnabled();			    
+				updateControls();
 			}			
 		});
 		m_folders.setSelection(0);
+
+		// The selection event doesn't fire if the selection doesn't change - force update
+		updateControls();
+	}
+
+	protected void updateControls() {
+	    ControlMonitor controlMonitor = getSelectedTab();
+	    controlMonitor.updateExportJpgEnabled();
+	    controlMonitor.updateZoomFitEnabled();
+	    controlMonitor.updateZoomInEnabled();
+	    controlMonitor.updateZoomOutEnabled();
+	    controlMonitor.updateZoomResetEnabled();			    
 	}
 
 	public void setFocus() {
@@ -89,6 +98,12 @@ public class VisualisationsView extends ViewPart {
 		getSelectedTab().exportJpg();
 	}
 	
+	public void setPie(boolean enable) {
+	}
+
+	public void setSummary(boolean enable) {
+	}
+
 	private void createTab(String name, controlMonitorBuilder builder) {
 		TabItem tab = new TabItem(m_folders, SWT.NONE);
 		tab.setText(name);

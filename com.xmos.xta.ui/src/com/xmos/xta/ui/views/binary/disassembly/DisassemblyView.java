@@ -58,10 +58,11 @@ import com.xmos.xta.ui.annotations.XtaAnnotations;
 import com.xmos.xta.ui.annotations.XtaDisassemblyAnnotations;
 import com.xmos.xta.ui.dialogs.Find;
 import com.xmos.xta.ui.editors.XtaDocumentProvider;
-import com.xmos.xta.ui.views.binary.TabbedView;
+import com.xmos.xta.ui.views.ControlMonitor;
+import com.xmos.xta.ui.views.binary.BinaryView;
 
 @SuppressWarnings("restriction")
-public class DisassemblyView implements TabbedView, XtaAnnotatedObject {
+public class DisassemblyView extends ControlMonitor implements XtaAnnotatedObject {
 	public final static String ID = "com.xmos.xta.ui.views.binary.Binary";
 	public final static String ViewContextViewID  = "#BinaryViewContext";
 	public final static String RulerContextViewID = "#BinaryEditorRulerContext";
@@ -90,6 +91,7 @@ public class DisassemblyView implements TabbedView, XtaAnnotatedObject {
 	private SourceViewerDecorationSupport m_sourceViewerDecorationSupport;
 
 	public DisassemblyView(Composite parent, IWorkbenchPartSite site) {
+		super(BinaryView.ID, false);
 		m_site = site;
 		
 		m_annotationPreferences = new MarkerAnnotationPreferences();

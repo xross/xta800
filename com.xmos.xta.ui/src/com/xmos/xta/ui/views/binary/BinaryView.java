@@ -1,68 +1,126 @@
 package com.xmos.xta.ui.views.binary;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.ui.views.ControlMonitor;
+import com.xmos.xta.ui.views.ViewControls;
 import com.xmos.xta.ui.views.binary.disassembly.DisassemblyView;
 import com.xmos.xta.ui.views.binary.graphics.GraphicsView;
 import com.xmos.xta.ui.views.binary.info.InfoView;
 
-public class BinaryView extends ViewPart {
+public class BinaryView extends ViewPart implements ViewControls {
 	public static final String ID = "com.xmos.xta.ui.views.binary.Binary";
 	
 	private TabFolder m_folders;
-	private List<TabbedView> m_views;
+	private Map<TabItem, ControlMonitor> m_tabMap;
 
 	public void createPartControl(Composite parent) {
 		m_folders = new TabFolder(parent, SWT.BORDER);
-		m_views = new ArrayList<TabbedView>();
+		m_tabMap = new HashMap<TabItem, ControlMonitor>();
 
 		createTab("Disassembly", new controlBuilder() {
-			public TabbedView create(Composite composite) {
+			public ControlMonitor create(Composite composite) {
 				return new DisassemblyView(composite, getSite());
-			}			
+			}
 		});
 		createTab("Info", new controlBuilder() {
-			public TabbedView create(Composite composite) {
+			public ControlMonitor create(Composite composite) {
 				return new InfoView(composite);
-			}			
-		});		
+			}
+		});
 		createTab("Graphical", new controlBuilder() {
-			public TabbedView create(Composite composite) {
+			public ControlMonitor create(Composite composite) {
 				return new GraphicsView(composite);
+			}
+		});
+
+		m_folders.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				updateControls();
 			}			
-		});		
+		});
 		m_folders.setSelection(0);
+
+		// The selection event doesn't fire if the selection doesn't change - force update
+		updateControls();
+	}
+
+	protected void updateControls() {
+	    ControlMonitor controlMonitor = getSelectedTab();
+	    controlMonitor.updateExportJpgEnabled();
+	    controlMonitor.updateZoomFitEnabled();
+	    controlMonitor.updateZoomInEnabled();
+	    controlMonitor.updateZoomOutEnabled();
+	    controlMonitor.updateZoomResetEnabled();			    
+	    controlMonitor.updatePieEnabled();
+	    controlMonitor.updateSummaryEnabled();
 	}
 
 	public void dispose() {
 		super.dispose();
-		for (TabbedView tabbedView : m_views) {
-			tabbedView.dispose();
+		for (ControlMonitor monitor : m_tabMap.values()) {
+			monitor.dispose();
 		}
+		m_tabMap.clear();
 	}
 
 	public void setFocus() {
 	}
 	
+	public void zoomIn() {
+		getSelectedTab().zoomIn();
+	}
+
+	public void zoomOut() {
+		getSelectedTab().zoomOut();
+	}
+
+	public void zoomReset() {
+		getSelectedTab().zoomReset();
+	}
+
+	public void zoomFit() {
+		getSelectedTab().zoomFit();
+	}
+	
+	public void exportJpg(){
+		getSelectedTab().exportJpg();
+	}
+
+	public void setPie(boolean enable){
+		getSelectedTab().setPie(enable);
+	}
+
+	public void setSummary(boolean enable){
+		getSelectedTab().setSummary(enable);
+	}
+
 	private void createTab(String name, controlBuilder builder) {
 		TabItem tab = new TabItem(m_folders, SWT.NONE);
 		tab.setText(name);
 		Composite composite = new Composite(m_folders, SWT.NONE);
 		composite.setLayout(new FillLayout());		
 		tab.setControl(composite);	
-		TabbedView tabbedView = builder.create(composite);
-		m_views.add(tabbedView);
+		ControlMonitor controlMonitor = builder.create(composite);
+		m_tabMap.put(tab, controlMonitor);
 	}
 
 	static private interface controlBuilder {
-		TabbedView create(Composite composite);
+		ControlMonitor create(Composite composite);
+	}
+
+	private ControlMonitor getSelectedTab() {
+		TabItem[] selected = m_folders.getSelection();
+		return m_tabMap.get(selected[0]);
 	}
 }

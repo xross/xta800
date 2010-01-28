@@ -1,8 +1,10 @@
 package com.xmos.xta.ui.views.binary.graphics.objects;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.swt.SWT;
@@ -13,6 +15,7 @@ import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 
 public abstract class GraphicsObject {
 	
@@ -59,10 +62,21 @@ public abstract class GraphicsObject {
     	createAndAddInfo(display, info);
     }
     
+	public void getInfoNames(Set<String> names) {
+		for (GraphicsObject child : m_children) {
+			child.getInfoNames(names);
+		}
+
+		for (GraphicsObject info : m_infos.values()) {
+			names.add(info.getName());
+		}
+	}
+
 	public GraphicsObject getObject(int x, int y, boolean summary) {
 		if (summary) {
 			GraphicsObject object = null;
-			for (GraphicsObject info : m_infos.values()) {
+			Collection<GraphicsInfo> active = getActiveInfos();
+			for (GraphicsObject info : active) {
 				object = info.getObject(x, y, false);
 				if (object != null) {
 					return object;
@@ -135,25 +149,27 @@ public abstract class GraphicsObject {
 	}
 
 	protected void drawInfo(Display display, GC gc, int x, int y, double scale, boolean summary) {
-		int numElements = m_infos.size();
-		
+		Collection<GraphicsInfo> active = getActiveInfos();
+		int numElements = active.size();
 		if (numElements == 0) {
 			return;
 		}
 		
-		int numCols = numCols();
-		int numRows = numRows(numCols);
+		int numCols = numCols(active);
 		
 		int offsetX = x + INFO_SPACING_X;
 		int offsetY = y + INFO_SPACING_Y;
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : m_infos.values()) {
+		for (GraphicsInfo info : active) {
+			if (!isActive(info)) {
+				continue;
+			}
 			info.draw(display, gc, offsetX, offsetY, scale, summary);
 
 			int col = (elementNum % numCols);
-			int row = (elementNum / numRows);
-			if (col == (numCols() - 1)) {
+			int row = (elementNum / numCols);
+			if (col == (numCols(active) - 1)) {
 				offsetX = x + INFO_SPACING_X;
 				offsetY = offsetY + getRowPixelsY(row) + INFO_SPACING_Y;
 			} else {
@@ -163,22 +179,39 @@ public abstract class GraphicsObject {
 		}
 	}
 
+	private boolean isActive(GraphicsInfo info) {
+		return GraphicsUtils.getSelectedOptions().contains(info.getName());
+	}
+	
+	private Collection<GraphicsInfo> getActiveInfos() {
+		Collection<GraphicsInfo> active = new LinkedList<GraphicsInfo>();
+		Set<String> activeOptions = GraphicsUtils.getSelectedOptions();
+		
+		for (GraphicsInfo info : m_infos.values()) {
+			if (activeOptions.contains(info.getName())) {
+				active.add(info);
+			}
+		}
+
+		return active;
+	}
 	protected int getInfoPixelsX() {
-		int numElements = m_infos.size();
+		Collection<GraphicsInfo> active = getActiveInfos();
+		int numElements = active.size();
 		if (numElements == 0) {
 			return 0;
 		}
 		
-		int numCols = numCols();
-		int numRows = numRows(numCols);
+		int numCols = numCols(active);
+		int numRows = numRows(active, numCols);
 		int x[] = new int[numRows];
 		for (int i = 0; i < numRows; i++) {
 			x[i] = INFO_SPACING_X;
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : m_infos.values()) {
-			int rowNumber = (elementNum / numRows);
+		for (GraphicsInfo info : active) {
+			int rowNumber = (elementNum / numCols);
 			x[rowNumber] += info.getPixelsX(false) + INFO_SPACING_X;
 			elementNum++;
 		}
@@ -191,19 +224,20 @@ public abstract class GraphicsObject {
 	}
 
 	protected int getInfoPixelsY() {
-		int numElements = m_infos.size();
+		Collection<GraphicsInfo> active = getActiveInfos();
+		int numElements = active.size();
 		if (numElements == 0) {
 			return 0;
 		}
 		
-		int numCols = numCols();
+		int numCols = numCols(active);
 		int y[] = new int[numCols];
 		for (int i = 0; i < numCols; i++) {
 			y[i] = INFO_SPACING_Y;
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : m_infos.values()) {
+		for (GraphicsInfo info : active) {
 			int colNumber = (elementNum % numCols);
 			y[colNumber] += info.getPixelsY(false) + INFO_SPACING_Y;
 			elementNum++;
@@ -216,16 +250,17 @@ public abstract class GraphicsObject {
 		return max;
 	}
 
-	private int numCols() {
-		return (int) Math.ceil(Math.sqrt(m_infos.size()));
+	private int numCols(Collection<GraphicsInfo> active) {
+		return (int) Math.ceil(Math.sqrt(active.size()));
 	}
 
-	private int numRows(int numCols) {
-		return m_infos.size() / numCols;
+	private int numRows(Collection<GraphicsInfo> active, int numCols) {
+		return (active.size() + numCols - 1) / numCols;
 	}
 
 	private int getColPixelsX(int col) {
-		int numCols = numCols();
+		Collection<GraphicsInfo> active = getActiveInfos();
+		int numCols = numCols(active);
 		assert(col < numCols);
 		
 		int x[] = new int[numCols];
@@ -234,7 +269,7 @@ public abstract class GraphicsObject {
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : m_infos.values()) {
+		for (GraphicsInfo info : active) {
 			int colNumber = (elementNum % numCols);
 			x[colNumber] = Math.max(x[colNumber], info.getPixelsX(false));
 			elementNum++;
@@ -243,8 +278,9 @@ public abstract class GraphicsObject {
 	}
 
 	private int getRowPixelsY(int row) {
-		int numCols = numCols();
-		int numRows = numRows(numCols);
+		Collection<GraphicsInfo> active = getActiveInfos();
+		int numCols = numCols(active);
+		int numRows = numRows(active, numCols);
 		assert(row < numRows);
 		
 		int y[] = new int[numRows];
@@ -253,8 +289,8 @@ public abstract class GraphicsObject {
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : m_infos.values()) {
-			int rowNumber = (elementNum / numRows);
+		for (GraphicsInfo info : active) {
+			int rowNumber = (elementNum / numCols);
 			y[rowNumber] = Math.max(y[rowNumber], info.getPixelsY(false));
 			elementNum++;
 		}

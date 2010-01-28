@@ -3,6 +3,8 @@ package com.xmos.xta.ui.views.binary.graphics;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -17,7 +19,9 @@ public class GraphicsUtils {
 	public static final String CHART_BAR = "Bar";
 	private static String s_chartTypes[] = { CHART_PIE, CHART_BAR };
 	private static String s_selectedChartType = CHART_PIE;
-	
+
+	private static Set<String> s_selectedOptions = new TreeSet<String>();
+
 	private static Color s_colors[];
 	
 	public static ImageData rotateLeft(ImageData srcData, int direction) {
@@ -100,14 +104,6 @@ public class GraphicsUtils {
 		}
 	}
 
-	public static final String[] getChartTypes() {
-		return s_chartTypes;
-	}
-
-	public static final String getSelectedChartType() {
-		return s_selectedChartType;
-	}
-
 	public static void setChartType(String charType) {
 		for (String type : s_chartTypes) {
 			if (type.equals(charType)) {
@@ -177,5 +173,13 @@ public class GraphicsUtils {
 			total += value;
 		}
 		return total;
+	}
+	
+	public static void setSelectedOptions(Set<String> options) {
+		s_selectedOptions = options;
+	}
+
+	public static Set<String> getSelectedOptions() {
+		return s_selectedOptions;
 	}
 }

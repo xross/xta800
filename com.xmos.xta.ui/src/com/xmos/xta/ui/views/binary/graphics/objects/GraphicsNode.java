@@ -81,16 +81,16 @@ public class GraphicsNode extends GraphicsObject {
 	public void draw(Display display, GC gc, int x, int y, double scale, boolean summary) {
 		track(x, y);
 
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-    	int width = getPixelsX(summary);
-    	int height = getPixelsY(summary);
-    	gc.fillRoundRectangle(x, y, width, height, CORNER_ROUNDING, CORNER_ROUNDING);
-
     	if (summary) {
 			drawInfo(display, gc, x, y, scale, summary);
 			return;
 		}
+
+    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+    	int width = getPixelsX(summary);
+    	int height = getPixelsY(summary);
+    	gc.fillRoundRectangle(x, y, width, height, CORNER_ROUNDING, CORNER_ROUNDING);
 
     	int column0X = x + BORDER_X;
     	int row0Y = y + BORDER_Y;

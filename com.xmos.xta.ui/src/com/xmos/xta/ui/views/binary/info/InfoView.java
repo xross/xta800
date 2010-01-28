@@ -15,12 +15,15 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.views.binary.TabbedView;
+import com.xmos.xta.ui.views.ControlMonitor;
+import com.xmos.xta.ui.views.binary.BinaryView;
 
-public class InfoView implements TabbedView, IPropertyChangeListener {
+public class InfoView extends ControlMonitor implements IPropertyChangeListener {
 	private Text m_text;
 	
 	public InfoView(Composite parent) {
+		super(BinaryView.ID, false);
+		
 		GuiEngine.addBroadcastListener(this);
 		
 		m_text = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);

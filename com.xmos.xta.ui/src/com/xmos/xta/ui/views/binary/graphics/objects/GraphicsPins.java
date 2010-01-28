@@ -37,4 +37,8 @@ public class GraphicsPins extends GraphicsObject {
 	public int getPixelsY(boolean summary) {
 		return 0;
 	}
+
+	public GraphicsObject getObject(int x, int y, boolean summary) {
+		return null;
+	}
 }

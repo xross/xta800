@@ -184,7 +184,7 @@ public class GraphicsCanvas{
 		if (m_graphicsObject == null) {
 			return null;
 		}
-		return m_graphicsObject.getObject(x, y, m_summary);
+		return m_graphicsObject.getObject(x + m_hScroll.getSelection(), y + m_vScroll.getSelection(), m_summary);
 	}
 
 	protected void drawCanvas(GC gc) {
@@ -224,8 +224,8 @@ public class GraphicsCanvas{
 		m_graphicsObject = object;
 		m_summary = summary;
 		if (object != null) {
-			int x = Math.max(1, object.getPixelsX(m_summary));
-			int y = Math.max(1, object.getPixelsY(m_summary));
+			int x = object.getPixelsX(m_summary) + 1;
+			int y = object.getPixelsY(m_summary) + 1;
 
 			m_canvasImage = new Image(m_display, x, y);
 			GC gc = new GC(m_canvasImage);

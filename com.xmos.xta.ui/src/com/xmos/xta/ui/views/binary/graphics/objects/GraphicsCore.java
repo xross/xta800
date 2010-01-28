@@ -22,17 +22,19 @@ public class GraphicsCore extends GraphicsObject {
 	public void draw(Display display, GC gc, int x, int y, double scale, boolean summary) {
 		track(x, y);
 		
-		int width = getPixelsX(summary);
-		int height = getPixelsY(summary);
-		int arcWidth = width / 10;
-		int arcHeight = height / 10;
-		
-    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-    	gc.fillRoundRectangle(x, y, width, height, arcWidth, arcHeight);
-    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-    	gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
+		if (!summary) {
+			int width = getPixelsX(summary);
+			int height = getPixelsY(summary);
+			int arcWidth = width / 10;
+			int arcHeight = height / 10;
+			
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+	    	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+	    	gc.fillRoundRectangle(x, y, width, height, arcWidth, arcHeight);
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+	    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+	    	gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
+		}
     	
     	drawInfo(display, gc, x, y, scale, summary);
     }

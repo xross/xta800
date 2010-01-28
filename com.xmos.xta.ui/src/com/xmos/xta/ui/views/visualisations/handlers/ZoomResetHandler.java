@@ -1,0 +1,9 @@
+package com.xmos.xta.ui.views.visualisations.handlers;
+
+import com.xmos.xta.ui.views.visualisations.VisualisationsView;
+
+public class ZoomResetHandler extends com.xmos.xta.ui.handlers.ZoomResetHandler {
+    public ZoomResetHandler() {
+    	super(VisualisationsView.ID);
+    }
+}

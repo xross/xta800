@@ -1,87 +1,64 @@
 package com.xmos.xta.ui.views.binary.graphics;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.List;
 
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsDevice;
 
 public class GraphicsOptions  {
     
-	private boolean m_summary;
+	private List m_options;
+	private Set<String> m_activeOptions;
 	
 	public GraphicsOptions(Composite parent, final GraphicsView view) {
-		m_summary = true;
+		m_activeOptions = new TreeSet<String>();
 		
-		Group graphOptions = createGroup(parent, "Chart type", 1, 1);
-		String selectedType = GraphicsUtils.getSelectedChartType();
-		for (String type : GraphicsUtils.getChartTypes()) {
-			final Button option = new Button(graphOptions, SWT.RADIO);
-			option.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-			option.setText(type);
-			option.setSelection(type.equals(selectedType));
-			option.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					if (option.getSelection()) {
-						GraphicsUtils.setChartType(option.getText());
-						view.refresh();
-					}
-				}
-			});
-		}
-
-		Group showOptions = createGroup(parent, "Show", 1, 1);
-		final Button thisButton = new Button(showOptions, SWT.RADIO);
-		thisButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-		thisButton.setText("Summary");
-		thisButton.setSelection(m_summary);
-
-		Button allButton = new Button(showOptions, SWT.RADIO);
-		allButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-		allButton.setText("Details");
-
-		SelectionAdapter showAdaptor = new SelectionAdapter() {
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+		group.setText("Options");
+		group.setLayout(new FillLayout());
+		m_options = new List(group, SWT.MULTI);
+		
+		m_options.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				m_summary = thisButton.getSelection();
+				m_activeOptions.clear();
+				for (String option : m_options.getSelection()) {
+					m_activeOptions.add(option);
+				}
+				GraphicsUtils.setSelectedOptions(m_activeOptions);
 				view.refresh();
 			}
-		};
-		thisButton.addSelectionListener(showAdaptor);
-		allButton.addSelectionListener(showAdaptor);
-
-
-		Group infoOptions = createGroup(parent, "Information", 2, 1);
-		Button option1 = new Button(infoOptions, SWT.CHECK);
-		option1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-		option1.setText("option1");
-
-		Button option2 = new Button(infoOptions, SWT.CHECK);
-		option2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
-		option2.setText("option2");
+		});
 	}
 
-    Group createGroup(Composite parent, String description, int numColumns, int span) {
-		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-	    GridLayout layout = new GridLayout();
-	    layout.numColumns = numColumns;
-	    group.setLayout(layout);	    
-	    if (description != null) {
-	        group.setText(description);
-	    }
-	    group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, span, 1));
-	    return group;
-	}
+	public void setGraphicsObject(GraphicsDevice device) {
+		m_options.removeAll();
+		m_activeOptions.clear();
+		if (device == null) {
+			return;
+		}
 
-	public void setGraphicsObject(GraphicsDevice m_device) {
+		m_activeOptions = new TreeSet<String>(); 
+		device.getInfoNames(m_activeOptions);
+		for (String infoName : m_activeOptions) {
+			m_options.add(infoName);
+		}
 		
+		// Set everything as selected
+		String selected[] = new String[m_activeOptions.size()];
+		m_activeOptions.toArray(selected);
+		m_options.setSelection(selected);
+		GraphicsUtils.setSelectedOptions(m_activeOptions);
 	}
 
-	public boolean getSummary() {
-		return m_summary;
-	}  
+	public Set<String> getActiveOptions() {
+		return m_activeOptions;
+	}
 }
