@@ -16,7 +16,6 @@ import com.xmos.xta.ui.views.ControlMonitor;
 import com.xmos.xta.ui.views.ViewControls;
 import com.xmos.xta.ui.views.binary.disassembly.DisassemblyView;
 import com.xmos.xta.ui.views.binary.graphics.GraphicsView;
-import com.xmos.xta.ui.views.binary.info.InfoView;
 
 public class BinaryView extends ViewPart implements ViewControls {
 	public static final String ID = "com.xmos.xta.ui.views.binary.Binary";
@@ -33,12 +32,7 @@ public class BinaryView extends ViewPart implements ViewControls {
 				return new DisassemblyView(composite, getSite());
 			}
 		});
-		createTab("Info", new controlBuilder() {
-			public ControlMonitor create(Composite composite) {
-				return new InfoView(composite);
-			}
-		});
-		createTab("Graphical", new controlBuilder() {
+		createTab("Resources", new controlBuilder() {
 			public ControlMonitor create(Composite composite) {
 				return new GraphicsView(composite);
 			}

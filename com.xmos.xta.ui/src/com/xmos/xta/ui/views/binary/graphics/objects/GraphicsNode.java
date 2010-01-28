@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
+import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 
 public class GraphicsNode extends GraphicsObject {
 	
@@ -64,17 +65,19 @@ public class GraphicsNode extends GraphicsObject {
 			return getInfoPixelsY();
 		}
 
+		int y = 0;
 		int numCores = numCores();
 		if (numCores == 4) {
 			int y0 = m_cores.get(0).getPixelsY(summary);
 			int y1 = m_cores.get(1).getPixelsY(summary);
 			int y2 = m_cores.get(2).getPixelsY(summary);
 			int y3 = m_cores.get(3).getPixelsY(summary);
-			return (Math.max(y0, y1) + Math.max(y2, y3)) + BORDER_Y * 3;
+			y = (Math.max(y0, y1) + Math.max(y2, y3)) + BORDER_Y * 3;
 
 		} else {
-			return m_cores.get(0).getPixelsY(summary) + BORDER_Y * 2;
+			y = m_cores.get(0).getPixelsY(summary) + BORDER_Y * 2;
 		}
+		return y + GraphicsUtils.getTextHeight();
 	}
 
 	@Override
@@ -92,8 +95,16 @@ public class GraphicsNode extends GraphicsObject {
     	int height = getPixelsY(summary);
     	gc.fillRoundRectangle(x, y, width, height, CORNER_ROUNDING, CORNER_ROUNDING);
 
+    	String label = String.format("Node %d", m_number);
+    	int labelX = label.length() * gc.getFontMetrics().getAverageCharWidth();
+    	if (labelX < width) {
+	    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+	    	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+	    	gc.drawText(label, x + ((width - labelX) / 2), y + 1);
+    	}
+    	
     	int column0X = x + BORDER_X;
-    	int row0Y = y + BORDER_Y;
+    	int row0Y = y + BORDER_Y + GraphicsUtils.getTextHeight();
     	
 		int numCores = m_cores.size();
 		if (numCores == 4) {

@@ -5,6 +5,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
+import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 
 public class GraphicsCore extends GraphicsObject {
 
@@ -34,6 +35,16 @@ public class GraphicsCore extends GraphicsObject {
 	    	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 	    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 	    	gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
+	    	
+	    	String label = String.format("Core %d", m_number);
+	    	int labelX = label.length() * gc.getFontMetrics().getAverageCharWidth();
+	    	if (labelX < width) {
+		    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		    	gc.drawText(label, x + ((width - labelX) / 2), y + 1);
+	    	}
+	    	
+	    	y += GraphicsUtils.getTextHeight();
 		}
     	
     	drawInfo(display, gc, x, y, scale, summary);
@@ -61,6 +72,10 @@ public class GraphicsCore extends GraphicsObject {
 
 	@Override
 	public int getPixelsY(boolean summary) {
-		return getInfoPixelsY();
+		int y = getInfoPixelsY();
+		if (!summary) {
+			y += GraphicsUtils.getTextHeight();
+		}
+		return y;
 	}
 }

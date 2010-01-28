@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -22,6 +23,7 @@ public class GraphicsUtils {
 
 	private static Set<String> s_selectedOptions = new TreeSet<String>();
 
+	private static int s_textHeight = -1;
 	private static Color s_colors[];
 	
 	public static ImageData rotateLeft(ImageData srcData, int direction) {
@@ -70,14 +72,16 @@ public class GraphicsUtils {
 	}
 	
 	public static Color getColor(Display display, int i) {
-		if (s_colors == null) {
-			initialiseColors(display);
-		}
-		
+		assert(s_colors != null);
 		return s_colors[i % s_colors.length];
 	}
 
-	private static void initialiseColors(Display display) {
+	public static int getTextHeight() {
+		assert(s_textHeight > 0);
+		return s_textHeight;
+	}
+
+	public static void initialise(Display display) {
 		List<Color> colors = new LinkedList<Color>();
 		colors.add(display.getSystemColor(SWT.COLOR_GRAY));
 		colors.add(display.getSystemColor(SWT.COLOR_BLUE));
@@ -88,6 +92,12 @@ public class GraphicsUtils {
 		colors.add(display.getSystemColor(SWT.COLOR_DARK_CYAN));
 		s_colors = new Color[colors.size()];
 		colors.toArray(s_colors);
+		
+		Image image = new Image(display, 1, 1);
+		GC gc = new GC(image);
+		s_textHeight = gc.getFontMetrics().getHeight() + 1;
+		gc.dispose();
+		image.dispose();
 	}
 
 	public static void drawChart(Display display, GC gc, Rectangle area,

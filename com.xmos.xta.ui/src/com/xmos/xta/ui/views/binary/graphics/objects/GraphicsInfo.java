@@ -1,5 +1,6 @@
 package com.xmos.xta.ui.views.binary.graphics.objects;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -109,4 +110,16 @@ public class GraphicsInfo extends GraphicsObject {
 	public int getPixelsY(boolean summary) {
 		return SIZE_Y + (2 * BORDER_Y);
 	}
+	
+	@Override
+	public GraphicsObject getObject(int x, int y, boolean summary) {
+		if (GraphicsUtils.getSelectedOptions().contains(m_name)) {
+			if ((x > m_pixelOffsetX) && (x < (getPixelsX(summary) + m_pixelOffsetX)) &&
+				(y > m_pixelOffsetY) && (y < (getPixelsY(summary) + m_pixelOffsetY))) {
+				return this;
+			}
+		}
+		return null;
+	}
+
 }

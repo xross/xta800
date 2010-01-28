@@ -63,6 +63,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 	    form.setWeights(new int[] {1, 3});
 	    left.setWeights(new int[] {3, 1});
 
+	    GraphicsUtils.initialise(m_display);
 	    initialise();
 		GuiEngine.addBroadcastListener(this);
 		
