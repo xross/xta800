@@ -144,33 +144,15 @@ public class NodeDescriptor implements Comparable<NodeDescriptor>{
 	    
     public String toString() {
     	String str = String.format("[ %d -> ", m_node.getId());
-    	for (Node ancestor : m_ancestors) {
-    		str += String.format("%d ", ancestor.getId());
-    	}
-    	
-    	str += "Next: ";
-    	for (NodeDescriptor next : m_next) {
-    		str += String.format("%d ", next.getNode().getId());
-    	}
-
-    	str += "Prev: ";
-    	for (NodeDescriptor prev : m_previous) {
-    		str += String.format("%d ", prev.getNode().getId());
-    	}
-    	
-    	if (m_node.getInstructions().size() > 0) {
-        	str += String.format(" (%s, 0x%x)]", m_node, m_node.getStartInstruction().getPc());    		
-    	} else {
-        	str += String.format(" (%s)]", m_node);    		    		
-    	}
     	return str;
     }
     
     public Set<NodeDescriptor> getEndInstructions() {
-    	return m_node.getEndInstructions(m_ancestors);
+    	return null;
     }
 
     public List<NodeDescriptor> getImmediateChildren() {
-    	return m_node.getDirectChildren(m_ancestors);
+    	//return m_node.iChildren(m_ancestors);
+    	return null;
     }
 }

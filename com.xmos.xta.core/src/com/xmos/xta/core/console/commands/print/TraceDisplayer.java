@@ -81,7 +81,7 @@ public class TraceDisplayer {
     }
     
 	private Node getChild(Node cond, Case c, long totalIterations, long iteration) {
-    	for (Node child : cond.getIndirectChildren()) {
+    	for (Node child : cond.iChildren()) {
     		long childIterations = cond.getAttributes().getLoopPathIterations(totalIterations, child, c);
     		if (iteration < childIterations) {
     			return child;
@@ -92,7 +92,7 @@ public class TraceDisplayer {
 	}
 
 	private void displayChildren(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
-    	for (Node child : node.getIndirectChildren()) {
+    	for (Node child : node.iChildren()) {
     		displayInstructions(child, c, totalIterations, iteration);
     	}
 	}

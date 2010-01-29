@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -70,10 +69,6 @@ public class SequenceNode extends Node {
 		return list;
 	}
 
-	public XtaInstruction getStartInstruction() {
-		return m_nodes.get(0).getStartInstruction();
-	}
-
 	public String getFunctionName() {
 		return "";
 	}
@@ -100,75 +95,6 @@ public class SequenceNode extends Node {
 			return status;
 		}
 		return TraverseStatus.CONTINUE;
-	}
-
-	public List<Node> getIndirectChildren() {
-		return m_nodes;
-	}
-
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		assert (m_nodes.contains(nodeDescriptor.getNode()));
-		
-		int index = m_nodes.indexOf(nodeDescriptor.getNode());
-		if (index < m_nodes.size() - 1) {
-			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-			next.add(new NodeDescriptor(m_nodes.get(index + 1), nodeDescriptor.getAncestors()));
-			return next;
-			
-		}  else if (nodeDescriptor.getNode().isInfiniteLoopNode() || 
-				    nodeDescriptor.getNode().isInfiniteSelfLoopNode()) {
-			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-			next.add(new NodeDescriptor(nodeDescriptor.getNode(), nodeDescriptor.getAncestors()));
-			return next;
-			
-		} else {		
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		    thisNodeDescriptor.getAncestors().pop();
-
-		    if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			    return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
-		    }
-		    return new TreeSet<NodeDescriptor>();
-		}
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(m_nodes.contains(nodeDescriptor.getNode()));
-		
-		int index = m_nodes.indexOf(nodeDescriptor.getNode());
-		if (index > 0) {
-			
-			Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-			before.add(new NodeDescriptor(m_nodes.get(index - 1), nodeDescriptor.getAncestors()));
-			return before;
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		    thisNodeDescriptor.getAncestors().pop();
-
-		    if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			    return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
-		    }
-		    return new TreeSet<NodeDescriptor>();
-		}
-	}
-
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-	    list.add(new NodeDescriptor(m_nodes.get(0), ancestors));
-		ancestors.pop();
-		return list;
-	}			
-	
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		
-		ancestors.push(this);
-		set.addAll(m_nodes.get(m_nodes.size()-1).getEndInstructions(ancestors));
-		ancestors.pop();
-		
-		return set;
 	}
 	
 	public TimeDistributionBuckets getTimeSpread() {
@@ -203,5 +129,54 @@ public class SequenceNode extends Node {
 		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
-	}	
+	}
+
+	//below here the methods have been verified useful
+	
+	public Set<Node> dChildren() {
+		Set<Node> directChildren = new TreeSet<Node>();
+		directChildren.add(m_nodes.get(0));
+		return directChildren;
+	}
+	
+	public Set<Node> iChildren() {
+		Set<Node> indirectChildren = new TreeSet<Node>(m_nodes);
+		return indirectChildren;
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		assert (m_nodes.contains(childNode));
+		int index = m_nodes.indexOf(childNode);
+		if (index < m_nodes.size() - 1) {
+			Set<Node> next = new TreeSet<Node>();
+			next.add(m_nodes.get(index + 1));
+			return next;
+		}  else if (childNode.isInfiniteLoopNode() || 
+				childNode.isInfiniteSelfLoopNode()) {
+			Set<Node> next = new TreeSet<Node>();
+			next.add(childNode);
+			return next;
+		} else {		
+			assert(getParent() != null);
+			return getParent().structurGraphNext(this);
+		}
+	}
+
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		for(Node node : m_nodes){
+			insts.addAll(node.getInstructionNodes());
+		}
+		return insts;
+	}
+
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		for(Node node : m_nodes){
+			addFunctionRefToRefSet(fnRef, node);
+		}
+		return fnRef;
+	}
+
+		
 }

@@ -91,11 +91,11 @@ public class RouteDescription {
 		return m_mode;
 	}
 
-	public Reference getStartPoint() {
+	public Reference getStartPoints() {
 		return m_from;
 	}
 
-	public Collection<Reference> getEndPoint() {
+	public Collection<Reference> getEndPoints() {
 		return m_to;
 	}
 

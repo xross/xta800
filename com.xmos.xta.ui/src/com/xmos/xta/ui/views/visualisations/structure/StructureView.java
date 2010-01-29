@@ -52,7 +52,7 @@ public class StructureView extends ZoomedCanvasView implements ControlMonitor {
     	}
     	
     	if (!node.isBlockNode()) {
-	        for (Node subNode : node.getIndirectChildren()) {
+	        for (Node subNode : node.iChildren()) {
 	        	ViewNode child = buildViewNode(subNode, depth);
 	        	if (child != null)
 	        		viewNode.addChild(child);

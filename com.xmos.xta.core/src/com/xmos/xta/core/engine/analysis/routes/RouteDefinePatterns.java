@@ -35,19 +35,19 @@ class SameBlockPattern extends RouteDefinePatterns {
 		// Are both the from and the to nodes in the same block?
 		if (fromBlock != toBlock)
 			return false;
-
+/*
 		// Checks that the from instruction comes before the to instruction 
-		if (fromBlock.getIndirectChildren().indexOf(from) >= fromBlock.getIndirectChildren().indexOf(to))
+		if (fromBlock.iChildren().indexOf(from) >= fromBlock.iChildren().indexOf(to))
 			return false;
-		
+	*/	
 		return true;
 	}
 	
 	public void apply(Reference fromRef, Reference toRef, Route route, 
 			Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source) {
-		
+	/*	
 		List<Node> blocks = new ArrayList<Node>();
-		List<Node> children = fromBlock.getIndirectChildren();
+		List<Node> children = fromBlock.iChildren();
 			
 		createBlock(blocks, children, 0, children.indexOf(from));
 		
@@ -65,7 +65,8 @@ class SameBlockPattern extends RouteDefinePatterns {
 
 		} else {
 			route.setNode(sequence);
-		}				
+		}	
+		*/			
 	}	
 }
 
@@ -74,48 +75,49 @@ class DifferentBlockPattern extends RouteDefinePatterns {
 		// Are both the from and to blocks children of the same parent?
 		if (fromBlock.getParent() != toBlock.getParent())		
 		    return false;
-
+/*
 		// Checks that the from block comes before the to block 
-		List<Node> children = fromBlock.getParent().getIndirectChildren();
+		List<Node> children = fromBlock.getParent().iChildren();
 		if (children.indexOf(fromBlock) >= children.indexOf(toBlock))
 			return false;
-		
+	*/	
 		return true;		
 	}
 	
 	public void apply(Reference fromRef, Reference toRef, Route route, 
 			Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source) {
-		
+	/*	
 		Node parent = fromBlock.getParent();
-		List<Node> children = parent.getIndirectChildren();
+		List<Node> children = parent.iChildren();
 		List<Node> newChildren = new ArrayList<Node>();
 		
 		newChildren.addAll(children.subList(0, children.indexOf(fromBlock)));
 		
 		List<Node> timingChildren = new ArrayList<Node>();		
 		
-		createBlock(newChildren, fromBlock.getIndirectChildren(), 
-				0, fromBlock.getIndirectChildren().indexOf(from));		
+		createBlock(newChildren, fromBlock.iChildren(), 
+				0, fromBlock.iChildren().indexOf(from));		
 
-		createBlock(timingChildren, fromBlock.getIndirectChildren(), 
-				fromBlock.getIndirectChildren().indexOf(from), fromBlock.getIndirectChildren().size());
+		createBlock(timingChildren, fromBlock.iChildren(), 
+				fromBlock.iChildren().indexOf(from), fromBlock.iChildren().size());
 				
 		timingChildren.addAll(children.subList(children.indexOf(fromBlock) + 1, children.indexOf(toBlock)));
 		
-		createBlock(timingChildren, toBlock.getIndirectChildren(), 
-				0, toBlock.getIndirectChildren().indexOf(to));		
+		createBlock(timingChildren, toBlock.iChildren(), 
+				0, toBlock.iChildren().indexOf(to));		
 
 		Node sequence = new SequenceNode(timingChildren);
 		sequence.getAttributes().setFixedTime(time);		
 		sequence.getAttributes().addKnown(Type.PATH_TIME, source, new Reference[] {fromRef, toRef});		
 		newChildren.add(sequence);		
 		
-		createBlock(newChildren, toBlock.getIndirectChildren(), 
-				toBlock.getIndirectChildren().indexOf(to), toBlock.getIndirectChildren().size());
+		createBlock(newChildren, toBlock.iChildren(), 
+				toBlock.iChildren().indexOf(to), toBlock.iChildren().size());
 				
 		newChildren.addAll(children.subList(children.indexOf(toBlock) + 1, children.size()));
 
-		parent.replaceChildren(newChildren);			
+		parent.replaceChildren(newChildren);	
+		*/		
 	}		
 }
 

@@ -23,14 +23,18 @@ public class StructureGraph {
 	
 	private Map<FunctionNode, Set<FunctionReferenceNode>> m_functionReferencesWithinFunction;
 	private Map<FunctionNode, Set<GraphEdge>> m_functionsToFunctionReferences;
+	private Map<FunctionNode, Set<InstructionNode>> m_instructionWithinFunction;
 	
 	public StructureGraph(Map<FunctionNode , Set<InstructionNode>>functionToEndNodes, 
 			Map<FunctionNode , InstructionNode>functionToStartNode, 
-			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction) {
-		super();
+			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
+			Map<FunctionNode, Set<InstructionNode>> instructionWithinFunction) {
+		
 		m_functionToStartNode = functionToStartNode;
 		
 		m_functionReferencesWithinFunction = functionReferencesWithinFunction;
+		
+		m_instructionWithinFunction = instructionWithinFunction;
 		
 		m_functionsToFunctionReferences = new HashMap<FunctionNode, Set<GraphEdge>>();
 		for(FunctionNode fn : m_functionReferencesWithinFunction.keySet()){
@@ -49,8 +53,10 @@ public class StructureGraph {
 		assert(!m_functionToEndNodes.isEmpty());
 	}
 	
-	//TODO --look at why this is a public method
+
 	public void removeLinks() {	
+		//TODO check that this does anything. when the removing of connections is done properly, remove this function
+		
 		for (Node node : getFunctions()) {
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
@@ -68,13 +74,16 @@ public class StructureGraph {
 	public Set<InstructionNode> getFunctionsEndNodes(FunctionNode fn){ 
 		assert(m_functionToEndNodes.containsKey(fn));
 		return m_functionToEndNodes.get(fn);
-		
+	}
+	
+	public Set<InstructionNode> getInstructionWithinFunction(FunctionNode fn){
+		assert(m_instructionWithinFunction.containsKey(fn));
+		return m_instructionWithinFunction.get(fn);
 	}
 	
 	public InstructionNode getFunctionsStartNode(FunctionNode fn){		
 		assert(m_functionToStartNode.containsKey(fn));
 		return m_functionToStartNode.get(fn);
-		
 	}
 	
     public Node getNode(final int nodeId) {
@@ -92,10 +101,8 @@ public class StructureGraph {
 		}
         return m_searchNode;   		
     }
-
+    
     public Set<Stack<FunctionReferenceNode>> getFunctionCallStack(FunctionNode fn){
-    	
-    	System.out.println("looking for stack for " + fn.getFunctionName());
     	Stack<FunctionReferenceNode> currentStack = new Stack<FunctionReferenceNode>();
     	Set<Stack<FunctionReferenceNode>> completeStacks = new HashSet<Stack<FunctionReferenceNode>>();
     	search(fn, currentStack, completeStacks);
@@ -104,13 +111,14 @@ public class StructureGraph {
     
     private void search(FunctionNode fn, Stack<FunctionReferenceNode> currentStack, Set<Stack<FunctionReferenceNode>> completeStacks){
     	if(m_functionsToFunctionReferences.get(fn).isEmpty()){
-    		completeStacks.add(currentStack);
+    		Stack<FunctionReferenceNode> saveStack = new Stack<FunctionReferenceNode>();
+    		saveStack.addAll(currentStack);
+    		completeStacks.add(saveStack);
     	} else {
 	    	for(GraphEdge ge : m_functionsToFunctionReferences.get(fn)){
-	    		Stack<FunctionReferenceNode> nextStack = new Stack<FunctionReferenceNode>();
-	    		nextStack.addAll(currentStack);
-	    		nextStack.push(ge.getFunctionReferenceNode());
-	    		search(ge.getFunctionNode(), nextStack, completeStacks);
+	    		currentStack.add(0, ge.getFunctionReferenceNode());
+	    		search(ge.getFunctionNode(), currentStack, completeStacks);
+	    		currentStack.remove(0);
 	    	}
     	}
     }
@@ -122,8 +130,6 @@ public class StructureGraph {
     	public GraphEdge(FunctionReferenceNode frn, FunctionNode fn){
     		m_frn = frn;
     		m_fn = fn;
-    		
-    	//	System.out.println(fn.getFunctionName() + " -> " +frn.getFunctionNode().getFunctionName());
     	}
     	public FunctionNode getFunctionNode(){
     		return m_fn;

@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -26,14 +25,6 @@ public class NullNode extends Node {
 	public NodeAttributes getAttributes() {
 		assert(false);
 		return null;	
-	}
-
-	public List<Node> getIndirectChildren() {
-		return new LinkedList<Node>();
-	}
-
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		return new LinkedList<NodeDescriptor>();
 	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
@@ -63,29 +54,6 @@ public class NullNode extends Node {
 	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
 		return TraverseStatus.CONTINUE;
 	}
-	
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		thisNodeDescriptor.getAncestors().pop();
-
-		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
-		}
-		return new TreeSet<NodeDescriptor>();
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		thisNodeDescriptor.getAncestors().pop();
-
-		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
-		}
-		return new TreeSet<NodeDescriptor>();
-	}
-
-	public void insertFnops() {		
-	}
 
 	public boolean isNullNode() {
 		return true;
@@ -104,5 +72,28 @@ public class NullNode extends Node {
 	}	
 	
 	public void replaceChildren(List<Node> children) {
+	}
+	//below here the methods have been verified useful
+	public Set<Node> dChildren() {
+		return new TreeSet<Node>();
+	}
+
+	public Set<Node> iChildren() {
+		return new TreeSet<Node>();
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		assert(false);
+		return null;
 	}		
+	
+	public Set<InstructionNode> getInstructionNodes() {
+		assert(false);
+		return null;
+	}
+	
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		assert(false);
+		return null;
+	}
 }

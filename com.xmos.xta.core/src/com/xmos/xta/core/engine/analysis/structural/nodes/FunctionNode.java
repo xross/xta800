@@ -1,7 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -12,11 +11,9 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class FunctionNode extends Node {
 	private NodeAttributes m_attributes;	
@@ -37,7 +34,9 @@ public class FunctionNode extends Node {
 	public FunctionNode(Node function, String functionName) {
 		super();
 		if (function.isSequenceNode()){
-			m_functionSequence = function.getIndirectChildren();
+			SequenceNode sn = (SequenceNode)function;
+			
+			m_functionSequence = sn.getPath();
 		} else {
 			m_functionSequence = new LinkedList<Node>();
 			m_functionSequence.add(function);
@@ -62,7 +61,7 @@ public class FunctionNode extends Node {
 	
 	public String toString(){
 		if(m_functionName!= null){
-			return m_functionName;
+			return "Function: " + m_functionName;
 		} else {
 			return getDescription();
 		}
@@ -143,14 +142,6 @@ public class FunctionNode extends Node {
 		}
 	}
 
-	public XtaInstruction getStartInstruction() {
-		if (m_functionSequence != null) {
-			return m_functionSequence.get(0).getStartInstruction();
-		} else {
-			return null;
-		}
-	}
-
 	public long getStartPc() {
 		if (m_functionSequence != null){
 			return m_functionSequence.get(0).getStartPc();
@@ -179,64 +170,6 @@ public class FunctionNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		List<Node> children = null;
-		if (m_functionSequence!= null) {
-			children =  m_functionSequence;
-		} else {
-			children = new LinkedList<Node>();
-		}
-		return children;
-	}
-	
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-
-		assert (m_functionSequence.contains(nodeDescriptor.getNode()));
-		
-		int index = m_functionSequence.indexOf(nodeDescriptor.getNode());
-		if (index < m_functionSequence.size() - 1) {
-			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-			next.add(new NodeDescriptor(m_functionSequence.get(index + 1), nodeDescriptor.getAncestors()));
-			return next;
-			
-		} else if (nodeDescriptor.getNode().isInfiniteLoopNode() || 
-    			   nodeDescriptor.getNode().isInfiniteSelfLoopNode()) {
-			
-			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-			next.add(new NodeDescriptor(nodeDescriptor.getNode(), nodeDescriptor.getAncestors()));
-			return next;
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();
-
-			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-				return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
-			}
-			return new TreeSet<NodeDescriptor>();
-		}
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert (m_functionSequence.contains(nodeDescriptor.getNode()));
-		
-		int index = m_functionSequence.indexOf(nodeDescriptor.getNode());
-		if (index > 0){
-			Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-			before.add(new NodeDescriptor(m_functionSequence.get(index - 1), nodeDescriptor.getAncestors()));
-			return before;
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();
-
-			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-				return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
-			}
-			return new TreeSet<NodeDescriptor>();
-		}
-	}
-
 	public boolean isFunctionNode() {
 		return true;
 	}	
@@ -251,17 +184,6 @@ public class FunctionNode extends Node {
 	    list.add(new NodeDescriptor(m_functionSequence.get(0), ancestors));
 		ancestors.pop();
 		return list;
-	}
-
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		if (m_functionSequence != null) {
-			ancestors.push(this);
-			Set<NodeDescriptor> ends = m_functionSequence.get(m_functionSequence.size() - 1).getEndInstructions(ancestors);
-			ancestors.pop();
-			return ends;
-
-		}
-		return new TreeSet<NodeDescriptor>();
 	}
 	
 	public TimeDistributionBuckets getTimeSpread() {
@@ -299,74 +221,7 @@ public class FunctionNode extends Node {
 		m_functionSequence.clear();
 		m_functionSequence.addAll(children);
 	}	
-	
-	public void getBackTrail(List<Long> backTrail) {
-		super.getBackTrail(backTrail);
 
-		Node parent = getParent();
-		if (parent != null) {
-			Node callNode = findCallNode(parent);
-			if (callNode != null) {
-				backTrail.add(callNode.getStartPc());
-			}
-		}				
-	}	
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-			ReferenceType referenceType = referenceTypes.peek();
-			
-			// If the next reference we are trying to match is 
-			// a call reference, then we need to find the calling 
-			// (instruction) node and check for a match here...
-			if (referenceType.getType() == ReferenceType.Type.CALL) {
-				
-				if (!ancestors.isEmpty()) {					
-    				Node parent = ancestors.peek();
-
-    				Node callNode = findCallNode(parent);
-					if (callNode != null) {
-						if (referenceType.getPcs().contains(callNode.getStartPc())) {
-							referenceTypes.pop();
-							if (referenceTypes.empty()) {
-								return true;
-							}								
-						}
-					}					
-				}
-			}
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
-		}
-		return false;
-	}
-	
-	private Node m_callNode;	
-	private Node findCallNode(Node parent) {
-		// Finds the node previous to this one...
-		Node previousNode = null;
-		for (Node child : parent.getIndirectChildren()) {
-			if (child == this)
-				break;
-			
-			previousNode = child;
-		}
-		if (previousNode == null) {
-			return null;
-		}
-		
-		// Finds the final instruction in the previous node
-		// (which must be the calling instruction..)
-		m_callNode = null;
-		previousNode.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
-				m_callNode = node;
-				return TraverseStatus.CONTINUE;
-			}
-		});			
-		return m_callNode;
-	}
 
 	public void addCallingFunction(FunctionNode f) {
 		m_callingFunctions.add(f);
@@ -379,5 +234,51 @@ public class FunctionNode extends Node {
 	public void removeCallingFunction(FunctionNode g) {
 		assert(m_callingFunctions.contains(g));
 		m_callingFunctions.remove(g);		
+	}
+
+	public Set<Node> dChildren() {
+		Set<Node> directChildren = new TreeSet<Node>();
+		directChildren.add(m_functionSequence.get(0));
+		return directChildren;
+	}
+
+	public Set<Node> iChildren() {
+		Set<Node> indirectChildren = new TreeSet<Node>();
+		indirectChildren.addAll(m_functionSequence);
+		return indirectChildren;
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		assert (m_functionSequence.contains(childNode));
+		Set<Node> next = new TreeSet<Node>();
+		int index = m_functionSequence.indexOf(childNode);
+		if (index < m_functionSequence.size() - 1) {
+			next.add(m_functionSequence.get(index + 1));
+			return next;
+		} else if (childNode.isInfiniteLoopNode() || 
+				childNode.isInfiniteSelfLoopNode()) {
+			next.add(childNode);
+			return next;
+		} else {
+			//this shouldn't be called as the route construction should have caught it
+			assert(false);
+			return next;
+		}
+	}
+	
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		for (Node node : m_functionSequence) {
+			insts.addAll(node.getInstructionNodes());		
+		}
+		return insts;
+	}
+	
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		for(Node node : m_functionSequence){
+			addFunctionRefToRefSet(fnRef, node);
+		}
+		return fnRef;
 	}
 }

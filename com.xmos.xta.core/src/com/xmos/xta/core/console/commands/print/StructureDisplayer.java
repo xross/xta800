@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Config;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -40,6 +41,10 @@ public class StructureDisplayer {
 			return;
 
 		if (node.isNullNode() && 
+			(m_verbosity < Config.VERBOSITY_DISPLAY_NULL_NODE))
+			return;
+		
+		if (node instanceof FunctionReferenceNode && 
 			(m_verbosity < Config.VERBOSITY_DISPLAY_NULL_NODE))
 			return;
 
@@ -107,7 +112,7 @@ public class StructureDisplayer {
 			} else if (node.isCondNode()) {
 				Node enclosingLoopNode = node.getEnclosingLoopNode();
 				if (enclosingLoopNode != null) {
-	                for (Node option : node.getIndirectChildren()) {
+	                for (Node option : node.iChildren()) {
 	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
 	                	sb.append(String.format("[%s,%d,%d]", optionSet, 
 	                			nodeAttributes.getLoopPathIterations(

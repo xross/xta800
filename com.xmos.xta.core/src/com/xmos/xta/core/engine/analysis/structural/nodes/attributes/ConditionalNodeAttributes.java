@@ -122,7 +122,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
 	public long getNumPaths() throws NumPathsOverflowException {
 		long value = 0;
-		for (Node child : getNode().getIndirectChildren()) {
+		for (Node child : getNode().iChildren()) {
 			value = addNumPaths(value, child.getAttributes().getNumPaths());
 		}
 
@@ -162,7 +162,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
    		// one option that hasn't had its iterations set (excluding this one)...
    		long remainder = loopIterations - newTotal;
    		if (remainder > 0) {
-   			int numUnsetOptions = getNode().getIndirectChildren().size() - m_setIterations.size();
+   			int numUnsetOptions = getNode().iChildren().size() - m_setIterations.size();
    			if (m_setIterations.get(optionNode) == null)
    				--numUnsetOptions;
    			

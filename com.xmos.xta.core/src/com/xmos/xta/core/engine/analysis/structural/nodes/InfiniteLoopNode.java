@@ -1,7 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,11 +96,7 @@ public class InfiniteLoopNode extends Node {
 		}
 		return insts;
 	}
-
-	public XtaInstruction getStartInstruction() {
-		return m_loops.get(0).getStartInstruction();
-	}
-
+	
 	public long getStartPc() {
 		return m_loopHeader.getStartPc();
 	}
@@ -126,68 +121,8 @@ public class InfiniteLoopNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		List<Node> children = new LinkedList<Node>();
-		children.add(m_loopHeader);
-		for (Node node : m_loops) {
-			children.add(node);					
-		}
-		return children;
-	}
-
 	public boolean isInfiniteLoopNode() {
 		return true;
-	}
-	
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-		if (m_loopHeader == nodeDescriptor.getNode()) {
-			for (Node loop : m_loops) {
-			    next.add(new NodeDescriptor(loop, nodeDescriptor.getAncestors()));
-			}
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();			
-			next.add(thisNodeDescriptor);
-		}
-		return next;
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-		if (m_loopHeader == nodeDescriptor.getNode()) {
-			for (Node loop : m_loops) {
-				before.add(new NodeDescriptor(loop, nodeDescriptor.getAncestors()));
-			}
-			
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();
-
-			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-				before.addAll(thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor));
-			}			
-			
-		} else if (m_loops.contains(nodeDescriptor.getNode())) {
-			before.add(new NodeDescriptor(m_loopHeader, nodeDescriptor.getAncestors()));
-		}
-		return before;
-	}
-	
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-	    list.add(new NodeDescriptor(m_loopHeader, ancestors));
-		ancestors.pop();
-		return list;
-	}
-	
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();	
-		ancestors.push(this);
-		set.addAll(m_loopHeader.getEndInstructions(ancestors));
-		ancestors.pop();
-		return set;
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
@@ -224,4 +159,49 @@ public class InfiniteLoopNode extends Node {
 		}
 		return false;
 	}
+	
+	//below here the methods have been verified useful
+	
+	public Set<Node> dChildren() {
+		Set<Node> directChildren = new TreeSet<Node>();
+		directChildren.add(m_loopHeader);
+		return directChildren;
+	}
+
+	public Set<Node> iChildren() {
+		Set<Node> children = new TreeSet<Node>();
+		children.add(m_loopHeader);
+		for (Node node : m_loops) {
+			children.add(node);					
+		}
+		return children;
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		Set<Node> next = new TreeSet<Node>();
+		if (m_loopHeader == childNode) {
+			next.addAll(m_loops);
+		} else {
+			next.add(m_loopHeader);
+		}
+		return next;
+	}
+	
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		insts.addAll(m_loopHeader.getInstructionNodes());
+		for (Node node : m_loops) {
+			insts.addAll(node.getInstructionNodes());		
+		}
+		return insts;
+	}
+	
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		addFunctionRefToRefSet(fnRef, m_loopHeader);
+		for(Node node : m_loops){
+			addFunctionRefToRefSet(fnRef, node);
+		}
+		return fnRef;
+	}	
 }

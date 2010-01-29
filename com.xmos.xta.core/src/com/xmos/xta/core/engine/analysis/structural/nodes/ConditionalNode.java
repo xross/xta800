@@ -72,15 +72,6 @@ public class ConditionalNode extends Node {
 		return list;		
 	}
 
-	public XtaInstruction getStartInstruction() {
-		Iterator<Node> iter = m_options.iterator();
-		if (iter.hasNext()) {
-			return iter.next().getStartInstruction();
-		} else {
-			return null;
-		}
-	}
-
 	public long getStartPc() {
 		return 0;
 	}
@@ -107,34 +98,6 @@ public class ConditionalNode extends Node {
 		}
 		return TraverseStatus.CONTINUE;
 	}
-
-	public List<Node> getIndirectChildren() {
-		return new LinkedList<Node>(m_options);
-	}
-
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		assert(m_options.contains(nodeDescriptor.getNode()));
-
-		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		thisNodeDescriptor.getAncestors().pop();
-
-		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
-		}
-		return new TreeSet<NodeDescriptor>();
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(m_options.contains(nodeDescriptor.getNode()));
-
-		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		thisNodeDescriptor.getAncestors().pop();
-
-		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
-		}
-		return new TreeSet<NodeDescriptor>();
-    }
 	
 	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
 		// Returns the best/worst case option of this conditional.
@@ -177,15 +140,7 @@ public class ConditionalNode extends Node {
 		return setOptions;
 	}
 	
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-		for (Node option : m_options) {
-		    list.add(new NodeDescriptor(option, ancestors));
-		}
-		ancestors.pop();
-		return list;
-	}
+
 
 	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
 			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
@@ -236,18 +191,6 @@ public class ConditionalNode extends Node {
 		return caseNode;		
 	}
 
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		
-		ancestors.push(this);
-		for (Node options : m_options) {
-			set.addAll(options.getEndInstructions(ancestors));
-		}
-		ancestors.pop();
-		
-		return set;
-	}
-
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		Collection<TimeDistributionBuckets> tdbs = new LinkedList<TimeDistributionBuckets>();
@@ -266,5 +209,38 @@ public class ConditionalNode extends Node {
 	public void replaceChildren(List<Node> children) {
 		m_options.clear();
 		m_options.addAll(children);
-	}	
+	}
+
+	//below here the methods have been verified useful
+
+	public Set<Node> dChildren() {
+		Set<Node> directChildren = new TreeSet<Node>(m_options);
+		return directChildren;
+	}
+	
+	public Set<Node> iChildren() {
+		return dChildren();
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		assert(m_options.contains(childNode));
+		assert(getParent() != null);
+		return getParent().structurGraphNext(this);
+	}
+	
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		for (Node node : m_options) {
+			insts.addAll(node.getInstructionNodes());		
+		}
+		return insts;
+	}
+	
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		for(Node node : m_options){
+			addFunctionRefToRefSet(fnRef, node);
+		}
+		return fnRef;
+	}
 }

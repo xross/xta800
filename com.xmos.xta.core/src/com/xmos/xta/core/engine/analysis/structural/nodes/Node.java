@@ -46,17 +46,18 @@ public abstract class Node implements Comparable<Node> {
 	 */
 	public abstract Node deepCopy(Aborter abort) throws AbortedException;
 	
-	
-	public abstract List<Node> getIndirectChildren();
-	public abstract List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors);
-	public abstract Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor);
-	public abstract Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor);
 	public abstract NodeTraverser.TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser);
-	public abstract Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors);
 	public abstract LinkedList<XtaInstruction> getInstructions();	
-	public abstract XtaInstruction getStartInstruction();	
 	public abstract TimeDistributionBuckets getTimeSpread();	
+	
+	//need to take a look at this one
 	public abstract long getStartPc();
+	
+	//
+	public abstract Set<InstructionNode> getInstructionNodes();
+	public abstract Set<FunctionReferenceNode> getFunctionReferencesNodes();
+	
+	//these are for timing defines
 	public abstract void replaceChild(Node oldNode, Node newNode);
 	public abstract void replaceChildren(List<Node> newChildren);
 
@@ -202,6 +203,7 @@ public abstract class Node implements Comparable<Node> {
 	}
 	
 	public Node getParent(){
+		//TODO the functionNode must not override this
 		return m_parent;
 	}
 	
@@ -286,7 +288,7 @@ public abstract class Node implements Comparable<Node> {
 	public void setFolded(boolean folded, boolean applyToChildren) {
 		m_isFolded = folded;
 		if (applyToChildren) {
-			for (Node child : getIndirectChildren()) {
+			for (Node child : iChildren()) {
 				child.setFolded(folded, applyToChildren);
 			}
 		}
@@ -327,7 +329,7 @@ public abstract class Node implements Comparable<Node> {
 		if (referenceTypes.peek().getType() != ReferenceType.Type.CALL) {
 			// Builds up a stack of all the children up to the calling node...
 			Stack<Node> children = new Stack<Node>();
-			for (Node child : getIndirectChildren()) {
+			for (Node child : iChildren()) {
 				if (child == node)
 					break;
 				
@@ -358,5 +360,17 @@ public abstract class Node implements Comparable<Node> {
 		}			
 		return false;
 	}
+	
+	protected void addFunctionRefToRefSet(Set<FunctionReferenceNode> fnRef,
+			Node node) {
+		if(node instanceof FunctionReferenceNode){
+			fnRef.add((FunctionReferenceNode) node);
+		}
+		fnRef.addAll(node.getFunctionReferencesNodes());
+	}
+	
+	public abstract Set<Node> dChildren();
+	public abstract Set<Node> iChildren();
+	public abstract Set<Node> structurGraphNext(Node childNode);
 }
 

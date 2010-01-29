@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -60,11 +59,7 @@ public class SelfLoopNode extends Node{
     	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
 		return insts;
 	}
-
-	public XtaInstruction getStartInstruction() {
-		return m_loop.getStartInstruction();
-	}
-
+	
 	public long getStartPc() {
 		return m_loop.getStartPc();
 	}
@@ -84,39 +79,7 @@ public class SelfLoopNode extends Node{
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		List<Node> children = new LinkedList<Node>();
-		children.add(m_loop);
-		return children;
-	}
 
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-		
-		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		thisNodeDescriptor.getAncestors().pop();
-
-		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			next.addAll(thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor));
-		}
-		next.add(new NodeDescriptor(m_loop, nodeDescriptor.getAncestors()));
-		return next;
-	}
-		
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(m_loop == nodeDescriptor.getNode());
-		
-		Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-		before.add(new NodeDescriptor(m_loop, nodeDescriptor.getAncestors()));
-		
-		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		thisNodeDescriptor.getAncestors().pop();
-
-		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			before.addAll(thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor));
-		}
-		return before;
-	}
 	
 	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
 		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
@@ -132,14 +95,6 @@ public class SelfLoopNode extends Node{
 
 	public Node getLoop() {
 		return m_loop;
-	}
-
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		ancestors.push(this);
-		set.addAll(m_loop.getEndInstructions(ancestors));
-		ancestors.pop();
-		return set;
 	}
 	
 	public TimeDistributionBuckets getTimeSpread() {
@@ -166,5 +121,38 @@ public class SelfLoopNode extends Node{
 		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
 		}
 		return false;
+	}
+	
+	//below here the methods have been verified useful
+	
+	public Set<Node> dChildren() {
+		Set<Node> directChildren = new TreeSet<Node>();
+		directChildren.add(m_loop);
+		return directChildren;
+	}
+	
+	public Set<Node> iChildren() {
+		return dChildren();
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		Set<Node> next = new TreeSet<Node>();
+		assert(getParent()!=null);
+		next.addAll(getParent().structurGraphNext(this));
+		//TODO check that this is correct
+		next.add(m_loop);
+		return next;
+	}
+	
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		insts.addAll(m_loop.getInstructionNodes());
+		return insts;
+	}	
+	
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		addFunctionRefToRefSet(fnRef, m_loop);
+		return fnRef;
 	}
 }

@@ -123,10 +123,11 @@ public class Route {
 		        return null;
 		    }
 		    
-		    if (index >= node.getIndirectChildren().size())
+		    if (index >= node.iChildren().size())
 		    	return null;
 			
-		    node = node.getIndirectChildren().get(index);
+			assert(false);
+		    //node = node.iChildren().get(index);
 		}		
 		return node;
 	}

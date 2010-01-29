@@ -1,12 +1,10 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
-
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -14,7 +12,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.BlockNodeAt
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
-import com.xmos.xta.core.engine.instructions.NullInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
@@ -104,57 +101,7 @@ public class BlockNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		return new LinkedList<Node>(m_insts);
-	}
 
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		assert(m_insts.contains(nodeDescriptor.getNode()));
-		
-		int index = m_insts.indexOf(nodeDescriptor.getNode());
-		if (index < m_insts.size() - 1) {
-			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-			next.add(new NodeDescriptor(m_insts.get(index + 1), nodeDescriptor.getAncestors()));
-			return next;
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();
-			
-			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-				return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
-			}
-			return new TreeSet<NodeDescriptor>();
-		}
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(m_insts.contains(nodeDescriptor.getNode()));
-		
-		int index = m_insts.indexOf(nodeDescriptor.getNode());
-		if (index > 0) {
-			Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-			before.add(new NodeDescriptor(m_insts.get(index - 1), nodeDescriptor.getAncestors()));
-			return before;
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();
-
-			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-				return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
-			}
-			return new TreeSet<NodeDescriptor>();
-		}
-	}
-
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-		list.add(new NodeDescriptor(m_insts.get(0), ancestors));
-		ancestors.pop();
-		return list;
-	}
 
     public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
 	    Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
@@ -198,5 +145,41 @@ public class BlockNode extends Node {
 			assert(child instanceof InstructionNode);
 			m_insts.add((InstructionNode)child);
 		}
+	}
+	
+	//below here the methods have been verified useful
+
+	public Set<Node> dChildren() {
+		Set<Node> directChildren = new TreeSet<Node>();
+		directChildren.add(m_insts.get(0));
+		return directChildren;
+	}
+	
+	public Set<Node> iChildren() {
+		Set<Node> indirectChildren = new TreeSet<Node>(m_insts);
+		return indirectChildren;
+	}
+
+	public Set<Node> structurGraphNext(Node currentNode) {
+		assert(m_insts.contains(currentNode));
+		int index = m_insts.indexOf(currentNode);
+		if (index < m_insts.size() - 1) {
+			Set<Node> next = new TreeSet<Node>();
+			next.add(m_insts.get(index +1));
+			return next;
+		} else {
+			assert(getParent() != null);
+			return getParent().structurGraphNext(this);
+		}
+	}	
+	
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>(m_insts);
+		return insts;
+	}
+	
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		return fnRef;
 	}
 }

@@ -1,16 +1,13 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
-import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -37,12 +34,6 @@ public class InstructionNode extends Node {
 	
 	public Node copyStructure() {
 		return new InstructionNode(this);
-	}
-
-	public Node deepCopy(Map<Long, FunctionNode> startPcs, Engine engine) {
-		InstructionNode in = new InstructionNode(this);
-		in.m_attributes = new InstructionNodeAttributes(in);
-		return in;
 	}
 
 	public Node deepCopy(Aborter aborter) throws AbortedException {
@@ -95,10 +86,6 @@ public class InstructionNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		return new LinkedList<Node>();
-	}
-
 	public boolean isInstructionNode() {
 		return true;
 	}
@@ -116,26 +103,6 @@ public class InstructionNode extends Node {
 	
 	public long getError(Case c) {
 		return 0;
-	}
-
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		return null;
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(false);
-		return null;
-	}
-
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		assert(false);
-		return null;
-	}
-
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		set.add(new NodeDescriptor(this, ancestors));
-		return set;
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
@@ -158,5 +125,29 @@ public class InstructionNode extends Node {
 			}
 		}
 		return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
+	}
+	//below here the methods have been verified useful
+	public Set<Node> dChildren() {
+		return new TreeSet<Node>();
+	}
+
+	public Set<Node> iChildren() {
+		return new TreeSet<Node>();
+	}
+	
+	public Set<Node> structurGraphNext(Node childNode) {
+		//This cannot have any children as its a instruction node
+		assert(false);
+		return null;
+	}
+	
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> inst = new TreeSet<InstructionNode>();
+		inst.add(this);
+		return inst;
+	}
+
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		return new TreeSet<FunctionReferenceNode>();
 	}
 }
