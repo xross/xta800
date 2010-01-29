@@ -280,4 +280,24 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		m_summary = enable;
 		refresh();
 	}
+
+	public void exportJpg() {
+		m_graphicsCanvas.exportJpg();
+	}
+
+	public void zoomFit() {
+		m_graphicsCanvas.zoomFit();
+	}
+	
+	public void zoomOut() {
+		m_graphicsCanvas.zoomOut();
+	}
+	
+	public void zoomIn() {
+		m_graphicsCanvas.zoomIn();
+	}
+	
+	public void zoomReset() {
+		m_graphicsCanvas.zoomReset();
+	}
 }

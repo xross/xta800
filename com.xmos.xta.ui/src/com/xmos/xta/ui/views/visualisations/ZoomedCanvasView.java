@@ -1,9 +1,5 @@
 package com.xmos.xta.ui.views.visualisations;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +17,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -30,7 +24,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -44,6 +37,7 @@ import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiRouteProperties;
 import com.xmos.xta.ui.views.ControlMonitor;
+import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 import com.xmos.xta.ui.views.visualisations.viewnode.ViewNode;
 
 public abstract class ZoomedCanvasView extends ControlMonitor implements IPropertyChangeListener, IMenuListener {
@@ -166,41 +160,6 @@ public abstract class ZoomedCanvasView extends ControlMonitor implements IProper
 	protected abstract Renderer createRenderer(Display display, RendererControl renderControl,
 			ZoomedCanvasProperties canvasProperties, Canvas canvas);
 		
-	public void exportJpg() {
-		
-		BufferedOutputStream bufferedOutput = null;
-        try {
-        	FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
-            String[] filterExt = { "*.jpg" };
-            fileDialog.setFilterExtensions(filterExt);
-        	fileDialog.setText("Save as...");
-            String fileName = fileDialog.open();
-        	
-            if (fileName != null) {
-	            bufferedOutput = new BufferedOutputStream(new FileOutputStream(fileName));
-	            
-	            ImageLoader imgLoader = new ImageLoader();
-	    		ImageData[] imgData = new ImageData[1];
-	    		imgData[0] = m_renderer.m_image.getImageData();
-	
-	    		imgLoader.data = imgData;
-	    		imgLoader.save(bufferedOutput, 4);
-            }
-            
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (bufferedOutput != null) {
-                    bufferedOutput.flush();
-                    bufferedOutput.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-	}
-	
 	public void setFocus() {
 		if (DEBUG) System.out.println(m_name + ": setFocus");
 	}
@@ -323,6 +282,10 @@ public abstract class ZoomedCanvasView extends ControlMonitor implements IProper
     	return position;
 	}
 
+	public void exportJpg() {
+		GraphicsUtils.exportJpg(m_renderer.m_image.getImageData());
+	}
+
 	public void zoomOut() {
 		if (m_viewNode == null)
 			return;
@@ -358,7 +321,7 @@ public abstract class ZoomedCanvasView extends ControlMonitor implements IProper
 		m_hScrollPosition = 0;
 		m_vScrollPosition = 0;
 		if (m_canvasProperties.scaleY()) {
-			scale = (xScale < yScale) ? xScale : yScale;
+			scale = Math.min(xScale, yScale);
 		} else {
 			scale = xScale;
 		}
@@ -379,7 +342,7 @@ public abstract class ZoomedCanvasView extends ControlMonitor implements IProper
 		double xScale = (double)m_renderControl.getCanvasWidth() / (double)box.width * scale;
 		double yScale = (double)m_renderControl.getCanvasHeight() / (double)box.height * scale;
 		if (m_canvasProperties.scaleY()) {
-			m_renderControl.setScale((xScale < yScale) ? xScale : yScale);
+			m_renderControl.setScale(Math.min(xScale, yScale));
 		} else {
 			m_renderControl.setScale(xScale);
 		}

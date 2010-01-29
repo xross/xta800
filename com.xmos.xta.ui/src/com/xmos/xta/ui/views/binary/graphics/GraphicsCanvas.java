@@ -40,11 +40,13 @@ public class GraphicsCanvas{
 	
 	private GraphicsObject m_graphicsObject;
 	private boolean m_summary;
+	private double m_scale;
 
 	public GraphicsCanvas(final Composite parent) {
 		m_display = parent.getDisplay();
 		m_graphicsObject = null;
 
+		m_scale = 1;
 	    m_offsetX = 0;
 		m_offsetY = 0;
 	    m_canvas = new Canvas(parent, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED);
@@ -150,16 +152,6 @@ public class GraphicsCanvas{
 
 	}
 
-	protected void zoomOut() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void zoomIn() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private void createToolTip(String toolTip, Listener labelListener) {
 		m_toolTip = new Shell(m_display, SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
 		m_toolTip.setBackground (m_display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
@@ -184,21 +176,35 @@ public class GraphicsCanvas{
 		if (m_graphicsObject == null) {
 			return null;
 		}
-		return m_graphicsObject.getObject(x + m_hScroll.getSelection(), y + m_vScroll.getSelection(), m_summary);
+		x = (int)((double)(x + m_hScroll.getSelection()) / m_scale);
+		y = (int)((double)(y + m_vScroll.getSelection()) / m_scale);
+		return m_graphicsObject.getObject(x, y, m_summary);
 	}
 
 	protected void drawCanvas(GC gc) {
 		Rectangle bounds = m_canvas.getBounds();
 		Rectangle imageBounds = m_canvasImage.getBounds();
 		
-		int copyWidth = imageBounds.width > bounds.width ? bounds.width : imageBounds.width;
-		int copyHeight = imageBounds.height > bounds.height ? bounds.height : imageBounds.height;
+		int renderX = scale(imageBounds.width);
+		int renderY = scale(imageBounds.height);
+
+		int copyWidth = Math.min(renderX, bounds.width);
+		int copyHeight = Math.min(renderY, bounds.height);
 		
-//		System.out.println("Draw " + m_offsetX + ", " + m_offsetY + ", " + copyWidth + ", " + copyHeight + ", " + copyWidth + ", " + copyHeight);
+		int offsetX = (int)((double)m_offsetX / m_scale);
+		int offsetY = (int)((double)m_offsetY / m_scale);
 		gc.drawImage(m_canvasImage,
-				m_offsetX, m_offsetY, copyWidth, copyHeight,
+				offsetX, offsetY, inverseScale(copyWidth), inverseScale(copyHeight),
 				0, 0, copyWidth, copyHeight);
     }
+
+	private int scale(int value) {
+		return (int)((double)value * m_scale);
+	}
+
+	private int inverseScale(int value) {
+		return (int)((double)value / m_scale);
+	}
 
 	private void updateScrollBars() {
 		Rectangle canvasBounds = m_canvas.getBounds();
@@ -206,11 +212,11 @@ public class GraphicsCanvas{
 		int canvasY = canvasBounds.height;
 		
 		Rectangle imageBounds = m_canvasImage.getBounds();
-		int renderX = imageBounds.width;
+		int renderX = scale(imageBounds.width);
 		if (canvasX > renderX)
 			renderX = canvasX;
 		
-		int renderY = imageBounds.height;
+		int renderY = scale(imageBounds.height);
 		if (canvasY > renderY)
 			renderY = canvasY;
 
@@ -218,24 +224,73 @@ public class GraphicsCanvas{
     	m_hScroll.setThumb(canvasX);
 	    m_vScroll.setMaximum(renderY);
     	m_vScroll.setThumb(canvasY);
+
+		m_offsetX = m_hScroll.getSelection();
+		m_offsetY = m_vScroll.getSelection();
 	}
 
 	public void setGraphicsObject(GraphicsObject object, boolean summary) {
 		m_graphicsObject = object;
 		m_summary = summary;
-		if (object != null) {
-			int x = object.getPixelsX(m_summary) + 1;
-			int y = object.getPixelsY(m_summary) + 1;
+		refresh();
+	}
+	
+	private void refresh() {
+		if (m_canvasImage != null) {
+			m_canvasImage.dispose();
+		}
+
+		if (m_graphicsObject != null) {
+			int x = m_graphicsObject.getPixelsX(m_summary) + 1;
+			int y = m_graphicsObject.getPixelsY(m_summary) + 1;
 
 			m_canvasImage = new Image(m_display, x, y);
 			GC gc = new GC(m_canvasImage);
 			gc.setAntialias(SWT.ON);
-			object.draw(m_display, gc, 0, 0, 1, m_summary);
+			m_graphicsObject.draw(m_display, gc, 0, 0, 1, m_summary);
 			gc.dispose();
 		} else {
 			m_canvasImage = new Image(m_display, 1, 1);
 		}
 		updateScrollBars();
 		m_canvas.redraw();
+	}
+
+	public void exportJpg() {
+		GraphicsUtils.exportJpg(m_canvasImage.getImageData());
+	}
+
+	public void zoomFit() {
+		Rectangle imageBounds = m_canvasImage.getBounds();
+		Rectangle canvasBounds = m_canvas.getBounds();
+		double xScale = (double)canvasBounds.width / (double)imageBounds.width;
+		double yScale = (double)canvasBounds.height / (double)imageBounds.height;
+		m_scale = Math.min(xScale, yScale);
+		m_scale = Math.min(m_scale, 1);
+		refresh();
+	}
+
+	protected void zoomOut() {
+		m_scale /= 1.2;
+		refresh();
+	}
+
+	protected void zoomIn() {
+		double oldScale = m_scale;
+		if (m_scale < 1) {
+			m_scale *= 1.2;
+		}
+		m_scale = Math.min(m_scale, 1);
+		
+		if (m_scale != oldScale) {
+			refresh();
+		}
+	}
+
+	public void zoomReset() {
+		if (m_scale != 1) {
+			m_scale = 1;
+			refresh();
+		}
 	}
 }

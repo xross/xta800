@@ -1,5 +1,7 @@
 package com.xmos.xta.ui.views.binary.graphics.objects;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -32,10 +34,8 @@ public class GraphicsDevice extends GraphicsObject {
 		if (summary) {
 			return getInfoPixelsX();
 		} else {
-			int pixelsX = 0;
-			for (GraphicsNode node : m_nodes.values()) {
-				pixelsX += node.getPixelsX(summary) + BORDER_X;
-			}
+			Collection<GraphicsObject> nodes = new LinkedList<GraphicsObject>(m_nodes.values());
+			int pixelsX = getPixelsX(nodes, BORDER_X, summary);
 			return pixelsX + (BORDER_X * 2);
 		}
     }
@@ -45,10 +45,8 @@ public class GraphicsDevice extends GraphicsObject {
 		if (summary) {
 			return getInfoPixelsY();
 		} else {
-			int pixelsY = 0;
-			for (GraphicsNode node : m_nodes.values()) {
-				pixelsY = Math.max(pixelsY, node.getPixelsY(summary));
-			}
+			Collection<GraphicsObject> nodes = new LinkedList<GraphicsObject>(m_nodes.values());
+			int pixelsY = getPixelsY(nodes, BORDER_Y, summary);
 			return pixelsY + (BORDER_Y * 2);
 		}
     }
@@ -60,7 +58,8 @@ public class GraphicsDevice extends GraphicsObject {
 		if (summary) {
 			drawInfo(display, gc, x, y, scale, summary);
 		} else {
-			drawNodes(display, gc, x, y, scale);
+			Collection<GraphicsObject> nodes = new LinkedList<GraphicsObject>(m_nodes.values());
+			draw(display, gc, x, y, scale, summary, nodes, BORDER_X, BORDER_Y);
 		}
     }
     
@@ -82,20 +81,6 @@ public class GraphicsDevice extends GraphicsObject {
 		assert(m_nodes.containsKey(nodeId) == false);
 		m_nodes.put(nodeId, node);
 		addChild(node);
-	}
-
-	private void drawNodes(Display display, GC gc, int x, int y, double scale) {
-    	if (m_nodes.isEmpty()) {
-    		return;
-    	}
-
-    	int offsetX = BORDER_X;
-    	int offsetY = BORDER_Y;
-    	
-		for (GraphicsNode node : m_nodes.values()) {
-			node.draw(display, gc, offsetX, offsetY, scale, false);
-			offsetX += node.getPixelsX(false) + BORDER_X;
-		}
 	}
 
 	@Override

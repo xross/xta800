@@ -1,5 +1,9 @@
 package com.xmos.xta.ui.views.binary.graphics;
 
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +15,10 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 
 public class GraphicsUtils {
 
@@ -191,5 +197,39 @@ public class GraphicsUtils {
 
 	public static Set<String> getSelectedOptions() {
 		return s_selectedOptions;
+	}
+
+	public static void exportJpg(ImageData data) {
+		BufferedOutputStream bufferedOutput = null;
+        try {
+        	FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
+            String[] filterExt = { "*.jpg" };
+            fileDialog.setFilterExtensions(filterExt);
+        	fileDialog.setText("Save as...");
+            String fileName = fileDialog.open();
+        	
+            if (fileName != null) {
+	            bufferedOutput = new BufferedOutputStream(new FileOutputStream(fileName));
+	            
+	            ImageLoader imgLoader = new ImageLoader();
+	    		ImageData[] imgData = new ImageData[1];
+	    		imgData[0] = data;
+	
+	    		imgLoader.data = imgData;
+	    		imgLoader.save(bufferedOutput, 4);
+            }
+            
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (bufferedOutput != null) {
+                    bufferedOutput.flush();
+                    bufferedOutput.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 	}
 }

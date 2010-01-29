@@ -75,7 +75,7 @@ public abstract class GraphicsObject {
 	public GraphicsObject getObject(int x, int y, boolean summary) {
 		if (summary) {
 			GraphicsObject object = null;
-			Collection<GraphicsInfo> active = getActiveInfos();
+			Collection<GraphicsObject> active = getActiveInfos();
 			for (GraphicsObject info : active) {
 				object = info.getObject(x, y, false);
 				if (object != null) {
@@ -149,42 +149,40 @@ public abstract class GraphicsObject {
 	}
 
 	protected void drawInfo(Display display, GC gc, int x, int y, double scale, boolean summary) {
-		Collection<GraphicsInfo> active = getActiveInfos();
-		int numElements = active.size();
+		Collection<GraphicsObject> active = getActiveInfos();
+		draw(display, gc, x, y, scale, summary, active, INFO_SPACING_X, INFO_SPACING_Y);
+	}
+	
+	protected void draw(Display display, GC gc, int x, int y, double scale, boolean summary,
+			Collection<GraphicsObject> objects, int spacingX, int spacingY) {
+		int numElements = objects.size();
 		if (numElements == 0) {
 			return;
 		}
 		
-		int numCols = numCols(active);
+		int numCols = numCols(objects);
 		
-		int offsetX = x + INFO_SPACING_X;
-		int offsetY = y + INFO_SPACING_Y;
+		int offsetX = x + spacingX;
+		int offsetY = y + spacingY;
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : active) {
-			if (!isActive(info)) {
-				continue;
-			}
-			info.draw(display, gc, offsetX, offsetY, scale, summary);
+		for (GraphicsObject object : objects) {
+			object.draw(display, gc, offsetX, offsetY, scale, summary);
 
 			int col = (elementNum % numCols);
 			int row = (elementNum / numCols);
-			if (col == (numCols(active) - 1)) {
-				offsetX = x + INFO_SPACING_X;
-				offsetY = offsetY + getRowPixelsY(row) + INFO_SPACING_Y;
+			if (col == (numCols(objects) - 1)) {
+				offsetX = x + spacingX;
+				offsetY = offsetY + getRowPixelsY(objects, false, row) + spacingY;
 			} else {
-				offsetX = offsetX + getColPixelsX(col) + INFO_SPACING_X;
+				offsetX = offsetX + getColPixelsX(objects, false, col) + spacingX;
 			}
 			elementNum++;
 		}
 	}
 
-	private boolean isActive(GraphicsInfo info) {
-		return GraphicsUtils.getSelectedOptions().contains(info.getName());
-	}
-	
-	private Collection<GraphicsInfo> getActiveInfos() {
-		Collection<GraphicsInfo> active = new LinkedList<GraphicsInfo>();
+	private Collection<GraphicsObject> getActiveInfos() {
+		Collection<GraphicsObject> active = new LinkedList<GraphicsObject>();
 		Set<String> activeOptions = GraphicsUtils.getSelectedOptions();
 		
 		for (GraphicsInfo info : m_infos.values()) {
@@ -195,24 +193,29 @@ public abstract class GraphicsObject {
 
 		return active;
 	}
+
 	protected int getInfoPixelsX() {
-		Collection<GraphicsInfo> active = getActiveInfos();
-		int numElements = active.size();
+		Collection<GraphicsObject> active = getActiveInfos();
+		return getPixelsX(active, INFO_SPACING_X, false);
+	}
+	
+	protected int getPixelsX(Collection<GraphicsObject> objects, int spacingX, boolean summary) {
+		int numElements = objects.size();
 		if (numElements == 0) {
 			return 0;
 		}
 		
-		int numCols = numCols(active);
-		int numRows = numRows(active, numCols);
+		int numCols = numCols(objects);
+		int numRows = numRows(objects, numCols);
 		int x[] = new int[numRows];
 		for (int i = 0; i < numRows; i++) {
-			x[i] = INFO_SPACING_X;
+			x[i] = spacingX;
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : active) {
+		for (GraphicsObject object : objects) {
 			int rowNumber = (elementNum / numCols);
-			x[rowNumber] += info.getPixelsX(false) + INFO_SPACING_X;
+			x[rowNumber] += object.getPixelsX(summary) + spacingX;
 			elementNum++;
 		}
 		
@@ -224,22 +227,26 @@ public abstract class GraphicsObject {
 	}
 
 	protected int getInfoPixelsY() {
-		Collection<GraphicsInfo> active = getActiveInfos();
-		int numElements = active.size();
+		Collection<GraphicsObject> active = getActiveInfos();
+		return getPixelsY(active, INFO_SPACING_Y, false);
+	}
+
+	protected int getPixelsY(Collection<GraphicsObject> objects, int spacingY, boolean summary) {
+		int numElements = objects.size();
 		if (numElements == 0) {
 			return 0;
 		}
 		
-		int numCols = numCols(active);
+		int numCols = numCols(objects);
 		int y[] = new int[numCols];
 		for (int i = 0; i < numCols; i++) {
-			y[i] = INFO_SPACING_Y;
+			y[i] = spacingY;
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : active) {
+		for (GraphicsObject object : objects) {
 			int colNumber = (elementNum % numCols);
-			y[colNumber] += info.getPixelsY(false) + INFO_SPACING_Y;
+			y[colNumber] += object.getPixelsY(summary) + spacingY;
 			elementNum++;
 		}
 		
@@ -250,17 +257,16 @@ public abstract class GraphicsObject {
 		return max;
 	}
 
-	private int numCols(Collection<GraphicsInfo> active) {
-		return (int) Math.ceil(Math.sqrt(active.size()));
+	private int numCols(Collection<GraphicsObject> objects) {
+		return (int) Math.ceil(Math.sqrt(objects.size()));
 	}
 
-	private int numRows(Collection<GraphicsInfo> active, int numCols) {
-		return (active.size() + numCols - 1) / numCols;
+	private int numRows(Collection<GraphicsObject> objects, int numCols) {
+		return (objects.size() + numCols - 1) / numCols;
 	}
 
-	private int getColPixelsX(int col) {
-		Collection<GraphicsInfo> active = getActiveInfos();
-		int numCols = numCols(active);
+	protected int getColPixelsX(Collection<GraphicsObject> objects, boolean summary, int col) {
+		int numCols = numCols(objects);
 		assert(col < numCols);
 		
 		int x[] = new int[numCols];
@@ -269,18 +275,17 @@ public abstract class GraphicsObject {
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : active) {
+		for (GraphicsObject object : objects) {
 			int colNumber = (elementNum % numCols);
-			x[colNumber] = Math.max(x[colNumber], info.getPixelsX(false));
+			x[colNumber] = Math.max(x[colNumber], object.getPixelsX(summary));
 			elementNum++;
 		}
 		return x[col];
 	}
 
-	private int getRowPixelsY(int row) {
-		Collection<GraphicsInfo> active = getActiveInfos();
-		int numCols = numCols(active);
-		int numRows = numRows(active, numCols);
+	private int getRowPixelsY(Collection<GraphicsObject> objects, boolean summary, int row) {
+		int numCols = numCols(objects);
+		int numRows = numRows(objects, numCols);
 		assert(row < numRows);
 		
 		int y[] = new int[numRows];
@@ -289,9 +294,9 @@ public abstract class GraphicsObject {
 		}
 		
 		int elementNum = 0;
-		for (GraphicsInfo info : active) {
+		for (GraphicsObject object : objects) {
 			int rowNumber = (elementNum / numCols);
-			y[rowNumber] = Math.max(y[rowNumber], info.getPixelsY(false));
+			y[rowNumber] = Math.max(y[rowNumber], object.getPixelsY(summary));
 			elementNum++;
 		}
 		
