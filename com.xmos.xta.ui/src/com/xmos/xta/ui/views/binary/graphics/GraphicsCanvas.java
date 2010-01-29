@@ -229,6 +229,7 @@ public class GraphicsCanvas{
 
 			m_canvasImage = new Image(m_display, x, y);
 			GC gc = new GC(m_canvasImage);
+			gc.setAntialias(SWT.ON);
 			object.draw(m_display, gc, 0, 0, 1, m_summary);
 			gc.dispose();
 		} else {

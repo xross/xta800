@@ -11,7 +11,7 @@ public class GraphicsPorts extends GraphicsObject {
 
 	@Override
 	public String getIconName() {
-		return "block_node";
+		return "ports";
 	}
 
 	@Override

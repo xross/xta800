@@ -28,6 +28,7 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.handlers.PieHandler;
 import com.xmos.xta.ui.handlers.SummaryHandler;
 import com.xmos.xta.ui.views.ControlMonitor;
 import com.xmos.xta.ui.views.binary.BinaryView;
@@ -55,8 +56,23 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 
 	public GraphicsView(final Composite parent) {
 		super(BinaryView.ID, true);
-		
 		m_display = parent.getDisplay();
+		
+		createLayout(parent);
+	    initialiseSummary(true);
+	    initialiseUtils();
+	    initialise();
+		GuiEngine.addBroadcastListener(this);
+		
+		m_treeViewer.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				m_selectedObject = m_treeViewer.getSelectedObject();
+				refresh();
+			}
+		});
+	}
+
+	private void createLayout(Composite parent) {
 		parent.setLayout(new FillLayout());
 
 	    SashForm form = new SashForm(parent, SWT.HORIZONTAL);
@@ -68,22 +84,27 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 	    m_graphicsCanvas = new GraphicsCanvas(bottom);
 
 	    form.setWeights(new int[] {1, 3});
+	}
 
+	private void initialiseUtils() {
 	    GraphicsUtils.initialise(m_display);
-	    initialise();
-		GuiEngine.addBroadcastListener(this);
+	    GraphicsUtils.setChartType(GraphicsUtils.CHART_PIE);
+
+		// Ensure the button state matches
+		ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+		Command command = service.getCommand(PieHandler.COMMAND_ID);
+		State state = command.getState(PieHandler.STATE_ID);
+		state.setValue(true);
+	}
+
+	private void initialiseSummary(boolean initialValue) {
+		m_summary = initialValue;
 		
-		m_treeViewer.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				m_selectedObject = m_treeViewer.getSelectedObject();
-				refresh();
-			}
-		});
-		
+		// Ensure the button state matches
 		ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
 		Command command = service.getCommand(SummaryHandler.COMMAND_ID);
 		State state = command.getState(SummaryHandler.STATE_ID);
-		m_summary = (Boolean) state.getValue();
+		state.setValue(initialValue);
 	}
 
 	public void dispose() {
@@ -107,7 +128,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 	    m_left.layout(true);
 	    
 		m_treeViewer.setRoot(m_device);
-		m_graphicsCanvas.setGraphicsObject(m_device, m_summary);
+		refresh();
 	}
 
 	public void refresh() {
@@ -208,7 +229,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		Set<Integer> priorities = configLoader.getPinPortPriorities(pinNumber);
 		
 		for (int priority : priorities) {
-			Map<String, String> attributes = configLoader.getPinPortAttributes(pinNumber, priority);
+			Map<String, String> attributes = configLoader.getPinPortBitAttributes(pinNumber, priority);
 			if (attributes.keySet().isEmpty()) {
 				continue;
 			}

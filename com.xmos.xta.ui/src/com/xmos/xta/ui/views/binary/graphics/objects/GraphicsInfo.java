@@ -60,20 +60,11 @@ public class GraphicsInfo extends GraphicsObject {
 
 	private void drawShape(Display display, GC gc, int x, int y, int textHeight) {
 		int width = getPixelsX(false);
-		int height = getPixelsY(false);
-		int arcWidth = SIZE_X / 10;
-		int arcHeight = height / 10;
-		
-		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
-    	gc.fillRoundRectangle(x, y, width, height, arcWidth, arcHeight);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+    	int labelX = m_name.length() * gc.getFontMetrics().getAverageCharWidth();
+
+    	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
     	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-    	gc.drawRoundRectangle(x, y, width, height, arcWidth, arcHeight);
-    	
-		gc.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
-    	gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-    	gc.drawText(m_name, x + arcWidth, y + 1);
+    	gc.drawText(m_name, x + ((width - labelX) / 2), y + 1);
 	}
 
 	@Override

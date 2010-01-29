@@ -24,11 +24,9 @@ public class PieHandler extends AbstractHandler implements IPropertyChangeListen
 	public static final String STATE_ID = "com.xmos.xta.ui.binary.pie.command.toggleState";
 
 	private String m_view;
-	private boolean m_toggled;
 	
     public PieHandler(String view) {
     	m_view = view;
-    	m_toggled = true;		
     	GuiEngine.addBroadcastListener(this);
     }
 
@@ -41,11 +39,11 @@ public class PieHandler extends AbstractHandler implements IPropertyChangeListen
 		ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
 		Command command = service.getCommand(COMMAND_ID);
 		State state = command.getState(STATE_ID);
-		m_toggled = (Boolean) state.getValue();
-		state.setValue(!m_toggled);
+		boolean toggled = (Boolean) state.getValue();
+		state.setValue(!toggled);
 		
 		ViewControls control = (ViewControls)HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(m_view);
-		control.setPie(m_toggled);
+		control.setPie(!toggled);
 		return null;
 	}
 	
@@ -62,6 +60,10 @@ public class PieHandler extends AbstractHandler implements IPropertyChangeListen
 
 	@SuppressWarnings("unchecked")
 	public void updateElement(UIElement element, Map parameters) {
-		element.setChecked(m_toggled);
-	}		
+		ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+		Command command = service.getCommand(COMMAND_ID);
+		State state = command.getState(STATE_ID);
+		boolean toggled = (Boolean) state.getValue();
+		element.setChecked(toggled);
+	}
 }
