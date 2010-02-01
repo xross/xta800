@@ -100,7 +100,6 @@ public class RouteConstructor {
 		
 		//find end instructions
 		Set<StackNode> endStackNodes = new HashSet<StackNode>();
-		
 		Set<InstructionNode> endInstructions = getEndInstructions(m_description);
 		
 		for(InstructionNode endInstruction : endInstructions){
@@ -127,15 +126,9 @@ public class RouteConstructor {
 		Set<InstructionNode> startInstructions = getStartInstruction(m_description);
 		
 		for(InstructionNode startInstruction : startInstructions){
-			//start instructions -> start functions
 			FunctionNode startFunction = getFunction(startInstruction);
-			
-			//start functions -> start call stacks
 			Set<Stack<FunctionReferenceNode>> callStacks = getCallStacks(startFunction); 
-			
 			Node startNode  = getStartNode(startInstruction);
-			
-			//Analyse from startNode within each of the contexts to all of the end nodes
 			for(Stack<FunctionReferenceNode> currentStack : callStacks){
 				Node analysis = makeStructureNode(currentStack, startNode, endStackNodes, exclusionStackNodes, m_engine, null);
 				Route route = new Route(src, m_engine, analysis, m_description, m_container);
@@ -173,6 +166,7 @@ public class RouteConstructor {
 				}
 			}
 		}
+		
 		Set<Node> workingSet = new TreeSet<Node>();
 		
 		NodeWrapper workingSetStartNode = new NodeWrapper(startNode);
@@ -684,9 +678,6 @@ public class RouteConstructor {
 		}
 	}		
 	
-	
-	
-	
 	//below here has been written during the refactoring
 
 	private Set<InstructionNode> refToInstructions(Reference ref) {
@@ -753,9 +744,7 @@ public class RouteConstructor {
 		if(m_stackLookUp.containsKey(function)){
 			return m_stackLookUp.get(function);
 		}
-		
 		Set<Stack<FunctionReferenceNode>> stack = m_structureGraph.getFunctionCallStack(function);
-		
 		m_stackLookUp.put(function, stack);
 		return stack;
 	}
@@ -796,7 +785,6 @@ public class RouteConstructor {
 				instructionNodes.addAll(refToInstructions(endRef));
 			}
 		}
-		assert(instructionNodes != null);
 		assert(!instructionNodes.isEmpty());
 		return instructionNodes;
 	}
@@ -835,7 +823,6 @@ public class RouteConstructor {
 			//this is naughty as it is overloading the return
 			return null;
 		}
-		
 		assert(!workingSet.isEmpty());
 		Node cfgStartNode = makeBasicBlocks(workingSetStartNode.node, workingSet);
 		cfgSanityCheckNodes(workingSet);

@@ -198,6 +198,9 @@ public class StructuralAnalysisEngine {
 			
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 			
+			//System.out.println(dumpTree("hello", currentGraph));
+			
+			
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph, functionReferences);
 
 			/*TODO --make the fnop analyser work efficiently
@@ -560,39 +563,9 @@ public class StructuralAnalysisEngine {
 		if (workingSet.size() > 1) {
 			sb.append("digraph "+ text + "{");
 			for (Node node : workingSet) {
+				sb.append("node" + node.getId() + " [label=\"" + node + "\"];");
 				for (Node next : node.getNextNodes()) {
-					if (node.getBranchTargets().contains(next)) {
-						if(node.isBlockNode()){
-							
-							BlockNode b = (BlockNode)node;
-							
-							if(b.getInstructions().size() > 0 && b.getInstructions().getLast().getNumBytes() == 4){
-								sb.append(node + " -> " + next + " [style=dotted, penwidth=5, color=red];");
-							} else {
-								sb.append(node + " -> " + next + " [style=dotted];");
-							}
-							
-						} else {
-							sb.append(node + " -> " + next + " [style=dotted];");
-						}
-
-					} else {
-						sb.append(node + " -> " + next + ";");
-					}
-				}
-				
-				if (node.isFunctionNode()) {
-					//sb.append(node + " [label=\""+ ((FunctionNode) node).getFunctionName()+ "\", style=filled, color=green];");
-					sb.append(node + " [label=\"func\"];");
-				} else if(node.isBlockNode()){
-					
-					BlockNode b = (BlockNode)node;
-					
-					int bytes = 0;
-					for(XtaInstruction inst : b.getInstructions()){
-						bytes +=inst.getNumBytes();
-					}
-					sb.append(node + " [label=\"bytes: " + bytes + "\"];");
+					sb.append("node" + node.getId() + " -> node" + next.getId()+ ";");
 				}
 			}
 			sb.append("}\n");

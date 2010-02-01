@@ -31,7 +31,6 @@ public class InstructionNode extends Node {
 		m_attributes = new InstructionNodeAttributes(this);
 	}
 	
-	
 	public Node copyStructure() {
 		return new InstructionNode(this);
 	}
