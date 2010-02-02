@@ -47,7 +47,7 @@ public class GraphicsInfo extends GraphicsObject {
     }
     
 	@Override
-	public void draw(Display display, GC gc, int x, int y, double scale, boolean summary) {
+	public void draw(Display display, GC gc, int x, int y, boolean summary) {
 		track(x, y);
 
 		int textHeight = gc.getFontMetrics().getHeight() + 1;
@@ -75,6 +75,11 @@ public class GraphicsInfo extends GraphicsObject {
 	@Override
 	public String getName() {
 		return m_name;
+	}
+
+	@Override
+	public String getShortName() {
+		return getName();
 	}
 
 	@Override

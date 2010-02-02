@@ -9,12 +9,14 @@ import java.util.TreeMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.icons.Icons;
 import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 
 public abstract class GraphicsObject {
@@ -24,16 +26,22 @@ public abstract class GraphicsObject {
 	private final int NUM_TIMERS = 10;
 	private final int RAM_SIZE = 0x10000;
 	
-	private final int INFO_SPACING_X = 10;
-	private final int INFO_SPACING_Y = 10;
+	protected final int PIN_NAME_CHARS = 9;
+	protected final int SHORT_NAME_CHARS = 7;
+	protected final int PIN_SPACING_X = 5;
+	protected final int PIN_SPACING_Y = 3;
+
+	protected final int INFO_SPACING_X = 10;
+	protected final int INFO_SPACING_Y = 10;
 
 	private List<GraphicsObject> m_children;
 	protected Map<String, GraphicsInfo> m_infos;
 	
     public abstract String getName();
+    public abstract String getShortName();
 	public abstract String getIconName();
 	public abstract String getToolTip();
-	public abstract void draw(Display display, GC gc, int x, int y, double scale, boolean summary);
+	public abstract void draw(Display display, GC gc, int x, int y, boolean summary);
 
 	public abstract int getPixelsX(boolean summary);
 	public abstract int getPixelsY(boolean summary);
@@ -148,12 +156,12 @@ public abstract class GraphicsObject {
 		return graphicsInfo;
 	}
 
-	protected void drawInfo(Display display, GC gc, int x, int y, double scale, boolean summary) {
+	protected void drawInfo(Display display, GC gc, int x, int y, boolean summary) {
 		Collection<GraphicsObject> active = getActiveInfos();
-		draw(display, gc, x, y, scale, summary, active, INFO_SPACING_X, INFO_SPACING_Y);
+		draw(display, gc, x, y, summary, active, INFO_SPACING_X, INFO_SPACING_Y);
 	}
 	
-	protected void draw(Display display, GC gc, int x, int y, double scale, boolean summary,
+	protected void draw(Display display, GC gc, int x, int y, boolean summary,
 			Collection<GraphicsObject> objects, int spacingX, int spacingY) {
 		int numElements = objects.size();
 		if (numElements == 0) {
@@ -167,7 +175,7 @@ public abstract class GraphicsObject {
 		
 		int elementNum = 0;
 		for (GraphicsObject object : objects) {
-			object.draw(display, gc, offsetX, offsetY, scale, summary);
+			object.draw(display, gc, offsetX, offsetY, summary);
 
 			int col = (elementNum % numCols);
 			int row = (elementNum / numCols);
@@ -194,11 +202,6 @@ public abstract class GraphicsObject {
 		return active;
 	}
 
-	protected int getInfoPixelsX() {
-		Collection<GraphicsObject> active = getActiveInfos();
-		return getPixelsX(active, INFO_SPACING_X, false);
-	}
-	
 	protected int getPixelsX(Collection<GraphicsObject> objects, int spacingX, boolean summary) {
 		int numElements = objects.size();
 		if (numElements == 0) {
@@ -226,11 +229,6 @@ public abstract class GraphicsObject {
 		return max;
 	}
 
-	protected int getInfoPixelsY() {
-		Collection<GraphicsObject> active = getActiveInfos();
-		return getPixelsY(active, INFO_SPACING_Y, false);
-	}
-
 	protected int getPixelsY(Collection<GraphicsObject> objects, int spacingY, boolean summary) {
 		int numElements = objects.size();
 		if (numElements == 0) {
@@ -255,6 +253,32 @@ public abstract class GraphicsObject {
 			max = Math.max(max, y[i]);
 		}
 		return max;
+	}
+
+	protected int getImagePixelsX() {
+		Image image = Icons.getIcon(getIconName());
+		if (image != null) {
+			return image.getBounds().width;
+		}
+		return 0;
+	}
+
+	protected int getImagePixelsY() {
+		Image image = Icons.getIcon(getIconName());
+		if (image != null) {
+			return image.getBounds().height;
+		}
+		return 0;
+	}
+
+	protected int getInfoPixelsX() {
+		Collection<GraphicsObject> active = getActiveInfos();
+		return getPixelsX(active, INFO_SPACING_X, false);
+	}
+	
+	protected int getInfoPixelsY() {
+		Collection<GraphicsObject> active = getActiveInfos();
+		return getPixelsY(active, INFO_SPACING_Y, false);
 	}
 
 	private int numCols(Collection<GraphicsObject> objects) {
@@ -307,5 +331,15 @@ public abstract class GraphicsObject {
 		int worstCase = info.getWorstCase();
 		graphicsInfo.addValue("free", total - worstCase, display.getSystemColor(SWT.COLOR_GREEN));
 		graphicsInfo.addValue("used", worstCase, display.getSystemColor(SWT.COLOR_RED));
+	}
+
+	protected int getPortWidth(String portName) {
+		String widthString = portName.replaceAll(".*_([0-9]+)[A-Z]$", "$1");
+		try {
+			return Integer.parseInt(widthString);
+		} catch (NumberFormatException e) {
+			assert(false);
+		}
+		return 0;
 	}
 }

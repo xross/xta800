@@ -24,12 +24,13 @@ public class GraphicsCore extends GraphicsObject {
     	m_portsNode = new GraphicsPorts();
     }
 
+	@Override
     public void addInfo(Display display, ProgInfoEntry info) {
     	addChild(createAndAddInfo(display, info));
     }
 
 	@Override
-	public void draw(Display display, GC gc, int x, int y, double scale, boolean summary) {
+	public void draw(Display display, GC gc, int x, int y, boolean summary) {
 		track(x, y);
 		
 		if (!summary) {
@@ -56,7 +57,7 @@ public class GraphicsCore extends GraphicsObject {
 	    	y += GraphicsUtils.getTextHeight();
 		}
     	
-    	drawInfo(display, gc, x, y, scale, summary);
+    	drawInfo(display, gc, x, y, summary);
     }
 	
 	@Override
@@ -71,6 +72,11 @@ public class GraphicsCore extends GraphicsObject {
 		} else {
 			return String.format("Core %d", m_number);
 		}
+	}
+
+	@Override
+	public String getShortName() {
+		return getName();
 	}
 
 	@Override

@@ -52,17 +52,18 @@ public class GraphicsDevice extends GraphicsObject {
     }
     
 	@Override
-	public void draw(Display display, GC gc, int x, int y, double scale, boolean summary) {
+	public void draw(Display display, GC gc, int x, int y, boolean summary) {
 		track(x, y);
 
 		if (summary) {
-			drawInfo(display, gc, x, y, scale, summary);
+			drawInfo(display, gc, x, y, summary);
 		} else {
 			Collection<GraphicsObject> nodes = new LinkedList<GraphicsObject>(m_nodes.values());
-			draw(display, gc, x, y, scale, summary, nodes, BORDER_X, BORDER_Y);
+			draw(display, gc, x, y, summary, nodes, BORDER_X, BORDER_Y);
 		}
     }
     
+	@Override
 	public void addInfo(Display display, ProgInfoEntry info) {
 		super.addInfo(display, info);
 
@@ -71,16 +72,6 @@ public class GraphicsDevice extends GraphicsObject {
 		if (node != null) {
 			node.addInfo(display, info);
 		}
-	}
-
-	public void addPin(String name, GraphicsPin pin) {
-		m_pins.addPin(name, pin);
-	}
-
-	public void addNode(int nodeId, GraphicsNode node) {
-		assert(m_nodes.containsKey(nodeId) == false);
-		m_nodes.put(nodeId, node);
-		addChild(node);
 	}
 
 	@Override
@@ -94,8 +85,23 @@ public class GraphicsDevice extends GraphicsObject {
 	}
 
 	@Override
+	public String getShortName() {
+		return getName();
+	}
+
+	@Override
 	public String getToolTip() {
 		return getName();
+	}
+
+	public void addPin(String name, GraphicsPin pin) {
+		m_pins.addPin(name, pin);
+	}
+
+	public void addNode(int nodeId, GraphicsNode node) {
+		assert(m_nodes.containsKey(nodeId) == false);
+		m_nodes.put(nodeId, node);
+		addChild(node);
 	}
 
 	public GraphicsPort getPort(int nodeNumber, int coreNumber, String name) {

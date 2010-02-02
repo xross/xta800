@@ -20,12 +20,17 @@ public class GraphicsPorts extends GraphicsObject {
 	}
 
 	@Override
+	public String getShortName() {
+		return getName();
+	}
+
+	@Override
 	public String getToolTip() {
 		return getName();
 	}
 
 	@Override
-	public void draw(Display display, GC gc, int x, int y, double scale, boolean summary) {
+	public void draw(Display display, GC gc, int x, int y, boolean summary) {
 	}
 
 	@Override

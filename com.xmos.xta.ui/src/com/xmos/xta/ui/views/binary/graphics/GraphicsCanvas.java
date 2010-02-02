@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.Shell;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsObject;
 
 public class GraphicsCanvas{
+
+	private static final int MAX_IMAGE_SIZE = 1024 * 1024 * 10;
     
 	private Display m_display;
 
@@ -243,12 +245,21 @@ public class GraphicsCanvas{
 		if (m_graphicsObject != null) {
 			int x = m_graphicsObject.getPixelsX(m_summary) + 1;
 			int y = m_graphicsObject.getPixelsY(m_summary) + 1;
-
-			m_canvasImage = new Image(m_display, x, y);
-			GC gc = new GC(m_canvasImage);
-			gc.setAntialias(SWT.ON);
-			m_graphicsObject.draw(m_display, gc, 0, 0, 1, m_summary);
-			gc.dispose();
+			
+			if ((x * y) > MAX_IMAGE_SIZE) {
+				m_canvasImage = new Image(m_display, 200, GraphicsUtils.getTextHeight());
+				GC gc = new GC(m_canvasImage);
+				gc.setAntialias(SWT.ON);
+				gc.drawText("Image too large to render", 0, 0);
+				gc.dispose();
+				
+			} else {
+				m_canvasImage = new Image(m_display, x, y);
+				GC gc = new GC(m_canvasImage);
+				gc.setAntialias(SWT.ON);
+				m_graphicsObject.draw(m_display, gc, 0, 0, m_summary);
+				gc.dispose();
+			}
 		} else {
 			m_canvasImage = new Image(m_display, 1, 1);
 		}

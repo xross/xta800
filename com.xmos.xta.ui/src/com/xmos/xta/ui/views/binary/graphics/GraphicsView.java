@@ -154,8 +154,6 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 				String coreName = xnLoader.getCoreName(nodeNumber, coreNumber);
 				GraphicsCore core = new GraphicsCore(coreName, coreNumber);
 				node.addCore(coreNumber, core);
-				
-				addCorePorts(configLoader, xnLoader, core, nodeNumber, coreNumber);
 			}					
 		}
 		
@@ -170,7 +168,16 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 			
 			m_device.addPin(pinName, pin);
 		}
-		
+
+		// Add ports once the pins are created
+		for (int nodeNumber : configLoader.getNodeNumbers()) {
+			GraphicsNode node = m_device.getNode(nodeNumber);
+			for (int coreNumber : configLoader.getCoreNumbers(nodeNumber)) {
+				GraphicsCore core = node.getCore(coreNumber);
+				addCorePorts(configLoader, xnLoader, core, nodeNumber, coreNumber);
+			}					
+		}
+
 		ProgInfoLoader progInfoLoader = xeLoader.getProgInfoLoader();
 		if (progInfoLoader != null) {
 			for (ProgInfoEntry info : progInfoLoader.getProgInfos()) {
@@ -200,7 +207,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 				Map<String, String> xnNames = xnLoader.getPortNames(nodeNumber, coreNumber);
 				String xnName = xnNames.get(portName);
 				
-				GraphicsPort port = new GraphicsPort(portName, xnName, nodeNumber, coreNumber);
+				GraphicsPort port = new GraphicsPort(m_device, portName, xnName, nodeNumber, coreNumber);
 				core.addPort(portName, port);
 				
 				addPortPins(configLoader, port, portName, nodeNumber, coreNumber);
@@ -221,13 +228,12 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 			}
 			
 			GraphicsPin pin = new GraphicsPin(attributes.get("name"), pinNum);
-			port.addChild(pin);
+			port.addPin(pin);
 		}
 	}
 
 	private void addPinPorts(ConfigLoader configLoader, XnLoader xnLoader, GraphicsPin pin, int pinNumber) {
 		Set<Integer> priorities = configLoader.getPinPortPriorities(pinNumber);
-		
 		for (int priority : priorities) {
 			Map<String, String> attributes = configLoader.getPinPortBitAttributes(pinNumber, priority);
 			if (attributes.keySet().isEmpty()) {
@@ -244,7 +250,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 				String xnName = xnNames.get(name);
 				
 				GraphicsPortBit port = new GraphicsPortBit(name, xnName, node, core, bitNum);
-				pin.addChild(port);
+				pin.addPortBit(port);
 				
 			} catch (NumberFormatException e) {}
 		}
@@ -262,7 +268,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 			int bitNum = Integer.parseInt(attributes.get("bitNum"));
 			String dir = "dir_" + attributes.get("dir");
 			GraphicsLink link = new GraphicsLink(node, number, bitNum, dir);
-			pin.addChild(link);
+			pin.addXLink(link);
 			
 		} catch (NumberFormatException e) {}
 	}

@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +11,7 @@ import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -30,7 +30,7 @@ public class GraphicsUtils {
 	private static Set<String> s_selectedOptions = new TreeSet<String>();
 
 	private static int s_textHeight = -1;
-	private static Color s_colors[];
+	private static int s_averageCharWidth = -1;
 	
 	public static ImageData rotateLeft(ImageData srcData, int direction) {
 		int bytesPerPixel = srcData.bytesPerLine / srcData.width;
@@ -77,31 +77,22 @@ public class GraphicsUtils {
 		return new ImageData(srcData.width, srcData.height, srcData.depth, srcData.palette, destBytesPerLine, newData);
 	}
 	
-	public static Color getColor(Display display, int i) {
-		assert(s_colors != null);
-		return s_colors[i % s_colors.length];
-	}
-
 	public static int getTextHeight() {
 		assert(s_textHeight > 0);
 		return s_textHeight;
 	}
 
+	public static int getAverageCharWidth() {
+		assert(s_averageCharWidth > 0);
+		return s_averageCharWidth;
+	}
+
 	public static void initialise(Display display) {
-		List<Color> colors = new LinkedList<Color>();
-		colors.add(display.getSystemColor(SWT.COLOR_GRAY));
-		colors.add(display.getSystemColor(SWT.COLOR_BLUE));
-		colors.add(display.getSystemColor(SWT.COLOR_GREEN));
-		colors.add(display.getSystemColor(SWT.COLOR_RED));
-		colors.add(display.getSystemColor(SWT.COLOR_MAGENTA));
-		colors.add(display.getSystemColor(SWT.COLOR_YELLOW));
-		colors.add(display.getSystemColor(SWT.COLOR_DARK_CYAN));
-		s_colors = new Color[colors.size()];
-		colors.toArray(s_colors);
-		
 		Image image = new Image(display, 1, 1);
 		GC gc = new GC(image);
-		s_textHeight = gc.getFontMetrics().getHeight() + 1;
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		s_textHeight = fontMetrics.getHeight() + 1;
+		s_averageCharWidth = fontMetrics.getAverageCharWidth() + 1;
 		gc.dispose();
 		image.dispose();
 	}

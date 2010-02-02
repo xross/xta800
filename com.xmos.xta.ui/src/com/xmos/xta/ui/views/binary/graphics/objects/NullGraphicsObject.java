@@ -10,23 +10,31 @@ public class NullGraphicsObject extends GraphicsObject {
 		addChild(child);
     }
     
+	@Override
 	public String getName() {
 		assert(false);
     	return "null";
     }
 
+	@Override
+	public String getShortName() {
+		return getName();
+	}
+
+	@Override
 	public String getIconName() {
 		assert(false);
 		return "errors";
 	}
 	
+	@Override
 	public String getToolTip() {
 		assert(false);
 		return "";
 	}
 
 	@Override
-	public void draw(Display display, GC gc, int x, int y, double scale, boolean summary) {
+	public void draw(Display display, GC gc, int x, int y, boolean summary) {
 		assert(false);
 	}
 
