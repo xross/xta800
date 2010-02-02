@@ -65,7 +65,7 @@ int iflash_support( unsigned len, unsigned version, streaming_chanend cAudioStre
       flash_post(cAudioStreaming);
       return 1;
     }
-    if( 0 != fl_addBootImage( &bii, len, 0x1, &supplyData, (void*)supplyArguments ) ) {
+    if( 0 != fl_addBootImage( &bii, len, &supplyData, (void*)supplyArguments ) ) {
       vprintstrln("Error: failed to add new boot image.");
       flash_post(cAudioStreaming);
       return 1;

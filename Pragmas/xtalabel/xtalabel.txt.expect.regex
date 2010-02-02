@@ -9,3 +9,4 @@ pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 11 - 1
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 13 - 13
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 17 - 17
 pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 19 - 19
+pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 20 - 20
