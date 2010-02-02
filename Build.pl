@@ -360,10 +360,18 @@ sub BuildEclipse
   # Creates the target specific build properties file..
   my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir, $exeName);
   system("cp $buildPropertiesFile $buildDir/build_config/build.properties >> $buildOutput");
+
+  my $buildFile=`echo $eclipseDir/plugins/org.eclipse.pde.build_*`;
+  $buildFile = substr($buildFile, 0, length($buildFile) -1); # strip off newline
+  $buildFile = "$buildFile/scripts/productBuild/productBuild.xml";
  
-  my $buildCmd = "java -jar $eclipseDir/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20080819.jar " .
+  my $launcherJar=`echo $eclipseDir/plugins/org.eclipse.equinox.launcher_*.jar`;
+  $launcherJar = substr($launcherJar, 0, length($launcherJar) -1);
+
+
+  my $buildCmd = "java -jar $launcherJar " .
                  "-application org.eclipse.ant.core.antRunner " .
-                 "-buildfile $eclipseDir/plugins/org.eclipse.pde.build_3.4.1.R34x_v20080805/scripts/productBuild/productBuild.xml " .
+                 "-buildfile $buildFile " .
                  "-Dbuilder=$buildDirProperties/build_config -quiet";
 
   system("$buildCmd >> $buildOutput");
