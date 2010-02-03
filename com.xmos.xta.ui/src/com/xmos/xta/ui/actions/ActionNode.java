@@ -1,7 +1,10 @@
 package com.xmos.xta.ui.actions;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -17,6 +20,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 import org.eclipse.ui.actions.ActionDelegate;
 
+import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
 
@@ -24,7 +28,8 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
                                                   IWorkbenchWindowPulldownDelegate {
 	private static int s_numInstances = 0;
 
-	private List<String> m_nodeIds;
+    private Map<String, Integer> m_nodeIds;
+    private Map<Integer, String> m_nodeNames;
 	private SelectionListener m_listListener;
 	private int m_currentNodeId;
 	private IAction m_action;
@@ -33,21 +38,23 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	public ActionNode() {
 		GuiEngine.addBroadcastListener(this);
 
-		m_nodeIds = new ArrayList<String>();
+		m_nodeIds = new TreeMap<String, Integer>();
+		m_nodeNames = new TreeMap<Integer, String>();
 		m_listListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-		        	int nodeId = Integer.parseInt(selected); 
+					if (!m_nodeIds.containsKey(selected)) {
+						return;
+					}
+
+					int nodeId = m_nodeIds.get(selected); 
 		        	if (nodeId != m_currentNodeId) {
 		        		GuiEngine.getEngine().setNodeId(GuiEngine.s_guiSrc, nodeId, true);
 		        		updateCurrentNodeId(nodeId);
 		        	}
-		        } catch (NumberFormatException exception) {
-		        }
-
-		        m_action.setToolTipText("Node " + m_currentNodeId);
+		        } catch (NumberFormatException exception) { }
 			}
 		};
 		m_instanceId = s_numInstances;
@@ -94,9 +101,11 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	public Menu getMenu(Control parent) {
 		Menu menu = new Menu(parent);
 		
-        for (final String nodeId : m_nodeIds) {
+		List<Integer> nodeNumbers = new LinkedList<Integer>(m_nodeNames.keySet());
+		Collections.sort(nodeNumbers);
+        for (final Integer nodeNumber : nodeNumbers) {
         	MenuItem item = new MenuItem(menu, SWT.NONE);
-    		item.setText(nodeId);
+    		item.setText(m_nodeNames.get(nodeNumber));
     		item.addSelectionListener(m_listListener);
         }
 		
@@ -105,8 +114,17 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 
 	private void updateState() {
 		m_nodeIds.clear();
-		for (Integer nodeId : GuiEngine.getEngine().getXeLoader().getNodeIds()) {
-			m_nodeIds.add(String.format("%d", nodeId));
+		m_nodeNames.clear();
+		
+		XnLoader xnLoader = GuiEngine.getEngine().getXeLoader().getXnLoader();
+		for (Integer nodeNumber : GuiEngine.getEngine().getXeLoader().getNodeIds()) {
+			String nodeName = xnLoader.getNodeName(nodeNumber);
+			if (nodeName.length() == 0) {
+				nodeName = String.format("%d", nodeNumber);
+			}
+
+			m_nodeIds.put(nodeName, nodeNumber);
+			m_nodeNames.put(nodeNumber, nodeName);
 		}
 		updateCurrentNodeId(GuiEngine.getEngine().getNodeId());		
 		
@@ -117,9 +135,10 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		}
 	}
 
-	private void updateCurrentNodeId(int noded) {
-		m_currentNodeId = noded;
-		m_action.setText("Node " + m_currentNodeId);		
-		m_action.setToolTipText("Node " + m_currentNodeId);		
+	private void updateCurrentNodeId(int nodeId) {
+		m_currentNodeId = nodeId;
+		String nodeName = m_nodeNames.get(nodeId);
+		m_action.setText("Node " + nodeName);		
+		m_action.setToolTipText("Node " + nodeName);		
 	}	
 }
