@@ -12,14 +12,14 @@ if (!$noBuild) {
 system("@ARGV load $genDir/test.xe " .
        "analyse function f " .
        "-set required - 3 cycles " .
-       "config proc 1 1 " .
-       "analyse function f " .
+       "config core 1 1 " .
+       "-analyse function f " .
        "-set required - 3 cycles " .
-       "config proc 2 2 " .
-       "analyse function f " .
+       "config core 2 2 " .
+       "-analyse function f " .
        "-set required - 3 cycles " .
-       "config proc 3 3 " .
-       "analyse function f " .
+       "config core 3 3 " .
+       "-analyse function f " .
        "-set required - 3 cycles " .
        "print summary " .
        "-exit > $genDir/test500.txt 2>&1");

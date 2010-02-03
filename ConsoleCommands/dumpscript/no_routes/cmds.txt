@@ -1,4 +1,4 @@
-config proc 0 1
+config core 0 1
 config freq 100
 config threads 1
 config case BEST

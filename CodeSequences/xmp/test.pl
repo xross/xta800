@@ -13,7 +13,7 @@ system("xcc -target=XMP -O3 -g main.xc -o $genDir/test.xe > $genDir/xmp.log 2>&1
 
 system("@ARGV load $genDir/test.xe " .
        "-status " .
-       "-config proc 15 0 " .
+       "-config core 15 0 " .
        "-analyse path loop loop " .
        "-print summary " .
        "-exit > $genDir/xmp.txt 2>&1");

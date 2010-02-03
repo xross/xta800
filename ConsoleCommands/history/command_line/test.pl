@@ -24,7 +24,7 @@ system("@ARGV  " .
        "-add functiontime main 10001 ns " .
        "-add pathtime 0x10000 0x10002 10001 ns " .
 
-       "-config proc 0 0 " .
+       "-config core 0 0 " .
        "-config freq 999 " .
        "-config threads 99 " .
        "-config case BEST " .

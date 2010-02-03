@@ -12,7 +12,7 @@ analyse function a
 #
 config threads 2
 config freq 200.0
-config proc 0 1
+config core 0 1
 analyse function b
 
 #
@@ -20,7 +20,7 @@ analyse function b
 #
 config threads 3
 config freq 300.0
-config proc 0 2
+config core 0 2
 analyse function c
 
 #
@@ -28,6 +28,6 @@ analyse function c
 #
 config threads 4
 config freq 400.0
-config proc 0 3
+config core 0 3
 analyse function d
 

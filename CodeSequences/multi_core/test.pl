@@ -11,9 +11,9 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/multi_core.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "config proc 0 2 " .
-       "status " .
-       "config proc 0 1 " .
-       "status " .
+       "config core 0 2 " .
+       "-status " .
+       "config core 0 1 " .
+       "-status " .
        "exit > $genDir/multi_core.txt 2>&1");
 

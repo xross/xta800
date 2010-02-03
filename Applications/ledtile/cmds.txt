@@ -9,7 +9,7 @@ analyse function ledreformat_process_mbi5026
 # the while(1) loop inside function: ethSwitch
 # =========================================================================== #
 
-config proc 0 2
+config core 0 2
 
 remove exclusion *
 add exclusion recieve_external_0 

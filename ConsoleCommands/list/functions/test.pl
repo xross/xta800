@@ -12,11 +12,11 @@ system("xcc -target=$target -march=$arch a.xc b.xc c.xc -o $genDir/test.xe > $ge
 }
 system("@ARGV load $genDir/test.xe " . 
        "list functions " .
-       "config proc 0 1 " .
-       "list functions " .
-       "config proc 0 2 " .
-       "list functions " .
-       "config proc 0 3 " .
-       "list functions " .
+       "config core 0 1 " .
+       "-list functions " .
+       "config core 0 2 " .
+       "-list functions " .
+       "config core 0 3 " .
+       "-list functions " .
        "exit > $genDir/functions.txt 2>&1");
 

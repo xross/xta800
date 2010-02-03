@@ -9,7 +9,7 @@
 7: set pathtime - 0x10000 0x10002 5003 us
 8: add functiontime main 10001 ns
 9: add pathtime 0x10000 0x10002 10001 ns
-10: config proc 0 0
+10: config core 0 0
 11: config freq 999
 12: config threads 99
 13: config case BEST

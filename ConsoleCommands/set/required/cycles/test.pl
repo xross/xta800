@@ -13,10 +13,10 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 
 system("@ARGV load $genDir/test.xe " .
 
-       "config proc 0 0 " .
-       "analyse function test0 " .
-       "config proc 0 1 " .
-       "analyse function test1 " .
+       "config core 0 0 " .
+       "-analyse function test0 " .
+       "config core 0 1 " .
+       "-analyse function test1 " .
 
        "-set required 0 1 cycles " .
        "-set required 1 1 cycles " .
