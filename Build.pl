@@ -361,13 +361,12 @@ sub BuildEclipse
   my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir, $exeName);
   system("cp $buildPropertiesFile $buildDir/build_config/build.properties >> $buildOutput");
 
-  my $buildFile=`echo $eclipseDir/plugins/org.eclipse.pde.build_*`;
-  $buildFile = substr($buildFile, 0, length($buildFile) -1); # strip off newline
-  $buildFile = "$buildFile/scripts/productBuild/productBuild.xml";
- 
-  my $launcherJar=`echo $eclipseDir/plugins/org.eclipse.equinox.launcher_*.jar`;
-  $launcherJar = substr($launcherJar, 0, length($launcherJar) -1);
+  # Identify buildFile and launcher regardless of version.
+  my $buildFile=<$eclipseDir/plugins/org.eclipse.pde.build_*/scripts/productBuild/productBuild.xml>;
+  die "buildFile $buildFile does not exist" unless (-e $buildFile);
 
+  my $launcherJar=<$eclipseDir/plugins/org.eclipse.equinox.launcher_*.jar>;
+  die "launcherJar $launcherJar does not exist" unless (-e $launcherJar);
 
   my $buildCmd = "java -jar $launcherJar " .
                  "-application org.eclipse.ant.core.antRunner " .
