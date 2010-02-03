@@ -153,7 +153,7 @@ m_function.getFilterControl().setText(function);
     private void createFunctionControl(Composite container) {    	
 		Group group = XtaDialog.createGroup(container, "function", 1, 2);
     	
-    	m_function = new FilteredTree(group, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter());
+    	m_function = new FilteredTree(group, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter(), true);
 	    TreeViewer viewer = m_function.getViewer();
 		viewer.getTree().setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 

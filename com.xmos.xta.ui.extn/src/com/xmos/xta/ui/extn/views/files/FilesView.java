@@ -51,7 +51,7 @@ public class FilesView extends ViewPart implements IPropertyChangeListener, IPer
 
 		getSite().getWorkbenchWindow().addPerspectiveListener(this);
 
-	    m_filesViewer = new FilteredTree(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter());
+	    m_filesViewer = new FilteredTree(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter(), true);
 	    final TreeViewer viewer = m_filesViewer.getViewer();
 		viewer.getTree().setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 

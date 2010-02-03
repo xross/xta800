@@ -43,7 +43,7 @@ public class FilteredFunctions extends Dialog {
     protected Control createDialogArea(Composite parent) {
     	Composite container = (Composite) super.createDialogArea(parent);
 
-	    m_signalsViewer = new FilteredTree(container, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter());
+	    m_signalsViewer = new FilteredTree(container, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter(), true);
 	    TreeViewer viewer = m_signalsViewer.getViewer();
 		viewer.getTree().setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
