@@ -17,7 +17,7 @@
             class="com.xmos.xta.ui.XtaPerspective"
             icon="icons/xta16x16.png"
             id="com.xmos.xta.ui.XtaPerspective"
-            name="Xta">
+            name="Timing">
       </perspective>
    </extension>
    <extension
