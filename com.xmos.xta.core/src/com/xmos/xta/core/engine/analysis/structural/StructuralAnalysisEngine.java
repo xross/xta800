@@ -293,11 +293,11 @@ public class StructuralAnalysisEngine {
 			done =true;
 			fn.traverse(new Stack<Node>(),  new DefaultNodeTraverser() {
 				public TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors) {
-					for(Node child : node.getIndirectChildren()){
-						if(child.isSequenceNode()){
+					for (Node child : node.getIndirectChildren()){
+						if (child.isSequenceNode()){
 							int insertPathAt =node.getIndirectChildren().indexOf(child);
 							node.getIndirectChildren().remove(insertPathAt);
-							for(Node pathChild : child.getIndirectChildren()){
+							for (Node pathChild : child.getIndirectChildren()){
 								node.getIndirectChildren().add(insertPathAt++, pathChild);
 							}
 							done = false;
@@ -308,11 +308,11 @@ public class StructuralAnalysisEngine {
 				}
 				
 				public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
-					for(Node child : node.getIndirectChildren()){
-						if(child.isSequenceNode()){
+					for (Node child : node.getIndirectChildren()){
+						if (child.isSequenceNode()){
 							int insertPathAt =node.getIndirectChildren().indexOf(child);
 							node.getIndirectChildren().remove(insertPathAt);
-							for(Node pathChild : child.getIndirectChildren()){
+							for (Node pathChild : child.getIndirectChildren()){
 								node.getIndirectChildren().add(insertPathAt++, pathChild);
 							}
 							done = false;
@@ -523,6 +523,12 @@ public class StructuralAnalysisEngine {
 			seen.add(fn.getFunctionName());
 			Collection<FunctionNode> toRemove = new TreeSet<FunctionNode>();
 			for (FunctionNode g : allFunctionObjects.get(fn)) {
+				Node branchTarget = g.getBranchTarget();
+				if (branchTarget == null) {
+					continue;
+				}
+
+				FunctionNode link = pcToFunctionStartNode.get(branchTarget.getStartPc());
 				if (seen.contains(g.getFunctionName())) {
 					if (!recursiveFunctions.contains(g.getFunctionName())) {
 						recursiveFunctions.add(g.getFunctionName());
@@ -530,7 +536,6 @@ public class StructuralAnalysisEngine {
 					toRemove.add(g);
 
 					// Remove backwards link
-					FunctionNode link = pcToFunctionStartNode.get(g.getBranchTarget().getStartPc());
 					link.removeCallingFunction(g);
 
 					g.setFunction(null, null);
@@ -538,10 +543,11 @@ public class StructuralAnalysisEngine {
 					g.setUnresolved(true);
 
 				} else {
-					search(g, seen, allFunctionObjects, recursiveFunctions, pcToFunctionStartNode);
+					search(link, seen, allFunctionObjects, recursiveFunctions, pcToFunctionStartNode);
 				}
 			}
 			allFunctionObjects.get(fn).removeAll(toRemove);
+			seen.remove(fn.getFunctionName());
 		}
 	}
 
