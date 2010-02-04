@@ -128,6 +128,11 @@ public class Scripter {
         		m_currentBranches.clear();
     		}
     		for (Reference fromRef : branches.keySet()) {
+    			outputPortableWarnings(script, new Reference[]{fromRef});
+    			for (Reference toRef : branches.get(fromRef)) {
+        			outputPortableWarnings(script, new Reference[]{toRef});
+    			}
+
     			List<Reference> toRefs = new ArrayList<Reference>(); 
             	script.append(String.format("add branch %s", fromRef.toString()));
     			for (Reference toRef : branches.get(fromRef)) {
@@ -146,6 +151,7 @@ public class Scripter {
         	    script.append("remove exclusion *\n");
     		}
         	for (Reference exclusion : exclusions) {
+    			outputPortableWarnings(script, new Reference[]{exclusion});
             	script.append(String.format("add exclusion %s\n", exclusion.getRef()));    		
         	}
     		m_currentExclusions.clear();
@@ -157,11 +163,17 @@ public class Scripter {
     	RouteDescription routeDescription = routeContainer.getDescription();
     	switch (routeDescription.getMode()) {
     	case FUNCTION:
+		    outputPortableWarnings(script, new Reference[]{routeDescription.getFunctionReference()});
        		script.append(String.format("analyse function %s\n", routeDescription.getFunctionName()));    			
     		break;
     		
     	case PATH:
-       		script.append(String.format("analyse path %s %s\n", routeDescription.getFromName(), routeDescription.getToName()));    			
+		    outputPortableWarnings(script, new Reference[]{routeDescription.getStartPoint()});
+    		Reference references[] = new Reference[routeDescription.getEndPoint().size()];
+    		routeDescription.getEndPoint().toArray(references);
+		    outputPortableWarnings(script, references);
+
+		    script.append(String.format("analyse path %s %s\n", routeDescription.getFromName(), routeDescription.getToName()));    			
     		break;
     	}    	
     }
@@ -183,7 +195,7 @@ public class Scripter {
 
 		    try {
 		    	String scriptStr = unknown.getScriptStr(routeIdStr, refStrs);
-			    outputPortableWarnings(script, unknown);
+			    outputPortableWarnings(script, unknown.getReferences());
 		    	script.append(scriptStr);		    	
 		    } catch (Exception e) {}
 		}
@@ -213,9 +225,9 @@ public class Scripter {
         	m_currentConfig.m_case = config.m_case; 
     	}
     	if ((m_currentNodeId != nodeId) || (m_currentCoreId != coreId)) {
-        	script.append(String.format("config core %d %d\n", nodeId, coreId));    		
+        	script.append(String.format("config core %d %d\n", nodeId, coreId));
         	m_currentNodeId = nodeId;
-        	m_currentCoreId = coreId;    		
+        	m_currentCoreId = coreId;
     	}
     }
 
@@ -249,11 +261,13 @@ public class Scripter {
 		return refStr;
     }
     
-    private void outputPortableWarnings(StringBuffer script, Unknown unknown) {
+    private void outputPortableWarnings(StringBuffer script, Reference[] references) {
     	boolean portable = true;
-    	for (Reference reference : unknown.getReferences()) {
-    		if ((reference == null) || (!reference.isPortable())) {
+    	for (Reference reference : references) {
+    		if (reference == null) {
     			portable = false;
+    		} else if (!reference.isPortable()) {
+    			script.append(String.format("# Warning: '%s' is a non-portable reference.\n", reference.getRef()));
     		}
     	}    	
     	if (!portable) {
