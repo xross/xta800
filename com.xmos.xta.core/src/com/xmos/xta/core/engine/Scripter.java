@@ -213,7 +213,7 @@ public class Scripter {
         	m_currentConfig.m_case = config.m_case; 
     	}
     	if ((m_currentNodeId != nodeId) || (m_currentCoreId != coreId)) {
-        	script.append(String.format("config proc %d %d\n", nodeId, coreId));    		
+        	script.append(String.format("config core %d %d\n", nodeId, coreId));    		
         	m_currentNodeId = nodeId;
         	m_currentCoreId = coreId;    		
     	}
