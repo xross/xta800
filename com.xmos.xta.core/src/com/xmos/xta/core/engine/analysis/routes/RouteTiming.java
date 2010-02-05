@@ -103,15 +103,15 @@ public class RouteTiming {
 			
 			if (level == Level.COMPLETE) {
 				description += String.format("Node: %d, Core: %d\n", m_nodeId, m_coreId);
-
 			} else {
 				description += "    ";				
 			}
 			
-			if (passedTiming())
+			if (passedTiming()) {
 				description += "Pass";
-			else
+			} else {
 				description += "Fail";
+			}
 
 			int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
 			if (numWarnings > 0)

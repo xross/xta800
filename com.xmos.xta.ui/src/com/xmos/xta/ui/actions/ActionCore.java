@@ -113,23 +113,24 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 		m_coreNames.clear();
 
 		int selectedNodeId = GuiEngine.getEngine().getNodeId();
-		XnLoader xnLoader = GuiEngine.getEngine().getXeLoader().getXnLoader();
-		List<Integer> coreNumbers = xnLoader.getCoreNumbers(selectedNodeId);
-
-		for (Integer coreNumber : coreNumbers) {
-			String coreName = xnLoader.getCoreName(selectedNodeId, coreNumber);
-			if (coreName.length() == 0) {
-				coreName = String.format("Core %d", coreNumber);
-			}
-			m_coreIds.put(coreName, coreNumber);
-			m_coreNames.put(coreNumber, coreName);
-		}
-		updateCurrentCoreId(GuiEngine.getEngine().getCoreId());
-
 		if (GuiEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId).size() < 2) {
 			m_action.setEnabled(false);
+
 		} else {
 			m_action.setEnabled(true);
+
+			XnLoader xnLoader = GuiEngine.getEngine().getXeLoader().getXnLoader();
+			List<Integer> coreNumbers = xnLoader.getCoreNumbers(selectedNodeId);
+	
+			for (Integer coreNumber : coreNumbers) {
+				String coreName = xnLoader.getCoreName(selectedNodeId, coreNumber);
+				if (coreName.length() == 0) {
+					coreName = String.format("Core %d", coreNumber);
+				}
+				m_coreIds.put(coreName, coreNumber);
+				m_coreNames.put(coreNumber, coreName);
+			}
+			updateCurrentCoreId(GuiEngine.getEngine().getCoreId());
 		}
 	}
 	
