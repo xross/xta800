@@ -13,6 +13,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
@@ -84,6 +85,8 @@ public class XtaSourceAnnotations extends XtaAnnotations {
 	}
 
 	public void updateAll() {
+		boolean fileReadOnly = inXtaPerspective() && fileInXtaBinary();
+		m_source.setReadOnly(fileReadOnly);
 		updateUnknowns();
 		updateHighlighting();
 	}
@@ -127,17 +130,48 @@ public class XtaSourceAnnotations extends XtaAnnotations {
 	}
 
     public boolean canAnnotate() {
-		if (!GuiEngine.getEngine().getXeLoader().isLoaded())
-			return false;
-		if (m_source.isDirty())
-			return false;
-
-		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		if (!page.getPerspective().getId().equals(XtaPerspective.ID)) {
+		if (!GuiEngine.getEngine().getXeLoader().isLoaded()) {
 			return false;
 		}
-			
+		
+		if (m_source.isDirty()) {
+			return false;
+		}
+
+		if (!inXtaPerspective()) {
+			return false;
+		}
+
+		if (!fileInXtaBinary()) {
+			return false;
+		}
+
 		return true;
+	}
+
+	private boolean inXtaPerspective() {
+		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		if (page == null) {
+			return false;
+		}
+		IPerspectiveDescriptor perspective = page.getPerspective();
+		String id = perspective.getId();
+		if (id.equals(XtaPerspective.ID)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean fileInXtaBinary() {
+		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
+		if (sourceMapper == null) {
+			return false;
+		}
+		String fileName = sourceMapper.getDebugFileName(getFileName());
+		if (sourceMapper.getSourceFile(fileName) != null) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 

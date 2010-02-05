@@ -190,6 +190,10 @@ public class DisassemblyView extends ControlMonitor implements XtaAnnotatedObjec
 		return m_viewer;
 	}
 
+	public void setReadOnly(boolean readOnly) {
+		// Ignore - already is readOnly...
+	}
+
 	public boolean isDirty() {
 		return false;
 	}

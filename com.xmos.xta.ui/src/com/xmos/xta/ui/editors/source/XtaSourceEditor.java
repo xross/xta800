@@ -60,4 +60,8 @@ public class XtaSourceEditor extends XtaEditor {
 		}
 		return fileName;
 	}
+
+	public void setReadOnly(boolean readOnly) {
+		// Ignore - already is readOnly...
+	}
 }

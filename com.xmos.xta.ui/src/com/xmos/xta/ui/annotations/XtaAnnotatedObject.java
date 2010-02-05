@@ -7,6 +7,7 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.ui.IEditorInput;
 
 public interface XtaAnnotatedObject {
+	public void setReadOnly(boolean readOnly);
 	public boolean isDirty();
 	public String getFileName();
 	public IDocument getDocument();
