@@ -1,5 +1,8 @@
 package com.xmos.xta.ui;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -17,6 +20,7 @@ import com.xmos.xta.core.engine.Notifier;
 public class GuiNotifier implements Notifier {
 	private boolean m_holdMessages;
 	private int m_heldMessageCount;
+	private List<IMarker> m_logContents = new LinkedList<IMarker>();
 	
 	public void notify(CommandSource src, String message, String argument) {
 		if (message.equals(Notifier.NOTIFY_ERROR)) {
@@ -33,6 +37,9 @@ public class GuiNotifier implements Notifier {
 		
 		} else if (message.equals(Notifier.NOTIFY_INFO)) {
 			log(IMarker.MESSAGE, argument, IMarker.SEVERITY_INFO, src);
+
+		} else if (message.equals(CLEAR_LOG)) {
+			clearLog();
 
 		} else if (message.equals(HOLD_MESSAGES)) {
 			m_holdMessages = true;
@@ -63,7 +70,6 @@ public class GuiNotifier implements Notifier {
 	}
 	
 	private void displayAbortDetails() {
-
 		StringBuffer sb = new StringBuffer();
 		sb.append("Functions Visited: ");
 		for (String function : GuiEngine.getEngine().getFunctionsVisited()) {
@@ -76,6 +82,8 @@ public class GuiNotifier implements Notifier {
 		try {
 			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 			IMarker marker = workspaceRoot.createMarker(type);
+			m_logContents.add(marker);
+			
 			marker.setAttribute(IMarker.MESSAGE, argument);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			if (src.getLineNum() > 0) {
@@ -85,6 +93,15 @@ public class GuiNotifier implements Notifier {
 				marker.setAttribute(IMarker.LOCATION, "xta");
 			}
 		} catch (CoreException e) {
+		}
+	}
+
+	private void clearLog() {
+		for (IMarker marker : m_logContents) {
+			try {
+				marker.delete();
+			} catch (CoreException e) {
+			}
 		}
 	}
 }

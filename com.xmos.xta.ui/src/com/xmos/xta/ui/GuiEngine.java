@@ -85,7 +85,11 @@ public class GuiEngine {
 	public static void notify(String message, String argument) {
 		s_notifier.notify(s_guiSrc, message, argument);
 	}
-	
+
+	public static Notifier getNotifier() {
+		return s_notifier;
+	}
+
 	public static void runFunction(final String functionName) {
 		if (!functionName.equals("")) {
 			Job job = new Job("Analyse: " + functionName) {

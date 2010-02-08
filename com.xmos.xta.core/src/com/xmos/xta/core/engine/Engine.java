@@ -251,7 +251,9 @@ public class Engine implements Notifier, Aborter {
 	}
 	
 	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {		
-    	try {
+		notify(src, Notifier.CLEAR_LOG, "");
+
+		try {
     		executableFile = executableFile.getCanonicalFile();
 		} catch (IOException e) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("failed to resolve executable path: %s", executableFile.getName()));
@@ -548,12 +550,12 @@ public class Engine implements Notifier, Aborter {
 		return m_wasReload; 
 	}
 		
-	public void updateSourceMappers(String fileName, File file) {
+	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
 		for (int nodeId : m_xeLoader.getNodeIds()){
 			for (int coreId : m_xeLoader.getCoreIds(nodeId)) {
 				SourceMapper sourceMapper = m_sourceMapper.get(nodeId, coreId);		
 				if (sourceMapper != null) {
-					updateSourceMapper(sourceMapper, fileName, file, nodeId, coreId);
+					updateSourceMapper(src, notifier, sourceMapper, fileName, file, nodeId, coreId);
 				}
 				m_userSpecifedFileLocations.add(new FileLocation(nodeId, coreId, fileName, file));
 			}
@@ -1283,7 +1285,7 @@ public class Engine implements Notifier, Aborter {
 
 			SourceMapper sourceMapper;
 			try {
-				sourceMapper = new SourceMapper(this, xeLoader, nodeId, coreId, starts, 
+				sourceMapper = new SourceMapper(src, this, xeLoader, nodeId, coreId, starts, 
 						id, newFunctionNames.get(nodeId, coreId), sections.getLabels(nodeId, coreId));
 			} catch (AbortedException e) {
 				return false;
@@ -1291,7 +1293,8 @@ public class Engine implements Notifier, Aborter {
 			
 			for (FileLocation fileLocation : m_userSpecifedFileLocations) {
 				if ((fileLocation.m_nodeId == nodeId) && (fileLocation.m_coreId == coreId)) {
-					updateSourceMapper(sourceMapper, fileLocation.m_fileName, fileLocation.m_file, nodeId, coreId);
+					updateSourceMapper(src, m_notifier, sourceMapper,
+							fileLocation.m_fileName, fileLocation.m_file, nodeId, coreId);
 				}
 			}
 			
@@ -1547,10 +1550,12 @@ public class Engine implements Notifier, Aborter {
 		return false;
 	}
 	
-    private void updateSourceMapper(SourceMapper sourceMapper, String fileName, File file, int nodeId, int coreId) {
+    private void updateSourceMapper(CommandSource src, Notifier notifier, SourceMapper sourceMapper,
+    		String fileName, File file, int nodeId, int coreId) {
+    	
         DebugEngine debugEngine = m_xeLoader.getDebugInfo(nodeId, coreId).getDebugEngine();					
         SourceFile sf = sourceMapper.getSourceFile(fileName);
-        sourceMapper.setFile(debugEngine, sf, file);    	
+        sourceMapper.setFile(src, notifier, debugEngine, sf, file);    	
     }
     
 	private void updateDefines(CommandSource src, String refString, DefinesUpdate update) {		

@@ -18,7 +18,9 @@ import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.controlflow.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 
@@ -26,6 +28,7 @@ public class SourceMapper {
 
 	private static final boolean DEBUG = false;
 	
+	private long m_xeLastModified;
     private List<Function> m_functions;
 	private List<SourceFile> m_sourceFiles;
 	private List<AssemblyLine> m_instructions;
@@ -40,7 +43,7 @@ public class SourceMapper {
 	
 	private Map<String, Set<Long>> m_labels;
 	
-    public SourceMapper(Engine engine, XeLoader xeLoader, int nodeId, int coreId,
+    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, int nodeId, int coreId,
 			Set<InstructionNode> starts, InstructionDecoder instructionDecoder, 
 			Map<String, List<InstructionNode>> treeMap, Map<String, Set<Long>> labels) throws AbortedException {
     	m_labels = labels;
@@ -50,27 +53,27 @@ public class SourceMapper {
         m_pcToAsm = new TreeMap<Long, AssemblyLine>();
         m_pcToFunction = new TreeMap<Long, Function>();
         m_functionToFile = new TreeMap<String, String>();
-        initialise(engine, xeLoader, nodeId, coreId);
-	}
 
-    public void initialise(Engine engine, XeLoader xeLoader, int nodeId, int coreId) throws AbortedException {
         m_pcToFile = new TreeMap <Long, SourceFile>();
         m_instructions = createAssemblyLines();
         m_functions = createFunctions();
-        m_sourceFiles = createSourceFiles(engine, xeLoader, nodeId, coreId);
-    }   
 
-    private SourceFile getSourceFile(DebugFile debugFile, List<SourceFile> sourceFiles){    	
+        // Must record the XE timestamp before loading files
+        m_xeLastModified = xeLoader.getFile().lastModified();
+        m_sourceFiles = createSourceFiles(src, engine, xeLoader, nodeId, coreId);
+	}
+
+	private SourceFile getSourceFile(DebugFile debugFile, List<SourceFile> sourceFiles){    	
     	// Every source file added should have been canonicalised as should have the file
-        for (SourceFile sourceFile : sourceFiles){
-            if (debugFile == sourceFile.getDebugFile()){
+        for (SourceFile sourceFile : sourceFiles) {
+            if (debugFile == sourceFile.getDebugFile()) {
                 return sourceFile;
             }
         }
         return null;
     }
   
-    private List<SourceFile> createSourceFiles(Engine engine, XeLoader xeLoader,
+    private List<SourceFile> createSourceFiles(CommandSource src, Engine engine, XeLoader xeLoader,
     		int nodeId, int coreId) throws AbortedException {
     	
     	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
@@ -88,18 +91,19 @@ public class SourceMapper {
     		
 			boolean done = false;
 			while (!done) {
+				Notifier notifier = engine.getNotifier();
 				if (file.exists()) {
 					try {
 						file = file.getCanonicalFile();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					addSourceFile(de, debugFile, file, sourceFiles);
+					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
 					done = true;
 
 				} else {
 					file = findFileInSrcPaths(engine.getSrcPaths(), debugFile.getFileName());
-					addSourceFile(de, debugFile, file, sourceFiles);
+					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
 					done = true;
 				}
 			}
@@ -121,14 +125,16 @@ public class SourceMapper {
 		return null;
 	}		
 	
-	private void addSourceFile(DebugEngine debugEngine, DebugFile debugFile,
+	private void addSourceFile(CommandSource src, Notifier notifier,
+			DebugEngine debugEngine, DebugFile debugFile,
 			File file, List<SourceFile> sourceFiles) {
+		
     	SourceFile sourceFile = getSourceFile(debugFile, sourceFiles);
     	if (sourceFile == null) {
     		sourceFile = new SourceFile(debugFile);
     	}
 		sourceFiles.add(sourceFile);
-    	setFile(debugEngine, sourceFile, file);
+    	setFile(src, notifier, debugEngine, sourceFile, file);
 	}
 
     public File findFileForSourceFile(SourceFile sourceFile, FileFinder fileFinder) {
@@ -159,7 +165,9 @@ public class SourceMapper {
 		return file;
     }
     
-    public void setFile(DebugEngine debugEngine, SourceFile sourceFile, File file) {
+    public void setFile(CommandSource src, Notifier notifier, DebugEngine debugEngine,
+    		SourceFile sourceFile, File file) {
+    	
     	if (file == null)
     		return;
 
@@ -167,9 +175,20 @@ public class SourceMapper {
 		debugFile.setFile(file);
 		sourceFile.readFile();
 		mapSourceFileLines(debugEngine, sourceFile);
+		
+		checkSourceFileDate(src, notifier, file);
     }
 
-    public String getDebugFileName(String diskFileName) {
+    private void checkSourceFileDate(CommandSource src, Notifier notifier, File file) {
+    	long sourceLastModified = file.lastModified();
+    	if (sourceLastModified > m_xeLastModified) {
+    		notifier.notify(src, Notifier.NOTIFY_WARNING,
+    				String.format("Source file '%s' newer than binary",
+    						file.getName()));
+    	}
+	}
+
+	public String getDebugFileName(String diskFileName) {
         for (SourceFile sourceFile : m_sourceFiles) {
         	try {
         		File fileOnDisk = sourceFile.getFile();

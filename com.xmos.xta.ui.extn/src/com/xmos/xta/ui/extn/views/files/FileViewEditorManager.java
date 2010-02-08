@@ -17,8 +17,8 @@ import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.GuiFileFinder;
 import com.xmos.xta.ui.editors.XtaEditor;
-import com.xmos.xta.ui.input.InputSource;
 import com.xmos.xta.ui.editors.source.XtaSourceEditor;
+import com.xmos.xta.ui.input.InputSource;
 
 public class FileViewEditorManager {
     // Keep a map to ensure source files can't be opened twice
@@ -67,7 +67,7 @@ public class FileViewEditorManager {
 			if (file == null)
 				return null;
 
-			engine.updateSourceMappers(fileName, file);
+			engine.updateSourceMappers(GuiEngine.s_guiSrc, GuiEngine.getNotifier(), fileName, file);
 		}
 		return sourceFile;
 	}
