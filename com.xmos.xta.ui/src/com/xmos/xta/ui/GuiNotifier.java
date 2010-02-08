@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -18,6 +19,9 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public class GuiNotifier implements Notifier {
+	
+	public static final String PLUGIN_ID = "My Plug-in ID";
+	
 	private boolean m_holdMessages;
 	private List<IMarker> m_logContents = new LinkedList<IMarker>();
 	private List<String> m_heldMessages = new LinkedList<String>();
@@ -51,7 +55,8 @@ public class GuiNotifier implements Notifier {
 			if (numMessages == 1) {
 				displayMessageBox("Warning", m_heldMessages.get(0));
 			} else if (numMessages > 1) {
-				displayMessageBox("Warning", "Multiple warnings detected\n(See Problems view for details)");
+				m_heldMessages.add(0, "Multiple warnings detected");
+				displayMessageBox("Warning", m_heldMessages);
 			}
 			m_heldMessages.clear();
 
@@ -66,9 +71,26 @@ public class GuiNotifier implements Notifier {
 		final IWorkbench workbench = PlatformUI.getWorkbench();
 		workbench.getDisplay().syncExec(new Runnable() {
 			public void run() {
-				Status status = new Status(IStatus.ERROR, "My Plug-in ID", 0, message, null);
+				Status status = new Status(IStatus.ERROR, PLUGIN_ID, 0, message, null);
 		        Shell shell = workbench.getDisplay().getActiveShell();
 				ErrorDialog.openError(shell, title, null, status);
+			}
+		});
+	}
+
+	private void displayMessageBox(final String title, final List<String> messages) {
+		// There must be more than one message to use this dialogue
+		assert(messages.size() > 1);
+
+		final IWorkbench workbench = PlatformUI.getWorkbench();
+		workbench.getDisplay().syncExec(new Runnable() {
+			public void run() {
+				MultiStatus multiStatus = new MultiStatus(PLUGIN_ID, IStatus.ERROR, messages.get(0), null);
+				for (int i = 1; i < messages.size(); i++) {
+					multiStatus.add(new Status(IStatus.INFO, PLUGIN_ID, 1, messages.get(i), null));
+				}
+		        Shell shell = workbench.getDisplay().getActiveShell();
+				ErrorDialog.openError(shell, title, null, multiStatus);
 			}
 		});
 	}
@@ -78,7 +100,7 @@ public class GuiNotifier implements Notifier {
 		sb.append("Functions Visited: ");
 		for (String function : GuiEngine.getEngine().getFunctionsVisited()) {
 			sb.append(function + ", ");
-		}			
+		}
 		displayMessageBox("Aborted", sb.substring(0, sb.length() - 2).toString());								
 	}
 
