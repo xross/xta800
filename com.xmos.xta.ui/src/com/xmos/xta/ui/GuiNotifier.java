@@ -19,8 +19,8 @@ import com.xmos.xta.core.engine.Notifier;
 
 public class GuiNotifier implements Notifier {
 	private boolean m_holdMessages;
-	private int m_heldMessageCount;
 	private List<IMarker> m_logContents = new LinkedList<IMarker>();
+	private List<String> m_heldMessages = new LinkedList<String>();
 	
 	public void notify(CommandSource src, String message, String argument) {
 		if (message.equals(Notifier.NOTIFY_ERROR)) {
@@ -30,7 +30,7 @@ public class GuiNotifier implements Notifier {
 		} else if (message.equals(Notifier.NOTIFY_WARNING)) {
 			log(IMarker.PROBLEM, argument, IMarker.SEVERITY_WARNING, src);
 			if (m_holdMessages) {
-				m_heldMessageCount++;
+				m_heldMessages.add(argument);
 			} else {
 				displayMessageBox("Warning", argument);
 			}
@@ -46,10 +46,14 @@ public class GuiNotifier implements Notifier {
 
 		} else if (message.equals(RELEASE_MESSAGES)) {
 			m_holdMessages = false;
-			if (m_heldMessageCount > 0) {
+			
+			int numMessages = m_heldMessages.size();
+			if (numMessages == 1) {
+				displayMessageBox("Warning", m_heldMessages.get(0));
+			} else if (numMessages > 1) {
 				displayMessageBox("Warning", "Multiple warnings detected\n(See Problems view for details)");
-				m_heldMessageCount = 0;
 			}
+			m_heldMessages.clear();
 
 		} else if (message.equals(NOTIFY_ANALYSIS_ABORTED)) {
 			displayAbortDetails();
