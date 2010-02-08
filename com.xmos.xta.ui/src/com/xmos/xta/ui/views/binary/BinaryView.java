@@ -2,6 +2,8 @@ package com.xmos.xta.ui.views.binary;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -12,10 +14,19 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.part.ViewPart;
 
+import com.xmos.xta.ui.Broadcaster;
+import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.views.ControlMonitor;
 import com.xmos.xta.ui.views.ViewControls;
 import com.xmos.xta.ui.views.binary.disassembly.DisassemblyView;
 import com.xmos.xta.ui.views.binary.graphics.GraphicsView;
+import com.xmos.xta.ui.views.binary.handlers.ExportJpgHandler;
+import com.xmos.xta.ui.views.binary.handlers.PieHandler;
+import com.xmos.xta.ui.views.binary.handlers.SummaryHandler;
+import com.xmos.xta.ui.views.binary.handlers.ZoomFitHandler;
+import com.xmos.xta.ui.views.binary.handlers.ZoomInHandler;
+import com.xmos.xta.ui.views.binary.handlers.ZoomOutHandler;
+import com.xmos.xta.ui.views.binary.handlers.ZoomResetHandler;
 
 public class BinaryView extends ViewPart implements ViewControls {
 	public static final String ID = "com.xmos.xta.ui.views.binary.Binary";
@@ -23,6 +34,14 @@ public class BinaryView extends ViewPart implements ViewControls {
 	private TabFolder m_folders;
 	private Map<TabItem, ControlMonitor> m_tabMap;
 
+	private static Set<String> m_enabledCommands;
+	public static Set<String> getEnabledCommands() {
+		if (m_enabledCommands == null) {
+			m_enabledCommands = new TreeSet<String>();
+		}
+		return m_enabledCommands;
+	}
+	
 	public void createPartControl(Composite parent) {
 		m_folders = new TabFolder(parent, SWT.BORDER);
 		m_tabMap = new HashMap<TabItem, ControlMonitor>();
@@ -51,13 +70,14 @@ public class BinaryView extends ViewPart implements ViewControls {
 
 	protected void updateControls() {
 	    ControlMonitor controlMonitor = getSelectedTab();
-	    controlMonitor.updateExportJpgEnabled();
-	    controlMonitor.updateZoomFitEnabled();
-	    controlMonitor.updateZoomInEnabled();
-	    controlMonitor.updateZoomOutEnabled();
-	    controlMonitor.updateZoomResetEnabled();			    
-	    controlMonitor.updatePieEnabled();
-	    controlMonitor.updateSummaryEnabled();
+	    controlMonitor.updateButton(ExportJpgHandler.COMMAND_ID);
+	    controlMonitor.updateButton(ZoomFitHandler.COMMAND_ID);
+	    controlMonitor.updateButton(ZoomInHandler.COMMAND_ID);
+	    controlMonitor.updateButton(ZoomOutHandler.COMMAND_ID);
+	    controlMonitor.updateButton(ZoomResetHandler.COMMAND_ID);
+	    controlMonitor.updateButton(PieHandler.COMMAND_ID);
+	    controlMonitor.updateButton(SummaryHandler.COMMAND_ID);
+		GuiEngine.broadcast(Broadcaster.BROADCAST_BUTTON_STATE_CHANGED, "");
 	}
 
 	public void dispose() {

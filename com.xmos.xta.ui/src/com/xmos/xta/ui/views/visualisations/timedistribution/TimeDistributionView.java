@@ -54,7 +54,7 @@ public class TimeDistributionView extends ControlMonitor implements IPropertyCha
 	private String m_name;
 
 	public TimeDistributionView(Composite parent) {
-		super(VisualisationsView.ID, false);
+		super(VisualisationsView.getEnabledCommands(), false);
 
 		m_name = "TimeDistributionView";
 		if (DEBUG) System.out.println(m_name + "()");			

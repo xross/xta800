@@ -66,7 +66,7 @@ public abstract class ZoomedCanvasView extends ControlMonitor implements IProper
     private String m_name;
 
 	public ZoomedCanvasView(String name, Composite parent) {
-		super(VisualisationsView.ID, true);
+		super(VisualisationsView.getEnabledCommands(), true);
 
 		m_name = name;
 		if (DEBUG) System.out.println(m_name + "()");			

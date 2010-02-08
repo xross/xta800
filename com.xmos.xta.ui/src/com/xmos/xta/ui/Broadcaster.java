@@ -8,30 +8,17 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.PlatformUI;
 
 public class Broadcaster {	
-	public static final String BROADCAST_SET_START_POINT     = "SetStartPoint";
-	public static final String BROADCAST_SET_END_POINT       = "SetEndPoint";
-	public static final String BROADCAST_SHOW_CODE_POINT     = "ShowCodePoint";
-	public static final String BROADCAST_SELECT_NODES        = "ShowNodes";
-	public static final String BROADCAST_UPDATE_FOLDING      = "UpdateFolding";
-	public static final String BROADCAST_SELECTION_CHANGED   = "SelectionChanged";
-	public static final String BROADCAST_SET_FOCUS           = "SetFocus";
-	public static final String BROADCAST_SET_SOURCE_PCS      = "SetSourcePcs";
-	public static final String BROADCAST_PERSPECTIVE_CHANGED = "PerspectiveChanged";
-	public static final String BROADCAST_EXPORT_JPG_ENABLED  = "ExportJpgEnabled";
-	public static final String BROADCAST_EXPORT_JPG_DISABLED = "ExportJpgDisabled";
-	public static final String BROADCAST_ZOOM_FIT_ENABLED    = "ZoomFitEnabled";
-	public static final String BROADCAST_ZOOM_FIT_DISABLED   = "ZoomFitDisabled";
-	public static final String BROADCAST_ZOOM_IN_ENABLED     = "ZoomInEnabled";
-	public static final String BROADCAST_ZOOM_IN_DISABLED    = "ZoomInDisbled";
-	public static final String BROADCAST_ZOOM_OUT_ENABLED    = "ZoomOutEnabled";
-	public static final String BROADCAST_ZOOM_OUT_DISABLED   = "ZoomOutDisabled";
-	public static final String BROADCAST_ZOOM_RESET_ENABLED  = "ZoomResetEnabled";
-	public static final String BROADCAST_ZOOM_RESET_DISABLED = "ZoomResetDisabled";
-	public static final String BROADCAST_PIE_ENABLED         = "PieEnabled";
-	public static final String BROADCAST_PIE_DISABLED        = "PieDisabled";
-	public static final String BROADCAST_SUMMARY_ENABLED     = "SummaryEnabled";
-	public static final String BROADCAST_SUMMARY_DISABLED    = "SummaryDisabled";
-	public static final String BROADCAST_SRC_COMMANDS_DONE   = "SrcCommandsDone";
+	public static final String BROADCAST_SET_START_POINT      = "SetStartPoint";
+	public static final String BROADCAST_SET_END_POINT        = "SetEndPoint";
+	public static final String BROADCAST_SHOW_CODE_POINT      = "ShowCodePoint";
+	public static final String BROADCAST_SELECT_NODES         = "ShowNodes";
+	public static final String BROADCAST_UPDATE_FOLDING       = "UpdateFolding";
+	public static final String BROADCAST_SELECTION_CHANGED    = "SelectionChanged";
+	public static final String BROADCAST_SET_FOCUS            = "SetFocus";
+	public static final String BROADCAST_SET_SOURCE_PCS       = "SetSourcePcs";
+	public static final String BROADCAST_PERSPECTIVE_CHANGED  = "PerspectiveChanged";
+	public static final String BROADCAST_BUTTON_STATE_CHANGED = "ButtonStateChanged";
+	public static final String BROADCAST_SRC_COMMANDS_DONE    = "SrcCommandsDone";
 	
 	private ArrayList<IPropertyChangeListener> m_listeners;
 

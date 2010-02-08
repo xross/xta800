@@ -1,5 +1,6 @@
 package com.xmos.xta.ui.views.binary.graphics;
 
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -28,8 +29,6 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.handlers.PieHandler;
-import com.xmos.xta.ui.handlers.SummaryHandler;
 import com.xmos.xta.ui.views.ControlMonitor;
 import com.xmos.xta.ui.views.binary.BinaryView;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsCore;
@@ -41,6 +40,8 @@ import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsPin;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsPort;
 import com.xmos.xta.ui.views.binary.graphics.objects.GraphicsPortBit;
 import com.xmos.xta.ui.views.binary.graphics.tree.GraphicsTreeViewer;
+import com.xmos.xta.ui.views.binary.handlers.PieHandler;
+import com.xmos.xta.ui.views.binary.handlers.SummaryHandler;
 
 public class GraphicsView extends ControlMonitor implements IPropertyChangeListener {
     
@@ -55,7 +56,7 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 	private boolean m_summary;
 
 	public GraphicsView(final Composite parent) {
-		super(BinaryView.ID, true);
+		super(BinaryView.getEnabledCommands(), true);
 		m_display = parent.getDisplay();
 		
 		createLayout(parent);

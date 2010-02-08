@@ -91,7 +91,7 @@ public class DisassemblyView extends ControlMonitor implements XtaAnnotatedObjec
 	private SourceViewerDecorationSupport m_sourceViewerDecorationSupport;
 
 	public DisassemblyView(Composite parent, IWorkbenchPartSite site) {
-		super(BinaryView.ID, false);
+		super(BinaryView.getEnabledCommands(), false);
 		m_site = site;
 		
 		m_annotationPreferences = new MarkerAnnotationPreferences();
