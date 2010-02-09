@@ -1,45 +1,42 @@
-Current node: 0
-Current core: 2
-Frequency: 400
-NumThreads: 8
 TimingFailAsError: true
 WarnAsError: false
-SrcPaths: .
+SrcPaths: \.
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
+Current node: 0
+Current core: 2
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 2 \(No debug information found\)
+Node: 0, Core: 1, Threads: 1 \(No debug information found\)
+Node: 0, Core: 2, Threads: 1 \(No debug information found\)
+Node: 0, Core: 3, Threads: 1 \(No debug information found\)
 No routes analysed
+TimingFailAsError: true
+WarnAsError: false
+SrcPaths: \.
+Case: WORST
+Verbosity: 0
+Loaded executable: test.xe
 Current node: 0
 Current core: 1
-Frequency: 400
-NumThreads: 8
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 2 \(No debug information found\)
+Node: 0, Core: 1, Threads: 1 \(No debug information found\)
+Node: 0, Core: 2, Threads: 1 \(No debug information found\)
+Node: 0, Core: 3, Threads: 1 \(No debug information found\)
+No routes analysed
 TimingFailAsError: true
 WarnAsError: false
-SrcPaths: .
+SrcPaths: \.
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
-No routes analysed
 Current node: 0
 Current core: 2
-Frequency: 400
-NumThreads: 8
-TimingFailAsError: true
-WarnAsError: false
-SrcPaths: .
-Case: WORST
-Verbosity: 0
-Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-Node: 0, Core: 1 \(No debug information found\)
-Node: 0, Core: 2 \(No debug information found\)
-Node: 0, Core: 3 \(No debug information found\)
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 2 \(No debug information found\)
+Node: 0, Core: 1, Threads: 1 \(No debug information found\)
+Node: 0, Core: 2, Threads: 1 \(No debug information found\)
+Node: 0, Core: 3, Threads: 1 \(No debug information found\)
 No routes analysed

@@ -3,31 +3,30 @@ load ".*test\.xe"
 #
 # Route: a
 #
-config threads 1
 config freq 100.0
 analyse function a
 
 #
 # Route: b
 #
+config core 0 1
 config threads 2
 config freq 200.0
-config core 0 1
 analyse function b
 
 #
 # Route: c
 #
+config core 0 2
 config threads 3
 config freq 300.0
-config core 0 2
 analyse function c
 
 #
 # Route: d
 #
+config core 0 3
 config threads 4
 config freq 400.0
-config core 0 3
 analyse function d
 

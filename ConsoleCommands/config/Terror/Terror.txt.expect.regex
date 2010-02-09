@@ -4,22 +4,21 @@
       option: freq <core frequency>: Sets the core frequency in Mhz \(currently: 400\.000000\)
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
       option: srcpaths <paths>: Sets the \(semicolon separated\) source search path
-      option: threads <num threads>: Sets number of threads currently executing \(currently: 8\)
+      option: threads <num threads>: Sets number of threads currently executing \(currently: 1\)
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not \(currently: off\)
       option: verbosity <level>: Sets the tool verbosity level \(range: -10 -> \+10, default: 0\)
       option: Werror <on/off>: treat warnings as errors or not \(currently: off\)
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
 TimingFailAsError: false
 WarnAsError: false
-SrcPaths: .
+SrcPaths: \.
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
+Current node: 0
+Current core: 0
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analysed
 Route\(0\) function: main
     Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
@@ -32,22 +31,21 @@ RETURN CODE OK
       option: freq <core frequency>: Sets the core frequency in Mhz \(currently: 400\.000000\)
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
       option: srcpaths <paths>: Sets the \(semicolon separated\) source search path
-      option: threads <num threads>: Sets number of threads currently executing \(currently: 8\)
+      option: threads <num threads>: Sets number of threads currently executing \(currently: 1\)
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not \(currently: on\)
       option: verbosity <level>: Sets the tool verbosity level \(range: -10 -> \+10, default: 0\)
       option: Werror <on/off>: treat warnings as errors or not \(currently: off\)
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
 TimingFailAsError: true
 WarnAsError: false
-SrcPaths: .
+SrcPaths: \.
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
+Current node: 0
+Current core: 0
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analysed
 Route\(0\) function: main
     Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz

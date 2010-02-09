@@ -1,9 +1,9 @@
 load ".*test\.xe"
 
-config threads 1
+config core 0 1
+config threads 5
 config freq 100\.0
 config case BEST
-config core 0 1
 remove branch \*
 add branch source1 target2 target3 target4
 add functiontime test 1\.999000 us

@@ -1,13 +1,12 @@
 xta: warning: target \(0x10010\) of: \(main\+\d+\) 0x10008 blrf \(lu10\) i 0x2 not found in executable sections
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(Debug information avaliable\)
+Current node: 0
+Current core: 0
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 8 \(Debug information avaliable\)
 No routes analysed

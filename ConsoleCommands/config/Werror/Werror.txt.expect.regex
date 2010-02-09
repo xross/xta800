@@ -1,38 +1,35 @@
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
 TimingFailAsError: true
 WarnAsError: true
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-No routes analysed
 Current node: 0
 Current core: 0
-Frequency: 400
-NumThreads: 8
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 1 \(No debug information found\)
+No routes analysed
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
-No routes analysed
 Current node: 0
 Current core: 0
-Frequency: 400
-NumThreads: 8
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 1 \(No debug information found\)
+No routes analysed
 TimingFailAsError: true
 WarnAsError: true
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Node: 0, Core: 0 \(No debug information found\)
+Current node: 0
+Current core: 0
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analysed
 Route\(0\) function: main
     Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz

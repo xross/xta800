@@ -1,6 +1,6 @@
 analyse function main
 
-config threads 1
+config threads 5
 config freq 100
 
 dumpscript

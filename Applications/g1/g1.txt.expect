@@ -1,49 +1,49 @@
 Route(0) path: sdr_input0_0 to sdr_input0_1
-    Pass with 4 unknowns, Num Paths: 1, Slack: 133.0 ns, Required: 333.0 ns, Worst: 200.0 ns, Min Core Frequency: 240 mhz
+    Pass with 4 unknowns, Num Paths: 1, Slack: 233.0 ns, Required: 333.0 ns, Worst: 100.0 ns, Min Core Frequency: 120 mhz
 
 Route(1) path: sdr_input0_1 to sdr_input0_2
-    Fail with 7 unknowns, Num Paths: 1, Violation: 27.0 ns, Required: 333.0 ns, Worst: 360.0 ns, Min Core Frequency: 432 mhz
+    Pass with 7 unknowns, Num Paths: 1, Slack: 153.0 ns, Required: 333.0 ns, Worst: 180.0 ns, Min Core Frequency: 216 mhz
 
 Route(2) path: sdr_input0_2 to sdr_input0_3
-    Pass with 5 unknowns, Num Paths: 1, Slack: 113.0 ns, Required: 333.0 ns, Worst: 220.0 ns, Min Core Frequency: 264 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 223.0 ns, Required: 333.0 ns, Worst: 110.0 ns, Min Core Frequency: 132 mhz
 
 Route(3) path: sdr_input0_3 to sdr_input0_0
-    Fail with 6 unknowns, Num Paths: 1, Violation: 7.0 ns, Required: 333.0 ns, Worst: 340.0 ns, Min Core Frequency: 408 mhz
+    Pass with 6 unknowns, Num Paths: 1, Slack: 163.0 ns, Required: 333.0 ns, Worst: 170.0 ns, Min Core Frequency: 204 mhz
 
 Route(4) path: sdr_input1_0 to sdr_input1_1
-    Pass with 4 unknowns, Num Paths: 1, Slack: 133.0 ns, Required: 333.0 ns, Worst: 200.0 ns, Min Core Frequency: 240 mhz
+    Pass with 4 unknowns, Num Paths: 1, Slack: 233.0 ns, Required: 333.0 ns, Worst: 100.0 ns, Min Core Frequency: 120 mhz
 
 Route(5) path: sdr_input1_1 to sdr_input1_2
-    Fail with 7 unknowns, Num Paths: 1, Violation: 27.0 ns, Required: 333.0 ns, Worst: 360.0 ns, Min Core Frequency: 432 mhz
+    Pass with 7 unknowns, Num Paths: 1, Slack: 153.0 ns, Required: 333.0 ns, Worst: 180.0 ns, Min Core Frequency: 216 mhz
 
 Route(6) path: sdr_input1_2 to sdr_input1_3
-    Pass with 5 unknowns, Num Paths: 1, Slack: 113.0 ns, Required: 333.0 ns, Worst: 220.0 ns, Min Core Frequency: 264 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 223.0 ns, Required: 333.0 ns, Worst: 110.0 ns, Min Core Frequency: 132 mhz
 
 Route(7) path: sdr_input1_3 to sdr_input1_0
-    Fail with 6 unknowns, Num Paths: 1, Violation: 7.0 ns, Required: 333.0 ns, Worst: 340.0 ns, Min Core Frequency: 408 mhz
+    Pass with 6 unknowns, Num Paths: 1, Slack: 163.0 ns, Required: 333.0 ns, Worst: 170.0 ns, Min Core Frequency: 204 mhz
 
 Route(8) path: sdr_input2_0 to sdr_input2_1
-    Pass with 5 unknowns, Num Paths: 1, Slack: 73.0 ns, Required: 333.0 ns, Worst: 260.0 ns, Min Core Frequency: 312 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 203.0 ns, Required: 333.0 ns, Worst: 130.0 ns, Min Core Frequency: 156 mhz
 
 Route(9) path: sdr_input2_1 to sdr_input2_2
-    Pass with 7 unknowns, Num Paths: 1, Slack: 13.0 ns, Required: 333.0 ns, Worst: 320.0 ns, Min Core Frequency: 384 mhz
+    Pass with 7 unknowns, Num Paths: 1, Slack: 173.0 ns, Required: 333.0 ns, Worst: 160.0 ns, Min Core Frequency: 192 mhz
 
 Route(10) path: sdr_input2_2 to sdr_input2_3
-    Pass with 5 unknowns, Num Paths: 1, Slack: 73.0 ns, Required: 333.0 ns, Worst: 260.0 ns, Min Core Frequency: 312 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 203.0 ns, Required: 333.0 ns, Worst: 130.0 ns, Min Core Frequency: 156 mhz
 
 Route(11) path: sdr_input2_3 to sdr_input2_0
-    Pass with 5 unknowns, Num Paths: 1, Slack: 53.0 ns, Required: 333.0 ns, Worst: 280.0 ns, Min Core Frequency: 336 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 193.0 ns, Required: 333.0 ns, Worst: 140.0 ns, Min Core Frequency: 168 mhz
 
 Route(12) path: sdr_input3_0 to sdr_input3_1
-    Pass with 5 unknowns, Num Paths: 1, Slack: 73.0 ns, Required: 333.0 ns, Worst: 260.0 ns, Min Core Frequency: 312 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 203.0 ns, Required: 333.0 ns, Worst: 130.0 ns, Min Core Frequency: 156 mhz
 
 Route(13) path: sdr_input3_1 to sdr_input3_2
-    Pass with 7 unknowns, Num Paths: 1, Slack: 13.0 ns, Required: 333.0 ns, Worst: 320.0 ns, Min Core Frequency: 384 mhz
+    Pass with 7 unknowns, Num Paths: 1, Slack: 173.0 ns, Required: 333.0 ns, Worst: 160.0 ns, Min Core Frequency: 192 mhz
 
 Route(14) path: sdr_input3_2 to sdr_input3_3
-    Pass with 5 unknowns, Num Paths: 1, Slack: 73.0 ns, Required: 333.0 ns, Worst: 260.0 ns, Min Core Frequency: 312 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 203.0 ns, Required: 333.0 ns, Worst: 130.0 ns, Min Core Frequency: 156 mhz
 
 Route(15) path: sdr_input3_3 to sdr_input3_0
-    Pass with 5 unknowns, Num Paths: 1, Slack: 53.0 ns, Required: 333.0 ns, Worst: 280.0 ns, Min Core Frequency: 336 mhz
+    Pass with 5 unknowns, Num Paths: 1, Slack: 193.0 ns, Required: 333.0 ns, Worst: 140.0 ns, Min Core Frequency: 168 mhz
 
-Fail, 4/16, Max Violation: 27.0 ns
+Pass, Min Core Frequency: 216 mhz

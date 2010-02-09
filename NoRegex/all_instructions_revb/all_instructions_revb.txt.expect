@@ -29,12 +29,12 @@ xta: warning: No branch targets set on instruction (main+240) 0x100f6 kret (0r)
 xta: warning: No branch targets set on instruction (main+546) 0x10228 waitef (1r) r0
 xta: warning: No branch targets set on instruction (main+548) 0x1022a waitet (1r) r0
 xta: warning: No branch targets set on instruction (main+550) 0x1022c waiteu (0r) 
-  0.0: (20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
-  20.0: (20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, i 0x1
-  40.0: (20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0
-  60.0: (20.0ns) 0x1000c main + 6               andnot (2r)  r0, r0
-  80.0: (20.0ns) 0x1000e main + 8               ashr (l3r)   r0, r0, r0
-  100.0: (20.0ns) 0x10012                        --FNOP--     
-  120.0: (20.0ns) 0x10012 main + 12              ashr (l2rus) r0, r0, i 0x1
-  140.0: (20.0ns) 0x10016 main + 16              bau (1r)     r0 [UNRESOLVED]
+  0.0: (10.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
+  10.0: (10.0ns) 0x10008 main + 2               add (2rus)   r0, r0, i 0x1
+  20.0: (10.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0
+  30.0: (10.0ns) 0x1000c main + 6               andnot (2r)  r0, r0
+  40.0: (10.0ns) 0x1000e main + 8               ashr (l3r)   r0, r0, r0
+  50.0: (10.0ns) 0x10012                        --FNOP--     
+  60.0: (10.0ns) 0x10012 main + 12              ashr (l2rus) r0, r0, i 0x1
+  70.0: (10.0ns) 0x10016 main + 16              bau (1r)     r0 [UNRESOLVED]
 

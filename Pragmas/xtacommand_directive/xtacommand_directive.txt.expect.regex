@@ -1,3 +1,3 @@
-function\(\d+\) +: 60.0 [mun]s / 60.0 [mun]s main
-.    block\(\d+\) +: 60.0 [mun]s \(x 1\) / 60.0 [mun]s \(x 1\) 
+function\(\d+\) +: 30.0 [mun]s / 30.0 [mun]s main
+.    block\(\d+\) +: 30.0 [mun]s \(x 1\) / 30.0 [mun]s \(x 1\) 
 

@@ -1,13 +1,12 @@
 xta: error: the file '.*test_2.xe' could not be loaded.
-Current node: 0
-Current core: 0
-Frequency: 400
-NumThreads: 8
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test_1.xe
-Node: 0, Core: 0 \(No debug information found\)
+Current node: 0
+Current core: 0
+Frequency: Node 0, 400.0 Mhz
+Node: 0, Core: 0, Threads: 8 \(No debug information found\)
 No routes analysed

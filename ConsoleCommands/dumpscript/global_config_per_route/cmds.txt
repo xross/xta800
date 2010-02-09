@@ -1,21 +1,21 @@
+config core 0 0
 config threads 1
 config freq 100
-config core 0 0
 analyse function a
 
+config core 0 1
 config threads 2
 config freq 200
-config core 0 1
 analyse function b
 
+config core 0 2
 config threads 3
 config freq 300
-config core 0 2
 analyse function c
 
+config core 0 3
 config threads 4
 config freq 400
-config core 0 3
 analyse function d
 
 dumpscript

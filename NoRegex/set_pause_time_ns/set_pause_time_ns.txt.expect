@@ -1,10 +1,10 @@
 Time taken for instruction (0x10008: in (2r)) is unknown, pc: 0x10008, backtrace: main:
 none
-* 0.0: (20.0ns) 0x10008 main + 0               in (2r)      r0, res[r0] (P)
-  20.0: (20.0ns) 0x1000a main + 2               retsp (u6)   i 0x0
+* 0.0: (10.0ns) 0x10008 main + 0               in (2r)      r0, res[r0] (P)
+  10.0: (10.0ns) 0x1000a main + 2               retsp (u6)   i 0x0
 
 none
 Time for instruction (0x10008: in (2r)) set to 100.0 ns, pc: 0x10008, backtrace: main:
   0.0: (100.0ns) 0x10008 main + 0               in (2r)      r0, res[r0] (P)
-  100.0: (20.0ns) 0x1000a main + 2               retsp (u6)   i 0x0
+  100.0: (10.0ns) 0x1000a main + 2               retsp (u6)   i 0x0
 

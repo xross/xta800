@@ -10,5 +10,5 @@ my $noBuild = shift(@ARGV);
 if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/freq.log 2>&1");
 }
-system("@ARGV config freq 100 status exit > $genDir/freq.txt 2>&1");
+system("@ARGV config freq 100 status load $genDir/test.xe config freq 100 status exit > $genDir/freq.txt 2>&1");
 
