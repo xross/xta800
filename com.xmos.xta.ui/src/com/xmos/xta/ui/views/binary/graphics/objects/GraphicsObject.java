@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
 import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.icons.Icons;
 import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
@@ -66,8 +67,8 @@ public abstract class GraphicsObject {
     	return m_children;
     }
     
-    public void addInfo(Display display, ProgInfoEntry info) {
-    	createAndAddInfo(display, info);
+    public void addInfo(XnLoader xnLoader, Display display, ProgInfoEntry info) {
+    	createAndAddInfo(xnLoader, display, info);
     }
     
 	public void getInfoNames(Set<String> names) {
@@ -112,7 +113,7 @@ public abstract class GraphicsObject {
 		m_pixelOffsetY = y;
 	}
 
-	protected GraphicsInfo createAndAddInfo(Display display, ProgInfoEntry info) {
+	protected GraphicsInfo createAndAddInfo(XnLoader xnLoader, Display display, ProgInfoEntry info) {
 		String name = info.getName();
 		if (name.equals(ProgInfoLoader.PROGINFO_STACK)) {
 			name = "memory";
@@ -135,11 +136,11 @@ public abstract class GraphicsObject {
 			
 		} else if (name.equals("memory")) {
 			XeLoader xeLoader = GuiEngine.getEngine().getXeLoader();
-			int node = info.getNode();
-			int core = info.getCore();
+			int nodeNumber = xnLoader.getNodeNumber(info.getNodeRoutingId());
+			int coreNumber = info.getCoreNumber();
 
-			int program = xeLoader.getExecutableSize(node, core);
-			int data = xeLoader.getDataSize(node, core);
+			int program = xeLoader.getExecutableSize(nodeNumber, coreNumber);
+			int data = xeLoader.getDataSize(nodeNumber, coreNumber);
 
 			int worstCase = info.getWorstCase();
 			int used = worstCase;

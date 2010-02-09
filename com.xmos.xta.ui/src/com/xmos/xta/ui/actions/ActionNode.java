@@ -28,31 +28,31 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
                                                   IWorkbenchWindowPulldownDelegate {
 	private static int s_numInstances = 0;
 
-    private Map<String, Integer> m_nodeIds;
+    private Map<String, Integer> m_nodeNumbers;
     private Map<Integer, String> m_nodeNames;
 	private SelectionListener m_listListener;
-	private int m_currentNodeId;
+	private int m_currentNodeNumber;
 	private IAction m_action;
 	private int m_instanceId;
 
 	public ActionNode() {
 		GuiEngine.addBroadcastListener(this);
 
-		m_nodeIds = new TreeMap<String, Integer>();
+		m_nodeNumbers = new TreeMap<String, Integer>();
 		m_nodeNames = new TreeMap<Integer, String>();
 		m_listListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-					if (!m_nodeIds.containsKey(selected)) {
+					if (!m_nodeNumbers.containsKey(selected)) {
 						return;
 					}
 
-					int nodeId = m_nodeIds.get(selected); 
-		        	if (nodeId != m_currentNodeId) {
-		        		GuiEngine.getEngine().setNodeId(GuiEngine.s_guiSrc, nodeId, true);
-		        		updateCurrentNodeId(nodeId);
+					int nodeNumber = m_nodeNumbers.get(selected); 
+		        	if (nodeNumber != m_currentNodeNumber) {
+		        		GuiEngine.getEngine().setNodeNumber(GuiEngine.s_guiSrc, nodeNumber, true);
+		        		updateCurrentNodeNumber(nodeNumber);
 		        	}
 		        } catch (NumberFormatException exception) { }
 			}
@@ -82,7 +82,7 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) { 
 	        updateState();
-    		updateCurrentNodeId(0);
+    		updateCurrentNodeNumber(0);
     		
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
@@ -113,31 +113,31 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 	}
 
 	private void updateState() {
-		m_nodeIds.clear();
+		m_nodeNumbers.clear();
 		m_nodeNames.clear();
 		
 		XnLoader xnLoader = GuiEngine.getEngine().getXeLoader().getXnLoader();
-		for (Integer nodeNumber : GuiEngine.getEngine().getXeLoader().getNodeIds()) {
+		for (Integer nodeNumber : GuiEngine.getEngine().getXeLoader().getNodeNumbers()) {
 			String nodeName = xnLoader.getNodeName(nodeNumber);
 			if (nodeName.length() == 0) {
 				nodeName = String.format("%d", nodeNumber);
 			}
 
-			m_nodeIds.put(nodeName, nodeNumber);
+			m_nodeNumbers.put(nodeName, nodeNumber);
 			m_nodeNames.put(nodeNumber, nodeName);
 		}
-		updateCurrentNodeId(GuiEngine.getEngine().getNodeId());		
+		updateCurrentNodeNumber(GuiEngine.getEngine().getNodeNumber());		
 		
-		if (GuiEngine.getEngine().getXeLoader().getNodeIds().size() < 2) {
+		if (GuiEngine.getEngine().getXeLoader().getNodeNumbers().size() < 2) {
 			m_action.setEnabled(false);
 		} else {
 			m_action.setEnabled(true);
 		}
 	}
 
-	private void updateCurrentNodeId(int nodeId) {
-		m_currentNodeId = nodeId;
-		String nodeName = m_nodeNames.get(nodeId);
+	private void updateCurrentNodeNumber(int nodeNumber) {
+		m_currentNodeNumber = nodeNumber;
+		String nodeName = m_nodeNames.get(nodeNumber);
 		m_action.setText("Node " + nodeName);		
 		m_action.setToolTipText("Node " + nodeName);		
 	}	

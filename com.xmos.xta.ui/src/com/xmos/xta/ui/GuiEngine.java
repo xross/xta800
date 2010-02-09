@@ -277,7 +277,7 @@ public class GuiEngine {
 	}
 
 	public static InputDisassembly getDisassemblyInput() {
-		String nodeCoreId = String.format("%d:%d", s_engine.getNodeId(), s_engine.getCoreId());
+		String nodeCoreId = String.format("%d:%d", s_engine.getNodeNumber(), s_engine.getCoreNumber());
 		InputDisassembly input = s_disassemblyInputs.get(nodeCoreId);
 		if (input == null) {
 			input = new InputDisassembly();

@@ -44,7 +44,7 @@ public class Core extends Command {
     
     public String description(Engine engine, boolean detailed) {
         return String.format("core [node id] <core id>: Change to core for following analysis (current: %d,%d)",
-        		engine.getNodeId(), engine.getCoreId());      	
+        		engine.getNodeNumber(), engine.getCoreNumber());      	
     }
 
     public Command clone(String[] args, int index) {
@@ -89,8 +89,8 @@ public class Core extends Command {
 		}
 
 		if (isPresent(engine, nodeNumber, coreNumber, console)) {
-	        engine.setNodeId(getSrc(), nodeNumber, true);
-	        engine.setCoreId(getSrc(), coreNumber);
+	        engine.setNodeNumber(getSrc(), nodeNumber, true);
+	        engine.setCoreNumber(getSrc(), coreNumber, true);
 		}
     }
 

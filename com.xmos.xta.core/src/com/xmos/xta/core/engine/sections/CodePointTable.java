@@ -12,8 +12,8 @@ public class CodePointTable extends Section {
 	private String m_sectionName;
 	private TreeMap<Long, CodePointTableInfo> m_locations;
 	
-	CodePointTable(int nodeId, int coreId, String sectionName, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	CodePointTable(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
 		m_locations = new TreeMap<Long, CodePointTableInfo>(); 
 	}
@@ -23,7 +23,7 @@ public class CodePointTable extends Section {
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
+		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeNumber(), getCoreNumber());
 				
 		try {
 			int byteIndex = 0;

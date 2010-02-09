@@ -26,17 +26,17 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
                                                           IWorkbenchWindowPulldownDelegate {
 	private static int s_numInstances = 0;
 	
-    private Map<String, Integer> m_coreIds;
+    private Map<String, Integer> m_coreNumbers;
     private Map<Integer, String> m_coreNames;
 	private SelectionListener m_listListener;
-	private int m_currentCoreId;
+	private int m_currentCoreNumber;
 	private IAction m_action;
 	private int m_instanceId;
 
 	public ActionCore() {
 		GuiEngine.addBroadcastListener(this);
 
-		m_coreIds = new TreeMap<String, Integer>();
+		m_coreNumbers = new TreeMap<String, Integer>();
 		m_coreNames = new TreeMap<Integer, String>();
 		
 		m_listListener = new SelectionAdapter() {
@@ -44,14 +44,14 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 				String selected = ((MenuItem)e.getSource()).getText();
 
 				try {
-					if (!m_coreIds.containsKey(selected)) {
+					if (!m_coreNumbers.containsKey(selected)) {
 						return;
 					}
 					
-		        	int coreId = m_coreIds.get(selected); 
-		        	if (coreId != m_currentCoreId) {
-		        		GuiEngine.getEngine().setCoreId(GuiEngine.s_guiSrc, coreId);
-		        		updateCurrentCoreId(coreId);
+		        	int coreNumber = m_coreNumbers.get(selected); 
+		        	if (coreNumber != m_currentCoreNumber) {
+		        		GuiEngine.getEngine().setCoreNumber(GuiEngine.s_guiSrc, coreNumber, true);
+		        		updateCurrentCoreNumber(coreNumber);
 		        	}
 		        } catch (NumberFormatException exception) { }
 			}
@@ -80,7 +80,7 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE)) { 
 	        updateState();
-    		updateCurrentCoreId(0);
+    		updateCurrentCoreNumber(0);
 
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 	        updateState();
@@ -99,9 +99,9 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 	public Menu getMenu(Control parent) {
 		Menu menu = new Menu(parent);
 		
-        for (final String coreId : m_coreIds.keySet()) {
+        for (final String coreNumber : m_coreNumbers.keySet()) {
         	MenuItem item = new MenuItem(menu, SWT.NONE);
-    		item.setText(coreId);
+    		item.setText(coreNumber);
     		item.addSelectionListener(m_listListener);
         }
 		
@@ -109,34 +109,35 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 	}
 
 	private void updateState() {
-		m_coreIds.clear();
+		m_coreNumbers.clear();
 		m_coreNames.clear();
 
-		int selectedNodeId = GuiEngine.getEngine().getNodeId();
-		if (GuiEngine.getEngine().getXeLoader().getCoreIds(selectedNodeId).size() < 2) {
+		int selectedNodeNumber = GuiEngine.getEngine().getNodeNumber();
+
+		XnLoader xnLoader = GuiEngine.getEngine().getXeLoader().getXnLoader();
+		List<Integer> coreNumbers = xnLoader.getCoreNumbers(selectedNodeNumber);
+		if (coreNumbers.size() < 2) {
+			m_action.setText("Core 0");
 			m_action.setEnabled(false);
 
 		} else {
 			m_action.setEnabled(true);
 
-			XnLoader xnLoader = GuiEngine.getEngine().getXeLoader().getXnLoader();
-			List<Integer> coreNumbers = xnLoader.getCoreNumbers(selectedNodeId);
-	
 			for (Integer coreNumber : coreNumbers) {
-				String coreName = xnLoader.getCoreName(selectedNodeId, coreNumber);
+				String coreName = xnLoader.getCoreName(selectedNodeNumber, coreNumber);
 				if (coreName.length() == 0) {
 					coreName = String.format("Core %d", coreNumber);
 				}
-				m_coreIds.put(coreName, coreNumber);
+				m_coreNumbers.put(coreName, coreNumber);
 				m_coreNames.put(coreNumber, coreName);
 			}
-			updateCurrentCoreId(GuiEngine.getEngine().getCoreId());
+			updateCurrentCoreNumber(GuiEngine.getEngine().getCoreNumber());
 		}
 	}
 	
-	private void updateCurrentCoreId(int coreId) {
-		m_currentCoreId = coreId;
-		String coreName = m_coreNames.get(coreId);
+	private void updateCurrentCoreNumber(int coreNumber) {
+		m_currentCoreNumber = coreNumber;
+		String coreName = m_coreNames.get(coreNumber);
 		m_action.setText(coreName);
 		m_action.setToolTipText(coreName);		
 	}

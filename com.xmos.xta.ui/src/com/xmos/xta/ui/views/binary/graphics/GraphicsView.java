@@ -147,11 +147,12 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		ConfigLoader configLoader = xeLoader.getConfigLoader();
 		m_device = new GraphicsDevice("Device");
 		
-		for (int nodeNumber : configLoader.getNodeNumbers()) {
-			GraphicsNode node = new GraphicsNode(nodeNumber);
+		for (int nodeRoutingId : configLoader.getNodeRoutingIds()) {
+			int nodeNumber = xnLoader.getNodeNumber(nodeRoutingId);
+			GraphicsNode node = new GraphicsNode(nodeNumber, nodeRoutingId);
 			m_device.addNode(nodeNumber, node);
 			
-			for (int coreNumber : configLoader.getCoreNumbers(nodeNumber)) {
+			for (int coreNumber : configLoader.getCoreNumbers(nodeRoutingId)) {
 				String coreName = xnLoader.getCoreName(nodeNumber, coreNumber);
 				GraphicsCore core = new GraphicsCore(coreName, coreNumber);
 				node.addCore(coreNumber, core);
@@ -171,27 +172,28 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		}
 
 		// Add ports once the pins are created
-		for (int nodeNumber : configLoader.getNodeNumbers()) {
+		for (int nodeRoutingId : configLoader.getNodeRoutingIds()) {
+			int nodeNumber = xnLoader.getNodeNumber(nodeRoutingId);
 			GraphicsNode node = m_device.getNode(nodeNumber);
-			for (int coreNumber : configLoader.getCoreNumbers(nodeNumber)) {
+			for (int coreNumber : configLoader.getCoreNumbers(nodeRoutingId)) {
 				GraphicsCore core = node.getCore(coreNumber);
-				addCorePorts(configLoader, xnLoader, core, nodeNumber, coreNumber);
+				addCorePorts(configLoader, xnLoader, core, nodeRoutingId, coreNumber);
 			}					
 		}
 
 		ProgInfoLoader progInfoLoader = xeLoader.getProgInfoLoader();
 		if (progInfoLoader != null) {
 			for (ProgInfoEntry info : progInfoLoader.getProgInfos()) {
-				m_device.addInfo(m_display, info);
+				m_device.addInfo(xnLoader, m_display, info);
 			}
 		}
 		return m_device;
 	}
 
 	private void addCorePorts(ConfigLoader configLoader, XnLoader xnLoader, GraphicsCore core,
-			int nodeNumber, int coreNumber) {
+			int nodeRoutingId, int coreNumber) {
 		List<String> portNames = new LinkedList<String>();
-		portNames.addAll(configLoader.getPortNames(nodeNumber, coreNumber));
+		portNames.addAll(configLoader.getPortNames(nodeRoutingId, coreNumber));
 		Collections.sort(portNames);
 		
 		if (portNames.size() == 0) {
@@ -199,31 +201,32 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 		}
 		
 		for (String portName : portNames) {
-			Map<String, String> attributes = configLoader.getPortAttributes(nodeNumber, coreNumber, portName);
+			Map<String, String> attributes = configLoader.getPortAttributes(nodeRoutingId, coreNumber, portName);
 			if (attributes.keySet().isEmpty()) {
 				continue;
 			}
 			
 			try {
+				int nodeNumber = xnLoader.getNodeNumber(nodeRoutingId);
 				Map<String, String> xnNames = xnLoader.getPortNames(nodeNumber, coreNumber);
 				String xnName = xnNames.get(portName);
 				
 				GraphicsPort port = new GraphicsPort(m_device, portName, xnName, nodeNumber, coreNumber);
 				core.addPort(portName, port);
 				
-				addPortPins(configLoader, port, portName, nodeNumber, coreNumber);
+				addPortPins(configLoader, port, portName, nodeRoutingId, coreNumber);
 				
 			} catch (NumberFormatException e) {}
 		}
 	}
 
 	private void addPortPins(ConfigLoader configLoader, GraphicsPort port, String portName,
-			int nodeNumber, int coreNumber) {
+			int nodeRoutingId, int coreNumber) {
 		
-		int numPins = configLoader.getNumPortPins(nodeNumber, coreNumber, portName);
+		int numPins = configLoader.getNumPortPins(nodeRoutingId, coreNumber, portName);
 		
 		for (int pinNum = 0; pinNum < numPins; pinNum++) {
-			Map<String, String> attributes = configLoader.getPortPinAttributes(nodeNumber, coreNumber, portName, pinNum);
+			Map<String, String> attributes = configLoader.getPortPinAttributes(nodeRoutingId, coreNumber, portName, pinNum);
 			if (attributes.keySet().isEmpty()) {
 				continue;
 			}
@@ -243,14 +246,15 @@ public class GraphicsView extends ControlMonitor implements IPropertyChangeListe
 			
 			try {
 				String name = attributes.get("name");
-				int node = Integer.parseInt(attributes.get("node"));
-				int core = Integer.parseInt(attributes.get("core"));
+				int nodeRoutingId = Integer.parseInt(attributes.get("node"));
+				int nodeNumber = xnLoader.getNodeNumber(nodeRoutingId);
+				int coreNumber = Integer.parseInt(attributes.get("core"));
 				int bitNum = Integer.parseInt(attributes.get("bitNum"));
 				
-				Map<String, String> xnNames = xnLoader.getPortNames(node, core);
+				Map<String, String> xnNames = xnLoader.getPortNames(nodeNumber, coreNumber);
 				String xnName = xnNames.get(name);
 				
-				GraphicsPortBit port = new GraphicsPortBit(name, xnName, node, core, bitNum);
+				GraphicsPortBit port = new GraphicsPortBit(name, xnName, nodeNumber, coreNumber, bitNum);
 				pin.addPortBit(port);
 				
 			} catch (NumberFormatException e) {}

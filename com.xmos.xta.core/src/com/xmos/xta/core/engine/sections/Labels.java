@@ -18,8 +18,8 @@ import com.xmos.xta.core.engine.Notifier;
 public class Labels extends Section  {	
 	private TreeMap<String, Set<Long>> m_labels;
 	
-	Labels(int nodeId, int coreId, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	Labels(int nodeNumber, int coreNumber, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_labels = new TreeMap<String, Set<Long>>(); 
 	}
 	
@@ -61,7 +61,7 @@ public class Labels extends Section  {
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
-        SymbolTable symbolTable = xeLoader.getSymbolTable(getNodeId(), getCoreId());
+        SymbolTable symbolTable = xeLoader.getSymbolTable(getNodeNumber(), getCoreNumber());
         ElfHandler elfHandler = symbolTable.getElfHandler();
         
         for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {

@@ -11,8 +11,8 @@ import com.xmos.xta.core.engine.Notifier;
 public class Systems extends Section {
 	private Collection<String> m_functions;
 
-	Systems(int nodeId, int coreId, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	Systems(int nodeNumber, int coreNumber, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_functions = new ArrayList<String>(); 
 	}
 	
@@ -21,7 +21,7 @@ public class Systems extends Section {
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtasystem", getNodeId(), getCoreId());
+		byte[] data = xeLoader.getSectionData(".xtasystem", getNodeNumber(), getCoreNumber());
 				
 		try {
 			int byteIndex = 0;

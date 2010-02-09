@@ -45,7 +45,7 @@ public class Route {
 		m_engine = engine;
 
 		Architecture architecture = engine.getXeLoader().getArchitecture();
-		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeId(), engine.getCoreId());
+		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeNumber(), engine.getCoreNumber());
 		m_unknowns = new RouteUnknowns(this);		
 		setRouteSpecificConfigs(description.getConfig(), architecture);
 	}

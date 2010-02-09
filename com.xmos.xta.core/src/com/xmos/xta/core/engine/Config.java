@@ -11,6 +11,7 @@ public class Config {
 	public boolean m_timingFailuresAsErrors;
 
 	static final public double DEFAULT_MHZ = 400;
+	static final public int DEFAULT_THREADS = 8;
 
 	static final public int VERBOSITY_DISPLAY_INSTRUCTION_NODES = 1;
 	static final public int VERBOSITY_DISPLAY_NULL_NODE = 50;
@@ -21,7 +22,7 @@ public class Config {
 	
 	public Config() {
 		m_verbosity = 0;
-		m_numThreads = 8;
+		m_numThreads = DEFAULT_THREADS;
 		m_frequency = DEFAULT_MHZ;
 		m_case = Case.WORST;
 		m_warnAsErrors = false;

@@ -37,13 +37,13 @@ public class FilesViewContentProvider implements ITreeContentProvider  {
     	}
 
 	    XeLoader xeLoader = engine.getXeLoader();
-	    int nodeId = engine.getNodeId();
-		int coreId = engine.getCoreId();
-		if (!xeLoader.isLoaded(nodeId, coreId)) {
+	    int nodeNumber = engine.getNodeNumber();
+		int coreNumber = engine.getCoreNumber();
+		if (!xeLoader.isLoaded(nodeNumber, coreNumber)) {
 			return new LinkedList<DebugFile>().toArray();
 		}
 		
-		DebugInfo debugInfo = xeLoader.getDebugInfo(nodeId, coreId);
+		DebugInfo debugInfo = xeLoader.getDebugInfo(nodeNumber, coreNumber);
 	    LinkedList<DebugFile> files = new LinkedList<DebugFile>(debugInfo.getDebugEngine().getDebugFiles());
 	    Collections.sort(files);
 	    return files.toArray();

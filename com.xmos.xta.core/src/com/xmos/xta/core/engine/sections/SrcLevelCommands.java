@@ -11,8 +11,8 @@ import com.xmos.xta.core.engine.Notifier;
 public class SrcLevelCommands extends Section {
 	private Collection<SrcStringInfo> m_commands;
 
-	SrcLevelCommands(int nodeId, int coreId, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	SrcLevelCommands(int nodeNumber, int coreNumber, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_commands = new ArrayList<SrcStringInfo>(); 
 	}
 	
@@ -21,7 +21,7 @@ public class SrcLevelCommands extends Section {
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtacommand", getNodeId(), getCoreId());
+		byte[] data = xeLoader.getSectionData(".xtacommand", getNodeNumber(), getCoreNumber());
 				
 		try {
 			int byteIndex = 0;

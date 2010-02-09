@@ -24,8 +24,8 @@ public class Scripter {
 	private Engine m_engine;
 	private int m_currentRouteId;
 	private Config m_currentConfig;
-	private int m_currentNodeId;
-	private int m_currentCoreId;
+	private int m_currentNodeNumber;
+	private int m_currentCoreNumber;
 	private Collection<Reference> m_currentExclusions;
 	private Map<Reference, List<Reference>> m_currentBranches;
 	private Defines m_currentDefines;
@@ -33,8 +33,8 @@ public class Scripter {
 	public Scripter(Engine engine) {
 		m_engine = engine;
 		m_currentConfig = new Config();
-		m_currentNodeId = 0;
-		m_currentCoreId = 0;
+		m_currentNodeNumber = 0;
+		m_currentCoreNumber = 0;
 		m_currentExclusions = new ArrayList<Reference>();
 		m_currentDefines = new Defines();
 		m_currentBranches = new TreeMap<Reference, List<Reference>>();
@@ -42,8 +42,8 @@ public class Scripter {
 
 	public void setEngineLoadAndRunDone() {
 		m_currentConfig = new Config(m_engine.getConfig());
-		m_currentNodeId = m_engine.getNodeId();
-		m_currentCoreId = m_engine.getCoreId();
+		m_currentNodeNumber = m_engine.getNodeNumber();
+		m_currentCoreNumber = m_engine.getCoreNumber();
 		m_currentExclusions = new ArrayList<Reference>(m_engine.getExclusions());
 		m_currentDefines = new Defines(m_engine.getDefines());
 		m_currentBranches = copyBranches(m_engine.getBranches());
@@ -63,13 +63,13 @@ public class Scripter {
        		script.append("\n");
 
        		RouteDescription description = routeContainer.getDescription();
-			int nodeId = description.getNodeId();
-       		int coreId = description.getCoreId();
+			int nodeNumber = description.getNodeNumber();
+       		int coreNumber = description.getCoreNumber();
 
        		routeComment(routeContainer, script);
         	globalConfig(routeContainer, script);
         	addBranches(description.getBranches(), script);
-        	addDefines(description.getDefines(), nodeId, coreId, script);
+        	addDefines(description.getDefines(), nodeNumber, coreNumber, script);
         	addExclusions(description.getExclusions(), script);
         	analyseRoutes(routeContainer, script);
         	removeRoutes(routeContainer, script);
@@ -83,11 +83,11 @@ public class Scripter {
     		}
     	}
     	script.append("\n");
-    	int nodeId = m_engine.getNodeId();
-		int coreId = m_engine.getCoreId();
-		updateGlobalConfig(script, m_engine.getConfig(), nodeId, coreId);
+    	int nodeNumber = m_engine.getNodeNumber();
+		int coreNumber = m_engine.getCoreNumber();
+		updateGlobalConfig(script, m_engine.getConfig(), nodeNumber, coreNumber);
     	addBranches(m_engine.getUserBranches(), script);
-    	addDefines(m_engine.getDefines(), nodeId, coreId, script);
+    	addDefines(m_engine.getDefines(), nodeNumber, coreNumber, script);
 		addExclusions(m_engine.getExclusions(), script);
 
     	return script.toString();
@@ -112,12 +112,12 @@ public class Scripter {
     private void globalConfig(RouteContainer routeContainer, StringBuffer script) {
     	updateGlobalConfig(script, 
     			routeContainer.getDescription().getConfig(), 
-    			routeContainer.getDescription().getNodeId(),
-    			routeContainer.getDescription().getCoreId());
+    			routeContainer.getDescription().getNodeNumber(),
+    			routeContainer.getDescription().getCoreNumber());
     }
     
-	private void addDefines(Defines defines, int nodeId, int coreId, StringBuffer script) {
-		defines.updateScript(m_currentDefines, script, nodeId, coreId);
+	private void addDefines(Defines defines, int nodeNumber, int coreNumber, StringBuffer script) {
+		defines.updateScript(m_currentDefines, script, nodeNumber, coreNumber);
 		m_currentDefines = defines;
 	}
     
@@ -211,7 +211,7 @@ public class Scripter {
 		}
     }
 
-    private void updateGlobalConfig(StringBuffer script, Config config, int nodeId, int coreId) {
+    private void updateGlobalConfig(StringBuffer script, Config config, int nodeNumber, int coreNumber) {
     	if (m_currentConfig.m_numThreads != config.m_numThreads) {
         	script.append(String.format("config threads %s\n", config.m_numThreads));
         	m_currentConfig.m_numThreads = config.m_numThreads;    		
@@ -224,10 +224,10 @@ public class Scripter {
         	script.append(String.format("config case %s\n", config.m_case));    		
         	m_currentConfig.m_case = config.m_case; 
     	}
-    	if ((m_currentNodeId != nodeId) || (m_currentCoreId != coreId)) {
-        	script.append(String.format("config core %d %d\n", nodeId, coreId));
-        	m_currentNodeId = nodeId;
-        	m_currentCoreId = coreId;
+    	if ((m_currentNodeNumber != nodeNumber) || (m_currentCoreNumber != coreNumber)) {
+        	script.append(String.format("config core %d %d\n", nodeNumber, coreNumber));
+        	m_currentNodeNumber = nodeNumber;
+        	m_currentCoreNumber = coreNumber;
     	}
     }
 

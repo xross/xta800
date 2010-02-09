@@ -27,8 +27,8 @@ public class RouteDescription {
 	private Reference m_function;
 	private Reference m_from;
 	private Collection<Reference> m_to;
-	private int m_nodeId;
-	private int m_coreId;
+	private int m_nodeNumber;
+	private int m_coreNumber;
 	private Collection<Reference> m_exclusions;
 	private Map<Reference, List<Reference>> m_branches;
 	private Defines m_defines;
@@ -38,7 +38,7 @@ public class RouteDescription {
 		PATH, FUNCTION
 	};
 
-	public RouteDescription(Reference from, Reference to, Engine engine, int nodeId, int coreId, 
+	public RouteDescription(Reference from, Reference to, Engine engine, int nodeNumber, int coreNumber, 
 			Collection<Reference> exclusions, Defines defines, Config config) {
 
 		m_mode = RouteMode.PATH;
@@ -48,8 +48,8 @@ public class RouteDescription {
 		m_to.add(to);
 		m_fromName = from.getRef();
 		m_toName = to.getRef();
-		m_nodeId = nodeId;
-		m_coreId = coreId;		
+		m_nodeNumber = nodeNumber;
+		m_coreNumber = coreNumber;		
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);
 		m_defines = new Defines(defines);
@@ -57,7 +57,7 @@ public class RouteDescription {
 		m_branches = engine.getUserBranches();
 	}
 
-	public RouteDescription(Reference function, Engine engine, int nodeId, int coreId, 
+	public RouteDescription(Reference function, Engine engine, int nodeNumber, int coreNumber, 
 			Collection<Reference> exclusions, Defines defines, Config config) {
 
 		m_mode = RouteMode.FUNCTION;
@@ -66,8 +66,8 @@ public class RouteDescription {
 		m_functionName = function.getBase().getRef();
 		m_from = function;
 		m_to = new LinkedList<Reference>();
-		m_nodeId = nodeId;
-		m_coreId = coreId;				
+		m_nodeNumber = nodeNumber;
+		m_coreNumber = coreNumber;				
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);
 		m_defines = new Defines(defines);		
@@ -115,12 +115,12 @@ public class RouteDescription {
 		return m_toName;
 	}
 	
-	public int getNodeId() {
-		return m_nodeId;
+	public int getNodeNumber() {
+		return m_nodeNumber;
 	}
 	
-	public int getCoreId() {
-		return m_coreId;
+	public int getCoreNumber() {
+		return m_coreNumber;
 	}
 	
 	public Collection<Reference> getExclusions() {

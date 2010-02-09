@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
+import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 
 public class GraphicsNode extends GraphicsObject {
@@ -19,10 +20,12 @@ public class GraphicsNode extends GraphicsObject {
 	private static final int BORDER_Y = 5;
 
     private Map<Integer, GraphicsCore> m_cores;
-	private int m_number;
+    private int m_nodeNumber;
+	private int m_routingId;
 
-	public GraphicsNode(int number) {
-		m_number = number;
+	public GraphicsNode(int nodeNumber, int routingId) {
+		m_nodeNumber = nodeNumber;
+		m_routingId = routingId;
 		m_cores = new TreeMap<Integer, GraphicsCore>();
     }
 
@@ -33,13 +36,13 @@ public class GraphicsNode extends GraphicsObject {
 	}
 	
 	@Override
-	public void addInfo(Display display, ProgInfoEntry info) {
-		super.addInfo(display, info);
+	public void addInfo(XnLoader xnLoader, Display display, ProgInfoEntry info) {
+		super.addInfo(xnLoader, display, info);
 
-		int coreId = info.getCore();
-		GraphicsCore core = m_cores.get(coreId);
+		int coreNumber = info.getCoreNumber();
+		GraphicsCore core = m_cores.get(coreNumber);
 		if (core != null) {
-			core.addInfo(display, info);
+			core.addInfo(xnLoader, display, info);
 		}
 	}
 	
@@ -99,7 +102,7 @@ public class GraphicsNode extends GraphicsObject {
 
 	@Override
 	public String getName() {
-		return String.format("Node %d", m_number);
+		return String.format("Node %d", m_nodeNumber);
 	}
 
 	@Override
@@ -109,7 +112,7 @@ public class GraphicsNode extends GraphicsObject {
 
 	@Override
 	public String getToolTip() {
-		return getName();
+		return getName() + String.format(" (RoutingId %d)", m_routingId);
 	}
 
 	public GraphicsPort getPort(int coreNumber, String name) {

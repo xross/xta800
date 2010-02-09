@@ -10,8 +10,8 @@ import com.xmos.xta.core.engine.Notifier;
 public class StringSection extends Section {
 	private Collection<String> m_strings;
 
-	StringSection(int nodeId, int coreId, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	StringSection(int nodeNumber, int coreNumber, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_strings = new ArrayList<String>(); 
 	}
 	

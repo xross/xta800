@@ -10,7 +10,7 @@ class SourcesViewerContentProvider extends BaseViewerContentProvider {
 	public Object[] getElements(Object inputElement) {
 		Engine engine = ((Engine)inputElement);
 		
-	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeId(), engine.getCoreId());
+	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeNumber(), engine.getCoreNumber());
 	    if (debugInfo == null) {
 	    	return EMPTY_ARRAY;
 	    }

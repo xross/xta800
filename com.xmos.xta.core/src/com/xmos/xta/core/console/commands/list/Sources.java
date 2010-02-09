@@ -35,7 +35,7 @@ public class Sources extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;		
 		
-	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeId(), engine.getCoreId());
+	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeNumber(), engine.getCoreNumber());
 	    assert(debugInfo != null);        
 
 	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {

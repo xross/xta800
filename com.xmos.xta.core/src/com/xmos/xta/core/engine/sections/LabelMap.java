@@ -9,22 +9,22 @@ import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 
 public class LabelMap {	
-	private int m_nodeId;
-	private int m_coreId;
+	private int m_nodeNumber;
+	private int m_coreNumber;
 	private TreeMap<String, Long> m_labels;
 	
-	LabelMap(int nodeId, int coreId) {
-		m_nodeId = nodeId;
-		m_coreId = coreId;
+	LabelMap(int nodeNumber, int coreNumber) {
+		m_nodeNumber = nodeNumber;
+		m_coreNumber = coreNumber;
 		m_labels = new TreeMap<String, Long>(); 
 	}
 	
-	int getNodeId() {
-		return m_nodeId;
+	int getNodeNumber() {
+		return m_nodeNumber;
 	}
 
-	int getCoreId() {
-		return m_coreId;
+	int getCoreNumber() {
+		return m_coreNumber;
 	}
 	
 	Map<String, Long> getMap() {
@@ -32,7 +32,7 @@ public class LabelMap {
 	}
 
 	public boolean load(XeLoader xeLoader) {
-        SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeId, m_coreId);
+        SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeNumber, m_coreNumber);
         ElfHandler elfHandler = symbolTable.getElfHandler();
         
         for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {

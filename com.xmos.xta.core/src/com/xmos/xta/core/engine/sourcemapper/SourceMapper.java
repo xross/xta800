@@ -43,7 +43,7 @@ public class SourceMapper {
 	
 	private Map<String, Set<Long>> m_labels;
 	
-    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, int nodeId, int coreId,
+    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, int nodeNumber, int coreNumber,
 			Set<InstructionNode> starts, InstructionDecoder instructionDecoder, 
 			Map<String, List<InstructionNode>> treeMap, Map<String, Set<Long>> labels) throws AbortedException {
     	m_labels = labels;
@@ -60,7 +60,7 @@ public class SourceMapper {
 
         // Must record the XE timestamp before loading files
         m_xeLastModified = xeLoader.getFile().lastModified();
-        m_sourceFiles = createSourceFiles(src, engine, xeLoader, nodeId, coreId);
+        m_sourceFiles = createSourceFiles(src, engine, xeLoader, nodeNumber, coreNumber);
 	}
 
 	private SourceFile getSourceFile(DebugFile debugFile, List<SourceFile> sourceFiles){    	
@@ -74,14 +74,14 @@ public class SourceMapper {
     }
   
     private List<SourceFile> createSourceFiles(CommandSource src, Engine engine, XeLoader xeLoader,
-    		int nodeId, int coreId) throws AbortedException {
+    		int nodeNumber, int coreNumber) throws AbortedException {
     	
     	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
 
-    	DebugInfo di = xeLoader.getDebugInfo(nodeId, coreId);     	
+    	DebugInfo di = xeLoader.getDebugInfo(nodeNumber, coreNumber);     	
         DebugEngine de = di.getDebugEngine();
             
-        if (DEBUG) System.out.printf("createSourceFiles: node: %d, core: %d\n", nodeId, coreId);            
+        if (DEBUG) System.out.printf("createSourceFiles: node: %d, core: %d\n", nodeNumber, coreNumber);            
             
 		Collection<DebugFile> debugFiles = de.getDebugFiles();
 		engine.startAnalysis("Processing sources", debugFiles.size());				

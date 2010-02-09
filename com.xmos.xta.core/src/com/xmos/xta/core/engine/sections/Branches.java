@@ -18,8 +18,8 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 public class Branches extends Section {	
 	private Map<Reference, Set<BranchInfo>> m_branches;
 
-	Branches(int nodeId, int coreId, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	Branches(int nodeNumber, int coreNumber, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 
 		m_branches = new TreeMap<Reference, Set<BranchInfo>>(); 
 	}
@@ -89,7 +89,7 @@ public class Branches extends Section {
 	}
 		
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeId(), getCoreId());
+		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeNumber(), getCoreNumber());
 				
 		if ((data.length % 8) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, "invalid size for .xtabranch section");

@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
+import com.xmos.libs.xnloader.XnLoader;
 
 public class GraphicsDevice extends GraphicsObject {
 
@@ -64,13 +65,13 @@ public class GraphicsDevice extends GraphicsObject {
     }
     
 	@Override
-	public void addInfo(Display display, ProgInfoEntry info) {
-		super.addInfo(display, info);
+	public void addInfo(XnLoader xnLoader, Display display, ProgInfoEntry info) {
+		super.addInfo(xnLoader, display, info);
 
-		int nodeId = info.getNode();
-		GraphicsNode node = m_nodes.get(nodeId);
+		int nodeNumber = xnLoader.getNodeNumber(info.getNodeRoutingId());
+		GraphicsNode node = m_nodes.get(nodeNumber);
 		if (node != null) {
-			node.addInfo(display, info);
+			node.addInfo(xnLoader, display, info);
 		}
 	}
 
@@ -98,9 +99,9 @@ public class GraphicsDevice extends GraphicsObject {
 		m_pins.addPin(name, pin);
 	}
 
-	public void addNode(int nodeId, GraphicsNode node) {
-		assert(m_nodes.containsKey(nodeId) == false);
-		m_nodes.put(nodeId, node);
+	public void addNode(int nodeNumber, GraphicsNode node) {
+		assert(m_nodes.containsKey(nodeNumber) == false);
+		m_nodes.put(nodeNumber, node);
 		addChild(node);
 	}
 

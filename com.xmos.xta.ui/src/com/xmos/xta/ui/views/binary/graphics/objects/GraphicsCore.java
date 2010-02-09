@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
+import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.ui.views.binary.graphics.GraphicsUtils;
 
 public class GraphicsCore extends GraphicsObject {
@@ -25,8 +26,8 @@ public class GraphicsCore extends GraphicsObject {
     }
 
 	@Override
-    public void addInfo(Display display, ProgInfoEntry info) {
-    	addChild(createAndAddInfo(display, info));
+    public void addInfo(XnLoader xnLoader, Display display, ProgInfoEntry info) {
+    	addChild(createAndAddInfo(xnLoader, display, info));
     }
 
 	@Override

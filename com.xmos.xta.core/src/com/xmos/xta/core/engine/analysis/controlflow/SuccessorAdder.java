@@ -28,13 +28,13 @@ public class SuccessorAdder {
 	private InstructionMnemonics m_mnenonics;
 	private Notifier m_notifier;
 
-	public SuccessorAdder(int nodeId, int coreId, InstructionDecoder instDecoder, Sections sections,
+	public SuccessorAdder(int nodeNumber, int coreNumber, InstructionDecoder instDecoder, Sections sections,
 			Collection<InstructionNode> threadEnds, XeLoader xeLoader, Notifier notifier) {
 		m_threadEnds = threadEnds;
-		m_branchMap = sections.getBranches(nodeId, coreId);
+		m_branchMap = sections.getBranches(nodeNumber, coreNumber);
 		m_instDecoder = instDecoder;
-		m_mi = xeLoader.getMemoryImage(nodeId, coreId);
-		m_cpPointer = xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
+		m_mi = xeLoader.getMemoryImage(nodeNumber, coreNumber);
+		m_cpPointer = xeLoader.getSymbolTable(nodeNumber, coreNumber).symbolAddress("_cp");
 		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());
 		m_notifier = notifier;
 	}
