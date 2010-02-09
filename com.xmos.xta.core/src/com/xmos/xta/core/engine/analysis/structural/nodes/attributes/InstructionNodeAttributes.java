@@ -99,7 +99,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	private long getThreadAdjustedCycles() {
 		assert(m_architecture != Architecture.UNKNOWN);
 		
-		InstructionMnemonics instructionMnemonics = new InstructionMnemonics(m_architecture);		
+		InstructionMnemonics instructionMnemonics = new InstructionMnemonics(m_architecture);
 		if (instructionMnemonics.isDivide(m_instruction) ||
 			instructionMnemonics.isRemainder(m_instruction)) {
 			return (m_config.m_numThreads < 4) ? 

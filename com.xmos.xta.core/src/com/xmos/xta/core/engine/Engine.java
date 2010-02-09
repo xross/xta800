@@ -429,11 +429,19 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public long getNodeHz(int nodeNumber) {
-		return m_nodeHz.get(nodeNumber);
+		if (m_nodeHz.containsKey(nodeNumber)) {
+			return m_nodeHz.get(nodeNumber);
+		} else {
+			return com.xmos.libs.xnloader.XmlHandler.DEFAULT_FREQUENCY_HZ;
+		}
 	}
 
 	public int getCoreThreads(int nodeNumber, int coreNumber) {
-		return m_coreThreads.get(nodeNumber, coreNumber);
+		Integer threads = m_coreThreads.get(nodeNumber, coreNumber);
+		if (threads == null) {
+			return Config.DEFAULT_THREADS;
+		}
+		return threads;
 	}
 
 	public int getCoreNumber() {
@@ -1640,7 +1648,13 @@ public class Engine implements Notifier, Aborter {
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
 			if ((entry.getNodeRoutingId() == nodeRoutingId) && (entry.getCoreNumber() == coreNumber) &&
 				(entry.getName().equals("thread"))) {
-				return entry.getWorstCase();
+				
+				int worstCase = entry.getWorstCase();
+				if (worstCase > 0) {
+					return worstCase;
+				} else {
+					return Config.DEFAULT_THREADS;
+				}
 			}
 		}
 		return Config.DEFAULT_THREADS;

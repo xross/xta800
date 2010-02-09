@@ -45,6 +45,9 @@ public class Freq extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-        engine.setFrequency(getSrc(), Double.parseDouble(m_frequencyString));
+		if (!isExecutableLoaded(engine, console))
+			return;			    	
+
+		engine.setFrequency(getSrc(), Double.parseDouble(m_frequencyString));
     }    
 }

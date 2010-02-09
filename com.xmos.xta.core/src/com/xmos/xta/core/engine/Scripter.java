@@ -212,6 +212,12 @@ public class Scripter {
     }
 
     private void updateGlobalConfig(StringBuffer script, Config config, int nodeNumber, int coreNumber) {
+    	// Need to change node/core first since the other config items are changed when node/core changes
+    	if ((m_currentNodeNumber != nodeNumber) || (m_currentCoreNumber != coreNumber)) {
+        	script.append(String.format("config core %d %d\n", nodeNumber, coreNumber));
+        	m_currentNodeNumber = nodeNumber;
+        	m_currentCoreNumber = coreNumber;
+    	}
     	if (m_currentConfig.m_numThreads != config.m_numThreads) {
         	script.append(String.format("config threads %s\n", config.m_numThreads));
         	m_currentConfig.m_numThreads = config.m_numThreads;    		
@@ -223,11 +229,6 @@ public class Scripter {
     	if (m_currentConfig.m_case != config.m_case) {
         	script.append(String.format("config case %s\n", config.m_case));    		
         	m_currentConfig.m_case = config.m_case; 
-    	}
-    	if ((m_currentNodeNumber != nodeNumber) || (m_currentCoreNumber != coreNumber)) {
-        	script.append(String.format("config core %d %d\n", nodeNumber, coreNumber));
-        	m_currentNodeNumber = nodeNumber;
-        	m_currentCoreNumber = coreNumber;
     	}
     }
 
