@@ -3,6 +3,7 @@ package com.xmos.xta.ui.views.info.unknowns;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -30,6 +31,8 @@ import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.dialogs.InstructionTime;
+import com.xmos.xta.ui.dialogs.Loop;
 import com.xmos.xta.ui.views.info.Viewer;
 
 abstract class InfoViewer implements Viewer {
@@ -38,10 +41,11 @@ abstract class InfoViewer implements Viewer {
 	private TableViewer m_viewer;
 	private List<Node> m_selectedNodes;
 
+	private Action m_setInstructionTimeAction;
+	private Action m_setLoopIterationsAction;
+
 	abstract InfoViewerContentProvider createContentProvider();
 	abstract InfoViewerLabelProvider createLabelProvider();
-	abstract void createContextMenuActions(MenuManager menuMgr);	
-	abstract void enableContextMenuActions(int numInstructionTimeNodes, int numLoopIterationsNodes);
 	
 	public Control getControl() {
 		return m_viewer.getControl();
@@ -162,4 +166,37 @@ abstract class InfoViewer implements Viewer {
 	int getNumLoopIterationsNodesSelected(ISelection selection) {
 		return 0;
 	}
+
+ 	void createContextMenuActions(MenuManager menuMgr) {
+		// Create the 'Set Instruction Time' action
+		m_setInstructionTimeAction = new Action() { 
+			public void run() {
+     			new InstructionTime(getParent().getShell(), getSelectedNodes());
+			}
+		};
+		m_setInstructionTimeAction.setText("Set instruction time");
+		menuMgr.add(m_setInstructionTimeAction);
+		m_setInstructionTimeAction.setEnabled(false);
+
+		// Create the 'Set Loop Iterations' action
+		m_setLoopIterationsAction = new Action() { 
+			public void run() {
+		        new Loop(getParent().getShell(), getSelectedNodes());
+			}
+		};
+		m_setLoopIterationsAction.setText("Set loop iterations");
+		menuMgr.add(m_setLoopIterationsAction);
+		m_setLoopIterationsAction.setEnabled(false);
+	} 		
+
+	void enableContextMenuActions(int numInstructionTimeNodes, int numLoopIterationsNodes) {
+		m_setLoopIterationsAction.setEnabled(false);
+		m_setInstructionTimeAction.setEnabled(false);
+		
+		if ((numInstructionTimeNodes > 0) && (numLoopIterationsNodes == 0)) {
+			m_setInstructionTimeAction.setEnabled(true);					
+		} else if ((numLoopIterationsNodes > 0) && (numInstructionTimeNodes == 0)) {
+			m_setLoopIterationsAction.setEnabled(true);
+		}		
+	}	
 }
