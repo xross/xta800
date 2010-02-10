@@ -1,6 +1,7 @@
 package com.xmos.xta.ui;
 
 import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -34,7 +35,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     public void postWindowOpen() {
         super.postWindowOpen();
 
-        IActionBarConfigurer configurer = getWindowConfigurer().getActionBarConfigurer();
+        final IActionBarConfigurer configurer = getWindowConfigurer().getActionBarConfigurer();
         
         // Removes unwanted menu items.
         IMenuManager menuManager = configurer.getMenuManager();        	
@@ -54,7 +55,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         }
                         
         // Removes unwanted tool bar items.
-        IContributionItem[] coolItems = configurer.getCoolBarManager().getItems();
+        ICoolBarManager coolBarManager = configurer.getCoolBarManager();
+		IContributionItem[] coolItems = coolBarManager.getItems();
         for (int i = 0; i < coolItems.length; i++) {
         	if (coolItems[i] instanceof ToolBarContributionItem) {
         		ToolBarContributionItem toolbarItem = (ToolBarContributionItem) coolItems[i];
@@ -68,6 +70,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         		}
         	}
         }
+        
+        GuiEngine.setCoolBarManager(configurer.getCoolBarManager());
 
         configurer.getCoolBarManager().update(true);
         configurer.getMenuManager().update(true);

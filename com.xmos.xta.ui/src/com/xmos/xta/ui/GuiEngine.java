@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -29,6 +30,8 @@ import com.xmos.xta.ui.input.InputDisassembly;
 import com.xmos.xta.ui.views.console.ConsoleView;
 
 public class GuiEngine {
+	private static ICoolBarManager m_coolBarManager;
+	
 	private static Engine s_engine;
 	private static GuiNotifier s_notifier;	
 	private static Broadcaster s_broadcaster;
@@ -362,4 +365,11 @@ public class GuiEngine {
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
 	}
 
+	public static void setCoolBarManager(ICoolBarManager coolBarManager) {
+		m_coolBarManager = coolBarManager;
+	}
+
+	public static void refreshCoolBar() {
+		m_coolBarManager.update(true);
+	}
 }

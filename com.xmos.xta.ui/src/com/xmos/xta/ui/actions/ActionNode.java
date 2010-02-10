@@ -150,6 +150,8 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		m_currentNodeNumber = nodeNumber;
 		String nodeName = m_nodeNames.get(nodeNumber);
 		m_action.setText("Node " + nodeName);		
-		m_action.setToolTipText("Node " + nodeName);		
+		m_action.setToolTipText("Node " + nodeName);
+		
+		GuiEngine.refreshCoolBar();
 	}	
 }

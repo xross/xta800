@@ -148,5 +148,7 @@ public class ActionCore extends ActionDelegate implements IPropertyChangeListene
 		String coreName = m_coreNames.get(coreNumber);
 		m_action.setText(coreName);
 		m_action.setToolTipText(coreName);
+
+		GuiEngine.refreshCoolBar();
 	}
 }
