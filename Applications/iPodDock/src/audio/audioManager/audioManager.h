@@ -3,7 +3,7 @@
 
 // Include User Options for which audio interface to use
 #include "global.h"
-#include "flash.h"
+#include "flash_local.h"
 #include "iflash.h"
 
 // Buffer size for the audio manager

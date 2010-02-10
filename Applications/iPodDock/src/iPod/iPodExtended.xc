@@ -1,6 +1,6 @@
 #include "iPod.h"
 #include "remote_cmds.h"
-#include "flash.h"
+#include "flash_local.h"
 
 int in_extended_mode = 0;
 

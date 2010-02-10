@@ -1,7 +1,7 @@
 #include "audioManager.h"
 #include "safestring.h"
 #include <flashlib.h>
-#include "flash.h"
+#include "flash_local.h"
 
 int iflash_state = 0;
 

@@ -5,7 +5,7 @@
 #include <global.h>
 #include <flashlib.h>
 #include "iflash.h"
-#include "flash.h"
+#include "flash_local.h"
 
 
 unsigned int supplyData( void* userPtr, unsigned int numBytes, unsigned char* dstBuf )
