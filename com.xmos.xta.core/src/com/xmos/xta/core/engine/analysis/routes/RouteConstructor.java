@@ -12,10 +12,12 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
+import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.RouteDescription.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
@@ -46,8 +48,8 @@ import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 
 public class RouteConstructor {
 	
-	private static final boolean debug_route = true;
-	private static final boolean sanity_debug = true;
+	private static boolean debug_route = false;
+	private static boolean sanity_debug = true;
 	
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1;
@@ -89,9 +91,8 @@ public class RouteConstructor {
 	}
 	
 	public RouteError analyse(CommandSource src) throws Exception {
-		boolean seenEndPoint = false;
 		
-		if (m_description.getStartPoints() == null) {
+		if (m_description.getStartPoint() == null) {
 			return RouteError.STARTPOINT_MISSING;
 		}
 		if (m_description.getEndPoints() == null) {
@@ -99,89 +100,480 @@ public class RouteConstructor {
 		}
 		
 		//find end instructions
-		Set<StackNode> endStackNodes = new HashSet<StackNode>();
-		Set<InstructionNode> endInstructions = getEndInstructions(m_description);
-		
-		for(InstructionNode endInstruction : endInstructions){
-			FunctionNode endFunction = getFunction(endInstruction);
-			Set<Stack<FunctionReferenceNode>> callStacks = getCallStacks(endFunction); 
-			//really want endNode to be the set of end nodes that are reachable within the current context
-			StackNode endNode = new StackNode(endInstruction, callStacks);
-			endStackNodes.add(endNode);
-		}
-		
+		Set<StackNode> endStackNodes = getEndStackNodes(m_description);
+
 		//find exclusions
 		Set<StackNode> exclusionStackNodes = new HashSet<StackNode>();
-		Set<InstructionNode> exclusionInstructions = getExclusionInstructions();
-		
-		for(InstructionNode exclusionInstruction : exclusionInstructions){
-			FunctionNode exclusionFunction = getFunction(exclusionInstruction);
-			Set<Stack<FunctionReferenceNode>> callStacks = getCallStacks(exclusionFunction); 
-			//really want exclusionInstruction to be the set of end nodes that are reachable within the current context
-			StackNode exclusionNode = new StackNode(exclusionInstruction, callStacks);
-			endStackNodes.add(exclusionNode);
+		for(Reference ref : m_engine.getExclusions()){
+			exclusionStackNodes.addAll(referenceToStackNode(ref));
 		}
+
 		
-		//find the start instructions
-		Set<InstructionNode> startInstructions = getStartInstruction(m_description);
-		
-		for(InstructionNode startInstruction : startInstructions){
-			FunctionNode startFunction = getFunction(startInstruction);
-			Set<Stack<FunctionReferenceNode>> callStacks = getCallStacks(startFunction); 
-			Node startNode  = getStartNode(startInstruction);
-			for(Stack<FunctionReferenceNode> currentStack : callStacks){
-				Node analysis = makeStructureNode(currentStack, startNode, endStackNodes, exclusionStackNodes, m_engine, null);
-				Route route = new Route(src, m_engine, analysis, m_description, m_container);
+		if(m_description.getMode() == RouteMode.FUNCTION){
+			FunctionNode fn = m_description.getFunction(m_description.getFunctionName(), m_structureGraph);
+			Set<Stack<FunctionReferenceNode>> stacks = getCallStacks(fn);
+			for(Stack<FunctionReferenceNode> stack : stacks){
+				FunctionReferenceNode fnRef = stack.peek();
+				FunctionNode newFunction = makeFunction(stack, fnRef, exclusionStackNodes, m_engine, endStackNodes);
+				setParent(newFunction);
+				Route route = new Route(src, m_engine, newFunction, m_description, m_container);
 				m_routes.add(route);
 			}
-		}
+			
+		} else if(m_description.getMode() == RouteMode.PATH){
+			Reference startRef = m_description.getStartPoint();
+			boolean foundAtLeastOneStartPoint = false;
+			Set<StackNode> startStackNodes = referenceToStackNode(startRef);
+			for(StackNode startStackNode : startStackNodes){
+				for(Stack<FunctionReferenceNode> currentStack : startStackNode.getNodeStacks()){
+					foundAtLeastOneStartPoint = true;
+					Node newPath = makePath(currentStack, startStackNode.getInstruction(), endStackNodes, exclusionStackNodes, m_engine);
+					if(newPath != null){
+						setParent(newPath);
+						Route route = new Route(src, m_engine, newPath, m_description, m_container);
+						m_routes.add(route);
+					}
+				}
+			}
+			
+			if(!foundAtLeastOneStartPoint){
+				return RouteError.COULD_NOT_FIND_STARTPOINT;
+			}
+		} 
+		
 		setUnknowns();	
 		setSrcLoopCounts();	
 		checkSupportedInstructions(src);
 		applyDefines(src);
-
-		switch (m_description.getMode()) {
-		case FUNCTION:
-			return RouteError.SUCCESS;
-		case PATH:
-			return seenEndPoint ? RouteError.SUCCESS : RouteError.NO_ENDPOINTS_FOUND;			
-		default:
-			assert(false);
-			return null;
-		}
+		return RouteError.SUCCESS;
 	}
 
-	private Node makeStructureNode(Stack<FunctionReferenceNode> currentStack, Node startNode, 
-			Set<StackNode> endStackNodes, Set<StackNode> exclusionStackNodes, Engine engine, Node prevCFGNode) throws AbortedException{
-		if(debug_route){
-			System.out.println("Making a route from " + currentStack  + " "+ startNode);
-			System.out.println("End stacks: ");
-			for(StackNode endStack : endStackNodes){
-				System.out.println("\t" + endStack);
-			}
-			if(!exclusionStackNodes.isEmpty()){
-				System.out.println("Exclusions: ");
-				for(StackNode exclusionStack : exclusionStackNodes){
-					System.out.println("\t" + exclusionStack);
+	private Set<StackNode> referenceToStackNode(Reference startRef) {
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
+		return referenceMatcher.getStackNode(m_engine, startRef);
+	}
+
+	private FunctionNode makeFunction(Stack<FunctionReferenceNode> currentStack, FunctionReferenceNode fnRef, 
+			Set<StackNode> exclusionStackNodes, Aborter aborter, Set<StackNode> endStackNodes) throws AbortedException{
+		//if there are any exclusions at this level or within any function that this function calls
+		//then this function needs to be manually explored
+		
+		if(!fnRef.isKnownFunction()){
+			return new FunctionNode();
+		}
+		
+		//find end instructions
+		FunctionNode fn = fnRef.getFunctionNode();
+		
+		Set<InstructionNode> currentExclusions = new TreeSet<InstructionNode>();
+		boolean exclusionsInOrBelowThisFunction = false;
+		//find exclusions
+		for(StackNode exclusion : exclusionStackNodes){
+			for(Stack<FunctionReferenceNode> stack : exclusion.getNodeStacks()){
+				if(stack.peek().equals(fnRef)){
+					currentExclusions.add(exclusion.getInstruction());
+				}
+				if(stack.contains(fnRef)){
+					exclusionsInOrBelowThisFunction = true;
 				}
 			}
 		}
 		
-		Set<Node> workingSet = new TreeSet<Node>();
-		
-		NodeWrapper workingSetStartNode = new NodeWrapper(startNode);
-		
-		//This removes all edges from the structure graphs.
-		//TODO - it would be unnecessary if the structure graph construction was done properly.
-		m_structureGraph.removeLinks();
-		
-		routeExplore(currentStack, startNode, endStackNodes, exclusionStackNodes, workingSet, workingSetStartNode, prevCFGNode);
-		
-		Node newStructureNode = convertCFGToStructure(engine, workingSet, exclusionStackNodes, currentStack, workingSetStartNode);
-		return newStructureNode;
+		//need to find out of there are any exclusions at this context of lower
+		if(!exclusionsInOrBelowThisFunction){
+			FunctionNode unmodifiedFunction = (FunctionNode)fnRef.getFunctionNode().deepCopy(aborter);
+			
+			return unmodifiedFunction;
+		} else {
+			InstructionNode startInst = m_structureGraph.getFunctionsStartNode(fnRef.getAlias().getFunctionNode());
+
+			
+			Set<Node> workingSet = new TreeSet<Node>();
+			Set<Node> currentExclusionsFound = new TreeSet<Node>();
+			Map<NodeDescriptor, Node> nodeToWorkingSet = new HashMap<NodeDescriptor, Node>();
+			
+			NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
+			findReachableGraph(null, currentStack, startInst, workingSet, 
+					exclusionStackNodes, currentExclusionsFound,  aborter, RouteMode.FUNCTION, endStackNodes, nodeToWorkingSet);
+			
+			removeExclusionBranches(workingSet, currentExclusionsFound);
+			dumpGraph(workingSet);
+			
+			if(workingSet.isEmpty()){
+				return null;
+			}
+			Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
+			
+			FunctionNode newFunction = new FunctionNode(node, fn.getFunctionName());
+
+			return newFunction;
+		}
+
 	}
 
+	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, Set<StackNode> endStackNodes,
+			Set<StackNode> exclusionStackNodes, Aborter aborter) throws AbortedException{
+		
+		Set<Node> workingSet = new TreeSet<Node>();
+		Set<Node> currentExclusionsFound = new TreeSet<Node>();
+
+		
+		Map<NodeDescriptor, Node> nodeToWorkingSet = new HashMap<NodeDescriptor, Node>();
+		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
+		findReachableGraph(null, currentStack, startInst, workingSet, 
+				exclusionStackNodes, currentExclusionsFound,  aborter, RouteMode.PATH, endStackNodes, nodeToWorkingSet);
+		
+		
+		dumpGraph(workingSet);
+		removeExclusionBranches(workingSet, currentExclusionsFound);
+		
+		
+		if(workingSet.isEmpty()){
+			return null;
+		}
+		Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
+		
+		return node;
+	}
 	
+	private Node convertGraphToStructure(Set<Node> workingSet, NodeDescriptor startNodeDescriptor, 
+			Map<NodeDescriptor, Node> nodeToWorkingSet) throws AbortedException {
+		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
+		dumpGraph(workingSet);
+		Node startNode = makeBasicBlocks(workingSet, startNodeDescriptor, nodeToWorkingSet);
+		dumpGraph(workingSet);
+		assert(cfgSanityCheckNodes(workingSet));
+		sae.createStructure(workingSet, startNode, m_engine, "Converting CFG to structure");
+		assert(workingSet.size() == 1);
+		Node structuralNode = workingSet.iterator().next();
+		sae.normaliseGraph(structuralNode);
+		return structuralNode;
+	}
+	
+	private Node makeBasicBlocks(Set<Node> workingSet, NodeDescriptor startNodeDescriptor, 
+			Map<NodeDescriptor, Node> nodeToWorkingSet) {
+		
+		Node firstNode = null;
+		Set<Node> newWorkingSet = new TreeSet<Node>();
+		
+		Set<Node> seenNodes = new TreeSet<Node>();
+		Set<Node> toDo = new TreeSet<Node>();
+		
+		for(NodeDescriptor nd : nodeToWorkingSet.keySet()){
+			if(startNodeDescriptor.equals(nd) && workingSet.contains(nodeToWorkingSet.get(nd))){
+				toDo.add(nodeToWorkingSet.get(nd));
+			}
+		}
+
+		assert(!toDo.isEmpty());
+		
+		Map<Node, Set<Node>> nexts = new HashMap<Node, Set<Node>>();
+		Map<Node, Node> instToBlock = new HashMap<Node, Node>();
+		
+		while(!toDo.isEmpty()){
+			
+			Node current = toDo.iterator().next();
+			toDo.remove(current);
+			
+			List<InstructionNode> insts = new LinkedList<InstructionNode>();
+			insts.add((InstructionNode)current);
+			seenNodes.add(current);
+			while(nextIsInSameBlock(current, workingSet)){
+				Node next = getNextNodes(current, workingSet).iterator().next();
+				insts.add((InstructionNode)next);
+				current = next;
+			}
+			seenNodes.addAll(insts);
+			BlockNode basicBlock = new BlockNode(insts);
+			
+			InstructionNode startOfBlock = basicBlock.getInstructionList().get(0);
+			instToBlock.put(startOfBlock, basicBlock);
+			nexts.put(basicBlock, current.getNextNodes());
+			if(newWorkingSet.isEmpty()){
+				firstNode = basicBlock;
+			}
+			newWorkingSet.add(basicBlock);
+			
+			for(Node next : current.getNextNodes()){	
+				if(next instanceof FunctionReferenceNode){
+					next.getNextNodes().clear();
+					next.getPrevNodes().clear();
+					newWorkingSet.add(next);
+					seenNodes.add(next);
+					instToBlock.put(next, next);
+					nexts.put(next, next.getNextNodes());
+					toDo.addAll(next.getNextNodes());
+				} else if(!seenNodes.contains(next)){
+					toDo.add(next);
+				}
+			}
+		}
+
+		for(Node node : nexts.keySet()){
+			for(Node next : nexts.get(node)){
+				CommonMethods.connect(instToBlock.get(next), node);
+			}
+		}
+		
+		Set<Node> seen = new TreeSet<Node>();
+		Set<Node> terminals = new TreeSet<Node>();
+		
+		findEndPoints(firstNode, seen, terminals);
+		
+		NullNode n = new NullNode();
+		for(Node node : terminals){
+			CommonMethods.connect(n, node);
+		}
+		newWorkingSet.add(n);
+		workingSet.clear();
+		workingSet.addAll(newWorkingSet);
+		return firstNode;
+	}
+	
+	private void findEndPoints(Node inst, Set<Node> seen, Set<Node> terminals) {
+		Set<Node> following = new TreeSet<Node>();
+		following.add(inst);
+		while(!following.isEmpty()){
+			Node current = following.iterator().next();
+			seen.add(current);
+			if(current.getNextNodesSize() == 0){
+				terminals.add(current);
+			} else {
+				for(Node next : current.getNextNodes()){
+					if(!seen.contains(next)){
+						following.add(next);
+					}
+				}
+			}
+			following.remove(current);
+		}
+	}
+	
+	private boolean nextIsInSameBlock(Node current, Set<Node> workingSet) {
+		if(getNextNodes(current, workingSet).size() != 1){
+			return false;
+		}
+		Node next = getNextNodes(current, workingSet).iterator().next();
+		if(!(next instanceof InstructionNode || next instanceof NullNode)){
+			return false;
+		}
+		
+		if( getPrevNodes(current, workingSet).size() > 1){
+			return false;
+		}
+		
+		if(current instanceof InstructionNode){
+			if(((InstructionNode)current).getXtaInstruction().getReturn()){
+				return false;
+			}
+			if(((InstructionNode)current).getXtaInstruction().isLink()){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private Set<Node> getNextNodes(Node node, Set<Node> workingSet){
+		Set<Node> next = new TreeSet<Node>(node.getNextNodes());
+		next.retainAll(workingSet);
+		return next;
+	}
+	
+	private Set<Node> getPrevNodes(Node node, Set<Node> workingSet){
+		Set<Node> prev = new TreeSet<Node>(node.getPrevNodes());
+		prev.retainAll(workingSet);
+		return prev;
+	}
+
+	private void removeExclusionBranches(Set<Node> workingSet,
+			Set<Node> currentExclusions) {
+		for(Node excludedNode : currentExclusions){
+			Node current = excludedNode;
+			
+			while(true){
+				if(current.getPrevNodes().size() == 1){
+					Node prev = current.getPrevNodes().iterator().next();
+					CommonMethods.disconnect(current, prev);
+					workingSet.remove(current);
+					if(prev.getNextNodes().size() == 0){
+						current = prev;
+					} else {
+						break;
+					}
+					
+				} else {
+					break;
+				}
+			}
+		}
+	}
+	
+	private void findReachableGraph(
+			Node parent, 
+			Stack<FunctionReferenceNode> currentStack, Node node,
+			Set<Node> workingSet,
+			Set<StackNode> exclusionStackNodes, 
+			Set<Node> currentExclusionsFound, 
+			Aborter aborter, 
+			RouteMode routeMode, 
+			Set<StackNode> endStackNodes,
+			Map<NodeDescriptor, Node> nodeToWorkingSet) 
+	throws AbortedException {
+
+		Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet, aborter);
+		
+		if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !workingSet.isEmpty()){
+			currentExclusionsFound.add(currentNode);
+			addToWorkingSet(parent, currentNode, workingSet);
+			return;
+		}
+		
+		if(stackNodesContainNode(endStackNodes, currentStack, node) && !workingSet.isEmpty()){
+			switch (routeMode) {
+			case FUNCTION:
+				addToWorkingSet(parent, currentNode, workingSet);
+				return;
+			case PATH:
+				return;		
+			}
+		} else {
+			addToWorkingSet(parent, currentNode, workingSet);
+		}
+		
+		
+		
+		for(Node next : node.getNextNodes()){
+			
+			if(next instanceof FunctionReferenceNode){
+				Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
+				newStack.addAll(currentStack);
+				
+				FunctionReferenceNode frn = ((FunctionReferenceNode)next);
+				assert(((FunctionReferenceNode)next).getAlias() != null);
+				newStack.add(frn);
+				
+				if(routeMode == RouteMode.FUNCTION){
+					//function mode function calls have to return
+					FunctionNode fn = makeFunction(newStack, frn, exclusionStackNodes, aborter, endStackNodes);
+					
+					if(fn != null){
+						((FunctionReferenceNode)next).setFunction(frn.getFunctionName(), fn);
+					} else {
+						currentExclusionsFound.add(currentNode);
+						continue;
+					}
+				} else if(routeMode == RouteMode.PATH){
+					//continue the path
+					FunctionReferenceNode nextFunction = newStack.peek();
+					if(nextFunction.isKnownFunction()){
+						InstructionNode inst = m_engine.getInstructionDecoder().getNode(nextFunction.getFunctionStartPc());
+						findReachableGraph(currentNode, newStack, inst, workingSet, 
+								exclusionStackNodes, currentExclusionsFound, aborter, routeMode, endStackNodes, nodeToWorkingSet);
+						
+						//TODO - i think this might be ok
+						continue;
+					}
+				}
+			}
+			
+			if(next instanceof NullNode){
+				FunctionReferenceNode callingFnRef = currentStack.peek();
+				for(Node followingFunction : callingFnRef.getNextNodes()){
+					
+					Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
+					newStack.addAll(currentStack);
+					newStack.pop();
+					
+					//need to update the currentEnds
+					findReachableGraph(currentNode, newStack, followingFunction, workingSet, 
+							exclusionStackNodes, currentExclusionsFound, aborter, routeMode, endStackNodes, nodeToWorkingSet);
+				}
+			} else if(!containsNode(next, currentStack, nodeToWorkingSet)){
+				findReachableGraph(currentNode, currentStack, next, workingSet, 
+						exclusionStackNodes, currentExclusionsFound, aborter, routeMode, endStackNodes, nodeToWorkingSet);
+			}
+			
+		}
+	}
+
+	private boolean containsNode(Node next, Stack<FunctionReferenceNode> currentStack, Map<NodeDescriptor, Node> nodeToWorkingSet){
+		NodeDescriptor nd = new NodeDescriptor(next, currentStack);
+		for(NodeDescriptor workingNd : nodeToWorkingSet.keySet()){
+			if(workingNd.equals(nd)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	class NodeDescriptor {
+		private Node m_node;
+		private Stack<FunctionReferenceNode> m_stack;
+		
+		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
+			m_node = node;
+			m_stack = stack;
+		}
+		
+		public Node getNode(){
+			return m_node;
+		}
+		
+		public Stack<FunctionReferenceNode> getStack(){
+			return m_stack;
+		}
+		
+		public boolean equals(Object obj) {
+			if(obj instanceof NodeDescriptor){
+				NodeDescriptor comp = (NodeDescriptor)obj;
+				if(comp.m_node == m_node && comp.m_stack.equals(m_stack)){
+					return true;
+				}
+				
+			}
+			return false;
+		}
+	}
+	
+	private Node getCurrentNode(Stack<FunctionReferenceNode> currentStack,
+			Node node, Map<NodeDescriptor, Node> nodeToWorkingSet, Aborter aborter) throws AbortedException {
+		NodeDescriptor nd = new NodeDescriptor(node, currentStack);
+		if(nodeToWorkingSet.containsKey(nd)){
+			return nodeToWorkingSet.get(nd);
+		} else {
+			Node copy = node.deepCopy(aborter);
+			nodeToWorkingSet.put(nd, copy);
+			return copy;
+		}
+	}
+
+	private boolean stackNodesContainNode(Set<StackNode> stackNodes, Stack<FunctionReferenceNode> currentStack, Node currentNode){
+		for(StackNode stackNode : stackNodes){
+			if(stackNode.getInstruction().equals(currentNode)){
+				for(Stack<FunctionReferenceNode> nodeStack : stackNode.getNodeStacks()){
+					if(nodeStack.equals(currentStack)){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	private void addToWorkingSet(Node parent, Node currentNode, Set<Node> workingSet) {
+		if(parent!= null)
+			CommonMethods.connect(currentNode, parent);
+		workingSet.add(currentNode);
+	}
+
+	static void setParent(Node node) {
+		for (Node child : node.iChildren()){
+			if(!(child instanceof InstructionNode)) {
+				child.setParent(node);
+			}
+			setParent(child);
+		}
+	}
 	
 	private void dumpGraph(Set<Node> workingSet) {
 		if(!debug_route) return;
@@ -204,332 +596,6 @@ public class RouteConstructor {
 		System.out.println("}");
 	}
 
-	private void routeExplore(Stack<FunctionReferenceNode> currentStack, Node currentNode, 
-			Set<StackNode> endStackNodes, Set<StackNode> exclusionStackNodes, Set<Node> workingSet, 
-			NodeWrapper workingSetStartNode, Node prevCFGNode) throws AbortedException{
-		
-		
-		//if current node is contained within any of the sets then set the boolean to true
-		//follow all function calls when getting 
-		boolean exclusionsWithinCurrentNode = nodesWithinCurrentContext(currentStack, currentNode, exclusionStackNodes);
-		boolean endInstructionsWithinCurrentNode = nodesWithinCurrentContext(currentStack, currentNode, endStackNodes);
-		
-		if(debug_route){
-			System.out.println("Current node: " + currentStack  + " "+ currentNode);
-			System.out.println("\tContains exclusions: " + exclusionsWithinCurrentNode + 
-					"\n\tContains end instruction " + endInstructionsWithinCurrentNode);
-		}
-		
-		
-		if(endInstructionsWithinCurrentNode){
-			//if this node is an end node then add it to the tree and stop.
-			if(matchesStackNode(currentNode, currentStack, endStackNodes)){
-				CommonMethods.connect(currentNode, prevCFGNode);
-				workingSet.add(currentNode);
-				Node nullNode = getNullNode(workingSet);
-				CommonMethods.connect(nullNode, currentNode);
-			} else {
-				routeExploreInto(currentStack, currentNode, endStackNodes, exclusionStackNodes, workingSet, workingSetStartNode, prevCFGNode);
-			}
-		} else {
-			if(exclusionsWithinCurrentNode){
-				routeExploreInto(currentStack, currentNode, endStackNodes, exclusionStackNodes, workingSet, workingSetStartNode, prevCFGNode);
-			} else {
-				routeExploreNext(currentStack, currentNode, endStackNodes, exclusionStackNodes, workingSet, workingSetStartNode, prevCFGNode);
-			}
-		}
-	}
-
-	private void routeExploreNext(Stack<FunctionReferenceNode> currentStack, Node currentNode, 
-			Set<StackNode> endStackNodes, Set<StackNode> exclusionStackNodes, Set<Node> workingSet, 
-			NodeWrapper workingSetStartNode, Node prevCFGNode) throws AbortedException{
-
-		if(debug_route){
-			System.out.println("Explore next: " + currentStack  + " "+ currentNode);
-		}
-		
-		if(debug_route){
-			System.out.println("Add "+ currentNode+ " to working set:" + workingSet);
-		}
-		if(prevCFGNode!= null){
-			CommonMethods.connect(currentNode, prevCFGNode);
-		}
-		workingSet.add(currentNode);
-		
-		Node parent = getParent(currentNode, currentStack);
-		if (parent != null) {			
-			Set<Node> nexts = parent.structurGraphNext(currentNode);
-		    if (!nexts.isEmpty()) {
-				for (Node next : nexts) {	
-					if (!workingSet.contains(next) || next.equals(workingSetStartNode)) {
-						routeExplore(currentStack, next, endStackNodes, exclusionStackNodes, workingSet, workingSetStartNode, currentNode);			
-					}
-				}	
-		    }
-			
-		} else {
-			Node nullNode = getNullNode(workingSet);
-			CommonMethods.connect(nullNode, currentNode);
-		}
-	}
-
-	private void routeExploreInto(Stack<FunctionReferenceNode> currentStack, Node currentNode, 
-			Set<StackNode> endStackNodes, Set<StackNode> exclusionStackNodes, Set<Node> workingSet, 
-			NodeWrapper workingSetStartNode, Node prevCFGNode) throws AbortedException{
-		
-		if(debug_route){
-			System.out.println("Explore into: " + currentStack  + " "+ currentNode);
-		}
-		
-		if(currentNode == workingSetStartNode.node){
-			if(!(currentNode instanceof InstructionNode)){
-				workingSetStartNode.node = currentNode.dChildren().iterator().next();
-			}
-		}
-		
-		if(currentNode instanceof FunctionReferenceNode){
-			FunctionReferenceNodeWrapper newFunctionReferenceNode = null;
-			boolean allPathsTerminated = exploreFunctionReference(newFunctionReferenceNode, currentStack, (FunctionReferenceNode)currentNode, 
-					endStackNodes, exclusionStackNodes);
-			
-			assert(newFunctionReferenceNode != null);
-			
-			if(!allPathsTerminated){
-				routeExplore(currentStack, newFunctionReferenceNode.node, endStackNodes, exclusionStackNodes, 
-						workingSet, workingSetStartNode, prevCFGNode);	
-			} else {
-				if(prevCFGNode!= null){
-					CommonMethods.connect(newFunctionReferenceNode.node, prevCFGNode);
-				}
-				
-			}
-		} else {
-			for (Node child : currentNode.dChildren()) {
-				if (!workingSet.contains(child) || child.equals(workingSetStartNode)) {							
-					routeExplore(currentStack, child, endStackNodes, exclusionStackNodes, workingSet, workingSetStartNode, prevCFGNode);		
-				}				
-			}
-		}
-	}
-	
-	/**
-	 * When a function Reference node is found it 
-	 * @param currentStack 
-	 * @throws AbortedException 
-	 */
-	private boolean exploreFunctionReference(FunctionReferenceNodeWrapper newFunctionReferenceNode,
-			Stack<FunctionReferenceNode> currentStack, FunctionReferenceNode currentFrn, Set<StackNode> endStackNodes, 
-			Set<StackNode> exclusionStackNodes) throws AbortedException {
-		
-		Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
-		
-		newStack.addAll(currentStack);
-		//check this is pushed on to the right end
-		newStack.push(currentFrn);
-		
-		//copy all its properties
-		FunctionReferenceNode newFrn= new FunctionReferenceNode(currentFrn);
-		newFunctionReferenceNode.node = newFrn;
-		
-		if(newFrn.isKnownFunction()){
-			Set<Node> workingSet = new TreeSet<Node>();
-			
-			FunctionNode fn = newFrn.getFunctionNode();
-			
-			NodeWrapper workingSetStartNode = new NodeWrapper(fn);
-			
-			Set<StackNode> newEndStackNodes = new HashSet<StackNode>();
-			newEndStackNodes.addAll(endStackNodes);
-			
-			for(InstructionNode endInstruction : m_structureGraph.getFunctionsEndNodes(fn)){
-				FunctionNode endFunction = getFunction(endInstruction);
-				newEndStackNodes.add(new StackNode(endInstruction, getCallStacks(endFunction)));
-			}
-			
-			//really want endNodes to be the set of end nodes that are reachable within the current context
-			routeExplore(newStack, fn, newEndStackNodes, exclusionStackNodes, workingSet, workingSetStartNode, newFrn);
-			
-			
-			
-			//reduce the working set down
-			Node newStructureNode = convertCFGToStructure(m_engine, workingSet, exclusionStackNodes, currentStack, workingSetStartNode);
-			
-			if(newStructureNode == null){
-				return false;
-			}
-			
-			FunctionNode newFunction = new FunctionNode(newStructureNode, fn.getFunctionName());
-			//point the newFrn to the function
-			
-			newFrn.setFunction(fn.getFunctionName(), newFunction);
-			return true;
-		} else {
-			//if we dont know where this function branched to then assume we returned from it
-			return true;
-		}
-	}
-
-	/**
-	 * This finds the null node within the working set. As there may not always be one then it makes one when needed.
-	 */
-	private Node getNullNode(Set<Node> workingSet) {
-		for(Node node : workingSet){
-			if(node instanceof NullNode){
-				return node;
-			}
-		}
-		Node nullNode = new NullNode();
-		workingSet.add(nullNode);
-		return nullNode;
-	}
-	
-	/** 
-	 * This looks within the current node at all of the instructions at the current context.
-	 * Return true if
-	 */
-	private boolean matchesStackNode(Node currentNode,
-			Stack<FunctionReferenceNode> currentStack,
-			Set<StackNode> nodesToBeMatched) {
-		for(StackNode sn : nodesToBeMatched){
-			for(Stack<FunctionReferenceNode> frn : sn.getNodeStacks()){
-				if(frn.equals(currentStack) && currentNode == sn.getInstruction()){
-					return true;
-				} 
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * This returns true if any of the instruction nodes reachable from this node are in the set stackNodes
-	 * @param currentNode 
-	 */
-	private boolean nodesWithinCurrentContext(
-			Stack<FunctionReferenceNode> currentStack,
-			Node currentNode, Set<StackNode> stackNodes) {
-		
-		Set<InstructionNode> currentContextInstructionsWithinNode = currentNode.getInstructionNodes();
-		Set<FunctionReferenceNode> currentContextFunctionReferencesWithinNode = currentNode.getFunctionReferencesNodes();
-		for(StackNode sn : stackNodes){
-			for(Stack<FunctionReferenceNode> frn : sn.getNodeStacks()){
-				if(frn.equals(currentStack) && currentContextInstructionsWithinNode.contains(sn.getInstruction())){
-					return true;
-				} 
-			}
-		}
-		//TODO --finish this
-		
-		
-		return false;
-	}
-	
-	/**
-	 * When you are a function node for its parent then it is popped from the top of the stack.
-	 * Watch out for this.
-	 */
-	private Node getParent(Node node, Stack<FunctionReferenceNode> currentStack) {
-		if(node instanceof FunctionNode){
-			return currentStack.pop().getParent();
-		} else {
-			return node.getParent();
-		}
-		
-	}
-
-	private Node makeBasicBlocks(Node startNode, Set<Node> workingSet) {
-		
-		if(startNode instanceof InstructionNode){
-			Node currentNode = startNode;
-			List<InstructionNode> blockInsts = new LinkedList<InstructionNode>();
-			while(true){
-				Set<Node> nextNodes = currentNode.getNextNodes();
-				if(nextNodes.size() == 1){
-					Node nextNode = nextNodes.iterator().next();
-					if(nextNode.getPrevNodes().size() == 1 && nextNode instanceof InstructionNode){
-						blockInsts.add((InstructionNode)currentNode);
-						//TODO disconnect the instruction nodes from one another as we go
-						if(nextNode != startNode){
-							currentNode = nextNode;
-							continue;
-						}
-					} 
-				} 
-				break;
-			}
-			startNode = replaceInstructionWithBlock(workingSet, blockInsts);
-		}
-		
-		Node nullNode = getNullNode(workingSet);
-		for(Node endNode : nullNode.getPrevNodes()){
-			if(endNode instanceof InstructionNode){
-				Node currentNode = endNode;
-				List<InstructionNode> blockInsts = new LinkedList<InstructionNode>();
-				blockInsts.add((InstructionNode) endNode);
-				while(true){
-					Set<Node> prevNodes = currentNode.getPrevNodes();
-					if(prevNodes.size() == 1){
-						Node prevNode = prevNodes.iterator().next();
-						if(prevNode.getNextNodes().size() == 1 && prevNode instanceof InstructionNode){
-							//TODO disconnect the instruction nodes from one another as we go
-							blockInsts.add(0, (InstructionNode)prevNode);
-							if(prevNode != endNode){
-								currentNode = prevNode;
-								continue;
-							}
-						} 
-					}
-					break;
-				}
-				replaceInstructionWithBlock(workingSet, blockInsts);
-			}
-		}
-		return startNode;
-	}
-
-	private Node replaceInstructionWithBlock(Set<Node> workingSet, List<InstructionNode> blockInsts) {
-		Node basicBlock = new BlockNode(blockInsts);
-		workingSet.removeAll(blockInsts);
-		Node startNode = blockInsts.get(0);
-		if(!startNode.getPrevNodes().isEmpty()){
-			for(Node prev : startNode.getPrevNodes()){
-				prev.removeNextNode(startNode);
-				CommonMethods.connect(basicBlock, prev);
-			}
-		}
-		startNode.getPrevNodes().clear();
-		Node endNode = blockInsts.get(blockInsts.size()-1);
-		if(!endNode.getNextNodes().isEmpty()){
-			for(Node next : endNode.getNextNodes()){
-				next.removePrevNode(endNode);
-				CommonMethods.connect(next, basicBlock);
-			}
-		}
-		endNode.getNextNodes().clear();
-		workingSet.add(basicBlock);
-		return basicBlock;
-	}
-
-	static void setParent(Node node) {
-		for (Node child : node.iChildren()){
-			child.setParent(node);
-			setParent(child);
-		}
-	}
-/*		
-	private void setParents() {
-		for (Route route : m_routes) {
-			setParent(route.getNode());
-		}
-	}
-
-	private void createExclusions() throws AbortedException {
-		m_exclusions = new ArrayList<NodeDescriptor>();
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
-		for (Reference reference : m_engine.getExclusions()) {
-			m_exclusions.addAll(referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
-		}
-	}
-*/
 	private void setUnknowns() {
 		for (Route route : m_routes) {
 			Node node = route.getNode();
@@ -678,64 +744,6 @@ public class RouteConstructor {
 		}
 	}		
 	
-	//below here has been written during the refactoring
-
-	private Set<InstructionNode> refToInstructions(Reference ref) {
-		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
-		for(long pc : ref.getPcs()){
-			InstructionNode inst = m_engine.getInstructionDecoder().getNode(pc);
-			insts.add(inst);
-		}
-		return insts;
-	}
-
-	/**
-	 * This finds the best starting node from the given instruction
-	 */
-	private Node getStartNode(InstructionNode startInstruction) {
-		Node currentNode = startInstruction;
-		
-		while(currentNode.getParent() != null && 
-				currentNode.getParent().dChildren().contains(currentNode)){
-			//TODO - don't use the parent if the parent contains exclusions
-			currentNode = currentNode.getParent();
-		}
-		return currentNode;
-	}
-	
-	/*
-	private boolean parentIsBetterThanChild(Node child, Stack<Node> ancestors) {
-		if (ancestors.isEmpty())
-			return false;
-
-		// Checks that the parent is not a conditional node..
-		Node parent = ancestors.peek();		
-		if (parent.isCondNode()) { 
-			return false;
-		}
-		
-		// The parent is a better start node than the child if the parent starts 
-		// with the same PC as the child. Note: be careful of FNOPs		
-		if ((parent.getStartPc() != child.getStartPc()) || 
-			parent.getStartInstruction().isFnop()) {
-			return false;
-		}
-		
-		// Check that the parent doesn't contain any exclusions..
-		Stack<Node> parentAncestors = new Stack<Node>();
-		parentAncestors.addAll(ancestors);	
-		parentAncestors.pop();
-		NodeDescriptor parentDescriptor = new NodeDescriptor(parent, parentAncestors);	
-		if (containsExclusions(parentDescriptor)) {
-			return false;
-		}		
-		
-		return true;
-	}
-
-		*/
-	
-
 	/**
 	 * For the given function find all possible call stacks to it. This also saves the call stack set
 	 * in a lookup table to save on memory and speed it up.
@@ -749,120 +757,25 @@ public class RouteConstructor {
 		return stack;
 	}
 	
-	/** 
-	 * returns the function that the node is contained within
-	 */
-	private FunctionNode getFunction(Node node) {
-		while(node.getParent() != null){
-			node = node.getParent();
-		}
-		assert(node instanceof FunctionNode);
-		return (FunctionNode) node;
-	}
-	
-	/** 
-	 * From the engine get all the excluded instructions
-	 */
-	private Set<InstructionNode> getExclusionInstructions() {
-		Set<InstructionNode> excludedInstructions = new TreeSet<InstructionNode>();
-		for(Reference ref : m_engine.getExclusions()){
-			excludedInstructions.addAll(refToInstructions(ref));
-		}
-		return excludedInstructions;
-	}
-	
 	/**
 	 * From a route description return the instruction nodes that end that route
 	 */
-	private Set<InstructionNode> getEndInstructions(RouteDescription description) {
-		Set<InstructionNode> instructionNodes = new TreeSet<InstructionNode>();
+	private Set<StackNode> getEndStackNodes(RouteDescription description) {
+		Set<StackNode> stackNodes = new HashSet<StackNode>();
 		if(description.getMode() == RouteMode.FUNCTION){
 			FunctionNode fn = description.getFunction(description.getFunctionName(), m_structureGraph);
-			instructionNodes = m_structureGraph.getFunctionsEndNodes(fn);
+			for(InstructionNode inst : m_structureGraph.getFunctionsEndNodes(fn)){
+				StackNode stackNode = new StackNode(inst, getCallStacks(fn));
+				stackNodes.add(stackNode);
+				//TODO this could be more specific -- would speed it up
+			}
 		} else {
 			Collection<Reference> endRefs = description.getEndPoints();
 			for(Reference endRef : endRefs){
-				instructionNodes.addAll(refToInstructions(endRef));
+				stackNodes.addAll(referenceToStackNode(endRef));
 			}
 		}
-		assert(!instructionNodes.isEmpty());
-		return instructionNodes;
-	}
-
-	/**
-	 * From a route description return the instruction nodes that begin that route
-	 */
-	private Set<InstructionNode> getStartInstruction(RouteDescription description) {
-		Set<InstructionNode> instructionNodes = new TreeSet<InstructionNode>();
-		if(description.getMode() == RouteMode.FUNCTION){
-			FunctionNode fn = description.getFunction(description.getFunctionName(), m_structureGraph);
-			InstructionNode start = m_structureGraph.getFunctionsStartNode(fn);
-			assert(start != null);
-			instructionNodes.add(start);
-		} else {
-			Reference startRef = description.getStartPoints();
-			instructionNodes = refToInstructions(startRef);
-			
-		}
-		assert(!instructionNodes.isEmpty());
-		return instructionNodes;
-	}
-	
-	/**
-	 * This converts a CFG in the form of a workingSet to a single structural node
-	 * @param currentStack 
-	 * @param exclusionStackNodes 
-	 */
-	private Node convertCFGToStructure(Engine engine, Set<Node> workingSet, Set<StackNode> exclusionStackNodes, Stack<FunctionReferenceNode> currentStack, NodeWrapper workingSetStartNode) {
-		dumpGraph(workingSet);
-		
-		cfgSanityCheckNodes(workingSet);
-		pruneGraphOfExcludedPaths(workingSet, currentStack, exclusionStackNodes);
-		cfgSanityCheckNodes(workingSet);
-		if(workingSet.size() == 0){
-			//this is naughty as it is overloading the return
-			return null;
-		}
-		assert(!workingSet.isEmpty());
-		Node cfgStartNode = makeBasicBlocks(workingSetStartNode.node, workingSet);
-		cfgSanityCheckNodes(workingSet);
-		dumpGraph(workingSet);
-		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-		try {
-			sae.createStructure(workingSet, cfgStartNode, engine, "Analysing sub-function");
-		} catch (AbortedException e) {
-			//notify the engine
-			System.err.println("Could not reduce control flow graph to a structural form.");
-			e.printStackTrace();
-			assert(false);
-			return null;
-		}
-		assert(workingSet.size() == 1);
-		Node newStructureNode = workingSet.iterator().next();
-		return newStructureNode;
-	}
-	
-	private void pruneGraphOfExcludedPaths(Set<Node> workingSet, Stack<FunctionReferenceNode> currentStack, Set<StackNode> exclusions) {
-		
-		
-		//TODO this need writing
-		
-		/*
-		Set<Node> t = new TreeSet<Node>(m_excludedRouteNodes);
-						
-		while (!m_excludedRouteNodes.isEmpty()) {
-			NodeDescriptor excludedNode = m_excludedRouteNodes.iterator().next();
-			for (NodeDescriptor previous : excludedNode.getPreviousNodes()){
-				previous.removeNextNode(excludedNode);
-				if (previous.getNextNodes().size() == 0){
-					m_excludedRouteNodes.add(previous);
-				}
-			}
-			m_excludedRouteNodes.remove(excludedNode);
-			workingSet.remove(excludedNode);
-		}
-		m_excludedRouteNodes.addAll(t);
-		*/
+		return stackNodes;
 	}
 	
 	/**
@@ -884,46 +797,6 @@ public class RouteConstructor {
 			}
 		}
 		return true;
-	}
-	
-	
-	class StackNode{
-		private Set<Stack<FunctionReferenceNode>> m_nodeStacks;
-		private InstructionNode m_instruction;
-		public StackNode(InstructionNode instruction, Set<Stack<FunctionReferenceNode>> nodeStacks){
-			m_nodeStacks = nodeStacks;
-			m_instruction = instruction;
-		}
-		
-		public Set<Stack<FunctionReferenceNode>> getNodeStacks(){
-			return m_nodeStacks;
-		}
-		
-		public InstructionNode getInstruction(){
-			return m_instruction;
-		}
-		
-		public String toString(){
-			String stacks = "";
-			for(Stack<FunctionReferenceNode> stack : m_nodeStacks){
-				stacks += "\t" + stack + "\n";
-			}
-			return m_instruction + " from " + m_nodeStacks.size() + " stacks\n" + stacks;
-		}
-	}
-	
-	class NodeWrapper{
-		public Node node;
-		public NodeWrapper(Node n){
-			node = n;
-		}
-	}
-	
-	class FunctionReferenceNodeWrapper{
-		public FunctionReferenceNode node;
-		public FunctionReferenceNodeWrapper(FunctionReferenceNode n){
-			node = n;
-		}
 	}
 	
 }

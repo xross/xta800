@@ -1247,14 +1247,15 @@ public class Engine implements Notifier, Aborter {
 			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 			
 			//Binary Stage
-			
 			InstructionDecoder id = new InstructionDecoder(nodeId, coreId, xeLoader, m_config, m_dataCollection);
+			
 			try {
 				id.decode();
 			} catch (Exception e) {
 				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());								
 				return false;
 			} 
+			
 			newInstructionDecoder.add(nodeId, coreId, id);
 			//Control Flow Stage
 			
@@ -1360,6 +1361,7 @@ public class Engine implements Notifier, Aborter {
 			
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
+			e.printStackTrace();
 			return false;
 		}
 		return success;

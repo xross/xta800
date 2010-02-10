@@ -41,6 +41,10 @@ public class BlockNode extends Node {
 		return new BlockNode(this);
 	}
 	
+	public List<InstructionNode> getInstructionList(){
+		return m_insts;
+	}
+	
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		List<InstructionNode> insts;
 		if (COPY_INSTRUCTIONS){
@@ -101,23 +105,6 @@ public class BlockNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-
-
-    public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-	    Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		
-		ancestors.push(this);
-		if (m_insts.get(m_insts.size() - 1).getXtaInstruction().isFnop()) {
-			set.add(new NodeDescriptor(m_insts.get(m_insts.size() - 2), ancestors));
-			
-		} else {
-			set.add(new NodeDescriptor(m_insts.get(m_insts.size() - 1), ancestors));
-		}
-		ancestors.pop();
-
-		return set;
-	}
-
     public TimeDistributionBuckets getTimeSpread() {
 		TimeUnit fixedTime = m_attributes.getFixedTime();
 		if (fixedTime != null) {
@@ -148,16 +135,9 @@ public class BlockNode extends Node {
 	}
 	
 	//below here the methods have been verified useful
-
-	public Set<Node> dChildren() {
-		Set<Node> directChildren = new TreeSet<Node>();
-		directChildren.add(m_insts.get(0));
-		return directChildren;
-	}
 	
-	public Set<Node> iChildren() {
-		Set<Node> indirectChildren = new TreeSet<Node>(m_insts);
-		return indirectChildren;
+	public List<Node> iChildren() {
+		return new LinkedList<Node>(m_insts);
 	}
 
 	public Set<Node> structurGraphNext(Node currentNode) {
@@ -182,4 +162,20 @@ public class BlockNode extends Node {
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
 		return fnRef;
 	}
+	
+	public void buildListUp(List<InstructionNode> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		m_parent.buildListUp(nodeList, stack, this);
+		for(InstructionNode inst : m_insts){
+			if(inst == start) break;
+			nodeList.add(inst);
+		}
+	}
+	public void buildListDown(List<InstructionNode> nodeList) {
+		for(InstructionNode inst : m_insts){
+			nodeList.add(inst);
+		}
+		
+	}
+
 }

@@ -1,21 +1,16 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Stack;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
-import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.NodeDescriptor;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
-import com.xmos.xta.core.engine.references.Reference;
 
 public class Route {
 	private static int s_routeCount;
@@ -102,6 +97,7 @@ public class Route {
     }
     
 	public Node getNode(String nodeString) {
+		
 		// Note: the nodeString takes the format ~x~x~x~x~...
 		// where x = the index of the child node at that level
 		// of the structure. It provides a (reasonably) robust way
@@ -126,12 +122,14 @@ public class Route {
 		    if (index >= node.iChildren().size())
 		    	return null;
 			
-			assert(false);
-		    //node = node.iChildren().get(index);
+			node = node.iChildren().get(index);
+			if(node instanceof FunctionReferenceNode){
+				node = node.iChildren().get(0);
+			}
 		}		
 		return node;
 	}
-
+/*
 	public Collection<Node> getReferencedNodes(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
@@ -151,7 +149,7 @@ public class Route {
 		}
 		return referencedNodes;		
 	} 
-	
+	*/
 	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
 		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {

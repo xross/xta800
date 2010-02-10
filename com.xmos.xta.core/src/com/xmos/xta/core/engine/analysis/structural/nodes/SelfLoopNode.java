@@ -13,7 +13,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.SelfLoopNod
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class SelfLoopNode extends Node{
 	private SelfLoopNodeAttributes m_attributes;
@@ -79,16 +78,6 @@ public class SelfLoopNode extends Node{
 		return TraverseStatus.CONTINUE;
 	}
 
-
-	
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-	    list.add(new NodeDescriptor(m_loop, ancestors));
-		ancestors.pop();
-		return list;
-	}	
-		
 	public boolean isSelfLoopNode() {
 		return true;
 	}
@@ -114,25 +103,12 @@ public class SelfLoopNode extends Node{
 		m_loop = children.get(0);		
 	}	
 	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes,
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
-		}
-		return false;
-	}
-	
 	//below here the methods have been verified useful
 	
-	public Set<Node> dChildren() {
-		Set<Node> directChildren = new TreeSet<Node>();
-		directChildren.add(m_loop);
-		return directChildren;
-	}
-	
-	public Set<Node> iChildren() {
-		return dChildren();
+	public List<Node> iChildren() {
+		List<Node> children = new LinkedList<Node>();
+		children.add(m_loop);
+		return children;
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -154,5 +130,14 @@ public class SelfLoopNode extends Node{
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
 		addFunctionRefToRefSet(fnRef, m_loop);
 		return fnRef;
+	}
+
+	public void buildListDown(List<InstructionNode> nodeList) {
+		m_loop.buildListDown(nodeList);
+	}
+
+	public void buildListUp(List<InstructionNode> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		m_parent.buildListUp(nodeList, stack, this);
 	}
 }

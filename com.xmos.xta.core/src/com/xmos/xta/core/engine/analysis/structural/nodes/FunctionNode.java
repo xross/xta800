@@ -177,15 +177,7 @@ public class FunctionNode extends Node {
 	public String getBackTrace(String backTrace) {
 		return super.getBackTrace(m_functionName + ":" + backTrace); 
 	}
-	
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-	    list.add(new NodeDescriptor(m_functionSequence.get(0), ancestors));
-		ancestors.pop();
-		return list;
-	}
-	
+
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeUnit fixedTime = m_attributes.getFixedTime();
 		if (fixedTime != null) {
@@ -236,16 +228,8 @@ public class FunctionNode extends Node {
 		m_callingFunctions.remove(g);		
 	}
 
-	public Set<Node> dChildren() {
-		Set<Node> directChildren = new TreeSet<Node>();
-		directChildren.add(m_functionSequence.get(0));
-		return directChildren;
-	}
-
-	public Set<Node> iChildren() {
-		Set<Node> indirectChildren = new TreeSet<Node>();
-		indirectChildren.addAll(m_functionSequence);
-		return indirectChildren;
+	public List<Node> iChildren() {
+		return m_functionSequence;
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -281,4 +265,23 @@ public class FunctionNode extends Node {
 		}
 		return fnRef;
 	}
+
+	public void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
+		Stack<FunctionReferenceNode> copyStack = new Stack<FunctionReferenceNode>();
+		copyStack.addAll(stack);
+		FunctionReferenceNode parent = copyStack.pop();
+		parent.buildListUp(nodeList, copyStack, this);
+		for(Node node : m_functionSequence){
+			if(start == node) break;
+			node.buildListDown(nodeList);
+		}
+		
+	}
+	
+	public void buildListDown(List<InstructionNode> nodeList) {
+		for(Node node : m_functionSequence){
+			node.buildListDown(nodeList);
+		}		
+	}
+
 }

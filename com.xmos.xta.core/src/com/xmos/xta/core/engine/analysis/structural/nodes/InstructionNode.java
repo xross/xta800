@@ -13,7 +13,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
 	private InstructionNodeAttributes m_attributes;	
@@ -103,7 +102,17 @@ public class InstructionNode extends Node {
 	public long getError(Case c) {
 		return 0;
 	}
-
+/*
+	public Node getParent(){
+		assert(false);
+		return null;
+	}
+	
+	public void setParent(Node node) {
+		//this is here to override the method
+	}
+	*/
+	
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
 	}
@@ -114,24 +123,11 @@ public class InstructionNode extends Node {
 	public void replaceChildren(List<Node> children) {
 	}
 	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (referenceTypes.peek().getPcs().contains(m_inst.getPc())) {
-			referenceTypes.pop();
-			if (referenceTypes.empty()) {
-				return true;
-			}
-		}
-		return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
-	}
 	//below here the methods have been verified useful
-	public Set<Node> dChildren() {
-		return new TreeSet<Node>();
-	}
 
-	public Set<Node> iChildren() {
-		return new TreeSet<Node>();
+	public List<Node> iChildren() {
+		List<Node> children = new LinkedList<Node>();
+		return children;
 	}
 	
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -148,5 +144,21 @@ public class InstructionNode extends Node {
 
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		return new TreeSet<FunctionReferenceNode>();
+	}
+
+	public void buildList(List<Node> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		assert(false);
+		//never call this on this
+	}
+
+	public void buildListDown(List<InstructionNode> nodeList) {
+		assert(false);
+	}
+
+
+	public void buildListUp(List<InstructionNode> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		assert(false);
 	}
 }

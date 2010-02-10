@@ -29,11 +29,12 @@ public class RouteDefines {
 	
 	public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
 		Reference reference = info.getFunction();
-		
+		/*
 		for (Node node : route.getReferencedFunctionNodes(reference)) {
 			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), 
 					reference, Type.FUNCTION_TIME, source);	
 		}
+		*/
 	}
 
 	public static boolean matchPathDefine(Node from, Node to) {
@@ -55,7 +56,7 @@ public class RouteDefines {
 
 	public void applyPathDefine(Engine engine, CommandSource src, 
 			Route route, PathTimeInfo info, Source source) throws AbortedException {
-		
+		/*
 		Reference fromRef = info.getFrom();
 		Reference toRef = info.getTo();
 
@@ -97,6 +98,7 @@ public class RouteDefines {
 		
 		route.getRouteUnknowns().invalidateCachedStats();
 		route.getRouteUnknowns().refreshDisplayedUnknowns();
+		*/
 	}	
 
 	private void display(String str, Route route) {

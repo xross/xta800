@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
@@ -25,14 +27,34 @@ public class StructureGraph {
 	private Map<FunctionNode, Set<GraphEdge>> m_functionsToFunctionReferences;
 	private Map<FunctionNode, Set<InstructionNode>> m_instructionWithinFunction;
 	
+	private Map<FunctionNode, FunctionReferenceNode> m_uncalledFunctionReference;
+	
 	public StructureGraph(Map<FunctionNode , Set<InstructionNode>>functionToEndNodes, 
 			Map<FunctionNode , InstructionNode>functionToStartNode, 
 			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
 			Map<FunctionNode, Set<InstructionNode>> instructionWithinFunction) {
 		
 		m_functionToStartNode = functionToStartNode;
+		m_uncalledFunctionReference = new TreeMap<FunctionNode, FunctionReferenceNode>();
 		
+		/*
+		for(FunctionNode fn : functionReferencesWithinFunction.keySet()){
+			for(FunctionReferenceNode frn: functionReferencesWithinFunction.get(fn)){
+				System.out.println(fn + "\t\t"+ frn +"\t\t" + frn.getAlias());
+			}
+		}
+		*/
 		m_functionReferencesWithinFunction = functionReferencesWithinFunction;
+		
+		Set<FunctionNode> uncalledFunctions = new TreeSet<FunctionNode>(m_functionReferencesWithinFunction.keySet());
+		for(Set<FunctionReferenceNode> frns : m_functionReferencesWithinFunction.values()){
+			for(FunctionReferenceNode frn : frns){
+				if(frn.isKnownFunction()){
+					uncalledFunctions.remove(frn.getFunctionNode());
+				}
+			}
+		}
+		
 		
 		m_instructionWithinFunction = instructionWithinFunction;
 		
@@ -40,6 +62,7 @@ public class StructureGraph {
 		for(FunctionNode fn : m_functionReferencesWithinFunction.keySet()){
 			m_functionsToFunctionReferences.put(fn, new HashSet<GraphEdge>());
 		}
+		
 		for(FunctionNode fn : m_functionReferencesWithinFunction.keySet()){
 			for(FunctionReferenceNode frn : m_functionReferencesWithinFunction.get(fn)){
 				if(frn.isKnownFunction()){
@@ -47,24 +70,18 @@ public class StructureGraph {
 				}
 			}
 		}
+
+		for(FunctionNode uncalledFunction : uncalledFunctions){
+			FunctionReferenceNode frn = new FunctionReferenceNode();
+			frn.setFunction(uncalledFunction.getFunctionName(), uncalledFunction);
+			m_uncalledFunctionReference.put(uncalledFunction, frn);
+		}
+		
+		
 		
 		m_functionToEndNodes = functionToEndNodes;
 		assert(m_functionToEndNodes != null);
 		assert(!m_functionToEndNodes.isEmpty());
-	}
-	
-
-	public void removeLinks() {	
-		//TODO check that this does anything. when the removing of connections is done properly, remove this function
-		
-		for (Node node : getFunctions()) {
-		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-					node.freeMemory();
-					return TraverseStatus.CONTINUE;
-				}
-		    });
-		}	
 	}
 
 	public Collection<FunctionNode> getFunctions() {
@@ -113,6 +130,7 @@ public class StructureGraph {
     	if(m_functionsToFunctionReferences.get(fn).isEmpty()){
     		Stack<FunctionReferenceNode> saveStack = new Stack<FunctionReferenceNode>();
     		saveStack.addAll(currentStack);
+    		saveStack.add(0, m_uncalledFunctionReference.get(fn));
     		completeStacks.add(saveStack);
     	} else {
 	    	for(GraphEdge ge : m_functionsToFunctionReferences.get(fn)){
@@ -139,4 +157,14 @@ public class StructureGraph {
     		return m_frn;
     	}
     }
+
+	public Set<FunctionNode> getFunctionsOfInstruction(InstructionNode inst) {
+		Set<FunctionNode> functions = new TreeSet<FunctionNode>();
+		for(FunctionNode fn : getFunctions()){
+			if(this.getInstructionWithinFunction(fn).contains(inst)){
+				functions.add(fn);
+			}
+		}
+		return functions;
+	}
 }

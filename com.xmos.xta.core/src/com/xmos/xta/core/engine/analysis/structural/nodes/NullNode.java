@@ -59,11 +59,6 @@ public class NullNode extends Node {
 		return true;
 	}
 	
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		return set;
-	}
-	
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(0);
 	}
@@ -73,13 +68,11 @@ public class NullNode extends Node {
 	
 	public void replaceChildren(List<Node> children) {
 	}
+	
 	//below here the methods have been verified useful
-	public Set<Node> dChildren() {
-		return new TreeSet<Node>();
-	}
 
-	public Set<Node> iChildren() {
-		return new TreeSet<Node>();
+	public List<Node> iChildren() {
+		return new LinkedList<Node>();
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -95,5 +88,12 @@ public class NullNode extends Node {
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		assert(false);
 		return null;
+	}
+
+	public void buildListDown(List<InstructionNode> nodeList) {
+		
+	}
+	public void buildListUp(List<InstructionNode> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
 	}
 }

@@ -91,7 +91,7 @@ public class RouteDescription {
 		return m_mode;
 	}
 
-	public Reference getStartPoints() {
+	public Reference getStartPoint() {
 		return m_from;
 	}
 

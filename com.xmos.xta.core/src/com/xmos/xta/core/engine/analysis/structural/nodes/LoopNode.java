@@ -14,7 +14,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class LoopNode extends Node {
 	private LoopNodeAttributes m_attributes;	
@@ -164,25 +163,10 @@ public class LoopNode extends Node {
 		}		
 	}	
 	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
-		}
-		return false;
-	}
-	
 	//below here the methods have been verified useful
-	
-	public Set<Node> dChildren() {
-		Set<Node> directChildren = new TreeSet<Node>();
-		directChildren.add(m_loopHeader);
-		return directChildren;
-	}
 
-	public Set<Node> iChildren() {
-		Set<Node> children = new TreeSet<Node>();
+	public List<Node> iChildren() {
+		List<Node> children = new LinkedList<Node>();
 		children.add(m_loopHeader);
 		for (Node node : m_loops) {
 			children.add(node);					
@@ -220,5 +204,21 @@ public class LoopNode extends Node {
 			addFunctionRefToRefSet(fnRef, node);
 		}
 		return fnRef;
+	}
+
+	public void buildListUp(List<InstructionNode> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		m_parent.buildListUp(nodeList, stack, this);
+		if(m_loops.contains(start)){
+			m_loopHeader.buildListDown(nodeList);
+		}
+		
 	}	
+	
+	public void buildListDown(List<InstructionNode> nodeList) {
+		m_loopHeader.buildListDown(nodeList);
+		for(Node node : m_loops){
+			node.buildListDown(nodeList);
+		}
+	}
 }

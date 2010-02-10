@@ -13,16 +13,14 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public abstract class Node implements Comparable<Node> {
 	public static int s_numNodes;
 	
 	private int m_id;
-	private Node m_parent;
+	protected Node m_parent;
 	private boolean m_dominatorSetIsCompleteSet;
 	private Edges m_edges;
-	private Node m_branchLinkReturn;
 	private boolean m_unresolved;
 	private boolean m_infinite;
 	private boolean m_isFolded;
@@ -78,6 +76,7 @@ public abstract class Node implements Comparable<Node> {
 	public boolean isCondNode()             { return false; }
 	public boolean isInstructionNode()      { return false; }
 	public boolean isFunctionNode()         { return false; }
+	public boolean isFunctionReferenceNode(){ return false; }
 	public boolean isLoopNode()             { return false; }
 	public boolean isBlockNode()            { return false; }
 	public boolean isSelfLoopNode()         { return false; }
@@ -118,13 +117,7 @@ public abstract class Node implements Comparable<Node> {
 		return Integer.signum(m_id - node.m_id);
 	}
 	
-	public void setBranchLinkReturn(Node bl){
-		m_branchLinkReturn = bl;
-	}
 	
-	public Node getBranchLinkReturn() {
-		return m_branchLinkReturn;
-	}
 	
 	public Set<Node> getDominators() {
 		return m_edges.getDominators();
@@ -198,12 +191,7 @@ public abstract class Node implements Comparable<Node> {
 		return m_dominatorSetIsCompleteSet;
 	}
 	
-	public void freeMemory() {
-		m_edges.freeMemory();
-	}
-	
 	public Node getParent(){
-		//TODO the functionNode must not override this
 		return m_parent;
 	}
 	
@@ -319,48 +307,6 @@ public abstract class Node implements Comparable<Node> {
 		}
 	}
 	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!referenceTypes.peek().getResolved()) {
-			return false;
-		}
-		
-		if (referenceTypes.peek().getType() != ReferenceType.Type.CALL) {
-			// Builds up a stack of all the children up to the calling node...
-			Stack<Node> children = new Stack<Node>();
-			for (Node child : iChildren()) {
-				if (child == node)
-					break;
-				
-				children.push(child);
-			}
-			
-			// Now call each of the children.
-			// Note: the use of a stack causes 
-			// them to be called in reverse order.
-			while (!children.empty()) {
-				Node child = children.pop();			
-				if (child.checkBackTrail(referenceTypes, ancestors, this, true))
-					return true;
-			}
-		}
-		
-		// Now if we are on are way up, then call the parent...
-		if (!calledFromAbove) {
-			if (!ancestors.isEmpty()) {
-				Node parent = ancestors.pop();
-		        if (parent.checkBackTrail(referenceTypes, ancestors, this, false))
-		    	    return true;
-
-			} else {
-				// We have reached the top of the tree...
-				return false;
-			}
-		}			
-		return false;
-	}
-	
 	protected void addFunctionRefToRefSet(Set<FunctionReferenceNode> fnRef,
 			Node node) {
 		if(node instanceof FunctionReferenceNode){
@@ -369,8 +315,10 @@ public abstract class Node implements Comparable<Node> {
 		fnRef.addAll(node.getFunctionReferencesNodes());
 	}
 	
-	public abstract Set<Node> dChildren();
-	public abstract Set<Node> iChildren();
+	public abstract List<Node> iChildren();
 	public abstract Set<Node> structurGraphNext(Node childNode);
+	public abstract void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start);
+	public abstract void buildListDown(List<InstructionNode> nodeList);
+	
 }
 

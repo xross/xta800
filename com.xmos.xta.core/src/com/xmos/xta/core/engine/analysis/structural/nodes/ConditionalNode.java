@@ -16,7 +16,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class ConditionalNode extends Node {
 	private ConditionalNodeAttributes m_attributes;
@@ -140,17 +139,6 @@ public class ConditionalNode extends Node {
 		return setOptions;
 	}
 	
-
-
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
-		}
-		return false;
-	}	
-	
 	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {			
 		// Finds the best/worst case of the real options..
 		Iterator<Node> iter = nodes.iterator();
@@ -212,14 +200,9 @@ public class ConditionalNode extends Node {
 	}
 
 	//below here the methods have been verified useful
-
-	public Set<Node> dChildren() {
-		Set<Node> directChildren = new TreeSet<Node>(m_options);
-		return directChildren;
-	}
 	
-	public Set<Node> iChildren() {
-		return dChildren();
+	public List<Node> iChildren() {
+		return new LinkedList<Node>(m_options);
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -242,5 +225,13 @@ public class ConditionalNode extends Node {
 			addFunctionRefToRefSet(fnRef, node);
 		}
 		return fnRef;
+	}
+
+	public void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
+		m_parent.buildListUp(nodeList, stack, this);
+	}
+	
+	public void buildListDown(List<InstructionNode> nodeList) {
+		return;
 	}
 }

@@ -1,112 +1,110 @@
 package com.xmos.xta.core.engine.analysis.structural;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.core.engine.instructions.NullInstruction;
+import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class FnopAnalyser {
-	public static int totalFnops;
+	
 	public FnopAnalyser() {
+	
 	}
 
-	public void analyse(Node startNode) {
-		//simulateBasicBlock((IBufferNode)startNode, null);
+	public void analyse(Collection<Node> workingSet) {
+		for(Node node : workingSet){
+			if(node instanceof BlockNode){
+				BlockNode block = (BlockNode)node;
+				updateBlock(block);
+			}
+		}
 	}
-/*
-	public void addFnopsToBasicBlocks(Node startNode){
+
+	private void updateBlock(BlockNode block){
+		InstructionBuffer ib =null;
+		long startPc = block.getInstructionList().get(0).getStartPc();
 		
-		Set<IBufferNode> nodes = new TreeSet<IBufferNode>();
-		explore((IBufferNode)startNode, nodes);
-		
-		for(IBufferNode node : nodes){
-			node.insertFnops();
-			totalFnops += node.getFnopCount();
+		//TODO -- refactor this to not be such a mess!
+		if(isWordAligned(startPc)){
+			if(block.getPrevNodes().size() == 1){
+				if(returningFromAFunction(block)){
+					ib = new InstructionBuffer(startPc, 0);
+				} else {
+					ib = new InstructionBuffer(startPc, 4);
+				}
+			} else {
+				ib = new InstructionBuffer(startPc, 4);
+			}
+		} else {
+			if(block.getPrevNodes().size() == 1){
+				if(returningFromAFunction(block)){
+					ib = new InstructionBuffer(startPc, 0);
+				} else {
+					ib = new InstructionBuffer(startPc, 2);
+				}
+			} else {
+				ib = new InstructionBuffer(startPc, 2);
+			}
 		}
 		
+		
+		List<InstructionNode> instCopy = new LinkedList<InstructionNode>(block.getInstructionList());
+		for(InstructionNode inst : instCopy){
+			update(ib, block.getInstructionList(), inst);	
+		}
+
 	}
 	
-	private void explore(IBufferNode startNode, Set<IBufferNode> seen) {
-		seen.add(startNode);
-		for (IBufferNode next : startNode.getNextIbufferNodes()){
-			if (!seen.contains(next)){
-				explore(next, seen);
-			}
-		}
-	}
-
-	private void simulateBasicBlock(IBufferNode block, IBufferNode parent) {
-		boolean statesUpdated = false;
-		if (parent == null || parent.isFunctionNode()) {
-			InstructionBuffer ib = new InstructionBuffer(block.getStartPc());
-			
-			////if (isFunction) {
-			//	ib.fetch();
-			//	statesUpdated = true;
-			//}
-			
-			statesUpdated |= iterateOverBasicBlocks(block, ib, parent);
-		} else {
-			for (InstructionBuffer ib : parent.getEndInstructionBuffers()) {
-				statesUpdated |= iterateOverBasicBlocks(block, ib, parent);
-			}
-		}
-		if (statesUpdated) {
-			for (IBufferNode next : block.getNextIbufferNodes()) {
-				simulateBasicBlock(next, block);
-			}
-		}
-
-	}
-
-	private boolean iterateOverBasicBlocks(IBufferNode block, InstructionBuffer pretransitionIB, IBufferNode parent) {
-
-		List<Long> fnopPcs = new LinkedList<Long>();
-		InstructionBuffer endInstBuffer = new InstructionBuffer(pretransitionIB);
-		
-		
-		if (parent == null) {
-			
-		} else {
-			if (parent.branchesTo(block)) {
-				if (parent.isFunctionNode()) {
-					// FIXME - this wont always be a load store but it is for now
-					endInstBuffer.branchTo(block.getStartPc(), true);
-				} else {
-					XtaInstruction prevInst = parent.getInstructions().getLast();
-					endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
-				}
-			} else {
-				if(!parent.getInstructions().isEmpty()){
-					XtaInstruction prevInst = parent.getInstructions().getLast();
-					endInstBuffer.branchTo(block.getStartPc(), prevInst.isLoadStore());
-				}
-			}
-		}
-
-		int numStartBytes = endInstBuffer.getNumBytes();
-		
-		for (XtaInstruction inst : block.getInstructions()) {
-			
-			if (inst.isBranch()) {
-				update(endInstBuffer, fnopPcs, inst);
-				endInstBuffer.branchTo(inst.getBranchPcRelativeTargetPc(), inst.isLoadStore());
-			} else {
-				update(endInstBuffer, fnopPcs, inst);
-				endInstBuffer.setPc(inst.getPc() + inst.getNumBytes());
-			}
-		}
-
-		endInstBuffer = new InstructionBuffer(pretransitionIB.getPc(), 1);
-		return block.addEndInstructionBuffer(numStartBytes, endInstBuffer, fnopPcs);
-	}
-
-	private void update(InstructionBuffer ib, List<Long> fnopPcs, XtaInstruction inst) {
+	private void update(InstructionBuffer ib, List<InstructionNode> blockInstructions, InstructionNode instNode) {
+		XtaInstruction inst = instNode.getXtaInstruction();
 		while (!ib.canIssue(inst.getNumBytes())) {
 			ib.fetch();
-			fnopPcs.add(inst.getPc());
+			int index = blockInstructions.indexOf(instNode);
+			XtaInstruction fnop = new NullInstruction("--FNOP--", 0, inst.getPc(), 0);
+			InstructionNode fnopNode = new InstructionNode(fnop);
+			
+			for(Node prev : instNode.getPrevNodes()){
+				prev.removeNextNode(instNode);
+				CommonMethods.connect(fnopNode, prev);
+				
+			}
+			instNode.getPrevNodes().clear();
+			CommonMethods.connect(instNode, fnopNode);
+			blockInstructions.add(index  , fnopNode);
 		}
 		if (!inst.isLoadStore()) {
 			ib.fetch();
 		}
 		ib.issue(inst.getNumBytes());
+		
+		if(inst.isBranch()){
+			ib.branchTo(inst.getBranchPcRelativeTargetPc(), inst.isLoadStore());
+		} else {
+			ib.setPc(inst.getPc() + inst.getNumBytes());
+		}
 	}
-*/
+	
+	private boolean isWordAligned(long address) {
+        if ((address & 0x3) == 0)
+            return true;
+        else
+            return false;
+    }
+	
+	private boolean returningFromAFunction(Node block){
+		Node prev = block.getPrevNodes().iterator().next();
+		if(prev instanceof FunctionReferenceNode){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 }

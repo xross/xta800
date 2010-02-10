@@ -12,7 +12,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class SequenceNode extends Node {
 	private NodeAttributes m_attributes;
@@ -121,27 +120,11 @@ public class SequenceNode extends Node {
 		m_nodes.clear();
 		m_nodes.addAll(children);
 	}	
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
-		}
-		return false;
-	}
 
 	//below here the methods have been verified useful
 	
-	public Set<Node> dChildren() {
-		Set<Node> directChildren = new TreeSet<Node>();
-		directChildren.add(m_nodes.get(0));
-		return directChildren;
-	}
-	
-	public Set<Node> iChildren() {
-		Set<Node> indirectChildren = new TreeSet<Node>(m_nodes);
-		return indirectChildren;
+	public List<Node> iChildren() {
+		return m_nodes;
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -177,6 +160,22 @@ public class SequenceNode extends Node {
 		}
 		return fnRef;
 	}
+	
+	public void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
+		m_parent.buildListUp(nodeList, stack, this);
+		for(Node node : m_nodes){
+			if(node == start) break;
+			node.buildListDown(nodeList);
+		}
+	}
 
+	public void buildListDown(List<InstructionNode> nodeList) {
+		for(Node node : m_nodes){
+			node.buildListDown(nodeList);
+		}
 		
+	}
+
+	
+	
 }
