@@ -66,7 +66,7 @@ public class Status extends Command {
     	for (MemoryImage memoryImage : engine.getMemoryImages()) {
     		int nodeNumber = memoryImage.getNodeNumber();
     		int coreNumber = memoryImage.getCoreNumber();
-    		int threads = engine.getCoreThreads(nodeNumber, coreNumber);
+    		int threads = engine.getNumThreads(nodeNumber, coreNumber);
     		console.display(String.format("Node: %d, Core: %d, Threads: %d ",
     				nodeNumber, coreNumber, threads));
 

@@ -394,7 +394,7 @@ public class Engine implements Notifier, Aborter {
 		if (nodeNumber != m_nodeNumber) {
 			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeNumber, m_coreNumber)) {
 				m_nodeNumber = nodeNumber;
-				m_config.m_frequency = (double)getNodeHz(m_nodeNumber) / 1000000;
+				m_config.m_frequency = getFrequency(m_nodeNumber);
 				m_selectedRoute = null;
 
 				if (doNotify) {
@@ -415,7 +415,7 @@ public class Engine implements Notifier, Aborter {
 		if (m_coreNumber != coreNumber) {
 			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeNumber, coreNumber)) {
 				m_coreNumber = coreNumber;
-				m_config.m_numThreads = getCoreThreads(m_nodeNumber, coreNumber);
+				m_config.m_numThreads = getNumThreads(m_nodeNumber, coreNumber);
 				m_selectedRoute = null;
 
 				if (doNotify) {
@@ -436,36 +436,73 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
-	public int getCoreThreads(int nodeNumber, int coreNumber) {
-		Integer threads = m_coreThreads.get(nodeNumber, coreNumber);
-		if (threads == null) {
-			return Config.DEFAULT_THREADS;
-		}
-		return threads;
-	}
-
 	public int getCoreNumber() {
 		return m_coreNumber;
 	}
 
 	public void setFrequency(CommandSource src, double frequency) {
+		if (!checkFrequency(src, frequency)) {
+			return;
+		}
+
 		m_config.m_frequency = frequency;
 		m_nodeHz.put(m_nodeNumber, (long)(frequency * 1000000));
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
+	}
+
+	public void setFrequency(CommandSource src, int nodeNumber, double frequency) {
+		if (!checkFrequency(src, frequency)) {
+			return;
+		}
+
+		if (m_nodeNumber == nodeNumber) {
+			setFrequency(src, frequency);
+		} else {
+			m_nodeHz.put(nodeNumber, (long)(frequency * 1000000));
+		}
 	}
 
 	public double getFrequency() {
 		return m_config.m_frequency;
 	}
 
+	public double getFrequency(int nodeNumber) {
+		assert(m_nodeHz.containsKey(nodeNumber));
+		return m_nodeHz.get(nodeNumber) / 1000000;
+	}
+
 	public void setNumThreads(CommandSource src, int numThreads) {
+		if (!checkNumThreads(src, numThreads)) {
+			return;
+		}
+
 		m_config.m_numThreads = numThreads;
 		m_coreThreads.add(m_nodeNumber, m_coreNumber, numThreads);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
 	}
 
+	public void setNumThreads(CommandSource src, int nodeNumber, int coreNumber, int numThreads) {
+		if (!checkNumThreads(src, numThreads)) {
+			return;
+		}
+
+		if ((m_nodeNumber == nodeNumber) && (m_coreNumber == coreNumber)) {
+			setNumThreads(src, numThreads);
+		} else {
+			m_coreThreads.add(nodeNumber, coreNumber, numThreads);
+		}
+	}
+
 	public int getNumThreads() {
 		return m_config.m_numThreads;
+	}
+
+	public int getNumThreads(int nodeNumber, int coreNumber) {
+		Integer threads = m_coreThreads.get(nodeNumber, coreNumber);
+		if (threads == null) {
+			return Config.DEFAULT_THREADS;
+		}
+		return threads;
 	}
 
 	public void setCase(CommandSource src, Case c) {
@@ -1658,6 +1695,22 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		return Config.DEFAULT_THREADS;
+	}
+
+	private boolean checkNumThreads(CommandSource src, int numThreads) {
+		if ((numThreads <= 0) || (numThreads > Config.MAX_THREADS)) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Num threads '%d' invalid", numThreads));
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkFrequency(CommandSource src, double frequency) {
+		if (frequency <= 0) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Frequency '%.1f' invalid", frequency));
+			return false;
+		}
+		return true;
 	}
 }
 
