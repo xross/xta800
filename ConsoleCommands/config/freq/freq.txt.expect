@@ -16,3 +16,26 @@ Current core: 0
 Frequency: Node 0, 100.0 Mhz
 Node: 0, Core: 0, Threads: 1 (No debug information found)
 No routes analysed
+xta: error: Frequency '-1.0' invalid
+TimingFailAsError: true
+WarnAsError: false
+SrcPaths: .
+Case: WORST
+Verbosity: 0
+Loaded executable: test.xe
+Current node: 0
+Current core: 0
+Frequency: Node 0, 100.0 Mhz
+Node: 0, Core: 0, Threads: 1 (No debug information found)
+No routes analysed
+TimingFailAsError: true
+WarnAsError: false
+SrcPaths: .
+Case: WORST
+Verbosity: 0
+Loaded executable: test.xe
+Current node: 0
+Current core: 0
+Frequency: Node 0, 1000.0 Mhz
+Node: 0, Core: 0, Threads: 1 (No debug information found)
+No routes analysed
