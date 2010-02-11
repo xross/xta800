@@ -40,7 +40,7 @@ public class Warnings extends Command {
 		RouteTiming routeTiming = route.getRouteTiming();
 		CommandSource src = routeTiming.getCommandSource();
 
-		if (!routeTiming.isTimingSpecified() || !routeTiming.passedTiming() ||
+		if (!routeTiming.isTimingSpecified() || !routeTiming.passed() ||
 			(route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0)) {
 			
 			// Need to take the '\n' off the end of the string

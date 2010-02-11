@@ -82,6 +82,8 @@ abstract class InfoViewer implements Viewer {
 						colIndex = 1;
 					} else if (col.getText().equals(InfoViewerLabelProvider.BACKTRACE)) {
 						colIndex = 2;
+					} else if (col.getText().equals(InfoViewerLabelProvider.LEVEL)) {
+						colIndex = 3;
 					} else {
 						assert(false);
 					}

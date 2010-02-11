@@ -25,7 +25,7 @@ public class RouteSelectorLabelProvider extends CellLabelProvider {
 		RouteTiming routeTiming = route.getRouteTiming();
 		String iconName = "";
 		if (routeTiming.isTimingSpecified()) {
-			if (routeTiming.passedTiming()) {
+			if (routeTiming.passed()) {
 				iconName = "required_pass";
 			} else {
 				iconName = "required_fail";

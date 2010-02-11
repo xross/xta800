@@ -45,7 +45,7 @@ public class Exit extends Command {
 				RouteTiming routeTiming = route.getRouteTiming();
 					
 				if (routeTiming.isTimingSpecified()) {			
-					if (!routeTiming.passedTiming()) {
+					if (!routeTiming.passed()) {
 						errors = 1;
 				    	break;
 					}
