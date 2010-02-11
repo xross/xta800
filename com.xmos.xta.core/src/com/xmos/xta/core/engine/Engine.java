@@ -1330,7 +1330,6 @@ public class Engine implements Notifier, Aborter {
 			SuccessorAdder sa = new SuccessorAdder(nodeNumber, coreNumber, id, sections, threadStopNodes, xeLoader, this);
 			if (!sa.process(src))
 				return false;
-			warnAboutUnsetBranches(xeLoader, sections, src, id, nodeNumber, coreNumber);
 			
 			FunctionHandler fh = new FunctionHandler(id);
 			if (!fh.addFunctions()) 
@@ -1502,23 +1501,6 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 	
-	private void warnAboutUnsetBranches(XeLoader xeLoader, Sections sections, CommandSource src, InstructionDecoder id,
-			int nodeNumber, int coreNumber) {
-		SymbolTable symbolTable = xeLoader.getSymbolTable(nodeNumber, coreNumber);
-		Collection<String> systemFunctions = sections.getSystems(nodeNumber, coreNumber);
-
-		for (InstructionNode inst : id.getInstructions()) {
-			if (inst.getXtaInstruction().isBranch() && (inst.getNextNodesSize() == 0) 
-					&& !inst.getXtaInstruction().getReturn() && !inst.getXtaInstruction().getBranchPcRelative()) {
-				
-				String functionName = symbolTable.functionName(inst.getXtaInstruction().getPc());
-				if (!isSystemFunction(systemFunctions, functionName)) {
-					notify(src, Notifier.NOTIFY_WARNING, "No branch targets set on instruction " + inst.getXtaInstruction());
-				}
-			}
-		}
-	}
-
 	private boolean isSystemFunction(Collection<String> systems, String functionName) {
 		if (functionName.length() == 0) {
 			return false;
