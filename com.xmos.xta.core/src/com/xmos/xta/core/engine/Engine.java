@@ -467,8 +467,11 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public double getFrequency(int nodeNumber) {
-		assert(m_nodeHz.containsKey(nodeNumber));
-		return m_nodeHz.get(nodeNumber) / 1000000;
+		if (m_nodeHz.containsKey(nodeNumber)) {
+			return (double)m_nodeHz.get(nodeNumber) / 1000000;
+		} else {
+			return Config.DEFAULT_MHZ;
+		}
 	}
 
 	public void setNumThreads(CommandSource src, int numThreads) {

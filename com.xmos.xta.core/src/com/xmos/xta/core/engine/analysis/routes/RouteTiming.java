@@ -68,7 +68,7 @@ public class RouteTiming {
 		Status status = new Status();
 		double worstTime = getWorstTime(status);
 		if (status.isComplete()) {
-			if (worstTime <= m_maxTime.getNs())
+			if ((worstTime <= m_maxTime.getNs()) && (worstTime != Double.POSITIVE_INFINITY))
 			    return true;
 		}
 		return false;
