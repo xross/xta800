@@ -71,8 +71,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         	}
         }
         
-        GuiEngine.setCoolBarManager(configurer.getCoolBarManager());
-
         configurer.getCoolBarManager().update(true);
         configurer.getMenuManager().update(true);
 	}

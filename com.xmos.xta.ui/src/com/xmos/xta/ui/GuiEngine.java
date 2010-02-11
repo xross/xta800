@@ -13,8 +13,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.Workbench;
+import org.eclipse.ui.internal.WorkbenchWindow;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
@@ -29,6 +32,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 import com.xmos.xta.ui.input.InputDisassembly;
 import com.xmos.xta.ui.views.console.ConsoleView;
 
+@SuppressWarnings("restriction")
 public class GuiEngine {
 	private static ICoolBarManager m_coolBarManager;
 	
@@ -365,11 +369,19 @@ public class GuiEngine {
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
 	}
 
-	public static void setCoolBarManager(ICoolBarManager coolBarManager) {
-		m_coolBarManager = coolBarManager;
-	}
-
 	public static void refreshCoolBar() {
-		m_coolBarManager.update(true);
+		if (m_coolBarManager == null) {
+			IWorkbenchWindow window = Workbench.getInstance().getActiveWorkbenchWindow();
+
+			if (window instanceof WorkbenchWindow) {
+			    if (((WorkbenchWindow)window).getCoolBarVisible()) {
+			        m_coolBarManager = ((WorkbenchWindow)window).getCoolBarManager2();
+			    }
+			}
+		}
+		
+		if (m_coolBarManager != null) {
+			m_coolBarManager.update(true);
+		}
 	}
 }
