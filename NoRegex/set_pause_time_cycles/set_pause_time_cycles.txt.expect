@@ -4,7 +4,7 @@ none
   20.0: (20.0ns) 0x1000a main + 2               retsp (u6)   i 0x0
 
 none
-Time for instruction (0x10008: in (2r)) set to 2.0 us, pc: 0x10008, backtrace: main:
+WARNING: Time for instruction (0x10008: in (2r)) set to 2.0 us, pc: 0x10008, backtrace: main:
   0.0: (2000.0ns) 0x10008 main + 0               in (2r)      r0, res[r0] (P)
   2000.0: (20.0ns) 0x1000a main + 2               retsp (u6)   i 0x0
 
