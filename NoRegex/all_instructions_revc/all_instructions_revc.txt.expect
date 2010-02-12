@@ -1,5 +1,3 @@
-xta: warning: target (0x0) of: (main+24) 0x1001e blacp (u10) cp[i 0x3ff] not found in executable sections
-xta: warning: CP address 0x410238 out of bounds
 xta: warning: target (0x1082a) of: (main+36) 0x1002a blrf (u10) i 0x3ff not found in executable sections
 xta: warning: target (0x21002e) of: (main+38) 0x1002c blrf (lu10) i 0xfffff not found in executable sections
 xta: warning: target (0xf834) of: (main+42) 0x10030 blrb (u10) i 0x3ff not found in executable sections
@@ -29,6 +27,7 @@ xta: warning: No branch targets set on instruction (main+240) 0x100f6 kret (0r)
 xta: warning: No branch targets set on instruction (main+546) 0x10228 waitef (1r) r0
 xta: warning: No branch targets set on instruction (main+548) 0x1022a waitet (1r) r0
 xta: warning: No branch targets set on instruction (main+550) 0x1022c waiteu (0r) 
+xta: warning: CP address 0x410238 out of bounds
   0.0: (20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
   20.0: (20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, i 0x1
   40.0: (20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0
