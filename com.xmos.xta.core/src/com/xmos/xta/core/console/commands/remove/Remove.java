@@ -15,6 +15,7 @@ public class Remove extends CommandContainer {
 	static private Command[] m_options = { 
 		new Branch(),
 		new Exclusion(),
+		new From(),
 		new FunctionTime(),
 		new InstructionTime(),
 		new Loop(),
@@ -22,6 +23,7 @@ public class Remove extends CommandContainer {
 		new LoopScope(),
 		new PathTime(),
 		new Route(),
+		new To(),
 	};
 	
 	public Remove() { super("remove"); }

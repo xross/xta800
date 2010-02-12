@@ -7,6 +7,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.actions.ActionDelegate;
 
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.ui.GuiEngine;
@@ -48,16 +49,17 @@ public class ActionRun extends ActionDelegate implements IPropertyChangeListener
 	
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(Notifier.NOTIFY_LOAD_EXECUTABLE) ||
-			event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
-			event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
+			event.getProperty().equals(Notifier.NOTIFY_FROM_END_POINT_SET) ||
+			event.getProperty().equals(Notifier.NOTIFY_TO_END_POINT_SET) ||
 			event.getProperty().equals(Notifier.NOTIFY_SET_NODE_CORE)) {			
 			updateState();
 		}
 	}
 
 	private void updateState() {
-		m_startPoint = GuiEngine.getStartPoint();					
-		m_endPoint = GuiEngine.getEndPoint();					
+		Engine engine = GuiEngine.getEngine();
+		m_startPoint = engine.getFromEndPoint();
+		m_endPoint = engine.getToEndPoint();
 
 		if (m_startPoint == null && m_endPoint == null) { 
 			m_action.setToolTipText(DEFAULT_TOOL_TIP);

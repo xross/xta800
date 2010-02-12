@@ -22,7 +22,6 @@ import org.eclipse.ui.actions.ActionDelegate;
 
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.GuiNotifier;
 import com.xmos.xta.ui.dialogs.FilteredFunctions;
 
 public class ActionFunction extends ActionDelegate implements IPropertyChangeListener, 
@@ -31,7 +30,6 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 	
 	private List<String> m_functions;
 	private SelectionListener m_listListener;
-	private String m_functionName;
 	private IAction m_action;
 	private int m_instanceId;
 
@@ -78,13 +76,7 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 	        
 		} else if (event.getProperty().equals(Notifier.NOTIFY_UPDATE_STATE)) {
 	        updateState();
-	        
-		} else if (event.getProperty().equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			if (GuiEngine.getRunMode() == GuiNotifier.RUN_MODE_FUNCTION) {
-				m_action.setToolTipText("Currently analysed: " + m_functionName);
-			}
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_FUNCTION_NAME)) {
-			m_functionName = GuiEngine.getFunctionName();
+
 		}
 	}
 

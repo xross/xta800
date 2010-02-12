@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,6 +106,8 @@ public class Engine implements Notifier, Aborter {
 	private Collection<FileLocation> m_userSpecifedFileLocations;	
 	private DataCollection m_dataCollection;
 	private Scripter m_scripter;
+	private Reference m_fromEndPoint;
+	private Reference m_toEndPoint;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -312,6 +315,8 @@ public class Engine implements Notifier, Aborter {
 		m_selectedRoute = null;
 		m_defines.clear();
 		Route.resetRouteCount();
+		m_fromEndPoint = null;
+		m_toEndPoint = null;
 		
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
 		
@@ -366,7 +371,63 @@ public class Engine implements Notifier, Aborter {
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
-	
+
+	public void analysePath(CommandSource src) {
+		if ((m_fromEndPoint == null) || m_fromEndPoint.getRef().equals("")) {
+			notify(src, Notifier.NOTIFY_ERROR, "please specify the from endpoint");
+
+		} else if ((m_toEndPoint == null) || m_toEndPoint.getRef().equals("")) {
+			notify(src, Notifier.NOTIFY_ERROR, "please specify the to endpoint");
+
+		} else {
+			analyseRoute(src, m_fromEndPoint.getRef(), m_toEndPoint.getRef(), false);
+		}
+	}
+
+	public void setFromEndPoint(CommandSource src, String ref) {
+		Reference fromEndPoint = ReferenceFactory.createReference(ref, ReferenceClass.ENDPOINT_REF);			
+		if (!fromEndPoint.resolve(this)) {
+			notify(src, Notifier.NOTIFY_ERROR,
+					String.format("'%s' is not a valid endpoint", ref));
+		} else {
+			m_fromEndPoint = fromEndPoint;
+			notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
+		}
+	}
+
+	public void removeFromEndPoint(CommandSource src) {
+		if (m_fromEndPoint != null) {
+			m_fromEndPoint = null;
+			notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
+		}
+	}
+
+	public void setToEndPoint(CommandSource src, String ref) {
+		Reference toEndPoint = ReferenceFactory.createReference(ref, ReferenceClass.ENDPOINT_REF);			
+		if (!toEndPoint.resolve(this)) {
+			notify(src, Notifier.NOTIFY_ERROR,
+					String.format("'%s' is not a valid endpoint", ref));
+		} else {
+			m_toEndPoint = toEndPoint;
+			notify(src, Notifier.NOTIFY_TO_END_POINT_SET, "");
+		}
+	}
+
+	public void removeToEndPoint(CommandSource src) {
+		if (m_toEndPoint != null) {
+			m_toEndPoint = null;
+			notify(src, Notifier.NOTIFY_TO_END_POINT_SET, "");
+		}
+	}
+
+	public Reference getFromEndPoint() {
+		return m_fromEndPoint;
+	}
+
+	public Reference getToEndPoint() {
+		return m_toEndPoint;
+	}
+
 	public Notifier getNotifier() {
 		return m_notifier;
 	}

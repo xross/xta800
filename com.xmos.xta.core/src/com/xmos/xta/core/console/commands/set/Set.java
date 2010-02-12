@@ -4,14 +4,16 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Set extends CommandContainer {
-	static private Command[] m_options = { 
-		new FunctionTime(), 
-		new InstructionTime(), 
+	static private Command[] m_options = {
+		new From(),
+		new FunctionTime(),
+		new InstructionTime(),
 		new Loop(),
 		new LoopPath(),
-		new LoopScope(), 
-		new PathTime(), 
-		new Required(), 
+		new LoopScope(),
+		new PathTime(),
+		new Required(),
+		new To(),
 	};
 	
 	public Set() { super("set"); }

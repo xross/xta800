@@ -20,7 +20,11 @@ public class Path extends Command {
 	}
 	
     public int numArgs() {
-    	return 2;
+    	if (hasEndPoints()) {
+    		return 2;
+    	} else {
+    		return 0;
+    	}
     }        
 
 	public ArgType[] getArgTypes() {
@@ -32,7 +36,11 @@ public class Path extends Command {
     }        
 
     public String commandLine() {
-    	return "path " + m_fromRef + " " + m_toRef;
+    	if (hasEndPoints()) {
+        	return "path " + m_fromRef + " " + m_toRef;
+    	} else {
+    		return "path";
+    	}
     }
     
     public String description(Engine engine, boolean detailed) {
@@ -40,18 +48,35 @@ public class Path extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) 
-			return null;		
+		if (areArgsDone(args, index + 1)) {
+			return new Path();
+			
+		} else {
+			if ((index + 2) >= args.length) 
+				return null;		
 
-    	String fromRef = args[index + 1];
-        String toRef = args[index + 2];
-        return new Path(fromRef, toRef);
+			String fromRef = args[index + 1];
+			String toRef = args[index + 2];
+			return new Path(fromRef, toRef);
+		}
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;			    	
 
-        engine.analyseRoute(getSrc(), m_fromRef, m_toRef, false);
+		if (hasEndPoints()) {
+			engine.analyseRoute(getSrc(), m_fromRef, m_toRef, false);
+		} else {
+			engine.analysePath(getSrc());
+		}
     }    
- }
+
+	private boolean hasEndPoints() {
+    	if ((m_fromRef.length() > 0) || (m_toRef.length() > 0)) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+	}
+}

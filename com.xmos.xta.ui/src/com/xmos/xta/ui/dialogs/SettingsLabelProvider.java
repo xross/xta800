@@ -21,7 +21,7 @@ public class SettingsLabelProvider extends LabelProvider implements ITableLabelP
 		m_columnNames = new LinkedList<String>();
 		m_columnAlignment = new LinkedList<Integer>();
 		
-		m_columnNames.add("Core");
+		m_columnNames.add(" ");
 		m_columnAlignment.add(SWT.LEFT);
 		Vector<Integer> nodeNumbers = engine.getXeLoader().getNodeNumbers();
 		for (int nodeNumber : nodeNumbers) {
@@ -51,7 +51,6 @@ public class SettingsLabelProvider extends LabelProvider implements ITableLabelP
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -10,6 +10,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
+import com.xmos.xta.core.engine.references.Reference;
 
 public class Status extends Command {
 	public Status() {
@@ -93,6 +94,16 @@ public class Status extends Command {
 	    	} else {
 	    		console.display(String.format("No routes analysed\n"));    			    		
 	    	}
+    	}
+    	
+    	Reference fromEndPoint = engine.getFromEndPoint();
+    	if ((fromEndPoint != null) && (fromEndPoint.getResolved())) {
+    		console.display(String.format("From endpoint '%s'\n", fromEndPoint.getRef())); 
+    	}
+
+    	Reference toEndPoint = engine.getToEndPoint();
+    	if ((toEndPoint != null) && (toEndPoint.getResolved())) {
+    		console.display(String.format("To endpoint '%s'\n", toEndPoint.getRef())); 
     	}
     }    
 }

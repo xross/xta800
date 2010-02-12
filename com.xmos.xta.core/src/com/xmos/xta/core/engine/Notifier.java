@@ -11,9 +11,8 @@ public interface Notifier {
 	public static final String NOTIFY_ANALYSIS_COMPLETE = "AnalysisComplete";
 	public static final String NOTIFY_ANALYSIS_ABORTED  = "AnalysisAborted";
 
-	public static final String NOTIFY_SET_FUNCTION_NAME = "SetFunctionName";
-	public static final String NOTIFY_SET_START_POINT   = "SetStartPoint";
-	public static final String NOTIFY_SET_END_POINT     = "SetEndPoint";
+	public static final String NOTIFY_FROM_END_POINT_SET = "FromEndPointSet";
+	public static final String NOTIFY_TO_END_POINT_SET   = "ToEndPointSet";
 
 	public static final String NOTIFY_SET_NODE_CORE = "SetNodeCore";
 	public static final String NOTIFY_SELECT_ROUTE  = "SelectRoute";
