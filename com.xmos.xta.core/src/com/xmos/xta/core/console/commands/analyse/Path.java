@@ -63,13 +63,20 @@ public class Path extends Command {
     
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
 		if (hasEndPoints()) {
-			engine.analyseRoute(getSrc(), m_fromRef, m_toRef, false);
-		} else {
-			engine.analysePath(getSrc());
+			boolean ok = engine.setFromEndPoint(getSrc(), m_fromRef);
+			if (!ok) {
+				return;
+			}
+
+			ok = engine.setToEndPoint(getSrc(), m_toRef);
+			if (!ok) {
+				return;
+			}
 		}
+		engine.analysePath(getSrc());
     }    
 
 	private boolean hasEndPoints() {
