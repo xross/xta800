@@ -96,6 +96,7 @@
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF|*> <to LABEL_REF|*> <to LABEL_REF|*>: Removes the given from/to references from the branches list
       option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
+      option: from: Removes the from endpoint
       option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
       option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines
       option: loop <ANY_REF|*>: Removes the given loop count define to the list of defines
@@ -103,7 +104,9 @@
       option: loopscope <ANY_REF|*>: Removes the given loop scope define to the list of defines
       option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines
       option: route <route id>: Removes the route with the given id from the current analysis
+      option: to: Removes the to endpoint
   [-]set <option> <arg0> <arg1>...: Set path information
+      option: from <ENDPOINT_REF>: Sets the from endpoint
       option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
@@ -125,6 +128,7 @@
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
+      option: to <ENDPOINT_REF>: Sets the to endpoint
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   Any of the following are permitted:

@@ -1,0 +1,18 @@
+echo "point 1"
+status
+set from start
+set to stop
+echo "point 2"
+status
+analyse path
+echo "point 3"
+status
+set from test.xc:16
+set to test.xc:19
+analyse path
+echo "point 4"
+status
+remove from
+remove to
+echo "point 5"
+status
