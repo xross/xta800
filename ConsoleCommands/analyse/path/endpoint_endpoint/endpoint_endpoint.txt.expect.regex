@@ -1,9 +1,9 @@
 Label: output0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 7
 Label: input0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10
-xta: error: unresolved reference: output1
+xta: error: 'output1' is not a valid endpoint
 Label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 19
 Label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 22
-xta: error: unresolved reference: output0
+xta: error: 'output0' is not a valid endpoint
 Route\(0\) path: output0 to input0
     No Timing Specified
 

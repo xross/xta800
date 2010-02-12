@@ -1,4 +1,4 @@
-xta: error: unresolved reference: test.xc:3
+xta: error: 'test.xc:3' is not a valid endpoint
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
