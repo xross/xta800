@@ -12,7 +12,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveListener2;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FilteredTree;
@@ -26,7 +29,7 @@ import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.editors.XtaEditor;
 import com.xmos.xta.ui.editors.source.XtaSourceEditor;
 
-public class FilesView extends ViewPart implements IPropertyChangeListener {
+public class FilesView extends ViewPart implements IPropertyChangeListener, IPerspectiveListener2 {
     public static final boolean DEBUG = false;
     public static final String ID = "com.xmos.xta.ui.extn.views.files.Files";
     
@@ -39,13 +42,16 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 	
 	public void dispose() {
 		GuiEngine.removeBroadcastListener(this);
+		getSite().getWorkbenchWindow().removePerspectiveListener(this);
 		super.dispose();
 	}
 
 	public void createPartControl(final Composite parent) {
 	    if (DEBUG) System.out.printf("FilesView: createPartControl\n");
-		
-	    m_filesViewer = new FilteredTree(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter());
+
+		getSite().getWorkbenchWindow().addPerspectiveListener(this);
+
+	    m_filesViewer = new FilteredTree(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, new PatternFilter(), true);
 	    final TreeViewer viewer = m_filesViewer.getViewer();
 		viewer.getTree().setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
@@ -100,6 +106,22 @@ public class FilesView extends ViewPart implements IPropertyChangeListener {
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void perspectiveChanged(IWorkbenchPage page,
+			IPerspectiveDescriptor perspective,
+			IWorkbenchPartReference partRef, String changeId) {
+		// Do nothing
+	}
+
+	public void perspectiveActivated(IWorkbenchPage page,
+			IPerspectiveDescriptor perspective) {
+		// Do nothing
+	}
+
+	public void perspectiveChanged(IWorkbenchPage page,
+			IPerspectiveDescriptor perspective, String changeId) {
+		m_filesViewer.getViewer().refresh();
 	}
 
 }

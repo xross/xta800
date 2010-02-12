@@ -32,10 +32,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.TimeDistributionBuckets;
 import com.xmos.xta.ui.Broadcaster;
 import com.xmos.xta.ui.GuiEngine;
+import com.xmos.xta.ui.views.ControlMonitor;
 import com.xmos.xta.ui.views.Views;
-import com.xmos.xta.ui.views.visualisations.ControlMonitor;
+import com.xmos.xta.ui.views.visualisations.VisualisationsView;
 
-public class TimeDistributionView implements IPropertyChangeListener, IMenuListener, ControlMonitor {
+public class TimeDistributionView extends ControlMonitor implements IPropertyChangeListener, IMenuListener {
     public static final String ID = "com.xmos.xta.ui.views.timedistribution.TimeDistribution";
     public static final boolean DEBUG = false;
 
@@ -53,6 +54,8 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 	private String m_name;
 
 	public TimeDistributionView(Composite parent) {
+		super(VisualisationsView.getEnabledCommands(), false);
+
 		m_name = "TimeDistributionView";
 		if (DEBUG) System.out.println(m_name + "()");			
 		GuiEngine.addBroadcastListener(this);
@@ -73,12 +76,6 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
 				m_canvas.redraw();
 			}
 	    });	    
-
-	    composite.addPaintListener(new PaintListener() {
-	        public void paintControl(PaintEvent e) {
-	        	m_canvas.redraw();
-		    }
-	    });
 
 	    m_canvas.addPaintListener(new PaintListener() {
 	        public void paintControl(PaintEvent e) {
@@ -273,39 +270,4 @@ public class TimeDistributionView implements IPropertyChangeListener, IMenuListe
     	DecimalFormat twoDForm = new DecimalFormat("#.#");
 	    return Double.valueOf(twoDForm.format(d));
     }
-	
-	public void setExportJpgEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_EXPORT_JPG_ENABLED, "");
-	}
-
-	public void setZoomFitEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_FIT_DISABLED, "");
-	}
-
-	public void setZoomInEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_IN_DISABLED, "");
-	}
-
-	public void setZoomOutEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_OUT_DISABLED, "");
-	}
-
-	public void setZoomResetEnabled() {
-		GuiEngine.broadcast(Broadcaster.BROADCAST_ZOOM_RESET_DISABLED, "");
-	}
-	
-	public void exportJpg() {
-	}
-	
-	public void zoomFit() {		
-	}
-	
-	public void zoomOut() {		
-	}
-	
-	public void zoomIn() {
-	}
-	
-	public void zoomReset() {		
-	}	
 }

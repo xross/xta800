@@ -228,7 +228,9 @@ public class ConditionalNode extends Node {
 	}
 
 	public void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
-		m_parent.buildListUp(nodeList, stack, this);
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, stack, this);
+		}
 	}
 	
 	public void buildListDown(List<InstructionNode> nodeList) {

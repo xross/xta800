@@ -18,6 +18,9 @@ import com.xmos.xta.ui.actions.ActionLoad;
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IWorkbenchAction m_aboutAction;
     private IWorkbenchAction m_exitAction;
+    private IWorkbenchAction m_saveAction;
+    private IWorkbenchAction m_saveAsAction;
+
     private IAction m_openAction;
 	private MenuManager m_showViewMenuMgr;
 	private IContributionItem m_showViewItem;
@@ -42,7 +45,13 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
   	    		actionLoad.run(this);
   	    	}
   	    }; 
-  	    
+
+    	m_saveAction = ActionFactory.SAVE.create(window);
+    	register(m_saveAction);
+
+    	m_saveAsAction = ActionFactory.SAVE_AS.create(window);
+    	register(m_saveAsAction);
+
     	m_showViewMenuMgr = new MenuManager("Show View", "showView");
     	m_showViewItem = ContributionItemFactory.VIEWS_SHORTLIST.create(window);  	    
     }
@@ -57,7 +66,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
    	    menuBar.add(helpMenu);
 
    	    fileMenu.add(m_openAction);
+   	    fileMenu.add(m_saveAction);
+   	    fileMenu.add(m_saveAsAction);
    	    fileMenu.add(m_exitAction);
+   	    
    	    helpMenu.add(m_aboutAction);
    	    
     	m_showViewMenuMgr.add(m_showViewItem);

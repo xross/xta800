@@ -13,8 +13,8 @@ public class ThreadDelimiters extends Section {
 	private String m_sectionName;
 	private Collection<Long> m_pcs;
 
-	ThreadDelimiters(int nodeId, int coreId, String sectionName, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	ThreadDelimiters(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
 		m_pcs = new TreeSet<Long>(); 
 	}
@@ -45,7 +45,7 @@ public class ThreadDelimiters extends Section {
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
+		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeNumber(), getCoreNumber());
 				
 		if ((data.length % 4) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(

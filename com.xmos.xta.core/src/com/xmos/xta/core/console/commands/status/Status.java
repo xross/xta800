@@ -36,15 +36,7 @@ public class Status extends Command {
     }
     
     public void execute(Shell shell, Engine engine, Console console) {
-    	int nodeId = engine.getNodeId();
-    	int coreId = engine.getCoreId();
-    	File executable = engine.getExecutable();
-    	    	
-    	console.display(String.format("Current node: %d\n", nodeId));    	
-    	console.display(String.format("Current core: %d\n", coreId));
 
-    	console.display(String.format("Frequency: %d\n", (int)engine.getConfig().m_frequency));    	
-    	console.display(String.format("NumThreads: %d\n", engine.getConfig().m_numThreads));
     	console.display(String.format("TimingFailAsError: %s\n",
     			engine.getConfig().m_timingFailuresAsErrors ? "true" : "false"));
     	console.display(String.format("WarnAsError: %s\n",
@@ -54,17 +46,31 @@ public class Status extends Command {
     	console.display(String.format("Case: %s\n", engine.getCase().toString()));
     	console.display(String.format("Verbosity: %d\n", engine.getVerbosity()));
     	
-    	if (executable != null)
+    	File executable = engine.getExecutable();
+    	if (executable != null) {
     		console.display(String.format("Loaded executable: %s\n", executable.getName()));
-    	else
+    	} else {
     		console.display(String.format("No executable loaded\n"));
-    	
-    	for (MemoryImage memoryImage : engine.getMemoryImages()) {
-    		int node = memoryImage.getNodeId();
-    		int core = memoryImage.getCoreId();    		
-    		console.display(String.format("Node: %d, Core: %d ", node, core));
+    		return;
+    	}
 
-    		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(node, core);    		    		
+    	console.display(String.format("Current node: %d\n", engine.getNodeNumber()));    	
+    	console.display(String.format("Current core: %d\n", engine.getCoreNumber()));
+
+    	console.display(String.format("Frequency:"));
+    	for (int nodeNumber : engine.getXeLoader().getNodeNumbers()) {
+    		double mhz = (double)engine.getNodeHz(nodeNumber) / 1000000;
+    		console.display(String.format(" Node %d, %.1f Mhz\n", nodeNumber, mhz));
+    	}
+
+    	for (MemoryImage memoryImage : engine.getMemoryImages()) {
+    		int nodeNumber = memoryImage.getNodeNumber();
+    		int coreNumber = memoryImage.getCoreNumber();
+    		int threads = engine.getCoreThreads(nodeNumber, coreNumber);
+    		console.display(String.format("Node: %d, Core: %d, Threads: %d ",
+    				nodeNumber, coreNumber, threads));
+
+    		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeNumber, coreNumber);    		    		
     		if (debugInfo.getDebugEngine().hasDebugInfo())
     			console.display(String.format("(Debug information avaliable)\n"));    		
         	else
@@ -72,9 +78,9 @@ public class Status extends Command {
     	}
     	    	
     	if (engine.isBusy()) {    		
-    		console.display("Currently busy...\n"); 
-    	}
-    	else {
+    		console.display("Currently busy...\n");
+    		
+    	} else {
     		List<Route> routes = engine.getRoutes();	    	
 	    	if (engine.getRoutes().size() > 0) {
 	    		for (Route route : routes) {
@@ -83,6 +89,7 @@ public class Status extends Command {
 		    				route.getRouteDescription().getDescription(),
 		    				route.getEndpointsPcsString()));	    			
 	    		}
+	    		
 	    	} else {
 	    		console.display(String.format("No routes analysed\n"));    			    		
 	    	}

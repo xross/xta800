@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.xta.core.engine.AbortedException;
@@ -46,16 +47,16 @@ public class RouteUnknowns {
 	public void setLoopIterations(CommandSource src, Engine engine,
 			Reference reference, long iterations, boolean sourceLevelIterations, Source source) throws AbortedException {
 		
-		//for (Node node : m_route.getReferencedNodes(reference)) {
-		//	setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference, source);
-		//}
+		for (Node node : m_route.getReferencedNodes(reference)) {
+			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference, source);
+		}
 	}
 
 	public void checkSetLoopIterations(Reference reference, long iterations) throws Exception {
 		if (iterations < 0)
-			throw new Exception("Cannot set a negative iteration count");		
-		/*
-		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
+			throw new Exception("Cannot set a negative iteration count");	
+		
+		Set<Node> referencedNodes = m_route.getReferencedNodes(reference);
 		if (referencedNodes.size() > 0) {
 			for (Node node : referencedNodes) {
 				checkSetLoopIterations(node); 
@@ -64,7 +65,7 @@ public class RouteUnknowns {
 		} else {
 			throw new Exception("Reference not found on given route");
 		}
-		*/
+
 	}
 
 	public void setLoopIterations(CommandSource src, Engine engine, Node node, long iterations, Source source) throws Exception {
@@ -113,15 +114,15 @@ public class RouteUnknowns {
 	// Setting Loop Path Iterations
 	// ===================================================================== //
 	public void setLoopPathIterations(Reference reference, long iterations, Source source) throws AbortedException {
-		//for (Node node : m_route.getReferencedNodes(reference)) {
-		//	setLoopPathIterationsNoCheck(node, iterations, reference, source);
-		//}		
+		for (Node node : m_route.getReferencedNodes(reference)) {
+			setLoopPathIterationsNoCheck(node, iterations, reference, source);
+		}		
 	}
 	
 	public void checkSetLoopPathIterations(Reference reference, long iterations) throws Exception {
 		if (iterations < 0)
 			throw new Exception("Cannot set a negative iteration count");		
-		/*
+
 		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
 		if (referencedNodes.size() > 0) {
 			for (Node node : referencedNodes) {
@@ -131,7 +132,7 @@ public class RouteUnknowns {
 		} else {
 			throw new Exception("Reference not found on given route");
 		}
-		*/
+
 	}
 	
 	public void setLoopPathIterations(Node node, long iterations, Source source) throws Exception {
@@ -183,13 +184,15 @@ public class RouteUnknowns {
 	// Setting Loop Scope
 	// ===================================================================== //
 	public void setLoopScope(Reference reference, boolean isAbsolute, Source source) throws AbortedException {
-		//for (Node node : m_route.getReferencedNodes(reference)) {
-		//	setLoopScopeNoCheck(node, isAbsolute, reference, source);
-		//}		
+
+		for (Node node : m_route.getReferencedNodes(reference)) {
+			setLoopScopeNoCheck(node, isAbsolute, reference, source);
+		}		
 	}
 
 	public void checkSetLoopScope(Reference reference, boolean isAbsolute) throws Exception {
-		/*
+		
+
 		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
 		if (referencedNodes.size() > 0) {
 			for (Node node : referencedNodes) {
@@ -198,7 +201,6 @@ public class RouteUnknowns {
 		} else {
 			throw new Exception("Reference not found on given route");
 		}
-		*/
 	}
 	
 	public void setLoopScope(Node node, boolean isAbsolute, Source source) throws Exception {
@@ -228,12 +230,10 @@ public class RouteUnknowns {
 	// ===================================================================== //	
 	public boolean setFixedTime(Reference reference, TimeUnit timeUnit, Type type, Source source) throws AbortedException {
 		boolean found = false;
-		/*
 	    for (Node node : m_route.getReferencedNodes(reference)) {
 	    	setFixedTime(node, timeUnit, reference, type, source);
 	    	found = true;
 		}
-		*/
 		return found;
 	}
 
@@ -255,13 +255,11 @@ public class RouteUnknowns {
 	
 	public boolean canInstructionPause(Reference reference) throws AbortedException {
 		boolean canPause = false;
-		/*
         for (Node node : m_route.getReferencedNodes(reference)) {
         	if (((InstructionNode)node).getXtaInstruction().canPause()) {
         		canPause = true;
         	}
 		}
-		*/
 		return canPause;
 	}
 	

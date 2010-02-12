@@ -40,7 +40,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         IMenuManager menuManager = configurer.getMenuManager();        	
         for (IContributionItem contributionItem : menuManager.getItems()) {
         	if (contributionItem.getId().equals("file")) {
-        		removeAllSubItems(contributionItem, new String[] {"quit", "open"});
+        		removeAllSubItems(contributionItem, new String[] {"quit", "saveAs", "save", "open"});
 
         	} else if (contributionItem.getId().equals("window")) {
         		removeAllSubItems(contributionItem, new String[] {"showView"});

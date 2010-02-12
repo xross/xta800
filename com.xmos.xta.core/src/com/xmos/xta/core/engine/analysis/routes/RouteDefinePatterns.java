@@ -35,17 +35,17 @@ class SameBlockPattern extends RouteDefinePatterns {
 		// Are both the from and the to nodes in the same block?
 		if (fromBlock != toBlock)
 			return false;
-/*
+
 		// Checks that the from instruction comes before the to instruction 
 		if (fromBlock.iChildren().indexOf(from) >= fromBlock.iChildren().indexOf(to))
 			return false;
-	*/	
+	
 		return true;
 	}
 	
 	public void apply(Reference fromRef, Reference toRef, Route route, 
 			Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source) {
-	/*	
+	
 		List<Node> blocks = new ArrayList<Node>();
 		List<Node> children = fromBlock.iChildren();
 			
@@ -66,7 +66,7 @@ class SameBlockPattern extends RouteDefinePatterns {
 		} else {
 			route.setNode(sequence);
 		}	
-		*/			
+				
 	}	
 }
 
@@ -75,18 +75,18 @@ class DifferentBlockPattern extends RouteDefinePatterns {
 		// Are both the from and to blocks children of the same parent?
 		if (fromBlock.getParent() != toBlock.getParent())		
 		    return false;
-/*
+
 		// Checks that the from block comes before the to block 
 		List<Node> children = fromBlock.getParent().iChildren();
 		if (children.indexOf(fromBlock) >= children.indexOf(toBlock))
 			return false;
-	*/	
+	
 		return true;		
 	}
 	
 	public void apply(Reference fromRef, Reference toRef, Route route, 
 			Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source) {
-	/*	
+
 		Node parent = fromBlock.getParent();
 		List<Node> children = parent.iChildren();
 		List<Node> newChildren = new ArrayList<Node>();
@@ -117,7 +117,7 @@ class DifferentBlockPattern extends RouteDefinePatterns {
 		newChildren.addAll(children.subList(children.indexOf(toBlock) + 1, children.size()));
 
 		parent.replaceChildren(newChildren);	
-		*/		
+		
 	}		
 }
 

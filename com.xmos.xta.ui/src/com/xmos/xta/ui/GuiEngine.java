@@ -12,9 +12,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
@@ -28,8 +25,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.ui.editors.script.InputScript;
-import com.xmos.xta.ui.editors.script.ScriptEditor;
 import com.xmos.xta.ui.input.InputDisassembly;
 import com.xmos.xta.ui.views.console.ConsoleView;
 
@@ -47,8 +42,9 @@ public class GuiEngine {
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
 	private static String s_commandLineXeFile;
 	
-	/* Ensure there is only one disassembly editor at once */
+	/* Ensure there is only one editor at once */
 	private static Map<String, InputDisassembly> s_disassemblyInputs;
+
 	private static Set<Long> s_sourcePcs;
 	private static boolean s_showPcPosition;
 	
@@ -89,7 +85,11 @@ public class GuiEngine {
 	public static void notify(String message, String argument) {
 		s_notifier.notify(s_guiSrc, message, argument);
 	}
-	
+
+	public static Notifier getNotifier() {
+		return s_notifier;
+	}
+
 	public static void runFunction(final String functionName) {
 		if (!functionName.equals("")) {
 			Job job = new Job("Analyse: " + functionName) {
@@ -277,17 +277,12 @@ public class GuiEngine {
 	}
 
 	public static InputDisassembly getDisassemblyInput() {
-		String nodeCoreId = String.format("%d:%d", s_engine.getNodeId(), s_engine.getCoreId());
+		String nodeCoreId = String.format("%d:%d", s_engine.getNodeNumber(), s_engine.getCoreNumber());
 		InputDisassembly input = s_disassemblyInputs.get(nodeCoreId);
 		if (input == null) {
 			input = new InputDisassembly();
 			s_disassemblyInputs.put(nodeCoreId, input);
 		}
-		return input;
-	}
-
-	public static IEditorInput getScriptInput() {
-		IEditorInput input = new InputScript();
 		return input;
 	}
 
@@ -307,25 +302,6 @@ public class GuiEngine {
 		return s_showPcPosition;
 	}
 
-	public static void openScriptEditor() {
-		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		
-		// Check whether there is actually anything to do
-		IEditorReference[] editorReferences = page.getEditorReferences();
-		for (IEditorReference editorRef : editorReferences) {
-			if (editorRef.getPartName().equals(ScriptEditor.EDITORNAME)) {
-				GuiEngine.broadcast(Broadcaster.BROADCAST_REFRESH_SCRIPT, "");
-				return;
-			}
-		}
-
-		try {
-			IEditorInput input = getScriptInput();
-		    page.openEditor(input, ScriptEditor.ID);
-
-		} catch (PartInitException e) {}		
-	}
-	
 	public static void closeDisassembly() {
 		s_disassemblyInputs.clear();
 	}
@@ -385,4 +361,5 @@ public class GuiEngine {
 		s_focusNodes = null;
 		s_runMode = Notifier.RUN_MODE_FUNCTION;
 	}
+
 }

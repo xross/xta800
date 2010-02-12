@@ -42,6 +42,8 @@
          <zipfileset src="../../infr_libs_java/export/jars/xehandler.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/xeloader.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/xnloader.jar"/>
+         <zipfileset src="../../infr_libs_java/export/jars/configloader.jar"/>
+         <zipfileset src="../../infr_libs_java/export/jars/proginfoloader.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/isa.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/util.jar"/>
     </jar>

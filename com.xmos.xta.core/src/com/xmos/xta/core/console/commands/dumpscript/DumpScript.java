@@ -34,7 +34,7 @@ public class DumpScript extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		Scripter scripter = new Scripter(engine);
+		Scripter scripter = engine.getScripter();
 		console.display(scripter.createScript());
     }
 }

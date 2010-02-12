@@ -20,11 +20,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Sash;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
@@ -43,27 +40,17 @@ public class SelectedRouteViewer {
 	
     public SelectedRouteViewer(Composite parent) {    	
     	m_parent = parent;
+    	m_viewer = new TreeViewer(m_parent);
+	    m_viewer.setContentProvider(new SelectedRouteContentProvider());				
+	    m_viewer.setLabelProvider(new SelectedRouteLabelProvider());
+		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
+		createContextMenus();
     }
     
     public TreeViewer getViewer() {
     	return m_viewer;
     }
     
-    public void create(Sash sash) {
-    	m_viewer = new TreeViewer(m_parent);
-	    FormData data = new FormData();
-	    data.top = new FormAttachment(0, 0);
-	    data.bottom = new FormAttachment(sash, 0);
-	    data.left = new FormAttachment(0, 0);
-	    data.right = new FormAttachment(100, 0);
-	    m_viewer.getControl().setLayoutData(data);
-	    
-	    m_viewer.setContentProvider(new SelectedRouteContentProvider());				
-	    m_viewer.setLabelProvider(new SelectedRouteLabelProvider());
-		ColumnViewerToolTipSupport.enableFor(m_viewer, ToolTip.NO_RECREATE);
-		createContextMenus();
-	}
-
 	public void initialise() {
 		List<Node> selectedNodes = GuiEngine.getSelectedNodes();
 		clear();

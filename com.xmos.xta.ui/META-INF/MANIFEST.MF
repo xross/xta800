@@ -9,6 +9,7 @@ Export-Package: com.xmos.xta.ui,
  com.xmos.xta.ui.dialogs,
  com.xmos.xta.ui.editors,
  com.xmos.xta.ui.editors.source,
+ com.xmos.xta.ui.icons,
  com.xmos.xta.ui.input
 Require-Bundle: com.xmos.libs;bundle-version="1.0.0",
  com.xmos.xta.core;bundle-version="1.0.0",
@@ -21,5 +22,6 @@ Bundle-Activator: com.xmos.xta.ui.XtaPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: XMOS
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.eclipse.core.resources
+Import-Package: org.eclipse.core.resources,
+ org.eclipse.ui
 

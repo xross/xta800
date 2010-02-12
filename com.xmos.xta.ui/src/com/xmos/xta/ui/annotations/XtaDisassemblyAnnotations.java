@@ -52,7 +52,13 @@ public class XtaDisassemblyAnnotations extends XtaAnnotations {
 	    GuiEngine.closeDisassembly();
     	super.dispose();
     }
-    
+
+	public void connectToFile() {
+		super.connectToFile();
+		updateFoldingStructure();
+        collapseFolding();
+	}
+
 	public void propertyChange(PropertyChangeEvent event) {
 		if (DEBUG) System.out.printf("XtaDisassemblyEditorAnnotations: propertyChange: %s\n", event.getProperty());	
 		if (m_isDisposed)

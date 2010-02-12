@@ -13,14 +13,13 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.FileNameMatcher;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
@@ -64,17 +63,16 @@ public class XtaSourceAnnotations extends XtaAnnotations {
 		if (!engine.getXeLoader().isLoaded() || m_source.isDirty())
 			return;
 
-		for (long lineNumber = 1; lineNumber < m_source.getDocument().getNumberOfLines(); lineNumber++) {
-			String fileName = engine.getSourceMapper().getDebugFileName(getFileName());
-    		String refString = String.format("%s:%d", fileName, lineNumber);
-    		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
-
-			if (ref.resolve(engine)) {
-				for (long pc : ref.getPcs()) {
-					addPcToLineEntry(pc, lineNumber);
-				}
-    		}
-    	}
+		SourceMapper sourceMapper = engine.getSourceMapper();
+		String fileName = sourceMapper.getDebugFileName(getFileName());
+		
+		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {			
+            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper)) {
+            	for (int lineNumber = info.getLineNumberStart(); lineNumber <= info.getLineNumberEnd(); ++lineNumber) {
+                    addPcToLineEntry(info.getPc(), lineNumber);            		
+            	}
+            }			
+		}		
 	}
 
 	private void addPcToLineEntry(long pc, long lineNumber) {
@@ -87,6 +85,8 @@ public class XtaSourceAnnotations extends XtaAnnotations {
 	}
 
 	public void updateAll() {
+		boolean fileReadOnly = inXtaPerspective() && fileInXtaBinary();
+		m_source.setReadOnly(fileReadOnly);
 		updateUnknowns();
 		updateHighlighting();
 	}
@@ -130,17 +130,48 @@ public class XtaSourceAnnotations extends XtaAnnotations {
 	}
 
     public boolean canAnnotate() {
-		if (!GuiEngine.getEngine().getXeLoader().isLoaded())
-			return false;
-		if (m_source.isDirty())
-			return false;
-
-		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		if (!page.getPerspective().getId().equals(XtaPerspective.ID)) {
+		if (!GuiEngine.getEngine().getXeLoader().isLoaded()) {
 			return false;
 		}
-			
+		
+		if (m_source.isDirty()) {
+			return false;
+		}
+
+		if (!inXtaPerspective()) {
+			return false;
+		}
+
+		if (!fileInXtaBinary()) {
+			return false;
+		}
+
 		return true;
+	}
+
+	private boolean inXtaPerspective() {
+		final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		if (page == null) {
+			return false;
+		}
+		IPerspectiveDescriptor perspective = page.getPerspective();
+		String id = perspective.getId();
+		if (id.equals(XtaPerspective.ID)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean fileInXtaBinary() {
+		SourceMapper sourceMapper = GuiEngine.getEngine().getSourceMapper();
+		if (sourceMapper == null) {
+			return false;
+		}
+		String fileName = sourceMapper.getDebugFileName(getFileName());
+		if (sourceMapper.getSourceFile(fileName) != null) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean addAnnotationsForPc(long pc, String type, List<Annotation> annotations, 

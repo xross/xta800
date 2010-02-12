@@ -153,12 +153,20 @@ public class InstructionNode extends Node {
 	}
 
 	public void buildListDown(List<InstructionNode> nodeList) {
-		assert(false);
+		nodeList.add(this);
 	}
 
 
 	public void buildListUp(List<InstructionNode> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
-		assert(false);
+		assert(start == null);
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, stack, this);
+		}
+		nodeList.add(this);
+	}
+
+	public long getPC() {
+		return m_inst.getPc();
 	}
 }

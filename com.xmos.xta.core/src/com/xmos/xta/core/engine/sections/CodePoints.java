@@ -14,8 +14,8 @@ public class CodePoints extends Section  {
 	private String m_sectionName;
 	private List<CodePointInfo> m_codePoints;
 	
-	CodePoints(int nodeId, int coreId, String sectionName, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+	CodePoints(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
 		m_codePoints = new ArrayList<CodePointInfo>();
 	}
@@ -52,7 +52,7 @@ public class CodePoints extends Section  {
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
+		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeNumber(), getCoreNumber());
 				
 		try {
 			int byteIndex = 0;

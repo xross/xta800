@@ -20,29 +20,29 @@ public class RouteTiming {
 	
 	private Route m_route;
 	private Config m_config;
-	private int m_nodeId;
-	private int m_coreId;
+	private int m_nodeNumber;
+	private int m_coreNumber;
 	private TimeUnit m_maxTime;
 	private boolean m_maxTimeSet;
 	
 	private CommandSource m_requirementsSrc;
 
-	RouteTiming(CommandSource src, Route route, Config config, int nodeId, int coreId) {
+	RouteTiming(CommandSource src, Route route, Config config, int nodeNumber, int coreNumber) {
 		m_requirementsSrc = src;
 		m_route = route;
 		m_config = config;
-		m_nodeId = nodeId;
-		m_coreId = coreId;
+		m_nodeNumber = nodeNumber;
+		m_coreNumber = coreNumber;
 		m_maxTime = new TimeUnit(m_config, 0.0, Units.NS);
 		m_maxTimeSet = false;
 	}
 
-	public int getNodeId() {
-		return m_nodeId;
+	public int getNodeNumber() {
+		return m_nodeNumber;
 	}
 
-	public int getCoreId() {
-		return m_coreId;
+	public int getCoreNumber() {
+		return m_coreNumber;
 	}
 
 	public boolean isTimingSpecified() {
@@ -102,16 +102,16 @@ public class RouteTiming {
 			}
 			
 			if (level == Level.COMPLETE) {
-				description += String.format("Node: %d, Core: %d\n", m_nodeId, m_coreId);
-
+				description += String.format("Node: %d, Core: %d\n", m_nodeNumber, m_coreNumber);
 			} else {
 				description += "    ";				
 			}
 			
-			if (passedTiming())
+			if (passedTiming()) {
 				description += "Pass";
-			else
+			} else {
 				description += "Fail";
+			}
 
 			int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
 			if (numWarnings > 0)

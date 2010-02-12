@@ -389,9 +389,9 @@ public class NodeAttributes {
     	m_unknowns.add(UnknownFactory.createUnknown(m_node, type, State.UNKNOWN));
     }
 
-    public void addKnown(Type type, Source source, Reference[] reference) {
+    public void addKnown(Type type, Source source, Reference[] references) {
     	removeUnknownOfType(type);
-    	m_unknowns.add(UnknownFactory.createKnown(m_node, type, State.KNOWN, source, reference));
+    	m_unknowns.add(UnknownFactory.createKnown(m_node, type, State.KNOWN, source, references));
     }
 
 	public boolean hasUnknowns() {

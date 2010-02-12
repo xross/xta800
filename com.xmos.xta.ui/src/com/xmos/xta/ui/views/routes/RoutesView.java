@@ -3,14 +3,9 @@ package com.xmos.xta.ui.views.routes;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Sash;
 import org.eclipse.ui.part.ViewPart;
 
 import com.xmos.xta.core.engine.Notifier;
@@ -38,36 +33,13 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener {
 
 	public void createPartControl(final Composite parent) {
 	    if (DEBUG) System.out.printf("RoutesView: createPartControl\n");
-		
-	    parent.setLayout(new FormLayout());
+	    parent.setLayout(new FillLayout());
 
-	    final Sash sash = new Sash(parent, SWT.HORIZONTAL);
-	    final FormData sashData = new FormData();
-	    sashData.top = new FormAttachment(70, 0); 
-	    sashData.left = new FormAttachment(0, 0); 
-	    sashData.right = new FormAttachment(100, 0); 
-	    sash.setLayoutData(sashData);
+	    SashForm sash = new SashForm(parent, SWT.VERTICAL);
 	    
-	    m_selectedRouteViewer = new SelectedRouteViewer(parent);
-	    m_selectedRouteViewer.create(sash);
-
-	    m_routeSelectorViewer = new RouteSelectorViewer(parent);
-	    m_routeSelectorViewer.create(sash);	    
-
-	    // Control the sash re-sizing
-	    final int limit = 40;
-	    sash.addListener(SWT.Selection, new Listener() {
-	        public void handleEvent(Event e) {
-	          Rectangle sashRect = sash.getBounds();
-	          Rectangle shellRect = parent.getClientArea();
-	          int bottom = shellRect.height - sashRect.height - limit;
-	          e.y = Math.max(Math.min(e.y, bottom), limit);
-	          if (e.y != sashRect.y) {
-	            sashData.top = new FormAttachment(0, e.y);
-	            parent.layout();
-	          }
-	        }
-	    });
+	    m_selectedRouteViewer = new SelectedRouteViewer(sash);
+	    m_routeSelectorViewer = new RouteSelectorViewer(sash);
+	    sash.setWeights(new int[] {4, 1});
 
 		initialiseTrees();
 	}

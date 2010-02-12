@@ -9,6 +9,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
@@ -38,11 +39,7 @@ public class ActionFunction extends ActionDelegate implements IPropertyChangeLis
 		GuiEngine.addBroadcastListener(this);
 		
 		m_functions = new ArrayList<String>();
-		m_listListener = new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				assert(false);
-			}
-
+		m_listListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				String selectedFunction = ((MenuItem)e.getSource()).getText();
 				GuiEngine.runFunction(selectedFunction);

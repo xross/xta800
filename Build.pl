@@ -152,13 +152,7 @@ sub DoClean
   chdir("../");
 
   SetupVars();
-  system("rm -rf $TOOLS_XTA/export/*.zip");
-  system("rm -rf $TOOLS_XTA/export/xta_bin");
-  system("rm -rf $TOOLS_XTA/export/xta_bin64");
-
-  system("rm -rf $TOOLS_XTA/tmp");
-  system("rm -rf $INSTALLPATH${SLASH}xta_bin");
-  system("rm -rf $INSTALLPATH${SLASH}xta_bin64");
+  rmtree([<"$TOOLS_XTA/export/*.zip">, "$TOOLS_XTA/export/xta_bin", "$TOOLS_XTA/export/xta_bin64", "$TOOLS_XTA/tmp", "$INSTALLPATH${SLASH}xta_bin", "$INSTALLPATH${SLASH}xta_bin64"]);
 
   chdir("$BUILDPATH") or die("oops");
 }
@@ -366,10 +360,17 @@ sub BuildEclipse
   # Creates the target specific build properties file..
   my $buildPropertiesFile = CreateBuildPropertiesFile($platform, $config, $buildDirProperties, $eclipseDir, $exeName);
   system("cp $buildPropertiesFile $buildDir/build_config/build.properties >> $buildOutput");
- 
-  my $buildCmd = "java -jar $eclipseDir/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20080819.jar " .
+
+  # Identify buildFile and launcher regardless of version.
+  my $buildFile=<$eclipseDir/plugins/org.eclipse.pde.build_*/scripts/productBuild/productBuild.xml>;
+  die "buildFile $buildFile does not exist" unless (-e $buildFile);
+
+  my $launcherJar=<$eclipseDir/plugins/org.eclipse.equinox.launcher_*.jar>;
+  die "launcherJar $launcherJar does not exist" unless (-e $launcherJar);
+
+  my $buildCmd = "java -jar $launcherJar " .
                  "-application org.eclipse.ant.core.antRunner " .
-                 "-buildfile $eclipseDir/plugins/org.eclipse.pde.build_3.4.1.R34x_v20080805/scripts/productBuild/productBuild.xml " .
+                 "-buildfile $buildFile " .
                  "-Dbuilder=$buildDirProperties/build_config -quiet";
 
   system("$buildCmd >> $buildOutput");
@@ -392,8 +393,7 @@ sub BuildEclipse
     or die("Unable to chdir to: $TOOLS_XTA/export\n");
 
   if ($HOST ne "PC" && $HOST ne "Mac") {
-    system("rm -rf xta_bin");
-    system("rm -rf xta_bin64");
+    rmtree(["xta_bin", "xta_bin64"]);
     system("unzip `ls | grep 64` >> $buildOutput; mv xta_bin xta_bin64 >> $buildOutput; unzip `ls | grep -v 64 | grep .zip` >> $buildOutput");
   } else {
     system("unzip -o $target >> $buildOutput");

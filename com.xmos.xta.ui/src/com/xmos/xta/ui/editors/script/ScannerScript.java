@@ -86,13 +86,13 @@ public class ScannerScript extends RuleBasedScanner {
     }
     
     private void processNumbers(Display display, List<IRule> rules) {
-    	Color color = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+    	Color color = display.getSystemColor(SWT.COLOR_RED);
     	IToken token = new Token(new TextAttribute(color));
     	rules.add(new NumberRule(token));
     }
 
     private void processComments(Display display, List<IRule> rules) {
-    	Color color = display.getSystemColor(SWT.COLOR_RED);
+    	Color color = display.getSystemColor(SWT.COLOR_DARK_GREEN);
     	IToken token = new Token(new TextAttribute(color));
     	rules.add(new PatternRule("#", null, token, '\0', true));    	
     }

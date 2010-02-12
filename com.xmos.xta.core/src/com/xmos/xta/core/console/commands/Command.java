@@ -62,15 +62,6 @@ public abstract class Command {
     	return true;
     }
 
-    public boolean isPresent(Engine engine, int nodeId, int coreId, Console console) { 
-    	if (engine.getXeLoader().getMemoryImage(nodeId, coreId) == null) {
-    		engine.notify(m_src, Notifier.NOTIFY_ERROR,
-    				String.format("no code loaded on node: %d, core: %d", nodeId, coreId));
-    		return false;
-    	}
-    	return true;    	
-    }
-    
     public boolean validateRoutes(Engine engine, Console console) {
        	if (engine.getRoutes().size() == 0) {
     		engine.notify(m_src, Notifier.NOTIFY_ERROR,

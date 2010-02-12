@@ -269,8 +269,13 @@ public class FunctionNode extends Node {
 	public void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
 		Stack<FunctionReferenceNode> copyStack = new Stack<FunctionReferenceNode>();
 		copyStack.addAll(stack);
-		FunctionReferenceNode parent = copyStack.pop();
-		parent.buildListUp(nodeList, copyStack, this);
+		if(!copyStack.isEmpty()){
+			FunctionReferenceNode parent = copyStack.pop();
+			if(parent!= null){
+				parent.buildListUp(nodeList, copyStack, this);
+			}
+				
+		}
 		for(Node node : m_functionSequence){
 			if(start == node) break;
 			node.buildListDown(nodeList);

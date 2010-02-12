@@ -1,16 +1,22 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
+import com.xmos.xta.core.engine.references.Reference;
 
 public class Route {
 	private static int s_routeCount;
@@ -40,7 +46,7 @@ public class Route {
 		m_engine = engine;
 
 		Architecture architecture = engine.getXeLoader().getArchitecture();
-		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeId(), engine.getCoreId());
+		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeNumber(), engine.getCoreNumber());
 		m_unknowns = new RouteUnknowns(this);		
 		setRouteSpecificConfigs(description.getConfig(), architecture);
 	}
@@ -129,27 +135,22 @@ public class Route {
 		}		
 		return node;
 	}
-/*
-	public Collection<Node> getReferencedNodes(Reference reference) throws AbortedException {
+
+	public Set<Node> getReferencedNodes(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		Collection<Node> referencedNodes = new ArrayList<Node>();
-		
-		for (NodeDescriptor nodeDescriptor : referenceMatcher.getNodeDescriptors(m_engine, m_node, reference)) {
-			referencedNodes.add(nodeDescriptor.getNode());
-		}
-		return referencedNodes;		
+		return referenceMatcher.getNodesMatchingReference(m_node, reference);		
 	} 
 
 	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
 		
-		for (NodeDescriptor nodeDescriptor : referenceMatcher.getFunctionNodeDescriptors(m_engine, m_node, reference)) {
-			referencedNodes.add(nodeDescriptor.getNode());
+		for (Node function : referenceMatcher.getFunctionNodesMatchingReference(m_node, reference)) {
+			referencedNodes.add(function);
 		}
 		return referencedNodes;		
 	} 
-	*/
+	
 	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
 		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {

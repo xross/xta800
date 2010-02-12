@@ -3,6 +3,8 @@ package com.xmos.xta.core.engine.analysis.structural;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -36,14 +38,6 @@ public class StructureGraph {
 		
 		m_functionToStartNode = functionToStartNode;
 		m_uncalledFunctionReference = new TreeMap<FunctionNode, FunctionReferenceNode>();
-		
-		/*
-		for(FunctionNode fn : functionReferencesWithinFunction.keySet()){
-			for(FunctionReferenceNode frn: functionReferencesWithinFunction.get(fn)){
-				System.out.println(fn + "\t\t"+ frn +"\t\t" + frn.getAlias());
-			}
-		}
-		*/
 		m_functionReferencesWithinFunction = functionReferencesWithinFunction;
 		
 		Set<FunctionNode> uncalledFunctions = new TreeSet<FunctionNode>(m_functionReferencesWithinFunction.keySet());
@@ -119,14 +113,14 @@ public class StructureGraph {
         return m_searchNode;   		
     }
     
-    public Set<Stack<FunctionReferenceNode>> getFunctionCallStack(FunctionNode fn){
+    public List<Stack<FunctionReferenceNode>> getFunctionCallStack(FunctionNode fn){
     	Stack<FunctionReferenceNode> currentStack = new Stack<FunctionReferenceNode>();
-    	Set<Stack<FunctionReferenceNode>> completeStacks = new HashSet<Stack<FunctionReferenceNode>>();
+    	List<Stack<FunctionReferenceNode>> completeStacks = new LinkedList<Stack<FunctionReferenceNode>>();
     	search(fn, currentStack, completeStacks);
 		return completeStacks;
     }
     
-    private void search(FunctionNode fn, Stack<FunctionReferenceNode> currentStack, Set<Stack<FunctionReferenceNode>> completeStacks){
+    private void search(FunctionNode fn, Stack<FunctionReferenceNode> currentStack, List<Stack<FunctionReferenceNode>> completeStacks){
     	if(m_functionsToFunctionReferences.get(fn).isEmpty()){
     		Stack<FunctionReferenceNode> saveStack = new Stack<FunctionReferenceNode>();
     		saveStack.addAll(currentStack);

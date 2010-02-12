@@ -165,15 +165,17 @@ public class BlockNode extends Node {
 	
 	public void buildListUp(List<InstructionNode> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
-		m_parent.buildListUp(nodeList, stack, this);
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, stack, this);
+		}
 		for(InstructionNode inst : m_insts){
 			if(inst == start) break;
-			nodeList.add(inst);
+			buildListDown(nodeList);
 		}
 	}
 	public void buildListDown(List<InstructionNode> nodeList) {
 		for(InstructionNode inst : m_insts){
-			nodeList.add(inst);
+			inst.buildListDown(nodeList);
 		}
 		
 	}
