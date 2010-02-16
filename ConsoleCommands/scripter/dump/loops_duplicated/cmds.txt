@@ -1,0 +1,24 @@
+analyse function main
+
+set loop - f1,loop 10
+set loop - f1,loop_path 10
+set looppath - f1,loop_path 5
+
+set loop - ~1~1~5~ 20
+set loop - ~1~1~7~ 20
+set looppath - ~1~1~7~1~1~0~ 10
+
+set loop - f2,loop 30
+set loop - f2,loop_path 30
+set looppath - f2,loop_path 15
+
+set loop - ~1~3~5~ 40
+set loop - ~1~3~7~ 40
+set looppath - ~1~3~7~1~1~0~ 20
+
+scripter dump > dump.txt
+source dump.txt
+scripter dump
+
+exit
+

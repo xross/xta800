@@ -1,0 +1,11 @@
+analyse path x1 x2
+set required - 100.0 ns
+
+analyse path x1 x2
+set required - 200 cycles
+
+analyse path x1 x2
+set required - 0.5 mhz
+
+scripter dump
+exit

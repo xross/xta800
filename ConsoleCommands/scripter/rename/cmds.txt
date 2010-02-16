@@ -1,0 +1,29 @@
+
+
+add exclusion the_great_outdoors
+analyse path x x
+
+analyse path test.xc:21 test.xc:22
+scripter listrefs
+scripter rename test.xc:21 start
+scripter listrefs
+scripter rename test.xc:22 stop
+scripter listrefs
+
+scripter disable stop
+scripter listrefs
+
+scripter disable test.xc:21
+scripter listrefs
+
+scripter enable C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/rename/test.xc:21
+scripter listrefs
+
+analyse path C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/rename/test.xc:21 C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/rename/test.xc:22
+
+scripter disable test.xc:21
+
+scripter rename x y
+
+scripter dump
+exit

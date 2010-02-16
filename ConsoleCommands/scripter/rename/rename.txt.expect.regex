@@ -1,0 +1,52 @@
+Enabled    Modifiable Reference  ->     MapsTo
+true       false      x          ->          x
+true       false      the_great_outdoors -> the_great_outdoors
+true       true       test.xc:21 ->    label_0
+true       true       test.xc:22 ->    label_1
+Enabled    Modifiable Reference  ->     MapsTo
+true       false      x          ->          x
+true       false      the_great_outdoors -> the_great_outdoors
+true       true       test.xc:21 ->      start
+true       true       test.xc:22 ->    label_1
+Enabled    Modifiable Reference  ->     MapsTo
+true       false      x          ->          x
+true       false      the_great_outdoors -> the_great_outdoors
+true       true       test.xc:21 ->      start
+true       true       test.xc:22 ->       stop
+xta: cmds.txt:13: error: Reference 'stop' not used in scripter
+Enabled    Modifiable Reference  ->     MapsTo
+true       false      x          ->          x
+true       false      the_great_outdoors -> the_great_outdoors
+true       true       test.xc:21 ->      start
+true       true       test.xc:22 ->       stop
+Enabled    Modifiable Reference  ->     MapsTo
+true       false      x          ->          x
+true       false      the_great_outdoors -> the_great_outdoors
+false      true       test.xc:21 ->      start
+true       true       test.xc:22 ->       stop
+Enabled    Modifiable Reference  ->     MapsTo
+true       false      x          ->          x
+true       false      the_great_outdoors -> the_great_outdoors
+false      true       test.xc:21 ->      start
+true       true       test.xc:22 ->       stop
+xta: cmds.txt:26: error: Reference 'x' cannot be renamed
+load ".*test.xe"
+
+#
+# Route: x => x
+#
+add exclusion the_great_outdoors
+analyse path x x
+
+#
+# Route: test.xc:21 => test.xc:22
+#
+# Warning: 'test.xc:21' is a non-portable reference.
+analyse path test.xc:21 stop
+
+#
+# Route: .+test.xc:21 => .+test.xc:22
+#
+# Warning: '.+test.xc:21' is a non-portable reference.
+analyse path .+test.xc:21 stop
+

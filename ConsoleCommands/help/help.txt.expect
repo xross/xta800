@@ -2,7 +2,6 @@
   [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
-  [-]dumpscript: Dump script which represents the current state
   [-]echo "text": prints the text to the console
   [-]exit: Quits the application
   [-]help [command/option]: Displays help message for the given command/option
@@ -12,6 +11,7 @@
   [-]print <option> <arg0> <arg1>...: Display analysis information
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
+  [-]scripter <option> <arg0> <arg1>...: Work with the script generator
   [-]set <option> <arg0> <arg1>...: Set path information
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
@@ -105,6 +105,12 @@
       option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines
       option: route <route id>: Removes the route with the given id from the current analysis
       option: to: Removes the to endpoint
+  [-]scripter <option> <arg0> <arg1>...: Work with the script generator
+      option: disable: Disable a mapping
+      option: dump: Dump script which represents the current state
+      option: enable: Enable a mapping
+      option: listrefs: List all references which will be used in the script
+      option: rename: Rename a mapping
   [-]set <option> <arg0> <arg1>...: Set path information
       option: from <ENDPOINT_REF>: Sets the from endpoint
       option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
