@@ -16,10 +16,10 @@ scripter listrefs
 scripter disable test.xc:21
 scripter listrefs
 
-scripter enable C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/rename/test.xc:21
+scripter enable SOURCE:21
 scripter listrefs
 
-analyse path C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/rename/test.xc:21 C:/peter/git/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/rename/test.xc:22
+analyse path SOURCE:21 SOURCE:22
 
 scripter disable test.xc:21
 
