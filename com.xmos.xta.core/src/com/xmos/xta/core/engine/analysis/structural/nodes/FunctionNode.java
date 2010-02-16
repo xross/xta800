@@ -28,6 +28,7 @@ public class FunctionNode extends Node {
 		m_attributes = new NodeAttributes(this);
 		m_functionEndNodes = new TreeSet<Node>();
 		m_callingFunctions = new ArrayList<FunctionNode>();
+		
 		setUnresolved(true);
 	}
 	
@@ -229,7 +230,12 @@ public class FunctionNode extends Node {
 	}
 
 	public List<Node> iChildren() {
-		return m_functionSequence;
+		if(m_functionSequence!= null){
+			return m_functionSequence;
+		} else {
+			return new LinkedList<Node>();
+		}
+		
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -266,11 +272,11 @@ public class FunctionNode extends Node {
 		return fnRef;
 	}
 
-	public void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
 		Stack<FunctionReferenceNode> copyStack = new Stack<FunctionReferenceNode>();
 		copyStack.addAll(stack);
 		if(!copyStack.isEmpty()){
-			FunctionReferenceNode parent = copyStack.pop();
+			FunctionReferenceNode parent = copyStack.pop().getAlias();
 			if(parent!= null){
 				parent.buildListUp(nodeList, copyStack, this);
 			}
@@ -283,7 +289,7 @@ public class FunctionNode extends Node {
 		
 	}
 	
-	public void buildListDown(List<InstructionNode> nodeList) {
+	public void buildListDown(List<Node> nodeList) {
 		for(Node node : m_functionSequence){
 			node.buildListDown(nodeList);
 		}		

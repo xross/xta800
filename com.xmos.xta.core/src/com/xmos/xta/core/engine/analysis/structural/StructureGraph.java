@@ -128,12 +128,24 @@ public class StructureGraph {
     		completeStacks.add(saveStack);
     	} else {
 	    	for(GraphEdge ge : m_functionsToFunctionReferences.get(fn)){
-	    		currentStack.add(0, ge.getFunctionReferenceNode());
-	    		search(ge.getFunctionNode(), currentStack, completeStacks);
-	    		currentStack.remove(0);
+	    		if(!formsRecursion(currentStack, ge.getFunctionReferenceNode())){
+	    			currentStack.add(0, ge.getFunctionReferenceNode());
+	    			search(ge.getFunctionNode(), currentStack, completeStacks);
+	    			currentStack.remove(0);
+	    		} 
 	    	}
     	}
     }
+    
+    private boolean formsRecursion(Stack<FunctionReferenceNode> currentStack, FunctionReferenceNode functionReferenceNode){
+    	for(FunctionReferenceNode frn : currentStack){
+    		if(functionReferenceNode.isKnownFunction() && functionReferenceNode.getFunctionName().equals(frn.getFunctionName())){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     
     class GraphEdge{
     	private FunctionReferenceNode m_frn;

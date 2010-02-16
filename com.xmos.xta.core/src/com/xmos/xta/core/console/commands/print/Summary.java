@@ -56,7 +56,7 @@ public class Summary extends Command {
 
 		RouteTiming routeTiming = route.getRouteTiming();				
 		if (routeTiming.isTimingSpecified()) {			
-			if (routeTiming.passedTiming()) {
+			if (routeTiming.passed()) {
 				if (displayPasses) {
 					console.display(String.format("Route(%d) %s\n%s\n", 
 							route.getRouteId(), 
@@ -92,7 +92,7 @@ public class Summary extends Command {
 			RouteTiming routeTiming = route.getRouteTiming();
 				
 			if (routeTiming.isTimingSpecified()) {			
-				if (routeTiming.passedTiming()) {
+				if (routeTiming.passed()) {
 					Status status = new Status();
 					int frequency = routeTiming.getMinFrequency(status);
 					if ((status.isComplete() || status.isZero()) && (frequency > minFrequency)) {

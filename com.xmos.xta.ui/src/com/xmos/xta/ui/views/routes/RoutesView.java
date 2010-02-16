@@ -37,9 +37,9 @@ public class RoutesView extends ViewPart implements IPropertyChangeListener {
 
 	    SashForm sash = new SashForm(parent, SWT.VERTICAL);
 	    
-	    m_selectedRouteViewer = new SelectedRouteViewer(sash);
 	    m_routeSelectorViewer = new RouteSelectorViewer(sash);
-	    sash.setWeights(new int[] {4, 1});
+	    m_selectedRouteViewer = new SelectedRouteViewer(sash);
+	    sash.setWeights(new int[] {1, 4});
 
 		initialiseTrees();
 	}

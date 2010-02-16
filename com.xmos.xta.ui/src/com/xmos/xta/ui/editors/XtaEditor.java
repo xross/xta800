@@ -15,6 +15,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.ui.GuiEngine;
 import com.xmos.xta.ui.actions.SourceActions;
@@ -71,15 +72,16 @@ public abstract class XtaEditor extends TextEditor implements XtaAnnotatedObject
      	super.editorContextMenuAboutToShow(menu);
 
 		menu.add(new Separator(ITextEditorActionConstants.GROUP_REST));
-		Reference startPoint = GuiEngine.getStartPoint();
+		Engine engine = GuiEngine.getEngine();
+		Reference fromEndPoint = engine.getFromEndPoint();
 		Action showStartAction = m_actions.get(SourceActions.ShowStartPointID);
 		menu.add(showStartAction);
-		showStartAction.setEnabled((startPoint != null));
+		showStartAction.setEnabled((fromEndPoint != null));
 
-		Reference endPoint = GuiEngine.getEndPoint();
+		Reference toEndPoint = engine.getToEndPoint();
 		Action showEndAction = m_actions.get(SourceActions.ShowEndPointID);
 		menu.add(showEndAction);
-		showEndAction.setEnabled((endPoint != null));
+		showEndAction.setEnabled((toEndPoint != null));
     }
 
     protected void rulerContextMenuAboutToShow(IMenuManager menu) {

@@ -11,9 +11,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.Workbench;
+import org.eclipse.ui.internal.WorkbenchWindow;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
@@ -23,20 +27,16 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.ui.input.InputDisassembly;
 import com.xmos.xta.ui.views.console.ConsoleView;
 
+@SuppressWarnings("restriction")
 public class GuiEngine {
+	private static ICoolBarManager s_coolBarManager;
 	private static Engine s_engine;
 	private static GuiNotifier s_notifier;	
 	private static Broadcaster s_broadcaster;
-	private static String s_functionName;
-	private static Reference s_startPoint;
-	private static Reference s_endPoint;
 	private static Reference s_codePoint;
-	private static String s_runMode;
 	private static Map<Integer, List<Node>> s_selectedNodes;
 	private static Node s_focusNodes;
 	private static Map<String, Map<Integer, GuiRouteProperties>> s_routeProperties;
@@ -108,48 +108,26 @@ public class GuiEngine {
 	}
 	
 	public static void runPath() {
-		if ((s_startPoint == null) || s_startPoint.getRef().equals("")) {
-			GuiEngine.notify(Notifier.NOTIFY_ERROR, "please specify a start reference");
-
-		} else if ((s_endPoint == null) || s_endPoint.getRef().equals("")) {
-			GuiEngine.notify(Notifier.NOTIFY_ERROR, "please specify an end reference");
-
-		} else {
-			final String startRef = s_startPoint.getRef();
-			final String endRef = s_endPoint.getRef();
-			Job job = new Job("Analyse: " + startRef + " -> " + endRef) {
-				protected IStatus run(IProgressMonitor monitor) {
-					s_engine.setMonitor(new GuiProgressMonitor(monitor));
-					s_engine.analyseRoute(s_guiSrc, startRef, endRef, false);
-					s_engine.setMonitor(null);
-					return Status.OK_STATUS;
-				}
-			};
-			job.setUser(true);
-			job.schedule();
-		}
+		assert(s_engine.getFromEndPoint() != null);
+		assert(s_engine.getToEndPoint() != null);
+		
+		Job job = new Job("Analyse route" + s_engine.getFromEndPoint().getRef() +
+				" -> " + s_engine.getToEndPoint().getRef()) {
+			protected IStatus run(IProgressMonitor monitor) {
+				s_engine.setMonitor(new GuiProgressMonitor(monitor));
+				s_engine.analysePath(s_guiSrc);
+				s_engine.setMonitor(null);
+				return Status.OK_STATUS;
+			}
+		};
+		job.setUser(true);
+		job.schedule();
 	}
 	
-	public static String getFunctionName() {
-		return s_functionName;
-	}
-	
-	public static Reference getStartPoint() {
-		return s_startPoint;
-	}
-	
-	public static Reference getEndPoint() {
-		return s_endPoint;
-	}
-
 	public static Reference getCodePoint() {
 		return s_codePoint;
 	}
 		
-	public static String getRunMode() {
-		return s_runMode;
-	}
-
 	public static void setCodePoint(Reference codePoint) {
 		s_codePoint = codePoint;
 	}
@@ -203,27 +181,9 @@ public class GuiEngine {
 			refreshGuiRouteProperties();
 			s_disassemblyInputs.clear();				
 			
-		} else if (message.equals(Notifier.NOTIFY_SET_FUNCTION_NAME)) {
-			s_functionName = argument;
-			
-		} else if (message.equals(Notifier.NOTIFY_SET_START_POINT)) {
-			Reference startPoint = ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF);			
-			Engine engine = GuiEngine.getEngine();
-		    startPoint.resolve(engine);
-	    	s_startPoint = startPoint;
-
-		} else if (message.equals(Notifier.NOTIFY_SET_END_POINT)) {
-			Reference endPoint = ReferenceFactory.createReference(argument, ReferenceClass.ENDPOINT_REF);			
-			Engine engine = GuiEngine.getEngine();
-			endPoint.resolve(engine);			
-			s_endPoint = endPoint;
-						
 		} else if (message.equals(Notifier.NOTIFY_SET_NODE_CORE)) {
 			resetGuiState();
 						
-		} else if (message.equals(Notifier.NOTIFY_ANALYSIS_COMPLETE)) {
-			s_runMode = argument;
-			
 		} else if (message.equals(Notifier.NOTIFY_REMOVE_ROUTE)) {
 			refreshGuiRouteProperties();			
 
@@ -356,10 +316,23 @@ public class GuiEngine {
 
 	private static void resetGuiState() {
 		s_codePoint = null;
-		s_startPoint = null;
-		s_endPoint = null;
 		s_focusNodes = null;
-		s_runMode = Notifier.RUN_MODE_FUNCTION;
 	}
 
+	public static void refreshCoolBar() {
+		if (s_coolBarManager == null) {
+			IWorkbenchWindow window = Workbench.getInstance().getActiveWorkbenchWindow();
+
+			if (window instanceof WorkbenchWindow) {
+			    if (((WorkbenchWindow)window).getCoolBarVisible()) {
+			        s_coolBarManager = ((WorkbenchWindow)window).getCoolBarManager2();
+			    }
+			}
+			assert(s_coolBarManager != null);
+		}
+		
+		if (s_coolBarManager != null) {
+			s_coolBarManager.update(true);
+		}
+	}
 }

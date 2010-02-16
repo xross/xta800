@@ -163,17 +163,17 @@ public class BlockNode extends Node {
 		return fnRef;
 	}
 	
-	public void buildListUp(List<InstructionNode> nodeList,
+	public void buildListUp(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
 		if(m_parent!= null){
 			m_parent.buildListUp(nodeList, stack, this);
 		}
 		for(InstructionNode inst : m_insts){
 			if(inst == start) break;
-			buildListDown(nodeList);
+			inst.buildListDown(nodeList);
 		}
 	}
-	public void buildListDown(List<InstructionNode> nodeList) {
+	public void buildListDown(List<Node> nodeList) {
 		for(InstructionNode inst : m_insts){
 			inst.buildListDown(nodeList);
 		}

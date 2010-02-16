@@ -1,8 +1,19 @@
 package com.xmos.xta.ui.dialogs;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -14,44 +25,66 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 import com.xmos.libs.util.Conversion;
+import com.xmos.xta.core.engine.Config;
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.ui.GuiEngine;
 
 public class Settings extends Dialog {
-    private Text m_coreMhzText;
-    private Spinner m_threadSpinner;
+	private static final int COLUMN_WIDTH = 60;
+	
     private Button m_caseButton;
     private Button m_scaleButton;
-  
-    private double m_oldFrequency;
-    private int m_oldNumThreads;
+    
+    private SettingsLabelProvider m_labelProvider;
+    private TableViewer m_viewer;
+
+    private Map<Integer, Double> m_oldFrequencies;
+    private Map<Integer, Map<Integer, Integer>> m_oldNumThreads;
     
     public Settings(Shell parent) {
     	super(parent);
-    	m_oldFrequency = getFrequency();
-    	m_oldNumThreads = getNumThreads();
+    	logFrequencies();
+    	logNumThreads();
     	open();
     }
 
-	public double getFrequency() {
-		return GuiEngine.getEngine().getFrequency();
+	private void logFrequencies() {
+		m_oldFrequencies = new TreeMap<Integer, Double>();
+		Engine engine = GuiEngine.getEngine();
+		Vector<Integer> nodeNumbers = engine.getXeLoader().getNodeNumbers();
+		for (int nodeNumber : nodeNumbers) {
+			m_oldFrequencies.put(nodeNumber, engine.getFrequency(nodeNumber));
+		}
 	}
 
-	public void setFrequency(double frequency) {
-		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiSrc, frequency);
+	private void logNumThreads() {
+		m_oldNumThreads = new TreeMap<Integer, Map<Integer, Integer>>();
+		Engine engine = GuiEngine.getEngine();
+		Vector<Integer> nodeNumbers = engine.getXeLoader().getNodeNumbers();
+		for (int nodeNumber : nodeNumbers) {
+			Map<Integer, Integer> threadNumbers = new TreeMap<Integer, Integer>();
+			for (int coreNumber : engine.getXeLoader().getCoreNumbers(nodeNumber)) {
+				threadNumbers.put(coreNumber, engine.getNumThreads(nodeNumber, coreNumber));
+			}
+			
+			m_oldNumThreads.put(nodeNumber, threadNumbers);
+		}
 	}
 
-	public int getNumThreads() {
-		return GuiEngine.getEngine().getNumThreads();
+
+	private void setFrequency(int nodeNumber, double frequency) {
+		GuiEngine.getEngine().setFrequency(GuiEngine.s_guiSrc, nodeNumber, frequency);
 	}
 
-	public void setNumThreads(int numThreads) {
-		GuiEngine.getEngine().setNumThreads(GuiEngine.s_guiSrc, numThreads);
+	private void setNumThreads(int nodeNumber, int coreNumber, int numThreads) {
+		GuiEngine.getEngine().setNumThreads(GuiEngine.s_guiSrc, nodeNumber, coreNumber, numThreads);
 	}	
     
     protected void configureShell(Shell newShell) {
@@ -74,8 +107,16 @@ public class Settings extends Dialog {
 
     protected void buttonPressed(int id) {
     	if (id == IDialogConstants.CANCEL_ID) {
-    		setFrequency(m_oldFrequency);
-    		setNumThreads(m_oldNumThreads);
+    		Engine engine = GuiEngine.getEngine();
+    		Vector<Integer> nodeNumbers = engine.getXeLoader().getNodeNumbers();
+    		for (int nodeNumber : nodeNumbers) {
+    			engine.setFrequency(GuiEngine.s_guiSrc, nodeNumber, m_oldFrequencies.get(nodeNumber));
+
+    			Map<Integer, Integer> threadNumbers = m_oldNumThreads.get(nodeNumber);
+    			for (int coreNumber : engine.getXeLoader().getCoreNumbers(nodeNumber)) {
+    				setNumThreads(nodeNumber, coreNumber, threadNumbers.get(coreNumber));
+    			}
+    		}
     	}
     	super.buttonPressed(id);
     }
@@ -84,36 +125,6 @@ public class Settings extends Dialog {
     }    
     
 	private void createSettingsBar(Composite controls) {
-		Group freqGroup = XtaDialog.createGroup(controls, "Core Mhz", 1, 1);
-		m_coreMhzText = new Text(freqGroup, SWT.BORDER | SWT.SINGLE);
-		m_coreMhzText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_coreMhzText.setText(Double.toString(getFrequency()));
-		m_coreMhzText.addVerifyListener(new VerifyListener() {
-			public void verifyText(VerifyEvent e) {
-				try {
-					double frequency = Double.parseDouble(m_coreMhzText.getText());
-					setFrequency(frequency);
-					enable(true);
-				} catch(Exception ex) {
-					enable(false);
-				}
-			}
-		});
-
-		Group threadsGroup = XtaDialog.createGroup(controls, "Num Threads", 1, 1);
-		m_threadSpinner = new Spinner(threadsGroup, SWT.BORDER);
-		m_threadSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		m_threadSpinner.setMinimum(1);
-		m_threadSpinner.setMaximum(8);
-		m_threadSpinner.setSelection(getNumThreads());
-		m_threadSpinner.setIncrement(1);
-		m_threadSpinner.setPageIncrement(4);
-		m_threadSpinner.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setNumThreads(m_threadSpinner.getSelection());
-			}			
-		});
-
 		Group caseGroup = XtaDialog.createGroup(controls, "Print worst case", 1, 1);
 		m_caseButton = new Button(caseGroup, SWT.CHECK);
 		m_caseButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
@@ -133,8 +144,87 @@ public class Settings extends Dialog {
 				setScale(m_scaleButton.getSelection());
 			}
 		});
+
+		createNodeSettings(controls);
 	}
 		
+	private void createNodeSettings(Composite controls) {
+		Engine engine = GuiEngine.getEngine();
+		Vector<Integer> nodeNumbers = engine.getXeLoader().getNodeNumbers();
+		if (nodeNumbers.size() == 0) {
+			return;
+		}
+	
+		Group freqGroup = XtaDialog.createGroup(controls, "Frequency/Threads", 2, 2);
+		m_viewer = new TableViewer(freqGroup);
+		Table table = m_viewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+
+		IStructuredContentProvider contentProvider = new SettingsContentProvider();
+		m_labelProvider = new SettingsLabelProvider(engine);
+
+		int i = 0;
+		List<Integer> alignments = m_labelProvider.getColumnAlignments();
+		List<String> columnNames = m_labelProvider.getColumnNames();
+		for (String label : columnNames) {
+			TableColumn tableColumn = new TableColumn(table, alignments.get(i));
+			tableColumn.setText(label);
+			tableColumn.setWidth(COLUMN_WIDTH);
+			i++;
+		}
+		m_viewer.setContentProvider(contentProvider);
+		m_viewer.setLabelProvider(m_labelProvider);
+
+		String names[] = new String[columnNames.size()];
+		columnNames.toArray(names);
+		m_viewer.setColumnProperties(names);
+		
+		m_viewer.setInput(engine);
+		addCellEditors(nodeNumbers);
+	}
+
+	private void addCellEditors(Vector<Integer> nodeNumbers) {
+		CellEditor[] editors = new CellEditor[nodeNumbers.size() + 1];
+
+		Table table = m_viewer.getTable();
+		TextCellEditor readOnly = new TextCellEditor(table);
+        ((Text) readOnly.getControl()).addVerifyListener(new VerifyListener() {
+    		public void verifyText(VerifyEvent e) {
+    			e.doit = false;  
+    		}
+        });
+        editors[0] = readOnly;
+
+		for (final int nodeNumber : nodeNumbers) {
+			TextCellEditor textEditor = new TextCellEditor(table);
+			final Text text = ((Text) textEditor.getControl());
+			text.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					try {
+						int rowNumber = m_viewer.getTable().getSelectionIndex();
+						if (rowNumber == 0) {
+							double frequency = Double.parseDouble(text.getText());
+							if (frequency > 0) {
+								setFrequency(nodeNumber, frequency);
+							}
+						} else {
+							int numThreads = Integer.parseInt(text.getText());
+							if ((numThreads > 0) && (numThreads <= Config.MAX_THREADS)) {
+								int coreNumber = rowNumber - 1;
+								setNumThreads(nodeNumber, coreNumber, numThreads);
+							}
+						}
+					} catch(Exception ex) { }
+				}
+			});
+	        editors[nodeNumber + 1] = textEditor;
+		}
+
+		m_viewer.setCellEditors(editors);
+		m_viewer.setCellModifier(new SettingsCellModifier(m_viewer, m_labelProvider));
+	}
+
 	private boolean isWorstCase() {
 		return GuiEngine.getEngine().getCase().equals(Case.WORST);
 	}
@@ -147,13 +237,6 @@ public class Settings extends Dialog {
 		if (scale != Conversion.getScale()) {
 			Conversion.setScale(scale);
 			GuiEngine.getEngine().notify(GuiEngine.s_guiSrc, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_SCALE);
-		}
-	}
-
-	private void enable(boolean enable) {
-		Button okButton = getButton(IDialogConstants.OK_ID);
-		if (okButton != null) {
-			okButton.setEnabled(enable);
 		}
 	}
 }

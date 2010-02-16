@@ -8,6 +8,7 @@ import com.xmos.xta.core.engine.TimeUnit.Units;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class RouteTiming {
@@ -64,16 +65,15 @@ public class RouteTiming {
 		return m_requirementsSrc;
 	}
 
-	public boolean passedTiming() {
-		Status status = new Status();
-		double worstTime = getWorstTime(status);
-		if (status.isComplete()) {
-			if (worstTime <= m_maxTime.getNs())
-			    return true;
+	public boolean passed() {
+		for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
+			if (unknown.getLevel() == Unknown.Level.ERROR) {
+				return false;
+			}
 		}
-		return false;
+		return passedTiming();
 	}
-	
+
 	public long getViolationCycles(Status status) {
 		return getWorstCycles(status) - m_maxTime.getCycles();
 	}
@@ -107,7 +107,7 @@ public class RouteTiming {
 				description += "    ";				
 			}
 			
-			if (passedTiming()) {
+			if (passed()) {
 				description += "Pass";
 			} else {
 				description += "Fail";
@@ -178,17 +178,17 @@ public class RouteTiming {
 		    		description += String.format("Worst Case Timing:  %8s,%8.2f mhz,%8d thread cycles\n", 
 		    				Conversion.getTimeString(worstTime),
 		    				getMhz(worstTime),
-		    				getWorstCycles(new Status()));    	    		
+		    				getWorstCycles(new Status()));
 		    	}
 		    	
-				if (isTimingSpecified()) {  			
+				if (isTimingSpecified()) {
 					description += String.format("Required:    %8s,%8.2f mhz,%8d thread cycles\n", 
 							Conversion.getTimeString(m_maxTime.getNs()), 
 							m_maxTime.getMhz(),
 							m_maxTime.getCycles());
 
 					if (passedTiming()) {
-						assert(status.isComplete());						
+						assert(status.isComplete());
 		                double slackTime = getSlackTime(new Status());
 		                description += String.format("Slack:      %8s,%8.2f mhz,%8d thread cycles\n", 
 		                		Conversion.getTimeString(slackTime),
@@ -220,6 +220,16 @@ public class RouteTiming {
 		return description;
 	}
 	    
+	private boolean passedTiming() {
+		Status status = new Status();
+		double worstTime = getWorstTime(status);
+		if (status.isComplete()) {
+			if ((worstTime <= m_maxTime.getNs()) && (worstTime != Double.POSITIVE_INFINITY))
+			    return true;
+		}
+		return false;
+	}
+	
 	private long getWorstCycles(Status status) {
 		Node worstCaseSubRoute = m_route.getNode();
 		return worstCaseSubRoute.getAttributes().getNumCycles(Case.WORST, status, null);

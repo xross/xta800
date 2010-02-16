@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,6 +106,8 @@ public class Engine implements Notifier, Aborter {
 	private Collection<FileLocation> m_userSpecifedFileLocations;	
 	private DataCollection m_dataCollection;
 	private Scripter m_scripter;
+	private Reference m_fromEndPoint;
+	private Reference m_toEndPoint;
 	
 	public Engine(Config config) {		
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
@@ -317,6 +320,8 @@ public class Engine implements Notifier, Aborter {
 		m_selectedRoute = null;
 		m_defines.clear();
 		Route.resetRouteCount();
+		m_fromEndPoint = null;
+		m_toEndPoint = null;
 		
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
 		
@@ -371,7 +376,63 @@ public class Engine implements Notifier, Aborter {
 			return analyseRouteSafely(src, routeDescription, temporaryRoute);
 		}
 	}
-	
+
+	public void analysePath(CommandSource src) {
+		if ((m_fromEndPoint == null) || m_fromEndPoint.getRef().equals("")) {
+			notify(src, Notifier.NOTIFY_ERROR, "please specify the from endpoint");
+
+		} else if ((m_toEndPoint == null) || m_toEndPoint.getRef().equals("")) {
+			notify(src, Notifier.NOTIFY_ERROR, "please specify the to endpoint");
+
+		} else {
+			analyseRoute(src, m_fromEndPoint.getRef(), m_toEndPoint.getRef(), false);
+		}
+	}
+
+	public void setFromEndPoint(CommandSource src, String ref) {
+		Reference fromEndPoint = ReferenceFactory.createReference(ref, ReferenceClass.ENDPOINT_REF);			
+		if (!fromEndPoint.resolve(this)) {
+			notify(src, Notifier.NOTIFY_ERROR,
+					String.format("'%s' is not a valid endpoint", ref));
+		} else {
+			m_fromEndPoint = fromEndPoint;
+			notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
+		}
+	}
+
+	public void removeFromEndPoint(CommandSource src) {
+		if (m_fromEndPoint != null) {
+			m_fromEndPoint = null;
+			notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
+		}
+	}
+
+	public void setToEndPoint(CommandSource src, String ref) {
+		Reference toEndPoint = ReferenceFactory.createReference(ref, ReferenceClass.ENDPOINT_REF);			
+		if (!toEndPoint.resolve(this)) {
+			notify(src, Notifier.NOTIFY_ERROR,
+					String.format("'%s' is not a valid endpoint", ref));
+		} else {
+			m_toEndPoint = toEndPoint;
+			notify(src, Notifier.NOTIFY_TO_END_POINT_SET, "");
+		}
+	}
+
+	public void removeToEndPoint(CommandSource src) {
+		if (m_toEndPoint != null) {
+			m_toEndPoint = null;
+			notify(src, Notifier.NOTIFY_TO_END_POINT_SET, "");
+		}
+	}
+
+	public Reference getFromEndPoint() {
+		return m_fromEndPoint;
+	}
+
+	public Reference getToEndPoint() {
+		return m_toEndPoint;
+	}
+
 	public Notifier getNotifier() {
 		return m_notifier;
 	}
@@ -399,7 +460,7 @@ public class Engine implements Notifier, Aborter {
 		if (nodeNumber != m_nodeNumber) {
 			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeNumber, m_coreNumber)) {
 				m_nodeNumber = nodeNumber;
-				m_config.m_frequency = (double)getNodeHz(m_nodeNumber) / 1000000;
+				m_config.m_frequency = getFrequency(m_nodeNumber);
 				m_selectedRoute = null;
 
 				if (doNotify) {
@@ -420,7 +481,7 @@ public class Engine implements Notifier, Aborter {
 		if (m_coreNumber != coreNumber) {
 			if (initialiseGlobalStructure(src, m_xeLoader, m_sections, false, m_nodeNumber, coreNumber)) {
 				m_coreNumber = coreNumber;
-				m_config.m_numThreads = getCoreThreads(m_nodeNumber, coreNumber);
+				m_config.m_numThreads = getNumThreads(m_nodeNumber, coreNumber);
 				m_selectedRoute = null;
 
 				if (doNotify) {
@@ -441,36 +502,76 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
-	public int getCoreThreads(int nodeNumber, int coreNumber) {
-		Integer threads = m_coreThreads.get(nodeNumber, coreNumber);
-		if (threads == null) {
-			return Config.DEFAULT_THREADS;
-		}
-		return threads;
-	}
-
 	public int getCoreNumber() {
 		return m_coreNumber;
 	}
 
 	public void setFrequency(CommandSource src, double frequency) {
+		if (!checkFrequency(src, frequency)) {
+			return;
+		}
+
 		m_config.m_frequency = frequency;
 		m_nodeHz.put(m_nodeNumber, (long)(frequency * 1000000));
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
+	}
+
+	public void setFrequency(CommandSource src, int nodeNumber, double frequency) {
+		if (!checkFrequency(src, frequency)) {
+			return;
+		}
+
+		if (m_nodeNumber == nodeNumber) {
+			setFrequency(src, frequency);
+		} else {
+			m_nodeHz.put(nodeNumber, (long)(frequency * 1000000));
+		}
 	}
 
 	public double getFrequency() {
 		return m_config.m_frequency;
 	}
 
+	public double getFrequency(int nodeNumber) {
+		if (m_nodeHz.containsKey(nodeNumber)) {
+			return (double)m_nodeHz.get(nodeNumber) / 1000000;
+		} else {
+			return Config.DEFAULT_MHZ;
+		}
+	}
+
 	public void setNumThreads(CommandSource src, int numThreads) {
+		if (!checkNumThreads(src, numThreads)) {
+			return;
+		}
+
 		m_config.m_numThreads = numThreads;
 		m_coreThreads.add(m_nodeNumber, m_coreNumber, numThreads);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
 	}
 
+	public void setNumThreads(CommandSource src, int nodeNumber, int coreNumber, int numThreads) {
+		if (!checkNumThreads(src, numThreads)) {
+			return;
+		}
+
+		if ((m_nodeNumber == nodeNumber) && (m_coreNumber == coreNumber)) {
+			setNumThreads(src, numThreads);
+		} else {
+			m_coreThreads.add(nodeNumber, coreNumber, numThreads);
+		}
+	}
+
 	public int getNumThreads() {
 		return m_config.m_numThreads;
+	}
+
+	public int getNumThreads(int nodeNumber, int coreNumber) {
+		Integer threads = m_coreThreads.get(nodeNumber, coreNumber);
+		if (threads == null) {
+			return Config.DEFAULT_THREADS;
+		}
+		return threads;
 	}
 
 	public void setCase(CommandSource src, Case c) {
@@ -1305,8 +1406,8 @@ public class Engine implements Notifier, Aborter {
 			} catch (Exception e) {
 				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());								
 				return false;
-				
 			} 
+
 			
 			Set<InstructionNode> functionStartNodes = fc.getFunctionStarts();
 			Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
@@ -1489,24 +1590,7 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 	}
-	/*
-	private void warnAboutUnsetBranches(XeLoader xeLoader, Sections sections, CommandSource src, InstructionDecoder id,
-			int nodeNumber, int coreNumber) {
-		SymbolTable symbolTable = xeLoader.getSymbolTable(nodeNumber, coreNumber);
-		Collection<String> systemFunctions = sections.getSystems(nodeNumber, coreNumber);
 
-		for (InstructionNode inst : id.getInstructions()) {
-			if (inst.getXtaInstruction().isBranch() && (inst.getNextNodesSize() == 0) 
-					&& !inst.getXtaInstruction().getReturn() && !inst.getXtaInstruction().getBranchPcRelative()) {
-				
-				String functionName = symbolTable.functionName(inst.getXtaInstruction().getPc());
-				if (!isSystemFunction(systemFunctions, functionName)) {
-					notify(src, Notifier.NOTIFY_WARNING, "No branch targets set on instruction " + inst.getXtaInstruction());
-				}
-			}
-		}
-	}
-*/
 	private boolean isSystemFunction(Collection<String> systems, String functionName) {
 		if (functionName.length() == 0) {
 			return false;
@@ -1672,6 +1756,22 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		return Config.DEFAULT_THREADS;
+	}
+
+	private boolean checkNumThreads(CommandSource src, int numThreads) {
+		if ((numThreads <= 0) || (numThreads > Config.MAX_THREADS)) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Num threads '%d' invalid", numThreads));
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkFrequency(CommandSource src, double frequency) {
+		if (frequency <= 0) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Frequency '%.1f' invalid", frequency));
+			return false;
+		}
+		return true;
 	}
 }
 

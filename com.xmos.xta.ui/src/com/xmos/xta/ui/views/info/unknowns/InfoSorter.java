@@ -19,9 +19,15 @@ class InfoSorter extends ViewerSorter {
 		case 1:
 			int res3 = p1.getDescription().compareTo(p2.getDescription());
 			return res3 * m_direction;
-		default:
+		case 2:
 			int resd = p1.getNode().getBackTrace("").compareTo(p2.getNode().getBackTrace(""));
 			return resd * m_direction;
+		case 3:
+			int res4 = p1.getLevel().toString().compareTo(p2.getLevel().toString());
+			return res4 * m_direction;
+		default:
+			assert(false);
+			return 0;
 		}
 	}
 

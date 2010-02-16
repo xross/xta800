@@ -93,11 +93,11 @@ public abstract class XtaAnnotations implements IPropertyChangeListener {
 		} else if (event.getProperty().equals(Notifier.NOTIFY_SELECT_ROUTE)) {
 			updateAll();
 
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_START_POINT) ||
+		} else if (event.getProperty().equals(Notifier.NOTIFY_FROM_END_POINT_SET) ||
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_START_POINT)) {
 			updateHighlighting();
 
-		} else if (event.getProperty().equals(Notifier.NOTIFY_SET_END_POINT) ||
+		} else if (event.getProperty().equals(Notifier.NOTIFY_TO_END_POINT_SET) ||
 				   event.getProperty().equals(Broadcaster.BROADCAST_SET_END_POINT)) {
 			updateHighlighting();
 
@@ -307,12 +307,12 @@ public abstract class XtaAnnotations implements IPropertyChangeListener {
 	}
 
 	public Set<Long> getStartPointIndexes() {
-		Reference ref = GuiEngine.getStartPoint();
+		Reference ref = GuiEngine.getEngine().getFromEndPoint();
 		return getIndexesForRef(ref);
 	}
 
     public Set<Long> getEndPointIndexes() {
-		Reference ref = GuiEngine.getEndPoint();
+		Reference ref = GuiEngine.getEngine().getToEndPoint();
 		return getIndexesForRef(ref);
 	}
 

@@ -61,13 +61,14 @@ abstract class PathTimeImpl implements XtaImpl {
 
     public Control createDialogArea(Composite parent, ButtonEnabler enabler) {
     	String from = "";
-    	Reference fromRef = GuiEngine.getStartPoint();
+    	Engine engine = GuiEngine.getEngine();
+    	Reference fromRef = engine.getFromEndPoint();
     	if (fromRef != null) {
     		from = fromRef.getRef();
     	}
     	
     	String to = "";
-    	Reference toRef = GuiEngine.getEndPoint();
+    	Reference toRef = engine.getToEndPoint();
     	if (toRef != null) {
     		to = toRef.getRef();
     	}

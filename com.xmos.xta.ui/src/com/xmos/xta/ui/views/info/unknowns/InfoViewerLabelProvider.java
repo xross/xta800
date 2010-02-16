@@ -15,11 +15,12 @@ class InfoViewerLabelProvider extends LabelProvider implements ITableLabelProvid
     static final String PC         = "Pc";
     static final String DESC       = "Description";
     static final String BACKTRACE  = "Back Trace";
+    static final String LEVEL      = "Level";
     
     InfoViewerLabelProvider() {
-    	m_columnNames = new String[] { PC, DESC, BACKTRACE };
-    	m_columnWidths = new int[] { 100, 350, 350 };
-    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT };
+    	m_columnNames = new String[] { PC, DESC, BACKTRACE, LEVEL };
+    	m_columnWidths = new int[] { 100, 300, 300, 100 };
+    	m_columnAligmnments = new int[] { SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT };
     }
     
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -32,10 +33,12 @@ class InfoViewerLabelProvider extends LabelProvider implements ITableLabelProvid
 		Unknown unknown = (Unknown)element;	
 		if (m_columnNames[columnIndex].equals(PC)) {
 			return String.format("0x%x", unknown.getNode().getStartPc());
-    	} else if (m_columnNames[columnIndex].equals(DESC)) {    		
+    	} else if (m_columnNames[columnIndex].equals(DESC)) {
 		    return unknown.getDescription();
-    	} else if (m_columnNames[columnIndex].equals(BACKTRACE)) {    		
+    	} else if (m_columnNames[columnIndex].equals(BACKTRACE)) {
 	        return unknown.getNode().getBackTrace("");
+    	} else if (m_columnNames[columnIndex].equals(LEVEL)) {
+		    return unknown.getLevel().toString();
         }
 		assert(false);
 		return "";

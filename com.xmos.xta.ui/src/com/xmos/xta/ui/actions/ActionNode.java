@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -20,6 +21,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 import org.eclipse.ui.actions.ActionDelegate;
 
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.ui.GuiEngine;
@@ -116,8 +118,10 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 		m_nodeNumbers.clear();
 		m_nodeNames.clear();
 		
-		XnLoader xnLoader = GuiEngine.getEngine().getXeLoader().getXnLoader();
-		for (Integer nodeNumber : GuiEngine.getEngine().getXeLoader().getNodeNumbers()) {
+		XeLoader xeLoader = GuiEngine.getEngine().getXeLoader();
+		XnLoader xnLoader = xeLoader.getXnLoader();
+		Vector<Integer> nodeNumbers = xeLoader.getNodeNumbers();
+		for (Integer nodeNumber : nodeNumbers) {
 			String nodeName = xnLoader.getNodeName(nodeNumber);
 			if (nodeName.length() == 0) {
 				nodeName = String.format("%d", nodeNumber);
@@ -126,19 +130,28 @@ public class ActionNode extends ActionDelegate implements IPropertyChangeListene
 			m_nodeNumbers.put(nodeName, nodeNumber);
 			m_nodeNames.put(nodeNumber, nodeName);
 		}
-		updateCurrentNodeNumber(GuiEngine.getEngine().getNodeNumber());		
 		
-		if (GuiEngine.getEngine().getXeLoader().getNodeNumbers().size() < 2) {
-			m_action.setEnabled(false);
-		} else {
-			m_action.setEnabled(true);
+		if (nodeNumbers.size() < 2) {
+			disable();
+			return;
 		}
+
+		updateCurrentNodeNumber(GuiEngine.getEngine().getNodeNumber());
+		m_action.setEnabled(true);
+	}
+
+	private void disable() {
+		m_action.setText("Node 0");
+		m_action.setToolTipText("Node 0");
+		m_action.setEnabled(false);
 	}
 
 	private void updateCurrentNodeNumber(int nodeNumber) {
 		m_currentNodeNumber = nodeNumber;
 		String nodeName = m_nodeNames.get(nodeNumber);
 		m_action.setText("Node " + nodeName);		
-		m_action.setToolTipText("Node " + nodeName);		
+		m_action.setToolTipText("Node " + nodeName);
+		
+		GuiEngine.refreshCoolBar();
 	}	
 }

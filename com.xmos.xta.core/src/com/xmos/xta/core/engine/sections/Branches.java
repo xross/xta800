@@ -69,7 +69,7 @@ public class Branches extends Section {
 
 	private boolean removeFrom(Set<BranchInfo> set, Collection<Reference> toRefs) {
 		boolean hit = false;
-		Set<BranchInfo> toRemove = new HashSet<BranchInfo>();
+		Set<BranchInfo> toRemove = new TreeSet<BranchInfo>();
 		for (BranchInfo info : set) {
 			if (info.isUser()) {
 				for (Reference toRef : toRefs) {

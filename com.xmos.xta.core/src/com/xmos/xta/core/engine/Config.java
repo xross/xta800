@@ -12,6 +12,7 @@ public class Config {
 
 	static final public double DEFAULT_MHZ = 400;
 	static final public int DEFAULT_THREADS = 8;
+	static final public int MAX_THREADS = 8;
 
 	static final public int VERBOSITY_DISPLAY_INSTRUCTION_NODES = 1;
 	static final public int VERBOSITY_DISPLAY_NULL_NODE = 50;

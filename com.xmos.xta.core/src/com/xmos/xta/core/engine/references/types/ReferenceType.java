@@ -75,15 +75,18 @@ public abstract class ReferenceType {
 	    m_pcBackTrails.put(pc, new LinkedList<String>());
 	}
 
-	public void addPc(long pc, String tableLabel) {
-	    m_pcs.add(pc);
-	    
-    	String[] subStrings = tableLabel.split(",");
+	public static List<String> convertLabelToList(String tableLabel){
+		String[] subStrings = tableLabel.split(",");
 	    List<String> backTrail = new LinkedList<String>();
 	    for (int i = 0; i < subStrings.length - 1; i++) {
 	    	backTrail.add(subStrings[i]);
 	    }
-	    m_pcBackTrails.put(pc, backTrail);
+		return backTrail;
+	}
+	
+	public void addPc(long pc, String tableLabel) {
+	    m_pcs.add(pc);
+	    m_pcBackTrails.put(pc, convertLabelToList(tableLabel));
 	}
 
 	public String getFileName() {

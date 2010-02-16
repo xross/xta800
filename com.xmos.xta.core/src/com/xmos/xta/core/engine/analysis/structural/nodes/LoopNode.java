@@ -37,6 +37,7 @@ public class LoopNode extends Node {
 	public LoopNode(Node loop, Node base) {
 		super();
 		m_loopHeader = base;
+		m_loopHeader.getAttributes().setIsLoopHeader(true);
 		m_loops = new ArrayList<Node>();
 		m_loops.add(loop);
 		m_attributes = new LoopNodeAttributes(this);
@@ -45,6 +46,7 @@ public class LoopNode extends Node {
 	public LoopNode(Set<Node> loops, Node base) {
 		super();
 		m_loopHeader = base;
+		m_loopHeader.getAttributes().setIsLoopHeader(true);
 		m_loops = new ArrayList<Node>();
 		for (Node loop : loops) {
 			m_loops.add(loop);
@@ -206,7 +208,7 @@ public class LoopNode extends Node {
 		return fnRef;
 	}
 
-	public void buildListUp(List<InstructionNode> nodeList,
+	public void buildListUp(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
 		if(m_parent!= null){
 			m_parent.buildListUp(nodeList, stack, this);
@@ -217,7 +219,7 @@ public class LoopNode extends Node {
 		
 	}	
 	
-	public void buildListDown(List<InstructionNode> nodeList) {
+	public void buildListDown(List<Node> nodeList) {
 		m_loopHeader.buildListDown(nodeList);
 		for(Node node : m_loops){
 			node.buildListDown(nodeList);

@@ -5,9 +5,15 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactor
 import com.xmos.xta.core.engine.references.Reference;
 
 public abstract class Unknown implements Comparable<Unknown> {
+	
 	public enum State {
 		UNKNOWN,
 		KNOWN,
+	}
+
+	public enum Level {
+		WARNING,
+		ERROR,
 	}
 
 	public enum Source {
@@ -34,6 +40,21 @@ public abstract class Unknown implements Comparable<Unknown> {
 
 	public Type getType() {
 		return m_type;
+	}
+
+	public Level getLevel() {
+		switch (m_type) {
+		case LOOP_ITERATIONS:
+    		return Level.ERROR;
+		case LOOP_PATH_ITERATIONS:
+		case LOOP_SCOPE:
+		case INSTRUCTION_TIME:
+		case PATH_TIME:
+		case FUNCTION_TIME:
+			return Level.WARNING;
+		}
+		assert(false);
+		return Level.ERROR;
 	}
 
 	public State getState() {

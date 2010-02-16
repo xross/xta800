@@ -152,12 +152,12 @@ public class InstructionNode extends Node {
 		//never call this on this
 	}
 
-	public void buildListDown(List<InstructionNode> nodeList) {
+	public void buildListDown(List<Node> nodeList) {
 		nodeList.add(this);
 	}
 
 
-	public void buildListUp(List<InstructionNode> nodeList,
+	public void buildListUp(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
 		assert(start == null);
 		if(m_parent!= null){

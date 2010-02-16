@@ -161,7 +161,7 @@ public class SequenceNode extends Node {
 		return fnRef;
 	}
 	
-	public void buildListUp(List<InstructionNode> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
 		if(m_parent!= null){
 			m_parent.buildListUp(nodeList, stack, this);
 		}
@@ -171,7 +171,7 @@ public class SequenceNode extends Node {
 		}
 	}
 
-	public void buildListDown(List<InstructionNode> nodeList) {
+	public void buildListDown(List<Node> nodeList) {
 		for(Node node : m_nodes){
 			node.buildListDown(nodeList);
 		}

@@ -2,7 +2,6 @@ package com.xmos.xta.ui.views.info.unknowns;
 
 import java.util.List;
 
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -31,10 +30,4 @@ public class KnownsViewer extends InfoViewer {
 	InfoViewerLabelProvider createLabelProvider() {
 		return new InfoViewerLabelProvider();
 	}
-
-	void enableContextMenuActions(int numInstructionTimeNodes, int numLoopIterationsNodes) {
-	}
-	
-	void createContextMenuActions(MenuManager menuMgr) {		
-	}	
 }

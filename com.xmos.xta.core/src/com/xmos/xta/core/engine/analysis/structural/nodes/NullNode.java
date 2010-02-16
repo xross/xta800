@@ -90,10 +90,10 @@ public class NullNode extends Node {
 		return null;
 	}
 
-	public void buildListDown(List<InstructionNode> nodeList) {
+	public void buildListDown(List<Node> nodeList) {
 		
 	}
-	public void buildListUp(List<InstructionNode> nodeList,
+	public void buildListUp(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
 	}
 }

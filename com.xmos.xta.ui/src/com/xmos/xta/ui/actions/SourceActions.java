@@ -45,7 +45,7 @@ public class SourceActions  {
 		
      	Action action = new Action("Show start point") {
      		public void run() {
-     			GuiEngine.setCodePoint(GuiEngine.getStartPoint());
+     			GuiEngine.setCodePoint(GuiEngine.getEngine().getFromEndPoint());
 				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
      		}
      	};
@@ -53,7 +53,7 @@ public class SourceActions  {
 
      	action = new Action("Show end point") {
      		public void run() {
-     			GuiEngine.setCodePoint(GuiEngine.getEndPoint());
+     			GuiEngine.setCodePoint(GuiEngine.getEngine().getToEndPoint());
 				GuiEngine.broadcast(Broadcaster.BROADCAST_SHOW_CODE_POINT, "");
      		}
      	};
@@ -61,28 +61,28 @@ public class SourceActions  {
 
      	action =  new Action("Set from endpoint") {
      		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, m_clickCodeRefString);
+     			GuiEngine.getEngine().setFromEndPoint(GuiEngine.s_guiSrc, m_clickCodeRefString);
      		}
      	};
      	m_actions.put(SetFromEndPointID, action);
      	
      	action = new Action("Set to endpoint") {
      		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, m_clickCodeRefString);
+     			GuiEngine.getEngine().setToEndPoint(GuiEngine.s_guiSrc, m_clickCodeRefString);
      		}
      	};
      	m_actions.put(SetToEndPointID, action);
      	
      	action = new Action("Remove from endpoint") {
      		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_START_POINT, "");     			
+     			GuiEngine.getEngine().removeFromEndPoint(GuiEngine.s_guiSrc);
      		}
      	};
      	m_actions.put(RemoveFromEndPointID, action);
      	
      	action = new Action("Remove to endpoint") {
      		public void run() {
-     			GuiEngine.broadcast(Broadcaster.BROADCAST_SET_END_POINT, "");
+     			GuiEngine.getEngine().removeToEndPoint(GuiEngine.s_guiSrc);
      		}
      	};
      	m_actions.put(RemoveToEndPointID, action);

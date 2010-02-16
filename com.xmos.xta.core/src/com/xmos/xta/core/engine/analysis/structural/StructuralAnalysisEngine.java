@@ -127,7 +127,6 @@ public class StructuralAnalysisEngine {
 		
 		engine.provideFeedback("Analysing call graph...");
 		detectRecursion(functionReferencesWithinFunction, sections.getRecursiveFunctions(nodeId, coreId));
-		
 		assert(functionToEndNodes != null);
 		assert(!functionToEndNodes.isEmpty());
 		
@@ -158,6 +157,7 @@ public class StructuralAnalysisEngine {
 			done =true;
 			fn.traverse(new Stack<Node>(),  new DefaultNodeTraverser() {
 				public TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors) {
+					
 					for(Node child : node.iChildren()){
 						if(child instanceof SequenceNode){
 							SequenceNode sn = (SequenceNode)child;
@@ -457,17 +457,18 @@ public class StructuralAnalysisEngine {
 				}
 			}
 		}	
-		assert(linkSanityCheck(functionReferencesWithinFunction));
+	//	assert(linkSanityCheck(functionReferencesWithinFunction));
 	}
 	
 	private void detectRecursion(Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
 			Collection<String> recursiveFunctions) {
 
-		//first build up a set of functions that cannot be called (i.e. thread starts)
-		//FIXME this is not necessarily true
-		Set<FunctionNode> nonBranchedToFunctions = new HashSet<FunctionNode>();
+
+		Set<FunctionReferenceNode> nonBranchedToFunctions = new HashSet<FunctionReferenceNode>();
 		
-		nonBranchedToFunctions.addAll(functionReferencesWithinFunction.keySet());
+		for (FunctionNode f : functionReferencesWithinFunction.keySet()) {
+			nonBranchedToFunctions.addAll(functionReferencesWithinFunction.get(f));
+		}
 		
 		for (FunctionNode f : functionReferencesWithinFunction.keySet()) {
 			for(FunctionReferenceNode fr : functionReferencesWithinFunction.get(f)){
@@ -476,30 +477,42 @@ public class StructuralAnalysisEngine {
 				}
 			}
 		}
+		
+		//FIXME - this set is too big
+		/*
+		System.out.println("non branched to functions: ");
+		for(FunctionReferenceNode fn : nonBranchedToFunctions){
+			System.out.println("\t" + fn.getFunctionName());
+		}
+		*/
+		
 		Set<FunctionReferenceNode> recursiveFunctionNodes = new HashSet<FunctionReferenceNode>();
-		Set<FunctionNode> seen = new HashSet<FunctionNode>();
-		for(FunctionNode start : nonBranchedToFunctions){
+		List<FunctionReferenceNode> seen = new LinkedList<FunctionReferenceNode>();
+		for(FunctionReferenceNode start : nonBranchedToFunctions){
 			walk(start, seen, functionReferencesWithinFunction, recursiveFunctionNodes);
 		}
+		for(Node recursive : recursiveFunctionNodes){
+			recursiveFunctions.add(recursive.getFunctionName());
+		}
+		
 		assert(linkSanityCheck(functionReferencesWithinFunction));
 	}
 	
 	private void walk(
-			FunctionNode start,
-			Set<FunctionNode> seen,
+			FunctionReferenceNode start,
+			List<FunctionReferenceNode> seen,
 			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
 			Set<FunctionReferenceNode> recursiveFunctionReferenceNodes) {
+		if(!start.isKnownFunction()) return;
+		
 		seen.add(start);
-		for(FunctionReferenceNode frn : functionReferencesWithinFunction.get(start)){
+	
+		for(FunctionReferenceNode frn : functionReferencesWithinFunction.get(start.getFunctionNode())){
 			if(frn.isKnownFunction()){
-				FunctionNode next = frn.getFunctionNode();
-				if(seen.contains(start)){
+				if(seen.contains(frn)){
 					recursiveFunctionReferenceNodes.add(frn);
-					//TODO -- look at this
-					//start.setFormsRecursion();
-					//start.setUnresolved(true);
 				} else {
-					walk(next, seen, functionReferencesWithinFunction, recursiveFunctionReferenceNodes);
+					walk(frn, seen, functionReferencesWithinFunction, recursiveFunctionReferenceNodes);
 				}
 			}
 		}

@@ -5,8 +5,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -18,12 +16,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNode
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.ui.GuiEngine;
-import com.xmos.xta.ui.dialogs.InstructionTime;
-import com.xmos.xta.ui.dialogs.Loop;
 
 public class UnknownsViewer extends InfoViewer {
-	private Action m_setInstructionTimeAction;
-	private Action m_setLoopIterationsAction;
 
 	public UnknownsViewer(TableViewer tableViewer, Composite parent, IWorkbenchPartSite site) {
 		super(tableViewer, parent, site);
@@ -63,37 +57,4 @@ public class UnknownsViewer extends InfoViewer {
 	InfoViewerLabelProvider createLabelProvider() {
 		return new InfoViewerLabelProvider();
 	}
-	
-	void enableContextMenuActions(int numInstructionTimeNodes, int numLoopIterationsNodes) {
-		m_setLoopIterationsAction.setEnabled(false);
-		m_setInstructionTimeAction.setEnabled(false);
-		
-		if ((numInstructionTimeNodes > 0) && (numLoopIterationsNodes == 0)) {
-			m_setInstructionTimeAction.setEnabled(true);					
-		} else if ((numLoopIterationsNodes > 0) && (numInstructionTimeNodes == 0)) {
-			m_setLoopIterationsAction.setEnabled(true);
-		}		
-	}	
-	
- 	void createContextMenuActions(MenuManager menuMgr) {
-		// Create the 'Set Instruction Time' action
-		m_setInstructionTimeAction = new Action() { 
-			public void run() {
-     			new InstructionTime(getParent().getShell(), getSelectedNodes());
-			}
-		};
-		m_setInstructionTimeAction.setText("Set instruction time");
-		menuMgr.add(m_setInstructionTimeAction);
-		m_setInstructionTimeAction.setEnabled(false);
-
-		// Create the 'Set Loop Iterations' action
-		m_setLoopIterationsAction = new Action() { 
-			public void run() {
-		        new Loop(getParent().getShell(), getSelectedNodes());
-			}
-		};
-		m_setLoopIterationsAction.setText("Set loop iterations");
-		menuMgr.add(m_setLoopIterationsAction);
-		m_setLoopIterationsAction.setEnabled(false);
-	} 		
 }
