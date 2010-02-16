@@ -1,5 +1,5 @@
-xta: error: unresolved reference: CALL:test.xc:19
-xta: error: unresolved reference: CALL:test.xc:13
+xta: error: 'CALL:test.xc:19' is not a valid endpoint
+xta: error: 'CALL:test.xc:13' is not a valid endpoint
 Route\(0\) path: CALL:test.xc:13 to CALL:test.xc:14
     No Timing Specified
 

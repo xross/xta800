@@ -9,3 +9,5 @@ Current core: 0
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(Debug information avaliable\)
 Loaded Route\(0\): path: test.xc:8 to test.xc:10 
+From endpoint 'test.xc:8'
+To endpoint 'test.xc:10'

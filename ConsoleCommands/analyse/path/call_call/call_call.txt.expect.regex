@@ -1,9 +1,9 @@
 Label: call_function_a0, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 13
 Label: call_function_b0, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 15
-xta: error: unresolved reference: call_function_a1
+xta: error: 'call_function_a1' is not a valid endpoint
 Label: call_function_a1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 21
 Label: call_function_b1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 23
-xta: error: unresolved reference: call_function_a0
+xta: error: 'call_function_a0' is not a valid endpoint
 Route\(0\) path: call_function_a0 to call_function_b0
     No Timing Specified
 
