@@ -13,6 +13,6 @@ function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s main
 .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 
-Loop iteratio[mun]s \(node id: \d+\) are known, pc: 0x[0-9a-fA-F]{5}, backtrace: main:f:
-Loop iteratio[mun]s \(node id: \d+\) are known, pc: 0x[0-9a-fA-F]{5}, backtrace: main:f:
-Loop scope \(node id: \d+\) has been set, pc: 0x[0-9a-fA-F]{5}, backtrace: main:f:
+ERROR: Loop iteratio[mun]s \(node id: \d+\) are known, pc: 0x[0-9a-fA-F]{5}, backtrace: main:f:
+ERROR: Loop iteratio[mun]s \(node id: \d+\) are known, pc: 0x[0-9a-fA-F]{5}, backtrace: main:f:
+WARNING: Loop scope \(node id: \d+\) has been set, pc: 0x[0-9a-fA-F]{5}, backtrace: main:f:

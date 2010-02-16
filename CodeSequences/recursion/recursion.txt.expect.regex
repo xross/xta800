@@ -1,44 +1,57 @@
-function\(\d+\) +: Unresolved / \d+.0 ns main
-.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
-.    function\(\d+\) +: Unresolved / \d+.0 ns f
-.    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
-.    .    cond\(\d+\) +: Unresolved / \d+.0 ns 
-.    .    .    block\(\d+\) +: 0.0 ns \(x 0\) / \d+.0 ns \(x 1\) 
-.    .    .    seq\(\d+\) +: Unresolved / 0.0 ns 
-.    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    .    function\(\d+\) +: Unresolved / 0.0 ns g
-.    .    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    .    .    cond\(\d+\) +: Unresolved / 0.0 ns 
-.    .    .    .    .    .    block\(\d+\) +: 0.0 ns \(x 0\) / 0.0 ns \(x 0\) 
-.    .    .    .    .    .    seq\(\d+\) +: Unresolved / Unresolved 
-.    .    .    .    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    .    .    .    .    function\(\d+\) +: Unresolved / Unresolved Recursive Call
-.    .    .    .    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    block\(\d+\) +  : \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+function\(\d+\)\s+: Unresolved / \d+.\d+ ns main
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    function\(\d+\)\s+: Unresolved / \d+.\d+ ns f
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    cond\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    .    seq\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    function\(\d+\)\s+: Unresolved / \d+.\d+ ns g
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    cond\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    seq\(\d+\)\s+: Unresolved / Unresolved 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    function\(\d+\)\s+: Unresolved / Unresolved f\(Recursive\)
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 
-function\(\d+\) +: Unresolved / \d+.0 ns f
-.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
-.    cond\(\d+\) +: Unresolved / \d+.0 ns 
-.    .    block\(\d+\) +: 0.0 ns \(x 0\) / \d+.0 ns \(x 1\) 
-.    .    seq\(\d+\) +: Unresolved / 0.0 ns 
-.    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    function\(\d+\) +: Unresolved / 0.0 ns g
-.    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    .    cond\(\d+\) +: Unresolved / 0.0 ns 
-.    .    .    .    .    block\(\d+\) +: 0.0 ns \(x 0\) / 0.0 ns \(x 0\) 
-.    .    .    .    .    seq\(\d+\) +: Unresolved / Unresolved 
-.    .    .    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    .    .    .    function\(\d+\) +: Unresolved / Unresolved Recursive Call
-.    .    .    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
+function\(\d+\)\s+: Unresolved / \d+.\d+ ns f
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    cond\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    seq\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    function\(\d+\)\s+: Unresolved / \d+.\d+ ns g
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    cond\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    seq\(\d+\)\s+: Unresolved / Unresolved 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    function\(\d+\)\s+: Unresolved / Unresolved f\(Recursive\)
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 
-function\(\d+\) +: Unresolved / \d+.0 ns g
-.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
-.    cond\(\d+\) +: Unresolved / \d+.0 ns 
-.    .    block\(\d+\) +: 0.0 ns \(x 0\) / \d+.0 ns \(x 1\) 
-.    .    seq\(\d+\) +: Unresolved / Unresolved 
-.    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    function\(\d+\) +: Unresolved / Unresolved Recursive Call
-.    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / 0.0 ns \(x 0\) 
+function\(\d+\)\s+: Unresolved / \d+.\d+ ns g
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    cond\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    seq\(\d+\)\s+: Unresolved / Unresolved 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    function\(\d+\)\s+: Unresolved / Unresolved f\(Recursive\)
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 

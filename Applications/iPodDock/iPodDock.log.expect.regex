@@ -1,11 +1,5 @@
 .*
 [^^^]
-xta: warning: No branch targets set on instruction \(usb_buf_pull\+\d+\) 0x[0-9a-z]+ bla \(1r\) r2
-xta: warning: No branch targets set on instruction \(usb_buf_pull\+\d+\) 0x[0-9a-z]+ bla \(1r\) r11
-xta: warning: No branch targets set on instruction \(USBHostStackParseConfigurationDescriptor\+\d+\) 0x[0-9a-z]+ bla \(1r\) r2
-xta: warning: No branch targets set on instruction \(USBHostStack_main\+\d+\) 0x[0-9a-z]+ bla \(1r\) r0
-xta: warning: No branch targets set on instruction \(USBHostStack_main\+\d+\) 0x[0-9a-z]+ bla \(1r\) r5
-xta: warning: No branch targets set on instruction \(USBHostStack_main\+\d+\) 0x[0-9a-z]+ bla \(1r\) r1
 Route\(0\) path: audio_48_left_o0 to audio_48_left_o2
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 

@@ -1,5 +1,3 @@
-xta: warning: No branch targets set on instruction \(XUD_Error_hex\+\d+\) 0x[0-9a-z]+ .*
-[^^^]
 Route\(0\) path: left_output to right_output
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 5.2 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
