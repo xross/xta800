@@ -354,29 +354,6 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
-	public boolean analyseRoute(CommandSource src, String from, String to, boolean temporaryRoute) {
-		Reference fromRef = ReferenceFactory.createReference(from, ReferenceClass.ENDPOINT_REF);
-		Reference toRef = ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF);
-		
-		if (!m_xeLoader.isLoaded(m_nodeNumber, m_coreNumber)) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"node: %d, Core: %d image not found in file: %s", m_nodeNumber,
-					m_coreNumber, m_executableFile));
-			return false;
-			
-		} else if (!resolveOrError(src, fromRef)) {
-			return false;
-			
-		} else if (!resolveOrError(src, toRef)) {
-			return false;
-			
-		} else {		
-			RouteDescription routeDescription = new RouteDescription(fromRef, toRef, this,
-					m_nodeNumber, m_coreNumber, m_exclusions, m_defines, m_config);
-			return analyseRouteSafely(src, routeDescription, temporaryRoute);
-		}
-	}
-
 	public void analysePath(CommandSource src) {
 		if ((m_fromEndPoint == null) || m_fromEndPoint.getRef().equals("")) {
 			notify(src, Notifier.NOTIFY_ERROR, "please specify the from endpoint");
@@ -385,18 +362,24 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, "please specify the to endpoint");
 
 		} else {
-			analyseRoute(src, m_fromEndPoint.getRef(), m_toEndPoint.getRef(), false);
+			RouteDescription routeDescription = new RouteDescription(
+					m_fromEndPoint, m_toEndPoint, this, m_nodeNumber, m_coreNumber,
+					m_exclusions, m_defines, m_config);
+			
+			analyseRouteSafely(src, routeDescription, false);
 		}
 	}
 
-	public void setFromEndPoint(CommandSource src, String ref) {
+	public boolean setFromEndPoint(CommandSource src, String ref) {
 		Reference fromEndPoint = ReferenceFactory.createReference(ref, ReferenceClass.ENDPOINT_REF);			
 		if (!fromEndPoint.resolve(this)) {
-			notify(src, Notifier.NOTIFY_ERROR,
-					String.format("'%s' is not a valid endpoint", ref));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint", ref));
+			return false;
+			
 		} else {
 			m_fromEndPoint = fromEndPoint;
 			notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
+			return true;
 		}
 	}
 
@@ -407,14 +390,16 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
-	public void setToEndPoint(CommandSource src, String ref) {
+	public boolean setToEndPoint(CommandSource src, String ref) {
 		Reference toEndPoint = ReferenceFactory.createReference(ref, ReferenceClass.ENDPOINT_REF);			
 		if (!toEndPoint.resolve(this)) {
-			notify(src, Notifier.NOTIFY_ERROR,
-					String.format("'%s' is not a valid endpoint", ref));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint", ref));
+			return false;
+			
 		} else {
 			m_toEndPoint = toEndPoint;
 			notify(src, Notifier.NOTIFY_TO_END_POINT_SET, "");
+			return true;
 		}
 	}
 
