@@ -25,7 +25,10 @@ public class ErrorReference extends ReferenceType {
 	}		
 	
 	public boolean isPortable() {
-		return false;
+		// This is portable because:
+		//  a) it will always be an error
+		//  b) it needs to be for the case of inlined references
+		return true;
 	}
 
 	public boolean matches(String s) {

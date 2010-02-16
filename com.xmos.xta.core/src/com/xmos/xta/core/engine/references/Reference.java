@@ -44,8 +44,9 @@ public class Reference implements Comparable<Reference>  {
 	
 	public long getLineNum() {
 		assert(m_base != null);
-		return m_base.getLineNum();		
+		return m_base.getLineNum();
 	}
+	
 	public String getFileName() {
 		assert(m_base != null);
 		return m_base.getFileName();		
@@ -148,8 +149,12 @@ public class Reference implements Comparable<Reference>  {
     	return getRef();
     }
 
-	public boolean matches(String s) {
-		return m_base.matches(s);
+	public boolean matches(String s, Engine engine) {
+		if (getRef().equals(s)) {
+			return true;
+		} else {
+			return m_base.matches(s, engine);
+		}
 	}
 	
 	public boolean matches(long pc) {

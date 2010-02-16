@@ -19,7 +19,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.Scripter;
+import com.xmos.xta.core.engine.scripter.Scripter;
 import com.xmos.xta.ui.editors.script.InputScript;
 import com.xmos.xta.ui.editors.script.ScriptEditor;
 
@@ -61,7 +61,7 @@ public class GuiScriptManager {
 		}
 
 	    Scripter scripter = GuiEngine.getEngine().getScripter();
-		String script = scripter.createScript();
+		String script = scripter.dump();
 		if (!doSaveAs(scriptFileName, script)) {
 			return;
 		}

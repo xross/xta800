@@ -1,13 +1,13 @@
-package com.xmos.xta.core.console.commands.dumpscript;
+package com.xmos.xta.core.console.commands.scripter;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.Scripter;
+import com.xmos.xta.core.engine.scripter.Scripter;
 
-public class DumpScript extends Command {
-	public DumpScript() {
+public class Dump extends Command {
+	public Dump() {
 	}
 	
     public int numArgs() {
@@ -15,19 +15,19 @@ public class DumpScript extends Command {
     }        
 
     public String name() {
-    	return "dumpscript";
+    	return "dump";
     }        
 
     public String commandLine() {
-    	return String.format("dumpscript");
+    	return "dump";
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "dumpscript: Dump script which represents the current state";      	
+        return "dump: Dump script which represents the current state";      	
     }
 
     public Command clone(String[] args, int index) {
-        return new DumpScript();
+        return new Dump();
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
@@ -35,7 +35,8 @@ public class DumpScript extends Command {
 			return;
 
 		Scripter scripter = engine.getScripter();
-		console.display(scripter.createScript());
+		scripter.createRefs();
+		console.display(scripter.dump());
     }
 }
 

@@ -103,7 +103,7 @@ public class RouteConstructor {
 		if (m_description.getStartPoint() == null) {
 			return RouteError.STARTPOINT_MISSING;
 		}
-		if (m_description.getEndPoint() == null) {
+		if (m_description.getEndPoints() == null) {
 			return RouteError.ENDPOINTS_MISSING;
 		}
 		
@@ -863,7 +863,7 @@ public class RouteConstructor {
 	private Collection<NodeDescriptor> findEndNodeDescriptors() throws AbortedException {
 		Set<NodeDescriptor> endNodeDescriptors = new TreeSet<NodeDescriptor>();
 		
-		for (Reference endPoint : m_description.getEndPoint()){
+		for (Reference endPoint : m_description.getEndPoints()){
 			for (NodeDescriptor endNodeDescriptor : getReferencedNodeDescriptors(endPoint)) {
 				if (!m_exclusions.contains(endNodeDescriptor)) {
 					endNodeDescriptors.add(endNodeDescriptor);

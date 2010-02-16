@@ -22,6 +22,14 @@ public class FileNameMatcher {
 		if (FileNameCompare.fileNamesMatch(fileName1, fileName2)) {
 			return true;
 		}
+
+		SourceFile sourceFile1 = sourceMapper.getSourceFile(fileName1);
+		if (sourceFile1 != null) {
+			SourceFile sourceFile2 = sourceMapper.getSourceFile(fileName2);
+			if (sourceFile1 == sourceFile2)
+				return true;
+		}
+		
 		return false;
 	}
 }
