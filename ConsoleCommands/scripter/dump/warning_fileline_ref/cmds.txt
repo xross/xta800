@@ -1,0 +1,14 @@
+analyse function main
+
+set loop - ENDPOINT:test.xc:12 10
+#src label example commented out due to compiler bug.
+#set loop - SRCLABEL:test.xc:19 10
+set loop - CALL:test.xc:22 10
+
+scripter disable ENDPOINT:test.xc:12
+scripter disable CALL:test.xc:22
+
+scripter dump
+
+exit
+

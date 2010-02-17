@@ -1,0 +1,15 @@
+analyse function main
+set instructiontime - inst 1000 cycles
+
+analyse function main
+set instructiontime - inst 2000.0 ns
+
+analyse function main
+set instructiontime - inst 0.1 mhz
+
+scripter dump > dump.txt
+source dump.txt
+scripter dump
+
+exit
+

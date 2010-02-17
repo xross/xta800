@@ -1,0 +1,8 @@
+analyse function main
+set loop - 0x1000a 10
+
+analyse function main
+set loop - 0x10008 10
+scripter dump
+exit
+

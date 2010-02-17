@@ -1,0 +1,19 @@
+add loop outer1 10
+add loop inner1 20
+add looppath inner1 15
+add loopscope inner1 a
+analyse function f
+remove loop *
+remove looppath *
+remove loopscope *
+
+add loop outer2 10
+add loop inner2 20
+add looppath inner2 15
+add loopscope inner2 a
+analyse function g
+remove loop *
+remove looppath *
+remove loopscope *
+
+scripter dump

@@ -12,6 +12,7 @@ help load
 help print
 help pwd
 help remove
+help scripter
 help set
 help source
 help status

@@ -1,9 +1,0 @@
-load ".*test\.xe"
-
-#
-# Route: main
-#
-analyse function main
-# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - 0x10008 10
-
