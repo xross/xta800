@@ -72,6 +72,16 @@ public class ReferenceMatcher {
 				}
 			}
 		}
+		if(debug){
+			for(StackNode sn : stackNodes){
+				System.out.println(sn.getInstruction());
+				for(Stack<FunctionReferenceNode> stack : sn.getNodeStacks()){
+					System.out.println("\t" + stack);
+				}
+			}
+			
+		}
+		
 		return stackNodes;
 	}
 	
@@ -169,6 +179,7 @@ public class ReferenceMatcher {
 			List<Node> nodeList = new LinkedList<Node>();
 			function.buildListUp(nodeList, stack, null);
 			List<ReferenceType> refList = new LinkedList<ReferenceType>(reference.getBackTrail());
+			
 			if(validateList(nodeList, refList)){
 				matches.add(function);
 			}
