@@ -969,4 +969,341 @@ public class RouteConstructor {
 		return true;
 	}
 	
+/*
+	private Collection<NodeDescriptor> getReferencedNodeDescriptors(Reference reference) throws AbortedException {
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		Set<NodeDescriptor> referencedNodeDescriptors = new TreeSet<NodeDescriptor>();
+		referencedNodeDescriptors.addAll(referenceMatcher.getNodeDescriptors(m_engine, m_structureGraph, reference));
+		return referencedNodeDescriptors;		
+	}
+
+	private Collection<NodeDescriptor> findStartDescriptors() throws AbortedException {
+    	return getReferencedNodeDescriptors(m_description.getStartPoint());
+	}
+	
+	private Collection<NodeDescriptor> findEndNodeDescriptors() throws AbortedException {
+		Set<NodeDescriptor> endNodeDescriptors = new TreeSet<NodeDescriptor>();
+		
+		for (Reference endPoint : m_description.getEndPoints()){
+			for (NodeDescriptor endNodeDescriptor : getReferencedNodeDescriptors(endPoint)) {
+				if (!m_exclusions.contains(endNodeDescriptor)) {
+					endNodeDescriptors.add(endNodeDescriptor);
+				}
+			}
+		}
+		return endNodeDescriptors;
+	}
+	
+	private Set<NodeDescriptor> containNodes(NodeDescriptor start, Collection<NodeDescriptor> ends) throws AbortedException {
+		Collection<NodeDescriptor> contained = getContainedNodes(start);
+		Set<NodeDescriptor> foundNodes = new TreeSet<NodeDescriptor>();
+		for (NodeDescriptor end : ends) {
+			if (contained.contains(end)) {
+				foundNodes.add(end);
+			}
+		}
+		return foundNodes;
+	}
+	
+	private NodeDescriptor getStartNodeDescriptor(NodeDescriptor startNodeDescriptor) {
+		Node startNode = startNodeDescriptor.getNode();
+
+		Stack<Node> ancestors = new Stack<Node>();
+		ancestors.addAll(startNodeDescriptor.getAncestors());
+
+		while (parentIsBetterThanChild(startNode, ancestors)) {
+			startNode = ancestors.pop();
+		}
+		return new NodeDescriptor(startNode, ancestors);
+	}
+
+	private boolean parentIsBetterThanChild(Node child, Stack<Node> ancestors) {
+		if (ancestors.isEmpty())
+			return false;
+
+		// Checks that the parent is not a conditional node..
+		Node parent = ancestors.peek();		
+		if (parent.isCondNode()) { 
+			return false;
+		}
+		
+		// The parent is a better start node than the child if the parent starts 
+		// with the same PC as the child. Note: be careful of FNOPs		
+		if ((parent.getStartPc() != child.getStartPc()) || 
+			parent.getStartInstruction().isFnop()) {
+			return false;
+		}
+		
+		// Check that the parent doesn't contain any exclusions..
+		Stack<Node> parentAncestors = new Stack<Node>();
+		parentAncestors.addAll(ancestors);	
+		parentAncestors.pop();
+		NodeDescriptor parentDescriptor = new NodeDescriptor(parent, parentAncestors);	
+		if (containsExclusions(parentDescriptor)) {
+			return false;
+		}		
+		
+		return true;
+	}
+	
+	private Collection<NodeDescriptor> getContainedNodes(NodeDescriptor nodeDescriptor) throws AbortedException {
+		final Collection<NodeDescriptor> nodeDescriptors = new ArrayList<NodeDescriptor>();
+		
+		if (!nodeDescriptor.getNode().isInstructionNode()) {
+			nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {
+				public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
+					try {
+						m_engine.getAbort();
+					} catch (AbortedException e) {
+						return TraverseStatus.ABORT;
+					}
+					return TraverseStatus.CONTINUE;
+				}
+				
+				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {	
+					nodeDescriptors.add(new NodeDescriptor(node, ancestors));
+					return TraverseStatus.CONTINUE;
+				}
+		    });			
+		}
+		
+		m_engine.getAbort();
+		return nodeDescriptors;
+	}
+
+	private boolean m_containsExclusions;
+	private boolean containsExclusions(NodeDescriptor nodeDescriptor) {
+		if (m_exclusions.isEmpty())
+			return false;
+		
+		m_containsExclusions = false;		
+		nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {	
+				NodeDescriptor nodeDescriptor = new NodeDescriptor(node, ancestors);
+				if (m_exclusions.contains(nodeDescriptor)) {
+					m_containsExclusions = true;
+				}
+				return TraverseStatus.CONTINUE;
+			}
+	    });			
+		return m_containsExclusions;
+	}
+	
+	private WorkingSet convertWorkingSet(Collection<NodeDescriptor> workingSet, 
+			NodeDescriptor start, final NodeDescriptor startInstruction) throws AbortedException {
+		
+		assert(workingSet.contains(start));
+		
+		Set<Node> nodes = new TreeSet<Node>();
+		Node startNode = null; 
+		
+		Map<NodeDescriptor, Node> nodeMap = new HashMap<NodeDescriptor, Node>();
+		
+		// Duplicates all the nodes in the working set.
+		for (NodeDescriptor nodeDescriptor : workingSet) {
+			Node node = nodeDescriptor.getNode().deepCopy(m_engine);
+			nodes.add(node);
+			nodeMap.put(nodeDescriptor, node);
+			
+			if (nodeDescriptor.equals(start))
+				startNode = node;
+			
+			updateStartInstruction(startInstruction, nodeDescriptor, node);
+		}
+		assert(startNode != null);
+
+		// Links all the nodes in the new working set.
+		for (NodeDescriptor nodeDescriptor : workingSet) {
+			Node fromNode = nodeMap.get(nodeDescriptor);
+
+			// Connects all the next nodes...
+			for (NodeDescriptor next : nodeDescriptor.getNextNodes()) {
+				Node toNode = nodeMap.get(next);
+				fromNode.addNextNode(toNode);
+			}
+			
+			// Connects all the previous nodes...
+			for (NodeDescriptor previous : nodeDescriptor.getPreviousNodes()) {
+				Node toNode = nodeMap.get(previous);
+				fromNode.addPrevNode(toNode);
+			}
+		}
+				
+		if (DEBUG_ROUTE_CONSTRUCTION) {
+			System.out.printf("convertWorkingSet: from (NodeDescriptors):\n");
+			displayNodeDescriptorWorkingSet(workingSet);
+			System.out.printf("convertWorkingSet: to (Nodes):\n");
+			displayNodeWorkingSet(nodes);
+		}		
+		return new WorkingSet(startNode, nodes);
+	}
+	
+	private void displayNodeDescriptorWorkingSet(Collection<NodeDescriptor> workingSet) throws AbortedException {
+		System.out.printf("== displayNodeDescriptorWorkingSet: size: %d\n", workingSet.size());
+		for (NodeDescriptor nodeDescriptor : workingSet) {			
+			System.out.printf("=> %s\n", nodeDescriptor);
+			for (NodeDescriptor contained : getContainedNodes(nodeDescriptor)) {
+				System.out.printf("--> %s\n", contained);				
+			}
+		}
+	}
+
+	private void displayNodeWorkingSet(Collection<Node> workingSet) {
+		for (Node node : workingSet) {
+			System.out.printf("--> %s, next: ", node);
+			for (Node next : node.getNextNodes()) {
+				System.out.printf("%s ", next);
+			}
+			System.out.printf("prev: ");
+			for (Node prev : node.getPrevNodes()) {
+				System.out.printf("%s ", prev);
+			}
+			System.out.printf("\n");
+		}
+	}
+	
+	private boolean checkNoExclusionsLeftInSet(Collection<NodeDescriptor> newWorkingSet,
+			Collection<NodeDescriptor> workingSet) throws AbortedException {
+		
+		// Newly formed functions must contain no exclusions unless the exclusion
+		// is on the first instruction of the function and the first instruction
+		// is the start instruction.		
+		for (NodeDescriptor nodeDescriptor : newWorkingSet) {
+			Collection<NodeDescriptor> set = new TreeSet<NodeDescriptor>(getContainedNodes(nodeDescriptor));
+			if (!workingSet.isEmpty())
+				addNodeToWorkingSet(set, nodeDescriptor);
+			set.retainAll(m_exclusions);
+			
+			if (!set.isEmpty())
+				return false;
+		}
+		return true;
+	}
+	
+	private boolean checkNoInstructionNodesLeftInSet(Collection<NodeDescriptor> workingSet) {
+		for (NodeDescriptor nodeDescriptor : workingSet) {			
+			if (nodeDescriptor.getNode().isInstructionNode()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean checkNodesNotContainedInNode(Collection<NodeDescriptor> nodes, NodeDescriptor node) throws AbortedException {
+		for (NodeDescriptor nodeDescriptor : getContainedNodes(node)){
+			if (nodes.contains(nodeDescriptor)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean m_startNodeFound;
+	private int m_startNodeIndex;
+	private int m_index;
+	
+	private void updateStartInstruction(final NodeDescriptor startInstruction, NodeDescriptor nodeDescriptor, Node node) {
+		// Checks if the route start instruction is found within this working set.
+		m_startNodeFound = false;
+		m_startNodeIndex = 0;
+		m_index = 0;
+		
+		nodeDescriptor.getNode().traverse(nodeDescriptor.getAncestors(), new DefaultNodeTraverser() {		
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {	
+				++m_index;
+
+				NodeDescriptor nd = new NodeDescriptor(node, ancestors);
+				if (nd.equals(startInstruction)) {
+					// We have found the start instruction.
+					m_startNodeFound = true;
+					m_startNodeIndex = m_index;
+				}
+				return TraverseStatus.CONTINUE;
+			}
+	    });	
+		
+		// If the start instruction was found in the working set, then we need to find
+		// (and remember) the corresponding new duplicated node.
+		if (m_startNodeFound) {
+			m_index = 0;
+			
+			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {		
+			    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+			        ++m_index;
+			        
+			        if (m_index == m_startNodeIndex) {
+			    	    m_startInstructionNode = node;
+			    	}
+				    return TraverseStatus.CONTINUE;
+			    }
+			});
+		}		
+	}
+	
+	private NodeDescriptor lookupStartInstruction(NodeDescriptor startInstruction,
+			Collection<NodeDescriptor> workingSet) throws AbortedException {
+		
+		// First search the working set to find the node that contains the start instruction
+		NodeDescriptor beginingOfFirstBlock = null;
+		
+		if (m_startInstructionNode != null) {
+			// The start instruction was detected within a 'refurbished' function,
+			for (NodeDescriptor wnd : workingSet) {
+				if (wnd.getNode() == m_startInstructionNode) {
+					beginingOfFirstBlock = wnd;
+					break;
+					
+				} else {
+					for (NodeDescriptor cnd : getContainedNodes(wnd)) {
+						if (cnd.getNode() == m_startInstructionNode) {
+							beginingOfFirstBlock = wnd;
+							break;
+						}						
+					}					
+				}				
+			}
+		} else {
+			// Searches the working set for a match with the original start instruction node descriptor. 
+			for (NodeDescriptor nodeDescriptor : workingSet) {						
+				if ((getContainedNodes(nodeDescriptor).contains(startInstruction) && (beginingOfFirstBlock == null)) || 
+			       (nodeDescriptor.equals(startInstruction))) {
+					
+					if (findFirstInstruction(nodeDescriptor).equals(startInstruction)) {
+						beginingOfFirstBlock = nodeDescriptor;
+					}
+				}
+			}			
+		}		
+		assert(beginingOfFirstBlock != null);
+		return beginingOfFirstBlock;
+	}
+		
+	private String dumpGraph(String text, Collection<NodeDescriptor> workingSet) {		
+		StringBuffer sb = new StringBuffer();
+		
+		if (workingSet.size() > 1) {
+			sb.append("digraph "+ text + "{");
+			for (NodeDescriptor node : workingSet) {
+				for (NodeDescriptor next : node.getNextNodes()) {
+					sb.append(node.getNode() + " -> " + next.getNode() + ";");
+				}
+			}
+			sb.append("}\n");
+
+		} else {
+			sb.append("# graph has only " + workingSet.size() + " nodes");
+		}
+		return sb.toString();
+	}
+	
+	static class WorkingSet {
+		Node m_start;
+		Set<Node> m_set;
+		
+		public WorkingSet(Node start, Set<Node> set) {
+			m_start = start;
+			m_set = set;
+		}
+	}	
+*/
 }

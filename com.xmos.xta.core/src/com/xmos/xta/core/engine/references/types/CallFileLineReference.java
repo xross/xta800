@@ -52,4 +52,8 @@ public class CallFileLineReference extends ReferenceType {
 	public boolean isPortable() {
 		return false;
 	}
+	
+	public boolean matches(String s, Engine engine) {
+		return fileLineMatches(s, engine);
+	}
 }

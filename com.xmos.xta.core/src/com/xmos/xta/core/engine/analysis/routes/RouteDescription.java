@@ -98,6 +98,11 @@ public class RouteDescription {
 	public Collection<Reference> getEndPoints() {
 		return m_to;
 	}
+	
+	public Reference getEndPoint() {
+		assert(m_to.size() == 1);
+		return m_to.iterator().next();
+	}
 
 	public Reference getFunctionReference() {
 		return m_function;

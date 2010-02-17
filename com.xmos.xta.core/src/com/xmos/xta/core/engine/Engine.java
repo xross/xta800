@@ -57,6 +57,7 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.scripter.Scripter;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
@@ -878,7 +879,7 @@ public class Engine implements Notifier, Aborter {
 		return m_defines.getLoopScopes(m_nodeNumber, m_coreNumber);
 	}
 	
-	Defines getDefines() {
+	public Defines getDefines() {
 		return m_defines;
 	}
 	

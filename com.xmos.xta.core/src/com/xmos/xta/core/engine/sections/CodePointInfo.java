@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.sections;
 
-public class CodePointInfo {
+public class CodePointInfo implements ScriptableInfo {
     private long m_pc;
     private String m_label;
     private String m_compilationDir;
@@ -33,5 +33,9 @@ public class CodePointInfo {
 
     public long getLineNumber() {
     	return m_lineNumber;
+    }
+    
+    public String toString() {
+    	return m_label;
     }
 }

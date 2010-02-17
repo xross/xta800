@@ -241,7 +241,7 @@ public abstract class ReferenceType {
 		return false;
 	}
 	
-	public boolean matches(String s) {
+	public boolean matches(String s, Engine engine) {
 		return false;
 	}
 	
@@ -275,6 +275,25 @@ public abstract class ReferenceType {
     	String[] subRefs = tableLabel.split(",");
     	assert(subRefs.length > 0);
 		return subRefs[subRefs.length - 1].equals(label);
+	}
+
+	protected boolean fileLineMatches(String s, Engine engine) {
+		if (!isSourceReference(s)) {
+			return false;
+		}
+		
+		String fileName = getFileName(s);
+        long lineNumber = getLineNumber(s);
+        
+        if (lineNumber != getLineNum()) {
+        	return false;
+        }
+        
+        if (FileNameMatcher.isMatch(fileName, getFileName(), engine.getSourceMapper())) {
+        	return true;
+        }
+        
+		return false;
 	}
 
 	public List<String> getPcBackTrail(long pc) {
