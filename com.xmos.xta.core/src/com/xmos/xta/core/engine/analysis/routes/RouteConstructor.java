@@ -49,7 +49,7 @@ import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 
 public class RouteConstructor {
 
-	private static boolean debug_route = true;
+	private static boolean debug_route = false;
 	private static boolean sanity_debug = true;
 
 	private static final int SR_IEBLE_SHIFT = 1;
@@ -329,9 +329,15 @@ public class RouteConstructor {
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 		dumpGraph(workingSet);
 		Node startNode = makeBasicBlocks(workingSet, startNodeDescriptor, nodeToWorkingSet);
+		
+		if(debug_route){
+			System.out.println("the start node is " + startNode);
+		}
 		dumpGraph(workingSet);
 		assert(cfgSanityCheckNodes(workingSet));
 		sae.createStructure(workingSet, startNode, m_engine, "Converting CFG to structure");
+		
+		dumpGraph(workingSet);
 		assert(workingSet.size() == 1);
 		Node structuralNode = workingSet.iterator().next();
 		sae.normaliseGraph(structuralNode);

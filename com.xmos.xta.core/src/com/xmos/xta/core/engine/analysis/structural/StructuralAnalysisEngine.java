@@ -31,6 +31,7 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalPatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.LoopPatternMatcher;
+import com.xmos.xta.core.engine.analysis.structural.patterns.PanicTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatcher;
@@ -90,7 +91,6 @@ public class StructuralAnalysisEngine {
 				}
 				for (Node node : postOrder) {
 					engine.getAbort();
-
 					if (pm.isMatch(node, workingSet, treeStart)) {
 						treeStart = pm.getTreeStart();
 						assert (workingSet.contains(treeStart));
@@ -605,6 +605,7 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new ConditionalPatternMatcher());
 		m_patternMatchers.add(new SequencePatternMatcher());	//uses dominators
 		m_patternMatchers.add(new ConditionalTransformer());	//uses dominators
+		m_patternMatchers.add(new PanicTransformer());			//uses dominators
 	}
 
 	private Collection<Node> getContainedNodes(Node node) {

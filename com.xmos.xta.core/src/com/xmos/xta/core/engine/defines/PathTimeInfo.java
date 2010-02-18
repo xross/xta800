@@ -39,6 +39,9 @@ public class PathTimeInfo implements DefineInfo {
     }
 
 	public boolean equals(Object o) {
+		if(o == null){
+			return false;
+		}
 		if (((PathTimeInfo)o).m_from.equals(m_from) && ((PathTimeInfo)o).m_to.equals(m_to)) {
 			return true;
 		}

@@ -32,6 +32,7 @@ public class LoopPathInfo implements DefineInfo {
     }
 
 	public boolean equals(Object o) {
+		if(o==null) return false;
 		return ((LoopPathInfo)o).m_reference.equals(m_reference);
 	}
 }

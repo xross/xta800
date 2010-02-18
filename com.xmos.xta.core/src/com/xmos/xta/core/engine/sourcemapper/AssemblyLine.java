@@ -57,32 +57,32 @@ public class AssemblyLine implements Line {
 	}
 
 	public String getPreText() {
-		String preText = "";
+		StringBuffer preText = new StringBuffer();
 		for (String key : m_labels.keySet()) {
     		if (m_labels.get(key).contains(m_instructionNode.getXtaInstruction().getPc())) {
-    			preText = key + ":";
+    			preText.append(key);
+    			preText.append(":");
     			break;
     		}
     	}
 
 		if (preText.length() > WIDTH) {
-			preText = preText.substring(0, WIDTH);
+			preText.setLength(WIDTH);
+			//preText = preText.substring(0, WIDTH);
 		}
 
 		for (int i = preText.length(); i < WIDTH; i++) {
-			preText += " ";
+			preText.append(" ");
 		}
 
-		return preText;
+		return preText.toString();
 	}
 	public String getEmptyText() {
-		String preText = "";
-
+		StringBuffer preText = new StringBuffer();
 		for (int i = preText.length(); i < WIDTH; i++) {
-			preText += " ";
+			preText.append(" ");
 		}
-
-		return preText;
+		return preText.toString();
 	}
 
 	public String getText() {

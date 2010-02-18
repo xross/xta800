@@ -31,6 +31,10 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 			boolean isOptional = isOptionalSet.contains(endNode);
 			Set<Node> condNodes = condNodeMap.get(endNode);
 			int numNodes = condNodes.size();
+			
+			if(condNodes.contains(treeStart)){
+				continue;
+			}
 			if (isOptional) {
 				numNodes += 1;
 			}
