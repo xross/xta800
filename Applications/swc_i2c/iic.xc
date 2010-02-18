@@ -189,7 +189,7 @@ XMOS_RTN_t iic_phy_sendByte(uint inByte, uint expectAck)
   {
     returnCode = XMOS_FAIL;
   }
-    
+  #pragma xta label "iic_phy_sendByte_done"
   return returnCode;
 }
 

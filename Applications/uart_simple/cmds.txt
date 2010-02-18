@@ -36,6 +36,9 @@ add exclusion start_bit_error
 add exclusion recieve_complete 
 
 analyse path start_bit_sample recieve_data
+
+set loop - start_bit_sample 0
+
 set required - 1000.0 ns
 
 remove exclusion *

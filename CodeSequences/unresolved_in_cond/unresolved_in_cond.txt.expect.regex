@@ -6,7 +6,7 @@ function\(\d+\) +: Unresolved / 220.0 ns main
 .    .    block\(\d+\) +: 0.0 ns \(x 0\) / 0.0 ns \(x 0\) 
 .    .    seq\(\d+\) +: Unresolved / Unresolved 
 .    .    .    block\(\d+\) +: 20.0 ns \(x 1\) / 0.0 ns \(x 0\) 
-.    .    .    function\(\d+\) +: Unresolved / Unresolved Unnamed function 0
+.    .    .    function\(\d+\) +: Unresolved / Unresolved \(Call to unknown function\)
 .    .    .    block\(\d+\) +: 60.0 ns \(x 1\) / 0.0 ns \(x 0\) 
 .    block\(\d+\) +: 20.0 ns \(x 1\) / 20.0 ns \(x 1\) 
 

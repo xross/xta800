@@ -1,60 +1,60 @@
 .*
 [^^^]
-Route\(0\) path: audio_48_left_o0 to audio_48_left_o2
+Route\(\d+\) path: audio_48_left_o0 to audio_48_left_o2
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(1\) path: audio_48_left_o1 to audio_48_left_o3
+Route\(\d+\) path: audio_48_left_o1 to audio_48_left_o3
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(2\) path: audio_48_left_o2 to audio_48_left_o4
+Route\(\d+\) path: audio_48_left_o2 to audio_48_left_o4
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(3\) path: audio_48_left_o3 to audio_48_left_o5
+Route\(\d+\) path: audio_48_left_o3 to audio_48_left_o5
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(4\) path: audio_48_left_o4 to audio_48_left_o6
+Route\(\d+\) path: audio_48_left_o4 to audio_48_left_o6
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(5\) path: audio_48_left_o5 to audio_48_left_o7
+Route\(\d+\) path: audio_48_left_o5 to audio_48_left_o7
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(6\) path: audio_48_left_o6 to audio_48_left_o4
+Route\(\d+\) path: audio_48_left_o6 to audio_48_left_o4
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(7\) path: audio_48_left_o6 to audio_48_right_o0
+Route\(\d+\) path: audio_48_left_o6 to audio_48_right_o0
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(8\) path: audio_48_left_o7 to audio_48_right_o1
+Route\(\d+\) path: audio_48_left_o7 to audio_48_right_o1
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(9\) path: audio_48_right_o0 to audio_48_right_o2
+Route\(\d+\) path: audio_48_right_o0 to audio_48_right_o2
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(10\) path: audio_48_right_o1 to audio_48_right_o3
+Route\(\d+\) path: audio_48_right_o1 to audio_48_right_o3
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(11\) path: audio_48_right_o2 to audio_48_right_o4
+Route\(\d+\) path: audio_48_right_o2 to audio_48_right_o4
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(12\) path: audio_48_right_o3 to audio_48_right_o5
+Route\(\d+\) path: audio_48_right_o3 to audio_48_right_o5
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(13\) path: audio_48_right_o4 to audio_48_right_o6
+Route\(\d+\) path: audio_48_right_o4 to audio_48_right_o6
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(14\) path: audio_48_right_o5 to audio_48_right_o7
+Route\(\d+\) path: audio_48_right_o5 to audio_48_right_o7
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(15\) path: audio_48_right_o6 to audio_48_right_o4
+Route\(\d+\) path: audio_48_right_o6 to audio_48_right_o4
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(16\) path: audio_48_right_o7 to audio_48_right_o5
+Route\(\d+\) path: audio_48_right_o7 to audio_48_right_o5
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(17\) path: audio_48_right_o6 to audio_48_left_o0
+Route\(\d+\) path: audio_48_right_o6 to audio_48_left_o0
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(18\) path: audio_48_right_o7 to audio_48_left_o1
+Route\(\d+\) path: audio_48_right_o7 to audio_48_left_o1
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Pass, Min Core Frequency: \d+ mhz

@@ -1,4 +1,3 @@
-xta: warning: No branch targets set on instruction \(\?\?\?\+\d+\) 0x10004 waiteu \(0r\) 
 function\(\d+\)   : n/a / n/a \?\?\?
 .    block\(\d+\)       : n/a \(x 1\) / n/a \(x 1\) 
 .    function\(\d+\)   : n/a / n/a main

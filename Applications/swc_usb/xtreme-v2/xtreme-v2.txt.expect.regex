@@ -1,10 +1,10 @@
-Route\(0\) path: ReadDataPidByte to NextRxWord
+Route\(\d+\) path: ReadDataPidByte to NextRxWord
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 133.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(1\) path: NextRxWord to NextRxWord
+Route\(\d+\) path: NextRxWord to NextRxWord
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 67.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(2\) path: StoreTailDataOut to ReadToken_PID
+Route\(\d+\) path: StoreTailDataOut to ReadToken_PID
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 200.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Pass, Min Core Frequency: \d+ mhz
