@@ -42,8 +42,11 @@ public class PathTimeInfo implements DefineInfo {
 		if(o == null){
 			return false;
 		}
-		if (((PathTimeInfo)o).m_from.equals(m_from) && ((PathTimeInfo)o).m_to.equals(m_to)) {
-			return true;
+		if(o instanceof PathTimeInfo){
+			PathTimeInfo pti = (PathTimeInfo)o;
+			if (pti.m_from.equals(m_from) && pti.m_to.equals(m_to)) {
+				return true;
+			}
 		}
 		return false;
 	}

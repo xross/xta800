@@ -58,11 +58,12 @@ public class Branches extends Section {
 			}
 		}
 		if (!hit) {
-			String message = String.format("unable to remove branch: %s", fromRef.toString());
+			StringBuffer message = new StringBuffer();
+			message.append(String.format("unable to remove branch: %s", fromRef.toString()));
 			for (Reference toRef : toRefs) {
-				message += String.format(" %s", toRef.toString());
+				message.append(String.format(" %s", toRef.toString()));
 			}
-			getNotifier().notify(src, Notifier.NOTIFY_ERROR, message);
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, message.toString());
 			return false;
 		}
 		return hit;

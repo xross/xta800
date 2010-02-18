@@ -23,10 +23,12 @@ public class StackNode{
 	}
 
 	public String toString(){
-		String stacks = "";
+		StringBuffer stacks = new StringBuffer();
 		for(Stack<FunctionReferenceNode> stack : m_nodeStacks){
-			stacks += "\t" + stack + "\n";
+			stacks.append("\t");
+			stacks.append(stack);
+			stacks.append("\n");
 		}
-		return m_instruction + " from " + m_nodeStacks.size() + " stacks\n" + stacks;
+		return m_instruction + " from " + m_nodeStacks.size() + " stacks\n" + stacks.toString();
 	}
 }

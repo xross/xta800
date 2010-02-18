@@ -19,12 +19,13 @@ public class Reference implements Comparable<Reference>  {
 	}
 
 	public String getRef() {
-    	String str = "";
+    	StringBuffer str = new StringBuffer();
     	for (ReferenceType backTrail : m_backTrail) {
-    		str += backTrail.getRef() + ",";
+    		str.append(backTrail.getRef());
+    		str.append(",");
     	}
-    	str += m_base.getRef();
-    	return str;
+    	str.append(m_base.getRef());
+    	return str.toString();
 	}
 
 	public String getPcString() {

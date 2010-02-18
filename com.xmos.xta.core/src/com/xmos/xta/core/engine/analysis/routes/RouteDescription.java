@@ -165,12 +165,14 @@ public class RouteDescription {
 			if (fn.getFunctionName().equals(m_functionName)) {
 				Set<InstructionNode> endInstructions = sg.getFunctionsEndNodes(fn);
 				for (Node endPoint : endInstructions) {
-					String to = "";
+					StringBuffer to = new StringBuffer();
 			    	for (ReferenceType backTrail : m_function.getBackTrail()) {
-			    		to += backTrail.getRef() + ",";
+			    		to.append(backTrail.getRef());
+			    		to.append(",");
 			    	}
-					to += "0x" + Long.toHexString(endPoint.getStartPc());
-					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
+					to.append("0x");
+					to.append(Long.toHexString(endPoint.getStartPc()));
+					m_to.add(ReferenceFactory.createReference(to.toString(), ReferenceClass.ENDPOINT_REF));
 				}
 
 				break;
