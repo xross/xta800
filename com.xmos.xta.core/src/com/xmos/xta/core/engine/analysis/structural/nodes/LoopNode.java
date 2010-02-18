@@ -1,11 +1,11 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -16,7 +16,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class LoopNode extends Node {
-	private LoopNodeAttributes m_attributes;	
+	private LoopNodeAttributes m_attributes;
 	private Node m_loopHeader;
 	private List<Node> m_loops;
 
@@ -57,7 +57,7 @@ public class LoopNode extends Node {
 	public LoopNode copyStructure() {
 		return new LoopNode(this);
 	}
-	
+
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		LoopNode ln = new LoopNode();
 		for (Node loop : m_loops) {
@@ -73,11 +73,11 @@ public class LoopNode extends Node {
     public String getTypeName() {
         return "loop";
     }
-		
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-    
+
 	public void addLoop(Node loop) {
 		m_loops.add(loop);
 	}
@@ -85,11 +85,11 @@ public class LoopNode extends Node {
 	public Node getLoopHeader() {
 		return m_loopHeader;
 	}
-	
+
 	public List<Node> getLoopBodies() {
 		return m_loops;
 	}
-	
+
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loopHeader.getInstructions());
 		for (Node al : m_loops) {
@@ -127,7 +127,7 @@ public class LoopNode extends Node {
 	public boolean isLoopNode() {
 		return true;
 	}
-	
+
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> loopList = new LinkedList<TimeDistributionBuckets>();
@@ -144,34 +144,34 @@ public class LoopNode extends Node {
 		tdb.add(loopList);
 		return tdb;
 	}
-	
+
 	public void replaceChild(Node oldNode, Node newNode) {
 		if (oldNode == m_loopHeader) {
 			m_loopHeader = newNode;
-				
-		} else {	
+
+		} else {
 		    int index = m_loops.indexOf(oldNode);
 		    m_loops.remove(index);
 		    m_loops.add(index, newNode);
 		}
-	}	
-	
+	}
+
 	public void replaceChildren(List<Node> children) {
 		if (!children.isEmpty()) {
-			m_loopHeader = children.get(0);		
+			m_loopHeader = children.get(0);
 			for (int index = 1; index < children.size(); ++index) {
 				m_loops.add(children.get(index));
-			}			
-		}		
-	}	
-	
+			}
+		}
+	}
+
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {
 		List<Node> children = new LinkedList<Node>();
 		children.add(m_loopHeader);
 		for (Node node : m_loops) {
-			children.add(node);					
+			children.add(node);
 		}
 		return children;
 	}
@@ -189,16 +189,16 @@ public class LoopNode extends Node {
 		}
 		return next;
 	}
-	
+
 	public Set<InstructionNode> getInstructionNodes() {
 		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
 		insts.addAll(m_loopHeader.getInstructionNodes());
 		for (Node node : m_loops) {
-			insts.addAll(node.getInstructionNodes());	
+			insts.addAll(node.getInstructionNodes());
 		}
 		return insts;
 	}
-	
+
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
 		addFunctionRefToRefSet(fnRef, m_loopHeader);
@@ -216,9 +216,9 @@ public class LoopNode extends Node {
 		if(m_loops.contains(start)){
 			m_loopHeader.buildListDown(nodeList);
 		}
-		
-	}	
-	
+
+	}
+
 	public void buildListDown(List<Node> nodeList) {
 		m_loopHeader.buildListDown(nodeList);
 		for(Node node : m_loops){

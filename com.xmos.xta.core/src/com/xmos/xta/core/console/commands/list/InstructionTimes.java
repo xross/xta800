@@ -12,15 +12,15 @@ public class InstructionTimes extends Command {
 
 	public InstructionTimes() {
 	}
-	
+
     public int numArgs() {
-    	return 0;    	    	
+    	return 0;
     }
 
 	public ArgType[] getArgTypes() {
-        return super.getArgTypes();            
+        return super.getArgTypes();
 	}
-    
+
     public String name() {
 		return "instructiontimes";
     }
@@ -28,19 +28,19 @@ public class InstructionTimes extends Command {
     public String commandLine() {
    		return "instructiontimes";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
     	return "instructiontime: Displays the instruction time defines";
     }
 
     public Command clone(String[] args, int index) {
-    	if ((index + numArgs()) >= args.length) { 
+    	if ((index + numArgs()) >= args.length) {
 			return null;
     	}
 
     	return new InstructionTimes();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
@@ -53,6 +53,6 @@ public class InstructionTimes extends Command {
 	    }
 		for (InstructionTimeInfo info : infos) {
 			console.display(info + "\n");
-		}	    
-    }    
+		}
+    }
 }

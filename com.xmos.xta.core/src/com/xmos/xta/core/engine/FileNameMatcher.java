@@ -8,11 +8,11 @@ public class FileNameMatcher {
 	public static boolean isMatch(String dir, String name, String fileName, SourceMapper sourceMapper) {
 		if (FileNameCompare.fileNamesMatch(dir, name, fileName))
 			return true;
-		
+
 		SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
 		if (sourceFile != null) {
 		    if (sourceFile.getDebugFile().fileNameMatches(dir, name)) {
-		        return true;							 
+		        return true;
 			}
 		}
 		return false;
@@ -29,7 +29,7 @@ public class FileNameMatcher {
 			if (sourceFile1 == sourceFile2)
 				return true;
 		}
-		
+
 		return false;
 	}
 }

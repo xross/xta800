@@ -12,35 +12,35 @@ public class LoopPath extends Command {
 
 	public LoopPath() {
 	}
-	
+
     public int numArgs() {
     	return 0;
-    }        
+    }
 
 	public ArgType[] getArgTypes() {
-        return super.getArgTypes();            
+        return super.getArgTypes();
 	}
-    
+
     public String name() {
 		return "looppaths";
-    }        
-    
+    }
+
     public String commandLine() {
    		return "looppaths";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
     	return "looppaths: Displays the loop path defines";
     }
-    
+
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) { 
+		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
 
     	return new LoopPath();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
@@ -53,6 +53,6 @@ public class LoopPath extends Command {
 	    }
 		for (LoopPathInfo info : infos) {
 			console.display(info + "\n");
-		}	    
-    }    
+		}
+    }
 }

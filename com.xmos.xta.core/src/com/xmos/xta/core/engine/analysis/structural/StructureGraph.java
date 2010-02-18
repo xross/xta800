@@ -20,26 +20,26 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNode
 public class StructureGraph {
 
 	private Node m_searchNode;
-	
+
 	//for each function there is a set of end nodes.
 	private Map<FunctionNode , Set<InstructionNode>> m_functionToEndNodes;
 	private Map<FunctionNode , InstructionNode> m_functionToStartNode;
-	
+
 	private Map<FunctionNode, Set<FunctionReferenceNode>> m_functionReferencesWithinFunction;
 	private Map<FunctionNode, Set<GraphEdge>> m_functionsToFunctionReferences;
 	private Map<FunctionNode, Set<InstructionNode>> m_instructionWithinFunction;
-	
+
 	private Map<FunctionNode, FunctionReferenceNode> m_uncalledFunctionReference;
-	
-	public StructureGraph(Map<FunctionNode , Set<InstructionNode>>functionToEndNodes, 
-			Map<FunctionNode , InstructionNode>functionToStartNode, 
+
+	public StructureGraph(Map<FunctionNode , Set<InstructionNode>>functionToEndNodes,
+			Map<FunctionNode , InstructionNode>functionToStartNode,
 			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
 			Map<FunctionNode, Set<InstructionNode>> instructionWithinFunction) {
-		
+
 		m_functionToStartNode = functionToStartNode;
 		m_uncalledFunctionReference = new TreeMap<FunctionNode, FunctionReferenceNode>();
 		m_functionReferencesWithinFunction = functionReferencesWithinFunction;
-		
+
 		Set<FunctionNode> uncalledFunctions = new TreeSet<FunctionNode>(m_functionReferencesWithinFunction.keySet());
 		for(Set<FunctionReferenceNode> frns : m_functionReferencesWithinFunction.values()){
 			for(FunctionReferenceNode frn : frns){
@@ -48,15 +48,15 @@ public class StructureGraph {
 				}
 			}
 		}
-		
-		
+
+
 		m_instructionWithinFunction = instructionWithinFunction;
-		
+
 		m_functionsToFunctionReferences = new HashMap<FunctionNode, Set<GraphEdge>>();
 		for(FunctionNode fn : m_functionReferencesWithinFunction.keySet()){
 			m_functionsToFunctionReferences.put(fn, new HashSet<GraphEdge>());
 		}
-		
+
 		for(FunctionNode fn : m_functionReferencesWithinFunction.keySet()){
 			for(FunctionReferenceNode frn : m_functionReferencesWithinFunction.get(fn)){
 				if(frn.isKnownFunction()){
@@ -70,9 +70,9 @@ public class StructureGraph {
 			frn.setFunction(uncalledFunction.getFunctionName(), uncalledFunction);
 			m_uncalledFunctionReference.put(uncalledFunction, frn);
 		}
-		
-		
-		
+
+
+
 		m_functionToEndNodes = functionToEndNodes;
 		assert(m_functionToEndNodes != null);
 		assert(!m_functionToEndNodes.isEmpty());
@@ -81,25 +81,25 @@ public class StructureGraph {
 	public Collection<FunctionNode> getFunctions() {
 		return m_functionToEndNodes.keySet();
 	}
-	
-	public Set<InstructionNode> getFunctionsEndNodes(FunctionNode fn){ 
+
+	public Set<InstructionNode> getFunctionsEndNodes(FunctionNode fn){
 		assert(m_functionToEndNodes.containsKey(fn));
 		return m_functionToEndNodes.get(fn);
 	}
-	
+
 	public Set<InstructionNode> getInstructionWithinFunction(FunctionNode fn){
 		assert(m_instructionWithinFunction.containsKey(fn));
 		return m_instructionWithinFunction.get(fn);
 	}
-	
-	public InstructionNode getFunctionsStartNode(FunctionNode fn){		
+
+	public InstructionNode getFunctionsStartNode(FunctionNode fn){
 		assert(m_functionToStartNode.containsKey(fn));
 		return m_functionToStartNode.get(fn);
 	}
-	
+
     public Node getNode(final int nodeId) {
     	m_searchNode = null;
-		for (Node node : getFunctions()) {					
+		for (Node node : getFunctions()) {
 		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					if (node.getId() == nodeId) {
@@ -110,16 +110,16 @@ public class StructureGraph {
 				}
 		    });
 		}
-        return m_searchNode;   		
+        return m_searchNode;
     }
-    
+
     public List<Stack<FunctionReferenceNode>> getFunctionCallStack(FunctionNode fn){
     	Stack<FunctionReferenceNode> currentStack = new Stack<FunctionReferenceNode>();
     	List<Stack<FunctionReferenceNode>> completeStacks = new LinkedList<Stack<FunctionReferenceNode>>();
     	search(fn, currentStack, completeStacks);
 		return completeStacks;
     }
-    
+
     private void search(FunctionNode fn, Stack<FunctionReferenceNode> currentStack, List<Stack<FunctionReferenceNode>> completeStacks){
     	if(m_functionsToFunctionReferences.get(fn).isEmpty()){
     		Stack<FunctionReferenceNode> saveStack = new Stack<FunctionReferenceNode>();
@@ -132,11 +132,11 @@ public class StructureGraph {
 	    			currentStack.add(0, ge.getFunctionReferenceNode());
 	    			search(ge.getFunctionNode(), currentStack, completeStacks);
 	    			currentStack.remove(0);
-	    		} 
+	    		}
 	    	}
     	}
     }
-    
+
     private boolean formsRecursion(Stack<FunctionReferenceNode> currentStack, FunctionReferenceNode functionReferenceNode){
     	for(FunctionReferenceNode frn : currentStack){
     		if(functionReferenceNode.isKnownFunction() && functionReferenceNode.getFunctionName().equals(frn.getFunctionName())){
@@ -145,12 +145,12 @@ public class StructureGraph {
     	}
     	return false;
     }
-    
-    
+
+
     class GraphEdge{
     	private FunctionReferenceNode m_frn;
     	private FunctionNode m_fn;
-    	
+
     	public GraphEdge(FunctionReferenceNode frn, FunctionNode fn){
     		m_frn = frn;
     		m_fn = fn;
@@ -158,7 +158,7 @@ public class StructureGraph {
     	public FunctionNode getFunctionNode(){
     		return m_fn;
     	}
-    	
+
     	public FunctionReferenceNode getFunctionReferenceNode(){
     		return m_frn;
     	}

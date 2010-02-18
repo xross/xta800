@@ -12,13 +12,13 @@ public class StringSection extends Section {
 
 	StringSection(int nodeNumber, int coreNumber, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
-		m_strings = new ArrayList<String>(); 
+		m_strings = new ArrayList<String>();
 	}
-	
+
 	Collection<String> get() {
 		return m_strings;
 	}
-	
+
 	boolean load(CommandSource src, XeLoader xeLoader) {
         return true;
 	}

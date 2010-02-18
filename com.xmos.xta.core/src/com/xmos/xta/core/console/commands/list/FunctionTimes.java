@@ -12,35 +12,35 @@ public class FunctionTimes extends Command {
 
 	public FunctionTimes() {
 	}
-	
+
     public int numArgs() {
-    	return 0;    	    	
-    }        
-	
+    	return 0;
+    }
+
 	public ArgType[] getArgTypes() {
-        return super.getArgTypes();            
-	}    
-    
+        return super.getArgTypes();
+	}
+
     public String name() {
 		return "functiontimes";
-    }        
+    }
 
     public String commandLine() {
    		return "functiontimes";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
     	return "functiontimes: Displays the function time defines";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) { 
+		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
 
     	return new FunctionTimes();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
@@ -53,6 +53,6 @@ public class FunctionTimes extends Command {
 	    }
 		for (FunctionTimeInfo info : infos) {
 			console.display(info + "\n");
-		}	    
+		}
     }
 }

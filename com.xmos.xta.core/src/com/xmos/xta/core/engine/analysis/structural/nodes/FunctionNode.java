@@ -11,39 +11,38 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class FunctionNode extends Node {
-	private NodeAttributes m_attributes;	
+	private NodeAttributes m_attributes;
 	private String m_functionName;
 	private List<Node> m_functionSequence;
 	private static int functionId;
 	private Set<Node> m_functionEndNodes;
 	private List<FunctionNode> m_callingFunctions;
-	
+
 	public FunctionNode() {
 		super();
 		m_attributes = new NodeAttributes(this);
 		m_functionEndNodes = new TreeSet<Node>();
 		m_callingFunctions = new ArrayList<FunctionNode>();
-		
+
 		setUnresolved(true);
 	}
-	
+
 	public FunctionNode(Node function, String functionName) {
 		super();
 		if (function.isSequenceNode()){
 			SequenceNode sn = (SequenceNode)function;
-			
+
 			m_functionSequence = sn.getPath();
 		} else {
 			m_functionSequence = new LinkedList<Node>();
 			m_functionSequence.add(function);
 		}
-		
+
 		if (functionName == null){
 			m_functionName = "Unnamed function " + functionId++;
 		} else {
@@ -52,7 +51,7 @@ public class FunctionNode extends Node {
 		m_attributes = new NodeAttributes(this);
 		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
-	
+
 	public FunctionNode(FunctionNode fn){
 		m_functionName = fn.m_functionName;
 		m_functionSequence = fn.m_functionSequence;
@@ -60,16 +59,16 @@ public class FunctionNode extends Node {
 		setUnresolved(fn.isUnresolved());
 		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
-	
+
 	public String toString(){
 		if(m_functionName!= null){
 			return "Function: " + m_functionName;
 		} else {
 			return getDescription();
 		}
-		
+
 	}
-	
+
 	public Node copyStructure() {
     	return new FunctionNode(this);
 	}
@@ -83,23 +82,23 @@ public class FunctionNode extends Node {
 			if (callNode != null) {
 				backTrail.add(callNode.getStartPc());
 			}
-		}				
+		}
 	}
-	
-	private Node m_callNode;	
+
+	private Node m_callNode;
 	private Node findCallNode(Node parent) {
 		// Finds the node previous to this one...
 		Node previousNode = null;
 		for (Node child : parent.iChildren()) {
 			if (child == this)
 				break;
-			
+
 			previousNode = child;
 		}
 		if (previousNode == null) {
 			return null;
 		}
-		
+
 		// Finds the final instruction in the previous node
 		// (which must be the calling instruction..)
 		m_callNode = null;
@@ -108,14 +107,14 @@ public class FunctionNode extends Node {
 				m_callNode = node;
 				return TraverseStatus.CONTINUE;
 			}
-		});			
-		
+		});
+
 		System.out.println("the node callinf function " + getFunctionName() + " is " + m_callNode);
-		
+
 		return m_callNode;
 	}
 */
-	
+
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		aborter.getAbort();
 
@@ -138,19 +137,19 @@ public class FunctionNode extends Node {
 	public String getTypeName() {
         return "function";
     }
-	
+
 	public void setFunctionEndNodes(Set<Node> functionEndNodes){
 		m_functionEndNodes = functionEndNodes;
 	}
-	
+
 	public Set<Node> getFunctionEndNodes(){
 		return m_functionEndNodes;
 	}
-		
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-	
+
 	public void setFunction(String functionName, List<Node> fn) {
 		m_functionSequence = fn;
 		m_functionName = functionName;
@@ -159,14 +158,14 @@ public class FunctionNode extends Node {
 	public List<Node> getFunction() {
 		return m_functionSequence;
 	}
-	
+
 	public String getDescription() {
 		if (m_functionName == null) {
 			m_functionName = "Unnamed function " + functionId++;
 		}
 		return m_functionName;
 	}
-	
+
 	public String getFunctionName() {
 		if (m_functionName == null) {
 			m_functionName = "Unnamed function " + functionId++;
@@ -216,10 +215,10 @@ public class FunctionNode extends Node {
 
 	public boolean isFunctionNode() {
 		return true;
-	}	
-	
+	}
+
 	public String getBackTrace(String backTrace) {
-		return super.getBackTrace(m_functionName + ":" + backTrace); 
+		return super.getBackTrace(m_functionName + ":" + backTrace);
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
@@ -242,21 +241,21 @@ public class FunctionNode extends Node {
 		tdb.add(tsbSequence);
 		return tdb;
 	}
-	
+
 	public void setFunctionName(String string) {
 		m_functionName = string;
 	}
-	
+
 	public void replaceChild(Node oldNode, Node newNode) {
 		int index = m_functionSequence.indexOf(oldNode);
 		m_functionSequence.remove(index);
 		m_functionSequence.add(index, newNode);
-	}	
-	
+	}
+
 	public void replaceChildren(List<Node> children) {
 		m_functionSequence.clear();
 		m_functionSequence.addAll(children);
-	}	
+	}
 
 
 	public void addCallingFunction(FunctionNode f) {
@@ -269,7 +268,7 @@ public class FunctionNode extends Node {
 
 	public void removeCallingFunction(FunctionNode g) {
 		assert(m_callingFunctions.contains(g));
-		m_callingFunctions.remove(g);		
+		m_callingFunctions.remove(g);
 	}
 
 	public List<Node> iChildren() {
@@ -278,7 +277,7 @@ public class FunctionNode extends Node {
 		} else {
 			return new LinkedList<Node>();
 		}
-		
+
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -288,7 +287,7 @@ public class FunctionNode extends Node {
 		if (index < m_functionSequence.size() - 1) {
 			next.add(m_functionSequence.get(index + 1));
 			return next;
-		} else if (childNode.isInfiniteLoopNode() || 
+		} else if (childNode.isInfiniteLoopNode() ||
 				childNode.isInfiniteSelfLoopNode()) {
 			next.add(childNode);
 			return next;
@@ -298,15 +297,15 @@ public class FunctionNode extends Node {
 			return next;
 		}
 	}
-	
+
 	public Set<InstructionNode> getInstructionNodes() {
 		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
 		for (Node node : m_functionSequence) {
-			insts.addAll(node.getInstructionNodes());		
+			insts.addAll(node.getInstructionNodes());
 		}
 		return insts;
 	}
-	
+
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
 		for(Node node : m_functionSequence){
@@ -323,19 +322,19 @@ public class FunctionNode extends Node {
 			if(parent!= null){
 				parent.buildListUp(nodeList, copyStack, this);
 			}
-				
+
 		}
 		for(Node node : m_functionSequence){
 			if(start == node) break;
 			node.buildListDown(nodeList);
 		}
-		
+
 	}
-	
+
 	public void buildListDown(List<Node> nodeList) {
 		for(Node node : m_functionSequence){
 			node.buildListDown(nodeList);
-		}		
+		}
 	}
 
 }

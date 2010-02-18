@@ -12,37 +12,37 @@ public class AllSrcLabels extends Command {
 
     public int numArgs() {
     	return 0;
-    }        
-	
+    }
+
     public String name() {
     	return "allsrclabels";
-    }        
+    }
 
     public String commandLine() {
     	return "allsrclabels";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
-        return "allsrclabels: Lists all the possible locations for source labels";      	
+        return "allsrclabels: Lists all the possible locations for source labels";
     }
 
     public Command clone(String[] args, int index) {
         return new AllSrcLabels();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			
-        
+			return;
+
 		if (engine.getSrcLabelTable().entrySet().size() == 0){
 			console.display("none\n");
 			return;
 		}
 
 		for (SrcLabelTableInfo info : engine.getSrcLabelTable().values()) {
-    	    console.display(String.format("pc: 0x%x, compilation dir: %s, filename: %s, line numbers: %d - %d\n", 
-    	    		info.getPc(), info.getCompilationDir(), info.getFileName(), 
+    	    console.display(String.format("pc: 0x%x, compilation dir: %s, filename: %s, line numbers: %d - %d\n",
+    	    		info.getPc(), info.getCompilationDir(), info.getFileName(),
     	    		info.getLineNumberStart(), info.getLineNumberEnd()));
-    	}		        
+    	}
     }
 }

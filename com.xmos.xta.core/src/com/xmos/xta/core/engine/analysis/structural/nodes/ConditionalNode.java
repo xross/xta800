@@ -26,7 +26,7 @@ public class ConditionalNode extends Node {
 		m_options = new TreeSet<Node>();
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
-	
+
 	public ConditionalNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
@@ -34,7 +34,7 @@ public class ConditionalNode extends Node {
 			m_options.add(new BlockNode());
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
-	
+
 	public ConditionalNode(ConditionalNode ms) {
 		super();
 		m_options = ms.m_options;
@@ -54,21 +54,21 @@ public class ConditionalNode extends Node {
 		sn.m_attributes = new ConditionalNodeAttributes(sn);
 		return sn;
 	}
-	
+
     public String getTypeName() {
         return "cond";
     }
-	
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
-    }    
-    
+    }
+
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		for (Node node : m_options){
 			list.addAll(node.getInstructions());
 		}
-		return list;		
+		return list;
 	}
 
 	public long getStartPc() {
@@ -78,7 +78,7 @@ public class ConditionalNode extends Node {
 	public Collection<Node> getOptions(){
 		return m_options;
 	}
-	
+
 	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundConditionalNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
@@ -88,7 +88,7 @@ public class ConditionalNode extends Node {
 				if (status != TraverseStatus.CONTINUE) {
 					break;
 				}
-			}		
+			}
 			ancestors.pop();
 		}
 
@@ -97,33 +97,33 @@ public class ConditionalNode extends Node {
 		}
 		return TraverseStatus.CONTINUE;
 	}
-	
+
 	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
 		// Returns the best/worst case option of this conditional.
 		Node option = getOption(c, ignoreIterationsAboveCond, m_options);
 		return option;
     }
-	
+
 	public Node getUnsetOption(Case c, Node ignoreIterationsAboveCond) {
-		// Gets the best/worst case option taken from each of the 
-		// option nodes that does not have its iteration 
+		// Gets the best/worst case option taken from each of the
+		// option nodes that does not have its iteration
 		// count explicitly set by the user.
 		List<Node> allUnsetOptions = getAllUnsetOptions();
 		if (allUnsetOptions.isEmpty())
 			return null;
-		
+
 		return getOption(c, ignoreIterationsAboveCond, allUnsetOptions);
 	}
-		
+
 	public boolean isCondNode() {
 		return true;
 	}
-	
+
 	public List<Node> getAllUnsetOptions() {
 		List<Node> unsetOptions = new LinkedList<Node>();
 		for (Node option : m_options) {
 			if (!getAttributes().getSetOption(option)) {
-				unsetOptions.add(option);				
+				unsetOptions.add(option);
 			}
 		}
 		return unsetOptions;
@@ -138,11 +138,11 @@ public class ConditionalNode extends Node {
 		}
 		return setOptions;
 	}
-	
-	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {			
+
+	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {
 		// Finds the best/worst case of the real options..
 		Iterator<Node> iter = nodes.iterator();
-		Node caseNode = iter.next();		
+		Node caseNode = iter.next();
 		Status s = new Status();
 		double caseTime = caseNode.getAttributes().getTimeTaken(c, s, ignoreIterationsAboveCond);
 		if (c == Case.WORST && s.isUnresolved()) {
@@ -164,19 +164,19 @@ public class ConditionalNode extends Node {
 				    caseTime = time;
 				}
 				break;
-				
+
 			case BEST:
 				if (time < caseTime && !status.isZero() && !status.isUnresolved()) {
 				    caseNode = node;
 				    caseTime = time;
 				}
 				break;
-			}	
+			}
 			assert(time >= 0);
-		}	
-		
-		
-		return caseNode;		
+		}
+
+
+		return caseNode;
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
@@ -187,20 +187,20 @@ public class ConditionalNode extends Node {
 		}
 		tdb.merge(tdbs);
 		return tdb;
-	}	
-	
+	}
+
 	public void replaceChild(Node oldNode, Node newNode) {
 		m_options.remove(oldNode);
 		m_options.add(newNode);
 	}
-	
+
 	public void replaceChildren(List<Node> children) {
 		m_options.clear();
 		m_options.addAll(children);
 	}
 
 	//below here the methods have been verified useful
-	
+
 	public List<Node> iChildren() {
 		return new LinkedList<Node>(m_options);
 	}
@@ -210,15 +210,15 @@ public class ConditionalNode extends Node {
 		assert(getParent() != null);
 		return getParent().structurGraphNext(this);
 	}
-	
+
 	public Set<InstructionNode> getInstructionNodes() {
 		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
 		for (Node node : m_options) {
-			insts.addAll(node.getInstructionNodes());		
+			insts.addAll(node.getInstructionNodes());
 		}
 		return insts;
 	}
-	
+
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
 		for(Node node : m_options){
@@ -232,7 +232,7 @@ public class ConditionalNode extends Node {
 			m_parent.buildListUp(nodeList, stack, this);
 		}
 	}
-	
+
 	public void buildListDown(List<Node> nodeList) {
 		return;
 	}

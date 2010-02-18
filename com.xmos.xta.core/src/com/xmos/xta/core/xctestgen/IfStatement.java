@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class IfStatement extends CodeElement {
-	
+
 	public IfStatement(int id) {
 		super(10, "i", id);
 	}
@@ -47,15 +47,15 @@ public class IfStatement extends CodeElement {
 				file.write("}");
 			}
 			file.write("\n");
-		} 	
+		}
 	}
 
 	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
-		
+
 		emitExpectIndent(file, depth);
 		file.write("cond\n");
-		
-		if(m_children.size() == 1 ) { 
+
+		if(m_children.size() == 1 ) {
 			for (ArrayList<CodeElement> children : m_children) {
 				for (CodeElement child : children) {
 					child.emitExpect(node, file, depth+1);
@@ -71,10 +71,10 @@ public class IfStatement extends CodeElement {
 			//TODO - ill do this later as its hard but not nessessary
 			assert(false);
 		}
-		
-		
-		
+
+
+
 	}
 
-	
+
 }

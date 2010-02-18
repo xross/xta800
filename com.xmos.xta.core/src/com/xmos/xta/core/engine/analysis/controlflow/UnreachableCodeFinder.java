@@ -7,21 +7,20 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class UnreachableCodeFinder {
 
 	private Set<Node> m_unreachable;
-		
+
 	public UnreachableCodeFinder() {
 		m_unreachable = new TreeSet<Node>();
 	}
-	
+
 	/**
-	 * This finds all the code that is unreachable and removes it from the graph. 
-	 * It needs removing from the graph so that functions 
+	 * This finds all the code that is unreachable and removes it from the graph.
+	 * It needs removing from the graph so that functions
 	 * and threads don't have invalid predecessors.
 	 */
 	public void analyseReachable(InstructionDecoder id, Set<InstructionNode> functionStarts) {
@@ -34,12 +33,12 @@ public class UnreachableCodeFinder {
 			reachable.addAll(seen);
 		}
 		m_unreachable.removeAll(reachable);
-		
+
 		for (Node unreachable : m_unreachable) {
 			for (Node next : unreachable.getNextNodes()) {
 				next.removePrevNode(unreachable);
 			}
-			
+
 			unreachable.clearNextNodes();
 		}
 	}
@@ -47,7 +46,7 @@ public class UnreachableCodeFinder {
 	private void explore(Node node, Collection<Node> seen) {
 		List<Node> toDo = new ArrayList<Node>();
 		toDo.add(node);
-		
+
 		while (!toDo.isEmpty()) {
 			Node currentNode = toDo.get(0);
 			if (!seen.contains(currentNode)) {
@@ -58,7 +57,7 @@ public class UnreachableCodeFinder {
 					}
 				}
 			}
-			
+
 			toDo.remove(currentNode);
 		}
 	}

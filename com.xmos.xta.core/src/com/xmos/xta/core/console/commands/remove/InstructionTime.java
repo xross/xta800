@@ -10,7 +10,7 @@ public class InstructionTime extends Command {
 
 	public InstructionTime() {
 	}
-	
+
 	public InstructionTime(String refString) {
 		m_refString = refString;
 	}
@@ -22,32 +22,32 @@ public class InstructionTime extends Command {
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.ENDPOINT};
 	}
-    
+
     public String name() {
-		return "instructiontime"; 
+		return "instructiontime";
     }
 
     public String commandLine() {
-       	return "instructiontime " + m_refString;        	
+       	return "instructiontime " + m_refString;
     }
-    
+
     public String description(Engine engine, boolean detailed) {
 		return "instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines";
     }
 
     public Command clone(String[] args, int index) {
-    	if ((index + numArgs()) >= args.length) { 
+    	if ((index + numArgs()) >= args.length) {
 			return null;
     	}
 
     	return new InstructionTime(args[index + 1]);
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
 		}
 
 		engine.removeInstructionTime(getSrc(), m_refString);
-    }    
+    }
 }

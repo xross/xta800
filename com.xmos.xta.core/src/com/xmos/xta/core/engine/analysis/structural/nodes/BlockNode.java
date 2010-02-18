@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.TimeUnit;
@@ -15,22 +16,22 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
-	private BlockNodeAttributes m_attributes;	
+	private BlockNodeAttributes m_attributes;
 	private List<InstructionNode> m_insts;
 
 	private static final boolean COPY_INSTRUCTIONS = true;
-	
+
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;
 		m_attributes = new BlockNodeAttributes(this);
 	}
-	
+
 	public BlockNode(List<InstructionNode> insts) {
 		super();
 		m_insts = insts;
         m_attributes = new BlockNodeAttributes(this);
 	}
-		
+
 	//this is for empty basic blocks for conditionals
 	public BlockNode() {
 		m_insts = new LinkedList<InstructionNode>();
@@ -40,11 +41,11 @@ public class BlockNode extends Node {
 	public BlockNode copyStructure() {
 		return new BlockNode(this);
 	}
-	
+
 	public List<InstructionNode> getInstructionList(){
 		return m_insts;
 	}
-	
+
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		List<InstructionNode> insts;
 		if (COPY_INSTRUCTIONS){
@@ -57,19 +58,19 @@ public class BlockNode extends Node {
 		}
 		return new BlockNode(insts);
 	}
-	
+
     public String getTypeName() {
         return "block";
     }
-    
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-    
+
 	public boolean isBlockNode() {
 		return true;
 	}
-    
+
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>();
 		for (Node inst : m_insts){
@@ -84,8 +85,8 @@ public class BlockNode extends Node {
 
 	public long getStartPc() {
 		return getInstructions().getFirst().getPc();
-	}	
-		
+	}
+
 	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundBlockNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
@@ -95,10 +96,10 @@ public class BlockNode extends Node {
 				if (status != TraverseStatus.CONTINUE) {
 					break;
 				}
-			}		
+			}
 			ancestors.pop();
 		}
-		
+
 		if (status == TraverseStatus.ABORT) {
 			return status;
 		}
@@ -125,7 +126,7 @@ public class BlockNode extends Node {
 		m_insts.remove(index);
 		m_insts.add(index, (InstructionNode)newNode);
 	}
-	
+
 	public void replaceChildren(List<Node> children) {
 		m_insts.clear();
 		for (Node child : children) {
@@ -133,9 +134,9 @@ public class BlockNode extends Node {
 			m_insts.add((InstructionNode)child);
 		}
 	}
-	
+
 	//below here the methods have been verified useful
-	
+
 	public List<Node> iChildren() {
 		return new LinkedList<Node>(m_insts);
 	}
@@ -151,18 +152,18 @@ public class BlockNode extends Node {
 			assert(getParent() != null);
 			return getParent().structurGraphNext(this);
 		}
-	}	
-	
+	}
+
 	public Set<InstructionNode> getInstructionNodes() {
 		Set<InstructionNode> insts = new TreeSet<InstructionNode>(m_insts);
 		return insts;
 	}
-	
+
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
 		return fnRef;
 	}
-	
+
 	public void buildListUp(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
 		if(m_parent!= null){
@@ -177,7 +178,7 @@ public class BlockNode extends Node {
 		for(InstructionNode inst : m_insts){
 			inst.buildListDown(nodeList);
 		}
-		
+
 	}
 
 }

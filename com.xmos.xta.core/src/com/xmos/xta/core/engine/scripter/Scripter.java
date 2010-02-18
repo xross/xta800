@@ -48,7 +48,7 @@ public class Scripter {
 	private Set<String> m_autoLabels;
 	private Set<String> m_disables;
 	private Map<String, String> m_renames;
-	
+
 	public Scripter(Engine engine) {
 		m_engine = engine;
 		m_currentConfig = new Config();
@@ -72,18 +72,18 @@ public class Scripter {
 		m_currentBranches = copyBranches(m_engine.getBranches());
 		m_references = null;
 	}
-	
+
 	public String dump() {
     	StringBuffer script = new StringBuffer();
- 	
+
     	m_currentRouteId = 0;
     	script.append(String.format("load \"%s\"\n", m_engine.getExecutable().toString()));
-    	    	    	
+
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
         	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
         	    (routeContainer.numExistingRoutes() <= 0))
         		continue;
-    		
+
        		script.append("\n");
 
        		RouteDescription description = routeContainer.getDescription();
@@ -101,7 +101,7 @@ public class Scripter {
        		for (Route route : routeContainer.getRoutes()) {
        			if (routeContainer.routeExists(route)) {
            			setKnowns(route, script, routeContainer.getRoutes().size() == 1);
-           			setRequirements(route, script, routeContainer.getRoutes().size() == 1);       				
+           			setRequirements(route, script, routeContainer.getRoutes().size() == 1);
        			}
        			++m_currentRouteId;
     		}
@@ -116,7 +116,7 @@ public class Scripter {
 
     	return script.toString();
     }
- 	
+
 	public String getUniqueLabel() {
 		int i = 0;
 		String label = "label_" + Integer.toString(i);
@@ -138,7 +138,7 @@ public class Scripter {
 					String.format("Reference '%s' not used in scripter", ref));
 		}
 	}
-	
+
 	public void disable(CommandSource src, Notifier notifier, String ref) {
 		ScripterReference scripterReference = getReference(ref);
 		if (scripterReference != null) {
@@ -149,28 +149,28 @@ public class Scripter {
 					String.format("Reference '%s' not used in scripter", ref));
 		}
 	}
-	
+
 	public void rename(CommandSource src, Notifier notifier, String from, String to) {
 		ScripterReference scripterReference = getReference(from);
 		if (scripterReference == null) {
 			notifier.notify(src, Notifier.NOTIFY_ERROR,
 					String.format("Reference '%s' not used in scripter", from));
-			
+
 		} else if (!scripterReference.isModifiable()) {
 			notifier.notify(src, Notifier.NOTIFY_ERROR,
 					String.format("Reference '%s' cannot be renamed", from));
-			
+
 		} else {
 			scripterReference.rename(to);
 			m_renames.put(from, to);
 		}
 	}
-	
+
 	public Collection<ScripterReference> getRefs() {
 		assert(m_references != null);
 		return m_references;
 	}
-		
+
 	public void createRefs() {
 		m_autoLabels.clear();
 		m_references = new LinkedList<ScripterReference>();
@@ -180,7 +180,7 @@ public class Scripter {
         	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
         	    (routeContainer.numExistingRoutes() <= 0))
         		continue;
-    		
+
        		RouteDescription description = routeContainer.getDescription();
        		if (description.getMode() == RouteMode.PATH) {
        			addReference(description.getStartPoint());
@@ -188,15 +188,15 @@ public class Scripter {
        		} else {
        			addReference(description.getFunctionReference());
        		}
-       		
+
        		for (Reference ref : description.getBranches().keySet()) {
        			addReference(ref);
        			addReferences(description.getBranches().get(ref));
        		}
-       		
+
        		addDefineReferences(description.getDefines(),
        				description.getNodeNumber(), description.getCoreNumber());
-       		
+
         	for (Reference ref : description.getExclusions()) {
         		addReference(ref);
         	}
@@ -221,7 +221,7 @@ public class Scripter {
     	for (Reference ref : m_engine.getExclusions()) {
     		addReference(ref);
     	}
-    	
+
     	disableReferences();
     	renameReferences();
 	}
@@ -231,7 +231,7 @@ public class Scripter {
     	for (Reference reference : references) {
     		if (reference == null) {
     			portable = false;
-    			
+
     		} else if (!reference.isPortable()) {
     			if (reference.getRef().equals(getReferenceString(reference))) {
     				// Only emit the warning if the reference is not being mapped to a new value
@@ -239,7 +239,7 @@ public class Scripter {
     					reference.getRef()));
     			}
     		}
-    	}    	
+    	}
     	if (!portable) {
 			script.append("# Warning: The following line contains a non-portable reference.\n");
 		}
@@ -253,27 +253,27 @@ public class Scripter {
     	case FUNCTION:
     		script.append(String.format("# Route: %s\n", routeDescription.getFunctionName()));
     		break;
-    		
+
     	case PATH:
     		script.append(String.format("# Route: %s => %s\n", routeDescription.getFromName(), routeDescription.getToName()));
     		break;
-    	}    	    	
+    	}
     	script.append("#\n");
 	}
-	
+
     private void globalConfig(RouteContainer routeContainer, StringBuffer script) {
-    	updateGlobalConfig(script, 
-    			routeContainer.getDescription().getConfig(), 
+    	updateGlobalConfig(script,
+    			routeContainer.getDescription().getConfig(),
     			routeContainer.getDescription().getNodeNumber(),
     			routeContainer.getDescription().getCoreNumber());
     }
-    
+
 	private void addDefines(Defines defines, int nodeNumber, int coreNumber, StringBuffer script) {
 		defines.updateScript(m_currentDefines, script, nodeNumber, coreNumber);
 		m_currentDefines = defines;
 	}
-    
-    private void addBranches(Map<Reference, List<Reference>> branches, StringBuffer script) {	
+
+    private void addBranches(Map<Reference, List<Reference>> branches, StringBuffer script) {
     	if (!m_currentBranches.equals(branches)) {
     		if (!m_currentBranches.isEmpty()) {
         	    script.append("remove branch *\n");
@@ -285,9 +285,9 @@ public class Scripter {
         			outputPortableWarnings(script, new Reference[]{toRef});
     			}
 
-    			List<Reference> toRefs = new ArrayList<Reference>(); 
+    			List<Reference> toRefs = new ArrayList<Reference>();
             	script.append(String.format("add branch %s", getReferenceString(fromRef)));
-            	
+
     			for (Reference toRef : branches.get(fromRef)) {
     				script.append(String.format(" %s", getReferenceString(toRef)));
                 	toRefs.add(toRef);
@@ -298,7 +298,7 @@ public class Scripter {
     	}
     }
 
-    private void addExclusions(Collection<Reference> exclusions, StringBuffer script) {	
+    private void addExclusions(Collection<Reference> exclusions, StringBuffer script) {
     	if (!m_currentExclusions.equals(exclusions)) {
     		if (!m_currentExclusions.isEmpty()) {
         	    script.append("remove exclusion *\n");
@@ -306,23 +306,23 @@ public class Scripter {
         	for (Reference exclusion : exclusions) {
     			outputPortableWarnings(script, new Reference[]{exclusion});
             	script.append(String.format("add exclusion %s\n",
-            			getReferenceString(exclusion)));    		
+            			getReferenceString(exclusion)));
         	}
     		m_currentExclusions.clear();
     		m_currentExclusions.addAll(exclusions);
     	}
     }
 
-    private void analyseRoutes(RouteContainer routeContainer, StringBuffer script) {    	
+    private void analyseRoutes(RouteContainer routeContainer, StringBuffer script) {
     	RouteDescription routeDescription = routeContainer.getDescription();
     	switch (routeDescription.getMode()) {
     	case FUNCTION:
 		    outputPortableWarnings(script, new Reference[]{routeDescription.getFunctionReference()});
 
 		    script.append(String.format("analyse function %s\n",
-		    		getReferenceString(routeDescription.getFunctionReference())));    			
+		    		getReferenceString(routeDescription.getFunctionReference())));
     		break;
-    		
+
     	case PATH:
 		    outputPortableWarnings(script, new Reference[]{routeDescription.getStartPoint()});
 		    outputPortableWarnings(script, new Reference[]{routeDescription.getEndPoint()});
@@ -331,7 +331,7 @@ public class Scripter {
 		    		getReferenceString(routeDescription.getStartPoint()),
 		    		getReferenceString(routeDescription.getEndPoint())));
     		break;
-    	}    	
+    	}
     }
 
 	private void removeRoutes(RouteContainer routeContainer, StringBuffer script) {
@@ -345,24 +345,24 @@ public class Scripter {
     }
 
     private void setKnowns(Route route, StringBuffer script, boolean singleRoute) {
-		for (Unknown unknown : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {	
-			String routeIdStr = getRouteIdString(singleRoute);			
+		for (Unknown unknown : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {
+			String routeIdStr = getRouteIdString(singleRoute);
 		    String[] refStrs = getReferenceStrings(unknown);
 
 		    try {
 		    	String scriptStr = unknown.getScriptStr(routeIdStr, refStrs);
 			    outputPortableWarnings(script, unknown.getReferences());
-		    	script.append(scriptStr);		    	
+		    	script.append(scriptStr);
 		    } catch (Exception e) {}
 		}
     }
-    
+
     private void setRequirements(Route route, StringBuffer script, boolean singleRoute) {
-		String routeIdStr = getRouteIdString(singleRoute);			    	
-    	
+		String routeIdStr = getRouteIdString(singleRoute);
+
 		RouteTiming routeTiming = route.getRouteTiming();
 		if (routeTiming.isTimingSpecified()) {
-	    	script.append(String.format("set required %s %s\n", routeIdStr, 
+	    	script.append(String.format("set required %s %s\n", routeIdStr,
 	    			routeTiming.getDescription(Level.REQUIRED)));
 		}
     }
@@ -376,15 +376,15 @@ public class Scripter {
     	}
     	if (m_currentConfig.m_numThreads != config.m_numThreads) {
         	script.append(String.format("config threads %s\n", config.m_numThreads));
-        	m_currentConfig.m_numThreads = config.m_numThreads;    		
+        	m_currentConfig.m_numThreads = config.m_numThreads;
     	}
     	if (m_currentConfig.m_frequency != config.m_frequency) {
-        	script.append(String.format("config freq %s\n", config.m_frequency));    		
-        	m_currentConfig.m_frequency = config.m_frequency; 
+        	script.append(String.format("config freq %s\n", config.m_frequency));
+        	m_currentConfig.m_frequency = config.m_frequency;
     	}
     	if (m_currentConfig.m_case != config.m_case) {
-        	script.append(String.format("config case %s\n", config.m_case));    		
-        	m_currentConfig.m_case = config.m_case; 
+        	script.append(String.format("config case %s\n", config.m_case));
+        	m_currentConfig.m_case = config.m_case;
     	}
     }
 
@@ -393,7 +393,7 @@ public class Scripter {
 		if (!singleRoute) {
 			routeIdStr = String.format("%d", m_currentRouteId);
 		}
-		return routeIdStr;    	
+		return routeIdStr;
     }
 
     private String[] getReferenceStrings(Unknown unknown) {
@@ -403,26 +403,26 @@ public class Scripter {
     	}
     	return refStrings.toArray(new String[0]);
     }
-    
+
     private String getReferenceString(Reference reference, Node node) {
 	    String refStr = "";
 		if (reference == null) {
 			// This unknown was set directly onto a node (and not via a reference),
 			// so we need to generate a suitable reference to use in the script.
 			refStr = node.getReferenceStr();
-			
+
 		} else {
 			// This unknown was set via a reference, so can use this directly in the script.
 			refStr = getReferenceString(reference);
 		}
 		return refStr;
     }
-    
+
     private Map<Reference, List<Reference>> copyBranches(Map<Reference, Set<BranchInfo>> map) {
     	Map<Reference, List<Reference>> copy = new TreeMap<Reference, List<Reference>>();
 
 		for (Reference fromRef : map.keySet()) {
-			List<Reference> toRefs = new ArrayList<Reference>(); 
+			List<Reference> toRefs = new ArrayList<Reference>();
 			for (BranchInfo to : map.get(fromRef)) {
             	toRefs.add(to.getRef());
 			}
@@ -454,14 +454,14 @@ public class Scripter {
 				ref.rename(m_renames.get(rename));
 			}
 		}
-		
+
 		for (String remove : toRemove) {
 			m_renames.remove(remove);
 		}
 	}
 
 	private void addDefineReferences(Defines defines, int nodeNumber, int coreNumber) {
-		
+
 		for (InstructionTimeInfo info : defines.getInstructionTimes(nodeNumber, coreNumber)) {
 			addReference(info.getReference());
 		}
@@ -490,7 +490,7 @@ public class Scripter {
 		if (ref == null) {
 			return;
 		}
-		
+
 		ScripterReference scripterReference = getReference(ref.getRef());
 		if (scripterReference == null) {
 			m_references.add(new ScripterReference(this, m_engine, ref));

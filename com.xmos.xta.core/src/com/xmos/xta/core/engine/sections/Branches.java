@@ -2,10 +2,11 @@ package com.xmos.xta.core.engine.sections;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map;
+
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
@@ -15,15 +16,15 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
-public class Branches extends Section {	
+public class Branches extends Section {
 	private Map<Reference, Set<BranchInfo>> m_branches;
 
 	Branches(int nodeNumber, int coreNumber, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
 
-		m_branches = new TreeMap<Reference, Set<BranchInfo>>(); 
+		m_branches = new TreeMap<Reference, Set<BranchInfo>>();
 	}
-	
+
 	boolean add(CommandSource src, Reference from, Collection<Reference> to, boolean isUser) {
 		Set<BranchInfo> pcs = null;
 		if (!m_branches.containsKey(from)) {
@@ -32,13 +33,13 @@ public class Branches extends Section {
 
 		} else {
 		    pcs = m_branches.get(from);
-		}	
+		}
 
 		for (Reference ref : to) {
 			for (BranchInfo info : pcs) {
 				if (info.getRef().equals(ref)) {
 					getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-							"unable to add duplicate branch: %s, %s", from.toString(), ref.toString()));					
+							"unable to add duplicate branch: %s, %s", from.toString(), ref.toString()));
 					return false;
 				}
 			}
@@ -48,7 +49,7 @@ public class Branches extends Section {
 		}
 		return true;
 	}
-	
+
 	boolean remove(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {
 		boolean hit = false;
 		for (Reference ref : m_branches.keySet()) {
@@ -62,7 +63,7 @@ public class Branches extends Section {
 				message += String.format(" %s", toRef.toString());
 			}
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, message);
-			return false;			
+			return false;
 		}
 		return hit;
 	}
@@ -87,10 +88,10 @@ public class Branches extends Section {
 	Map<Reference, Set<BranchInfo>> get() {
 		return m_branches;
 	}
-		
+
 	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeNumber(), getCoreNumber());
-				
+
 		if ((data.length % 8) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, "invalid size for .xtabranch section");
 			return false;
@@ -98,24 +99,24 @@ public class Branches extends Section {
 
 		try {
 			int byteIndex = 0;
-	        while (byteIndex < data.length) {        	
+	        while (byteIndex < data.length) {
 	        	long fromPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
-	        	byteIndex += 4;        	
+	        	byteIndex += 4;
 	        	long toPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
-	        	
+
 	        	Collection<Reference> toRefs = new HashSet<Reference>();
 	    		Reference toRef = ReferenceFactory.createReference(String.format("0x%x", toPc), ReferenceClass.PC_REF);
 	        	toRefs.add(toRef);
 	    		Reference fromRef = ReferenceFactory.createReference(String.format("0x%x", fromPc), ReferenceClass.PC_REF);
 	    		add(src, fromRef, toRefs, false);
-	        }        
+	        }
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 			    	"problem reading .xtabranch section while loading executable"));
 			e.printStackTrace(System.out);
     	    return false;
-        }        
+        }
         return true;
-	}	
+	}
 }

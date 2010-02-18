@@ -8,9 +8,9 @@ import com.xmos.xta.core.engine.Engine;
 public class To extends Command {
 	public To() {
 	}
-	
+
     public int numArgs() {
-   		return 0; 
+   		return 0;
     }
 
     public String name() {
@@ -20,7 +20,7 @@ public class To extends Command {
     public String commandLine() {
        	return "to";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
        	return "to: Removes the to endpoint";
     }
@@ -28,11 +28,11 @@ public class To extends Command {
     public Command clone(String[] args, int index) {
 	    return new To();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
         engine.removeToEndPoint(getSrc());
-    }    
+    }
 }

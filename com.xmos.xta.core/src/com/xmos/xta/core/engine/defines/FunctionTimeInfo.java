@@ -11,7 +11,7 @@ public class FunctionTimeInfo implements DefineInfo {
 		m_function = function;
 		m_timeUnit = timeUnit;
 	}
-	
+
 	public Reference getFunction() {
 		return m_function;
 	}
@@ -19,11 +19,11 @@ public class FunctionTimeInfo implements DefineInfo {
 	public TimeUnit getTimeUnit() {
 		return m_timeUnit;
 	}
-	
+
 	public String toString() {
 		return String.format("%s: %s", m_function.toString(), m_timeUnit.getDescription(false));
-	}	
-	
+	}
+
     public String getDescription() {
     	return m_function.toString();
     }

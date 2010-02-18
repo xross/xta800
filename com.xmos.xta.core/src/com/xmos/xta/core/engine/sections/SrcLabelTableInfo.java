@@ -6,8 +6,8 @@ public class SrcLabelTableInfo implements Comparable<SrcLabelTableInfo>, Scripta
     private String m_fileName;
     private int m_lineNumberStart;
     private int m_lineNumberEnd;
-    
-    public SrcLabelTableInfo(long pc, String compilationDir, String fileName, 
+
+    public SrcLabelTableInfo(long pc, String compilationDir, String fileName,
     		int lineNumberStart, int lineNumberEnd) {
     	m_pc = pc;
     	m_compilationDir = compilationDir;
@@ -15,15 +15,15 @@ public class SrcLabelTableInfo implements Comparable<SrcLabelTableInfo>, Scripta
     	m_lineNumberStart = lineNumberStart;
     	m_lineNumberEnd = lineNumberEnd;
     }
- 
+
     public long getPc() {
     	return m_pc;
     }
-        
+
     public String getCompilationDir() {
     	return m_compilationDir;
     }
-    
+
     public String getFileName() {
     	return m_fileName;
     }

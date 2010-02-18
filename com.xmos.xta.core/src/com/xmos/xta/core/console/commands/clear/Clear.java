@@ -6,31 +6,31 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Clear extends Command  {
-	public Clear() {		
+	public Clear() {
 	}
-	
+
     public int numArgs() {
     	return 0;
     }
 
     public String name() {
     	return "clear";
-    }        
+    }
 
     public String commandLine() {
     	return "clear";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
-        return "clear: Clears the screen (Gui mode only)";      	
+        return "clear: Clears the screen (Gui mode only)";
     }
 
     public Command clone(String[] args, int index) {
     	return new Clear();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
     	console.clearScreen();
-    }    
+    }
 }
 

@@ -20,7 +20,7 @@ public abstract class ReferenceType {
 	private Set<Long> m_pcs;
 	private Map<Long, List<String>> m_pcBackTrails;
 	private String m_fileName;
-	private long m_lineNum;	
+	private long m_lineNum;
 	private Type m_type;
 
 	public enum Type {
@@ -33,7 +33,7 @@ public abstract class ReferenceType {
 		EVERYTHING,
 		ERROR
 	}
-	
+
 	ReferenceType(String ref, Type type) {
 		m_ref = ref;
 		m_pcs = new TreeSet<Long>();
@@ -43,21 +43,21 @@ public abstract class ReferenceType {
 		m_lineNum = 0;
 		m_type = type;
 	}
-	
+
 	public abstract ReferenceType create(Engine engine, String reference);
 	public abstract String name();
 	public abstract String description();
 	public abstract boolean resolve(Engine engine);
 	public abstract boolean isPortable();
-	
+
 	public String getRef() {
-	    return m_ref;	    
+	    return m_ref;
 	}
-	
+
 	public void setRef(String ref) {
 		m_ref = ref;
 	}
-	    
+
 	public boolean getResolved() {
     	return m_resolved;
     }
@@ -65,10 +65,10 @@ public abstract class ReferenceType {
     public void setResolved(boolean resolved) {
     	m_resolved = resolved;
     }
-    
+
 	public Set<Long> getPcs() {
 		return m_pcs;
-	}	
+	}
 
 	public void addPc(long pc) {
 	    m_pcs.add(pc);
@@ -83,7 +83,7 @@ public abstract class ReferenceType {
 	    }
 		return backTrail;
 	}
-	
+
 	public void addPc(long pc, String tableLabel) {
 	    m_pcs.add(pc);
 	    m_pcBackTrails.put(pc, convertLabelToList(tableLabel));
@@ -91,7 +91,7 @@ public abstract class ReferenceType {
 
 	public String getFileName() {
 		return m_fileName;
-	}	
+	}
 
 	public void setFileName(String fileName) {
 		m_fileName = fileName;
@@ -99,64 +99,64 @@ public abstract class ReferenceType {
 
 	public long getLineNum() {
 		return m_lineNum;
-	}	
+	}
 
 	public void setLineNum(long lineNum) {
 		m_lineNum = lineNum;
 	}
-	
+
 	public Type getType() {
 		return m_type;
 	}
-	
+
 	boolean inSrcLabelTable(String ref, Map<Long, SrcLabelTableInfo> srcLabelTable, SourceMapper sourceMapper) {
 		String fileName = getFileName(ref);
-        long lineNumber  = getLineNumber(ref);		
+        long lineNumber  = getLineNumber(ref);
 
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
             if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper) &&
             	((lineNumber >= info.getLineNumberStart()) &&
             	 (lineNumber <= info.getLineNumberEnd()))) {
             	return true;
-            }			
-		}		
+            }
+		}
 		return false;
 	}
-	
-	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable, SourceMapper sourceMapper) {		
+
+	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable, SourceMapper sourceMapper) {
 		String fileName = getFileName(ref);
-        long lineNumber  = getLineNumber(ref);		
+        long lineNumber  = getLineNumber(ref);
 
 		for (CodePointTableInfo info : codePointTable.values()) {
             if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper) &&
             	(info.getLineNumber() == lineNumber)) {
             	return true;
-            }			
-		}		
+            }
+		}
 		return false;
-	}	
+	}
 
 	boolean isSourceReference(String ref) {
-		String[] refArray = ref.split(":"); 
+		String[] refArray = ref.split(":");
 
 		if ((refArray.length < 2) || (refArray.length > 4))
 			return false;
-				
+
 		String fileName = getFileName(ref);
 		if (fileName.length() == 0)
 			return false;
 
-		String lineNum = refArray[refArray.length - 1];			
-		if (!lineNum.matches("[0-9]*")) 
+		String lineNum = refArray[refArray.length - 1];
+		if (!lineNum.matches("[0-9]*"))
 			return false;
-		
+
 		return true;
 	}
 
 	boolean isPcString(String ref) {
-		String[] refArray = ref.split(":"); 
-        String pcString = (refArray.length == 2) ? refArray[1] : refArray[0];	 
-		
+		String[] refArray = ref.split(":");
+        String pcString = (refArray.length == 2) ? refArray[1] : refArray[0];
+
 		if (pcString.matches("0x[0-9a-fA-F]+")){
 			return true;
 		} else if (pcString.matches("[0-9]+")){
@@ -165,11 +165,11 @@ public abstract class ReferenceType {
 			return false;
 		}
 	}
-	
+
 	long getPcString(String ref) {
-		String[] refArray = ref.split(":"); 
-        String pcString = (refArray.length == 2) ? refArray[1] : refArray[0];	 		
-		
+		String[] refArray = ref.split(":");
+        String pcString = (refArray.length == 2) ? refArray[1] : refArray[0];
+
 		if (pcString.matches("0x[0-9a-fA-F]+")){
 			return Long.parseLong(pcString.substring(2), 16);
 		} else if (pcString.matches("[0-9]+")){
@@ -178,12 +178,12 @@ public abstract class ReferenceType {
 			assert(false);
 			return 0;
 		}
-	}	
-		
+	}
+
 	String getFileName(String fileLineReference) {
 		String[] refArray = fileLineReference.split(":");
 		assert((refArray.length == 2) || (refArray.length == 3) || (refArray.length == 4));
-		
+
 		if ((refArray.length == 4) || (refArray.length == 3) &&
 				(refArray[refArray.length - 3].length() == 1)) {
 			return refArray[refArray.length - 3] + ":" + refArray[refArray.length - 2];
@@ -194,27 +194,27 @@ public abstract class ReferenceType {
 
 	long getLineNumber(String fileLineReference) {
 		String[] refArray = fileLineReference.split(":");
-		assert((refArray.length == 2) || (refArray.length == 3) || (refArray.length == 4));		
-		
+		assert((refArray.length == 2) || (refArray.length == 3) || (refArray.length == 4));
+
 		String lineNumberStr = refArray[refArray.length - 1];
         long lineNumber = 0;
-        try {       
+        try {
         	lineNumber = Long.parseLong(lineNumberStr);
         }
         catch (NumberFormatException e) {
             assert false;
-        }            
+        }
         return lineNumber;
 	}
-	
+
 	String getLabel(String reference) {
 		String[] refArray = reference.split(":");
-		assert((refArray.length == 1) || (refArray.length == 2));		
-		return (refArray.length == 1) ? refArray[0] : refArray[1];		
+		assert((refArray.length == 1) || (refArray.length == 2));
+		return (refArray.length == 1) ? refArray[0] : refArray[1];
 	}
-	
+
 	boolean checkTypeString(String reference, Type refType, int numElements) {
-		String[] refArray = reference.split(":"); 
+		String[] refArray = reference.split(":");
 
 		if ((refArray.length == numElements))
 			return true;
@@ -233,18 +233,18 @@ public abstract class ReferenceType {
 
 			if ((refArray.length == 3) && (refArray[0].length() == 1)) {
 				return true; // Case of a windows path and no type
-				
+
 			} else if (refArray[0].equals(refType.toString())) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public boolean matches(String s, Engine engine) {
 		return false;
 	}
-	
+
     public int hashCode() {
         int hash = 1;
         for (long pc : m_pcs) {
@@ -270,7 +270,7 @@ public abstract class ReferenceType {
 		}
 		return false;
 	}
-	
+
 	protected boolean labelsMatch(String tableLabel, String label) {
     	String[] subRefs = tableLabel.split(",");
     	assert(subRefs.length > 0);
@@ -281,18 +281,18 @@ public abstract class ReferenceType {
 		if (!isSourceReference(s)) {
 			return false;
 		}
-		
+
 		String fileName = getFileName(s);
         long lineNumber = getLineNumber(s);
-        
+
         if (lineNumber != getLineNum()) {
         	return false;
         }
-        
+
         if (FileNameMatcher.isMatch(fileName, getFileName(), engine.getSourceMapper())) {
         	return true;
         }
-        
+
 		return false;
 	}
 

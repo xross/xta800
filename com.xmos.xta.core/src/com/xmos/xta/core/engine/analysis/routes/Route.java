@@ -32,8 +32,6 @@ public class Route {
 	private RouteUnknowns m_unknowns;
 	private Node m_node;
 	private Node m_searchNode;
-	private Engine m_engine;
-
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
@@ -43,14 +41,12 @@ public class Route {
 		m_container = container;
 		m_routeId = s_routeCount++;
 		m_node = node;
-		m_engine = engine;
-
 		Architecture architecture = engine.getXeLoader().getArchitecture();
 		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeNumber(), engine.getCoreNumber());
-		m_unknowns = new RouteUnknowns(this);		
+		m_unknowns = new RouteUnknowns(this);
 		setRouteSpecificConfigs(description.getConfig(), architecture);
 	}
-	
+
 	public int getRouteId() {
 		return m_routeId;
 	}
@@ -58,11 +54,11 @@ public class Route {
 	public Node getNode() {
 		return m_node;
 	}
-	
+
 	public void setNode(Node node) {
 		m_node = node;
 	}
-	
+
 	public RouteDescription getRouteDescription() {
 		return m_description;
 	}
@@ -70,15 +66,15 @@ public class Route {
     public RouteContainer getRouteContainer() {
 		return m_container;
 	}
-	
+
 	public RouteTiming getRouteTiming() {
 		return m_timing;
 	}
-	
+
 	public RouteUnknowns getRouteUnknowns() {
 		return m_unknowns;
 	}
-	
+
 	public String getEndpointsPcsString() {
 		return "";
 	}
@@ -86,9 +82,9 @@ public class Route {
     public Node getNode(final int nodeId) {
     	if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
     		return m_node;
-    		
+
     	} else {
-        	m_searchNode = null;			
+        	m_searchNode = null;
         	m_node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
     			public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
     				if (node.getId() == nodeId) {
@@ -99,11 +95,11 @@ public class Route {
     			}
     		});
             return m_searchNode;
-    	}    	
+    	}
     }
-    
+
 	public Node getNode(String nodeString) {
-		
+
 		// Note: the nodeString takes the format ~x~x~x~x~...
 		// where x = the index of the child node at that level
 		// of the structure. It provides a (reasonably) robust way
@@ -111,12 +107,12 @@ public class Route {
 		// purely for testing purposes.
 		if (nodeString.charAt(0) != '~')
 			return null;
-		
+
 		if (nodeString.charAt(nodeString.length() - 1) != '~')
 			return null;
-		
+
 		Node node = m_node;
-		
+
 		String[] nodeIndecies = nodeString.substring(1, nodeString.length() - 1).split("~");
 		for (String nodeIndex : nodeIndecies) {
 			int index;
@@ -124,37 +120,37 @@ public class Route {
 		    } catch (NumberFormatException e) {
 		        return null;
 		    }
-		    
+
 		    if (index >= node.iChildren().size())
 		    	return null;
-			
+
 			node = node.iChildren().get(index);
 			if(node instanceof FunctionReferenceNode){
 				node = node.iChildren().get(0);
 			}
-		}		
+		}
 		return node;
 	}
 
 	public Set<Node> getReferencedNodes(Reference reference) throws AbortedException {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
-		return referenceMatcher.getNodesMatchingReference(m_node, reference);		
-	} 
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
+		return referenceMatcher.getNodesMatchingReference(m_node, reference);
+	}
 
 	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();		
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
 		Collection<Node> referencedNodes = new ArrayList<Node>();
-		
+
 		for (Node function : referenceMatcher.getFunctionNodesMatchingReference(m_node, reference)) {
 			referencedNodes.add(function);
 		}
-		return referencedNodes;		
-	} 
-	
+		return referencedNodes;
+	}
+
 	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
 		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
-				((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);				
+				((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);
 				return TraverseStatus.CONTINUE;
 			}
 		});

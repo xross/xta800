@@ -8,7 +8,7 @@ public abstract class Section {
 	private int m_nodeNumber;
 	private int m_coreNumber;
 	private Notifier m_notifier;
-	
+
 	Section(int nodeNumber, int coreNumber, Notifier notifier) {
 		m_nodeNumber = nodeNumber;
 		m_coreNumber = coreNumber;
@@ -16,7 +16,7 @@ public abstract class Section {
 	}
 
 	abstract boolean load(CommandSource src, XeLoader xeLoader);
-	
+
 	int getNodeNumber() {
 		return m_nodeNumber;
 	}
@@ -24,8 +24,8 @@ public abstract class Section {
 	int getCoreNumber() {
 		return m_coreNumber;
 	}
-	
+
 	Notifier getNotifier() {
 		return m_notifier;
-	}	
+	}
 }

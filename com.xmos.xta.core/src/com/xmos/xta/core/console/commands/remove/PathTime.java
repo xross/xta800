@@ -11,7 +11,7 @@ public class PathTime extends Command {
 
 	public PathTime() {
 	}
-	
+
 	public PathTime(String fromRef, String toRef) {
 		m_fromRef = fromRef;
 		m_toRef = toRef;
@@ -19,20 +19,20 @@ public class PathTime extends Command {
 
     public int numArgs() {
    		return 2;
-    }        
+    }
 
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.ENDPOINT, ArgType.ENDPOINT};
-	}    
+	}
 
     public String name() {
-		return "pathtime"; 
-    }        
+		return "pathtime";
+    }
 
     public String commandLine() {
-       	return "pathtime " + m_fromRef + " " + m_toRef;        	
+       	return "pathtime " + m_fromRef + " " + m_toRef;
     }
-    
+
     public String description(Engine engine, boolean detailed) {
 		return "pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines";
     }
@@ -41,15 +41,15 @@ public class PathTime extends Command {
 		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-		
+
     	return new PathTime(args[index + 1], args[index + 2]);
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
 		}
 
 		engine.removePathTime(getSrc(), m_fromRef, m_toRef);
-    }    
+    }
  }

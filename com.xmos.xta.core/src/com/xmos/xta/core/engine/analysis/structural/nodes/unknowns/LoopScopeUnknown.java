@@ -12,11 +12,11 @@ public class LoopScopeUnknown extends Unknown {
 	public String getDescription() {
 		switch(getState()) {
 		case UNKNOWN:
-			return String.format("Loop scope (node id: " + 
+			return String.format("Loop scope (node id: " +
 					getNode().getId() + ") has not been set");
 
 		case KNOWN:
-			return String.format("Loop scope (node id: " + 
+			return String.format("Loop scope (node id: " +
 					getNode().getId() + ") has been set");
 		}
 		assert(false);
@@ -27,8 +27,8 @@ public class LoopScopeUnknown extends Unknown {
     	if (getSource() == Source.BINARY) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
-    	return String.format("set loopscope %s %s %s\n", 
-    			routeIdStr, refStrs[0], 
+    	return String.format("set loopscope %s %s %s\n",
+    			routeIdStr, refStrs[0],
     			getNode().getAttributes().getIsAbsolute() ? "a" : "r");
 	}
 }

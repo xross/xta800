@@ -55,11 +55,11 @@ public class SequenceNode extends Node {
     public String getTypeName() {
         return "seq";
     }
-    
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
-    }    
-		
+    }
+
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		for (Node node : m_nodes) {
@@ -95,7 +95,7 @@ public class SequenceNode extends Node {
 		}
 		return TraverseStatus.CONTINUE;
 	}
-	
+
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
@@ -119,10 +119,10 @@ public class SequenceNode extends Node {
 	public void replaceChildren(List<Node> children) {
 		m_nodes.clear();
 		m_nodes.addAll(children);
-	}	
+	}
 
 	//below here the methods have been verified useful
-	
+
 	public List<Node> iChildren() {
 		return m_nodes;
 	}
@@ -134,12 +134,12 @@ public class SequenceNode extends Node {
 			Set<Node> next = new TreeSet<Node>();
 			next.add(m_nodes.get(index + 1));
 			return next;
-		}  else if (childNode.isInfiniteLoopNode() || 
+		}  else if (childNode.isInfiniteLoopNode() ||
 				childNode.isInfiniteSelfLoopNode()) {
 			Set<Node> next = new TreeSet<Node>();
 			next.add(childNode);
 			return next;
-		} else {		
+		} else {
 			assert(getParent() != null);
 			return getParent().structurGraphNext(this);
 		}
@@ -160,7 +160,7 @@ public class SequenceNode extends Node {
 		}
 		return fnRef;
 	}
-	
+
 	public void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
 		if(m_parent!= null){
 			m_parent.buildListUp(nodeList, stack, this);
@@ -175,9 +175,9 @@ public class SequenceNode extends Node {
 		for(Node node : m_nodes){
 			node.buildListDown(nodeList);
 		}
-		
+
 	}
 
-	
-	
+
+
 }

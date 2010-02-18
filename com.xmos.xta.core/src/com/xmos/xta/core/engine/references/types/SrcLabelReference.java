@@ -19,10 +19,10 @@ public class SrcLabelReference extends ReferenceType {
 	public boolean resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
-		
+
 		boolean found = false;
 		for (CodePointInfo info : engine.getSrcLabels()) {
-			if (labelsMatch(info.getLabel(), label)) {			
+			if (labelsMatch(info.getLabel(), label)) {
 				addPc(info.getPc(), info.getLabel());
 				found = true;
 			}
@@ -33,16 +33,16 @@ public class SrcLabelReference extends ReferenceType {
 		}
 		return found;
 	}
-	
+
 	public String name() {
 		return "SrcLabel";
 	}
-	
+
 	public String description() {
 		return "Source label specified using the source level pragma mechanism";
-	}		
-	
+	}
+
 	public boolean isPortable() {
 		return true;
-	}	
+	}
 }

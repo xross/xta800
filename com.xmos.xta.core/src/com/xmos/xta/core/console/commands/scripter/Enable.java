@@ -8,7 +8,7 @@ import com.xmos.xta.core.engine.scripter.Scripter;
 
 public class Enable extends Command {
 	private String m_reference;
-	
+
 	public Enable() {
 	}
 
@@ -18,25 +18,25 @@ public class Enable extends Command {
 
     public int numArgs() {
     	return 1;
-    }        
+    }
 
     public String name() {
     	return "enable";
-    }        
+    }
 
     public String commandLine() {
     	return "enable " + m_reference;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "enable: Enable a mapping";      	
+        return "enable: Enable a mapping";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) { 
+		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-	    
+
         return new Enable(args[index + 1]);
     }
 

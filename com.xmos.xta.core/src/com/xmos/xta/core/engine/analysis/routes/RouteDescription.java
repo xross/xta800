@@ -39,7 +39,7 @@ public class RouteDescription {
 		PATH, FUNCTION
 	};
 
-	public RouteDescription(Reference from, Reference to, Engine engine, int nodeNumber, int coreNumber, 
+	public RouteDescription(Reference from, Reference to, Engine engine, int nodeNumber, int coreNumber,
 			Collection<Reference> exclusions, Defines defines, Config config) {
 
 		m_mode = RouteMode.PATH;
@@ -50,7 +50,7 @@ public class RouteDescription {
 		m_fromName = from.getRef();
 		m_toName = to.getRef();
 		m_nodeNumber = nodeNumber;
-		m_coreNumber = coreNumber;		
+		m_coreNumber = coreNumber;
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);
 		m_defines = new Defines(defines);
@@ -58,7 +58,7 @@ public class RouteDescription {
 		m_branches = engine.getUserBranches();
 	}
 
-	public RouteDescription(Reference function, Engine engine, int nodeNumber, int coreNumber, 
+	public RouteDescription(Reference function, Engine engine, int nodeNumber, int coreNumber,
 			Collection<Reference> exclusions, Defines defines, Config config) {
 
 		m_mode = RouteMode.FUNCTION;
@@ -68,21 +68,21 @@ public class RouteDescription {
 		m_from = function;
 		m_to = new LinkedList<Reference>();
 		m_nodeNumber = nodeNumber;
-		m_coreNumber = coreNumber;				
+		m_coreNumber = coreNumber;
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(exclusions);
-		m_defines = new Defines(defines);		
+		m_defines = new Defines(defines);
 		m_config = new Config(config);
 		m_branches = engine.getUserBranches();
-		
+
 		StructureGraph sg = engine.getStructureGraph();
         findEndpoints(sg);
-        
+
         for (Reference to : m_to) {
         	to.resolve(engine);
         }
 	}
-	
+
 	public String getDescription() {
 		return m_description;
 	}
@@ -98,7 +98,7 @@ public class RouteDescription {
 	public Collection<Reference> getEndPoints() {
 		return m_to;
 	}
-	
+
 	public Reference getEndPoint() {
 		assert(m_to.size() == 1);
 		return m_to.iterator().next();
@@ -107,7 +107,7 @@ public class RouteDescription {
 	public Reference getFunctionReference() {
 		return m_function;
 	}
-	
+
 	public String getFunctionName() {
 		return m_functionName;
 	}
@@ -119,15 +119,15 @@ public class RouteDescription {
 	public String getToName() {
 		return m_toName;
 	}
-	
+
 	public int getNodeNumber() {
 		return m_nodeNumber;
 	}
-	
+
 	public int getCoreNumber() {
 		return m_coreNumber;
 	}
-	
+
 	public Collection<Reference> getExclusions() {
 		return m_exclusions;
 	}
@@ -143,7 +143,7 @@ public class RouteDescription {
 	public Config getConfig() {
 		return m_config;
 	}
-	
+
 	public FunctionNode getFunction(String functionName, StructureGraph sg){
 		for (FunctionNode fn : sg.getFunctions()) {
 			if (fn.getFunctionName().equals(m_functionName)) {
@@ -153,7 +153,7 @@ public class RouteDescription {
 		assert(false);
 		return null;
 	}
-	
+
 	/**
 	 * This function is supposed to take a function start and find all the end points
 	 * could be done better with FunctionEndNodes and FunctionStartNodes
@@ -168,14 +168,14 @@ public class RouteDescription {
 					String to = "";
 			    	for (ReferenceType backTrail : m_function.getBackTrail()) {
 			    		to += backTrail.getRef() + ",";
-			    	}					
-					to += "0x" + Long.toHexString(endPoint.getStartPc());				
+			    	}
+					to += "0x" + Long.toHexString(endPoint.getStartPc());
 					m_to.add(ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF));
 				}
 
 				break;
 			}
-		}		
-	}	
-	
+		}
+	}
+
 }

@@ -22,16 +22,16 @@ public class LoopScopeInfo implements DefineInfo {
 	public String toString() {
 		return String.format("%s: %s", m_reference.toString(), m_absolute ? "true" : "false");
 	}
-	
+
     public String getDescription() {
     	return m_reference.toString();
     }
 
     public String getValue() {
     	return m_absolute ? "true" : "false";
-    }		
-    
+    }
+
 	public boolean equals(Object o) {
 		return ((LoopScopeInfo)o).m_reference.equals(m_reference);
-	}				
+	}
 }

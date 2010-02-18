@@ -1,10 +1,10 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -15,9 +15,9 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class InstructionNode extends Node {
-	private InstructionNodeAttributes m_attributes;	
+	private InstructionNodeAttributes m_attributes;
 	private XtaInstruction m_inst;
-	
+
 	public InstructionNode(XtaInstruction inst){
 		super();
 		m_inst = inst;
@@ -29,7 +29,7 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 		m_attributes = new InstructionNodeAttributes(this);
 	}
-	
+
 	public Node copyStructure() {
 		return new InstructionNode(this);
 	}
@@ -39,15 +39,15 @@ public class InstructionNode extends Node {
 		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;
 	}
-	
+
 	public String toString() {
 		return String.format("%s (0x%x)", super.toString(), m_inst.getPc());
 	}
-	
-    public String getTypeName() {    	
+
+    public String getTypeName() {
         return "instruction";
     }
-	
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
@@ -89,16 +89,16 @@ public class InstructionNode extends Node {
 	}
 
 	public String getDescription() {
-		return String.format("0x%x: %s %s", 
+		return String.format("0x%x: %s %s",
 				m_inst.getPc(),
 				m_inst.getNmenonic(),
 				m_inst.getOperandString());
 	}
-	
+
 	public XtaInstruction getXtaInstruction() {
 		return m_inst;
 	}
-	
+
 	public long getError(Case c) {
 		return 0;
 	}
@@ -107,12 +107,12 @@ public class InstructionNode extends Node {
 		assert(false);
 		return null;
 	}
-	
+
 	public void setParent(Node node) {
 		//this is here to override the method
 	}
 	*/
-	
+
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
 	}
@@ -122,20 +122,20 @@ public class InstructionNode extends Node {
 
 	public void replaceChildren(List<Node> children) {
 	}
-	
+
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {
 		List<Node> children = new LinkedList<Node>();
 		return children;
 	}
-	
+
 	public Set<Node> structurGraphNext(Node childNode) {
 		//This cannot have any children as its a instruction node
 		assert(false);
 		return null;
 	}
-	
+
 	public Set<InstructionNode> getInstructionNodes() {
 		Set<InstructionNode> inst = new TreeSet<InstructionNode>();
 		inst.add(this);

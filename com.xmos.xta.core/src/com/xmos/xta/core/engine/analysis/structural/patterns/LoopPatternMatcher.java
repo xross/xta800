@@ -1,8 +1,9 @@
 package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.TreeSet;
 import java.util.Set;
+import java.util.TreeSet;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.InfiniteLoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -16,7 +17,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 		intersection.retainAll(currentNode.getPrevNodes());
 		if (intersection.size() > 0) {
 			Set <Node> workingIntersection = new TreeSet<Node>();
-			
+
 			for (Node loop : intersection) {
 				if (!(loop.getNextNodesSize() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodesSize() != 1)) {
 					workingIntersection.add(loop);
@@ -32,28 +33,28 @@ public class LoopPatternMatcher extends PatternMatcher {
 		return false;
 	}
 
-	protected void updateGraph(Set<Node> intersection, Collection<Node> workingSet, 
-			Node header, Node treeStart) {		
+	protected void updateGraph(Set<Node> intersection, Collection<Node> workingSet,
+			Node header, Node treeStart) {
 		Node loop = null;
-		
+
 		boolean noNextNode = false;
-		
+
 		if (header.getNextNodesSize() == intersection.size()){
 			noNextNode = true;
 		}
-		
+
 		if (noNextNode){
 			loop = new InfiniteLoopNode(intersection, header);
 		} else {
 			loop = new LoopNode(intersection, header);
 		}
-		
+
 		if (intersection.contains(treeStart) || header == treeStart){
 			m_treeStart = loop;
 		} else {
 			m_treeStart = treeStart;
 		}
-		
+
 		for (Node prev : header.getPrevNodes()) {
 			if (!intersection.contains(prev)) {
 				loop.addPrevNode(prev);
@@ -62,27 +63,27 @@ public class LoopPatternMatcher extends PatternMatcher {
 				prev.addNextNode(loop);
 			}
 		}
-		
+
 		for (Node next : header.getNextNodes()) {
 			if (!intersection.contains(next)) {
 				loop.addNextNode(next);
-				
+
 				next.removePrevNode(header);
 				//next.getPrevNodes().remove(base);
 				next.addPrevNode(loop);
 			}
 		}
-		
+
 		if (noNextNode){
 			CommonMethods.connect(CommonMethods.findNullNode(workingSet), loop);
 		}
-		
+
 		workingSet.removeAll(intersection);
 		workingSet.remove(header);
 		workingSet.add(loop);
 	}
 
-	
+
 	public boolean usesDominatorTree() {
 		return false;
 	}

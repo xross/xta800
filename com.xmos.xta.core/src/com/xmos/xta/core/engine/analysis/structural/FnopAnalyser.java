@@ -13,9 +13,9 @@ import com.xmos.xta.core.engine.instructions.NullInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class FnopAnalyser {
-	
+
 	public FnopAnalyser() {
-	
+
 	}
 
 	public void analyse(Collection<Node> workingSet) {
@@ -30,7 +30,7 @@ public class FnopAnalyser {
 	private void updateBlock(BlockNode block){
 		InstructionBuffer ib =null;
 		long startPc = block.getInstructionList().get(0).getStartPc();
-		
+
 		//TODO -- refactor this to not be such a mess!
 		if(isWordAligned(startPc)){
 			if(block.getPrevNodes().size() == 1){
@@ -53,15 +53,15 @@ public class FnopAnalyser {
 				ib = new InstructionBuffer(startPc, 2);
 			}
 		}
-		
-		
+
+
 		List<InstructionNode> instCopy = new LinkedList<InstructionNode>(block.getInstructionList());
 		for(InstructionNode inst : instCopy){
-			update(ib, block.getInstructionList(), inst);	
+			update(ib, block.getInstructionList(), inst);
 		}
 
 	}
-	
+
 	private void update(InstructionBuffer ib, List<InstructionNode> blockInstructions, InstructionNode instNode) {
 		XtaInstruction inst = instNode.getXtaInstruction();
 		while (!ib.canIssue(inst.getNumBytes())) {
@@ -69,11 +69,11 @@ public class FnopAnalyser {
 			int index = blockInstructions.indexOf(instNode);
 			XtaInstruction fnop = new NullInstruction("--FNOP--", 0, inst.getPc(), 0);
 			InstructionNode fnopNode = new InstructionNode(fnop);
-			
+
 			for(Node prev : instNode.getPrevNodes()){
 				prev.removeNextNode(instNode);
 				CommonMethods.connect(fnopNode, prev);
-				
+
 			}
 			instNode.getPrevNodes().clear();
 			CommonMethods.connect(instNode, fnopNode);
@@ -83,21 +83,21 @@ public class FnopAnalyser {
 			ib.fetch();
 		}
 		ib.issue(inst.getNumBytes());
-		
+
 		if(inst.isBranch()){
 			ib.branchTo(inst.getBranchPcRelativeTargetPc(), inst.isLoadStore());
 		} else {
 			ib.setPc(inst.getPc() + inst.getNumBytes());
 		}
 	}
-	
+
 	private boolean isWordAligned(long address) {
         if ((address & 0x3) == 0)
             return true;
         else
             return false;
     }
-	
+
 	private boolean returningFromAFunction(Node block){
 		Node prev = block.getPrevNodes().iterator().next();
 		if(prev instanceof FunctionReferenceNode){
@@ -106,5 +106,5 @@ public class FnopAnalyser {
 			return false;
 		}
 	}
-	
+
 }

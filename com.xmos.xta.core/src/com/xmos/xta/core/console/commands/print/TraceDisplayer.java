@@ -14,11 +14,11 @@ class EscapedDetctedException extends Exception {}
 public class TraceDisplayer {
 	private Console m_console;
 	private double m_currentTime;
-		
+
 	public TraceDisplayer(Console console) {
 		m_console = console;
 	}
-	
+
     public void display(Node node, Case c) {
     	if (isInfinite(node, c)) {
     		m_console.display("Cannot trace - time is infinite\n");
@@ -32,12 +32,12 @@ public class TraceDisplayer {
     		m_console.display("\n");
     	}
     }
-    
+
     private boolean isInfinite(Node node, Case c) {
     	// Allow the user to always trace blocks
     	if (node.isBlockNode())
     		return false;
-    	
+
     	Status status = new Status();
     	node.getAttributes().getTimeTaken(c, status, null);
     	if (status.isInfinite()) {
@@ -49,23 +49,23 @@ public class TraceDisplayer {
 	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
 		if (node == null || node.isNullNode())
 			return;
-		
+
 		if (node.isInstructionNode()) {
 			displayInstruction((InstructionNode)node);
-			
+
 		} else if (node.isLoopNode() || node.isSelfLoopNode()) {
 			displayLoop(node, c, totalIterations, iteration);
-			
+
     	} else if (node.isCondNode()) {
     		Node child = getChild(node, c, totalIterations, iteration);
     		displayInstructions(child, c, totalIterations, iteration);
-    		
+
     	} else if (node.getAttributes().getFixedTime() != null) {
     		// Deal with function/sequence nodes which have a fixed time
     		double timeBefore = m_currentTime;
     		displayChildren(node, c, totalIterations, iteration);
     		double timeAfter = m_currentTime;
-    		
+
     		double fixedTime = node.getAttributes().getFixedTime().getNs();
     		double timeDifference = fixedTime - (timeAfter - timeBefore);
          	m_console.display(String.format("  %.1f: (%.1fns) fixed %s time\n",
@@ -79,7 +79,7 @@ public class TraceDisplayer {
     		displayChildren(node, c, totalIterations, iteration);
     	}
     }
-    
+
 	private Node getChild(Node cond, Case c, long totalIterations, long iteration) {
     	for (Node child : cond.iChildren()) {
     		long childIterations = cond.getAttributes().getLoopPathIterations(totalIterations, child, c);
@@ -110,7 +110,7 @@ public class TraceDisplayer {
 			if (node.isLoopNode()) {
 				displayInstructions(((LoopNode)node).getLoopHeader(), c, totalIterations, iteration);
 			}
-			
+
 		} else {
     		for (int i = 0; i < loopIterations; i++) {
     			displayChildren(node, c, loopIterations, i);
@@ -120,35 +120,35 @@ public class TraceDisplayer {
 			}
 		}
 	}
-    
+
 	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException {
 		String isUnknown = instruction.getAttributes().getDisplayAsUnknown() ? "*" : " ";
 		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
-     	
+
      	XtaInstruction xtaInstruction = instruction.getXtaInstruction();
 		String functionName = xtaInstruction.getFunctionName();
-		
+
 		String functionOffsetString = "";
-		if (functionName != null) { 
+		if (functionName != null) {
 			functionOffsetString = functionName + " + " + xtaInstruction.getFunctionOffset();
 		}
-     	
+
      	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s",
      			isUnknown,
          		m_currentTime,
          		instruction.getAttributes().getFixedTime().getNs(),
-           		xtaInstruction.getPc(), 
-           		functionOffsetString, 
-           		xtaInstruction.getNmenonic(), 
+           		xtaInstruction.getPc(),
+           		functionOffsetString,
+           		xtaInstruction.getNmenonic(),
            		xtaInstruction.getOperandString(),
            		isUnresolved));
-     	
+
      	if (xtaInstruction.canPause())
      		m_console.display(" (P)");
-     	
+
      	m_currentTime += instruction.getAttributes().getFixedTime().getNs();
-      	m_console.display("\n");    
-      	
+      	m_console.display("\n");
+
       	if (m_console.hasEscaped()) {
       		throw new EscapedDetctedException();
       	}

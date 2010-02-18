@@ -33,28 +33,28 @@ public class Labels extends Command {
 	public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
-				
-   		return new Labels();            
+
+   		return new Labels();
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-       	listLabels(engine, console);        	
+       	listLabels(engine, console);
 	}
-	
+
 	private void listLabels(Engine engine, Console console) {
 		if (engine.getLabels().entrySet().size() == 0){
 			console.display("none\n");
 			return;
 		}
-		
-    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels().entrySet().iterator();        
+
+    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels().entrySet().iterator();
     	while (iter.hasNext()) {
     	    Map.Entry<String, Set<Long>> pair = iter.next();
     	    console.display(String.format("Label: %s, pcs: %s\n",
     	    		pair.getKey(), Conversion.pcSetToString(pair.getValue())));
-    	}		
+    	}
 	}
 }

@@ -46,15 +46,15 @@ public class InfiniteSelfLoopNode extends Node{
 		ln.m_attributes = new InfiniteSelfLoopNodeAttributes(ln);
 		return ln;
 	}
-	
+
     public String getTypeName() {
         return "infiniteselfloop";
     }
-	
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
-    }    
-    
+    }
+
 	public LinkedList<XtaInstruction> getInstructions() {
 	    LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
 		return insts;
@@ -68,7 +68,7 @@ public class InfiniteSelfLoopNode extends Node{
 		TraverseStatus status = nodeTraverser.foundInfiniteSelfLoopNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
-			status = m_loop.traverse(ancestors, nodeTraverser);			
+			status = m_loop.traverse(ancestors, nodeTraverser);
 			ancestors.pop();
 		}
 		if (status == TraverseStatus.ABORT) {
@@ -78,8 +78,8 @@ public class InfiniteSelfLoopNode extends Node{
 	}
 
 
-	
-	
+
+
 	public boolean isInfiniteSelfLoopNode() {
 		return true;
 	}
@@ -93,17 +93,17 @@ public class InfiniteSelfLoopNode extends Node{
 		tdb.setInfinite();
 		return tdb;
 	}
-	
+
 	public void replaceChild(Node oldNode, Node newNode) {
 		if (oldNode == m_loop) {
 			m_loop = newNode;
-		}				
-	}	
-	
+		}
+	}
+
 	public void replaceChildren(List<Node> children) {
 		assert(children.size() == 1);
-		m_loop = children.get(0);		
-	}	
+		m_loop = children.get(0);
+	}
 
 	//below here the methods have been verified useful
 
@@ -119,13 +119,13 @@ public class InfiniteSelfLoopNode extends Node{
 		next.add(m_loop);
 		return next;
 	}
-	
+
 	public Set<InstructionNode> getInstructionNodes() {
 		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
 		insts.addAll(m_loop.getInstructionNodes());
 		return insts;
 	}
-	
+
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
 		addFunctionRefToRefSet(fnRef, m_loop);
@@ -141,5 +141,5 @@ public class InfiniteSelfLoopNode extends Node{
 		if(m_parent!= null){
 			m_parent.buildListUp(nodeList, stack, this);
 		}
-	}	
+	}
 }

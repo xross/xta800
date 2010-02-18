@@ -11,28 +11,28 @@ import com.xmos.xta.core.engine.Notifier;
 public class Core extends Command {
 	private String m_nodeId;
 	private String m_coreId;
-	
+
 	public Core() {
 		m_nodeId = "";
 		m_coreId = "";
 	}
-	
+
 	public Core(String nodeId, String coreId) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 	}
-	
+
     public int numArgs() {
     	if (m_nodeId.length() == 0) {
     		return 1;
     	} else {
     		return 2;
     	}
-    }        
+    }
 
     public String name() {
     	return "core";
-    }        
+    }
 
     public String commandLine() {
     	if (m_nodeId.length() == 0) {
@@ -41,15 +41,15 @@ public class Core extends Command {
     		return String.format("core %s %s", m_nodeId, m_coreId);
     	}
     }
-    
+
     public String description(Engine engine, boolean detailed) {
         return String.format("core [node id] <core id>: Change to core for following analysis (current: %d,%d)",
-        		engine.getNodeNumber(), engine.getCoreNumber());      	
+        		engine.getNodeNumber(), engine.getCoreNumber());
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + 1) >= args.length) 
-			return null;		
+		if ((index + 1) >= args.length)
+			return null;
 
 		if (areArgsDone(args, index + 2)) {
 	        return new Core("", args[index + 1]);
@@ -57,10 +57,10 @@ public class Core extends Command {
 	        return new Core(args[index + 1], args[index + 2]);
 		}
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
 		XnLoader xnLoader = engine.getXeLoader().getXnLoader();
 
@@ -74,7 +74,7 @@ public class Core extends Command {
 			}
 			nodeNumber = nodeCore.first;
 			coreNumber = nodeCore.second;
-			
+
 		} else {
 			nodeNumber = xnLoader.getNodeNumber(m_nodeId);
 			if (nodeNumber == -1) {
@@ -100,6 +100,6 @@ public class Core extends Command {
     				String.format("no code loaded on node: %s, core: %s", m_nodeId, m_coreId));
     		return false;
     	}
-    	return true;    	
+    	return true;
 	}
 }

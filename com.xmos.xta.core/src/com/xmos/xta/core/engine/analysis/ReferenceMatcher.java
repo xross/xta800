@@ -22,23 +22,23 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 public class ReferenceMatcher {
-	
-	
+
+
 	private static final boolean debug = false;
 
 	public List<StackNode> getStackNode(Engine engine, Reference reference) {
-		
-		
+
+
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
 		StructureGraph sg = engine.getStructureGraph();
 		if (debug) System.out.println("\nFinding stack nodes for " + reference.toString());
-		
+
 		for(long pc : reference.getPcs()){
 			if (debug) System.out.println("checking pc 0x" + Long.toHexString(pc));
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
-			
+
 			matchLabel(reference, pc, refList);
-			
+
 			if (debug) {
 				System.out.println("references were:");
 				for(ReferenceType ref : reference.getBackTrail()){
@@ -49,7 +49,7 @@ public class ReferenceMatcher {
 					System.out.println("Type: " + ref.getType());
 					System.out.println();
 				}
-				
+
 				System.out.println("references the match are:");
 				for(ReferenceType ref : refList){
 					System.out.print("\t " + ref.getRef() + " ");
@@ -61,10 +61,10 @@ public class ReferenceMatcher {
 				}
 			}
 			Collections.reverse(refList);
-			
+
 			InstructionNode inst = engine.getInstructionDecoder().getNode(pc);
 			List<Stack<FunctionReferenceNode>> stacks = new LinkedList<Stack<FunctionReferenceNode>>();
-			
+
 			Set<FunctionNode> containedInFunction = sg.getFunctionsOfInstruction(inst);
 
 			for(FunctionNode fn : containedInFunction){
@@ -81,7 +81,7 @@ public class ReferenceMatcher {
 					}
 					if(validateList(nodeList, refList)){
 						stacks.add(stack);
-					} 
+					}
 					nodeList.clear();
 				}
 				if(!stacks.isEmpty()){
@@ -96,12 +96,12 @@ public class ReferenceMatcher {
 					System.out.println("\t" + stack);
 				}
 			}
-			
+
 		}
-		
+
 		return stackNodes;
 	}
-	
+
 	public Set<Node> getNodesMatchingReference(Node node, final Reference reference) {
 		if (debug) System.out.println("##########################");
 		Set<Node> matches = new TreeSet<Node>();
@@ -131,22 +131,22 @@ public class ReferenceMatcher {
 				current = current.getParent();
 			}
 			if(debug) System.out.println("The stack is: " +stack + " for " + inst);
-			
+
 			List<Node> nodeList = new LinkedList<Node>();
-			
+
 			inst.buildListUp(nodeList, stack, null);
-			
+
 			if(debug){
 				System.out.println("made the list");
 				for(Node listNode : nodeList){
 					System.out.println("\t\t" + listNode);
 				}
 			}
-			
+
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
-			
+
 			matchLabel(reference, pc, refList);
-			
+
 			if (debug) {
 				System.out.println("reference list is:");
 				for(ReferenceType ref : refList){
@@ -157,7 +157,7 @@ public class ReferenceMatcher {
 					System.out.println();
 				}
 			}
-			
+
 			if(validateList(nodeList, refList)){
 				matches.add(inst);
 			}
@@ -165,16 +165,16 @@ public class ReferenceMatcher {
 		if (debug) System.out.println("##########################");
 		return matches;
 	}
-	
+
 	public Set<Node>  getFunctionNodesMatchingReference(Node node, final Reference reference) {
-		
+
 		Set<Node> matches = new TreeSet<Node>();
 		final Set<Node> functions = new TreeSet<Node>();
 		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		if(node instanceof FunctionNode){
 	    			FunctionNode function = (FunctionNode)node;
-	    			
+
 	    			if(reference.getRef().equals(function.getFunctionName())){
 	    				functions.add(function);
 	    			}
@@ -182,8 +182,8 @@ public class ReferenceMatcher {
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
-		
-		
+
+
 		for(Node function : functions){
 			Stack<FunctionReferenceNode> stack = new Stack<FunctionReferenceNode>();
 			Node current = function;
@@ -196,15 +196,15 @@ public class ReferenceMatcher {
 			List<Node> nodeList = new LinkedList<Node>();
 			function.buildListUp(nodeList, stack, null);
 			List<ReferenceType> refList = new LinkedList<ReferenceType>(reference.getBackTrail());
-			
+
 			if(validateList(nodeList, refList)){
 				matches.add(function);
 			}
 		}
-		
+
 		return matches;
 	}
-	
+
 	private void matchLabel(Reference reference, long pc, List<ReferenceType> refList){
 		List<String> backTrailForPc = new LinkedList<String>(reference.getPcBackTrail(pc));
 		for(int i=reference.getBackTrail().size()-1; i>=0; i--){
@@ -217,14 +217,14 @@ public class ReferenceMatcher {
 			}
 		}
 	}
-	
-	
+
+
 	private int getIndexOf(List<String> backTrailForPc, String string){
 		int i=0;
 		for(String backTrail : backTrailForPc){
 			int rightBra = backTrail.indexOf(")");
 			int leftBra = backTrail.indexOf("(");
-			
+
 			if(rightBra != -1 && leftBra != -1){
 				String bracketedString = backTrail.substring(leftBra+1, rightBra);
 				String [] parts = bracketedString.split(",");
@@ -233,32 +233,32 @@ public class ReferenceMatcher {
 						return i;
 					}
 				}
-			} 
-			
+			}
+
 			if(backTrail.equals(string)){
 				return i;
 			}
-			
+
 			i++;
 		}
-		
-		
+
+
 		return -1;
 	}
-	
+
 	private boolean validateList(List<Node> nodeList, List<ReferenceType> references) {
 		int validEndPoints = 0;
-		
+
 		for(ReferenceType bt : references){
-			
+
 			boolean matched = false;
 			boolean isFunctionRef = false;
 			if(bt.getType() == Type.CALL){
 				isFunctionRef = true;
 			}
-			
+
 			if(!bt.getResolved()) return false;
-			
+
 			for(long pc : bt.getPcs()){
 				validEndPoints++;
 				int index = getIndexOfInst(nodeList, pc);
@@ -272,12 +272,12 @@ public class ReferenceMatcher {
 						matched = true;
 						nodeList = nodeList.subList(0, index);
 					}
-				} 
+				}
 			}
 			if(validEndPoints == 0){
 				return true;
 			}
-			
+
 			if(!matched){
 				return false;
 			}
@@ -297,17 +297,17 @@ public class ReferenceMatcher {
 		return -1;
 	}
 
-	private BlockNode foundBlock;	
-	
+	private BlockNode foundBlock;
+
 	private BlockNode getStartBlock(final InstructionNode inst, FunctionNode fn) {
 		foundBlock = null;
 		fn.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 			public TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors) {
 				if(node.getInstructionNodes().contains(inst)){
 					foundBlock = (BlockNode) node;
-					return TraverseStatus.ABORT;		
+					return TraverseStatus.ABORT;
 				} else {
-					return TraverseStatus.CONTINUE;						
+					return TraverseStatus.CONTINUE;
 				}
 			}
 	    });
@@ -315,6 +315,6 @@ public class ReferenceMatcher {
 		return foundBlock;
 	}
 
-	
+
 
 }

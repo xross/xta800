@@ -17,14 +17,14 @@ public class NullNode extends Node {
 	public NullNode(){
 		super();
 	}
-	
+
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		return new NullNode();
 	}
-	
+
 	public NodeAttributes getAttributes() {
 		assert(false);
-		return null;	
+		return null;
 	}
 
 	public LinkedList<XtaInstruction> getInstructions() {
@@ -58,17 +58,17 @@ public class NullNode extends Node {
 	public boolean isNullNode() {
 		return true;
 	}
-	
+
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(0);
 	}
-	
+
 	public void replaceChild(Node oldNode, Node newNode) {
-	}	
-	
+	}
+
 	public void replaceChildren(List<Node> children) {
 	}
-	
+
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {
@@ -78,20 +78,20 @@ public class NullNode extends Node {
 	public Set<Node> structurGraphNext(Node childNode) {
 		assert(false);
 		return null;
-	}		
-	
+	}
+
 	public Set<InstructionNode> getInstructionNodes() {
 		assert(false);
 		return null;
 	}
-	
+
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		assert(false);
 		return null;
 	}
 
 	public void buildListDown(List<Node> nodeList) {
-		
+
 	}
 	public void buildListUp(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {

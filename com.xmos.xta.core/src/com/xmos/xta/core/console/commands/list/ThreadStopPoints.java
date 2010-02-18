@@ -28,26 +28,26 @@ public class ThreadStopPoints extends Command {
 	public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
-				
-   		return new ThreadStopPoints();            
+
+   		return new ThreadStopPoints();
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-   		listThreadStopPoints(engine, console);        	
+   		listThreadStopPoints(engine, console);
 	}
-	
+
 	private void listThreadStopPoints(Engine engine, Console console) {
 		if (engine.getThreadStopPoints().size() == 0){
 			console.display("none\n");
 			return;
 		}
-		
+
 		for (long pc : engine.getThreadStopPoints()) {
     	    console.display(String.format("0x%x ", pc));
-    	}		
+    	}
 	    console.display("\n");
 	}
 }

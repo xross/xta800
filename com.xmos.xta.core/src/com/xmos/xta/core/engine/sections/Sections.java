@@ -3,15 +3,15 @@ package com.xmos.xta.core.engine.sections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
 
-public class Sections {	
+public class Sections {
 	private XeLoader m_xeLoader;
 	private Notifier m_notifier;
 	private Collection<Section> m_branches;
@@ -29,8 +29,8 @@ public class Sections {
 	private Collection<Section> m_systems;
 	private Collection<Section> m_recursiveFunctions;
 	private Collection<Section> m_unreachableFunctions;
-	
-    public Sections() { 
+
+    public Sections() {
     	m_xeLoader = null;
     	m_notifier = null;
 		m_branches  = new ArrayList<Section>();
@@ -50,7 +50,7 @@ public class Sections {
 		m_unreachableFunctions = new ArrayList<Section>();
     }
 
-	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {		
+	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {
 		m_xeLoader = xeLoader;
 		m_notifier = notifier;
 		m_branches.clear();
@@ -88,7 +88,7 @@ public class Sections {
 				m_unreachableFunctions.add(new StringSection(nodeNumber, coreNumber, m_notifier));
 			}
 		}
-				
+
 		if (!loadSection(src, m_branches))
 			return false;
 		if (!loadSection(src, m_labels))
@@ -115,23 +115,23 @@ public class Sections {
 			return false;
 		if (!loadSection(src, m_systems))
 			return false;
-		
+
 		return true;
-	}	
-	
+	}
+
 	public boolean addToBranches(CommandSource src, int nodeNumber, int coreNumber,
 			Reference from, Collection<Reference> to) {
-		
+
 		Branches branches = (Branches)getSection(m_branches, nodeNumber, coreNumber);
 		return branches.add(src, from, to, true);
 	}
 
 	public boolean removeFromBranches(CommandSource src, int nodeNumber, int coreNumber,
 			Reference fromRef, Collection<Reference> toRefs) {
-		
+
 		Branches branches = (Branches)getSection(m_branches, nodeNumber, coreNumber);
-		return branches.remove(src, fromRef, toRefs);			
-	}	
+		return branches.remove(src, fromRef, toRefs);
+	}
 
 	public Map<Reference, Set<BranchInfo>> getBranches(int nodeNumber, int coreNumber) {
 		Branches branches = (Branches)getSection(m_branches, nodeNumber, coreNumber);
@@ -142,16 +142,16 @@ public class Sections {
 	    Labels labels = (Labels)getSection(m_labels, nodeNumber, coreNumber);
 	    return labels.get();
 	}
-	
+
 	public List<CodePointInfo> getSrcLabels(int nodeNumber, int coreNumber) {
 		CodePoints codePoints = (CodePoints)getSection(m_srcLabels, nodeNumber, coreNumber);
 	    return codePoints.get();
 	}
-	
+
 	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(int nodeNumber, int coreNumber) {
 		SrcLabelTable srcLabelTable = (SrcLabelTable)getSection(m_srcLabelTables, nodeNumber, coreNumber);
 		return srcLabelTable.get();
-	}	
+	}
 
 	public List<CodePointInfo> getEndpoints(int nodeNumber, int coreNumber) {
 		CodePoints codePoints = (CodePoints)getSection(m_endpoints, nodeNumber, coreNumber);
@@ -160,39 +160,39 @@ public class Sections {
 
 	public Map<Long, CodePointTableInfo> getEndpointTable(int nodeNumber, int coreNumber) {
 		CodePointTable endpointTable = (CodePointTable)getSection(m_endpointTables, nodeNumber, coreNumber);
-		return endpointTable.get();		
-	}	
+		return endpointTable.get();
+	}
 
 	public List<CodePointInfo> getCalls(int nodeNumber, int coreNumber) {
 		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeNumber, coreNumber);
 	    return codePoints.get();
 	}
-	
+
 	public Map<Long, CodePointTableInfo> getCallTable(int nodeNumber, int coreNumber) {
 		CodePointTable endpointTable = (CodePointTable)getSection(m_callTables, nodeNumber, coreNumber);
-		return endpointTable.get();		
+		return endpointTable.get();
 	}
-		
+
 	public Collection<Long> getThreadStartPoints(int nodeNumber, int coreNumber) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, nodeNumber, coreNumber);				
-		return threadDelimiter.get();	
+		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, nodeNumber, coreNumber);
+		return threadDelimiter.get();
 	}
-	
+
 	public Collection<Long> getThreadStopPoints(int nodeNumber, int coreNumber) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeNumber, coreNumber);				
-		return threadDelimiter.get();	
+		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeNumber, coreNumber);
+		return threadDelimiter.get();
 	}
-	
+
 	public Collection<SrcStringInfo> getSrcLevelCommands(int nodeNumber, int coreNumber) {
 		SrcLevelCommands srcLevelCommands = (SrcLevelCommands)getSection(m_srcLevelCommands, nodeNumber, coreNumber);
-		return srcLevelCommands.get();		
+		return srcLevelCommands.get();
 	}
 
 	public Collection<SrcLevelLoopInfo> getSrcLevelLoops(int nodeNumber, int coreNumber) {
 		SrcLevelLoops loops = (SrcLevelLoops)getSection(m_srcLevelLoops, nodeNumber, coreNumber);
-		return loops.get();		
+		return loops.get();
 	}
-	
+
 	public Collection<String> getSystems(int nodeNumber, int coreNumber) {
 		Systems systems = (Systems)getSection(m_systems, nodeNumber, coreNumber);
 		return systems.get();
@@ -200,12 +200,12 @@ public class Sections {
 
 	public Collection<String> getRecursiveFunctions(int nodeNumber, int coreNumber) {
 		StringSection strings = (StringSection)getSection(m_recursiveFunctions, nodeNumber, coreNumber);
-		return strings.get();		
+		return strings.get();
 	}
 
 	public Collection<String> getUnreachableFunctions(int nodeNumber, int coreNumber) {
 		StringSection strings = (StringSection)getSection(m_unreachableFunctions, nodeNumber, coreNumber);
-		return strings.get();		
+		return strings.get();
 	}
 
 	private boolean loadSection(CommandSource src, Collection<Section> sections) {
@@ -215,8 +215,8 @@ public class Sections {
 			}
 		}
 		return true;
-	}	
- 	
+	}
+
 	private Section getSection(Collection<Section> sections, int nodeNumber, int coreNumber) {
 		for (Section section : sections) {
 			if ((section.getNodeNumber() == nodeNumber) &&

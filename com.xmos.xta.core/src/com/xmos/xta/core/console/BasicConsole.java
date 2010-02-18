@@ -21,14 +21,14 @@ public class BasicConsole extends Console {
 
 	public ConsoleCommand getNextLine(Vector<Command> commandHistory) {
     	Scanner in = new Scanner(System.in);
-        String command = in.nextLine();        
-        CommandSource src = new CommandSource(Type.CONSOLE);        
+        String command = in.nextLine();
+        CommandSource src = new CommandSource(Type.CONSOLE);
         return new ConsoleCommand(command, src);
 	}
-		
-	public void clearScreen() {		
+
+	public void clearScreen() {
 	}
-	
+
 	public boolean hasEscaped() {
 		return false;
 	}

@@ -19,14 +19,14 @@ public class InstructionTimeUnknown extends Unknown {
 		case UNKNOWN:
 			return String.format("Time taken for instruction (0x%x: %s) is unknown",
 					instruction.getPc(),
-					instruction.getNmenonic());	
-				
+					instruction.getNmenonic());
+
 		case KNOWN:
 			return String.format("Time for instruction (0x%x: %s) set to %s",
 					instruction.getPc(),
 					instruction.getNmenonic(),
 					Conversion.getTimeString(getNode().getAttributes().getFixedTime().getNs()));
-		}	
+		}
 		assert(false);
 		return "";
 	}
@@ -35,8 +35,8 @@ public class InstructionTimeUnknown extends Unknown {
     	if (getSource() == Source.BINARY) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
-    	return String.format("set instructiontime %s %s %s\n", 
-    			routeIdStr, refStrs[0], 
+    	return String.format("set instructiontime %s %s %s\n",
+    			routeIdStr, refStrs[0],
     			getNode().getAttributes().getFixedTimeString());
 	}
 }

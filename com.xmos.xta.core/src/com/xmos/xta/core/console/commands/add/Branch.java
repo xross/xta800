@@ -25,19 +25,19 @@ public class Branch extends Command {
 	}
 
 	public int numArgs() {
-        return 1 + m_toRefStrings.size();         
+        return 1 + m_toRefStrings.size();
 	}
 
 	public ArgType[] getArgTypes() {
-		// Note: From the point of view of the console command 
+		// Note: From the point of view of the console command
 		// completion, it wont work after the 10th argument...
 		return new Command.ArgType[] {
 				ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL,
      			ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL};
-	}    
-	
+	}
+
 	public String name() {
-		return "branch"; 
+		return "branch";
 	}
 
 	public String commandLine() {
@@ -45,25 +45,25 @@ public class Branch extends Command {
 		for (String toRefString : m_toRefStrings) {
 			str += " " + toRefString;
 		}
-		return str; 
+		return str;
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list";         
+        return "branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list";
 	}
 
 	public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-				
+
 		int i = 2;
 		Collection<String> toRefStrings = new ArrayList<String>();
 		while (!areArgsDone(args, index + i)) {
 			toRefStrings.add(args[index + i]);
 			++i;
-		}		    		
-		return new Branch(args[index + 1], toRefStrings);  
+		}
+		return new Branch(args[index + 1], toRefStrings);
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
@@ -71,8 +71,8 @@ public class Branch extends Command {
 			return;
 
 		Reference fromRef = ReferenceFactory.createReference(m_fromRefString, ReferenceClass.LABEL_REF);
-		
-		Collection<Reference> toRefs = new ArrayList<Reference>(); 
+
+		Collection<Reference> toRefs = new ArrayList<Reference>();
 		for (String toRefString : m_toRefStrings) {
 			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF);
 			toRefs.add(ref);
