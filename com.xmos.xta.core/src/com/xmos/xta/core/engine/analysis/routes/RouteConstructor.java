@@ -49,7 +49,7 @@ import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 
 public class RouteConstructor {
 
-	private static boolean debug_route = false;
+	private static boolean debug_route = true;
 	private static boolean sanity_debug = true;
 
 	private static final int SR_IEBLE_SHIFT = 1;
