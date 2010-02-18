@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -27,12 +29,17 @@ import com.xmos.xta.ui.views.binary.handlers.ZoomFitHandler;
 import com.xmos.xta.ui.views.binary.handlers.ZoomInHandler;
 import com.xmos.xta.ui.views.binary.handlers.ZoomOutHandler;
 import com.xmos.xta.ui.views.binary.handlers.ZoomResetHandler;
+import com.xmos.xta.ui.views.binary.tables.DataContentProvider;
+import com.xmos.xta.ui.views.binary.tables.FunctionContentProvider;
+import com.xmos.xta.ui.views.binary.tables.TableView;
 
-public class BinaryView extends ViewPart implements ViewControls {
+public class BinaryView extends ViewPart implements ViewControls, IPropertyChangeListener {
 	public static final String ID = "com.xmos.xta.ui.views.binary.Binary";
 	
 	private TabFolder m_folders;
 	private Map<TabItem, ControlMonitor> m_tabMap;
+	private int m_numTabs;
+	private int m_disassemblyIndex;
 
 	private static Set<String> m_enabledCommands;
 	public static Set<String> getEnabledCommands() {
@@ -42,11 +49,16 @@ public class BinaryView extends ViewPart implements ViewControls {
 		return m_enabledCommands;
 	}
 	
+	public BinaryView() {
+		GuiEngine.addBroadcastListener(this);
+		m_numTabs = 0;
+	}
+	
 	public void createPartControl(Composite parent) {
 		m_folders = new TabFolder(parent, SWT.BORDER);
 		m_tabMap = new HashMap<TabItem, ControlMonitor>();
 
-		createTab("Disassembly", new controlBuilder() {
+		m_disassemblyIndex = createTab("Disassembly", new controlBuilder() {
 			public ControlMonitor create(Composite composite) {
 				return new DisassemblyView(composite, getSite());
 			}
@@ -57,6 +69,18 @@ public class BinaryView extends ViewPart implements ViewControls {
 			}
 		});
 
+		createTab("Function Table", new controlBuilder() {
+			public ControlMonitor create(Composite composite) {
+				return new TableView(composite, new FunctionContentProvider(), true);
+			}
+		});
+
+		createTab("Data Table", new controlBuilder() {
+			public ControlMonitor create(Composite composite) {
+				return new TableView(composite, new DataContentProvider(), false);
+			}
+		});
+		
 		m_folders.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				updateControls();
@@ -88,6 +112,12 @@ public class BinaryView extends ViewPart implements ViewControls {
 		m_tabMap.clear();
 	}
 
+	public void propertyChange(PropertyChangeEvent event) {
+		if (event.getProperty().equals(Broadcaster.BROADCAST_SHOW_CODE_POINT)) {
+			m_folders.setSelection(m_disassemblyIndex);
+		} 
+	}
+	
 	public void setFocus() {
 	}
 	
@@ -119,14 +149,17 @@ public class BinaryView extends ViewPart implements ViewControls {
 		getSelectedTab().setSummary(enable);
 	}
 
-	private void createTab(String name, controlBuilder builder) {
+	private int createTab(String name, controlBuilder builder) {
 		TabItem tab = new TabItem(m_folders, SWT.NONE);
 		tab.setText(name);
 		Composite composite = new Composite(m_folders, SWT.NONE);
 		composite.setLayout(new FillLayout());		
 		tab.setControl(composite);	
 		ControlMonitor controlMonitor = builder.create(composite);
-		m_tabMap.put(tab, controlMonitor);
+		m_tabMap.put(tab, controlMonitor);		
+		int tabIndex = m_numTabs;
+		++m_numTabs;
+		return tabIndex;
 	}
 
 	static private interface controlBuilder {
