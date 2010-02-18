@@ -242,7 +242,12 @@ public class Engine implements Notifier, Aborter {
 	public Collection<Route> getRoute(int routeId) {
 		Collection<Route> routes = new ArrayList<Route>();
 		
+		if(m_routes.isEmpty()){
+			return routes;
+		}
+		
 		if (routeId == ROUTE_ID_LAST) {
+			
 			assert(m_routes.size() >= m_numRoutesLastAnalysed);						
 			int toIndex = m_routes.size();
 			int fromIndex = toIndex - m_numRoutesLastAnalysed;

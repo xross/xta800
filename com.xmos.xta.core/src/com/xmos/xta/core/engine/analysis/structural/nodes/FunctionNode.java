@@ -11,6 +11,7 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
@@ -72,7 +73,49 @@ public class FunctionNode extends Node {
 	public Node copyStructure() {
     	return new FunctionNode(this);
 	}
-
+	/*
+	public void getBackTrail(List<Long> backTrail) {
+		super.getBackTrail(backTrail);
+		System.out.println("on function " + getFunctionName());
+		Node parent = getParent();
+		if (parent != null) {
+			Node callNode = findCallNode(parent);
+			if (callNode != null) {
+				backTrail.add(callNode.getStartPc());
+			}
+		}				
+	}
+	
+	private Node m_callNode;	
+	private Node findCallNode(Node parent) {
+		// Finds the node previous to this one...
+		Node previousNode = null;
+		for (Node child : parent.iChildren()) {
+			if (child == this)
+				break;
+			
+			previousNode = child;
+		}
+		if (previousNode == null) {
+			return null;
+		}
+		
+		// Finds the final instruction in the previous node
+		// (which must be the calling instruction..)
+		m_callNode = null;
+		previousNode.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+				m_callNode = node;
+				return TraverseStatus.CONTINUE;
+			}
+		});			
+		
+		System.out.println("the node callinf function " + getFunctionName() + " is " + m_callNode);
+		
+		return m_callNode;
+	}
+*/
+	
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		aborter.getAbort();
 

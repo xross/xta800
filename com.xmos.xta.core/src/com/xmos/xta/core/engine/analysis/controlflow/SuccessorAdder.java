@@ -50,12 +50,13 @@ public class SuccessorAdder {
 			addTargetsToAllNonBranchingInstructions(node, inst);
 			addUserSuccessors(node, inst);
 		}
-		warnAboutUnsetBranches();
+		//warnAboutUnsetBranches();
 	}
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
 		Set<BranchInfo> targets = new HashSet<BranchInfo>();
 		for (Reference ref : m_branchMap.keySet()) {
+			
 			if (ref.matches(inst.getPc())) {
 				Set<BranchInfo> mapEntries = m_branchMap.get(ref);
 				targets.addAll(mapEntries);
@@ -65,6 +66,7 @@ public class SuccessorAdder {
 		//FIXME - this should not be allowed for instruction that are not branches
 		for (BranchInfo target : targets) {
 			for (long pc : target.getRef().getPcs()) {
+			//	System.out.println(inst + " -> 0x" + Long.toHexString(pc));
 				connect(instruction, pc, true);
 			}
 		}

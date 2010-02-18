@@ -24,7 +24,6 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 	
 	public void setLoopIterations(CommandSource src, Engine engine,
 			long numIterations, boolean sourceLevelIterations) {
-		
 		if (m_sourceLevelIterations) {
 			engine.notify(src, Notifier.NOTIFY_WARNING,
 				String.format("Overriding loop iterations already set at source level (loop starting at 0x%x)",

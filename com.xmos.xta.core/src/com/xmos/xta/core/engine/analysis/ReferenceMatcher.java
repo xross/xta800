@@ -31,19 +31,32 @@ public class ReferenceMatcher {
 		
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
 		StructureGraph sg = engine.getStructureGraph();
-		if (debug) System.out.println("\nFinding stack nodes for " + reference);
+		if (debug) System.out.println("\nFinding stack nodes for " + reference.toString());
+		
 		for(long pc : reference.getPcs()){
 			if (debug) System.out.println("checking pc 0x" + Long.toHexString(pc));
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
 			
 			matchLabel(reference, pc, refList);
+			
 			if (debug) {
-				System.out.println("reference list is:");
+				System.out.println("references were:");
+				for(ReferenceType ref : reference.getBackTrail()){
+					System.out.print("\t " + ref.getRef() + " ");
+					for(long refPc : ref.getPcs()){
+						System.out.print("0x" + Long.toHexString(refPc) + " ");
+					}
+					System.out.println("Type: " + ref.getType());
+					System.out.println();
+				}
+				
+				System.out.println("references the match are:");
 				for(ReferenceType ref : refList){
 					System.out.print("\t " + ref.getRef() + " ");
 					for(long refPc : ref.getPcs()){
 						System.out.print("0x" + Long.toHexString(refPc) + " ");
 					}
+					System.out.println("Type: " + ref.getType());
 					System.out.println();
 				}
 			}
@@ -60,8 +73,12 @@ public class ReferenceMatcher {
 				List<Node> nodeList = new LinkedList<Node>();
 				for(Stack<FunctionReferenceNode> stack : callStacks){
 					block.buildListUp(nodeList, stack, inst);
-					
-					
+					if(debug){
+						System.out.println("nodeList: ");
+						for (Node n : nodeList){
+							System.out.println("\t" + n);
+						}
+					}
 					if(validateList(nodeList, refList)){
 						stacks.add(stack);
 					} 
@@ -97,7 +114,7 @@ public class ReferenceMatcher {
 	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 	    		if(node instanceof InstructionNode){
 	    			InstructionNode inst = (InstructionNode)node;
-	    			if(reference.getPcs().contains(inst.getPC())){
+	    			if(!inst.getXtaInstruction().isFnop() && reference.getPcs().contains(inst.getPC())){
 	    				insts.add(inst);
 	    			}
 	    		}
@@ -192,12 +209,41 @@ public class ReferenceMatcher {
 		List<String> backTrailForPc = new LinkedList<String>(reference.getPcBackTrail(pc));
 		for(int i=reference.getBackTrail().size()-1; i>=0; i--){
 			ReferenceType refType = reference.getBackTrail().get(i);
-			if(backTrailForPc.contains(refType.getRef())){
-				backTrailForPc = backTrailForPc.subList(0, backTrailForPc.indexOf(refType.getRef()));
+			int index = getIndexOf(backTrailForPc, refType.getRef());
+			if(index != -1){
+				backTrailForPc = backTrailForPc.subList(0, index);
 			} else {
 				refList.add(0, refType);
 			}
 		}
+	}
+	
+	
+	private int getIndexOf(List<String> backTrailForPc, String string){
+		int i=0;
+		for(String backTrail : backTrailForPc){
+			int rightBra = backTrail.indexOf(")");
+			int leftBra = backTrail.indexOf("(");
+			
+			if(rightBra != -1 && leftBra != -1){
+				String bracketedString = backTrail.substring(leftBra+1, rightBra);
+				String [] parts = bracketedString.split(",");
+				for(String part : parts){
+					if(part.equals(string)){
+						return i;
+					}
+				}
+			} 
+			
+			if(backTrail.equals(string)){
+				return i;
+			}
+			
+			i++;
+		}
+		
+		
+		return -1;
 	}
 	
 	private boolean validateList(List<Node> nodeList, List<ReferenceType> references) {

@@ -287,23 +287,19 @@ public abstract class Node implements Comparable<Node> {
 	}
 	
 	public String getReferenceStr() {
-		String refStr = "";
-		List<Long> backTrail = new ArrayList<Long>();
-		getBackTrail(backTrail);
-		for (Long pc : backTrail) {
-			refStr += String.format("CALL:0x%x,", pc);
-		}
+		StringBuffer refStr = new StringBuffer();
+		getBackTrail(refStr);
 		if (isFunctionNode()) {
-			refStr += ((FunctionNode)this).getFunctionName();
+			refStr.append(((FunctionNode)this).getFunctionName());
 		} else {
-			refStr += String.format("0x%x", getStartPc());
+			refStr.append(String.format("0x%x", getStartPc()));
 		}
-		return refStr;
+		return refStr.toString();
 	}
 	
-	public void getBackTrail(List<Long> backTrail) {
+	public void getBackTrail(StringBuffer refStr) {
 		if (m_parent != null) {
-			m_parent.getBackTrail(backTrail);
+			m_parent.getBackTrail(refStr);
 		}
 	}
 	
