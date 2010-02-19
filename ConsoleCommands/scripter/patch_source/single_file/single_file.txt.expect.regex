@@ -1,0 +1,14 @@
+Enabled    Modifiable Reference  ->     MapsTo
+true       true       test.xc:13 ->    label_0
+true       true       .+/test.xc:25 ->    label_1
+Enabled    Modifiable Reference  ->     MapsTo
+true       true       test.xc:13 ->          x
+true       true       .+/test.xc:25 -> out_of_bounds
+load ".+test.xe"
+
+#
+# Route: test.xc:13 => .+/test.xc:13
+#
+add exclusion out_of_bounds
+analyse path x x
+

@@ -75,7 +75,7 @@ void mm_init()
 	memset(mm_map, 0xff, sizeof(mm_map));
 }
 
-inline unsigned char mm_get(unsigned short addr)
+extern inline unsigned char mm_get(unsigned short addr)
 {
 	unsigned char offset = addr>>8;
 	unsigned char block = mm_map[offset];
@@ -89,7 +89,7 @@ inline unsigned char mm_get(unsigned short addr)
 	return mm_memory[block*256 + (addr&0xff)];
 }
 
-inline void mm_set(unsigned short addr, unsigned char value)
+extern inline void mm_set(unsigned short addr, unsigned char value)
 {
 	unsigned char offset = addr>>8;
 	unsigned char block = mm_map[offset];
