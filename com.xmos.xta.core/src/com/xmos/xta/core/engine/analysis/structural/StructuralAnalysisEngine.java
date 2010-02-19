@@ -456,7 +456,6 @@ public class StructuralAnalysisEngine {
 					String functionName = link.getFunctionName();
 					g.setFunction(functionName, link);
 					g.getAlias().setFunction(functionName, link);
-					link.addCallingFunction(f);
 				}
 			}
 		}

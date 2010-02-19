@@ -77,18 +77,6 @@ public class InfiniteLoopNode extends Node {
     	return m_attributes;
     }
 
-	public void addLoop(Node loop) {
-		m_loops.add(loop);
-	}
-
-	public Node getLoopHeader() {
-		return m_loopHeader;
-	}
-
-	public List<Node> getLoopBodies() {
-		return m_loops;
-	}
-
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loopHeader.getInstructions());
 		for (Node al : m_loops) {

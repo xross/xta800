@@ -72,11 +72,8 @@ public class ConditionalNode extends Node {
 	}
 
 	public long getStartPc() {
+		assert(false);
 		return 0;
-	}
-
-	public Collection<Node> getOptions(){
-		return m_options;
 	}
 
 	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
@@ -127,16 +124,6 @@ public class ConditionalNode extends Node {
 			}
 		}
 		return unsetOptions;
-	}
-
-	public List<Node> getAllSetOptions() {
-		List<Node> setOptions = new LinkedList<Node>();
-		for (Node option : m_options) {
-			if (getAttributes().getSetOption(option)) {
-				setOptions.add(option);
-			}
-		}
-		return setOptions;
 	}
 
 	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {

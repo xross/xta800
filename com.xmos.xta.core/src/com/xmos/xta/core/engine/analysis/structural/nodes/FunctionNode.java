@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -20,15 +19,10 @@ public class FunctionNode extends Node {
 	private String m_functionName;
 	private List<Node> m_functionSequence;
 	private static int functionId;
-	private Set<Node> m_functionEndNodes;
-	private List<FunctionNode> m_callingFunctions;
 
 	public FunctionNode() {
 		super();
 		m_attributes = new NodeAttributes(this);
-		m_functionEndNodes = new TreeSet<Node>();
-		m_callingFunctions = new ArrayList<FunctionNode>();
-
 		setUnresolved(true);
 	}
 
@@ -49,7 +43,6 @@ public class FunctionNode extends Node {
 			m_functionName = functionName;
 		}
 		m_attributes = new NodeAttributes(this);
-		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 
 	public FunctionNode(FunctionNode fn){
@@ -57,7 +50,6 @@ public class FunctionNode extends Node {
 		m_functionSequence = fn.m_functionSequence;
 		m_attributes = new NodeAttributes(this);
 		setUnresolved(fn.isUnresolved());
-		m_callingFunctions = new ArrayList<FunctionNode>();
 	}
 
 	public String toString(){
@@ -72,48 +64,6 @@ public class FunctionNode extends Node {
 	public Node copyStructure() {
     	return new FunctionNode(this);
 	}
-	/*
-	public void getBackTrail(List<Long> backTrail) {
-		super.getBackTrail(backTrail);
-		System.out.println("on function " + getFunctionName());
-		Node parent = getParent();
-		if (parent != null) {
-			Node callNode = findCallNode(parent);
-			if (callNode != null) {
-				backTrail.add(callNode.getStartPc());
-			}
-		}
-	}
-
-	private Node m_callNode;
-	private Node findCallNode(Node parent) {
-		// Finds the node previous to this one...
-		Node previousNode = null;
-		for (Node child : parent.iChildren()) {
-			if (child == this)
-				break;
-
-			previousNode = child;
-		}
-		if (previousNode == null) {
-			return null;
-		}
-
-		// Finds the final instruction in the previous node
-		// (which must be the calling instruction..)
-		m_callNode = null;
-		previousNode.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
-				m_callNode = node;
-				return TraverseStatus.CONTINUE;
-			}
-		});
-
-		System.out.println("the node callinf function " + getFunctionName() + " is " + m_callNode);
-
-		return m_callNode;
-	}
-*/
 
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		aborter.getAbort();
@@ -129,22 +79,12 @@ public class FunctionNode extends Node {
 			}
 			fn.m_functionSequence = nodes;
 		}
-
-		fn.m_callingFunctions = new ArrayList<FunctionNode>();
 		return fn;
 	}
 
 	public String getTypeName() {
         return "function";
     }
-
-	public void setFunctionEndNodes(Set<Node> functionEndNodes){
-		m_functionEndNodes = functionEndNodes;
-	}
-
-	public Set<Node> getFunctionEndNodes(){
-		return m_functionEndNodes;
-	}
 
     public NodeAttributes getAttributes() {
     	return m_attributes;
@@ -255,20 +195,6 @@ public class FunctionNode extends Node {
 	public void replaceChildren(List<Node> children) {
 		m_functionSequence.clear();
 		m_functionSequence.addAll(children);
-	}
-
-
-	public void addCallingFunction(FunctionNode f) {
-		m_callingFunctions.add(f);
-	}
-
-	public List<FunctionNode> getCallingFunctions() {
-		return m_callingFunctions;
-	}
-
-	public void removeCallingFunction(FunctionNode g) {
-		assert(m_callingFunctions.contains(g));
-		m_callingFunctions.remove(g);
 	}
 
 	public List<Node> iChildren() {

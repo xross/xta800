@@ -109,8 +109,6 @@ public class FunctionReferenceNode extends Node {
 		return m_functionName;
 	}
 
-
-
 	public FunctionNode getFunctionNode(){
 		if(m_isRecursive){
 			String fnName = getFunctionName() + "(Recursive)";
@@ -144,18 +142,11 @@ public class FunctionReferenceNode extends Node {
 		return f;
 	}
 
-	public boolean isFunctionReferenceNode(){
-		return true;
-	}
-
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		FunctionReferenceNode newFrn = new FunctionReferenceNode(this);
 		if(getFunctionNode() != null){
 			newFrn.m_functionNode = (FunctionNode) getFunctionNode().deepCopy(aborter);
 		}
-
-
-
 		return newFrn;
 	}
 
@@ -182,12 +173,8 @@ public class FunctionReferenceNode extends Node {
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
-		if(isKnownFunction()){
-			return m_functionNode.getTimeSpread();
-		} else {
-			return new TimeDistributionBuckets();
-		}
-		
+		assert(false);
+		return null;
 	}
 
 	public String getTypeName() {
@@ -200,12 +187,10 @@ public class FunctionReferenceNode extends Node {
 
 	public void replaceChild(Node oldNode, Node newNode) {
 		assert(false);
-
 	}
 
 	public void replaceChildren(List<Node> newChildren) {
 		assert(false);
-
 	}
 
 	public TraverseStatus traverse(Stack<Node> ancestors,
