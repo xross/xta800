@@ -41,7 +41,7 @@ public class ListRefs extends Command {
 		scripter.createRefs();
 		Collection<ScripterReference> refs = scripter.getRefs();
 		if (refs.size() == 0) {
-			console.display("none");
+			console.display("none\n");
 			return;
 		}
 		

@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
 
-public class SourceFile {
+public class SourceFile implements Comparable<SourceFile> {
 	private DebugFile m_debugFile;
 	private ArrayList<SourceLine> m_sourceLines;
 	private Map<Long, SourceLine> m_pcToLine;
@@ -85,5 +85,9 @@ public class SourceFile {
 
 	public boolean fileNameMatches(String fileName) {
 		return m_debugFile.fileNameMatches(fileName);
+	}
+
+	public int compareTo(SourceFile o) {
+		return m_debugFile.compareTo(o.getDebugFile());
 	}
 }

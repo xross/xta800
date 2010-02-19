@@ -179,12 +179,15 @@ public class SourceMapper {
 		checkSourceFileDate(src, notifier, file);
     }
 
-    private void checkSourceFileDate(CommandSource src, Notifier notifier, File file) {
+    public boolean fileNewerThanBinary(File file) {
     	long sourceLastModified = file.lastModified();
-    	if (sourceLastModified > m_xeLastModified) {
+    	return (sourceLastModified > m_xeLastModified);
+	}
+
+    private void checkSourceFileDate(CommandSource src, Notifier notifier, File file) {
+    	if (fileNewerThanBinary(file)) {
     		notifier.notify(src, Notifier.NOTIFY_WARNING,
-    				String.format("Source file '%s' newer than binary",
-    						file.getName()));
+    				String.format("Source file '%s' newer than binary", file.getName()));
     	}
 	}
 

@@ -44,6 +44,10 @@ public class ScripterReference implements Comparable<ScripterReference> {
 		return m_ref.equals(o.m_ref);
 	}
 
+	public void setModifiable(boolean isModifiable) {
+		m_isModifiable = isModifiable;
+	}
+	
 	public boolean isModifiable() {
     	return m_isModifiable;
     }

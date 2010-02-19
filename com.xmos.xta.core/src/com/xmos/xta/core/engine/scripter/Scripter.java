@@ -1,7 +1,15 @@
 package com.xmos.xta.core.engine.scripter;
 
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +20,7 @@ import java.util.TreeSet;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.FileNameMatcher;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.routes.Route;
@@ -31,6 +40,8 @@ import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
+import com.xmos.xta.core.engine.sourcemapper.SourceFile;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class Scripter {
 	private Engine m_engine;
@@ -74,49 +85,13 @@ public class Scripter {
 	}
 	
 	public String dump() {
-    	StringBuffer script = new StringBuffer();
- 	
-    	m_currentRouteId = 0;
-    	script.append(String.format("load \"%s\"\n", m_engine.getExecutable().toString()));
-    	    	    	
-    	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
-        	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
-        	    (routeContainer.numExistingRoutes() <= 0))
-        		continue;
-    		
-       		script.append("\n");
-
-       		RouteDescription description = routeContainer.getDescription();
-			int nodeNumber = description.getNodeNumber();
-       		int coreNumber = description.getCoreNumber();
-
-       		routeComment(routeContainer, script);
-        	globalConfig(routeContainer, script);
-        	addBranches(description.getBranches(), script);
-        	addDefines(description.getDefines(), nodeNumber, coreNumber, script);
-        	addExclusions(description.getExclusions(), script);
-        	analyseRoutes(routeContainer, script);
-        	removeRoutes(routeContainer, script);
-
-       		for (Route route : routeContainer.getRoutes()) {
-       			if (routeContainer.routeExists(route)) {
-           			setKnowns(route, script, routeContainer.getRoutes().size() == 1);
-           			setRequirements(route, script, routeContainer.getRoutes().size() == 1);       				
-       			}
-       			++m_currentRouteId;
-    		}
-    	}
-    	script.append("\n");
-    	int nodeNumber = m_engine.getNodeNumber();
-		int coreNumber = m_engine.getCoreNumber();
-		updateGlobalConfig(script, m_engine.getConfig(), nodeNumber, coreNumber);
-    	addBranches(m_engine.getUserBranches(), script);
-    	addDefines(m_engine.getDefines(), nodeNumber, coreNumber, script);
-		addExclusions(m_engine.getExclusions(), script);
-
+		createRefs();
+		Map<SourceFile, List<Long>> fileLineNumbers = getFileLineNumbers();
+		addPragmasToFiles(fileLineNumbers);
+		StringBuffer script = createScript();
     	return script.toString();
-    }
- 	
+	}
+	
 	public String getUniqueLabel() {
 		int i = 0;
 		String label = "label_" + Integer.toString(i);
@@ -203,6 +178,10 @@ public class Scripter {
 
        		for (Route route : routeContainer.getRoutes()) {
        			for (Unknown unknown : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {
+       				if (unknown.getSource() == Unknown.Source.BINARY) {
+       					continue;
+       				}
+       				
        				for (Reference ref : unknown.getReferences()) {
        					addReference(ref);
        				}
@@ -221,9 +200,14 @@ public class Scripter {
     	for (Reference ref : m_engine.getExclusions()) {
     		addReference(ref);
     	}
-    	
+
+    	// Apply all current disables and renames
     	disableReferences();
     	renameReferences();
+
+    	// Disable those which can't be done due to source file issues
+    	Map<SourceFile, List<Long>> fileLineNumbers = getFileLineNumbers();
+    	disableRefsForInvalidFiles(fileLineNumbers);
 	}
 
     public void outputPortableWarnings(StringBuffer script, Reference[] references) {
@@ -245,6 +229,50 @@ public class Scripter {
 		}
     }
 
+	private StringBuffer createScript() {
+		StringBuffer script = new StringBuffer();
+ 	
+    	m_currentRouteId = 0;
+    	script.append(String.format("load \"%s\"\n", m_engine.getExecutable().toString()));
+    	    	    	
+    	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
+        	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
+        	    (routeContainer.numExistingRoutes() <= 0))
+        		continue;
+    		
+       		script.append("\n");
+
+       		RouteDescription description = routeContainer.getDescription();
+			int nodeNumber = description.getNodeNumber();
+       		int coreNumber = description.getCoreNumber();
+
+       		routeComment(routeContainer, script);
+        	globalConfig(routeContainer, script);
+        	addBranches(description.getBranches(), script);
+        	addDefines(description.getDefines(), nodeNumber, coreNumber, script);
+        	addExclusions(description.getExclusions(), script);
+        	analyseRoutes(routeContainer, script);
+        	removeRoutes(routeContainer, script);
+
+       		for (Route route : routeContainer.getRoutes()) {
+       			if (routeContainer.routeExists(route)) {
+           			setKnowns(route, script, routeContainer.getRoutes().size() == 1);
+           			setRequirements(route, script, routeContainer.getRoutes().size() == 1);       				
+       			}
+       			++m_currentRouteId;
+    		}
+    	}
+    	script.append("\n");
+    	int nodeNumber = m_engine.getNodeNumber();
+		int coreNumber = m_engine.getCoreNumber();
+		updateGlobalConfig(script, m_engine.getConfig(), nodeNumber, coreNumber);
+    	addBranches(m_engine.getUserBranches(), script);
+    	addDefines(m_engine.getDefines(), nodeNumber, coreNumber, script);
+		addExclusions(m_engine.getExclusions(), script);
+
+		return script;
+    }
+ 	
 	private void routeComment(RouteContainer routeContainer, StringBuffer script) {
     	RouteDescription routeDescription = routeContainer.getDescription();
 
@@ -508,11 +536,162 @@ public class Scripter {
 
     private String getReferenceString(Reference ref) {
     	ScripterReference scripterReference = getReference(ref.getRef());
-    	assert(scripterReference != null);
+    	if (scripterReference == null) {
+    		return ref.getRef();
+    	}
+
     	if (scripterReference.isEnabled()) {
     		return scripterReference.getMapsToLabel();
     	} else {
     		return ref.getRef();
     	}
+	}
+
+	private void disableRefsForInvalidFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
+		List<SourceFile> toRemove = new LinkedList<SourceFile>();
+		SourceMapper sourceMapper = m_engine.getSourceMapper();
+		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
+			File file = sourceFile.getFile();
+			if ((file == null) || !file.canWrite() || sourceMapper.fileNewerThanBinary(file)) {
+				disableRefsForFile(sourceFile.getFileName());
+				toRemove.add(sourceFile);
+			}
+		}
+		
+		for (SourceFile sourceFile : toRemove) {
+			fileLineNumbers.remove(sourceFile);
+		}
+	}
+
+	private void disableRefsForFile(String fileName) {
+		for (ScripterReference scripterReference : m_references) {
+			String refFileName = scripterReference.getReference().getFileName();
+			if (FileNameMatcher.isMatch(fileName, refFileName, m_engine.getSourceMapper())) {
+				scripterReference.setEnable(false);
+				scripterReference.setModifiable(false);
+			}
+		}
+	}
+
+	private void addPragmasToFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
+		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
+			boolean ok = backupFile(sourceFile);
+			if (!ok) {
+				continue;
+			}
+			
+			List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
+			Collections.sort(lineNumbers);
+			addPragmasToFile(sourceFile, lineNumbers);
+		}
+	}
+
+	private void addPragmasToFile(SourceFile sourceFile, List<Long> lineNumbers) {
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(sourceFile.getFile()));
+			String fileContents = "";
+			String line = "";
+			long lineNumber = 1;
+			while ((line = in.readLine()) != null) {
+				if (lineNumbers.contains(lineNumber)) {
+					String pragma = getPragmaString(sourceFile, lineNumber);
+					String indent = getIndent(line);
+					
+					fileContents += indent + pragma + "\n";
+				}
+				fileContents += line + "\n";
+				lineNumber++;
+			}
+			in.close();
+			
+			BufferedWriter out = new BufferedWriter(new FileWriter(sourceFile.getFile()));
+			out.write(fileContents);
+            out.close();
+		} catch(IOException e) {
+		}
+	}
+
+	private String getIndent(String line) {
+		String indent = line.replaceAll("[^\\s].*$", "");
+		return indent;
+	}
+
+	private String getPragmaString(SourceFile sourceFile, long lineNumber) {
+		SourceMapper sourceMapper = m_engine.getSourceMapper();
+		String sourceFileName = sourceFile.getFileName();
+
+		for (ScripterReference scripterReference : m_references) {
+			Reference reference = scripterReference.getReference();
+			if (FileNameMatcher.isMatch(sourceFileName, reference.getFileName(), sourceMapper) && 
+				(reference.getLineNum() == lineNumber)) {
+				
+				return getPragmaString(scripterReference);
+			}
+		}
+		assert(false);
+		return "";
+	}
+	
+	private String getPragmaString(ScripterReference scripterReference) {
+		String type = "";
+		switch (scripterReference.getReference().getBase().getType()) {
+		case ENDPOINT:
+			type = "endpoint";
+			break;
+		case CALL:
+			type = "call";
+			break;
+		case LABEL:
+		case SRCLABEL:
+			type = "call";
+			break;
+		default:
+			assert(false);
+			return "";
+		}
+		return "#pragma xta " + type + " \"" + scripterReference.getMapsToLabel() + "\"";
+	}		
+
+	private boolean backupFile(SourceFile sourceFile) {
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(sourceFile.getFile()));
+			File f2 = new File(sourceFile.getFullFileName() + ".bak");
+			BufferedWriter out = new BufferedWriter(new FileWriter(f2));
+			String s = "";
+			int lineCount = 1;
+			while ((s = in.readLine()) != null) {
+				out.write(s);
+				out.newLine();
+				lineCount++;
+			}
+			in.close();
+            out.close();
+		} catch(IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	private Map<SourceFile, List<Long>> getFileLineNumbers() {
+		SourceMapper sourceMapper = m_engine.getSourceMapper();
+		TreeMap<SourceFile, List<Long>> fileLineNumbers = new TreeMap<SourceFile, List<Long>>();
+		for (ScripterReference scripterReference : m_references) {
+			if (!scripterReference.isEnabled()) {
+				continue;
+			}
+			
+			String fileName = scripterReference.getReference().getFileName();
+			if (!fileName.equals("")) {
+				SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
+				
+				List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
+				if (lineNumbers == null) {
+					lineNumbers = new LinkedList<Long>();
+					fileLineNumbers.put(sourceFile, lineNumbers);
+				}
+				lineNumbers.add(scripterReference.getReference().getLineNum());
+			}
+		}
+		return fileLineNumbers;
 	}
 }
