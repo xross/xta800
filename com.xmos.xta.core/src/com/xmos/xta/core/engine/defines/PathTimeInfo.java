@@ -13,7 +13,7 @@ public class PathTimeInfo implements DefineInfo {
 		m_to = to;
 		m_timeUnit = timeUnit;
 	}
-	
+
 	public Reference getFrom() {
 		return m_from;
 	}
@@ -21,7 +21,7 @@ public class PathTimeInfo implements DefineInfo {
 	public Reference getTo() {
 		return m_to;
 	}
-	
+
 	public TimeUnit getTimeUnit() {
 		return m_timeUnit;
 	}
@@ -29,7 +29,7 @@ public class PathTimeInfo implements DefineInfo {
 	public String toString() {
 		return String.format("%s to %s: %s", m_from.toString(), m_to.toString(), m_timeUnit.getDescription(false));
 	}
-	
+
     public String getDescription() {
     	return m_from + " " + m_to;
     }
@@ -37,11 +37,17 @@ public class PathTimeInfo implements DefineInfo {
     public String getValue() {
     	return m_timeUnit.getDescription(true);
     }
-    
+
 	public boolean equals(Object o) {
-		if (((PathTimeInfo)o).m_from.equals(m_from) && ((PathTimeInfo)o).m_to.equals(m_to)) {
-			return true;
+		if(o == null){
+			return false;
+		}
+		if(o instanceof PathTimeInfo){
+			PathTimeInfo pti = (PathTimeInfo)o;
+			if (pti.m_from.equals(m_from) && pti.m_to.equals(m_to)) {
+				return true;
+			}
 		}
 		return false;
-	}					
+	}
 }

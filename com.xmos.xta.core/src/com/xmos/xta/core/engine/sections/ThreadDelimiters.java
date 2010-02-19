@@ -16,16 +16,16 @@ public class ThreadDelimiters extends Section {
 	ThreadDelimiters(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
-		m_pcs = new TreeSet<Long>(); 
+		m_pcs = new TreeSet<Long>();
 	}
-	
+
 
 	boolean add(CommandSource src, long pc) {
-		if (m_pcs.add(pc)) {												
-			return true;	
+		if (m_pcs.add(pc)) {
+			return true;
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"unable to add pc: 0x%08x", pc));			
+					"unable to add pc: 0x%08x", pc));
 			return false;
 		}
 	}
@@ -37,16 +37,16 @@ public class ThreadDelimiters extends Section {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
     				"unable to remove pc: %s", pc));
 			return false;
-		}		
+		}
 	}
 	*/
 	Collection<Long> get() {
 		return m_pcs;
 	}
-	
+
 	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeNumber(), getCoreNumber());
-				
+
 		if ((data.length % 4) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"invalid size for %s section", m_sectionName));
@@ -55,17 +55,17 @@ public class ThreadDelimiters extends Section {
 
 		try {
 			int byteIndex = 0;
-	        while (byteIndex < data.length) {        	
+	        while (byteIndex < data.length) {
 	        	long pc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
-	        	byteIndex += 4;        	
+	        	byteIndex += 4;
 
 	    		m_pcs.add(pc);
-	        }        
+	        }
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 			    	"problem reading %s section while loading executable", m_sectionName));
     	    return false;
-        }        
+        }
         return true;
-	}		
+	}
 }

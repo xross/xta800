@@ -15,19 +15,19 @@ public class SrcCommands extends Command {
 	}
 
 	public String name() {
-  		return "srccommands"; 
+  		return "srccommands";
 	}
 
 	public String commandLine() {
-   		return "srccommands"; 
+   		return "srccommands";
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "srccommands : Displays the command list embedded in the loaded executable";         
+        return "srccommands : Displays the command list embedded in the loaded executable";
 	}
 
 	public Command clone(String[] args, int index) {
-   		return new SrcCommands();            
+   		return new SrcCommands();
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
@@ -38,9 +38,9 @@ public class SrcCommands extends Command {
 			console.display("none\n");
 			return;
 		}
-		
+
 		for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands()) {
     	    console.display(String.format("%s\n", cmdInfo.getString()));
-    	}		
+    	}
 	}
 }

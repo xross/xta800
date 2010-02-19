@@ -29,17 +29,17 @@ public class Endpoints extends Command {
 	public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
-				
-   		return new Endpoints();            
+
+   		return new Endpoints();
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-       	listEndpoints(engine, console);        	
+       	listEndpoints(engine, console);
 	}
-	
+
 	private void listEndpoints(Engine engine, Console console) {
 		if (engine.getEndpoints().size() == 0){
 			console.display("none\n");
@@ -47,14 +47,14 @@ public class Endpoints extends Command {
 		}
 
 		for (CodePointInfo info : engine.getEndpoints()) {
-    	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
-    	    
+    	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc()));
+
     	    if (!info.getCompilationDir().equals("")) {
     	    	console.display(", compilation dir: " + info.getCompilationDir());
     	    	console.display(", filename: " + info.getFileName());
     	    	console.display(", line number: " + info.getLineNumber());
     	    }
-    	    console.display("\n");    	    
-    	}				
+    	    console.display("\n");
+    	}
 	}
 }

@@ -18,9 +18,9 @@ public class Config {
 	static final public int VERBOSITY_DISPLAY_NULL_NODE = 50;
 	static final public int VERBOSITY_DISPLAY_NUM_PATHS = 50;
 	static final public int VERBOSITY_DISPLAY_ATTRIBUTES = 50;
-	static final public int VERBOSITY_DISPLAY_ANCESTORS = 50;	
+	static final public int VERBOSITY_DISPLAY_ANCESTORS = 50;
 	static final public int VERBOSITY_PROGRESS_MONITOR_ENABLED = 10;
-	
+
 	public Config() {
 		m_verbosity = 0;
 		m_numThreads = DEFAULT_THREADS;

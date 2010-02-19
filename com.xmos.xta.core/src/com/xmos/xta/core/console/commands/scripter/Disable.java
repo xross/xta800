@@ -8,7 +8,7 @@ import com.xmos.xta.core.engine.scripter.Scripter;
 
 public class Disable extends Command {
 	private String m_reference;
-	
+
 	public Disable() {
 	}
 
@@ -18,25 +18,25 @@ public class Disable extends Command {
 
     public int numArgs() {
     	return 1;
-    }        
+    }
 
     public String name() {
     	return "disable";
-    }        
+    }
 
     public String commandLine() {
     	return "disable " + m_reference;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "disable: Disable a mapping";      	
+        return "disable: Disable a mapping";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) { 
+		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-	    
+
         return new Disable(args[index + 1]);
     }
 

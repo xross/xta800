@@ -14,31 +14,31 @@ public class SrcLevelLoops extends Section {
 
 	SrcLevelLoops(int nodeNumber, int coreNumber, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
-		m_loops = new ArrayList<SrcLevelLoopInfo>(); 
+		m_loops = new ArrayList<SrcLevelLoopInfo>();
 	}
-	
+
 	Collection<SrcLevelLoopInfo> get() {
 		return m_loops;
 	}
-	
+
 	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(".xtaloop", getNodeNumber(), getCoreNumber());
 		try {
 			int byteIndex = 0;
-	        while (byteIndex < data.length) {        
+	        while (byteIndex < data.length) {
 	        	long pc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
-	        	byteIndex += 4;        	
-	        	
+	        	byteIndex += 4;
+
 	        	int numIterations = ByteArrayManipulation.readInt(data, byteIndex);
 	        	byteIndex += 4;
-	        	
+
 	        	m_loops.add(new SrcLevelLoopInfo(pc, numIterations));
-	        }        
+	        }
 		} catch (Exception e) {
 		    getNotifier().notify(src, Notifier.NOTIFY_ERROR,
 			    	"problem reading .xtaloop section while loading executable");
     	    return false;
         }
         return true;
-	}		
+	}
 }

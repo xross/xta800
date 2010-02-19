@@ -12,11 +12,11 @@ public class LoopUnknown extends Unknown {
 	public String getDescription() {
 		switch(getState()) {
 		case UNKNOWN:
-			return String.format("Loop iterations (node id: " + 
+			return String.format("Loop iterations (node id: " +
 					getNode().getId() + ") are unknown");
 
 		case KNOWN:
-			return String.format("Loop iterations (node id: " + 
+			return String.format("Loop iterations (node id: " +
 					getNode().getId() + ") are known");
 		}
 		assert(false);
@@ -27,8 +27,8 @@ public class LoopUnknown extends Unknown {
     	if (getSource() == Source.BINARY) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
-    	return String.format("set loop %s %s %d\n", 
-	    		routeIdStr, refStrs[0], 
-	    		getNode().getAttributes().getLoopIterations());		    		
+    	return String.format("set loop %s %s %d\n",
+	    		routeIdStr, refStrs[0],
+	    		getNode().getAttributes().getLoopIterations());
 	}
 }

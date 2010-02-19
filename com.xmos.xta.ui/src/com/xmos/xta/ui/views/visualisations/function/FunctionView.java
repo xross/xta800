@@ -58,7 +58,7 @@ public class FunctionView extends ZoomedCanvasView {
     	}
     	
     	if (!node.isBlockNode()) {
-	        for (Node subNode : node.getIndirectChildren()) {
+	        for (Node subNode : node.iChildren()) {
 	        	ViewNode child = buildViewNode(subNode, depth);
 	        	if (child != null)
 	        		viewNode.addChild(child);

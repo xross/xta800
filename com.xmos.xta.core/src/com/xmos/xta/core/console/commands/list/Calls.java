@@ -29,17 +29,17 @@ public class Calls extends Command {
 	public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
-				
-   		return new Calls();            
+
+   		return new Calls();
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-       	listCalls(engine, console);        	
+       	listCalls(engine, console);
 	}
-	
+
 	private void listCalls(Engine engine, Console console) {
 		if (engine.getCalls().size() == 0){
 			console.display("none\n");
@@ -47,14 +47,14 @@ public class Calls extends Command {
 		}
 
 		for (CodePointInfo info : engine.getCalls()) {
-    	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc())); 
-    	    
+    	    console.display(String.format("Label: %s, pc: 0x%x", info.getLabel(), info.getPc()));
+
     	    if (!info.getCompilationDir().equals("")) {
     	    	console.display(", compilation dir: " + info.getCompilationDir());
     	    	console.display(", filename: " + info.getFileName());
     	    	console.display(", line number: " + info.getLineNumber());
     	    }
-    	    console.display("\n");    	    
-    	}				
+    	    console.display("\n");
+    	}
 	}
 }

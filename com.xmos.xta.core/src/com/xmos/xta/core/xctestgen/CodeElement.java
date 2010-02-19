@@ -17,7 +17,7 @@ public abstract class CodeElement {
 		m_namePart = namePart;
 		m_maxNodes = maxNodes;
 	}
-	
+
 	public int getChildCount(){
 		int childCount = 0;
 		for(ArrayList<CodeElement> child : m_children){
@@ -25,12 +25,12 @@ public abstract class CodeElement {
 		}
 		return childCount;
 	}
-	
+
 	public void addNode() {
 		assert(m_children.size() < m_maxNodes);
 		m_children.add(new ArrayList<CodeElement>());
 	}
-	
+
 	public void addChild(CodeElement element) {
 		assert(m_children.size() > 0);
 		addChild(m_children.size() - 1, element);
@@ -69,7 +69,7 @@ public abstract class CodeElement {
 		return getName();
 	}
 	public String getName() {
-		if (m_children.size() == 0) 
+		if (m_children.size() == 0)
 			return m_namePart;
 
 		String name = m_namePart;

@@ -8,17 +8,17 @@ import com.xmos.libs.elfhandler.Symbol;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 
-public class LabelMap {	
+public class LabelMap {
 	private int m_nodeNumber;
 	private int m_coreNumber;
 	private TreeMap<String, Long> m_labels;
-	
+
 	LabelMap(int nodeNumber, int coreNumber) {
 		m_nodeNumber = nodeNumber;
 		m_coreNumber = coreNumber;
-		m_labels = new TreeMap<String, Long>(); 
+		m_labels = new TreeMap<String, Long>();
 	}
-	
+
 	int getNodeNumber() {
 		return m_nodeNumber;
 	}
@@ -26,7 +26,7 @@ public class LabelMap {
 	int getCoreNumber() {
 		return m_coreNumber;
 	}
-	
+
 	Map<String, Long> getMap() {
 		return m_labels;
 	}
@@ -34,13 +34,13 @@ public class LabelMap {
 	public boolean load(XeLoader xeLoader) {
         SymbolTable symbolTable = xeLoader.getSymbolTable(m_nodeNumber, m_coreNumber);
         ElfHandler elfHandler = symbolTable.getElfHandler();
-        
+
         for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {
         	if (!symbol.isSpecialSection()) {
-            	int sectionIndex = symbol.getShndx();        	
-            	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {        		
+            	int sectionIndex = symbol.getShndx();
+            	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {
             		if (symbol.getName().charAt(0) != '.') {
-            	        m_labels.put(symbol.getName(), (long)symbol.getValue());
+            	        m_labels.put(symbol.getName(), symbol.getValue());
             		}
             	}
         	}

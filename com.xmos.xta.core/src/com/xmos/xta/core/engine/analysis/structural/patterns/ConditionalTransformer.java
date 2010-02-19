@@ -12,14 +12,14 @@ public class ConditionalTransformer extends PatternMatcher {
 		m_treeStart = treeStart;
 		if (currentNode.getNextNodesSize() < 2) {
 			return false;
-		} 
+		}
 		return explore(currentNode, new TreeSet<Node>(), currentNode.getDominators(), currentNode, workingSet);
 	}
 
 	private boolean explore(Node node, TreeSet<Node> seen, Set<Node> dominators, Node start, Collection<Node> workingSet) {
 		seen.add(node);
 		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
-			
+
 			if(node.getNextNodesSize() >1 && node.getPrevNodesSize() == 1){
 				CommonMethods.wedgeUp(node, workingSet);
 				return true;
@@ -29,7 +29,7 @@ public class ConditionalTransformer extends PatternMatcher {
 				return true;
 			}
 		}
-		
+
 		boolean found = false;
 		for(Node next : node.getNextNodes()){
 			if(!seen.contains(next)){

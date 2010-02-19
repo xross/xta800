@@ -11,7 +11,7 @@ public class InstructionTimeInfo implements DefineInfo {
 		m_reference = reference;
 		m_timeUnit = timeUnit;
 	}
-	
+
 	public Reference getReference() {
 		return m_reference;
 	}
@@ -23,16 +23,17 @@ public class InstructionTimeInfo implements DefineInfo {
 	public String toString() {
 		return String.format("%s: %s", m_reference.toString(), m_timeUnit.getDescription(false));
 	}
-	
+
     public String getDescription() {
     	return m_reference.toString();
     }
 
     public String getValue() {
     	return m_timeUnit.getDescription(true);
-    }	
-    	
+    }
+
 	public boolean equals(Object o) {
+		if(o==null) return false;
 		return ((InstructionTimeInfo)o).m_reference.equals(m_reference);
-	}	
+	}
 }

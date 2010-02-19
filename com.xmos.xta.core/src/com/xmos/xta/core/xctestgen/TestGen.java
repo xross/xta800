@@ -11,7 +11,7 @@ public class TestGen {
 	static int m_unique;
 	static int m_endpoint;
 	static int m_testCount;
-	
+
 	static boolean done() {
 		return (m_testDescription.length() == 0);
 	}
@@ -34,7 +34,7 @@ public class TestGen {
 			return;
 
 		code.addNode();
-		
+
 		CodeElement lastElement = null;
 
 		do {
@@ -90,17 +90,17 @@ public class TestGen {
 	}
 
 	private static void createNonStucturalTest(String description, String optLevel) {
-		
+
 		try {
 			m_testDescription = description;
 			m_unique = 0;
 			m_endpoint = 0;
 			CodeElement test = new TestCodeElement(description);
 			generate(test);
-			
+
 			String testName = test.getName()+"_O" + optLevel;
 			m_testCount++;
-			
+
 			File dir = new File(testName);
 			if (!dir.exists()) {
 				boolean success = (new File(testName)).mkdir();
@@ -108,19 +108,19 @@ public class TestGen {
 					error("Error: failed to mkdir '" + testName + "'");
 				}
 			}
-		  
+
 			BufferedWriter sourceFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".xc"));
 			test.emitSource(sourceFile, 0);
 			sourceFile.close();
-	
+
 			BufferedWriter runExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".txt.expect.regex"));
 			runExpectFile.write("xta: warning: no valid paths of execution\n[^^^]\n");
 			runExpectFile.close();
-	
+
 			// Create empty build expect
 			BufferedWriter logExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".log.expect"));
 			logExpectFile.close();
-	
+
 			BufferedWriter testPerlFile = new BufferedWriter(new FileWriter(testName + "/test.pl"));
 			writeNonStucturalTestPerl(testPerlFile, testName, "-O"+optLevel);
 			testPerlFile.close();
@@ -129,17 +129,17 @@ public class TestGen {
 		}
 	}
 	/*
-	private static void createStucturalTest(String description) {		
+	private static void createStucturalTest(String description) {
 		try {
 			m_testDescription = description;
 			m_unique = 0;
 			m_endpoint = 0;
 			CodeElement test = new TestCodeElement(description);
 			generate(test);
-			
+
 			String testName = test.getName();
 			m_testCount++;
-			
+
 			File dir = new File(testName);
 			if (!dir.exists()) {
 				boolean success = (new File(testName)).mkdir();
@@ -147,19 +147,19 @@ public class TestGen {
 					error("Error: failed to mkdir '" + testName + "'");
 				}
 			}
-		  
+
 			BufferedWriter sourceFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".xc"));
 			test.emitSource(sourceFile, 0);
 			sourceFile.close();
-	
+
 			BufferedWriter runExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".txt.expect.regex"));
 			test.emitExpect(0, runExpectFile, 0);
 			runExpectFile.close();
-	
+
 			// Create empty build expect
 			BufferedWriter logExpectFile = new BufferedWriter(new FileWriter(testName + "/" + testName + ".log.expect"));
 			logExpectFile.close();
-	
+
 			BufferedWriter testPerlFile = new BufferedWriter(new FileWriter(testName + "/test.pl"));
 			writeStucturalTestPerl(testPerlFile, testName, "");
 			testPerlFile.close();
@@ -210,31 +210,31 @@ public class TestGen {
 		file.write("       \"-analyse path endpoint1 end \" .\n");
 		file.write("       \"-analyse path endpoint2 end \" .\n");
 		file.write("       \"-analyse path endpoint0 endpoint2 \" .\n");
-		
+
 		file.write("       \"-add exclusion endpoint0 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-remove exclusion endpoint0 \" .\n");
-		
+
 		file.write("       \"-add exclusion endpoint1 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-remove exclusion endpoint1 \" .\n");
-		
+
 		file.write("       \"-add exclusion endpoint2 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-remove exclusion endpoint2 \" .\n");
-		
+
 		file.write("       \"-add exclusion endpoint0 \" .\n");
 		file.write("       \"-add exclusion endpoint1 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-remove exclusion endpoint0 \" .\n");
 		file.write("       \"-remove exclusion endpoint1 \" .\n");
-		
+
 		file.write("       \"-add exclusion endpoint0 \" .\n");
 		file.write("       \"-add exclusion endpoint2 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
 		file.write("       \"-remove exclusion endpoint0 \" .\n");
 		file.write("       \"-remove exclusion endpoint2 \" .\n");
-		
+
 		file.write("       \"-add exclusion endpoint1 \" .\n");
 		file.write("       \"-add exclusion endpoint2 \" .\n");
 		file.write("       \"-analyse function test \" .\n");
@@ -245,7 +245,7 @@ public class TestGen {
 
 	static public void main(String[] args) {
 		String tests[] = {
-	/*			
+	/*
 
 				"papp",
 				"pd(pap)",
@@ -256,7 +256,7 @@ public class TestGen {
 				"pad(apd(ap))",
 				"pad(ad(apd(ap)))",
 				"pad(ad(apd(ad(ap))))",
-				
+
 				"pd(i(pap))",
 				"pd(d(pi(ap)))",
 				"pd(d(pd(i(ap))))",
@@ -265,7 +265,7 @@ public class TestGen {
 				"pi(a)d(pi(a)d(i(ap)))",
 				"pi(a)d(i(a)d(pi(a)d(i(ap))))",
 				"pi(a)d(i(a)d(pi(a)d(i(a)d(i(ap)))))",
-				
+
 				"pf(pap)",
 				"pf(pf(ap))",
 				"pf(f(pf(f(ap))))",
@@ -278,7 +278,7 @@ public class TestGen {
 				"pi(a)pf(i(ap))",
 				"pi(a)f(pi(a)f(i(ap)))",
 				"pi(a)f(pi(a)f(i(a)f(i(a)f(i(ap)))))",
-				
+
 				"pw(pap)",
 				"pw(pw(ap))",
 				"pw(w(w(pw(ap))))",
@@ -291,7 +291,7 @@ public class TestGen {
 				"pi(a)w(i(pap))",
 				"pi(a)w(i(pa)w(i(ap)))",
 				"pi(a)w(i(a)w(i(pa)w(i(a)w(i(ap)))))",
-				
+
 				"pd(i(pa)(ap))",
 				"pd(d(i(pa)(ap)))",
 				"pd(d(d(i(pa)(ap))))",
@@ -300,7 +300,7 @@ public class TestGen {
 				"pi(a)(a)d(i(ap)(a)d(i(a)(ap)))",
 				"pi(a)(a)d(i(a)(pa)d(i(a)(a)d(i(a)(ap))))",
 				"pi(a)(a)d(i(a)(a)d(i(pa)(a)d(i(a)(a)d(i(a)(ap)))))",
-				
+
 				"pf(pap)",
 				"pf(pf(ap))",
 				"pf(pf(f(f(ap))))",
@@ -313,7 +313,7 @@ public class TestGen {
 				"pi(a)(pa)f(i(a)(ap))",
 				"pi(a)(a)f(i(pa)(a)f(i(a)(ap)))",
 				"pi(a)(a)f(i(a)(a)f(i(pa)(a)f(i(a)(a)f(i(a)(ap)))))",
-				
+
 				"pw(pap)",
 				"pw(w(pap))",
 				"pw(w(pw(w(ap))))",
@@ -326,24 +326,24 @@ public class TestGen {
 				"pi(a)(pa)w(i(a)(ap))",
 				"pi(a)(a)w(i(pa)(a)w(i(a)(ap)))",
 				"pi(a)(a)w(i(a)(a)w(i(a)(pa)w(i(a)(a)w(i(a)(ap)))))",
-				
-				
+
+
 				"ps(pa)(ap)",
 				"ps(a)(pa)(ap)",
 				"ps(pa)(a)(a)(ap)",
-				
+
 				"pd(s(pa)(ap))",
 				"pd(s(a)(pa)(ap))",
 				"pd(s(a)(pa)(a)(ap))",
-				
+
 				"ps(d(pa))(d(ap))",
 				"ps(d(a))(d(pa))(d(ap))",
 				"ps(d(pa))(d(a))(d(a))(d(ap))",
-				
+
 				"pd(s(d(ap))(d(ap)))",
 				"pd(s(d(ap))(d(a))(d(ap)))",
 				"pd(s(d(ap))(d(a))(d(a))(d(ap)))",
-				
+
 				"ps(s(pa)(a))(ap)",
 				"ps(s(a)(pa))(s(a)(ap))",
 				"ps(s(a)(s(pa)(a)))(s(a)(ap))",
@@ -352,26 +352,26 @@ public class TestGen {
 				"pe(pa)(ap)",
 				"pe(a)(pa)(ap)",
 				"pe(a)(pa)(a)(ap)",
-				
+
 				"pd(e(pa)(ap))",
 				"pd(e(pa)(a)(ap))",
 				"pd(e(a)(pa)(a)(ap))",
-				
+
 				"pe(d(pa))(d(ap))",
 				"pe(d(a))(d(pa))(d(ap))",
 				"pe(d(pa))(d(a))(d(a))(d(ap))",
-				
+
 				"pd(e(d(pa))(d(ap)))",
 				"pd(e(d(a))(d(ap))(d(ap)))",
 				"pd(e(d(pa))(d(a))(d(a))(d(ap)))",
-				
+
 				"pe(e(pa)(a))(ap)",
 				"pe(e(a)(pa))(e(a)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(a)(ap))",
 				"pe(e(pa)(e(a)(a)))(e(a)(e(a)(ap)))",
-				
+
 				//now for non stuctural test with returns on them
-	*/			
+	*/
 				"parpp",
 				"pd(rpap)",
 				"pd(rpd(rap))",
@@ -381,7 +381,7 @@ public class TestGen {
 				"pad(aprd(apr))",
 				"pad(ad(apd(ap)r)r)r",
 				"pad(ad(apd(ad(apr)r)r)r)",
-				
+
 				"pd(ir(prap))",
 				"pd(rd(pi(rap)))",
 				"pd(d(pd(ri(ap))))",
@@ -390,7 +390,7 @@ public class TestGen {
 				"pi(ar)d(pi(a)d(i(ap)))",
 				"pi(ar)d(i(a)d(pi(a)d(i(ap))))",
 				"pi(a)d(i(a)d(pri(a)d(i(a)d(i(rap)))))",
-				
+
 				"pf(prap)",
 				"pf(prf(ap))",
 				"pf(rf(pf(f(ap))))",
@@ -403,7 +403,7 @@ public class TestGen {
 				"pi(ar)pf(i(ap))",
 				"pi(ar)f(pi(a)f(i(ap)))",
 				"pi(a)f(pi(ar)f(i(ra)f(i(a)f(i(arp)))))",
-				
+
 				"pw(prap)",
 				"prw(pw(ap))",
 				"pw(w(w(prw(rap))))",
@@ -416,7 +416,7 @@ public class TestGen {
 				"pi(ar)w(i(pap))",
 				"pi(ar)w(i(pa)w(i(rap)))",
 				"pi(ar)w(i(ra)w(i(pa)w(i(ra)w(i(ap)))))",
-				
+
 				"pd(i(pra)(ap))",
 				"pd(d(ri(pra)(ap)))",
 				"pd(rd(d(i(pra)(ap))))",
@@ -425,7 +425,7 @@ public class TestGen {
 				"pi(a)(ar)d(i(ap)(ar)d(i(a)(arp)))",
 				"pi(ar)(a)d(i(a)(pra)d(i(a)(a)d(i(a)(apr))))",
 				"pi(a)(ar)d(i(a)(a)d(i(pa)(a)d(i(a)(a)d(ri(a)(ap)))))",
-				
+
 				"pf(parp)",
 				"pf(prf(ap))",
 				"pf(pf(f(f(arp))))",
@@ -438,7 +438,7 @@ public class TestGen {
 				"pi(a)(pa)f(ri(a)(ap))",
 				"pi(a)(a)f(ri(pa)(a)f(ri(a)(ap)))",
 				"pi(a)(a)f(ri(a)(a)f(ri(pa)(a)f(i(a)(a)f(ri(a)(ap)))))",
-				
+
 				"pw(rprarp)",
 				"pw(w(prap))",
 				"pw(rw(pw(w(ap))))",
@@ -451,61 +451,61 @@ public class TestGen {
 				"pi(a)(pra)w(i(a)(ap))",
 				"pi(a)(ar)w(i(par)(a)w(i(ra)(ap)))",
 				"pi(a)(a)w(i(a)(a)w(i(a)(pra)w(i(a)(a)rw(i(a)(ap)))))",
-				
-				
+
+
 				"ps(prra)(ap)",
 				"ps(ar)(pa)(ap)",
 				"ps(pa)(a)(a)(arp)r",
-				
+
 				"pd(s(pa)(arp))",
 				"pd(s(ar)(pa)(ap))",
 				"pd(rs(ar)(pa)(a)(ap))",
-				
+
 				"ps(rd(pa))(d(ap))",
 				"ps(d(ra))(d(pra))(d(ap))",
 				"ps(d(pra))(d(ra))(d(a))(d(ap))r",
-				
+
 				"pd(s(d(arp))(d(ap)))",
 				"pd(s(d(arp))(d(a))(d(arp)))",
 				"pd(s(d(arp))(d(ar))(d(a))(d(ap)))r",
-				
+
 				"prs(s(pra)(a))(rap)",
 				"prs(s(a)(pa))(s(a)(ap))",
 				"ps(s(ar)(s(pa)(ar)))(s(a)(ap))",
 				"ps(s(par)(s(a)(a)))(s(ar)(s(arr)(ap)))",
-	
+
 				"pe(par)(ap)",
 				"pe(ar)(pa)(ap)",
 				"pe(a)(pa)(ra)(ap)",
-				
+
 				"pd(e(rpa)(ap))",
 				"pd(e(pra)(ar)(ap))",
 				"pd(e(ra)(pa)(a)(arp))",
-				
+
 				"pe(d(pa))(d(arp))",
 				"pe(d(ar))(d(pa))(d(ap))",
 				"pe(d(par))(d(a))(d(rra))(d(ap))",
-				
+
 				"pd(e(d(pa))(d(arp)))",
 				"pd(e(d(ar))(d(arp))(d(ap)))",
 				"pd(e(d(pra))(d(a))(d(a))(d(ap)))",
-				
+
 				"pe(e(pra)(a))(ap)",
 				"pe(e(a)(pra))(e(ar)(ap))",
 				"pe(e(a)(e(pa)(a)))(e(ra)(ap))",
 				"pe(e(pa)(e(ra)(ar)))(e(ra)(e(a)(ap)))",
-			
+
 		};
 
 		m_testCount = 0;
 	  for (String testDesc : tests) {
-		 
+
 		  createNonStucturalTest(testDesc, "0");
 		  createNonStucturalTest(testDesc, "1");
 		  createNonStucturalTest(testDesc, "2");
 		  createNonStucturalTest(testDesc, "3");
 		  createNonStucturalTest(testDesc, "s");
-		  
+
 		 // createStucturalTest(testDesc);
 	  }
 	}

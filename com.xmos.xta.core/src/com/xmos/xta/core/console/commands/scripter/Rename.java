@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.scripter.Scripter;
 public class Rename extends Command {
 	private String m_from;
 	private String m_to;
-	
+
 	public Rename() {
 	}
 
@@ -20,25 +20,25 @@ public class Rename extends Command {
 
     public int numArgs() {
     	return 2;
-    }        
+    }
 
     public String name() {
     	return "rename";
-    }        
+    }
 
     public String commandLine() {
     	return "rename " + m_from + " " + m_to;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "rename: Rename a mapping";      	
+        return "rename: Rename a mapping";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) { 
+		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-	    
+
         return new Rename(args[index + 1], args[index + 2]);
     }
 

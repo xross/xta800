@@ -12,35 +12,35 @@ public class PathTimes extends Command {
 
 	public PathTimes() {
 	}
-	
+
     public int numArgs() {
-    	return 0;    	
-    }        
+    	return 0;
+    }
 
 	public ArgType[] getArgTypes() {
-        return super.getArgTypes();            
-	}    
+        return super.getArgTypes();
+	}
 
     public String name() {
 		return "pathtimes";
-    }        
+    }
 
     public String commandLine() {
    		return "pathtimes";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
     	return "pathtimes: Displays the path time defines";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) { 
+		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-		
+
     	return new PathTimes();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
@@ -53,6 +53,6 @@ public class PathTimes extends Command {
 	    }
 		for (PathTimeInfo info : infos) {
 			console.display(info + "\n");
-		}	    
-    }    
+		}
+    }
  }

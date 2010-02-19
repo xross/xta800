@@ -2,7 +2,9 @@ package com.xmos.xta.core.engine.analysis.structural;
 
 import java.util.Collection;
 import java.util.LinkedList;
+
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
@@ -30,7 +32,7 @@ public class BasicBlockMatcher {
 			for(Node n : nodes){
 				insts.add((InstructionNode)n);
 			}
-			
+
 			m_block = new BlockNode(insts);
 		}
 		if (isStart && nodes.contains(treeStart)) {
@@ -52,12 +54,12 @@ public class BasicBlockMatcher {
 	private boolean isStart(Node node) {
 		if(node == m_treeStart){
 			return true;
-		} else 
+		} else
 			if (node.getPrevNodesSize() == 0) {
 			return true;
 		} else if (node.getPrevNodesSize() == 1) {
 			Node prev = node.getPrevNode();
-			if (prev.isFunctionNode()) {
+			if (prev instanceof FunctionReferenceNode) {
 				return true;
 			}
 			if (prev.getNextNodesSize() > 1) {
@@ -73,8 +75,7 @@ public class BasicBlockMatcher {
 	}
 
 	private boolean isEnd(Node node) {
-		
-		
+
 		if (node.getNextNodesSize() == 0) {
 			return true;
 		} else if (node.getNextNodesSize() == 1) {
@@ -85,8 +86,8 @@ public class BasicBlockMatcher {
 			if(next instanceof NullNode ){
 				return true;
 			}
-			
-			if (next.isFunctionNode()) {
+
+			if (next instanceof FunctionReferenceNode) {
 				return true;
 			}
 			if (next.getPrevNodesSize() > 1) {

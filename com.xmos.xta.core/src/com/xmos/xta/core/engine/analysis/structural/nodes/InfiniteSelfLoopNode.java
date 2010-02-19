@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +13,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class InfiniteSelfLoopNode extends Node{
 	private NodeAttributes m_attributes;
@@ -38,7 +36,7 @@ public class InfiniteSelfLoopNode extends Node{
 		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
-	public InfiniteSelfLoopNode shallowCopy() {
+	public InfiniteSelfLoopNode copyStructure() {
 		return new InfiniteSelfLoopNode(this);
 	}
 
@@ -48,22 +46,18 @@ public class InfiniteSelfLoopNode extends Node{
 		ln.m_attributes = new InfiniteSelfLoopNodeAttributes(ln);
 		return ln;
 	}
-	
+
     public String getTypeName() {
         return "infiniteselfloop";
     }
-	
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
-    }    
-    
+    }
+
 	public LinkedList<XtaInstruction> getInstructions() {
 	    LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
 		return insts;
-	}
-
-	public XtaInstruction getStartInstruction() {
-		return m_loop.getStartInstruction();
 	}
 
 	public long getStartPc() {
@@ -74,7 +68,7 @@ public class InfiniteSelfLoopNode extends Node{
 		TraverseStatus status = nodeTraverser.foundInfiniteSelfLoopNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
-			status = m_loop.traverse(ancestors, nodeTraverser);			
+			status = m_loop.traverse(ancestors, nodeTraverser);
 			ancestors.pop();
 		}
 		if (status == TraverseStatus.ABORT) {
@@ -83,41 +77,9 @@ public class InfiniteSelfLoopNode extends Node{
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		List<Node> children = new LinkedList<Node>();
-		children.add(m_loop);
-		return children;
-	}
 
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();		
-		next.add(new NodeDescriptor(m_loop, nodeDescriptor.getAncestors()));
-		return next;
-	}
 
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(m_loop == nodeDescriptor.getNode());
-		
-		Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-		before.add(new NodeDescriptor(m_loop, nodeDescriptor.getAncestors()));
-			
-		NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		thisNodeDescriptor.getAncestors().pop();
 
-		if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			before.addAll(thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor));
-		}
-		return before;
-	}
-	
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-	    list.add(new NodeDescriptor(m_loop, ancestors));
-		ancestors.pop();
-		return list;
-	}
-	
 	public boolean isInfiniteSelfLoopNode() {
 		return true;
 	}
@@ -126,37 +88,58 @@ public class InfiniteSelfLoopNode extends Node{
 		return m_loop;
 	}
 
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		ancestors.push(this);
-		set.addAll(m_loop.getEndInstructions(ancestors));
-		ancestors.pop();
-		return set;
-	}
-
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		tdb.setInfinite();
 		return tdb;
 	}
-	
+
 	public void replaceChild(Node oldNode, Node newNode) {
 		if (oldNode == m_loop) {
 			m_loop = newNode;
-		}				
-	}	
-	
+		}
+	}
+
 	public void replaceChildren(List<Node> children) {
 		assert(children.size() == 1);
-		m_loop = children.get(0);		
-	}	
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
+		m_loop = children.get(0);
+	}
+
+	//below here the methods have been verified useful
+
+	public List<Node> iChildren() {
+		List<Node> children = new LinkedList<Node>();
+		children.add(m_loop);
+		return children;
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		Set<Node> next = new TreeSet<Node>();
+		//TODO check this
+		next.add(m_loop);
+		return next;
+	}
+
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		insts.addAll(m_loop.getInstructionNodes());
+		return insts;
+	}
+
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		addFunctionRefToRefSet(fnRef, m_loop);
+		return fnRef;
+	}
+
+	public void buildListDown(List<Node> nodeList) {
+		m_loop.buildListDown(nodeList);
+	}
+
+	public void buildListUp(List<Node> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, stack, this);
 		}
-		return false;
 	}
 }

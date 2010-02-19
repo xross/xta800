@@ -26,13 +26,12 @@ public class RouteDefines {
 			new SameBlockPattern(),
 			new DifferentBlockPattern()
 	};
-	
+
 	public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
 		Reference reference = info.getFunction();
-		
 		for (Node node : route.getReferencedFunctionNodes(reference)) {
-			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(), 
-					reference, Type.FUNCTION_TIME, source);	
+			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(),
+					reference, Type.FUNCTION_TIME, source);
 		}
 	}
 
@@ -51,24 +50,24 @@ public class RouteDefines {
 			}
 		}
 		return false;
-	}	
+	}
 
-	public void applyPathDefine(Engine engine, CommandSource src, 
+	public void applyPathDefine(Engine engine, CommandSource src,
 			Route route, PathTimeInfo info, Source source) throws AbortedException {
-		
+
 		Reference fromRef = info.getFrom();
 		Reference toRef = info.getTo();
 
 		Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
 		Collection<Node> toNodes = route.getReferencedNodes(toRef);
-		
+
 		TimeUnit timeUnit = new TimeUnit(route.getRouteDescription().getConfig(), info.getTimeUnit());
-		
+
 		for (Node from : fromNodes) {
 			assert(from instanceof InstructionNode);
 			Node fromBlock = from.getParent();
 			assert(fromBlock instanceof BlockNode);
-			
+
 			boolean success = false;
 			for (Node to : toNodes) {
 				assert(to instanceof InstructionNode);
@@ -78,11 +77,11 @@ public class RouteDefines {
 				for (RouteDefinePatterns pattern : m_patterns) {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
 
-						if (DEBUG_ROUTE_DEFINES) display("BEFORE", route);						
-						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, timeUnit, source);						
+						if (DEBUG_ROUTE_DEFINES) display("BEFORE", route);
+						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, timeUnit, source);
 						RouteConstructor.setParent(route.getNode());
 						if (DEBUG_ROUTE_DEFINES) display("AFTER", route);
-						
+
 						success = true;
 						break;
 					}
@@ -90,20 +89,21 @@ public class RouteDefines {
 			}
 
 			if (!success) {
-				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s", 
+				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s",
 						info, route.getRouteDescription().getDescription()));
 			}
 		}
-		
+
 		route.getRouteUnknowns().invalidateCachedStats();
 		route.getRouteUnknowns().refreshDisplayedUnknowns();
-	}	
+
+	}
 
 	private void display(String str, Route route) {
 		System.out.printf("------------ %s -------------\n", str);
-		StructureDisplayer sd = new StructureDisplayer(new BasicConsole(), 100);	
+		StructureDisplayer sd = new StructureDisplayer(new BasicConsole(), 100);
 		Collection<Node> nodes = new ArrayList<Node>();
 		nodes.add(route.getNode());
-		sd.display(nodes);					
+		sd.display(nodes);
 	}
 }

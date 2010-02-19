@@ -4,11 +4,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class DoWhileStatement extends CodeElement {
-	
+
 	public DoWhileStatement(int id) {
 		super(1, "d", id);
 	}
-	
+
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
 		emitSourceIndent(file, depth);
 		file.write("do {\n");

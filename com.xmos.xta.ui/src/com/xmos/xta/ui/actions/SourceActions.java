@@ -118,12 +118,16 @@ public class SourceActions  {
      	    	if (!reference.resolve(engine)) {
      	    		assert(false);
      	    	}
+     	    	/*
      			try {
-					nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
+     				//FIXME
+					//nodes.addAll(engine.getSelectedRoute().getReferencedNodes(reference));
 				} catch (AbortedException e) { }
+				*/
      			if(!nodes.isEmpty()){
      				new InstructionTime(parent.getShell(), nodes);
      			}
+     			
      		}
      	};
      	m_actions.put(SetInstructionTimeID, action);

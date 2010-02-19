@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.sections;
 
 import com.xmos.xta.core.engine.references.Reference;
 
-public class BranchInfo implements Comparable<BranchInfo> {	
+public class BranchInfo implements Comparable<BranchInfo> {
 	private Reference m_ref;
 	private boolean m_isUser;
 
@@ -10,11 +10,11 @@ public class BranchInfo implements Comparable<BranchInfo> {
 		m_ref = ref;
 		m_isUser = isUser;
 	}
-	
+
 	public Reference getRef() {
-		return m_ref;	
+		return m_ref;
 	}
-	
+
 	public boolean isUser() {
 		return m_isUser;
 	}

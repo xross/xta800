@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class SelectStatement extends CodeElement {
-	
+
 	public SelectStatement(int id) {
 		super(10, "e", id);
 	}
-	
+
 	public void emitSource(BufferedWriter file, int depth) throws IOException {
 		// Need to create a basic block for the timer declarations
 		emitSourceIndent(file, depth);
@@ -40,9 +40,9 @@ public class SelectStatement extends CodeElement {
 		file.write("}\n");
 	}
 
-	// Emit the part of the switch which relates to the current path 
+	// Emit the part of the switch which relates to the current path
 	public void emitExpect(int node,  BufferedWriter file, int depth) throws IOException  {
-		
+
 		//TODO
 		for (ArrayList<CodeElement> children : m_children) {
 			for (CodeElement child : children) {
