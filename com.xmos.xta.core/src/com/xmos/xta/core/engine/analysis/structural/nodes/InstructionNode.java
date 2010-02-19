@@ -58,22 +58,8 @@ public class InstructionNode extends Node {
 		return inst;
 	}
 
-	public XtaInstruction getStartInstruction() {
-		return m_inst;
-	}
-
-	public Set<Long> getPCs() {
-		Set<Long> pcs = new TreeSet<Long>();
-		pcs.add(m_inst.getPc());
-		return pcs;
-	}
-
 	public long getStartPc() {
 		return m_inst.getPc();
-	}
-
-	public boolean isFunction() {
-		return false;
 	}
 
 	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
@@ -98,20 +84,6 @@ public class InstructionNode extends Node {
 	public XtaInstruction getXtaInstruction() {
 		return m_inst;
 	}
-
-	public long getError(Case c) {
-		return 0;
-	}
-/*
-	public Node getParent(){
-		assert(false);
-		return null;
-	}
-
-	public void setParent(Node node) {
-		//this is here to override the method
-	}
-	*/
 
 	public TimeDistributionBuckets getTimeSpread() {
 		return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
@@ -149,7 +121,6 @@ public class InstructionNode extends Node {
 	public void buildList(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
 		assert(false);
-		//never call this on this
 	}
 
 	public void buildListDown(List<Node> nodeList) {

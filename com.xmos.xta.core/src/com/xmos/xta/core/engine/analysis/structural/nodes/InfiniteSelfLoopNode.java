@@ -77,15 +77,8 @@ public class InfiniteSelfLoopNode extends Node{
 		return TraverseStatus.CONTINUE;
 	}
 
-
-
-
 	public boolean isInfiniteSelfLoopNode() {
 		return true;
-	}
-
-	public Node getLoop() {
-		return m_loop;
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {

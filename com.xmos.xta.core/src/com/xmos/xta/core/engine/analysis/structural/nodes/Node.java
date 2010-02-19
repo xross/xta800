@@ -75,14 +75,12 @@ public abstract class Node implements Comparable<Node> {
 	public boolean isCondNode()             { return false; }
 	public boolean isInstructionNode()      { return false; }
 	public boolean isFunctionNode()         { return false; }
-	public boolean isFunctionReferenceNode(){ return false; }
 	public boolean isLoopNode()             { return false; }
 	public boolean isBlockNode()            { return false; }
 	public boolean isSelfLoopNode()         { return false; }
 	public boolean isNullNode()             { return false; }
 	public boolean isInfiniteLoopNode()     { return false; }
 	public boolean isInfiniteSelfLoopNode() { return false; }
-	public boolean isEndNode()              { return false; }
 	public boolean isSequenceNode()         { return false; }
 
 	public String toString() {
@@ -96,11 +94,13 @@ public abstract class Node implements Comparable<Node> {
 	public boolean isUnresolved() {
 		return m_unresolved;
 	}
+	
 	public void setInfinite(boolean infinite){
 		m_infinite = infinite;
 	}
 
 	public boolean isInfinite(){
+		//never called
 		return m_infinite;
 	}
 
@@ -108,15 +108,9 @@ public abstract class Node implements Comparable<Node> {
 		return m_id;
 	}
 
-	public void setId(int id) {
-		m_id = id;
-	}
-
 	public int compareTo(Node node) {
 		return Integer.signum(m_id - node.m_id);
 	}
-
-
 
 	public Set<Node> getDominators() {
 		return m_edges.getDominators();
@@ -243,10 +237,6 @@ public abstract class Node implements Comparable<Node> {
 
 	public Set<Node> getBranchTargets(){
 		return m_edges.getBranchTargets();
-	}
-
-	public boolean branchesTo(Node block) {
-		return m_edges.branchesTo(block);
 	}
 
 	public String getDescription() {

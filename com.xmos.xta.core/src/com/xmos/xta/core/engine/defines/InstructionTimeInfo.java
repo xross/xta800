@@ -33,7 +33,11 @@ public class InstructionTimeInfo implements DefineInfo {
     }
 
 	public boolean equals(Object o) {
-		if(o==null) return false;
-		return ((InstructionTimeInfo)o).m_reference.equals(m_reference);
+		if(o!=null) {
+			if(o instanceof InstructionTimeInfo){
+				return ((InstructionTimeInfo)o).m_reference.equals(m_reference);
+			}
+		}
+		return false;
 	}
 }

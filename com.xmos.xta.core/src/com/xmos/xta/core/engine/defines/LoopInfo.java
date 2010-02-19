@@ -32,7 +32,12 @@ public class LoopInfo implements DefineInfo {
     }
 
 	public boolean equals(Object o) {
-		if(o==null) return false;
-		return ((LoopInfo)o).m_reference.equals(m_reference);
+		if(o!=null) {
+			if(o instanceof LoopInfo){
+				return ((LoopInfo)o).m_reference.equals(m_reference);
+			}
+		}
+		return false;
+		
 	}
 }

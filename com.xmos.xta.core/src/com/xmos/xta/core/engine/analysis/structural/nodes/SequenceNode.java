@@ -68,10 +68,6 @@ public class SequenceNode extends Node {
 		return list;
 	}
 
-	public String getFunctionName() {
-		return "";
-	}
-
 	public long getStartPc() {
 		return m_nodes.get(0).getStartPc();
 	}
