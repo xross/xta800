@@ -8,11 +8,11 @@ import java.util.Set;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
-public class AssemblyLine implements Line {	
-	
+public class AssemblyLine implements Line {
+
 	private Map<String, Set<Long>> m_labels;
 	private static final int WIDTH = 20;
-	
+
 	public static String getLeadingWhiteSpace() {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < WIDTH; i++) {
@@ -20,13 +20,13 @@ public class AssemblyLine implements Line {
 		}
 		return sb.toString();
 	}
-	
+
 	private static final String m_resourceName[] = {
 		"PORT", "TIMER", "CHANEND",	"SYNC", "THREAD",
 		"LOCK", "CLKBLK", "COPROC", "INVALID", "INVALID",
 		"INVALID", "PS", "CONFIG", "INSTRUCTION",
 	};
-	
+
 	private static final String m_controlTokenName[] = {
 		"INVALID", "CT_END","CT_PAUSE",	"CT_ACK","CT_NACK",
 		"INVALID", "INVALID", "INVALID", "INVALID", "INVALID",
@@ -36,9 +36,9 @@ public class AssemblyLine implements Line {
 		"CT_WRITE4", "CT_WRITE8", "CT_CALL", "INVALID", "INVALID",
 		"INVALID", "INVALID", "INVALID",
 	};
-	
+
 	private InstructionNode m_instructionNode;
-	
+
 	public AssemblyLine(InstructionNode instructionNode, Map<String, Set<Long>> labels) {
 		m_instructionNode = instructionNode;
 		m_labels = labels;
@@ -57,34 +57,34 @@ public class AssemblyLine implements Line {
 	}
 
 	public String getPreText() {
-		String preText = "";
+		StringBuffer preText = new StringBuffer();
 		for (String key : m_labels.keySet()) {
     		if (m_labels.get(key).contains(m_instructionNode.getXtaInstruction().getPc())) {
-    			preText = key + ":";
+    			preText.append(key);
+    			preText.append(":");
     			break;
     		}
     	}
-		
+
 		if (preText.length() > WIDTH) {
-			preText = preText.substring(0, WIDTH);
+			preText.setLength(WIDTH);
+			//preText = preText.substring(0, WIDTH);
 		}
-		
+
 		for (int i = preText.length(); i < WIDTH; i++) {
-			preText += " ";
+			preText.append(" ");
 		}
-		
-		return preText;
+
+		return preText.toString();
 	}
 	public String getEmptyText() {
-		String preText = "";
-		
+		StringBuffer preText = new StringBuffer();
 		for (int i = preText.length(); i < WIDTH; i++) {
-			preText += " ";
+			preText.append(" ");
 		}
-		
-		return preText;
+		return preText.toString();
 	}
-	
+
 	public String getText() {
 		XtaInstruction inst  = m_instructionNode.getXtaInstruction();
 		String operandString = inst.getOperandString();
@@ -114,11 +114,11 @@ public class AssemblyLine implements Line {
 			operandString = operandString.substring(0, operandString.indexOf("i 0x")) + m_controlTokenName[ctNum] ;
 
 		}
-		
+
 	    if (inst.getBranchPcRelative()) {
 	        String functionName = inst.getBranchPcRelativeTargetFunction();
 	        String target = functionName;
-	        
+
 	        if (functionName.startsWith("0x")) {
 	        	for (String key : m_labels.keySet()) {
 	        		if (m_labels.get(key).contains(inst.getBranchPcRelativeTargetPc())) {
@@ -126,17 +126,17 @@ public class AssemblyLine implements Line {
 	        			break;
 	        		}
 	        	}
-	        } 
+	        }
 	        if (target == null) {
 	        	target = functionName;
 	        }
-	        
+
 	        if (operandString.contains("i ")) {
 	        	operandString = operandString.substring(0, operandString.indexOf("i "));
 	        }
 	        operandString = operandString.trim();
 	        return "\t" + inst.getNmenonic() + " " + operandString + " <" + target + ">";
-	        
+
 	    } else {
 	        return "\t" + inst.getNmenonic() +" " + operandString;
 	    }
@@ -149,5 +149,5 @@ public class AssemblyLine implements Line {
 	public long getPc() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}
-	
+
 }

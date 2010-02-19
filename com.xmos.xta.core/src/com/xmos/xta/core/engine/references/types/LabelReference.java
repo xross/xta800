@@ -9,7 +9,7 @@ public class LabelReference extends ReferenceType {
 	LabelReference(String ref) {
 		super(ref, Type.LABEL);
 	}
-	
+
 	public ReferenceType create(Engine engine, String reference) {
 		if (checkTypeString(reference, Type.LABEL, 1) &&
 		    engine.getLabels().containsKey(getLabel(reference))) {
@@ -17,11 +17,11 @@ public class LabelReference extends ReferenceType {
 		}
 		return null;
 	}
-	
+
 	public boolean resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
-		
+
 	    Map<String, Set<Long>> labels = engine.getLabels();
 		if (labels.containsKey(label)) {
 	    	for (Long pc : labels.get(label)) {
@@ -31,17 +31,17 @@ public class LabelReference extends ReferenceType {
 	        return true;
 	    }
 	    return false;
-	}	
-	
+	}
+
 	public String name() {
 		return "Label";
 	}
-	
+
 	public String description() {
 		return "Any source or assembly level symbol defined with respect to an executable section";
 	}
-	
+
 	public boolean isPortable() {
 		return true;
-	}	
+	}
 }

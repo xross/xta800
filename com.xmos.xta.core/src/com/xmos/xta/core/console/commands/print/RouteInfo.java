@@ -10,52 +10,52 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 
 public class RouteInfo extends Command {
 	private int m_routeId;
-	
+
 	public RouteInfo() {
 		m_routeId = 0;
 	}
-	
+
 	public RouteInfo(int routeId) {
 		m_routeId = routeId;
 	}
-	
+
     public int numArgs() {
    		return 1;
-    }        
+    }
 
     public String name() {
     	return "routeinfo";
-    }        
+    }
 
     public String commandLine() {
    	    return "routeinfo " + getRouteId(m_routeId);
-    }        
-    
+    }
+
     public String description(Engine engine, boolean detailed) {
     	return "routeinfo <route id>: Show detailed information for the given route";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) 
-			return null;		
+		if ((index + numArgs()) >= args.length)
+			return null;
 
-        try { 
-            return new RouteInfo(getRouteId(args[index + 1])); 
-        } catch (NumberFormatException e) {        	
+        try {
+            return new RouteInfo(getRouteId(args[index + 1]));
+        } catch (NumberFormatException e) {
           	return null;
-        }    		            		
+        }
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
 		for (Route route : engine.getRoute(m_routeId)) {
     	    RouteTiming routeTiming = route.getRouteTiming();
-    	    console.display(String.format("%s %s\n", route.getRouteDescription().getDescription(), route.getEndpointsPcsString()));    	
+    	    console.display(String.format("%s %s\n", route.getRouteDescription().getDescription(), route.getEndpointsPcsString()));
     	    console.display(routeTiming.getDescription(Level.COMPLETE));
 		}
     }

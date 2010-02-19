@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttribu
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class SequenceNode extends Node {
 	private NodeAttributes m_attributes;
@@ -38,7 +36,7 @@ public class SequenceNode extends Node {
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public Node shallowCopy() {
+	public Node copyStructure() {
 		return new SequenceNode(this);
 	}
 
@@ -57,25 +55,17 @@ public class SequenceNode extends Node {
     public String getTypeName() {
         return "seq";
     }
-    
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
-    }    
-		
+    }
+
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		for (Node node : m_nodes) {
 			list.addAll(node.getInstructions());
 		}
 		return list;
-	}
-
-	public XtaInstruction getStartInstruction() {
-		return m_nodes.get(0).getStartInstruction();
-	}
-
-	public String getFunctionName() {
-		return "";
 	}
 
 	public long getStartPc() {
@@ -102,75 +92,6 @@ public class SequenceNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		return m_nodes;
-	}
-
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		assert (m_nodes.contains(nodeDescriptor.getNode()));
-		
-		int index = m_nodes.indexOf(nodeDescriptor.getNode());
-		if (index < m_nodes.size() - 1) {
-			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-			next.add(new NodeDescriptor(m_nodes.get(index + 1), nodeDescriptor.getAncestors()));
-			return next;
-			
-		}  else if (nodeDescriptor.getNode().isInfiniteLoopNode() || 
-				    nodeDescriptor.getNode().isInfiniteSelfLoopNode()) {
-			Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-			next.add(new NodeDescriptor(nodeDescriptor.getNode(), nodeDescriptor.getAncestors()));
-			return next;
-			
-		} else {		
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		    thisNodeDescriptor.getAncestors().pop();
-
-		    if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			    return thisNodeDescriptor.getAncestors().peek().whatsNext(thisNodeDescriptor);
-		    }
-		    return new TreeSet<NodeDescriptor>();
-		}
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(m_nodes.contains(nodeDescriptor.getNode()));
-		
-		int index = m_nodes.indexOf(nodeDescriptor.getNode());
-		if (index > 0) {
-			
-			Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-			before.add(new NodeDescriptor(m_nodes.get(index - 1), nodeDescriptor.getAncestors()));
-			return before;
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-		    thisNodeDescriptor.getAncestors().pop();
-
-		    if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-			    return thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor);
-		    }
-		    return new TreeSet<NodeDescriptor>();
-		}
-	}
-
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-	    list.add(new NodeDescriptor(m_nodes.get(0), ancestors));
-		ancestors.pop();
-		return list;
-	}			
-	
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		
-		ancestors.push(this);
-		set.addAll(m_nodes.get(m_nodes.size()-1).getEndInstructions(ancestors));
-		ancestors.pop();
-		
-		return set;
-	}
-	
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		List<TimeDistributionBuckets> tsbPath = new LinkedList<TimeDistributionBuckets>();
@@ -194,14 +115,65 @@ public class SequenceNode extends Node {
 	public void replaceChildren(List<Node> children) {
 		m_nodes.clear();
 		m_nodes.addAll(children);
-	}	
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
+	}
+
+	//below here the methods have been verified useful
+
+	public List<Node> iChildren() {
+		return m_nodes;
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		assert (m_nodes.contains(childNode));
+		int index = m_nodes.indexOf(childNode);
+		if (index < m_nodes.size() - 1) {
+			Set<Node> next = new TreeSet<Node>();
+			next.add(m_nodes.get(index + 1));
+			return next;
+		}  else if (childNode.isInfiniteLoopNode() ||
+				childNode.isInfiniteSelfLoopNode()) {
+			Set<Node> next = new TreeSet<Node>();
+			next.add(childNode);
+			return next;
+		} else {
+			assert(getParent() != null);
+			return getParent().structurGraphNext(this);
 		}
-		return false;
-	}	
+	}
+
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		for(Node node : m_nodes){
+			insts.addAll(node.getInstructionNodes());
+		}
+		return insts;
+	}
+
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		for(Node node : m_nodes){
+			addFunctionRefToRefSet(fnRef, node);
+		}
+		return fnRef;
+	}
+
+	public void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, stack, this);
+		}
+		for(Node node : m_nodes){
+			if(node == start) break;
+			node.buildListDown(nodeList);
+		}
+	}
+
+	public void buildListDown(List<Node> nodeList) {
+		for(Node node : m_nodes){
+			node.buildListDown(nodeList);
+		}
+
+	}
+
+
+
 }

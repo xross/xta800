@@ -4,11 +4,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class ForStatement extends CodeElement {
-	
+
 	public ForStatement(int id) {
 		super(1, "f", id);
 	}
-	
+
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
 		emitSourceIndent(file, depth);
 		file.write("for (int i" + m_id + " = 0; i" + m_id + " < temp; i" + m_id + "++) {\n");

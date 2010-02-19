@@ -21,8 +21,8 @@ public class Branches extends Command {
 
 	public ArgType[] getArgTypes() {
         return super.getArgTypes();
-	}    
-	
+	}
+
 	public String name() {
 		return "branches";
 	}
@@ -39,8 +39,8 @@ public class Branches extends Command {
 		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-				
-		return new Branches();            
+
+		return new Branches();
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
@@ -50,15 +50,15 @@ public class Branches extends Command {
 
 		listBranches(engine, console);
 	}
-	
+
 	private void listBranches(Engine engine, Console console) {
 		if (engine.getBranches().entrySet().size() == 0){
 			console.display("none\n");
 			return;
 		}
-		
+
 		Map<Reference, Set<BranchInfo>> branches = engine.getBranches();
-		
+
 		for (Reference fromRef : branches.keySet()) {
 			String to = getTo(branches, fromRef, false);
 			if (to.length() > 0) {

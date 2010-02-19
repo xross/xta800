@@ -9,17 +9,17 @@ import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Config;
 
-public class Disassembler {      
+public class Disassembler {
 	public static Vector<Instruction> disassemble(
-			MemoryImage memoryImage, long address, long size, XeLoader.Architecture architecture, Config config) {	
+			MemoryImage memoryImage, long address, long size, XeLoader.Architecture architecture, Config config) {
 
-		XtaInstructionDecoder instructionDecoder = 
+		XtaInstructionDecoder instructionDecoder =
 			XtaInstructionDecoder.createInstructionDecoder(architecture);
-        
+
         Vector<Instruction> disassemblyVector = new Vector<Instruction>();
-        
+
         int numBytesRead = 0;
-        while (numBytesRead < size) {        	
+        while (numBytesRead < size) {
         	long pc = address + numBytesRead;
         	int opcode = 0;
         	try {
@@ -27,28 +27,28 @@ public class Disassembler {
         	} catch (Exception e) {
         	    return null;
         	}
-        	XtaInstruction instruction = instructionDecoder.decode(opcode, pc);    
-            disassemblyVector.add(instruction);            
-        	int instNumBytes = instruction.getNumBytes();        	        	
+        	XtaInstruction instruction = instructionDecoder.decode(opcode, pc);
+            disassemblyVector.add(instruction);
+        	int instNumBytes = instruction.getNumBytes();
         	numBytesRead += instNumBytes;
         }
         return disassemblyVector;
 	}
-	
+
 	public static HashMap<Long, String> createBranchTargetMap(
 			SymbolTable symbolTable, Vector<Instruction> instructions) {
-		
-		HashMap<Long, String> branchTargetMap = new HashMap<Long, String>();		
+
+		HashMap<Long, String> branchTargetMap = new HashMap<Long, String>();
 		for (Instruction instruction : instructions) {
 		    if (instruction.getBranchPcRelative() && !symbolTable.functionExists(instruction.getPc())) {
 		    	long branchTargetPc = instruction.getBranchPcRelativeTargetPc();
-		    	
+
 		    	if (!branchTargetMap.containsKey(branchTargetPc)) {
 		    		String branchTargetName = ".bt" + branchTargetMap.size();
 		    		branchTargetMap.put(branchTargetPc, branchTargetName);
 		    	}
 		    }
-		}		
+		}
 		return branchTargetMap;
-	}	
+	}
 }

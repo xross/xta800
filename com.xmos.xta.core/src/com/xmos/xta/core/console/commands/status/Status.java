@@ -15,38 +15,38 @@ import com.xmos.xta.core.engine.references.Reference;
 public class Status extends Command {
 	public Status() {
 	}
-	
+
     public int numArgs() {
     	return 0;
-    }        
-	
+    }
+
     public String name() {
     	return "status";
-    }        
-	
+    }
+
     public String commandLine() {
     	return "status";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
-        return "status: Display current status";      	
+        return "status: Display current status";
     }
 
     public Command clone(String[] args, int index) {
         return new Status();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 
     	console.display(String.format("TimingFailAsError: %s\n",
     			engine.getConfig().m_timingFailuresAsErrors ? "true" : "false"));
     	console.display(String.format("WarnAsError: %s\n",
     			engine.getConfig().m_warnAsErrors ? "true" : "false"));
-    	
+
     	console.display(String.format("SrcPaths: %s\n", engine.getSrcPaths()));
     	console.display(String.format("Case: %s\n", engine.getCase().toString()));
     	console.display(String.format("Verbosity: %d\n", engine.getVerbosity()));
-    	
+
     	File executable = engine.getExecutable();
     	if (executable != null) {
     		console.display(String.format("Loaded executable: %s\n", executable.getName()));
@@ -55,7 +55,7 @@ public class Status extends Command {
     		return;
     	}
 
-    	console.display(String.format("Current node: %d\n", engine.getNodeNumber()));    	
+    	console.display(String.format("Current node: %d\n", engine.getNodeNumber()));
     	console.display(String.format("Current core: %d\n", engine.getCoreNumber()));
 
     	console.display(String.format("Frequency:"));
@@ -71,39 +71,39 @@ public class Status extends Command {
     		console.display(String.format("Node: %d, Core: %d, Threads: %d ",
     				nodeNumber, coreNumber, threads));
 
-    		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeNumber, coreNumber);    		    		
+    		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeNumber, coreNumber);
     		if (debugInfo.getDebugEngine().hasDebugInfo())
-    			console.display(String.format("(Debug information avaliable)\n"));    		
+    			console.display(String.format("(Debug information avaliable)\n"));
         	else
-        		console.display(String.format("(No debug information found)\n"));  		    		
+        		console.display(String.format("(No debug information found)\n"));
     	}
-    	    	
-    	if (engine.isBusy()) {    		
+
+    	if (engine.isBusy()) {
     		console.display("Currently busy...\n");
-    		
+
     	} else {
-    		List<Route> routes = engine.getRoutes();	    	
+    		List<Route> routes = engine.getRoutes();
 	    	if (engine.getRoutes().size() > 0) {
 	    		for (Route route : routes) {
-		    		console.display(String.format("Loaded Route(%d): %s %s\n", 
+		    		console.display(String.format("Loaded Route(%d): %s %s\n",
 		    				route.getRouteId(),
 		    				route.getRouteDescription().getDescription(),
-		    				route.getEndpointsPcsString()));	    			
+		    				route.getEndpointsPcsString()));
 	    		}
-	    		
+
 	    	} else {
-	    		console.display(String.format("No routes analysed\n"));    			    		
+	    		console.display(String.format("No routes analysed\n"));
 	    	}
     	}
-    	
+
     	Reference fromEndPoint = engine.getFromEndPoint();
     	if ((fromEndPoint != null) && (fromEndPoint.getResolved())) {
-    		console.display(String.format("From endpoint '%s'\n", fromEndPoint.getRef())); 
+    		console.display(String.format("From endpoint '%s'\n", fromEndPoint.getRef()));
     	}
 
     	Reference toEndPoint = engine.getToEndPoint();
     	if ((toEndPoint != null) && (toEndPoint.getResolved())) {
-    		console.display(String.format("To endpoint '%s'\n", toEndPoint.getRef())); 
+    		console.display(String.format("To endpoint '%s'\n", toEndPoint.getRef()));
     	}
-    }    
+    }
 }

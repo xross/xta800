@@ -13,44 +13,44 @@ public class SrcLevelCommands extends Section {
 
 	SrcLevelCommands(int nodeNumber, int coreNumber, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
-		m_commands = new ArrayList<SrcStringInfo>(); 
+		m_commands = new ArrayList<SrcStringInfo>();
 	}
-	
+
 	Collection<SrcStringInfo> get() {
 		return m_commands;
 	}
-	
+
 	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(".xtacommand", getNodeNumber(), getCoreNumber());
-				
+
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {
 	        	int base = byteIndex;
-	        	
+
 	        	int size = ByteArrayManipulation.readInt(data, byteIndex);
 	        	byteIndex += 4;
 
 	        	// Ignores the version field.
 	       		ByteArrayManipulation.readInt(data, byteIndex);
 	       		byteIndex += 4;
-	        		        		
+
 	       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
 	       		byteIndex += compilationDir.length() + 1;
-	       		
+
 	           	while (byteIndex < (base + size)) {
 	        		String commandString = ByteArrayManipulation.readString(data, byteIndex);
 	        		byteIndex += commandString.length() + 1;
-	        		
+
 	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
 	        		byteIndex += fileName.length() + 1;
-	        		
+
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
-	        				
+
 	        		SrcStringInfo command = new SrcStringInfo(commandString, compilationDir, fileName, lineNumber);
 	        		m_commands.add(command);
-	        	}			
+	        	}
 		    }
         } catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(

@@ -10,7 +10,7 @@ public class From extends Command {
 	}
 
     public int numArgs() {
-   		return 0; 
+   		return 0;
     }
 
     public String name() {
@@ -20,7 +20,7 @@ public class From extends Command {
     public String commandLine() {
     	return "from";
     }
-    
+
     public String description(Engine engine, boolean detailed) {
        	return "from: Removes the from endpoint";
     }
@@ -28,11 +28,11 @@ public class From extends Command {
     public Command clone(String[] args, int index) {
 	    return new From();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
         engine.removeFromEndPoint(getSrc());
-    }    
+    }
 }

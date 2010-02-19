@@ -10,7 +10,7 @@ public class LoopInfo implements DefineInfo {
 		m_reference = reference;
 		m_iterations = iterations;
 	}
-	
+
 	public Reference getReference() {
 		return m_reference;
 	}
@@ -22,16 +22,22 @@ public class LoopInfo implements DefineInfo {
 	public String toString() {
 		return String.format("%s: %d", m_reference.toString(), m_iterations);
 	}
-	
+
     public String getDescription() {
     	return m_reference.toString();
     }
 
     public String getValue() {
     	return String.format("%d", m_iterations);
-    }	
-    	
+    }
+
 	public boolean equals(Object o) {
-		return ((LoopInfo)o).m_reference.equals(m_reference);
-	}		
+		if(o!=null) {
+			if(o instanceof LoopInfo){
+				return ((LoopInfo)o).m_reference.equals(m_reference);
+			}
+		}
+		return false;
+		
+	}
 }

@@ -13,35 +13,35 @@ public class UnknownFactory {
     	INSTRUCTION_TIME,
     	PATH_TIME,
     	FUNCTION_TIME,
-    }	
-	
-    public static Unknown createUnknown(Node node, Type type, State state) {    	
-        return create(node, type, state, Source.USER, new Reference[]{});	
     }
-    
+
+    public static Unknown createUnknown(Node node, Type type, State state) {
+        return create(node, type, state, Source.USER, new Reference[]{});
+    }
+
     public static Unknown createKnown(Node node, Type type, State state, Source source, Reference[] references) {
         return create(node, type, state, source, references);
     }
-     
+
     private static Unknown create(Node node, Type type, State state, Source source, Reference[] references) {
     	switch (type) {
-    	case LOOP_ITERATIONS:      
+    	case LOOP_ITERATIONS:
     		return new LoopUnknown(node, type, state, source, references);
-    		
-    	case LOOP_PATH_ITERATIONS: 
+
+    	case LOOP_PATH_ITERATIONS:
     		return new LoopPathUnknown(node, type, state, source, references);
-    		
-    	case LOOP_SCOPE:           
-    		return new LoopScopeUnknown(node, type, state, source, references); 
-    		
+
+    	case LOOP_SCOPE:
+    		return new LoopScopeUnknown(node, type, state, source, references);
+
     	case INSTRUCTION_TIME:
-    		return new InstructionTimeUnknown(node, type, state, source, references); 
-    		
+    		return new InstructionTimeUnknown(node, type, state, source, references);
+
     	case PATH_TIME:
-    		return new PathTimeUnknown(node, type, state, source, references);  
-    		
+    		return new PathTimeUnknown(node, type, state, source, references);
+
     	case FUNCTION_TIME:
-    		return new FunctionTimeUnknown(node, type, state, source, references);    	
+    		return new FunctionTimeUnknown(node, type, state, source, references);
     	}
     	assert(false);
     	return null;

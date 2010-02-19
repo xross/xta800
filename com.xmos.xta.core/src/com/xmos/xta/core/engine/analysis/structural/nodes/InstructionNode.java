@@ -1,27 +1,23 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
-import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class InstructionNode extends Node {
-	private InstructionNodeAttributes m_attributes;	
+	private InstructionNodeAttributes m_attributes;
 	private XtaInstruction m_inst;
-	
+
 	public InstructionNode(XtaInstruction inst){
 		super();
 		m_inst = inst;
@@ -33,16 +29,9 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 		m_attributes = new InstructionNodeAttributes(this);
 	}
-	
-	
-	public Node shallowCopy() {
-		return new InstructionNode(this);
-	}
 
-	public Node deepCopy(Map<Long, FunctionNode> startPcs, Engine engine) {
-		InstructionNode in = new InstructionNode(this);
-		in.m_attributes = new InstructionNodeAttributes(in);
-		return in;
+	public Node copyStructure() {
+		return new InstructionNode(this);
 	}
 
 	public Node deepCopy(Aborter aborter) throws AbortedException {
@@ -50,15 +39,15 @@ public class InstructionNode extends Node {
 		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;
 	}
-	
+
 	public String toString() {
 		return String.format("%s (0x%x)", super.toString(), m_inst.getPc());
 	}
-	
-    public String getTypeName() {    	
+
+    public String getTypeName() {
         return "instruction";
     }
-	
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
@@ -69,22 +58,8 @@ public class InstructionNode extends Node {
 		return inst;
 	}
 
-	public XtaInstruction getStartInstruction() {
-		return m_inst;
-	}
-
-	public Set<Long> getPCs() {
-		Set<Long> pcs = new TreeSet<Long>();
-		pcs.add(m_inst.getPc());
-		return pcs;
-	}
-
 	public long getStartPc() {
 		return m_inst.getPc();
-	}
-
-	public boolean isFunction() {
-		return false;
 	}
 
 	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
@@ -95,47 +70,19 @@ public class InstructionNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		return new LinkedList<Node>();
-	}
-
 	public boolean isInstructionNode() {
 		return true;
 	}
 
 	public String getDescription() {
-		return String.format("0x%x: %s %s", 
+		return String.format("0x%x: %s %s",
 				m_inst.getPc(),
 				m_inst.getNmenonic(),
 				m_inst.getOperandString());
 	}
-	
+
 	public XtaInstruction getXtaInstruction() {
 		return m_inst;
-	}
-	
-	public long getError(Case c) {
-		return 0;
-	}
-
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		return null;
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		assert(false);
-		return null;
-	}
-
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		assert(false);
-		return null;
-	}
-
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();
-		set.add(new NodeDescriptor(this, ancestors));
-		return set;
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
@@ -147,16 +94,50 @@ public class InstructionNode extends Node {
 
 	public void replaceChildren(List<Node> children) {
 	}
-	
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (referenceTypes.peek().getPcs().contains(m_inst.getPc())) {
-			referenceTypes.pop();
-			if (referenceTypes.empty()) {
-				return true;
-			}
+
+	//below here the methods have been verified useful
+
+	public List<Node> iChildren() {
+		List<Node> children = new LinkedList<Node>();
+		return children;
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		//This cannot have any children as its a instruction node
+		assert(false);
+		return null;
+	}
+
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> inst = new TreeSet<InstructionNode>();
+		inst.add(this);
+		return inst;
+	}
+
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		return new TreeSet<FunctionReferenceNode>();
+	}
+
+	public void buildList(List<Node> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		assert(false);
+	}
+
+	public void buildListDown(List<Node> nodeList) {
+		nodeList.add(this);
+	}
+
+
+	public void buildListUp(List<Node> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		assert(start == null);
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, stack, this);
 		}
-		return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
+		nodeList.add(this);
+	}
+
+	public long getPC() {
+		return m_inst.getPc();
 	}
 }

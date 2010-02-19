@@ -13,7 +13,7 @@ public class NodeCoreCollection<E> {
 	public NodeCoreCollection() {
 		m_collectedObjects = new HashMap<String, E>();
 	}
-	
+
 	public NodeCoreCollection(NodeCoreCollection<E> old) {
 		m_collectedObjects = new HashMap<String, E>(old.m_collectedObjects);
 	}
@@ -41,7 +41,7 @@ public class NodeCoreCollection<E> {
 	private String nodeCoreToString(int nodeNumber, int coreNumber) {
 		return nodeNumber + ":" + coreNumber;
 	}
-	
+
 	private Pair<Integer, Integer> stringToNodeCore(String str) {
 		int nodeNumber = Integer.parseInt(str.split(":")[0]);
 		int coreNumber = Integer.parseInt(str.split(":")[1]);

@@ -18,16 +18,16 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	private Reference m_ref;
 	private Reference m_mapsTo;
 	private String m_mapsToLabel;
-	
+
 	public ScripterReference(Scripter scripter, Engine engine, Reference ref) {
 		m_isEnabled = true;
 		m_isModifiable = true;
 		m_ref = ref;
-		
+
 		if (ref.isPortable()) {
 			initialise(ref, ref.getRef(), false);
-			
-		} else { 
+
+		} else {
 			tryHighestLevelReference(scripter, engine, ref);
 			if (m_mapsTo == null) {
 				// Failed to find/create a valid reference to handle this
@@ -44,6 +44,10 @@ public class ScripterReference implements Comparable<ScripterReference> {
 		return m_ref.equals(o.m_ref);
 	}
 
+	public void setModifiable(boolean isModifiable) {
+		m_isModifiable = isModifiable;
+	}
+	
 	public boolean isModifiable() {
     	return m_isModifiable;
     }
@@ -73,20 +77,20 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	}
 
 	private void tryHighestLevelReference(Scripter scripter, Engine engine, Reference ref) {
-		
+
 		ReferenceType.Type type = ref.getBase().getType();
 		if (type == ReferenceType.Type.ENDPOINT) {
 			tryMatching(scripter, ref,
 					engine.getEndpoints(),
 					engine.getEndpointTable().values(),
 					ReferenceClass.ENDPOINT_REF);
-			
+
 		} else {
 			boolean matched = tryMatching(scripter, ref,
 					engine.getSrcLabels(),
 					engine.getSrcLabelTable().values(),
 					ReferenceClass.LABEL_REF);
-			
+
 			if (!matched) {
 				tryLabels(engine, scripter, ref);
 			}
@@ -97,7 +101,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 			Collection<? extends ScriptableInfo> infos,
 			Collection<? extends ScriptableInfo> tableInfos,
 			ReferenceClass refClass) {
-		
+
 		// Try the user-defined
 		Set<String> names = getNames(infos);
 		for (String name : names) {

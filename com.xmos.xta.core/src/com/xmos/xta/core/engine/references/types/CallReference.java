@@ -15,10 +15,10 @@ public class CallReference extends ReferenceType {
 		if (checkTypeString(reference, Type.CALL, 1) &&
 			isValid(engine.getCalls(), getLabel(reference))) {
 			return new CallReference(reference);
-		}	
+		}
 		return null;
 	}
-	
+
 	public boolean resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
@@ -27,13 +27,13 @@ public class CallReference extends ReferenceType {
 		for (CodePointInfo info : engine.getCalls()) {
 			if (labelsMatch(info.getLabel(), label)) {
 				addPc(info.getPc(), info.getLabel());
-			
+
 				Map<Long, CodePointTableInfo> callTable = engine.getCallTable();
 				if (!callTable.containsKey(info.getPc()))
 					return false;
-				
+
 				if (!found) {
-				    CodePointTableInfo call = callTable.get(info.getPc());			
+				    CodePointTableInfo call = callTable.get(info.getPc());
 					setFileName(call.getFileName());
 		        	setLineNum(call.getLineNumber());
 				}
@@ -51,12 +51,12 @@ public class CallReference extends ReferenceType {
 	public String name() {
 		return "Call";
 	}
-	
+
 	public String description() {
 		return "Call specified using the source level pragma mechanism";
 	}
-	
+
 	public boolean isPortable() {
 		return true;
-	}	
+	}
 }

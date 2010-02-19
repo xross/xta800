@@ -4,11 +4,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class EndPointStatement extends CodeElement{
-	
+
 	public EndPointStatement(int id) {
 		super(0, "p", id);
 	}
-	
+
 	public void emitSource(BufferedWriter file, int depth) throws IOException  {
 		emitSourceIndent(file, depth);
 		file.write("#pragma xta endpoint \"endpoint" + m_id + "\"\n");

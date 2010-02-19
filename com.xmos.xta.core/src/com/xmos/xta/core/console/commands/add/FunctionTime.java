@@ -19,30 +19,30 @@ public class FunctionTime extends Command {
 		m_value = value;
 		m_mode = mode;
 	}
-	
+
 
 	public int numArgs() {
-   		return 3; 
-    }        
-	
+   		return 3;
+    }
+
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.FUNCTION};
-	}    
-    
+	}
+
     public String name() {
-		return "functiontime"; 
-    }        
+		return "functiontime";
+    }
 
     public String commandLine() {
        	return "functiontime " + m_functionName + " " + m_value + " " + m_mode;
     }
-    
+
     public String description(Engine engine, boolean detailed) {
     	String descString = "functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines";
-       	if (detailed) {    	    	
+       	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}
-    	return descString;   		    	            
+    	return descString;
     }
 
     public Command clone(String[] args, int index) {
@@ -56,7 +56,7 @@ public class FunctionTime extends Command {
 	    }
 	    return null;
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;

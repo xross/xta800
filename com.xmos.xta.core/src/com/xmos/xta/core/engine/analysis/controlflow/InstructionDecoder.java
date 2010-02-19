@@ -21,10 +21,10 @@ public class InstructionDecoder {
 	private int m_coreNumber;
 	private long m_endPc;
 	private Map<Long, InstructionNode> m_decodedInstructions;
-	private List<InstructionNode> m_orderedInstructions;	
+	private List<InstructionNode> m_orderedInstructions;
 	private XeLoader m_xeLoader;
 	private DataCollection m_dataCollection;
-	
+
 	public InstructionDecoder(int nodeNumber, int coreNumber, XeLoader xeLoader, Config config, DataCollection dataCollection) {
 		m_nodeNumber = nodeNumber;
 		m_coreNumber = coreNumber;
@@ -34,15 +34,15 @@ public class InstructionDecoder {
 		m_orderedInstructions = new LinkedList<InstructionNode>();
 		m_dataCollection = dataCollection;
 	}
-	
-	public void decode() throws Exception {		
+
+	public void decode() throws Exception {
 		MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeNumber, m_coreNumber);
 		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeNumber, m_coreNumber);
 		XtaInstructionDecoder instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(m_xeLoader.getArchitecture());
 		if (instructionDecoder == null) {
-			throw new Exception("Architecture not supported");		
+			throw new Exception("Architecture not supported");
 		}
-		
+
 		for (ElfSection section: m_xeLoader.getSymbolTable(m_nodeNumber, m_coreNumber).getElfHandler().getSections()) {
 			if (section.isExecutable()){
 				long sectionAddress = XtaInstruction.makeLongPc(section.getAddress());
@@ -54,14 +54,14 @@ public class InstructionDecoder {
 		            } catch (Exception e) {
 		            	throw new Exception("Invalid address detected");
 		            }
-		            
+
 		            XtaInstruction inst = instructionDecoder.decode(opcode, pc);
-		            
+
 		            m_dataCollection.checkInstruction(inst);
-		            
-		            inst.setFunctionName(symbolTable.functionName(pc)); 
+
+		            inst.setFunctionName(symbolTable.functionName(pc));
 		            inst.setFunctionOffset(symbolTable.functionOffset(pc));
-		            
+
 		            InstructionNode instNode = new InstructionNode(inst);
 		            Node prev = m_decodedInstructions.put(pc, instNode);
 		            m_orderedInstructions.add(instNode);
@@ -75,15 +75,15 @@ public class InstructionDecoder {
 			}
 		}
 	}
-	
+
 	public List<InstructionNode> getInstructions(){
 		return m_orderedInstructions;
 	}
-	
+
 	public InstructionNode getNode(long pc){
 		return m_decodedInstructions.get(pc);
 	}
-	
+
 	public long getEndPc() {
 		return m_endPc;
 	}

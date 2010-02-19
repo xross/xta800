@@ -21,27 +21,27 @@ public class InstructionTime extends Command {
 	}
 
     public int numArgs() {
-   		return 3; 
+   		return 3;
     }
 
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.ENDPOINT};
-	}    
-    
+	}
+
     public String name() {
-		return "instructiontime"; 
-    }        
+		return "instructiontime";
+    }
 
     public String commandLine() {
        	return "instructiontime " + m_refString + " " + m_value + " " + m_mode;
     }
-    
+
     public String description(Engine engine, boolean detailed) {
     	String descString = "instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines";
-       	if (detailed) {    	    	
+       	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}
-    	return descString;   		    	                
+    	return descString;
     }
 
     public Command clone(String[] args, int index) {
@@ -55,7 +55,7 @@ public class InstructionTime extends Command {
 	    }
 	    return null;
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console)) {
 			return;

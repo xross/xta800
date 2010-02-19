@@ -18,11 +18,11 @@ public class EndpointReference extends ReferenceType {
 		}
 		return null;
 	}
-	
+
 	public boolean resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
-		
+
 		boolean found = false;
 		for (CodePointInfo info : engine.getEndpoints()) {
 	    	if (labelsMatch(info.getLabel(), label)) {
@@ -34,11 +34,11 @@ public class EndpointReference extends ReferenceType {
 					return false;
 
 				if (!found) {
-				    CodePointTableInfo endpoint = endpointTable.get(pc);			
+				    CodePointTableInfo endpoint = endpointTable.get(pc);
 					setFileName(endpoint.getFileName());
 		        	setLineNum(endpoint.getLineNumber());
 				}
-				
+
 				found = true;
 			}
 		}
@@ -52,12 +52,12 @@ public class EndpointReference extends ReferenceType {
 	public String name() {
 		return "Endpoint";
 	}
-	
+
 	public String description() {
 		return "Endpoint specified using the source level pragma mechanism";
-	}	
-	
+	}
+
 	public boolean isPortable() {
 		return true;
-	}	
+	}
 }

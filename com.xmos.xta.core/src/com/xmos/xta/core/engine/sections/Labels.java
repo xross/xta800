@@ -15,24 +15,24 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
-public class Labels extends Section  {	
+public class Labels extends Section  {
 	private TreeMap<String, Set<Long>> m_labels;
-	
+
 	Labels(int nodeNumber, int coreNumber, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
-		m_labels = new TreeMap<String, Set<Long>>(); 
+		m_labels = new TreeMap<String, Set<Long>>();
 	}
-	
+
 	boolean add(CommandSource src, String label, long pc) {
 		Set<Long> pcs = m_labels.get(label);
-		if (pcs == null) {									
+		if (pcs == null) {
 			pcs = new TreeSet<Long>();
 			m_labels.put(label, pcs);
 		}
 		pcs.add(pc);
 		return true;
 	}
-	
+
 	boolean remove(CommandSource src, String label) {
 		List<String> matches = new ArrayList<String>();
 		for (String mapEntry : m_labels.keySet()) {
@@ -48,28 +48,28 @@ public class Labels extends Section  {
 			for (String toRemove : matches) {
 				m_labels.remove(toRemove);
 			}
-			return true;			
+			return true;
 		} else {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"unable to remove label: %s", label));
 			return false;
-		}		
+		}
 	}
-	
+
 	Map<String, Set<Long>> get() {
 		return m_labels;
 	}
-	
+
 	boolean load(CommandSource src, XeLoader xeLoader) {
         SymbolTable symbolTable = xeLoader.getSymbolTable(getNodeNumber(), getCoreNumber());
         ElfHandler elfHandler = symbolTable.getElfHandler();
-        
+
         for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {
         	if (!symbol.isSpecialSection()) {
-            	int sectionIndex = symbol.getShndx();        	
-            	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {        		
+            	int sectionIndex = symbol.getShndx();
+            	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {
             		if (symbol.getName().charAt(0) != '.') {
-            			add(src, symbol.getName(), (long)symbol.getValue());
+            			add(src, symbol.getName(), symbol.getValue());
             		}
             	}
         	}
