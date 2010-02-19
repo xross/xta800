@@ -1,7 +1,7 @@
-Route\(0\) function: a,f
+Route\(\d+\) function: a,f
     No Timing Specified
 
-Route\(1\) function: b,f
+Route\(\d+\) function: b,f
     No Timing Specified
 
 Fail, Timing Unspecified

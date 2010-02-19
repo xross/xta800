@@ -148,6 +148,7 @@ void mii_rx_pins(chanend c_mii_rx)
                         break;
                     }
 
+                    #pragma xta endpoint "end_frame"
                     outuint(c_mii_rx, END_FRAME);
                     outuint(c_mii_rx, length);
 

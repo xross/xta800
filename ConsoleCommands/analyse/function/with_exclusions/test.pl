@@ -12,11 +12,10 @@ system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/wi
 }
 system("@ARGV load $genDir/test.xe " .
        "-analyse function f " .
-       "-print structure 0 " .
+       "-print structure - " .
        "-add exclusion g,f,then " .
        "-add exclusion h,f,else " .
        "-analyse function f " .
-       "-print structure 1 " .
-       "-print structure 2 " .
+       "-print structure - " .
        "-exit > $genDir/with_exclusions.txt 2>&1");
 

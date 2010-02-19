@@ -1,6 +1,9 @@
-function\(\d+\)\s+: n/a / n/a \?\?\?
-.    block\(\d+\)\s+: n/a \(x 1\) / n/a \(x 1\) 
-.    function\(\d+\)\s+: n/a / n/a main
-.    .    block\(\d+\)\s+: n/a \(x 1\) / n/a \(x 1\) 
-.    block\(\d+\)\s+: n/a \(x 1\) / n/a \(x 1\) 
+function\(\d+\)   : n/a / n/a \?\?\?
+.    block\(\d+\)       : n/a \(x 1\) / n/a \(x 1\) 
+.    function\(\d+\)   : n/a / n/a main
+.    .    block\(\d+\)      : n/a \(x 1\) / n/a \(x 1\) 
+.    block\(\d+\)       : n/a \(x 1\) / n/a \(x 1\) 
+
+function\(\d+\)   : n/a / n/a main
+.    block\(\d+\)      : n/a \(x 1\) / n/a \(x 1\) 
 
