@@ -1260,7 +1260,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public Map<Reference, List<Reference>> getUserBranches() {
-		Map<Reference, List<Reference>> branches = new HashMap<Reference, List<Reference>>();
+		Map<Reference, List<Reference>> branches = new TreeMap<Reference, List<Reference>>();
 		Map<Reference, Set<BranchInfo>> currentBranches = getBranches();
 
 		for (Reference from : currentBranches.keySet()) {
