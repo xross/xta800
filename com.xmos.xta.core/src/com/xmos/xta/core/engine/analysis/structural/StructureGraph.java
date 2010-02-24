@@ -67,6 +67,7 @@ public class StructureGraph {
 
 		for(FunctionNode uncalledFunction : uncalledFunctions){
 			FunctionReferenceNode frn = new FunctionReferenceNode();
+			assert(uncalledFunction.getFunctionName() != null);
 			frn.setFunction(uncalledFunction.getFunctionName(), uncalledFunction);
 			m_uncalledFunctionReference.put(uncalledFunction, frn);
 		}

@@ -23,43 +23,17 @@ import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 public class ReferenceMatcher {
 
-
-	private static final boolean debug = false;
-
 	public List<StackNode> getStackNode(Engine engine, Reference reference) {
 
 
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
 		StructureGraph sg = engine.getStructureGraph();
-		if (debug) System.out.println("\nFinding stack nodes for " + reference.toString());
 
 		for(long pc : reference.getPcs()){
-			if (debug) System.out.println("checking pc 0x" + Long.toHexString(pc));
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
 
 			matchLabel(reference, pc, refList);
 
-			if (debug) {
-				System.out.println("references were:");
-				for(ReferenceType ref : reference.getBackTrail()){
-					System.out.print("\t " + ref.getRef() + " ");
-					for(long refPc : ref.getPcs()){
-						System.out.print("0x" + Long.toHexString(refPc) + " ");
-					}
-					System.out.println("Type: " + ref.getType());
-					System.out.println();
-				}
-
-				System.out.println("references the match are:");
-				for(ReferenceType ref : refList){
-					System.out.print("\t " + ref.getRef() + " ");
-					for(long refPc : ref.getPcs()){
-						System.out.print("0x" + Long.toHexString(refPc) + " ");
-					}
-					System.out.println("Type: " + ref.getType());
-					System.out.println();
-				}
-			}
 			Collections.reverse(refList);
 
 			InstructionNode inst = engine.getInstructionDecoder().getNode(pc);
@@ -73,12 +47,6 @@ public class ReferenceMatcher {
 				List<Node> nodeList = new LinkedList<Node>();
 				for(Stack<FunctionReferenceNode> stack : callStacks){
 					block.buildListUp(nodeList, stack, inst);
-					if(debug){
-						System.out.println("nodeList: ");
-						for (Node n : nodeList){
-							System.out.println("\t" + n);
-						}
-					}
 					if(validateList(nodeList, refList)){
 						stacks.add(stack);
 					}
@@ -89,80 +57,49 @@ public class ReferenceMatcher {
 				}
 			}
 		}
-		if(debug){
-			for(StackNode sn : stackNodes){
-				System.out.println(sn.getInstruction());
-				for(Stack<FunctionReferenceNode> stack : sn.getNodeStacks()){
-					System.out.println("\t" + stack);
-				}
-			}
-
-		}
 
 		return stackNodes;
 	}
 
 	public Set<Node> getNodesMatchingReference(Node node, final Reference reference) {
-		if (debug) System.out.println("##########################");
 		Set<Node> matches = new TreeSet<Node>();
-		if (debug) System.out.println("Finding nodes for " + reference);
-		if (debug) System.out.println("Starting from node: " + node);
-		assert(reference.getPcs().size() == 1);
-		long pc = reference.getPcs().iterator().next();
-		final Set<Node> insts = new TreeSet<Node>();
-		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-	    		if(node instanceof InstructionNode){
-	    			InstructionNode inst = (InstructionNode)node;
-	    			if(!inst.getXtaInstruction().isFnop() && reference.getPcs().contains(inst.getPC())){
-	    				insts.add(inst);
-	    			}
-	    		}
-	        	return TraverseStatus.CONTINUE;
-	    	}
-	    });
-		for(Node inst : insts){
-			Stack<FunctionReferenceNode> stack = new Stack<FunctionReferenceNode>();
-			Node current = inst;
-			while(current.getParent() != null){
-				if(current instanceof FunctionReferenceNode){
-					stack.push(((FunctionReferenceNode)current).getAlias());
-				}
-				current = current.getParent();
-			}
-			if(debug) System.out.println("The stack is: " +stack + " for " + inst);
-
-			List<Node> nodeList = new LinkedList<Node>();
-
-			inst.buildListUp(nodeList, stack, null);
-
-			if(debug){
-				System.out.println("made the list");
-				for(Node listNode : nodeList){
-					System.out.println("\t\t" + listNode);
-				}
-			}
-
-			List<ReferenceType> refList = new LinkedList<ReferenceType>();
-
-			matchLabel(reference, pc, refList);
-
-			if (debug) {
-				System.out.println("reference list is:");
-				for(ReferenceType ref : refList){
-					System.out.print("\t " + ref.getRef() + " " + ref.getType() + " ");
-					for(long refPc : ref.getPcs()){
-						System.out.print("0x" + Long.toHexString(refPc) + " ");
+		assert(reference.getBase().getType() != Type.EVERYTHING);
+		for(long pc : reference.getPcs()){
+			final Set<Node> insts = new TreeSet<Node>();
+			node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+		    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+		    		if(node instanceof InstructionNode){
+		    			InstructionNode inst = (InstructionNode)node;
+		    			if(!inst.getXtaInstruction().isFnop() && reference.getPcs().contains(inst.getPC())){
+		    				insts.add(inst);
+		    			}
+		    		}
+		        	return TraverseStatus.CONTINUE;
+		    	}
+		    });
+			for(Node inst : insts){
+				Stack<FunctionReferenceNode> stack = new Stack<FunctionReferenceNode>();
+				Node current = inst;
+				while(current.getParent() != null){
+					if(current instanceof FunctionReferenceNode){
+						stack.push(((FunctionReferenceNode)current).getAlias());
 					}
-					System.out.println();
+					current = current.getParent();
 				}
-			}
-
-			if(validateList(nodeList, refList)){
-				matches.add(inst);
+				List<Node> nodeList = new LinkedList<Node>();
+	
+				inst.buildListUp(nodeList, stack, null);
+	
+				List<ReferenceType> refList = new LinkedList<ReferenceType>();
+	
+				matchLabel(reference, pc, refList);
+	
+				if(validateList(nodeList, refList)){
+					matches.add(inst);
+				}
 			}
 		}
-		if (debug) System.out.println("##########################");
+		
 		return matches;
 	}
 
@@ -286,7 +223,7 @@ public class ReferenceMatcher {
 	}
 
 	private int getIndexOfInst(List<Node> nodeList, long pc) {
-		for(int i=nodeList.size()-1; i > 0;i--){
+		for(int i=nodeList.size()-2; i > 0;i--){
 			if(nodeList.get(i) instanceof InstructionNode){
 				InstructionNode inst = (InstructionNode)nodeList.get(i);
 				if(inst.getPC() == pc){

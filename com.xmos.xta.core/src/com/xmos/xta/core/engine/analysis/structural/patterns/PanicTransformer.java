@@ -24,7 +24,6 @@ public class PanicTransformer extends PatternMatcher {
 				return true;
 			}
 		}
-
 		boolean found = false;
 		for(Node next : node.getNextNodes()){
 			if(!seen.contains(next)){

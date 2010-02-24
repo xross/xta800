@@ -683,13 +683,14 @@ public class Scripter {
 			String fileName = scripterReference.getReference().getFileName();
 			if (!fileName.equals("")) {
 				SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
-				
-				List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
-				if (lineNumbers == null) {
-					lineNumbers = new LinkedList<Long>();
-					fileLineNumbers.put(sourceFile, lineNumbers);
+				if(sourceFile != null){
+					List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
+					if (lineNumbers == null) {
+						lineNumbers = new LinkedList<Long>();
+						fileLineNumbers.put(sourceFile, lineNumbers);
+					}
+					lineNumbers.add(scripterReference.getReference().getLineNum());
 				}
-				lineNumbers.add(scripterReference.getReference().getLineNum());
 			}
 		}
 		return fileLineNumbers;

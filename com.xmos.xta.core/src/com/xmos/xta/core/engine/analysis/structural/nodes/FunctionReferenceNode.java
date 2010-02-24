@@ -40,13 +40,14 @@ public class FunctionReferenceNode extends Node {
 
 	public FunctionReferenceNode(InstructionNode source, InstructionNode target) {
 		m_isRecursive = false;
-		m_functionName = null;
 		m_functionNode = null;
 		m_functionCallPc = source.getXtaInstruction().getPc();
 		if(target == null){
+			m_functionName = "(Call to unknown function)";
 			m_isKnownFunctionTarget = false;
 			m_functionStartPc = 0x0;
 		} else {
+			m_functionName = "(unlinked to known function)";
 			m_isKnownFunctionTarget = true;
 			m_functionStartPc = target.getXtaInstruction().getPc();
 		}
@@ -70,6 +71,10 @@ public class FunctionReferenceNode extends Node {
 		refStr.append(String.format("CALL:0x%x,", m_functionCallPc));
 	}
 
+	public long getFunctionCallPc(){
+		return m_functionCallPc;
+	}
+	
 	public void reset(){
 		m_recursiveFunction = null;
 		m_unknownFunction = null;
@@ -173,8 +178,12 @@ public class FunctionReferenceNode extends Node {
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
-		assert(false);
-		return null;
+		if(getFunctionNode() != null){
+			return m_functionNode.getTimeSpread();
+		} else {
+			return new TimeDistributionBuckets();
+		}
+		
 	}
 
 	public String getTypeName() {
@@ -215,6 +224,7 @@ public class FunctionReferenceNode extends Node {
 	 */
 	public boolean verifyLinkProcess() {
 		if(m_isKnownFunctionTarget){
+			assert(m_functionName != null);
 			return (getFunctionNode() != null);
 		} else {
 			return (getFunctionNode() == m_unknownFunction);

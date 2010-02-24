@@ -80,7 +80,6 @@ public class Engine implements Notifier, Aborter {
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
-	private int m_numRoutesLastAnalysed;
 	private Collection<Reference> m_exclusions;
 	private Route m_selectedRoute;
 	private Config m_config;
@@ -122,7 +121,6 @@ public class Engine implements Notifier, Aborter {
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_routeContainers = new LinkedList<RouteContainer>();
-		m_numRoutesLastAnalysed = 0;
 		m_exclusions = new ArrayList<Reference>();
 		m_config = config;
 		m_executableFile = null;
@@ -241,16 +239,22 @@ public class Engine implements Notifier, Aborter {
 
 	public Collection<Route> getRoute(int routeId) {
 		Collection<Route> routes = new ArrayList<Route>();
-
+		assert(validateRouteCount());
+		// TODO
 		if(m_routes.isEmpty()){
 			return routes;
 		}
 
 		if (routeId == ROUTE_ID_LAST) {
-
-			assert(m_routes.size() >= m_numRoutesLastAnalysed);
+			if(m_routes.size()< getNumLastRoutesAnalysed()){
+				System.out.println(getNumLastRoutesAnalysed());
+				System.out.println(m_routes.size());
+			}
+			
+			
+			assert(validateRouteCount());
 			int toIndex = m_routes.size();
-			int fromIndex = toIndex - m_numRoutesLastAnalysed;
+			int fromIndex = toIndex - getNumLastRoutesAnalysed();
 			routes.addAll(m_routes.subList(fromIndex, toIndex));
 
 		} else if (routeId == ROUTE_ID_ALL) {
@@ -267,6 +271,13 @@ public class Engine implements Notifier, Aborter {
 		    }
 		}
 		return routes;
+	}
+
+	private boolean validateRouteCount(){
+		
+		int s = m_routes.size();
+		int t = getNumLastRoutesAnalysed();
+		return m_routes.size() >= getNumLastRoutesAnalysed();
 	}
 
 	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {
@@ -322,7 +333,6 @@ public class Engine implements Notifier, Aborter {
 		setCoreNumber(src, 0, false);
 		m_routes.clear();
 		m_routeContainers.clear();
-		m_numRoutesLastAnalysed = 0;
 		m_selectedRoute = null;
 		m_defines.clear();
 		Route.resetRouteCount();
@@ -606,22 +616,28 @@ public class Engine implements Notifier, Aborter {
 
 	public boolean removeRoute(CommandSource src, int routeId) {
 		Collection<Route> routes = getRoute(routeId);
+		assert(validateRouteCount());
 		if (routes.size() == 0)
 			return false;
-
+		assert(validateRouteCount());
 		for (Route route : routes) {
 			route.getRouteContainer().remove(route);
 		}
-
 		m_routes.removeAll(routes);
+		assert(validateRouteCount());
 		if (m_routes.size() == 0) {
 			Route.resetRouteCount();
+			assert(validateRouteCount());
 			setSelectedRoute(src, null);
+			assert(validateRouteCount());
 
 		} else if (m_selectedRoute.getRouteId() == routeId) {
 			this.setSelectedRoute(src, m_routes.get(m_routes.size() - 1));
+			assert(validateRouteCount());
 		}
+		assert(validateRouteCount());
 		notify(src, Notifier.NOTIFY_REMOVE_ROUTE, "");
+		assert(validateRouteCount());
 		return true;
 	}
 
@@ -778,7 +794,7 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.addInstructionTime(m_nodeNumber, m_coreNumber, reference, timeUnit);
 			}
-		});
+		}, ReferenceClass.ANY_REF);
 	}
 
 	public void addLoop(CommandSource src, String refString, final long iterations) {
@@ -786,7 +802,7 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoop(m_nodeNumber, m_coreNumber, reference, iterations);
 			}
-		});
+		}, ReferenceClass.ANY_REF);
 	}
 
 	public void addLoopPath(CommandSource src, String refString, final long iterations) {
@@ -794,7 +810,7 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopPath(m_nodeNumber, m_coreNumber, reference, iterations);
 			}
-		});
+		}, ReferenceClass.ANY_REF);
 	}
 
 	public void addLoopScope(CommandSource src, String refString, final boolean absolute) {
@@ -802,11 +818,11 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopScope(m_nodeNumber, m_coreNumber, reference, absolute);
 			}
-		});
+		}, ReferenceClass.ANY_REF);
 	}
 
 	public void removeFunctionTime(CommandSource src, String functionName) {
-		Reference functionRef = ReferenceFactory.createReference(functionName, ReferenceClass.FUNCTION_REF);
+		Reference functionRef = ReferenceFactory.createReference(functionName, ReferenceClass.FUNCTION_REF_WITH_EVERYTHING);
 		if (!resolveOrError(src, functionRef)) {
 			return;
 		}
@@ -815,11 +831,11 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void removePathTime(CommandSource src, String from, String to) {
-		Reference fromRef = ReferenceFactory.createReference(from, ReferenceClass.ENDPOINT_REF);
+		Reference fromRef = ReferenceFactory.createReference(from, ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING);
 		if (!resolveOrError(src, fromRef)) {
 			return;
 		}
-		Reference toRef = ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF);
+		Reference toRef = ReferenceFactory.createReference(to, ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING);
 		if (!resolveOrError(src, toRef)) {
 			return;
 		}
@@ -833,7 +849,7 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.removeInstructionTime(m_nodeNumber, m_coreNumber, reference);
 			}
-		});
+		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
 	}
 
 	public void removeLoop(CommandSource src, String refString) {
@@ -841,7 +857,7 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoop(m_nodeNumber, m_coreNumber, reference);
 			}
-		});
+		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
 	}
 
 	public void removeLoopPath(CommandSource src, String refString) {
@@ -849,7 +865,7 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoopPath(m_nodeNumber, m_coreNumber, reference);
 			}
-		});
+		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
 	}
 
 	public void removeLoopScope(CommandSource src, String refString) {
@@ -857,7 +873,7 @@ public class Engine implements Notifier, Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoopScope(m_nodeNumber, m_coreNumber, reference);
 			}
-		});
+		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
 	}
 
 	public Collection<FunctionTimeInfo> getFunctionTimeDefines() {
@@ -1180,7 +1196,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public boolean removeExclusion(CommandSource src, String refString) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
+		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF_WITH_EVERYTHING);
 		if (!resolveOrError(src, reference)) {
 			return false;
 		}
@@ -1242,7 +1258,16 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
-	public boolean removeBranch(CommandSource src, Reference fromRef, Collection<Reference> toRefs) {
+	public boolean removeBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
+		
+		Reference fromRef = ReferenceFactory.createReference(fromRefString, ReferenceClass.LABEL_REF_WITH_EVERYTHING);
+
+		Collection<Reference> toRefs = new ArrayList<Reference>();
+		for (String toRefString : toRefStrings) {
+			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF_WITH_EVERYTHING);
+			toRefs.add(ref);
+		}
+		
 		if (!resolveOrError(src, fromRef))
 			return false;
 
@@ -1544,10 +1569,8 @@ public class Engine implements Notifier, Aborter {
 
 		} else {
 			int currentSize = m_routes.size();
-			m_numRoutesLastAnalysed = 0;
 			for (Route route : routeConstructor.getRoutes()) {
 				m_routes.add(route);
-				++m_numRoutesLastAnalysed;
 			}
 			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {
 				routeContainer.add(routeConstructor.getRoutes());
@@ -1676,8 +1699,8 @@ public class Engine implements Notifier, Aborter {
         sourceMapper.setFile(src, notifier, debugEngine, sf, file);
     }
 
-	private void updateDefines(CommandSource src, String refString, DefinesUpdate update) {
-		Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF);
+	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass ref) {
+		Reference reference = ReferenceFactory.createReference(refString, ref);
 		if (resolveOrError(src, reference)) {
 			update.run(reference);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
@@ -1763,6 +1786,10 @@ public class Engine implements Notifier, Aborter {
 			return false;
 		}
 		return true;
+	}
+	private int getNumLastRoutesAnalysed() {
+		if(m_routeContainers.isEmpty()) return 0;
+		return m_routeContainers.get(m_routeContainers.size() -1).numExistingRoutes();
 	}
 }
 
