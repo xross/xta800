@@ -13,12 +13,8 @@ int g() {
     timer t;
 
     #pragma xta endpoint "start"
-    #pragma xta endpoint "start"
-    #pragma xta endpoint "start"
     t :> time;
     f();
-    #pragma xta endpoint "stop"
-    #pragma xta endpoint "stop"
     #pragma xta endpoint "stop"
     t when timerafter(time + 300) :> time;
 }
