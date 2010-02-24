@@ -14,6 +14,7 @@ public class CommonMethods {
 	}
 
 	public static void connect(Node leaf, Node root){
+		
 		root.addNextNode(leaf);
 		leaf.addPrevNode(root);
 	}

@@ -55,6 +55,4 @@ public class TerminatorAdder {
 			following.remove(current);
 		}
 	}
-
-
 }

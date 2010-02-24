@@ -327,6 +327,7 @@ public class RouteConstructor {
 	private Node convertGraphToStructure(Set<Node> workingSet, NodeDescriptor startNodeDescriptor,
 			Map<NodeDescriptor, Node> nodeToWorkingSet) throws AbortedException {
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
+		if(debug_route) System.out.println("raw graph " + startNodeDescriptor.getNode());
 		dumpGraph(workingSet);
 		Node startNode = makeBasicBlocks(workingSet, startNodeDescriptor, nodeToWorkingSet);
 		
@@ -338,6 +339,7 @@ public class RouteConstructor {
 		sae.createStructure(workingSet, startNode, m_engine, "Converting CFG to structure");
 		
 		dumpGraph(workingSet);
+		
 		assert(workingSet.size() == 1);
 		Node structuralNode = workingSet.iterator().next();
 		sae.normaliseGraph(structuralNode);
@@ -372,7 +374,7 @@ public class RouteConstructor {
 			List<InstructionNode> insts = new LinkedList<InstructionNode>();
 			insts.add((InstructionNode)current);
 			seenNodes.add(current);
-			while(nextIsInSameBlock(current, workingSet) ){
+			while(nextIsInSameBlock(current, workingSet, seenNodes) ){
 				Node next = getNextNodes(current, workingSet).iterator().next();
 				insts.add((InstructionNode)next);
 				current = next;
@@ -457,11 +459,16 @@ public class RouteConstructor {
 		}
 	}
 
-	private boolean nextIsInSameBlock(Node current, Set<Node> workingSet) {
+	private boolean nextIsInSameBlock(Node current, Set<Node> workingSet, Set<Node> seenNodes) {
 		if(getNextNodes(current, workingSet).size() != 1){
 			return false;
 		}
 		Node next = getNextNodes(current, workingSet).iterator().next();
+		
+		if(seenNodes.contains(next)){
+			return false;
+		}
+		
 		if(!(next instanceof InstructionNode || next instanceof NullNode)){
 			return false;
 		}
@@ -631,13 +638,13 @@ public class RouteConstructor {
 								findReachableGraph(currentNode, newStack, inst, workingSet,
 										exclusionStackNodes, currentExclusionsFound, aborter, routeMode,
 										endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false);
-
-								//TODO - i think this might be ok
 								continue;
 							}
 						} else {
 							FunctionNode fn = makeFunction(newStack, frn, exclusionStackNodes, aborter, endStackNodes, false);
 							if(fn != null){
+								
+								
 								((FunctionReferenceNode)next).setFunction(frn.getFunctionName(), fn);
 							} else {
 								currentExclusionsFound.add(currentNode);

@@ -31,6 +31,7 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalPatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.LoopPatternMatcher;
+import com.xmos.xta.core.engine.analysis.structural.patterns.NullRemover;
 import com.xmos.xta.core.engine.analysis.structural.patterns.PanicTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SelfLoopPattern;
@@ -65,9 +66,6 @@ public class StructuralAnalysisEngine {
 
 	public boolean createStructure(Collection<Node> workingSet, Node treeStart,
 			Engine engine, String jobPrefix) throws AbortedException {
-
-		
-		
 		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) {
 			return true;
 		}
@@ -221,6 +219,9 @@ public class StructuralAnalysisEngine {
 			Set<InstructionNode> instructionWithinCurrentFunction = new TreeSet<InstructionNode>();
 			findAllNodesInCurrentFunction(graphStart, currentGraph);
 
+			dumpTree("currentGraph" , currentGraph);
+			
+			
 			Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
 			for(Node node : currentGraph){
 				if(node instanceof NullNode){
@@ -241,9 +242,15 @@ public class StructuralAnalysisEngine {
 			FnopAnalyser fa = new FnopAnalyser();
 			fa.analyse(basicBlocks);
 
-			dumpTree("after", basicBlocks);
+			//dumpTree("after", basicBlocks);
 
 			if (createStructure(basicBlocks, initialBasicBlock, engine, jobName)) {
+				
+				if(basicBlocks.size() != 1){
+					
+					dumpTree("broken", basicBlocks);
+				}
+				
 				assert(basicBlocks.size() == 1);
 				Node decomposedGraph = basicBlocks.iterator().next();
 				FunctionNode fn = new FunctionNode(decomposedGraph, functionName);
@@ -259,7 +266,6 @@ public class StructuralAnalysisEngine {
 
 			engine.provideWorkDone(1);
 		}
-
 		return;
 	}
 
@@ -456,7 +462,7 @@ public class StructuralAnalysisEngine {
 					String functionName = link.getFunctionName();
 					g.setFunction(functionName, link);
 					g.getAlias().setFunction(functionName, link);
-				}
+				} 
 			}
 		}
 	//	assert(linkSanityCheck(functionReferencesWithinFunction));
@@ -602,6 +608,7 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new SelfLoopPattern());
 		m_patternMatchers.add(new LoopPatternMatcher());
 		m_patternMatchers.add(new ConditionalPatternMatcher());
+		m_patternMatchers.add(new NullRemover());
 		m_patternMatchers.add(new SequencePatternMatcher());	//uses dominators
 		m_patternMatchers.add(new ConditionalTransformer());	//uses dominators
 		m_patternMatchers.add(new PanicTransformer());			//uses dominators
