@@ -19,6 +19,7 @@ int bar(){
     int x;
     while(1){
         x = foo();
+        #pragma xta call "stop"
         x = foo();
         x = foo();
         x = foo();

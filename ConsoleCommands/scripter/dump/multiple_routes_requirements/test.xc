@@ -6,6 +6,8 @@ out port p = XS1_PORT_1A;
 int foo(){
     int x = 0;
     #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
     p <: x;
     return x;
 }

@@ -64,6 +64,8 @@ unsigned char mm_memory[256*mm_blocks];
 unsigned char mm_nextFreeBlock;
 unsigned char mm_map[256];
 
+void cpuJSR(unsigned short npc, unsigned char na);
+
 void mm_init()
 {
 //	int i;
@@ -840,13 +842,13 @@ static inline void setflags(int flag, int cond)
 }
 
 
-static inline void push(unsigned char val)
+extern inline void push(unsigned char val)
 {
     setmem(0x100+s,val);
     if (s) s--;
 }
 
-static inline unsigned char pop(void)
+extern inline unsigned char pop(void)
 {
     if (s<0xff) s++;
     return getmem(0x100+s);
@@ -878,7 +880,7 @@ void cpuResetTo(unsigned short npc, unsigned char na)
     pc=npc; 
 }
 
-static inline void cpuParse(void)
+void cpuParse(void)
 {
     unsigned char opc=getmem(pc++);
     int cmd=opcodes[opc];
@@ -1163,22 +1165,6 @@ static inline void cpuParse(void)
             setflags(FLAG_N, a&0x80);
             break;  
     }        
-}
-
-void cpuJSR(unsigned short npc, unsigned char na)
-{  
-    a=na;
-    x=0;
-    y=0;
-    p=0;
-    s=255;
-    pc=npc;
-    push(0);
-    push(0);
-
-    while (pc > 1)
-        cpuParse();
- 
 }
 
 void c64Init(int nSampleRate)
