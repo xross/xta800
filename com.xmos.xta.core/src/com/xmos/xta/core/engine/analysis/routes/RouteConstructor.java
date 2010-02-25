@@ -301,7 +301,7 @@ public class RouteConstructor {
 
 		for (Route route : m_routes){
 			List<String> nodeList = createRouteDescription(route.getNode());
-			if (newNodeList.containsAll(nodeList)){
+			if (newNodeList.equals(nodeList)){
 				return true;
 			}
 		}

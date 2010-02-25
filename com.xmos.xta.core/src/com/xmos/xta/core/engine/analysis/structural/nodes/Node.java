@@ -21,7 +21,7 @@ public abstract class Node implements Comparable<Node> {
 	private boolean m_dominatorSetIsCompleteSet;
 	private Edges m_edges;
 	private boolean m_unresolved;
-	private boolean m_infinite;
+	//private boolean m_infinite;
 	private boolean m_isFolded;
 
 	public enum Case {
@@ -69,7 +69,7 @@ public abstract class Node implements Comparable<Node> {
 		m_id = s_numNodes++;
 		m_isFolded = false;
 		m_unresolved = node.m_unresolved;
-		m_infinite = node.m_infinite;
+		//m_infinite = node.m_infinite;
 	}
 
 	public boolean isCondNode()             { return false; }
@@ -94,7 +94,7 @@ public abstract class Node implements Comparable<Node> {
 	public boolean isUnresolved() {
 		return m_unresolved;
 	}
-	
+	/*
 	public void setInfinite(boolean infinite){
 		m_infinite = infinite;
 	}
@@ -103,7 +103,7 @@ public abstract class Node implements Comparable<Node> {
 		//never called
 		return m_infinite;
 	}
-
+*/
 	public int getId() {
 		return m_id;
 	}

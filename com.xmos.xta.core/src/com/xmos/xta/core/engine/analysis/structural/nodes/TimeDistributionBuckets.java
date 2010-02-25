@@ -6,7 +6,7 @@ import java.util.List;
 import com.xmos.xta.core.console.Console;
 
 public class TimeDistributionBuckets {
-	public static final int BUCKET_COUNT = 80;
+	public static final int BUCKET_COUNT = 160;
 
 	private double m_buckets[];
 	private double m_lowest;

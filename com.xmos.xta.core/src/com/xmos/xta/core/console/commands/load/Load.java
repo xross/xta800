@@ -18,6 +18,10 @@ public class Load extends Command {
 	public Load() {
 		m_executableName = "";
 	}
+	
+	public String toString() {
+		return commandLine();
+	}
 
 	public Load(String executableName) {
 		m_executableName = executableName;
@@ -58,10 +62,6 @@ public class Load extends Command {
 			}
 		});
     }
-
-	public String toString() {
-		return commandLine();
-	}
 
     private void runSectionCommand(Shell shell, Engine engine, Console console, String commandStr, CommandSource src) {
         String[] tokens = commandStr.trim().split("\\s+");

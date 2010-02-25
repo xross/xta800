@@ -33,11 +33,12 @@ public class FunctionTimeInfo implements DefineInfo {
     }
 
 	public boolean equals(Object o) {
+		boolean ret = false;
 		if(o!=null) {
 			if(o instanceof FunctionTimeInfo){
-				return ((FunctionTimeInfo)o).m_function.equals(m_function);
+				ret = ((FunctionTimeInfo)o).m_function.equals(m_function);
 			}
 		}
-		return false;
+		return ret;
 	}
 }

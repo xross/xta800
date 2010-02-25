@@ -50,7 +50,6 @@ import com.xmos.xta.core.engine.defines.LoopInfo;
 import com.xmos.xta.core.engine.defines.LoopPathInfo;
 import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
-import com.xmos.xta.core.engine.instructions.DataCollection;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
@@ -104,7 +103,6 @@ public class Engine implements Notifier, Aborter {
 	private NodeCoreCollection<StructureGraph> m_structuralGraph;
 	private NodeCoreCollection<Map<String, List<InstructionNode>>> m_functionNameToInsts;
 	private Collection<FileLocation> m_userSpecifedFileLocations;
-	private DataCollection m_dataCollection;
 	private Scripter m_scripter;
 	private Reference m_fromEndPoint;
 	private Reference m_toEndPoint;
@@ -133,7 +131,6 @@ public class Engine implements Notifier, Aborter {
 		m_defines = new Defines();
 		m_timeOut = -1;
 		m_numErrors = 0;
-		m_dataCollection = new DataCollection();
 		m_scripter = new Scripter(this);
 		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
 		ReferenceTypeFactory.setEngine(this);
@@ -274,9 +271,6 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	private boolean validateRouteCount(){
-		
-		int s = m_routes.size();
-		int t = getNumLastRoutesAnalysed();
 		return m_routes.size() >= getNumLastRoutesAnalysed();
 	}
 
@@ -347,9 +341,9 @@ public class Engine implements Notifier, Aborter {
 		return true;
 	}
 
-	public void printInstructionReport(){
-		m_dataCollection.report();
-	}
+	//public void printInstructionReport(){
+	//	m_dataCollection.report();
+	//}
 
 	public boolean analyseRoute(CommandSource src, String functionName, boolean temporaryRoute) {
 		Reference functionRef = ReferenceFactory.createReference(functionName, ReferenceClass.FUNCTION_REF);
@@ -1397,7 +1391,7 @@ public class Engine implements Notifier, Aborter {
 			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 
 			//Binary Stage
-			InstructionDecoder id = new InstructionDecoder(nodeNumber, coreNumber, xeLoader, m_config, m_dataCollection);
+			InstructionDecoder id = new InstructionDecoder(nodeNumber, coreNumber, xeLoader, m_config);
 
 			try {
 				id.decode();

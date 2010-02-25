@@ -345,13 +345,13 @@ public class StructuralAnalysisEngine {
 				CommonMethods.connect(leaf, root);
 			}
 		}
-
+/*
 		for (Node node : basicBlocks) {
 			if(haltsProcessor(node)){
 				node.setInfinite(true);
 			}
 		}
-
+*/
 		assert(!basicBlocks.isEmpty());
 		assert(basicBlocks.contains(treeStart));
 		return treeStart;

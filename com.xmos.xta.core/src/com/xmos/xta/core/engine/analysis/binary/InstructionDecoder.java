@@ -12,7 +12,6 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.instructions.DataCollection;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstructionDecoder;
 
@@ -23,16 +22,14 @@ public class InstructionDecoder {
 	private Map<Long, InstructionNode> m_decodedInstructions;
 	private List<InstructionNode> m_orderedInstructions;
 	private XeLoader m_xeLoader;
-	private DataCollection m_dataCollection;
 
-	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader, Config config, DataCollection dataCollection) {
+	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader, Config config) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
 		m_endPc = Long.MIN_VALUE;
 		m_decodedInstructions = new HashMap<Long, InstructionNode>();
 		m_orderedInstructions = new LinkedList<InstructionNode>();
-		m_dataCollection = dataCollection;
 	}
 
 	public void decode() throws Exception {
@@ -56,9 +53,7 @@ public class InstructionDecoder {
 		            }
 
 		            XtaInstruction inst = instructionDecoder.decode(opcode, pc);
-
-		            m_dataCollection.checkInstruction(inst);
-
+		            
 		            inst.setFunctionName(symbolTable.functionName(pc));
 		            inst.setFunctionOffset(symbolTable.functionOffset(pc));
 
