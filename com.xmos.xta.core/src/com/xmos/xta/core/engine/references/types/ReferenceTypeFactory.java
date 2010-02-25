@@ -19,79 +19,90 @@ public class ReferenceTypeFactory {
 		ANY_REF_WITH_EVERYTHING
 	}
 
-	private static Map<ReferenceClass, ReferenceType[]> m_referenceClasses;
+	private static Map<ReferenceClass, ReferenceClassType> m_referenceClasses;
 	static {
-		m_referenceClasses = new HashMap<ReferenceClass, ReferenceType[]>();
-
-		m_referenceClasses.put(ReferenceClass.PC_REF, new ReferenceType[] {
-				new PcReference(null)});
-
-		m_referenceClasses.put(ReferenceClass.FUNCTION_REF, new ReferenceType[] {
-				new FunctionReference(null)});
-
-		m_referenceClasses.put(ReferenceClass.LABEL_REF, new ReferenceType[] {
-				new PcReference(null),
-				new LabelReference(null)});
-
-		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF, new ReferenceType[] {
-				new PcReference(null),
-				new EndpointReference(null),
-				new EndpointFileLineReference(null),
-				new CallReference(null),
-				new CallFileLineReference(null),
-				new CallPcReference(null),
-				new LabelReference(null)});
-
-		m_referenceClasses.put(ReferenceClass.ANY_REF, new ReferenceType[] {
-				new PcReference(null),
-				new EndpointReference(null),
-				new EndpointFileLineReference(null),
-		        new CallReference(null),
-		        new CallFileLineReference(null),
-		        new CallPcReference(null),
-		        new SrcLabelReference(null),
-		        new SrcLabelFileLineReference(null),
-				new LabelReference(null)});
+		m_referenceClasses = new HashMap<ReferenceClass, ReferenceClassType>();
 		
-		m_referenceClasses.put(ReferenceClass.PC_REF_WITH_EVERYTHING, new ReferenceType[] {
-				new EverythingReference(null),
-				new PcReference(null)});
+		m_referenceClasses.put(ReferenceClass.PC_REF,
+				new ReferenceClassType(true, new ReferenceType[] {
+					new PcReference(null)}));
 
-		m_referenceClasses.put(ReferenceClass.FUNCTION_REF_WITH_EVERYTHING, new ReferenceType[] {
-				new EverythingReference(null),
-				new FunctionReference(null)});
+		m_referenceClasses.put(ReferenceClass.FUNCTION_REF,
+				new ReferenceClassType(true, new ReferenceType[] {
+					new FunctionReference(null)}));
 
-		m_referenceClasses.put(ReferenceClass.LABEL_REF_WITH_EVERYTHING, new ReferenceType[] {
-				new EverythingReference(null),
-				new PcReference(null),
-				new LabelReference(null)});
+		m_referenceClasses.put(ReferenceClass.LABEL_REF,
+				new ReferenceClassType(true, new ReferenceType[] {
+					new PcReference(null),
+					new LabelReference(null)}));
 
-		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, new ReferenceType[] {
-				new EverythingReference(null),
-				new PcReference(null),
-				new EndpointReference(null),
-				new EndpointFileLineReference(null),
-				new CallReference(null),
-				new CallFileLineReference(null),
-				new CallPcReference(null),
-				new LabelReference(null)});
+		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF,
+				new ReferenceClassType(true, new ReferenceType[] {
+					new PcReference(null),
+					new EndpointReference(null),
+					new EndpointFileLineReference(null),
+					new CallReference(null),
+					new CallFileLineReference(null),
+					new CallPcReference(null),
+					new LabelReference(null)}));
 
-		m_referenceClasses.put(ReferenceClass.ANY_REF_WITH_EVERYTHING, new ReferenceType[] {
-				new EverythingReference(null),
-				new PcReference(null),
-				new EndpointReference(null),
-				new EndpointFileLineReference(null),
-		        new CallReference(null),
-		        new CallFileLineReference(null),
-		        new CallPcReference(null),
-		        new SrcLabelReference(null),
-		        new SrcLabelFileLineReference(null),
-				new LabelReference(null)});
+		m_referenceClasses.put(ReferenceClass.ANY_REF,
+				new ReferenceClassType(true, new ReferenceType[] {
+					new PcReference(null),
+					new EndpointReference(null),
+					new EndpointFileLineReference(null),
+					new CallReference(null),
+					new CallFileLineReference(null),
+					new CallPcReference(null),
+					new SrcLabelReference(null),
+					new SrcLabelFileLineReference(null),
+					new LabelReference(null)}));
+		
+		m_referenceClasses.put(ReferenceClass.PC_REF_WITH_EVERYTHING,
+				new ReferenceClassType(false, new ReferenceType[] {
+					new EverythingReference(null),
+					new PcReference(null)}));
+
+		m_referenceClasses.put(ReferenceClass.FUNCTION_REF_WITH_EVERYTHING,
+				new ReferenceClassType(false, new ReferenceType[] {
+					new EverythingReference(null),
+					new FunctionReference(null)}));
+
+		m_referenceClasses.put(ReferenceClass.LABEL_REF_WITH_EVERYTHING,
+				new ReferenceClassType(false, new ReferenceType[] {
+					new EverythingReference(null),
+					new PcReference(null),
+					new LabelReference(null)}));
+
+		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING,
+				new ReferenceClassType(false, new ReferenceType[] {
+					new EverythingReference(null),
+					new PcReference(null),
+					new EndpointReference(null),
+					new EndpointFileLineReference(null),
+					new CallReference(null),
+					new CallFileLineReference(null),
+					new CallPcReference(null),
+					new LabelReference(null)}));
+
+		m_referenceClasses.put(ReferenceClass.ANY_REF_WITH_EVERYTHING,
+				new ReferenceClassType(false, new ReferenceType[] {
+					new EverythingReference(null),
+					new PcReference(null),
+					new EndpointReference(null),
+					new EndpointFileLineReference(null),
+					new CallReference(null),
+					new CallFileLineReference(null),
+					new CallPcReference(null),
+					new SrcLabelReference(null),
+					new SrcLabelFileLineReference(null),
+					new LabelReference(null)}));
 	}
 	private static Engine m_engine;
 
-	public static ReferenceType createReferenceType(String reference, ReferenceClass referenceClass) {
-		ReferenceType[] referenceTypes = getReferenceClass(referenceClass);
+	public static ReferenceType createReferenceType(String reference, ReferenceClass classType) {
+		ReferenceClassType referenceClass = getReferenceClass(classType);
+		ReferenceType[] referenceTypes = referenceClass.getReferencTypes();
 		for (ReferenceType referenceType : referenceTypes) {
 			ReferenceType refType = referenceType.create(m_engine, reference);
 			if (refType != null) {
@@ -101,10 +112,10 @@ public class ReferenceTypeFactory {
 		return new ErrorReference(reference);
 	}
 
-	public static ReferenceType[] getReferenceClass(ReferenceClass referenceClass) {
-    	ReferenceType[] referenceTypes = m_referenceClasses.get(referenceClass);
-		assert(referenceTypes != null);
-		return referenceTypes;
+	public static ReferenceClassType getReferenceClass(ReferenceClass classType) {
+		ReferenceClassType referenceClass = m_referenceClasses.get(classType);
+		assert(referenceClass != null);
+		return referenceClass;
 	}
 
     public static void setEngine(Engine engine) {
