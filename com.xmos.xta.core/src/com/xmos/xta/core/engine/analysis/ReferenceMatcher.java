@@ -240,7 +240,8 @@ public class ReferenceMatcher {
 		foundBlock = null;
 		fn.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
 			public TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors) {
-				if(node.getInstructionNodes().contains(inst)){
+				BlockNode block = (BlockNode)node;
+				if(block.getInstructionList().contains(inst)){
 					foundBlock = (BlockNode) node;
 					return TraverseStatus.ABORT;
 				} else {

@@ -1449,7 +1449,7 @@ public class Engine implements Notifier, Aborter {
 
 			//Structural Stage
 
-			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(xeLoader);
+			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 			try {
 				if (!sae.analyse(this, functionStartNodes, newFunctionNames.get(nodeNumber, coreNumber), sections, nodeNumber, coreNumber)) {
 					return false;

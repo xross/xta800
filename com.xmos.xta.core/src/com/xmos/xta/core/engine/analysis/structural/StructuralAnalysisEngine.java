@@ -13,7 +13,6 @@ import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Config;
@@ -36,8 +35,6 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.PanicTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatcher;
-import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sections.Sections;
 
 public class StructuralAnalysisEngine {
@@ -48,13 +45,6 @@ public class StructuralAnalysisEngine {
 
 	private StructureGraph m_structureGraph;
 	private List<PatternMatcher> m_patternMatchers;
-	private Architecture m_arch;
-
-	public StructuralAnalysisEngine(XeLoader xeLoader) {
-		//this needs to be consolidated into one constructor
-		m_arch = xeLoader.getArchitecture();
-		setUpPatternMatcher();
-	}
 
 	public StructuralAnalysisEngine() {
 		setUpPatternMatcher();
@@ -345,28 +335,9 @@ public class StructuralAnalysisEngine {
 				CommonMethods.connect(leaf, root);
 			}
 		}
-/*
-		for (Node node : basicBlocks) {
-			if(haltsProcessor(node)){
-				node.setInfinite(true);
-			}
-		}
-*/
 		assert(!basicBlocks.isEmpty());
 		assert(basicBlocks.contains(treeStart));
 		return treeStart;
-	}
-
-	private boolean haltsProcessor(Node basicBlock) {
-		if(basicBlock instanceof FunctionReferenceNode) return false;
-		LinkedList<XtaInstruction> instruction = basicBlock.getInstructions();
-		if (instruction.size() > 1) {
-			InstructionMnemonics im = new InstructionMnemonics(m_arch);
-			if (im.isClre(instruction.get(instruction.size() - 2)) && im.isWait(instruction.getLast())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void findAllNodesInCurrentFunction(Node node, Collection<Node> currentGraph) {
