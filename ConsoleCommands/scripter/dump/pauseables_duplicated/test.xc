@@ -4,16 +4,6 @@ in port pIn = XS1_PORT_1A;
 
 void f() {
     #pragma xta endpoint "inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
-    #pragma xta endpoint "f1,inst"
     pIn :> int x;
 }
 

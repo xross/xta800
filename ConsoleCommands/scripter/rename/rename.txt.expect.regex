@@ -29,7 +29,12 @@ true       false      x          ->          x
 true       false      the_great_outdoors -> the_great_outdoors
 false      true       test.xc:21 ->      start
 true       true       test.xc:22 ->       stop
-xta: cmds.txt:26: error: Reference 'x' cannot be renamed
+Enabled    Modifiable Reference  ->     MapsTo
+true       false      x          ->          x
+true       false      the_great_outdoors -> the_great_outdoors
+false      true       test.xc:21 ->      start
+false      true       test.xc:22 ->       stop
+xta: cmds.txt:28: error: Reference 'x' cannot be renamed
 load ".*test.xe"
 
 #
@@ -42,11 +47,13 @@ analyse path x x
 # Route: test.xc:21 => test.xc:22
 #
 # Warning: 'test.xc:21' is a non-portable reference.
-analyse path test.xc:21 stop
+# Warning: 'test.xc:22' is a non-portable reference.
+analyse path test.xc:21 test.xc:22
 
 #
 # Route: .+test.xc:21 => .+test.xc:22
 #
 # Warning: '.+test.xc:21' is a non-portable reference.
-analyse path .+test.xc:21 stop
+# Warning: '.+test.xc:22' is a non-portable reference.
+analyse path .+test.xc:21 .+test.xc:22
 

@@ -22,6 +22,8 @@ scripter listrefs
 analyse path SOURCE:21 SOURCE:22
 
 scripter disable test.xc:21
+scripter disable test.xc:22
+scripter listrefs
 
 scripter rename x y
 

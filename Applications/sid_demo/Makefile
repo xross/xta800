@@ -7,6 +7,7 @@ INCLUDES = -I.
 VPATH = .
 
 OBJECTS = \
+$(TARGETDIR)/cpuJSR.o \
 $(TARGETDIR)/sid_store_core_1.o \
 $(TARGETDIR)/sid_store_core_2.o \
 $(TARGETDIR)/sid_store_core_3.o \
@@ -24,6 +25,9 @@ $(TARGETDIR)/test.xe: $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
 	xcc $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
+
+$(TARGETDIR)/main.o: main.xc
+	xcc $(INCLUDES) -target=$(TARGET) -g -O3 -Wall -Werror -c -o "$@" "$<"
 
 $(TARGETDIR)/%.o: %.xc
 	xcc $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
