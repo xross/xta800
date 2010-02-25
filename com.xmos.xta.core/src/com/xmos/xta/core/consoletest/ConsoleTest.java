@@ -20,6 +20,7 @@ import com.xmos.xta.core.consoletest.commands.History;
 import com.xmos.xta.core.consoletest.commands.List;
 import com.xmos.xta.core.consoletest.commands.Load;
 import com.xmos.xta.core.consoletest.commands.Mess;
+import com.xmos.xta.core.consoletest.commands.Pling;
 import com.xmos.xta.core.consoletest.commands.Print;
 import com.xmos.xta.core.consoletest.commands.Pwd;
 import com.xmos.xta.core.consoletest.commands.Remove;
@@ -34,10 +35,10 @@ public class ConsoleTest {
 	private static Command[] realCommands = { new Add(), new Analyse(),
 			new Config(), new Clear(), new Echo(), new Help(), new History(),
 			new List(), 
-			new Load("test.xe"), 
+			//new Load("test.xe"), 
 			new Mess(), new Print(),
 			new Pwd(), new Remove(), new Scripter(), new Set(), new Source(),
-			new Status(), new Version() };			
+			new Status(), new Version() , new Pling()};			
 
 	private HashSet<String> m_errorToFile;
 	
@@ -54,6 +55,8 @@ public class ConsoleTest {
 		
 		int iteration = 0;
 		while(true){
+			
+			
 			makeCmdList(r, sb);
 			
 	        writeOutCmdFile(sb); 
@@ -113,7 +116,13 @@ public class ConsoleTest {
 	}
 
 	private void makeCmdList(Random r, StringBuffer sb) {
-		for(int i=0;i<1000;i++){
+		
+		Command load = new Load("test.xe");
+		for(int i=0;i<10;i++){
+			sb.append(load.getCommand());
+		}
+		
+		for(int i=0;i<100;i++){
 			if(r.nextBoolean()){
 				sb.append("-");
 			}

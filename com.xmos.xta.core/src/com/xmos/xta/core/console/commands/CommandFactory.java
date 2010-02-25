@@ -56,8 +56,13 @@ public class CommandFactory {
 
         if (isPlingCommand(arg)) {
         	Command command = getPingCommand(arg, commandHistory);
-        	command.setSrc(src);
-        	return command;
+        	if (command == null) {
+		    	console.display("xta: " + src.getFileName() + ":" + src.getLineNum() + ": error: " +
+		    			"invalid command: " + arg + "'..)\n");
+		    	return null;
+			} else {
+				command.setSrc(src);
+			}
         }
 
     	arg = stripLeadingDash(arg);
