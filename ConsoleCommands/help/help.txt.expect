@@ -138,17 +138,13 @@
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   Any of the following are permitted:
-    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
   Any of the following are permitted:
-    EverythingReference: Matches everything: '*'
     Function: Any function
   Any of the following are permitted:
-    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section
   Any of the following are permitted:
-    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
     Endpoint: Endpoint specified using the source level pragma mechanism
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
@@ -157,7 +153,6 @@
     CallPc: Call specified in the format: 0x*
     Label: Any source or assembly level symbol defined with respect to an executable section
   Any of the following are permitted:
-    EverythingReference: Matches everything: '*'
     Pc: Raw program counter specified in the format: 0x*
     Endpoint: Endpoint specified using the source level pragma mechanism
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
