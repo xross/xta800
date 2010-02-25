@@ -11,6 +11,16 @@ int foo(){
     }
 
     #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
     p <: x;
     return x;
 }
@@ -19,6 +29,7 @@ int bar(){
     int x;
     while(1){
         x = foo();
+        #pragma xta call "stop"
         x = foo();
         x = foo();
         x = foo();

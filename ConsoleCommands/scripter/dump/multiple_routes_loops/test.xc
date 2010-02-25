@@ -11,6 +11,16 @@ int foo(){
     }
 
     #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
+    #pragma xta endpoint "x"
     p <: x;
     return x;
 }
