@@ -5,6 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.references.types.ReferenceClassType;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -60,7 +61,9 @@ public class Help extends Command {
         if (detailed) {
             desc += "\n      options: ";
             for (ReferenceClass referenceClass : ReferenceClass.values()) {
-        	    desc += String.format("%s, ", referenceClass.name());
+            	if (ReferenceTypeFactory.getReferenceClass(referenceClass).isVisible()) {
+            		desc += String.format("%s, ", referenceClass.name());
+            	}
             }
             desc = desc.substring(0, desc.length() - 2);
         }
@@ -100,7 +103,8 @@ public class Help extends Command {
     		// Displays help for a specific option.
     		console.display("  Any of the following are permitted:\n");
 
-    		ReferenceType[] referenceTypes = ReferenceTypeFactory.getReferenceClass(m_referenceClass);
+    		ReferenceClassType classType = ReferenceTypeFactory.getReferenceClass(m_referenceClass);
+    		ReferenceType[] referenceTypes = classType.getReferencTypes();
     		for (ReferenceType referenceType : referenceTypes) {
     			console.display(String.format("    %s: %s\n",
     					referenceType.name(), referenceType.description()));

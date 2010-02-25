@@ -676,7 +676,7 @@ public class Scripter {
 		SourceMapper sourceMapper = m_engine.getSourceMapper();
 		TreeMap<SourceFile, List<Long>> fileLineNumbers = new TreeMap<SourceFile, List<Long>>();
 		for (ScripterReference scripterReference : m_references) {
-			if (!scripterReference.isEnabled()) {
+			if (!scripterReference.isEnabled() || !scripterReference.isModifiable()) {
 				continue;
 			}
 			
