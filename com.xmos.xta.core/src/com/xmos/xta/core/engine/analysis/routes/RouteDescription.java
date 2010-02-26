@@ -144,14 +144,15 @@ public class RouteDescription {
 		return m_config;
 	}
 
-	public FunctionNode getFunction(String functionName, StructureGraph sg){
+	public List<FunctionNode> getFunction(String functionName, StructureGraph sg){
+		
+		List<FunctionNode> functions = new LinkedList<FunctionNode>();
 		for (FunctionNode fn : sg.getFunctions()) {
 			if (fn.getFunctionName().equals(m_functionName)) {
-				return fn;
+				functions.add(fn);
 			}
 		}
-		assert(false);
-		return null;
+		return functions;
 	}
 
 	/**

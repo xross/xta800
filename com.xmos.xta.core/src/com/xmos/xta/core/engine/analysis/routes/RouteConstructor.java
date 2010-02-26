@@ -112,18 +112,18 @@ public class RouteConstructor {
 
 
 		if(m_description.getMode() == RouteMode.FUNCTION){
-			FunctionNode fn = m_description.getFunction(m_description.getFunctionName(), m_structureGraph);
-			List<Stack<FunctionReferenceNode>> stacks = getCallStacks(fn);
-
-
-			for(Stack<FunctionReferenceNode> stack : stacks){
-				FunctionReferenceNode fnRef = stack.peek();
-				FunctionNode newFunction = makeFunction(stack, fnRef, exclusionStackNodes, m_engine, endStackNodes, true);
-				if(newFunction != null){
-					setParent(newFunction);
-					Route route = new Route(src, m_engine, newFunction, m_description, m_container);
-					if (!alreadyContainRoute(newFunction)) {
-						m_routes.add(route);
+			List<FunctionNode> fns = m_description.getFunction(m_description.getFunctionName(), m_structureGraph);
+			for(FunctionNode fn : fns){
+				List<Stack<FunctionReferenceNode>> stacks = getCallStacks(fn);
+				for(Stack<FunctionReferenceNode> stack : stacks){
+					FunctionReferenceNode fnRef = stack.peek();
+					FunctionNode newFunction = makeFunction(stack, fnRef, exclusionStackNodes, m_engine, endStackNodes, true);
+					if(newFunction != null){
+						setParent(newFunction);
+						Route route = new Route(src, m_engine, newFunction, m_description, m_container);
+						if (!alreadyContainRoute(newFunction)) {
+							m_routes.add(route);
+						}
 					}
 				}
 			}
@@ -968,11 +968,12 @@ public class RouteConstructor {
 	private Set<StackNode> getEndStackNodes(RouteDescription description) {
 		Set<StackNode> stackNodes = new HashSet<StackNode>();
 		if(description.getMode() == RouteMode.FUNCTION){
-			FunctionNode fn = description.getFunction(description.getFunctionName(), m_structureGraph);
-			for(InstructionNode inst : m_structureGraph.getFunctionsEndNodes(fn)){
-				StackNode stackNode = new StackNode(inst, getCallStacks(fn));
-				stackNodes.add(stackNode);
-				//TODO this could be more specific -- would speed it up
+			List<FunctionNode> fns = description.getFunction(description.getFunctionName(), m_structureGraph);
+			for(FunctionNode fn : fns){
+				for(InstructionNode inst : m_structureGraph.getFunctionsEndNodes(fn)){
+					StackNode stackNode = new StackNode(inst, getCallStacks(fn));
+					stackNodes.add(stackNode);
+				}
 			}
 		} else {
 			Collection<Reference> endRefs = description.getEndPoints();

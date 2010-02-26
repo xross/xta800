@@ -1623,7 +1623,25 @@ public class Engine implements Notifier, Aborter {
 				pcToLabel.put(pc, label);
 			}
 		}
-
+		
+		for(InstructionNode inst : funcStarts){
+			String functionName = symbolTable.functionName(inst.getStartPc());
+			
+			if (functionNameToInstructions.containsKey(functionName)) {
+				String label = pcToLabel.get(inst.getXtaInstruction().getPc());
+				if(label != null){
+					functionName = label;
+				}
+			}
+			
+			addToMap(functionNameToInstructions, inst, functionName);
+		}
+		
+		
+		
+		
+		
+		/*
 		for (InstructionNode inst : funcStarts) {
 			String name = symbolTable.functionName(inst.getStartPc());
 			String label = pcToLabel.get(inst.getXtaInstruction().getPc());
@@ -1654,7 +1672,7 @@ public class Engine implements Notifier, Aborter {
 				addToMap(functionNameToInstructions, inst, name);
 			}
 		}
-		/*
+
 		for(String functionName : functionNameToInstructions.keySet()){
 			System.out.println("function: " + functionName  +" maps to ");
 			for(InstructionNode inst  : functionNameToInstructions.get(functionName)){
@@ -1662,7 +1680,7 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		System.out.println();
-		*/
+*/		
 	}
 
 	private void addToMap(Map<String, List<InstructionNode>> treeMap,
