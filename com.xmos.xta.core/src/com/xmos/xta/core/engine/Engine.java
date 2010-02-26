@@ -1654,7 +1654,7 @@ public class Engine implements Notifier, Aborter {
 				addToMap(functionNameToInstructions, inst, name);
 			}
 		}
-		
+		/*
 		for(String functionName : functionNameToInstructions.keySet()){
 			System.out.println("function: " + functionName  +" maps to ");
 			for(InstructionNode inst  : functionNameToInstructions.get(functionName)){
@@ -1662,7 +1662,7 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		System.out.println();
-		
+		*/
 	}
 
 	private void addToMap(Map<String, List<InstructionNode>> treeMap,
