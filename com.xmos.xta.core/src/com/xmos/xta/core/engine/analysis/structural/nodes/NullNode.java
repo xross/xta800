@@ -10,7 +10,8 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class NullNode extends Node {
@@ -51,7 +52,7 @@ public class NullNode extends Node {
 		return new NullNode();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		return TraverseStatus.CONTINUE;
 	}
 
@@ -95,5 +96,9 @@ public class NullNode extends Node {
 	}
 	public void buildListUp(List<Node> nodeList,
 			Stack<FunctionReferenceNode> stack, Node start) {
+	}
+
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		return TraverseStatus.CONTINUE;
 	}
 }

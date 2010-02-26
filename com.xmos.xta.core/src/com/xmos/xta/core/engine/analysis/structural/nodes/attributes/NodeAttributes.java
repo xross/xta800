@@ -3,7 +3,6 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
 import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.CommandSource;
@@ -12,6 +11,7 @@ import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
@@ -360,8 +360,8 @@ public class NodeAttributes {
 	}
 
 	void clearUnknowns(Node node) {
-		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+		node.traverse(new UntypedNodeTraverser() {
+	    	public TraverseStatus foundNode(Node node) {
 	    		node.getAttributes().clearUnknowns();
 	        	return TraverseStatus.CONTINUE;
 	    	}

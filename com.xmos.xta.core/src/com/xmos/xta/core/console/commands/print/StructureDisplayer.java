@@ -9,7 +9,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverserWithAncestors;
 
 public class StructureDisplayer {
 
@@ -24,7 +25,7 @@ public class StructureDisplayer {
 	public void display(Collection<Node> nodes) {
 		final StringBuffer sb = new StringBuffer();
 		for (Node node : nodes) {
-		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
+		    node.traverse(new Stack<Node>(), new UntypedNodeTraverserWithAncestors() {
 				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
 					displayNodeInfo(node, ancestors, sb);
 					return TraverseStatus.CONTINUE;

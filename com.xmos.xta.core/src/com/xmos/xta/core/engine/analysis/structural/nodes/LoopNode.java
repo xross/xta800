@@ -12,7 +12,8 @@ import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.LoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class LoopNode extends Node {
@@ -94,7 +95,7 @@ public class LoopNode extends Node {
 		return m_loopHeader.getStartPc();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundLoopNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
@@ -108,6 +109,27 @@ public class LoopNode extends Node {
 				}
 			}
 			ancestors.pop();
+		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
+	
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundLoopNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+
+			status = m_loopHeader.traverse( nodeTraverser);
+			if (status == TraverseStatus.CONTINUE) {
+				for (Node node : m_loops) {
+					status = node.traverse( nodeTraverser);
+					if (status != TraverseStatus.CONTINUE) {
+						break;
+					}
+				}
+			}
 		}
 
 		if (status == TraverseStatus.ABORT) {

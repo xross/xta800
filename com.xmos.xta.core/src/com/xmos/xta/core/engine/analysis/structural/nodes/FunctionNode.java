@@ -11,7 +11,8 @@ import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class FunctionNode extends Node {
@@ -132,7 +133,7 @@ public class FunctionNode extends Node {
 		return 0;
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundFunctionNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			if (m_functionSequence != null) {
@@ -153,6 +154,24 @@ public class FunctionNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundFunctionNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+			if (m_functionSequence != null) {
+				for (Node node : m_functionSequence) {
+					status = node.traverse( nodeTraverser);
+					if (status != TraverseStatus.CONTINUE) {
+						break;
+					}
+				}
+			}
+		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
 	public boolean isFunctionNode() {
 		return true;
 	}

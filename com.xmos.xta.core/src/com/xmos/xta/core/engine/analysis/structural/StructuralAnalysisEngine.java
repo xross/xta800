@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -26,6 +25,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalPatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalTransformer;
@@ -146,8 +146,8 @@ public class StructuralAnalysisEngine {
 		done = false;
 		while(!done){
 			done =true;
-			fn.traverse(new Stack<Node>(),  new DefaultNodeTraverser() {
-				public TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors) {
+			fn.traverse(new DefaultNodeTraverser() {
+				public TraverseStatus foundSequenceNode(Node node) {
 
 					for(Node child : node.iChildren()){
 						if(child instanceof SequenceNode){
@@ -164,7 +164,7 @@ public class StructuralAnalysisEngine {
 					return TraverseStatus.CONTINUE;
 				}
 
-				public TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundFunctionNode(Node node) {
 					for(Node child : node.iChildren()){
 						if(child instanceof SequenceNode){
 							SequenceNode sn = (SequenceNode)child;
@@ -507,8 +507,8 @@ public class StructuralAnalysisEngine {
 
 	private void setConfig(final Config config, final Architecture architecture, Collection<FunctionNode> nodes) {
 		for (Node node : nodes) {
-			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+			node.traverse(new DefaultNodeTraverser() {
+				public TraverseStatus foundInstructionNode(Node node) {
 					((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);
 					return TraverseStatus.CONTINUE;
 				}
@@ -588,8 +588,8 @@ public class StructuralAnalysisEngine {
 	private Collection<Node> getContainedNodes(Node node) {
 		final Collection<Node> nodes = new ArrayList<Node>();
 
-		node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+		node.traverse(new DefaultNodeTraverser() {
+			public TraverseStatus foundInstructionNode(Node node) {
 				nodes.add(node);
 				return TraverseStatus.CONTINUE;
 			}

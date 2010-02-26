@@ -38,8 +38,9 @@ public class Functions extends Command {
         Collection<String> functionNames = engine.getNonSystemFunctionNames();
         if (functionNames.size() > 0) {
             for (String functionName : functionNames) {
-            	long functionAddress = engine.getFunctionPc(functionName);
-                console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
+            	for(long functionAddress : engine.getFunctionPc(functionName)){
+            		console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
+            	}
             }
         } else {
 			console.display("none\n");

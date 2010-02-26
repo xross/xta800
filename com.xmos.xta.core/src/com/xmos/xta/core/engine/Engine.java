@@ -196,10 +196,19 @@ public class Engine implements Notifier, Aborter {
 		return new TreeSet<String>();
 	}
 
-	public long getFunctionPc(String functionName) {
+	public List<Long> getFunctionPc(String functionName) {
+		
+		List<Long> pcs = new LinkedList<Long>();
+		
 		List<InstructionNode> insts = m_functionNameToInsts.get(m_nodeNumber, m_coreNumber).get(functionName);
+		
 		assert((insts != null) && !insts.isEmpty());
-		return insts.get(0).getStartPc();
+		
+		for(InstructionNode inst : insts){
+			pcs.add(inst.getPC());
+		}
+		
+		return pcs;
 	}
 
 	public Collection<String> getNonSystemFunctionNames() {
@@ -237,18 +246,10 @@ public class Engine implements Notifier, Aborter {
 	public Collection<Route> getRoute(int routeId) {
 		Collection<Route> routes = new ArrayList<Route>();
 		assert(validateRouteCount());
-		// TODO
 		if(m_routes.isEmpty()){
 			return routes;
 		}
-
 		if (routeId == ROUTE_ID_LAST) {
-			if(m_routes.size()< getNumLastRoutesAnalysed()){
-				System.out.println(getNumLastRoutesAnalysed());
-				System.out.println(m_routes.size());
-			}
-			
-			
 			assert(validateRouteCount());
 			int toIndex = m_routes.size();
 			int fromIndex = toIndex - getNumLastRoutesAnalysed();
@@ -1613,7 +1614,7 @@ public class Engine implements Notifier, Aborter {
 
 
 	private void ensureAllFunctionsAreNamed(
-			SymbolTable symbolTable, Map<String, List<InstructionNode>> treeMap,
+			SymbolTable symbolTable, Map<String, List<InstructionNode>> functionNameToInstructions,
 			Set<InstructionNode> funcStarts, Map<String, Set<Long>> labelToPc) {
 
 		Map<Long, String> pcToLabel = new HashMap<Long, String>();
@@ -1627,32 +1628,41 @@ public class Engine implements Notifier, Aborter {
 			String name = symbolTable.functionName(inst.getStartPc());
 			String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 
-			if (treeMap.containsKey(name)) {
+			if (functionNameToInstructions.containsKey(name)) {
 				//the one with the lower pc will stay in the set and the other will take an auto-generated name.
 
-				LinkedList<InstructionNode> instNodes = new LinkedList<InstructionNode>(treeMap.get(name));
+				LinkedList<InstructionNode> instNodes = new LinkedList<InstructionNode>(functionNameToInstructions.get(name));
 				for (InstructionNode instNode : instNodes) {
 					if (instNode.getStartPc() < inst.getStartPc()) {
 						if (label != null) {
-							addToMap(treeMap, inst, label);
+							addToMap(functionNameToInstructions, inst, label);
 						} else {
 							name = "unnamed_function_at_0x" + Long.toHexString(inst.getStartPc());
-							addToMap(treeMap, inst, name);
+							addToMap(functionNameToInstructions, inst, name);
 						}
 
 					} else if (instNode.getStartPc() > inst.getStartPc()) {
 						String newName = "unnamed_function_at_0x" + Long.toHexString(instNode.getStartPc());
-						addToMap(treeMap, instNode, newName);
-						addToMap(treeMap, inst, name);
+						addToMap(functionNameToInstructions, instNode, newName);
+						addToMap(functionNameToInstructions, inst, name);
 					} else {
 						assert(false);
 					}
 				}
 			} else {
-				assert(!treeMap.containsKey(name));
-				addToMap(treeMap, inst, name);
+				assert(!functionNameToInstructions.containsKey(name));
+				addToMap(functionNameToInstructions, inst, name);
 			}
 		}
+		
+		for(String functionName : functionNameToInstructions.keySet()){
+			System.out.println("function: " + functionName  +" maps to ");
+			for(InstructionNode inst  : functionNameToInstructions.get(functionName)){
+				System.out.println("\t" + inst.getXtaInstruction());
+			}
+		}
+		System.out.println();
+		
 	}
 
 	private void addToMap(Map<String, List<InstructionNode>> treeMap,

@@ -16,6 +16,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
@@ -66,8 +67,8 @@ public class ReferenceMatcher {
 		assert(reference.getBase().getType() != Type.EVERYTHING);
 		for(long pc : reference.getPcs()){
 			final Set<Node> insts = new TreeSet<Node>();
-			node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-		    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+			node.traverse(new UntypedNodeTraverser() {
+		    	public TraverseStatus foundNode(Node node) {
 		    		if(node instanceof InstructionNode){
 		    			InstructionNode inst = (InstructionNode)node;
 		    			if(!inst.getXtaInstruction().isFnop() && reference.getPcs().contains(inst.getPC())){
@@ -107,8 +108,8 @@ public class ReferenceMatcher {
 
 		Set<Node> matches = new TreeSet<Node>();
 		final Set<Node> functions = new TreeSet<Node>();
-		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+		node.traverse( new UntypedNodeTraverser() {
+	    	public TraverseStatus foundNode(Node node) {
 	    		if(node instanceof FunctionNode){
 	    			FunctionNode function = (FunctionNode)node;
 
@@ -238,8 +239,8 @@ public class ReferenceMatcher {
 
 	private BlockNode getStartBlock(final InstructionNode inst, FunctionNode fn) {
 		foundBlock = null;
-		fn.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-			public TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors) {
+		fn.traverse( new DefaultNodeTraverser() {
+			public TraverseStatus foundBlockNode(Node node) {
 				BlockNode block = (BlockNode)node;
 				if(block.getInstructionList().contains(inst)){
 					foundBlock = (BlockNode) node;

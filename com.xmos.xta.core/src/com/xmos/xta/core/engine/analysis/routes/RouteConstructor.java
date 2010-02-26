@@ -30,6 +30,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
@@ -247,8 +248,8 @@ public class RouteConstructor {
 	private boolean containsRecursion(FunctionReferenceNode fnRef) {
 		final Collection<String> recursiveFunctions = m_engine.getRecursiveFunctions();
 		found = false;
-		fnRef.getFunctionNode().traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+		fnRef.getFunctionNode().traverse(new UntypedNodeTraverser() {
+	    	public TraverseStatus foundNode(Node node) {
 	    		if(node instanceof FunctionNode){
 	    			if(recursiveFunctions.contains(((FunctionNode)node).getFunctionName())){
 	    				found = true;
@@ -311,8 +312,8 @@ public class RouteConstructor {
 	private List<String> createRouteDescription(Node node) {
 		final List<String> nodeList = new LinkedList<String>();
 
-		node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+		node.traverse(new UntypedNodeTraverser() {
+	    	public TraverseStatus foundNode(Node node) {
 	    		if(node.isInstructionNode()){
 	    			nodeList.add(node.getTypeName()+node.getStartPc());
 	    		} else {
@@ -802,9 +803,9 @@ public class RouteConstructor {
 	private void setUnknowns() {
 		for (Route route : m_routes) {
 			Node node = route.getNode();
-			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+			node.traverse( new DefaultNodeTraverser() {
 				// Sets all the pausing instructions to unknown.
-				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundInstructionNode(Node node) {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
 						NodeAttributes nodeAttributes = node.getAttributes();
@@ -813,13 +814,13 @@ public class RouteConstructor {
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the loop iterations to unknown.
-				public TraverseStatus foundLoopNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundLoopNode(Node node) {
 					NodeAttributes nodeAttributes = node.getAttributes();
 					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the self loop iterations to unknown.
-				public TraverseStatus foundSelfLoopNode(Node node, Stack<Node> ancestors) {
+				public TraverseStatus foundSelfLoopNode(Node node) {
 					NodeAttributes nodeAttributes = node.getAttributes();
 					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
@@ -854,8 +855,8 @@ public class RouteConstructor {
 
 		for (Route route : m_routes) {
 			Node node = route.getNode();
-			node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
-				public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+			node.traverse(new DefaultNodeTraverser() {
+				public TraverseStatus foundInstructionNode(Node node) {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 
 					// Checks for threading instructions...
@@ -922,16 +923,16 @@ public class RouteConstructor {
 
 	private void refreshDisplayedUnknowns(Node node) {
 		// Clears the display unknown flags on all nodes..
-	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+	    node.traverse(new UntypedNodeTraverser() {
+	    	public TraverseStatus foundNode(Node node) {
 	    		node.getAttributes().setDisplayAsUnknown(false);
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
 
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
-	    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-	    	public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+	    node.traverse(new UntypedNodeTraverser() {
+	    	public TraverseStatus foundNode(Node node) {
 	    		if (node.getAttributes().hasUnknowns()) {
 	    			setDisplayAsUnknownOnParentNodes(node);
 	    		}

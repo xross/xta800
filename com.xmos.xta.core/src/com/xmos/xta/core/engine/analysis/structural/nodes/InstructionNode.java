@@ -11,7 +11,8 @@ import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class InstructionNode extends Node {
@@ -62,14 +63,21 @@ public class InstructionNode extends Node {
 		return m_inst.getPc();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundInstructionNode(this, ancestors);
 		if (status == TraverseStatus.ABORT) {
 			return status;
 		}
 		return TraverseStatus.CONTINUE;
 	}
-
+	
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundInstructionNode(this);
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
 	public boolean isInstructionNode() {
 		return true;
 	}

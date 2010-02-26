@@ -14,7 +14,8 @@ import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.references.Reference;
 
@@ -85,8 +86,8 @@ public class Route {
 
     	} else {
         	m_searchNode = null;
-        	m_node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-    			public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+        	m_node.traverse(new UntypedNodeTraverser() {
+    			public TraverseStatus foundNode(Node node) {
     				if (node.getId() == nodeId) {
     					m_searchNode = node;
     					return TraverseStatus.NO_CHILDREN;
@@ -148,7 +149,7 @@ public class Route {
 	}
 
 	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
-		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverser() {
+		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverserWithAncestors() {
 			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 				((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);
 				return TraverseStatus.CONTINUE;

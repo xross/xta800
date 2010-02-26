@@ -12,7 +12,8 @@ import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class BlockNode extends Node {
@@ -87,7 +88,7 @@ public class BlockNode extends Node {
 		return getInstructions().getFirst().getPc();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundBlockNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
@@ -98,6 +99,23 @@ public class BlockNode extends Node {
 				}
 			}
 			ancestors.pop();
+		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
+	
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundBlockNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+			for (Node instruction : m_insts) {
+				status = instruction.traverse(nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}
 		}
 
 		if (status == TraverseStatus.ABORT) {

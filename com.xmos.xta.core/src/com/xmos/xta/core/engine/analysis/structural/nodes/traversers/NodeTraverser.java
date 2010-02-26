@@ -1,24 +1,17 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.traversers;
 
-import java.util.Stack;
-
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public interface NodeTraverser {
-
-	enum TraverseStatus {
-		CONTINUE, ABORT, NO_CHILDREN
-	}
-
-	TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundLoopNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundInfiniteLoopNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundSelfLoopNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundConditionalNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundEndNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundFunctionReferenceNode(Node node, Stack<Node> ancestors);
+	TraverseStatus foundBlockNode(Node node);
+	TraverseStatus foundFunctionNode(Node node);
+	TraverseStatus foundInstructionNode(Node node);
+	TraverseStatus foundSequenceNode(Node node);
+	TraverseStatus foundLoopNode(Node node);
+	TraverseStatus foundInfiniteLoopNode(Node node);
+	TraverseStatus foundSelfLoopNode(Node node);
+	TraverseStatus foundConditionalNode(Node node);
+	TraverseStatus foundInfiniteSelfLoopNode(Node node);
+	TraverseStatus foundEndNode(Node node);
+	TraverseStatus foundFunctionReferenceNode(Node node);
 }

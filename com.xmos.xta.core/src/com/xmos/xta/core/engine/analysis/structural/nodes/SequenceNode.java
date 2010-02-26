@@ -10,7 +10,8 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class SequenceNode extends Node {
@@ -72,7 +73,7 @@ public class SequenceNode extends Node {
 		return m_nodes.get(0).getStartPc();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundSequenceNode(this, ancestors);
 
 		if (status == TraverseStatus.CONTINUE) {
@@ -86,6 +87,22 @@ public class SequenceNode extends Node {
 			ancestors.pop();
 		}
 
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
+	
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundSequenceNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+			for (Node node : m_nodes) {
+				status = node.traverse(nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}
+		}
 		if (status == TraverseStatus.ABORT) {
 			return status;
 		}

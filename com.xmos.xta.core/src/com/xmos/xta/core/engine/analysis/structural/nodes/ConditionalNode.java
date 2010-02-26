@@ -14,7 +14,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Conditional
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class ConditionalNode extends Node {
@@ -76,7 +77,7 @@ public class ConditionalNode extends Node {
 		return 0;
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundConditionalNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
@@ -95,6 +96,22 @@ public class ConditionalNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundConditionalNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+			for (Node node : m_options) {
+				status = node.traverse(nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}
+		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
 	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
 		// Returns the best/worst case option of this conditional.
 		Node option = getOption(c, ignoreIterationsAboveCond, m_options);

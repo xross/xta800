@@ -15,6 +15,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureGraph {
@@ -101,8 +102,8 @@ public class StructureGraph {
     public Node getNode(final int nodeId) {
     	m_searchNode = null;
 		for (Node node : getFunctions()) {
-		    node.traverse(new Stack<Node>(), new UntypedNodeTraverser() {
-				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+		    node.traverse(new UntypedNodeTraverser() {
+				public TraverseStatus foundNode(Node node) {
 					if (node.getId() == nodeId) {
 						m_searchNode = node;
 						return TraverseStatus.NO_CHILDREN;

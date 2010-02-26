@@ -12,7 +12,8 @@ import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class InfiniteLoopNode extends Node {
@@ -89,7 +90,7 @@ public class InfiniteLoopNode extends Node {
 		return m_loopHeader.getStartPc();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
@@ -109,6 +110,24 @@ public class InfiniteLoopNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+			m_loopHeader.traverse(nodeTraverser);
+			for (Node node : m_loops) {
+				status = node.traverse(nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}
+
+		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
 	public boolean isInfiniteLoopNode() {
 		return true;
 	}

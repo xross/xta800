@@ -10,7 +10,8 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class FunctionReferenceNode extends Node {
@@ -203,7 +204,7 @@ public class FunctionReferenceNode extends Node {
 	}
 
 	public TraverseStatus traverse(Stack<Node> ancestors,
-			NodeTraverser nodeTraverser) {
+			NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundFunctionReferenceNode(this, ancestors);
 		if(getFunctionNode() != null ){
 			if (status == TraverseStatus.CONTINUE) {
@@ -217,7 +218,20 @@ public class FunctionReferenceNode extends Node {
 		}
 		return TraverseStatus.CONTINUE;
 	}
+	
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundFunctionReferenceNode(this);
+		if(getFunctionNode() != null ){
+			if (status == TraverseStatus.CONTINUE) {
+				status = getFunctionNode().traverse(nodeTraverser);
+			}
+		}
 
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
 	/**
 	 * This is to verify that after the link process has happened that all branches are linked to their
 	 * respective function

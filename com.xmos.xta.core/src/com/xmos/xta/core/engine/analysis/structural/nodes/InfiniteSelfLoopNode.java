@@ -11,7 +11,8 @@ import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteSelfLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class InfiniteSelfLoopNode extends Node{
@@ -64,7 +65,7 @@ public class InfiniteSelfLoopNode extends Node{
 		return m_loop.getStartPc();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundInfiniteSelfLoopNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
@@ -77,6 +78,17 @@ public class InfiniteSelfLoopNode extends Node{
 		return TraverseStatus.CONTINUE;
 	}
 
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundInfiniteSelfLoopNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+			status = m_loop.traverse(nodeTraverser);
+		}
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
+	
 	public boolean isInfiniteSelfLoopNode() {
 		return true;
 	}

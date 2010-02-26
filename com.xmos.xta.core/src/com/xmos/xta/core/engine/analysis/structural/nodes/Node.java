@@ -11,6 +11,8 @@ import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public abstract class Node implements Comparable<Node> {
@@ -42,7 +44,8 @@ public abstract class Node implements Comparable<Node> {
 	 */
 	public abstract Node deepCopy(Aborter abort) throws AbortedException;
 
-	public abstract NodeTraverser.TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser);
+	public abstract TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser);
+	public abstract TraverseStatus traverse(NodeTraverser nodeTraverser);
 	public abstract LinkedList<XtaInstruction> getInstructions();
 	public abstract TimeDistributionBuckets getTimeSpread();
 
