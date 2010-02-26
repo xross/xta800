@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use File::Copy;
 use Cwd;
+use Fcntl ':mode';
 
 my $cwd = getcwd();
 my $genDir  = shift(@ARGV);
@@ -13,6 +14,9 @@ if (!$noBuild) {
   open(LOG, ">$genDir/source_read_only.log");
   copy("foo.xc", "$genDir/foo.xc") or print(LOG "Failed to copy foo.xc\n");
   copy("bar.xc", "$genDir/bar.xc") or print(LOG "Failed to copy bar.xc\n");
+ 
+  # Remove write permissions
+  chmod 0444, "$genDir/foo.xc";
   close(LOG);
 
   chdir("$genDir");
