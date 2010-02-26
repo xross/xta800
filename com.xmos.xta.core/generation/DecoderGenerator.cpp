@@ -216,7 +216,7 @@ void DecoderGenerator::calculateBranchTargetInfo(FILE *outFp, DbFormat *fmt, DbI
     for (int operIndex = 0; operIndex < fmt->numOperands(); ++operIndex)
     {
       DbOperand *operand = fmt->getOperand(operIndex);
-      if (*operand->getRelcationType() != "R_XCORE1_NONE")
+      if (*operand->getRelocationType() != "R_XCORE1_NONE")
       {
         branchTargetOperand = operand;
         break;
