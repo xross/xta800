@@ -8,9 +8,10 @@ public class CommandSource {
 		COMMAND_LINE,     // Commands passed on the command line.
 		COMPILER,         // Actions prompted via the compiler.
 		CONSOLE_VIA_GUI,  // Actions passed to the gui console via the gui.
-		SRC_LEVEL_COMMAND // Embedded command in the executable
+		SRC_LEVEL_COMMAND,// Embedded command in the executable
+		TEST			  // Console test program
 	}
-	
+
 	private String m_fileName;
 	private long m_lineNum;
 	private Type m_type;
@@ -25,18 +26,21 @@ public class CommandSource {
 	public CommandSource(Type type) {
 		m_type = type;
 		switch (type) {
+		case TEST:
+			m_fileName = "test";
+			break;
 		case CONSOLE:
 			m_fileName = "console";
 			break;
-			
+
 		case GUI:
 			m_fileName = "gui";
 			break;
-			
+
 		case COMMAND_LINE:
 			m_fileName = "cmd";
 			break;
-			
+
 		case COMPILER:
 			m_fileName = "internal";
 			break;
@@ -44,23 +48,23 @@ public class CommandSource {
 		case CONSOLE_VIA_GUI:
 			m_fileName = "gui";
 			break;
-			
+
 		case FILE:
 		case SRC_LEVEL_COMMAND:
 		default:
 			assert(false);
-		}		    
+		}
 		m_lineNum = 0;
 	}
-	
+
 	public Type getType() {
 		return m_type;
 	}
-	
+
 	public String getFileName() {
 		return m_fileName;
 	}
-	
+
 	public long getLineNum() {
 		return m_lineNum;
 	}

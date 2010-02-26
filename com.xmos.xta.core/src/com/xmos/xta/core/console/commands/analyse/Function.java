@@ -7,47 +7,47 @@ import com.xmos.xta.core.engine.Engine;
 
 public class Function extends Command {
 	private String m_functionName;
-	
+
 	public Function() {
 		m_functionName = "";
 	}
-	
+
 	public Function(String functionName) {
 		m_functionName = functionName;
 	}
 
     public int numArgs() {
     	return 1;
-    }        
-	
+    }
+
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.FUNCTION};
-	}    
-    
+	}
+
     public String name() {
     	return "function";
-    }        
+    }
 
     public String commandLine() {
     	return "function " + m_functionName;
     }
-    
+
     public String description(Engine engine, boolean detailed) {
-        return "function <FUNCTION_REF>: Analyse the given function";      	
+        return "function <FUNCTION_REF>: Analyse the given function";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) 
-			return null;		
+		if ((index + numArgs()) >= args.length)
+			return null;
 
     	String functionName = args[index + 1];
         return new Function(functionName);
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
-        engine.analyseRoute(getSrc(), m_functionName, false);  
+        engine.analyseRoute(getSrc(), m_functionName, false);
     }
 }

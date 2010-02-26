@@ -16,28 +16,28 @@ public class JLineConsole extends Console {
 	private String m_prompt;
 	private Engine m_engine;
 	private boolean m_hasEscaped;
-	
+
 	JLineConsole(Engine engine) throws IOException {
 	  	m_engine = engine;
 	  	m_hasEscaped = false;
 	  	initialise();
 	}
-	
+
 	public void display(String str) {
-		if (!redirectToFile(str)) {		
+		if (!redirectToFile(str)) {
 		    System.out.printf("%s", str);
 		}
 	}
-	
+
 	public void displayPrompt(String str) {
 		m_prompt = str;
-	}	
-	
+	}
+
 	public ConsoleCommand getNextLine(Vector<Command> commandHistory) {
 		String line = null;
 		while (line == null) {
 			try {
-    			line = m_reader.readLine(m_prompt);	
+    			line = m_reader.readLine(m_prompt);
 	    		if (line == null) {
 		   			reportError();
 		    	    return null;
@@ -52,9 +52,9 @@ public class JLineConsole extends Console {
 		return new ConsoleCommand(line, new CommandSource(Type.CONSOLE));
 	}
 
-	public void clearScreen() {		
+	public void clearScreen() {
 	}
-	
+
 	public boolean hasEscaped() {
 		return m_hasEscaped;
 	}
@@ -63,15 +63,15 @@ public class JLineConsole extends Console {
 		m_hasEscaped = true;
 	}
 
-	public void setFileRedirect(String fileName) {		
+	public void setFileRedirect(String fileName) {
 	}
-	
+
 	private void reportError() {
 		System.out.printf("internal error: Problem reading console input (aborting)..\n");
-	    System.out.printf("try using -DConsole=Basic\n");			
-		System.exit(1);		
+	    System.out.printf("try using -DConsole=Basic\n");
+		System.exit(1);
 	}
-	
+
 	private void initialise() throws IOException {
 		m_reader = new ConsoleReader();
 		m_reader.setBellEnabled(false);

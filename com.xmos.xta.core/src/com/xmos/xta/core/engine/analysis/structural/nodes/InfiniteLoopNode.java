@@ -1,21 +1,20 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class InfiniteLoopNode extends Node {
 	private NodeAttributes m_attributes;
@@ -47,6 +46,7 @@ public class InfiniteLoopNode extends Node {
 	public InfiniteLoopNode(Set<Node> loops, Node base) {
 		super();
 		m_loopHeader = base;
+		m_loopHeader.getAttributes().setIsLoopHeader(true);
 		m_loops = new ArrayList<Node>();
 		for (Node loop : loops) {
 			m_loops.add(loop);
@@ -54,10 +54,10 @@ public class InfiniteLoopNode extends Node {
 		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
-	public InfiniteLoopNode shallowCopy() {
+	public InfiniteLoopNode copyStructure() {
 		return new InfiniteLoopNode(this);
 	}
-	
+
 	public Node deepCopy(Aborter aborter) throws AbortedException {
 		InfiniteLoopNode ln = new InfiniteLoopNode();
 		for (Node loop : m_loops) {
@@ -73,23 +73,11 @@ public class InfiniteLoopNode extends Node {
     public String getTypeName() {
         return "infiniteloop";
     }
-		
+
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-    
-	public void addLoop(Node loop) {
-		m_loops.add(loop);
-	}
 
-	public Node getLoopHeader() {
-		return m_loopHeader;
-	}
-	
-	public List<Node> getLoopBodies() {
-		return m_loops;
-	}
-	
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loopHeader.getInstructions());
 		for (Node al : m_loops) {
@@ -98,19 +86,15 @@ public class InfiniteLoopNode extends Node {
 		return insts;
 	}
 
-	public XtaInstruction getStartInstruction() {
-		return m_loops.get(0).getStartInstruction();
-	}
-
 	public long getStartPc() {
 		return m_loopHeader.getStartPc();
 	}
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverser nodeTraverser) {
+	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
-			ancestors.push(this);			
-			m_loopHeader.traverse(ancestors, nodeTraverser);			
+			ancestors.push(this);
+			m_loopHeader.traverse(ancestors, nodeTraverser);
 			for (Node node : m_loops) {
 				status = node.traverse(ancestors, nodeTraverser);
 				if (status != TraverseStatus.CONTINUE) {
@@ -126,68 +110,26 @@ public class InfiniteLoopNode extends Node {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public List<Node> getIndirectChildren() {
-		List<Node> children = new LinkedList<Node>();
-		children.add(m_loopHeader);
-		for (Node node : m_loops) {
-			children.add(node);					
-		}
-		return children;
-	}
+	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+		TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this);
+		if (status == TraverseStatus.CONTINUE) {
+			m_loopHeader.traverse(nodeTraverser);
+			for (Node node : m_loops) {
+				status = node.traverse(nodeTraverser);
+				if (status != TraverseStatus.CONTINUE) {
+					break;
+				}
+			}
 
+		}
+
+		if (status == TraverseStatus.ABORT) {
+			return status;
+		}
+		return TraverseStatus.CONTINUE;
+	}
 	public boolean isInfiniteLoopNode() {
 		return true;
-	}
-	
-	public Collection<NodeDescriptor> whatsNext(NodeDescriptor nodeDescriptor) {
-		Collection<NodeDescriptor> next = new TreeSet<NodeDescriptor>();
-		if (m_loopHeader == nodeDescriptor.getNode()) {
-			for (Node loop : m_loops) {
-			    next.add(new NodeDescriptor(loop, nodeDescriptor.getAncestors()));
-			}
-			
-		} else {
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();			
-			next.add(thisNodeDescriptor);
-		}
-		return next;
-	}
-
-	public Collection<NodeDescriptor> whatsBefore(NodeDescriptor nodeDescriptor) {
-		Collection<NodeDescriptor> before = new TreeSet<NodeDescriptor>();
-		if (m_loopHeader == nodeDescriptor.getNode()) {
-			for (Node loop : m_loops) {
-				before.add(new NodeDescriptor(loop, nodeDescriptor.getAncestors()));
-			}
-			
-			NodeDescriptor thisNodeDescriptor = new NodeDescriptor(this, nodeDescriptor.getAncestors());
-			thisNodeDescriptor.getAncestors().pop();
-
-			if (!thisNodeDescriptor.getAncestors().isEmpty()) {
-				before.addAll(thisNodeDescriptor.getAncestors().peek().whatsBefore(thisNodeDescriptor));
-			}			
-			
-		} else if (m_loops.contains(nodeDescriptor.getNode())) {
-			before.add(new NodeDescriptor(m_loopHeader, nodeDescriptor.getAncestors()));
-		}
-		return before;
-	}
-	
-	public List<NodeDescriptor> getDirectChildren(Stack<Node> ancestors) {
-		List<NodeDescriptor> list = new LinkedList<NodeDescriptor>();		
-		ancestors.push(this);
-	    list.add(new NodeDescriptor(m_loopHeader, ancestors));
-		ancestors.pop();
-		return list;
-	}
-	
-	public Set<NodeDescriptor> getEndInstructions(Stack<Node> ancestors) {
-		Set<NodeDescriptor> set = new TreeSet<NodeDescriptor>();	
-		ancestors.push(this);
-		set.addAll(m_loopHeader.getEndInstructions(ancestors));
-		ancestors.pop();
-		return set;
 	}
 
 	public TimeDistributionBuckets getTimeSpread() {
@@ -195,33 +137,81 @@ public class InfiniteLoopNode extends Node {
 		tdb.setInfinite();
 		return tdb;
 	}
-		
+
 	public void replaceChild(Node oldNode, Node newNode) {
 		if (oldNode == m_loopHeader) {
 			m_loopHeader = newNode;
-				
-		} else {	
+
+		} else {
 		    int index = m_loops.indexOf(oldNode);
 		    m_loops.remove(index);
 		    m_loops.add(index, newNode);
 		}
-	}	
+	}
 
 	public void replaceChildren(List<Node> children) {
 		if (!children.isEmpty()) {
-			m_loopHeader = children.get(0);		
+			m_loopHeader = children.get(0);
 			for (int index = 1; index < children.size(); ++index) {
 				m_loops.add(children.get(index));
-			}			
-		}		
-	}	
-		
-	boolean checkBackTrail(Stack<ReferenceType> referenceTypes, 
-			Stack<Node> ancestors, Node node, boolean calledFromAbove) {
-		
-		if (!calledFromAbove) {
-		    return super.checkBackTrail(referenceTypes, ancestors, node, calledFromAbove);
+			}
 		}
-		return false;
+	}
+
+	//below here the methods have been verified useful
+
+	public List<Node> iChildren() {
+		List<Node> children = new LinkedList<Node>();
+		children.add(m_loopHeader);
+		for (Node node : m_loops) {
+			children.add(node);
+		}
+		return children;
+	}
+
+	public Set<Node> structurGraphNext(Node childNode) {
+		Set<Node> next = new TreeSet<Node>();
+		if (m_loopHeader == childNode) {
+			next.addAll(m_loops);
+		} else {
+			next.add(m_loopHeader);
+		}
+		return next;
+	}
+
+	public Set<InstructionNode> getInstructionNodes() {
+		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
+		insts.addAll(m_loopHeader.getInstructionNodes());
+		for (Node node : m_loops) {
+			insts.addAll(node.getInstructionNodes());
+		}
+		return insts;
+	}
+
+	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
+		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
+		addFunctionRefToRefSet(fnRef, m_loopHeader);
+		for(Node node : m_loops){
+			addFunctionRefToRefSet(fnRef, node);
+		}
+		return fnRef;
+	}
+
+	public void buildListUp(List<Node> nodeList,
+			Stack<FunctionReferenceNode> stack, Node start) {
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, stack, this);
+		}
+		if(m_loops.contains(start)){
+			m_loopHeader.buildListDown(nodeList);
+		}
+
+	}
+
+	public void buildListDown(List<Node> nodeList) {
+		m_loopHeader.buildListDown(nodeList);
+		for(Node node : m_loops){
+			node.buildListDown(nodeList);
+		}
 	}
 }

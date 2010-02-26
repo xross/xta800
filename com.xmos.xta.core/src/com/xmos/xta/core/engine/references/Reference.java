@@ -9,29 +9,30 @@ import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 
-public class Reference implements Comparable<Reference>  {		
+public class Reference implements Comparable<Reference>  {
 	private ReferenceType m_base;
 	private List<ReferenceType> m_backTrail;
-	
+
 	Reference(ReferenceType base) {
 		m_base = base;
 		m_backTrail = new ArrayList<ReferenceType>();
 	}
 
 	public String getRef() {
-    	String str = "";
+    	StringBuffer str = new StringBuffer();
     	for (ReferenceType backTrail : m_backTrail) {
-    		str += backTrail.getRef() + ",";
+    		str.append(backTrail.getRef());
+    		str.append(",");
     	}
-    	str += m_base.getRef();
-    	return str;
+    	str.append(m_base.getRef());
+    	return str.toString();
 	}
-	
+
 	public String getPcString() {
 		assert(m_base != null);
 		return Conversion.pcSetToString(m_base.getPcs());
 	}
-	
+
 	public Set<Long> getPcs() {
 		assert(m_base != null);
 		return m_base.getPcs();
@@ -39,32 +40,33 @@ public class Reference implements Comparable<Reference>  {
 
 	public boolean getResolved() {
 		assert(m_base != null);
-		return m_base.getResolved();		
+		return m_base.getResolved();
 	}
-	
+
 	public long getLineNum() {
 		assert(m_base != null);
-		return m_base.getLineNum();		
+		return m_base.getLineNum();
 	}
+
 	public String getFileName() {
 		assert(m_base != null);
-		return m_base.getFileName();		
+		return m_base.getFileName();
 	}
 
 	public ReferenceType getBase() {
 		return m_base;
 	}
-	
+
 	public List<ReferenceType> getBackTrail() {
 		return m_backTrail;
 	}
-	
+
 	public boolean resolve(Engine engine) {
 		assert(m_base != null);
 
 		if (!m_base.resolve(engine))
 			return false;
-			
+
 		// Resolve backtrail, but don't check it at the moment. The label may contain
 		// a backtrail which ignores the reference.
 		for (ReferenceType referenceType : m_backTrail) {
@@ -78,29 +80,29 @@ public class Reference implements Comparable<Reference>  {
 
 		if (!m_base.isPortable())
 			return false;
-			
+
 		for (ReferenceType referenceType : m_backTrail) {
 			if (!referenceType.isPortable())
 				return false;
 		}
-		return true;		
+		return true;
 	}
-	
+
 	public void addToBackTrail(ReferenceType referenceType) {
 		m_backTrail.add(referenceType);
 	}
-	
+
     public boolean equals(Object obj) {
     	if (obj == null)
     	return false;
-               
+
         if(!(obj instanceof Reference))
             return false;
 
     	// A reference is equal to another if its base pc, and
     	// all of its back trail pc's, match.
     	Reference reference = (Reference)obj;
-               
+
 		assert(m_base != null);
 		if (reference.checkPcsMatch()) {
 			if (!match(reference.getPcs(), m_base.getPcs())) {
@@ -109,10 +111,10 @@ public class Reference implements Comparable<Reference>  {
 		}
 
         if (reference.checkBackTrailMatches()) {
-	        if (m_backTrail.size() != reference.getBackTrail().size()) { 
+	        if (m_backTrail.size() != reference.getBackTrail().size()) {
 	    	    return false;
 	        }
-	
+
 	        for (int i = 0; i < m_backTrail.size(); ++i) {
 	    	    if (!match(m_backTrail.get(i).getPcs(), getBackTrail().get(i).getPcs())) {
 	    	        return false;
@@ -120,8 +122,8 @@ public class Reference implements Comparable<Reference>  {
 	        }
         }
     	return true;
-    }	
-    
+    }
+
     private boolean match(Set<Long> set1, Set<Long> set2) {
     	Set<Long> intersection = new TreeSet<Long>(set1);
     	intersection.retainAll(set2);
@@ -143,15 +145,19 @@ public class Reference implements Comparable<Reference>  {
         }
         return hash;
     }
-    
+
     public String toString() {
     	return getRef();
     }
 
-	public boolean matches(String s) {
-		return m_base.matches(s);
+	public boolean matches(String s, Engine engine) {
+		if (getRef().equals(s)) {
+			return true;
+		} else {
+			return m_base.matches(s, engine);
+		}
 	}
-	
+
 	public boolean matches(long pc) {
 		if (m_base.getPcs().contains(pc)) {
 			return true;

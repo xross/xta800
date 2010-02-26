@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
 
-public class SourceFile {
+public class SourceFile implements Comparable<SourceFile> {
 	private DebugFile m_debugFile;
 	private ArrayList<SourceLine> m_sourceLines;
 	private Map<Long, SourceLine> m_pcToLine;
@@ -33,11 +33,11 @@ public class SourceFile {
 	public String getShortFileName() {
 		return m_debugFile.getShortFileName();
 	}
-	
+
 	public String getFullFileName() {
 		return m_debugFile.getFullFileName();
 	}
-	
+
 	public void readFile() {
 		try {
 			readFile(m_debugFile.getFile());
@@ -45,11 +45,11 @@ public class SourceFile {
 			// Do nothing
 		}
 	}
-	
+
 	private void readFile(File file) throws IOException {
 		if (file == null)
 			return;
-		
+
 		int lineNo = 1;
 		BufferedReader inputFp = new BufferedReader(new FileReader(file));
 		String line = null;
@@ -70,7 +70,7 @@ public class SourceFile {
 	public File getFile() {
 		return m_debugFile.getFile();
 	}
-	
+
 	public void addPcToLine(long pc, SourceLine sourceLine) {
 		m_pcToLine.put(pc, sourceLine);
 	}
@@ -85,5 +85,9 @@ public class SourceFile {
 
 	public boolean fileNameMatches(String fileName) {
 		return m_debugFile.fileNameMatches(fileName);
+	}
+
+	public int compareTo(SourceFile o) {
+		return m_debugFile.compareTo(o.getDebugFile());
 	}
 }

@@ -10,11 +10,11 @@ public class Required extends Command {
 	private int m_routeId;
 	private String m_value;
 	private String m_mode;
-	
+
 	public Required() {
 		m_routeId = 0;
 	}
-	
+
 	public Required(int routeId, String value, String mode) {
 		m_routeId = routeId;
 		m_value = value;
@@ -22,37 +22,37 @@ public class Required extends Command {
 	}
 
     public int numArgs() {
-   		return 3; 
+   		return 3;
     }
 
     public String name() {
     	return "required";
-    }        
+    }
 
     public String commandLine() {
-       	return String.format("required %s %s %s", getRouteId(m_routeId), 
+       	return String.format("required %s %s %s", getRouteId(m_routeId),
        			m_value, m_mode);
     }
-    
+
     public String description(Engine engine, boolean detailed) {
-        String descString = "required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route";         
-      	if (detailed) { 
+        String descString = "required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route";
+      	if (detailed) {
            	descString += "\n" + TimeUnit.getHelp();
        	}
        	return descString;
     }
 
     public Command clone(String[] args, int index) {
-    	if ((index + numArgs()) >= args.length) 
+    	if ((index + numArgs()) >= args.length)
 			return null;
-    	
+
        	int routeId = 0;
    		try {
      		routeId = getRouteId(args[index + 1]);
     	} catch (NumberFormatException e) {
     		return null;
-    	} 	
-    	
+    	}
+
   		String value = args[index + 2];
      	String mode = args[index + 3];
 
@@ -62,16 +62,16 @@ public class Required extends Command {
 	    }
 	    return null;
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
 	    if (!validateRouteId(engine, console, m_routeId))
-		    return;    	
-    	
+		    return;
+
 	    TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
 	    assert(timeUnit.isValid());
         engine.setRequiredTime(getSrc(), m_routeId, timeUnit);
-    }    
+    }
 }

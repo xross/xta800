@@ -9,66 +9,69 @@ import com.xmos.xta.core.engine.TimeUnit;
 public class FunctionTime extends Command {
 	private int m_routeId;
 	private String m_functionName;
-	private TimeUnit m_timeUnit;
-	
+	private String m_value;
+	private String m_mode;
+
 	public FunctionTime() {
 		m_routeId = 0;
 		m_functionName = "";
-		m_timeUnit = null;
 	}
-	
-	public FunctionTime(int routeId, String functionName, TimeUnit timeUnit) {
+
+	public FunctionTime(int routeId, String functionName, String value, String mode) {
 		m_routeId = routeId;
 		m_functionName = functionName;
-		m_timeUnit = timeUnit;
+		m_value = value;
+		m_mode = mode;
 	}
-	
+
     public int numArgs() {
     	return 4;
-    }        
-	
+    }
+
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.IGNORE, ArgType.FUNCTION};
-	}    
-    
+	}
+
     public String name() {
     	return "functiontime";
-    }        
+    }
 
     public String commandLine() {
-    	return "functiontime " + getRouteId(m_routeId) + " " + m_functionName + " " + m_timeUnit.getDescription(false);
+    	return "functiontime " + getRouteId(m_routeId) + " " + m_functionName + " " + m_value + " " + m_mode;
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = "functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route";         
-       	if (detailed) {    	    	
+        String descString = "functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route";
+       	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}
         return descString;
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) 
-			return null;		
+		if ((index + numArgs()) >= args.length)
+			return null;
 
-		try {			
+		try {
 			int routeId = getRouteId(args[index + 1]);
 	    	String name  = args[index + 2];
 	    	String value = args[index + 3];
 	   		String mode  = args[index + 4];
-	   		
+
 		    TimeUnit timeUnit = new TimeUnit(value, mode);
 		    if (timeUnit.isValid()) {
-		    	return new FunctionTime(routeId, name, timeUnit);
+		    	return new FunctionTime(routeId, name, value, mode);
 		    }
 	    } catch (NumberFormatException e) {}
-	    return null;        
+	    return null;
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
-        engine.setFunctionTime(getSrc(), m_routeId, m_functionName, m_timeUnit); 
+		TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
+		assert(timeUnit.isValid());
+        engine.setFunctionTime(getSrc(), m_routeId, m_functionName, timeUnit);
     }
 }

@@ -4,11 +4,11 @@ import com.xmos.xta.core.engine.ProgressMonitor;
 
 public class ConsoleProgessMonitor implements ProgressMonitor {
 	private Console m_console;
-	
+
 	ConsoleProgessMonitor(Console console) {
 		m_console = console;
 	}
-	
+
 	public void beginTask(String name, int totalWork) {
 	}
 

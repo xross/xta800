@@ -1,13 +1,13 @@
 package com.xmos.xta.core.engine.sections;
 
-public class SrcLabelTableInfo implements Comparable<SrcLabelTableInfo> {
+public class SrcLabelTableInfo implements Comparable<SrcLabelTableInfo>, ScriptableInfo {
     private long m_pc;
     private String m_compilationDir;
     private String m_fileName;
     private int m_lineNumberStart;
     private int m_lineNumberEnd;
-    
-    public SrcLabelTableInfo(long pc, String compilationDir, String fileName, 
+
+    public SrcLabelTableInfo(long pc, String compilationDir, String fileName,
     		int lineNumberStart, int lineNumberEnd) {
     	m_pc = pc;
     	m_compilationDir = compilationDir;
@@ -15,15 +15,15 @@ public class SrcLabelTableInfo implements Comparable<SrcLabelTableInfo> {
     	m_lineNumberStart = lineNumberStart;
     	m_lineNumberEnd = lineNumberEnd;
     }
- 
+
     public long getPc() {
     	return m_pc;
     }
-        
+
     public String getCompilationDir() {
     	return m_compilationDir;
     }
-    
+
     public String getFileName() {
     	return m_fileName;
     }
@@ -55,4 +55,9 @@ public class SrcLabelTableInfo implements Comparable<SrcLabelTableInfo> {
 			return 0;
 		}
 	}
+
+    public String toString() {
+		return m_compilationDir + "\\" + m_fileName + ":" +
+			Long.toString(m_lineNumberStart) + "-" + Long.toString(m_lineNumberEnd);
+    }
 }

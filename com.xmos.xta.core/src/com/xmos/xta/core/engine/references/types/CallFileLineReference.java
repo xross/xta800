@@ -11,17 +11,17 @@ public class CallFileLineReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference) {
 		if (checkTypeString(reference, Type.CALL, 2) &&
-		    isSourceReference(reference) && 
+		    isSourceReference(reference) &&
 			inCodePointTable(reference, engine.getCallTable(), engine.getSourceMapper())) {
-	    	return new CallFileLineReference(reference);	
-		}	
+	    	return new CallFileLineReference(reference);
+		}
 		return null;
 	}
-	
+
 	public boolean resolve(Engine engine) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
-        long lineNumber = getLineNumber(ref);		
+        long lineNumber = getLineNumber(ref);
 
         boolean found = false;
 		for (CodePointTableInfo info : engine.getCallTable().values()) {
@@ -32,24 +32,28 @@ public class CallFileLineReference extends ReferenceType {
             	setLineNum(lineNumber);
 
             	found = true;
-            }			
-		}		
+            }
+		}
 
 		if (found) {
 			setResolved(true);
 		}
 		return found;
-	}		      
+	}
 
 	public String name() {
 		return "CallFileLine";
 	}
-	
+
 	public String description() {
 		return "Call specified in the format: 'file name:line number'";
 	}
-	
+
 	public boolean isPortable() {
 		return false;
+	}
+
+	public boolean matches(String s, Engine engine) {
+		return fileLineMatches(s, engine);
 	}
 }

@@ -3,9 +3,9 @@ package com.xmos.xta.core.engine.references.types;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
-public class PcReference extends ReferenceType {	
+public class PcReference extends ReferenceType {
 	PcReference(String ref) {
-		super(ref, Type.PC);				
+		super(ref, Type.PC);
 		if (ref != null) {
 		    addPc(getPcString(ref));
 		}
@@ -18,10 +18,10 @@ public class PcReference extends ReferenceType {
 		}
 		return null;
 	}
-	
+
 	public boolean resolve(Engine engine) {
 		SourceMapper sourceMapper = engine.getSourceMapper();
-		if (sourceMapper == null) 
+		if (sourceMapper == null)
 			return false;
 
 		if (sourceMapper.areProfilablePcs(getPcs())) {
@@ -30,16 +30,16 @@ public class PcReference extends ReferenceType {
 	    }
 	    return false;
 	}
-	
+
 	public String name() {
 		return "Pc";
 	}
-	
+
 	public String description() {
 		return "Raw program counter specified in the format: 0x*";
-	}			
-	
+	}
+
 	public boolean isPortable() {
 		return false;
-	}	
+	}
 }

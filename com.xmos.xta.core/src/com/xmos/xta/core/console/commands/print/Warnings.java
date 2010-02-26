@@ -15,13 +15,13 @@ public class Warnings extends Command {
 	public Warnings() {
 	}
 
-    public int numArgs() { 
-    	return 0; 
+    public int numArgs() {
+    	return 0;
     }
-    
-    public String name()        { return "warnings"; }        
-    public String commandLine() { return "warnings"; }        
-    
+
+    public String name()        { return "warnings"; }
+    public String commandLine() { return "warnings"; }
+
     public String description(Engine engine, boolean detailed) {
     	return "warnings: Print all timing warnings";
     }
@@ -29,25 +29,25 @@ public class Warnings extends Command {
     public Command clone(String[] args, int index) {
    		return new Warnings();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		for (Route route : engine.getRoutes()) {
 		    displayRouteSummary(engine, console, route);
-		}		
+		}
     }
 
     private void displayRouteSummary(Engine engine, Console console, Route route) {
 		RouteTiming routeTiming = route.getRouteTiming();
 		CommandSource src = routeTiming.getCommandSource();
 
-		if (!routeTiming.isTimingSpecified() || !routeTiming.passedTiming() ||
+		if (!routeTiming.isTimingSpecified() || !routeTiming.passed() ||
 			(route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0)) {
-			
+
 			// Need to take the '\n' off the end of the string
 			String description = routeTiming.getDescription(Level.DETAILED);
 			description = description.substring(0, description.length() - 1);
-			
-			engine.notify(src, Notifier.NOTIFY_WARNING, 
+
+			engine.notify(src, Notifier.NOTIFY_WARNING,
 					String.format("route(%d) %s", route.getRouteId(), description));
 		}
 	}

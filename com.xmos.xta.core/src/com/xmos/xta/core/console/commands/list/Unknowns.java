@@ -22,31 +22,31 @@ public class Unknowns extends Command {
 
     public int numArgs() {
    		return 1;
-    }        
+    }
 
     public String name() {
     	return "unknowns";
-    }        
+    }
 
     public String commandLine() {
    		return "unknowns " + getRouteId(m_routeId);
-    }        
-    
+    }
+
     public String description(Engine engine, boolean detailed) {
         return "unknowns <route id>: Displays the list of unknowns for the given route";
     }
 
     public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
-			return null;    	
-    	
+			return null;
+
     	try {
     	    return new Unknowns(getRouteId(args[index + 1]));
 	    } catch (NumberFormatException e) {
 	        return null;
-	    }    	
+	    }
     }
-    
+
     public void execute(Shell shell, Engine engine, final Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
@@ -58,17 +58,18 @@ public class Unknowns extends Command {
 	    for (Route route : engine.getRoute(m_routeId)) {
 		    Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.UNKNOWN);
 		    if (unknowns.size() > 0) {
-				for (Unknown unknown : unknowns) {			
-				    console.display(String.format("%s, pc: 0x%x, backtrace: %s\n", 
+				for (Unknown unknown : unknowns) {
+				    console.display(String.format("%s: %s, pc: 0x%x, backtrace: %s\n",
+				    		unknown.getLevel().toString(),
 				    		unknown.getDescription(),
-				    		unknown.getNode().getStartPc(), 
+				    		unknown.getNode().getStartPc(),
 				    		unknown.getNode().getBackTrace("")));
 				}
-				found = true;				
-		    }			    	
+				found = true;
+		    }
 	    }
 	    if (!found) {
 		    console.display("none\n");
-	    }		
+	    }
     }
 }

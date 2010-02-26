@@ -25,20 +25,20 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		m_config = null;
 		m_architecture = Architecture.UNKNOWN;
 	}
-	
+
 	public void setConfig(Config config, Architecture architecture) {
 		m_config = config;
 		m_architecture = architecture;
-		m_numCycles = getThreadAdjustedCycles();		
+		m_numCycles = getThreadAdjustedCycles();
 	}
-	
+
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getNode().isUnresolved()) {
-			status.mergeStatus(S.UNRESOLVED);
-		}
 		if (m_config == null) {
 			status.mergeStatus(S.NOT_AVALIABLE);
 			return 0.0;
+		}
+		if (getNode().isUnresolved()) {
+			status.mergeStatus(S.UNRESOLVED);
 		}
 		return new TimeUnit(m_config, m_numCycles, Units.CYCLES).getNs();
 	}
@@ -49,8 +49,8 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		}
 		return m_numCycles;
 	}
-	
-	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {		
+
+	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getNode().isUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
@@ -69,24 +69,24 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		}
 		return 0;
 	}
-	
+
 	public long getNumPaths() throws ArithmeticException {
 		return 1;
 	}
-	
+
 	public void setFixedTime(TimeUnit timeUnit) {
-		long cycles = timeUnit.getCycles();		
+		long cycles = timeUnit.getCycles();
 		if (m_instruction.canPause()) {
 			long baseNumCycles = getThreadAdjustedCycles();
 			if (cycles > baseNumCycles) {
-				m_numCycles = cycles;		
-			} else {								
-			    m_numCycles = baseNumCycles;	
+				m_numCycles = cycles;
+			} else {
+			    m_numCycles = baseNumCycles;
 			}
 		}
 		m_instructionTimeString = timeUnit.getDescription(false);
 	}
-	
+
 	public TimeUnit getFixedTime() {
 		return new TimeUnit(m_config, m_numCycles, Units.CYCLES);
 	}
@@ -95,14 +95,14 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		assert(m_instructionTimeString != null);
 		return m_instructionTimeString;
 	}
-	
+
 	private long getThreadAdjustedCycles() {
 		assert(m_architecture != Architecture.UNKNOWN);
-		
-		InstructionMnemonics instructionMnemonics = new InstructionMnemonics(m_architecture);		
+
+		InstructionMnemonics instructionMnemonics = new InstructionMnemonics(m_architecture);
 		if (instructionMnemonics.isDivide(m_instruction) ||
 			instructionMnemonics.isRemainder(m_instruction)) {
-			return (m_config.m_numThreads < 4) ? 
+			return (m_config.m_numThreads < 4) ?
 					m_instruction.getNumCycles() * m_config.m_numThreads :
 					m_instruction.getNumCycles() * 4;
 		}

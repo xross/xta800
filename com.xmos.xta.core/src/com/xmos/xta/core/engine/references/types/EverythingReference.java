@@ -10,23 +10,23 @@ public class EverythingReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference) {
 		if (reference.equals("*")) {
-	    	return new EverythingReference(reference);	
-		}	
+	    	return new EverythingReference(reference);
+		}
 		return null;
 	}
-	
+
 	public boolean resolve(Engine engine) {
 		return true;
-	}		      
+	}
 
 	public String name() {
 		return "EverythingReference";
 	}
-	
+
 	public String description() {
 		return "Matches everything: '*'";
 	}
-	
+
 	public boolean isPortable() {
 		return true;
 	}
@@ -34,7 +34,7 @@ public class EverythingReference extends ReferenceType {
 	public boolean matches(String s) {
 		return true;
 	}
-	
+
 	public boolean checkPcsMatch() {
 		return false;
 	}

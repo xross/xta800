@@ -14,7 +14,7 @@ public class BasicBlockData {
 	private double m_totalSize;
 	private int m_blockCount;
 	private int m_longestBlock;
-	
+
 	public BasicBlockData(){
 		m_staticalyDeterministicIbuffer = 0;
 		m_exclusivlyBranchedTo = 0 ;
@@ -23,15 +23,15 @@ public class BasicBlockData {
 		m_blockCount = 0;
 		m_longestBlock = 0;
 	}
-	
-	
+
+
 	public void add(Collection<Node> basicBlocks, int nodeId, int coreId) {
 
-		for(Node node : basicBlocks){	
+		for(Node node : basicBlocks){
 			m_longestBlock = Math.max(m_longestBlock, node.getInstructions().size());
 			m_totalSize += node.getInstructions().size();
 			m_blockCount++;
-			
+
 			if (!node.isFunctionNode()) {
 				m_totalBasicBlocks++;
 				if (allPredecessorsBranchTo(node)) {
@@ -43,17 +43,17 @@ public class BasicBlockData {
 			}
 		}
 	}
-	
+
 	public void printResults(){
 		System.out.println("Number of Basic Blocks: " + m_totalBasicBlocks);
-		System.out.println("Number of Basic Blocks that are statically deterministic: " + m_staticalyDeterministicIbuffer + " (" + 
+		System.out.println("Number of Basic Blocks that are statically deterministic: " + m_staticalyDeterministicIbuffer + " (" +
 				((m_staticalyDeterministicIbuffer*100)/m_totalBasicBlocks) + "%)");
-		System.out.println("Number of Basic Blocks exclusivly branched to: " + m_exclusivlyBranchedTo+ " (" + 
+		System.out.println("Number of Basic Blocks exclusivly branched to: " + m_exclusivlyBranchedTo+ " (" +
 				((m_exclusivlyBranchedTo*100)/m_totalBasicBlocks) + "%)");
 		System.out.println("Average number of instructions per block: " + (m_totalSize / m_blockCount) + " longest: " + m_longestBlock);
-		
+
 	}
-	
+
 	private boolean allPredecessorsBranchTo(Node node) {
 		boolean allBranch= true;
 		for(Node prev : node.getPrevNodes()){
@@ -63,22 +63,22 @@ public class BasicBlockData {
 		}
 		return allBranch;
 	}
-	
+
 	private boolean staticalyDeterministicIbuffe(Node node) {
 		if(node.getPrevNodesSize() == 1){
 			return true;
 		}
 		return allPredecessorsBranchTo(node);
 	}
-	
-	
+
+
 	class NodeCoreCollection<E> {
 		private Map<String, E> m_collectedObjects;
 
 		public NodeCoreCollection() {
 			m_collectedObjects = new HashMap<String, E>();
 		}
-		
+
 		public NodeCoreCollection(NodeCoreCollection <E> old) {
 			m_collectedObjects = new HashMap<String, E>(old.m_collectedObjects);
 		}

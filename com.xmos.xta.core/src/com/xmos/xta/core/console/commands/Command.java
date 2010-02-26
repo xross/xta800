@@ -15,7 +15,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 public abstract class Command {
 	public static final String REDIRECT_OVERWITE = ">";
 	public static final String REDIRECT_APPEND   = ">>";
-	
+
     public enum ArgType {
     	FILE,
     	FUNCTION,
@@ -33,27 +33,27 @@ public abstract class Command {
     private CommandSource m_src;
     private String m_fileRedirect;
     private RedirectMode m_fileRedirectMode;
-    
+
     public abstract int numArgs();
     public abstract String name();
     public abstract String commandLine();
     public abstract String description(Engine engine, boolean detailed);
     public abstract Command clone(String[] args, int index);
     public abstract void execute(Shell shell, Engine engine, Console console);
-    
+
 	public String toString(){
 		return commandLine();
 	}
-    
+
 	public Command[] getSubCommands() {
 		return new Command[] {};
 	}
-    
+
 	public ArgType[] getArgTypes() {
 		return new ArgType[] {};
 	}
-	
-    public boolean isExecutableLoaded(Engine engine, Console console) {    
+
+    public boolean isExecutableLoaded(Engine engine, Console console) {
 	    File executable = engine.getExecutable();
     	if (executable == null) {
     		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no executable loaded");
@@ -62,22 +62,13 @@ public abstract class Command {
     	return true;
     }
 
-    public boolean isPresent(Engine engine, int nodeId, int coreId, Console console) { 
-    	if (engine.getXeLoader().getMemoryImage(nodeId, coreId) == null) {
-    		engine.notify(m_src, Notifier.NOTIFY_ERROR,
-    				String.format("no code loaded on node: %d, core: %d", nodeId, coreId));
-    		return false;
-    	}
-    	return true;    	
-    }
-    
     public boolean validateRoutes(Engine engine, Console console) {
        	if (engine.getRoutes().size() == 0) {
     		engine.notify(m_src, Notifier.NOTIFY_ERROR,
     				"no routes analysed");
     		return false;
      	}
-        return true;  	
+        return true;
     }
 
     public boolean validateRouteId(Engine engine, Console console, int routeId) {
@@ -95,15 +86,15 @@ public abstract class Command {
     	}
     	return true;
     }
-    
+
     public boolean validateNodeId(Engine engine, Console console, int routeId, int nodeId) {
     	if (routeId == Engine.ROUTE_ID_GLOBAL) {
         	Node node = engine.getStructureGraph().getNode(nodeId);
         	if (node == null) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
        					"invalid node id: %d", nodeId));
-        		return false;    		
-        	}        	    		    		
+        		return false;
+        	}
     	} else {
 	    	if (engine.getRoutes().size() == 0) {
 	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
@@ -115,29 +106,31 @@ public abstract class Command {
        					"invalid route id: %d", routeId));
         		return false;
         	}
-        	
+
         	boolean found = false;
         	for (Route route : routes) {
             	Node node = route.getNode(nodeId);
             	if (node != null) {
             		found = true;
             		break;
-            	}        	
+            	}
         	}
         	if (!found) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
        					"invalid node id: %d", nodeId));
-        		return false;    		        		
+        		return false;
         	}
-    	}    	    	    	
+    	}
     	return true;
     }
-    
+
     public static int getRouteId(String routeId) {
     	if (routeId.equals("-")) {
     		return Engine.ROUTE_ID_LAST;
     	} else if (routeId.equals("#")) {
     		return Engine.ROUTE_ID_GLOBAL;
+    	} else if (routeId.equals("*")) {
+    		return Engine.ROUTE_ID_ALL;
     	}
     	int route = Integer.parseInt(routeId);
     	return route;
@@ -148,6 +141,8 @@ public abstract class Command {
     		return "-";
     	} else if (routeId == Engine.ROUTE_ID_GLOBAL) {
     		return "#";
+    	} else if (routeId == Engine.ROUTE_ID_ALL) {
+    		return "*";
     	}
     	return String.format("%d", routeId);
     }
@@ -155,7 +150,7 @@ public abstract class Command {
     public static int getNodeId(String nodeId) {
     	if (nodeId.equals("-")) {
     		return Engine.NODE_ID_TOP_LEVEL;
-    	} 
+    	}
     	int node = Integer.parseInt(nodeId);
     	return node;
     }
@@ -163,13 +158,13 @@ public abstract class Command {
     public static String getNodeId(int nodeId) {
     	if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
     		return "-";
-    	} 
+    	}
     	return String.format("%d", nodeId);
-    }    
+    }
 
     protected boolean areArgsDone(String[] args, int i) {
-		if ((i >= args.length) || 
-			(args[i].startsWith("-") && (args[i].length() > 1)) || 
+		if ((i >= args.length) ||
+			(args[i].startsWith("-") && (args[i].length() > 1)) ||
 			args[i].startsWith("\n") ||
 			args[i].equals(REDIRECT_OVERWITE) ||
 			args[i].equals(REDIRECT_APPEND)) {
@@ -181,7 +176,7 @@ public abstract class Command {
     protected Collection<Node> getCollection(Node node) {
     	Collection<Node> nodes = new ArrayList<Node>();
     	nodes.add(node);
-    	return nodes;    	
+    	return nodes;
     }
 
     protected Node getReferencedNode(Engine engine, int routeId, String nodeString) {
@@ -194,19 +189,19 @@ public abstract class Command {
     	}
     	return null;
     }
-    
+
     public void setSrc(CommandSource src) {
 		m_src = src;
 	}
-    
+
     public CommandSource getSrc() {
 		return m_src;
 	}
-    
+
     public void setFileRedirect(String fileRedirect) {
     	m_fileRedirect = fileRedirect;
     }
-    
+
     public String getFileRedirect() {
     	return m_fileRedirect;
     }
@@ -214,20 +209,20 @@ public abstract class Command {
     public void setFileRedirectMode(RedirectMode fileRedirectMode) {
     	m_fileRedirectMode = fileRedirectMode;
     }
-    
+
     public RedirectMode getFileRedirectMode() {
     	return m_fileRedirectMode;
     }
-    
+
     public String getFullCommandLine() {
 		if (m_fileRedirect != null) {
 			switch (m_fileRedirectMode) {
 			case OVERWRITE:
 				return commandLine() + " " + REDIRECT_OVERWITE + " " + m_fileRedirect;
-				
+
 			case APPEND:
 				return commandLine() + " " + REDIRECT_APPEND + " " + m_fileRedirect;
-				
+
 			default:
 				return commandLine();
 			}

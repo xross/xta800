@@ -13,17 +13,17 @@ public class NodeCoreCollection<E> {
 	public NodeCoreCollection() {
 		m_collectedObjects = new HashMap<String, E>();
 	}
-	
+
 	public NodeCoreCollection(NodeCoreCollection<E> old) {
 		m_collectedObjects = new HashMap<String, E>(old.m_collectedObjects);
 	}
 
-	public void add(int nodeId, int coreId, E newObject) {
-		m_collectedObjects.put(nodeCoreToString(nodeId, coreId), newObject);
+	public void add(int nodeNumber, int coreNumber, E newObject) {
+		m_collectedObjects.put(nodeCoreToString(nodeNumber, coreNumber), newObject);
 	}
 
-	public E get(int nodeId, int coreId) {
-		return m_collectedObjects.get(nodeCoreToString(nodeId, coreId));
+	public E get(int nodeNumber, int coreNumber) {
+		return m_collectedObjects.get(nodeCoreToString(nodeNumber, coreNumber));
 	}
 
 	public void clear() {
@@ -38,13 +38,13 @@ public class NodeCoreCollection<E> {
 		return entries;
 	}
 
-	private String nodeCoreToString(int nodeId, int coreId) {
-		return nodeId + ":" + coreId;
+	private String nodeCoreToString(int nodeNumber, int coreNumber) {
+		return nodeNumber + ":" + coreNumber;
 	}
-	
+
 	private Pair<Integer, Integer> stringToNodeCore(String str) {
-		int nodeId = Integer.parseInt(str.split(":")[0]);
-		int coreId = Integer.parseInt(str.split(":")[1]);
-		return new Pair<Integer, Integer>(nodeId, coreId);
+		int nodeNumber = Integer.parseInt(str.split(":")[0]);
+		int coreNumber = Integer.parseInt(str.split(":")[1]);
+		return new Pair<Integer, Integer>(nodeNumber, coreNumber);
 	}
 }

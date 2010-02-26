@@ -13,18 +13,18 @@ import com.xmos.xta.core.engine.Notifier;
 public class CodePoints extends Section  {
 	private String m_sectionName;
 	private List<CodePointInfo> m_codePoints;
-	
-	CodePoints(int nodeId, int coreId, String sectionName, Notifier notifier) {
-		super(nodeId, coreId, notifier);
+
+	CodePoints(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
+		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
 		m_codePoints = new ArrayList<CodePointInfo>();
 	}
-	
+
 	boolean add(CommandSource src, String label, int pc) {
 		m_codePoints.add(new CodePointInfo(pc, label, "", "", 0));
 		return true;
 	}
-	
+
 	boolean remove(CommandSource src, String label) {
 		boolean found = false;
 		Iterator<CodePointInfo> iter = m_codePoints.iterator();
@@ -46,44 +46,44 @@ public class CodePoints extends Section  {
 		}
 		return true;
 	}
-	
+
 	List<CodePointInfo> get() {
 		return m_codePoints;
 	}
-	
+
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeId(), getCoreId());
-				
+		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeNumber(), getCoreNumber());
+
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {
 	        	int base = byteIndex;
-	        	
+
 	        	int size = ByteArrayManipulation.readInt(data, byteIndex);
 	        	byteIndex += 4;
 
 	        	// Ignores the version field.
 	       		ByteArrayManipulation.readInt(data, byteIndex);
 	       		byteIndex += 4;
-	        		        		
+
 	       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
 	       		byteIndex += compilationDir.length() + 1;
-	       		
-	           	while (byteIndex < (base + size)) {        		
+
+	           	while (byteIndex < (base + size)) {
 	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
-	        		
+
 	        		String codePoint = ByteArrayManipulation.readString(data, byteIndex);
 	        		byteIndex += codePoint.length() + 1;
 
 	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
 	        		byteIndex += fileName.length() + 1;
-	        		
+
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
-	        		        		
-            		m_codePoints.add(new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));        	        		
-	        	}			
+
+            		m_codePoints.add(new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));
+	        	}
 		    }
         } catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(

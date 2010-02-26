@@ -25,7 +25,7 @@ public class Function implements Line, Comparable<Object> {
 	}
 
 	public int compareTo(Object o) throws ClassCastException {
-		Function f = (Function) o; 
+		Function f = (Function) o;
 		if (m_functionName.charAt(0) == '_') {
 			if (f.m_functionName.charAt(0) == '_')
 				return m_functionName.compareTo(f.m_functionName);

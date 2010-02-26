@@ -5,6 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.references.types.ReferenceClassType;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -12,7 +13,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 public class Help extends Command {
 	private Command m_command;
 	private ReferenceClass m_referenceClass;
-	
+
 	public Help() {
 		m_command = null;
 		m_referenceClass = null;
@@ -21,28 +22,28 @@ public class Help extends Command {
 	public Help(Command command) {
 		m_command = command;
 	}
-	
+
 	public Help(ReferenceClass referenceClass) {
 		m_referenceClass = referenceClass;
 	}
-	
+
     public int numArgs() {
     	if (m_command != null) {
     		return 1;
     	}
     	if (m_referenceClass != null) {
     	    return 1;
-    	} 
+    	}
     	return 0;
-    }        
+    }
 
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.HELP};
-	}    
-    
+	}
+
     public String name() {
     	return "help";
-    }        
+    }
 
     public String commandLine() {
     	if (m_command != null) {
@@ -53,26 +54,28 @@ public class Help extends Command {
     	}
    		return "help";
     }
-   
+
     public String description(Engine engine, boolean detailed) {
-        String desc = "help [command/option]: Displays help message for the given command/option";  
-        
+        String desc = "help [command/option]: Displays help message for the given command/option";
+
         if (detailed) {
-            desc += "\n      options: ";                          
+            desc += "\n      options: ";
             for (ReferenceClass referenceClass : ReferenceClass.values()) {
-        	    desc += String.format("%s, ", referenceClass.name()); 
+            	if (ReferenceTypeFactory.getReferenceClass(referenceClass).isVisible()) {
+            		desc += String.format("%s, ", referenceClass.name());
+            	}
             }
             desc = desc.substring(0, desc.length() - 2);
         }
         return desc;
     }
-    
+
     public Command clone(String[] args, int index) {
 		if (areArgsDone(args, index + 1)) {
 			return new Help();
 		}
-    	
-		String arg = args[index + 1];    	
+
+		String arg = args[index + 1];
 		// Checks for matching commands..
     	Command[] avaliableCommands = CommandFactory.getCommands();
     	for (Command command : avaliableCommands) {
@@ -87,30 +90,31 @@ public class Help extends Command {
     	    	return new Help(referenceClass);
     	    }
         }
-        
+
         // Error..
     	return null;
     }
-    
-    public void execute(Shell shell, Engine engine, Console console) { 
+
+    public void execute(Shell shell, Engine engine, Console console) {
     	if (m_command != null) {
     		// Displays help for a specific command.
-    		console.display(String.format("  [-]%s\n", m_command.description(engine, true)));    		
+    		console.display(String.format("  [-]%s\n", m_command.description(engine, true)));
     	} else if (m_referenceClass != null) {
     		// Displays help for a specific option.
     		console.display("  Any of the following are permitted:\n");
-    		
-    		ReferenceType[] referenceTypes = ReferenceTypeFactory.getReferenceClass(m_referenceClass); 
+
+    		ReferenceClassType classType = ReferenceTypeFactory.getReferenceClass(m_referenceClass);
+    		ReferenceType[] referenceTypes = classType.getReferencTypes();
     		for (ReferenceType referenceType : referenceTypes) {
-    			console.display(String.format("    %s: %s\n", 
-    					referenceType.name(), referenceType.description())); 
-    		}    		
-    	} else {    	
-            // Displays help for all commands.    	
+    			console.display(String.format("    %s: %s\n",
+    					referenceType.name(), referenceType.description()));
+    		}
+    	} else {
+            // Displays help for all commands.
 	    	Command[] avaliableCommands = CommandFactory.getCommands();
 	    	for (Command command : avaliableCommands) {
-	    		console.display(String.format("  [-]%s\n", command.description(engine, false)));   		
+	    		console.display(String.format("  [-]%s\n", command.description(engine, false)));
 	    	}
     	}
-    }    
+    }
 }

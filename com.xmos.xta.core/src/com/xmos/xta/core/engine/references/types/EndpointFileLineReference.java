@@ -11,7 +11,7 @@ public class EndpointFileLineReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference) {
 		if (checkTypeString(reference, Type.ENDPOINT, 2) &&
-		    isSourceReference(reference) && 
+		    isSourceReference(reference) &&
 			inCodePointTable(reference, engine.getEndpointTable(), engine.getSourceMapper())) {
 	    	return new EndpointFileLineReference(reference);
 		}
@@ -21,7 +21,7 @@ public class EndpointFileLineReference extends ReferenceType {
 	public boolean resolve(Engine engine) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
-        long lineNumber = getLineNumber(ref);		
+        long lineNumber = getLineNumber(ref);
 
         boolean found = false;
 		for (CodePointTableInfo info : engine.getEndpointTable().values()) {
@@ -33,22 +33,26 @@ public class EndpointFileLineReference extends ReferenceType {
             	found = true;
             }
 		}
-		
+
 		if (found) {
 			setResolved(true);
 		}
 		return found;
-	}		      
+	}
 
 	public String name() {
 		return "EndpointFileLine";
 	}
-	
+
 	public String description() {
 		return "Endpoint specified in the format: 'file name:line number'";
 	}
-	
+
 	public boolean isPortable() {
 		return false;
-	}	
+	}
+
+	public boolean matches(String s, Engine engine) {
+		return fileLineMatches(s, engine);
+	}
 }

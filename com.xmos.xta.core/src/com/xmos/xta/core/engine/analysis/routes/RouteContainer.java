@@ -10,18 +10,18 @@ public class RouteContainer {
     private RouteDescription m_description;
     private List<Route> m_routes;
     private List<Boolean> m_exists;
-    
+
     public RouteContainer(CommandSource src, RouteDescription description) {
     	m_src = src;
     	m_description = description;
     	m_routes = new ArrayList<Route>();
     	m_exists = new ArrayList<Boolean>();
     }
-    
+
     public RouteDescription getDescription() {
     	return m_description;
     }
-    
+
     public CommandSource getCommandSrc() {
     	return m_src;
     }
@@ -39,9 +39,9 @@ public class RouteContainer {
     }
 
     public List<Route> getRoutes() {
-    	return m_routes;    	
+    	return m_routes;
     }
-    
+
     public boolean routeExists(Route route) {
     	int index = m_routes.indexOf(route);
     	return m_exists.get(index);

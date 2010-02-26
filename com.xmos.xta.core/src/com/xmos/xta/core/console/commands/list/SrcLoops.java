@@ -15,19 +15,19 @@ public class SrcLoops extends Command {
 	}
 
 	public String name() {
-  		return "srcloops"; 
+  		return "srcloops";
 	}
 
 	public String commandLine() {
-   		return "srcloops"; 
+   		return "srcloops";
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "srcloops : Displays the loop counts embedded in the loaded executable";         
+        return "srcloops : Displays the loop counts embedded in the loaded executable";
 	}
 
 	public Command clone(String[] args, int index) {
-   		return new SrcLoops();            
+   		return new SrcLoops();
 	}
 
 	public void execute(Shell shell, Engine engine, Console console) {
@@ -38,11 +38,11 @@ public class SrcLoops extends Command {
 			console.display("none\n");
 			return;
 		}
-		
+
 		for (SrcLevelLoopInfo srcLevelLoopInfo : engine.getSrcLevelLoops()) {
-    	    console.display(String.format("0x%x: %d\n", 
-                    srcLevelLoopInfo.getPc(), 
+    	    console.display(String.format("0x%x: %d\n",
+                    srcLevelLoopInfo.getPc(),
                     srcLevelLoopInfo.getNumIterations()));
-    	}		
+    	}
 	}
 }

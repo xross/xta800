@@ -14,13 +14,13 @@ public class Summary extends Command {
 	public Summary() {
 	}
 
-    public int numArgs() { 
-    	return 0; 
+    public int numArgs() {
+    	return 0;
     }
-    
-    public String name()        { return "summary"; }        
-    public String commandLine() { return "summary"; }        
-    
+
+    public String name()        { return "summary"; }
+    public String commandLine() { return "summary"; }
+
     public String description(Engine engine, boolean detailed) {
     	return "summary: Show routes summary (verbosity -2|-1|0)";
     }
@@ -28,71 +28,71 @@ public class Summary extends Command {
     public Command clone(String[] args, int index) {
    		return new Summary();
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	
+			return;
 
 		if (!validateRoutes(engine, console))
 			return;
-		
+
 		for (Route route : engine.getRoutes()) {
 		    displayRouteSummary(console, route, engine.getVerbosity());
-		}		
+		}
 		displayOverallSummary(console, engine);
     }
 
     private void displayRouteSummary(Console console, Route route, int verbosity) {
     	if (verbosity >= 0) {
-			displayRouteSummary(console, route, true, true);			
-    		    	
+			displayRouteSummary(console, route, true, true);
+
     	} else if (verbosity == -1) {
-			displayRouteSummary(console, route, true, false);			
-		} 
+			displayRouteSummary(console, route, true, false);
+		}
     }
-    
-	private void displayRouteSummary(Console console, Route route, 
+
+	private void displayRouteSummary(Console console, Route route,
 			boolean displayFailures, boolean displayPasses) {
 
-		RouteTiming routeTiming = route.getRouteTiming();				
-		if (routeTiming.isTimingSpecified()) {			
-			if (routeTiming.passedTiming()) {
+		RouteTiming routeTiming = route.getRouteTiming();
+		if (routeTiming.isTimingSpecified()) {
+			if (routeTiming.passed()) {
 				if (displayPasses) {
-					console.display(String.format("Route(%d) %s\n%s\n", 
-							route.getRouteId(), 
+					console.display(String.format("Route(%d) %s\n%s\n",
+							route.getRouteId(),
 							route.getRouteDescription().getDescription(),
-							routeTiming.getDescription(Level.DETAILED))); 
+							routeTiming.getDescription(Level.DETAILED)));
 				}
 			} else {
 				if (displayFailures) {
-					console.display(String.format("Route(%d) %s\n%s\n", 
-							route.getRouteId(), 
+					console.display(String.format("Route(%d) %s\n%s\n",
+							route.getRouteId(),
 							route.getRouteDescription().getDescription(),
-							routeTiming.getDescription(Level.DETAILED))); 
+							routeTiming.getDescription(Level.DETAILED)));
 				}
-			}			
+			}
 		} else {
-			console.display(String.format("Route(%d) %s\n%s\n", 
-					route.getRouteId(), 
+			console.display(String.format("Route(%d) %s\n%s\n",
+					route.getRouteId(),
 					route.getRouteDescription().getDescription(),
 			        routeTiming.getDescription(Level.SIMPLE)));
 		}
 	}
-		
+
     private void displayOverallSummary(Console console, Engine engine) {
 		double maxViolationTime = 0.0;
 		Status maxViolationStatus = new Status();
-		
+
 		int numFails = 0;
 		int numUnspecified = 0;
 		int total = 0;
 		int minFrequency = 0;
-		
+
 		for (Route route : engine.getRoutes()) {
 			RouteTiming routeTiming = route.getRouteTiming();
-				
-			if (routeTiming.isTimingSpecified()) {			
-				if (routeTiming.passedTiming()) {
+
+			if (routeTiming.isTimingSpecified()) {
+				if (routeTiming.passed()) {
 					Status status = new Status();
 					int frequency = routeTiming.getMinFrequency(status);
 					if ((status.isComplete() || status.isZero()) && (frequency > minFrequency)) {
@@ -100,7 +100,7 @@ public class Summary extends Command {
 					}
 				} else {
 					Status status = new Status();
-					double violationTime = routeTiming.getViolationTime(status);				
+					double violationTime = routeTiming.getViolationTime(status);
 					if ((status.isComplete() || status.isZero()) && (violationTime > maxViolationTime)) {
 						maxViolationTime = violationTime;
 					}
@@ -112,19 +112,19 @@ public class Summary extends Command {
 			}
 			++total;
 		}
-		
+
 		if (numUnspecified == 0) {
 			if (numFails > 0) {
 				if (maxViolationStatus.isComplete() || maxViolationStatus.isZero()) {
-				    console.display(String.format("Fail, %d/%d, Max Violation: %s\n", 
+				    console.display(String.format("Fail, %d/%d, Max Violation: %s\n",
 				    		numFails, total, Conversion.getTimeString(maxViolationTime)));
 				} else {
-				    console.display(String.format("Fail, %d/%d, Max Violation: %s\n", 
+				    console.display(String.format("Fail, %d/%d, Max Violation: %s\n",
 				    		numFails, total, maxViolationStatus.getString()));
 				}
 			} else {
-				console.display(String.format("Pass, Min Core Frequency: %d mhz\n", 
-			    		minFrequency));			
+				console.display(String.format("Pass, Min Core Frequency: %d mhz\n",
+			    		minFrequency));
 			}
 		} else {
 		    console.display("Fail, Timing Unspecified\n");

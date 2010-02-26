@@ -10,40 +10,39 @@ import com.xmos.xta.core.engine.TimeUnit;
 public class InstructionTime extends Command {
 	private int m_routeId;
 	private String m_refString;
-	private TimeUnit m_timeUnit;
-	
+	private String m_value;
+	private String m_mode;
+
 	public InstructionTime() {
-		m_routeId = 0;
-		m_refString = null;
-		m_timeUnit = null;
 	}
-	
-	public InstructionTime(int routeId, String refString, TimeUnit timeUnit) {
+
+	public InstructionTime(int routeId, String refString, String value, String mode) {
 		m_routeId = routeId;
 		m_refString = refString;
-		m_timeUnit = timeUnit;
+		m_value = value;
+		m_mode = mode;
 	}
 
     public int numArgs() {
-   		return 4; 
+   		return 4;
     }
 
 	public ArgType[] getArgTypes() {
 		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ENDPOINT};
-	}    
-    
+	}
+
     public String name() {
     	return "instructiontime";
-    }        
+    }
 
     public String commandLine() {
-       	return String.format("instructiontime %s %s %s", getRouteId(m_routeId), 
-       			m_refString, m_timeUnit.getDescription(false));
+       	return String.format("instructiontime %s %s %s %s", getRouteId(m_routeId),
+       			m_refString, m_value, m_mode);
     }
-    
+
     public String description(Engine engine, boolean detailed) {
-        String descString = "instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";         
-       	if (detailed) {    	    	
+        String descString = "instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";
+       	if (detailed) {
            	descString += "\n";
            	descString += TimeUnit.getHelp();
        	}
@@ -51,7 +50,7 @@ public class InstructionTime extends Command {
     }
 
     public Command clone(String[] args, int index) {
-    	if ((index + numArgs()) >= args.length) 
+    	if ((index + numArgs()) >= args.length)
 			return null;
 
     	int routeId = 0;
@@ -59,26 +58,28 @@ public class InstructionTime extends Command {
      		routeId = getRouteId(args[index + 1]);
     	} catch (NumberFormatException e) {
     		return null;
-    	} 	
+    	}
 
-    	String ref = args[index + 2];   		
+    	String ref = args[index + 2];
     	String value = args[index + 3];
    		String mode = args[index + 4];
-   		    
+
 	    TimeUnit timeUnit = new TimeUnit(value, mode);
 	    if (timeUnit.isValid()) {
-	    	return new InstructionTime(routeId, ref, timeUnit);
+	    	return new InstructionTime(routeId, ref, value, mode);
 	    }
 	    return null;
     }
-    
+
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
-			return;			    	    	
-    	
-        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, m_timeUnit)) {
+			return;
+
+		TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
+		assert(timeUnit.isValid());
+        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, timeUnit)) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   	       			"failed to set instruction time on reference id: %s", m_refString));    			            	        	
-		}		
-    }    
+   	       			"failed to set instruction time on reference id: %s", m_refString));
+		}
+    }
 }

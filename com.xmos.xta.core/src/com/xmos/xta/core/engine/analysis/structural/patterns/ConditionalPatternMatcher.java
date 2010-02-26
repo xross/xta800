@@ -1,23 +1,23 @@
 package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.TreeSet;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class ConditionalPatternMatcher extends PatternMatcher {
-	
+
 	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
 		m_treeStart = treeStart;
 
 		if (currentNode.getNextNodesSize() < 2) {
 			return false;
 		}
-		
+
 		Map<Node, Set<Node>> condNodeMap = new TreeMap<Node, Set<Node>>();
 		Set<Node> isOptionalSet = new TreeSet<Node>();
 		for (Node node : currentNode.getNextNodes()) {
@@ -26,11 +26,15 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 				return false;
 			}
 		}
-		
+
 		for (Node endNode : condNodeMap.keySet()) {
 			boolean isOptional = isOptionalSet.contains(endNode);
 			Set<Node> condNodes = condNodeMap.get(endNode);
 			int numNodes = condNodes.size();
+			
+			if(condNodes.contains(treeStart)){
+				continue;
+			}
 			if (isOptional) {
 				numNodes += 1;
 			}
@@ -45,10 +49,10 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 
 	private Set<Node> getConditionalDepth(Node currentNode, int depth, Node startNode,
 			Map<Node,Set<Node>> endNodeMap, Set<Node> isOptionalSet) {
-		
+
 		if ((depth > 1) || (currentNode == startNode)) {
 			return null;
-			
+
 		} else if (currentNode.getPrevNodesSize() > 1) {
 			Set<Node> condNodes = endNodeMap.get(currentNode);
 			if (condNodes == null) {
@@ -59,22 +63,22 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 				isOptionalSet.add(currentNode);
 			}
 			return condNodes;
-			
+
 		} else if (currentNode.getNextNodesSize() == 0) {
 			return new TreeSet<Node>();
-			
+
 		} else if (currentNode.getNextNodesSize() != 1) {
 			return null;
-			
+
 		} else {
 			Set<Node> condNodes = getConditionalDepth(currentNode.getNextNode(), depth + 1, startNode,
 					endNodeMap, isOptionalSet);
-			
+
 			if (condNodes != null) {
 				condNodes.add(currentNode);
 			}
 			return condNodes;
-			
+
 		}
 	}
 
@@ -88,15 +92,15 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 		if (jumpNode != null) {
 			edgeCount++;
 		}
-		
+
 		if (edgeCount < 2) {
 			return false;
 		}
-		
+
 		if (!endNode.getPrevNodes().containsAll(condNodes)) {
 			return false;
 		}
-		
+
 		if (jumpNode != null && jumpNode != endNode) {
 			return false;
 		}
@@ -105,14 +109,14 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 
 	protected void updateGraph(Node startNode, Collection<Node> condNodes, boolean isOptional,
 			Collection<Node> workingSet, Node endNode) {
-		
+
 		for (Node condNode : condNodes){
 			startNode.removeNextNode(condNode);
 		}
-		
+
 		ConditionalNode newCondNode = new ConditionalNode(condNodes, isOptional);
 		startNode.addNextNode(newCondNode);
-		
+
 		endNode.getPrevNodes().removeAll(condNodes);
 		endNode.addPrevNode(newCondNode);
 
@@ -127,7 +131,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 		workingSet.removeAll(condNodes);
 		workingSet.add(newCondNode);
 	}
-	
+
 	public boolean usesDominatorTree() {
 		return false;
 	}

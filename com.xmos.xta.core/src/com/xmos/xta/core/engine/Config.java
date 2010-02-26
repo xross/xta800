@@ -11,17 +11,19 @@ public class Config {
 	public boolean m_timingFailuresAsErrors;
 
 	static final public double DEFAULT_MHZ = 400;
+	static final public int DEFAULT_THREADS = 8;
+	static final public int MAX_THREADS = 8;
 
 	static final public int VERBOSITY_DISPLAY_INSTRUCTION_NODES = 1;
 	static final public int VERBOSITY_DISPLAY_NULL_NODE = 50;
 	static final public int VERBOSITY_DISPLAY_NUM_PATHS = 50;
 	static final public int VERBOSITY_DISPLAY_ATTRIBUTES = 50;
-	static final public int VERBOSITY_DISPLAY_ANCESTORS = 50;	
+	static final public int VERBOSITY_DISPLAY_ANCESTORS = 50;
 	static final public int VERBOSITY_PROGRESS_MONITOR_ENABLED = 10;
-	
+
 	public Config() {
 		m_verbosity = 0;
-		m_numThreads = 8;
+		m_numThreads = DEFAULT_THREADS;
 		m_frequency = DEFAULT_MHZ;
 		m_case = Case.WORST;
 		m_warnAsErrors = false;

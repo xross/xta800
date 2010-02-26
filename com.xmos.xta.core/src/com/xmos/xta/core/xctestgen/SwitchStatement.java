@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class SwitchStatement extends CodeElement {
-	
+
 	public SwitchStatement(int id) {
 		super(10, "s", id);
 	}
-	
+
 	public void emitSource(BufferedWriter file, int depth) throws IOException {
 		emitSourceIndent(file, depth);
 		file.write("switch (x) {\n");
@@ -27,7 +27,7 @@ public class SwitchStatement extends CodeElement {
 		file.write("}\n");
 	}
 
-	// Emit the part of the switch which relates to the current path 
+	// Emit the part of the switch which relates to the current path
 	public void emitExpect(int node, BufferedWriter file, int depth) throws IOException  {
 //TODO
 		for (ArrayList<CodeElement> children : m_children) {
