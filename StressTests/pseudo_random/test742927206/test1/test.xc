@@ -18,6 +18,7 @@ int f(int i){
   #pragma xta endpoint "ep2"
   t :> y;
   #pragma xta call "label_0"
+  #pragma xta call "label_0"
   i = i + 32;
   #pragma xta call "label_0"
   i = i + 32;

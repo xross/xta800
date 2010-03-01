@@ -29,6 +29,7 @@ timer t;
   t :> x;
 #pragma xta call "callf"
 i = f(i) + 32;
+#pragma xta call "label_0"
 i = i + 32;
 	#pragma xta call "label_0"
 	return 54;
