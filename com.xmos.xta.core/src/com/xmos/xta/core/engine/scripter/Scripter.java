@@ -106,8 +106,7 @@ public class Scripter {
 	public void enable(CommandSource src, Notifier notifier, String ref) {
 		ScripterReference scripterReference = getReference(ref);
 		if (scripterReference != null) {
-			scripterReference.setEnable(true);
-			m_disables.remove(ref);
+			setEnable(scripterReference, true);
 		} else {
 			notifier.notify(src, Notifier.NOTIFY_ERROR,
 					String.format("Reference '%s' not used in scripter", ref));
@@ -117,12 +116,20 @@ public class Scripter {
 	public void disable(CommandSource src, Notifier notifier, String ref) {
 		ScripterReference scripterReference = getReference(ref);
 		if (scripterReference != null) {
-			scripterReference.setEnable(false);
-			m_disables.add(ref);
+			setEnable(scripterReference, false);
 		} else {
 			notifier.notify(src, Notifier.NOTIFY_ERROR,
 					String.format("Reference '%s' not used in scripter", ref));
 		}
+	}
+
+	public void setEnable(ScripterReference scripterReference, boolean enable) {
+		scripterReference.setEnable(enable);
+		if (enable) {
+			m_disables.remove(scripterReference.getReference().getRef());
+		} else {
+			m_disables.add(scripterReference.getReference().getRef());
+		}	
 	}
 
 	public void rename(CommandSource src, Notifier notifier, String from, String to) {
@@ -136,9 +143,13 @@ public class Scripter {
 					String.format("Reference '%s' cannot be renamed", from));
 
 		} else {
-			scripterReference.rename(to);
-			m_renames.put(from, to);
+			rename(scripterReference, from, to);
 		}
+	}
+
+	public void rename(ScripterReference scripterReference, String from, String to) {
+		scripterReference.rename(to);
+		m_renames.put(from, to);
 	}
 
 	public Collection<ScripterReference> getRefs() {
