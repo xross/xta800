@@ -181,6 +181,7 @@ public class SourceMapper {
     }
 
     public boolean fileNewerThanBinary(File file) {
+    	assert(file != null);
     	long sourceLastModified = file.lastModified();
     	return (sourceLastModified > m_xeLastModified);
 	}
