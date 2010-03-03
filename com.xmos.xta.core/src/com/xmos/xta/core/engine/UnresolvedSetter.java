@@ -27,7 +27,7 @@ public class UnresolvedSetter {
 	}
 
 	private void findUnresolved(Node inst, Set<Node> seen, Set<Node> isUnresolved) {
-		Set<Node> following = new HashSet<Node>();
+		Set<Node> following = new TreeSet<Node>();
 		following.add(inst);
 		while(!following.isEmpty()){
 			Node current = following.iterator().next();

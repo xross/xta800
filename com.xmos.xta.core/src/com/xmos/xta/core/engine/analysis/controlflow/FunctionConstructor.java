@@ -80,8 +80,10 @@ public class FunctionConstructor {
 				if (threadNode != null) {
 					m_functionStarts.add(threadNode);
 				} else {
-					m_notifier.notify(m_src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) +
-							") of: " + i.getXtaInstruction().toString() + " not found in executable sections");
+					if(!m_mnenonics.isLdap(i.getXtaInstruction())){
+						m_notifier.notify(m_src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) +
+								") of: " + i.getXtaInstruction().toString() + " not found in executable sections");
+					} 
 				}
 			}
 		}

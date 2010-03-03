@@ -145,4 +145,19 @@ public class InstructionMnemonics {
 		}
 		return false;
 	}
+
+
+	public boolean isLdap(XtaInstruction inst) {
+		switch (m_arch) {
+		case REVB: return (inst.getClass() == xs1bXtaInstruction_ldapb_lu10.class) ||
+            (inst.getClass() == xs1bXtaInstruction_ldapb_u10.class) ||
+            (inst.getClass() == xs1bXtaInstruction_ldapf_lu10.class) ||
+ 	        (inst.getClass() == xs1bXtaInstruction_ldapf_u10.class);
+        case REVC: return (inst.getClass() == xs1bXtaInstruction_ldapb_lu10.class) ||
+        	(inst.getClass() == xs1bXtaInstruction_ldapb_u10.class) ||
+        	(inst.getClass() == xs1bXtaInstruction_ldapf_lu10.class) ||
+	    	(inst.getClass() == xs1bXtaInstruction_ldapf_u10.class);
+		}
+		return false;
+	}
 }

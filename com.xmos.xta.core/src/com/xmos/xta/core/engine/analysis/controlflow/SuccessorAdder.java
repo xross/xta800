@@ -47,11 +47,20 @@ public class SuccessorAdder {
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
 		Set<BranchInfo> targets = new HashSet<BranchInfo>();
+		Set<BranchInfo> targetsWithBacktrails = new HashSet<BranchInfo>();
 		for (Reference ref : m_branchMap.keySet()) {
 
-			if (ref.matches(inst.getPc())) {
-				Set<BranchInfo> mapEntries = m_branchMap.get(ref);
-				targets.addAll(mapEntries);
+			
+			if(ref.getBackTrail().isEmpty()){
+				if (ref.matches(inst.getPc())) {
+					Set<BranchInfo> mapEntries = m_branchMap.get(ref);
+					targets.addAll(mapEntries);
+				}
+			} else {
+				if (ref.matches(inst.getPc())) {
+					Set<BranchInfo> mapEntries = m_branchMap.get(ref);
+					targetsWithBacktrails.addAll(mapEntries);
+				}
 			}
 		}
 
@@ -76,7 +85,7 @@ public class SuccessorAdder {
 
 		if(inst.isLink()) return;
 
-		if (inst.getBranchPcRelative()) {
+		if (inst.getBranchPcRelative() && inst.isBranch()) {
 			long target = inst.getBranchPcRelativeTargetPc();
 			connect(instruction, target, true);
 		}
@@ -94,8 +103,10 @@ public class SuccessorAdder {
 			}
 			CommonMethods.connect(target, instruction);
 		} else {
-			m_notifier.notify(m_src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) +
+			if(!m_mnenonics.isLdap(((InstructionNode)instruction).getXtaInstruction())){
+				m_notifier.notify(m_src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) +
 					") of: " + ((InstructionNode)instruction).getXtaInstruction().toString() + " not found in executable sections");
+			}
 		}
 	}
 

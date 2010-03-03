@@ -92,15 +92,9 @@ public class Edges {
 		}
 	}
 
-	public void freeMemory() {
-		m_nextNodes = null;
-		m_prevNodes = null;
-		m_dominators = null;
-	}
-
 	public Set<Node> getDominators() {
 		if (m_dominators == null) {
-			m_dominators = new HashSet<Node>();
+			m_dominators = new TreeSet<Node>();
 		}
 		return m_dominators;
 	}
@@ -149,10 +143,4 @@ public class Edges {
 		return m_branchTargets;
 	}
 
-	public boolean branchesTo(Node block) {
-		if (m_branchTargets == null) {
-			return false;
-		}
-		return m_branchTargets.contains(block);
-	}
 }
