@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -213,7 +212,7 @@ public class Engine implements Notifier, Aborter {
 
 	public Collection<String> getNonSystemFunctionNames() {
 		if (!m_xeLoader.isLoaded(m_nodeNumber, m_coreNumber))
-			return new HashSet<String>();
+			return new TreeSet<String>();
 
 		List<String> functionNames = new ArrayList<String>();
 		functionNames.addAll(getFunctionNames());
@@ -1464,7 +1463,7 @@ public class Engine implements Notifier, Aborter {
 			newStructuralGraph.add(nodeNumber, coreNumber, sae.getStructureGraph());
 
 			//Source Mapping Stage
-
+			
 			SourceMapper sourceMapper;
 			try {
 				sourceMapper = new SourceMapper(src, this, xeLoader, nodeNumber, coreNumber, functionStartNodes,
@@ -1617,7 +1616,7 @@ public class Engine implements Notifier, Aborter {
 			SymbolTable symbolTable, Map<String, List<InstructionNode>> functionNameToInstructions,
 			Set<InstructionNode> funcStarts, Map<String, Set<Long>> labelToPc) {
 
-		Map<Long, String> pcToLabel = new HashMap<Long, String>();
+		Map<Long, String> pcToLabel = new TreeMap<Long, String>();
 		for (String label : labelToPc.keySet()) {
 			for (Long pc : labelToPc.get(label)) {
 				pcToLabel.put(pc, label);

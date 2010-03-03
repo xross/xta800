@@ -261,9 +261,10 @@ public class SourceMapper {
             	if (m_pcToAsm.containsKey(pc)) {
                     AssemblyLine assemblyLine = m_pcToAsm.get(pc);
                     Function fn = m_pcToFunction.get(pc);
-                    m_functionToFile.put(fn.getText(), sourceFile.getFileName());
-                    sourceLine.addAssembly(assemblyLine);
-
+                    if(fn != null){
+                    	m_functionToFile.put(fn.getText(), sourceFile.getFileName());
+                    	sourceLine.addAssembly(assemblyLine);
+                    }
             	} else {
             		System.err.println("Could not find assembly line correspinding to 0x" +
             				Long.toHexString(pc) + " in debug information. ");
@@ -312,7 +313,10 @@ public class SourceMapper {
 
     	Map<Long, Function> pcToFunction = new HashMap<Long, Function>();
 
+    	
+    	
     	for (InstructionNode inst : m_starts) {
+    		
     		int startIndex = instList.indexOf(inst);
     		List<AssemblyLine> functionAssembly = new ArrayList<AssemblyLine>();
     		functionAssembly.add(m_instructions.get(startIndex));
