@@ -46,12 +46,12 @@ public class ListRefs extends Command {
 		}
 
 		console.display(String.format("%-10s %-10s %-10s -> %10s\n",
-				"Enabled", "Modifiable", "Reference", "MapsTo"));
+				"Modifiable", "Enabled", "Reference", "MapsTo"));
 
 		for (ScripterReference ref : refs) {
 			String refString = ref.getReference().getRef();
 			console.display(String.format("%-10s %-10s %-10s -> %10s\n",
-					ref.isEnabled(), ref.isModifiable(), refString, ref.getMapsToLabel()));
+					ref.isModifiable(), ref.isEnabled(), refString, ref.getMapsToLabel()));
 		}
     }
 }
