@@ -1,4 +1,4 @@
-load "C:\peter\git\software\verif_tests_sw\Tools\xta\ConsoleCommands\scripter\dump\loops\csim__xs1b__default\test.xe"
+load "/home/andrew/sandbox/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/loops/csim__xs1b__default/test.xe"
 
 #
 # Route: main
@@ -8,9 +8,9 @@ set loop - loop 10
 set loop - loop_path 10
 set looppath - loop_path 5
 # Warning: The following line contains a non-portable reference.
-set loop - 0x100f8 10
+set loop - 0x100fc 10
 # Warning: The following line contains a non-portable reference.
-set loop - 0x10114 10
+set loop - 0x10118 10
 # Warning: The following line contains a non-portable reference.
-set looppath - 0x10126 5
+set looppath - 0x1012a 5
 

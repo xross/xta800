@@ -14,7 +14,7 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <xs1.h>
-
+#include <platform.h>
 void pwm_server(chanend c_samples, out port p_pwm_output, int pwm_frequency)
 {
 	unsigned int time;

@@ -33,4 +33,5 @@ extern void synth_render(signed short &buffer, unsigned long len);
 extern unsigned char mm_get(unsigned short addr);
 extern void mm_set(unsigned short addr, unsigned char value);
 
+
 #endif /*SID_DEMO_H_*/

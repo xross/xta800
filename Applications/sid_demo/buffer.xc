@@ -15,6 +15,7 @@
 
 #include <xs1.h>
 #include "sid_demo.h"
+#include <platform.h>
 
 #define SAMPLE_PERIOD (XS1_TIMER_HZ / SAMPLE_RATE)
 

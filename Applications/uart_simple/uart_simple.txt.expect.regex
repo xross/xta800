@@ -1,26 +1,26 @@
 ----------------------------------------
 Tra[mun]smit
 ----------------------------------------
-Route\(0\) path: tra[mun]smit_start to tra[mun]smit_data
+Route\(\d+\) path: tra[mun]smit_start to tra[mun]smit_data
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(1\) path: tra[mun]smit_data to tra[mun]smit_data
+Route\(\d+\) path: tra[mun]smit_data to tra[mun]smit_data
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(2\) path: tra[mun]smit_data to tra[mun]smit_stop1
+Route\(\d+\) path: tra[mun]smit_data to tra[mun]smit_stop1
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(3\) path: tra[mun]smit_stop1 to tra[mun]smit_stop2
+Route\(\d+\) path: tra[mun]smit_stop1 to tra[mun]smit_stop2
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Pass, Min Core Frequency: \d+ mhz
 ----------------------------------------
 Recieve
 ----------------------------------------
-Route\(0\) path: start_bit_sample to recieve_data
+Route\(\d+\) path: start_bit_sample to recieve_data
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
-Route\(1\) path: recieve_data to recieve_data
+Route\(\d+\) path: recieve_data to recieve_data
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
 Pass, Min Core Frequency: \d+ mhz

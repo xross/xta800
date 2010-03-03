@@ -2,7 +2,7 @@
 #define IIC_H_
 
 #include <xccompat.h>
-
+#include <platform.h>
 #define iic_speed_khz               10
 
 int iic_initialise();

@@ -63,10 +63,10 @@ $(TARGETDIR)/test.xe: $(OBJECTS)
 	xcc -target=$(TARGET) -g -o $(TARGETDIR)/test.xe $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
-	xcc $(INCLUDES) -save-temps -g -O3 -Wall -c -o "$@" "$<"
+	xcc -target=$(TARGET) $(INCLUDES) -save-temps -g -O3 -Wall -c -o "$@" "$<"
 
 $(TARGETDIR)/%.o: %.xc
-	xcc $(INCLUDES) -save-temps -fxta-info -g -O3 -Wall -c -o "$@" "$<"
+	xcc -target=$(TARGET) $(INCLUDES) -save-temps -fxta-info -g -O3 -Wall -c -o "$@" "$<"
 
 clean:
 	rm -rf $(OBJECTS)

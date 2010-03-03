@@ -1,6 +1,6 @@
 #include <xs1.h>
 #include <print.h>
-
+#include <platform.h>
 #define TRUE 1
 #define FALSE 0
 
