@@ -8,11 +8,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.FileNameMatcher;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.utils.FileNameMatcher;
 
 public abstract class ReferenceType {
 	private String m_ref;
@@ -22,6 +22,8 @@ public abstract class ReferenceType {
 	private String m_fileName;
 	private long m_lineNum;
 	private Type m_type;
+	private int m_nodeNumber;
+	private int m_coreNumber;
 
 	public enum Type {
 		PC,
@@ -34,7 +36,7 @@ public abstract class ReferenceType {
 		ERROR
 	}
 
-	ReferenceType(String ref, Type type) {
+	ReferenceType(String ref, Type type, int nodeNumber, int coreNumber) {
 		m_ref = ref;
 		m_pcs = new TreeSet<Long>();
 		m_pcBackTrails = new TreeMap<Long, List<String>>();
@@ -42,9 +44,11 @@ public abstract class ReferenceType {
 		m_fileName = "";
 		m_lineNum = 0;
 		m_type = type;
+		m_nodeNumber = nodeNumber;
+		m_coreNumber = coreNumber;
 	}
 
-	public abstract ReferenceType create(Engine engine, String reference);
+	public abstract ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber);
 	public abstract String name();
 	public abstract String description();
 	public abstract boolean resolve(Engine engine);
@@ -289,7 +293,7 @@ public abstract class ReferenceType {
         	return false;
         }
 
-        if (FileNameMatcher.isMatch(fileName, getFileName(), engine.getSourceMapper())) {
+        if (FileNameMatcher.isMatch(fileName, getFileName(), engine.getSourceMapper(m_nodeNumber, m_coreNumber))) {
         	return true;
         }
 
@@ -300,4 +304,12 @@ public abstract class ReferenceType {
 		assert(m_pcBackTrails.get(pc) != null);
 		return m_pcBackTrails.get(pc);
 	}
+	
+	public int getNodeNumber() {
+		return m_nodeNumber;		
+	}
+
+	public int getCoreNumber() {
+		return m_coreNumber;		
+	}	
 }

@@ -14,7 +14,6 @@ import java.util.TreeSet;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -36,6 +35,7 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatcher;
 import com.xmos.xta.core.engine.sections.Sections;
+import com.xmos.xta.core.engine.utils.CoreConfig;
 
 public class StructuralAnalysisEngine {
 
@@ -99,7 +99,6 @@ public class StructuralAnalysisEngine {
 			Map<String, List<InstructionNode>> functionNameToInstructions, Sections sections,
 			int nodeId,  int coreId) throws AbortedException {
 
-
 		//for each function node there is a set of function references in this map
 		Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction
 			= new TreeMap<FunctionNode, Set<FunctionReferenceNode>>();
@@ -123,16 +122,18 @@ public class StructuralAnalysisEngine {
 
 		m_structureGraph = new StructureGraph(functionToEndNodes, functionToStartNode, functionReferencesWithinFunction, instructionWithinFunction);
 
-
 		if (REGISTER_CONFIG_ON_GLOBAL_TREE) {
 			// If enabled, this allows the printing of the global structure to
 			// display the node times. It is disabled by default for efficiency reasons,
 			// as printing the global structure is not a user activity.
 			engine.provideFeedback("Registering config...");
-			Config config = engine.getConfig();
+			
+			CoreConfig coreConfig = new CoreConfig(
+					engine.getNumThreads(nodeId, coreId), 
+					engine.getFrequency(nodeId));
+			
 			Architecture architecture = engine.getXeLoader().getArchitecture();
-			setConfig(config, architecture, m_structureGraph.getFunctions());
-
+			setCoreConfig(coreConfig, architecture, m_structureGraph.getFunctions());
 		}
 		assert(linkSanityCheck(functionReferencesWithinFunction));
 		engine.provideFeedback("Complete");
@@ -140,7 +141,6 @@ public class StructuralAnalysisEngine {
 	}
 
 	private boolean done;
-
 	public void normaliseGraph(Node fn) {
 		setParent(fn);
 		done = false;
@@ -505,11 +505,11 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	private void setConfig(final Config config, final Architecture architecture, Collection<FunctionNode> nodes) {
+	private void setCoreConfig(final CoreConfig coreConfig, final Architecture architecture, Collection<FunctionNode> nodes) {
 		for (Node node : nodes) {
 			node.traverse(new DefaultNodeTraverser() {
 				public TraverseStatus foundInstructionNode(Node node) {
-					((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);
+					((InstructionNodeAttributes)node.getAttributes()).setCoreConfig(coreConfig, architecture);
 					return TraverseStatus.CONTINUE;
 				}
 			});

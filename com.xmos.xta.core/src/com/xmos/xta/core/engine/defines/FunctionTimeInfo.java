@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
-import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class FunctionTimeInfo implements DefineInfo {
 	private Reference m_function;
@@ -34,9 +34,11 @@ public class FunctionTimeInfo implements DefineInfo {
 
 	public boolean equals(Object o) {
 		boolean ret = false;
-		if(o!=null) {
-			if(o instanceof FunctionTimeInfo){
-				ret = ((FunctionTimeInfo)o).m_function.equals(m_function);
+		if (o != null) {
+			if (o instanceof FunctionTimeInfo) {
+				ret = ((FunctionTimeInfo)o).m_function.equals(m_function) &&
+				      (((FunctionTimeInfo)o).m_function.getNodeNumber() == m_function.getNodeNumber()) &&
+				      (((FunctionTimeInfo)o).m_function.getCoreNumber() == m_function.getCoreNumber());
 			}
 		}
 		return ret;

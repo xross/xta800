@@ -3,11 +3,11 @@ package com.xmos.xta.core.engine.references.types;
 import com.xmos.xta.core.engine.Engine;
 
 public class ErrorReference extends ReferenceType {
-	ErrorReference(String ref) {
-		super(ref, Type.ERROR);
+	ErrorReference(String ref, int nodeNumber, int coreNumber) {
+		super(ref, Type.ERROR, nodeNumber, coreNumber);
 	}
 
-	public ReferenceType create(Engine engine, String reference) {
+	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		assert(false);
 		return null;
 	}

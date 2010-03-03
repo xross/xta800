@@ -6,6 +6,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Functions extends Command {
 	public Functions() {
@@ -31,19 +32,22 @@ public class Functions extends Command {
         return new Functions();
     }
 
-    public void execute(Shell shell, Engine engine, Console console) {
+    public void execute(Shell shell, final Engine engine, final Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        Collection<String> functionNames = engine.getNonSystemFunctionNames();
-        if (functionNames.size() > 0) {
-            for (String functionName : functionNames) {
-            	for(long functionAddress : engine.getFunctionPc(functionName)){
-            		console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
-            	}
-            }
-        } else {
-			console.display("none\n");
-        }
+		for (NodeCorePair activeCore : engine.getActiveCores()) {			
+	        Collection<String> functionNames = engine.getNonSystemFunctionNames(activeCore.getNode(), activeCore.getCore());
+	        if (functionNames.size() > 0) {
+	            console.display(String.format("Node: %d, Core: %d\n\n", activeCore.getNode(), activeCore.getCore()));
+
+	        	for (String functionName : functionNames) {
+	            	for (long functionAddress : engine.getFunctionPcs(functionName, activeCore.getNode(), activeCore.getCore())){
+	            		console.display(String.format("- %s (0x%x)\n", functionName, functionAddress));
+	            	}
+	            }
+	            console.display("\n");
+	        }				
+		}			
     }
 }

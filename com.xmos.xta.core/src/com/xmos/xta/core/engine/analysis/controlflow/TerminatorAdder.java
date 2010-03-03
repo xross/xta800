@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine;
+package com.xmos.xta.core.engine.analysis.controlflow;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,7 +10,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 
 public class TerminatorAdder {
-
 	private Set<InstructionNode> m_functionStartNodes;
 
 	public TerminatorAdder(Set<InstructionNode> functionStartNodes){

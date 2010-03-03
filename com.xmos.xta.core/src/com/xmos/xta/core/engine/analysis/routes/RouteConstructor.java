@@ -19,7 +19,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
-import com.xmos.xta.core.engine.analysis.routes.RouteDescription.RouteMode;
+import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
@@ -52,7 +52,6 @@ public class RouteConstructor {
 
 	private static boolean debug_route = false;
 	private static boolean sanity_debug = true;
-
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1;
 
@@ -71,21 +70,18 @@ public class RouteConstructor {
 	}
 
 	private Map<FunctionNode, List<Stack<FunctionReferenceNode>>> m_stackLookUp;
-
-	private RouteDescription m_description;
 	private StructureGraph m_structureGraph;
 	private List<Route> m_routes;
 	private Engine m_engine;
-	private RouteContainer m_container;
-
+	private RouteCoreContainer m_coreContainer;
+	
 	public RouteConstructor(Engine engine, StructureGraph structureGraph,
-			RouteDescription description, RouteContainer container) throws AbortedException {
+			RouteCoreContainer routeCoreContainer) throws AbortedException {
 		m_stackLookUp = new TreeMap<FunctionNode, List<Stack<FunctionReferenceNode>>>();
 		m_structureGraph = structureGraph;
-		m_description = description;
 		m_routes = new ArrayList<Route>();
 		m_engine = engine;
-    	m_container = container;
+		m_coreContainer = routeCoreContainer;		
 	}
 
 	public List<Route> getRoutes() {
@@ -93,16 +89,17 @@ public class RouteConstructor {
 	}
 
 	public RouteError analyse(CommandSource src) throws Exception {
+		RouteContainer routeContainer = m_coreContainer.getRouteContainer();
 
-		if (m_description.getStartPoint() == null) {
+		if (m_coreContainer.getFromReference() == null) {
 			return RouteError.STARTPOINT_MISSING;
 		}
-		if (m_description.getEndPoints() == null) {
+		if (m_coreContainer.getToReferences() == null) {
 			return RouteError.ENDPOINTS_MISSING;
 		}
 
 		//find end instructions
-		Set<StackNode> endStackNodes = getEndStackNodes(m_description);
+		Set<StackNode> endStackNodes = getEndStackNodes(routeContainer);
 
 		//find exclusions
 		Set<StackNode> exclusionStackNodes = new HashSet<StackNode>();
@@ -110,17 +107,16 @@ public class RouteConstructor {
 			exclusionStackNodes.addAll(referenceToStackNode(ref));
 		}
 
-
-		if(m_description.getMode() == RouteMode.FUNCTION){
-			List<FunctionNode> fns = m_description.getFunction(m_description.getFunctionName(), m_structureGraph);
-			for(FunctionNode fn : fns){
+		if (routeContainer.getMode() == RouteMode.FUNCTION){
+			List<FunctionNode> fns = m_coreContainer.getFunction(routeContainer.getFunctionName(), m_structureGraph);
+			for (FunctionNode fn : fns){
 				List<Stack<FunctionReferenceNode>> stacks = getCallStacks(fn);
-				for(Stack<FunctionReferenceNode> stack : stacks){
+				for( Stack<FunctionReferenceNode> stack : stacks){
 					FunctionReferenceNode fnRef = stack.peek();
 					FunctionNode newFunction = makeFunction(stack, fnRef, exclusionStackNodes, m_engine, endStackNodes, true);
-					if(newFunction != null){
+					if (newFunction != null){
 						setParent(newFunction);
-						Route route = new Route(src, m_engine, newFunction, m_description, m_container);
+						Route route = new Route(src, m_engine, newFunction, m_coreContainer);
 						if (!alreadyContainRoute(newFunction)) {
 							m_routes.add(route);
 						}
@@ -128,20 +124,18 @@ public class RouteConstructor {
 				}
 			}
 
-		} else if(m_description.getMode() == RouteMode.PATH){
-			Reference startRef = m_description.getStartPoint();
+		} else if (routeContainer.getMode() == RouteMode.PATH){
+			Reference startRef = m_coreContainer.getFromReference();
 			boolean foundAtLeastOneStartPoint = false;
 			List<StackNode> startStackNodes = referenceToStackNode(startRef);
 
-
-
-			for(StackNode startStackNode : startStackNodes){
-				for(Stack<FunctionReferenceNode> currentStack : startStackNode.getNodeStacks()){
+			for (StackNode startStackNode : startStackNodes){
+				for (Stack<FunctionReferenceNode> currentStack : startStackNode.getNodeStacks()){
 					foundAtLeastOneStartPoint = true;
 					Node newPath = makePath(currentStack, startStackNode.getInstruction(), endStackNodes, exclusionStackNodes, m_engine);
-					if(newPath != null){
+					if (newPath != null){
 						setParent(newPath);
-						Route route = new Route(src, m_engine, newPath, m_description, m_container);
+						Route route = new Route(src, m_engine, newPath, m_coreContainer);
 						if (!alreadyContainRoute(newPath)) {
 							m_routes.add(route);
 						}
@@ -149,7 +143,7 @@ public class RouteConstructor {
 				}
 			}
 
-			if(!foundAtLeastOneStartPoint){
+			if (!foundAtLeastOneStartPoint){
 				return RouteError.COULD_NOT_FIND_STARTPOINT;
 			}
 		}
@@ -162,9 +156,11 @@ public class RouteConstructor {
 	}
 
 	private List<StackNode> referenceToStackNode(Reference startRef) {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
-		List<StackNode> stackNodes= referenceMatcher.getStackNode(m_engine, startRef);
+		int nodeNumber = m_coreContainer.getNodeNumber();
+		int coreNumber = m_coreContainer.getCoreNumber();
 
+		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
+		List<StackNode> stackNodes= referenceMatcher.getStackNode(m_engine, startRef, nodeNumber, coreNumber);
 		return stackNodes;
 	}
 
@@ -241,12 +237,14 @@ public class RouteConstructor {
 
 			return newFunction;
 		}
-
 	}
 
 	boolean found = false;
 	private boolean containsRecursion(FunctionReferenceNode fnRef) {
-		final Collection<String> recursiveFunctions = m_engine.getRecursiveFunctions();
+		int nodeNumber = m_coreContainer.getNodeNumber();
+		int coreNumber = m_coreContainer.getCoreNumber();
+		
+		final Collection<String> recursiveFunctions = m_engine.getRecursiveFunctions(nodeNumber, coreNumber);
 		found = false;
 		fnRef.getFunctionNode().traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
@@ -635,7 +633,10 @@ public class RouteConstructor {
 							//continue the path
 							FunctionReferenceNode nextFunction = newStack.peek();
 							if(nextFunction.isKnownFunction()){
-								InstructionNode inst = m_engine.getInstructionDecoder().getNode(nextFunction.getFunctionStartPc());
+								int nodeNumber = m_coreContainer.getNodeNumber();
+								int coreNumber = m_coreContainer.getCoreNumber();
+								
+								InstructionNode inst = m_engine.getInstructionDecoder(nodeNumber, coreNumber).getNode(nextFunction.getFunctionStartPc());
 								findReachableGraph(currentNode, newStack, inst, workingSet,
 										exclusionStackNodes, currentExclusionsFound, aborter, routeMode,
 										endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false);
@@ -831,12 +832,15 @@ public class RouteConstructor {
 	}
 
 	private void setSrcLoopCounts() {
+		int nodeNumber = m_coreContainer.getNodeNumber();
+		int coreNumber = m_coreContainer.getCoreNumber();
+		
 		// Sets the loop iteration counts specified at compile time.
-		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops()) {
+		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops(nodeNumber, coreNumber)) {
 
 			Reference reference = ReferenceFactory.createReference(
 					String.format("0x%x", srcLevelLoopInfo.getPc()),
-					ReferenceClass.PC_REF);
+					ReferenceClass.PC_REF, nodeNumber, coreNumber);
 
 			CommandSource src = new CommandSource(Type.COMPILER);
 			for (Route route : m_routes) {
@@ -893,34 +897,90 @@ public class RouteConstructor {
 		RouteDefines defines = new RouteDefines();
 		for (Route route : m_routes) {
 			for (FunctionTimeInfo info : m_engine.getFunctionTimeDefines()) {
-				defines.applyFunctionDefine(src, route, info, Source.BINARY);
+				if (coreMatch(route, info.getFunction())) {
+    				defines.applyFunctionDefine(src, route, info, Source.BINARY);
+				}
 			}
 			for (PathTimeInfo info : m_engine.getPathTimeDefines()) {
-				defines.applyPathDefine(m_engine, src, route, info, Source.BINARY);
+				if (coreMatch(route, info.getFrom()) && 
+					coreMatch(route, info.getTo())) {
+    				defines.applyPathDefine(m_engine, src, route, info, Source.BINARY);
+				}
 			}
 		}
-		for (LoopInfo info : m_engine.getLoopDefines()) {
+		for (LoopInfo info : m_engine.getLoopDefines()) {			
 			try {
-				m_engine.applyLoopToRoutes(src, m_routes, info, Source.BINARY);
+				for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+					    route.getRouteUnknowns().checkSetLoopIterations(
+							info.getReference(), info.getIterations());
+					}
+				}
+				for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+    				    route.getRouteUnknowns().setLoopIterations(src, m_engine,
+				    		info.getReference(), info.getIterations(), false, Source.BINARY);
+					}
+				}				
 			} catch (Exception e) {}
 		}
 		for (LoopPathInfo info : m_engine.getLoopPathDefines()) {
 			try {
-				m_engine.applyLoopPathToRoutes(m_routes, info, Source.BINARY);
+				for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+    					route.getRouteUnknowns().checkSetLoopPathIterations(
+							info.getReference(), info.getIterations());
+					}
+				}
+				for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+    				    route.getRouteUnknowns().setLoopPathIterations(
+				    		info.getReference(), info.getIterations(), Source.BINARY);
+					}
+				}
 			} catch (Exception e) {}
 		}
 		for (LoopScopeInfo info : m_engine.getLoopScopeDefines()) {
 			try {
-				m_engine.applyLoopScopeToRoutes(m_routes, info, Source.BINARY);
+				for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+    					route.getRouteUnknowns().checkSetLoopScope(
+							info.getReference(), info.getAbsolute());
+					}
+				}
+				for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+    				    route.getRouteUnknowns().setLoopScope(
+				    		info.getReference(), info.getAbsolute(), Source.BINARY);
+					}
+				}
 			} catch (Exception e) {}
 		}
 		for (InstructionTimeInfo info : m_engine.getInstructionTimeDefines()) {
 			try {
-				m_engine.applyInstructionTimeToRoutes(m_routes, info, Source.BINARY);
+				for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+    					if (!route.getRouteUnknowns().canInstructionPause(info.getReference()))
+	    					throw new Exception();
+					}
+			    }
+			    for (Route route : m_routes) {
+					if (coreMatch(route, info.getReference())) {
+    			        route.getRouteUnknowns().setFixedTime(info.getReference(), 
+    			        		info.getTimeUnit(), UnknownFactory.Type.INSTRUCTION_TIME, Source.BINARY);
+					}
+    			}				
 			} catch (Exception e) {}
 		}
 	}
 
+	private boolean coreMatch(Route route, Reference reference) {
+		int nodeNumber = route.getRouteCoreContainer().getNodeNumber();
+		int coreNumber = route.getRouteCoreContainer().getCoreNumber();
+		return ((reference.getNodeNumber() == nodeNumber) &&
+		        (reference.getCoreNumber() == coreNumber));
+	}
+	
 	private void refreshDisplayedUnknowns(Node node) {
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new UntypedNodeTraverser() {
@@ -965,10 +1025,11 @@ public class RouteConstructor {
 	/**
 	 * From a route description return the instruction nodes that end that route
 	 */
-	private Set<StackNode> getEndStackNodes(RouteDescription description) {
+	private Set<StackNode> getEndStackNodes(RouteContainer routeContainer) {
 		Set<StackNode> stackNodes = new HashSet<StackNode>();
-		if(description.getMode() == RouteMode.FUNCTION){
-			List<FunctionNode> fns = description.getFunction(description.getFunctionName(), m_structureGraph);
+		
+		if (routeContainer.getMode() == RouteMode.FUNCTION){
+			List<FunctionNode> fns = m_coreContainer.getFunction(routeContainer.getFunctionName(), m_structureGraph);
 			for(FunctionNode fn : fns){
 				for(InstructionNode inst : m_structureGraph.getFunctionsEndNodes(fn)){
 					StackNode stackNode = new StackNode(inst, getCallStacks(fn));
@@ -976,9 +1037,9 @@ public class RouteConstructor {
 				}
 			}
 		} else {
-			Collection<Reference> endRefs = description.getEndPoints();
-			for(Reference endRef : endRefs){
-				stackNodes.addAll(referenceToStackNode(endRef));
+			Collection<Reference> toRefs = m_coreContainer.getToReferences();
+			for (Reference toRef : toRefs){
+				stackNodes.addAll(referenceToStackNode(toRef));
 			}
 		}
 		return stackNodes;

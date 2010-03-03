@@ -25,93 +25,95 @@ public class ReferenceTypeFactory {
 		
 		m_referenceClasses.put(ReferenceClass.PC_REF,
 				new ReferenceClassType(true, new ReferenceType[] {
-					new PcReference(null)}));
+					new PcReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.FUNCTION_REF,
 				new ReferenceClassType(true, new ReferenceType[] {
-					new FunctionReference(null)}));
+					new FunctionReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.LABEL_REF,
 				new ReferenceClassType(true, new ReferenceType[] {
-					new PcReference(null),
-					new LabelReference(null)}));
+					new PcReference(null, 0, 0),
+					new LabelReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF,
 				new ReferenceClassType(true, new ReferenceType[] {
-					new PcReference(null),
-					new EndpointReference(null),
-					new EndpointFileLineReference(null),
-					new CallReference(null),
-					new CallFileLineReference(null),
-					new CallPcReference(null),
-					new LabelReference(null)}));
+					new PcReference(null, 0, 0),
+					new EndpointReference(null, 0, 0),
+					new EndpointFileLineReference(null, 0, 0),
+					new CallReference(null, 0, 0),
+					new CallFileLineReference(null, 0, 0),
+					new CallPcReference(null, 0, 0),
+					new LabelReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.ANY_REF,
 				new ReferenceClassType(true, new ReferenceType[] {
-					new PcReference(null),
-					new EndpointReference(null),
-					new EndpointFileLineReference(null),
-					new CallReference(null),
-					new CallFileLineReference(null),
-					new CallPcReference(null),
-					new SrcLabelReference(null),
-					new SrcLabelFileLineReference(null),
-					new LabelReference(null)}));
+					new PcReference(null, 0, 0),
+					new EndpointReference(null, 0, 0),
+					new EndpointFileLineReference(null, 0, 0),
+					new CallReference(null, 0, 0),
+					new CallFileLineReference(null, 0, 0),
+					new CallPcReference(null, 0, 0),
+					new SrcLabelReference(null, 0, 0),
+					new SrcLabelFileLineReference(null, 0, 0),
+					new LabelReference(null, 0, 0)}));
 		
 		m_referenceClasses.put(ReferenceClass.PC_REF_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
-					new EverythingReference(null),
-					new PcReference(null)}));
+					new EverythingReference(null, 0, 0),
+					new PcReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.FUNCTION_REF_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
-					new EverythingReference(null),
-					new FunctionReference(null)}));
+					new EverythingReference(null, 0, 0),
+					new FunctionReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.LABEL_REF_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
-					new EverythingReference(null),
-					new PcReference(null),
-					new LabelReference(null)}));
+					new EverythingReference(null, 0, 0),
+					new PcReference(null, 0, 0),
+					new LabelReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
-					new EverythingReference(null),
-					new PcReference(null),
-					new EndpointReference(null),
-					new EndpointFileLineReference(null),
-					new CallReference(null),
-					new CallFileLineReference(null),
-					new CallPcReference(null),
-					new LabelReference(null)}));
+					new EverythingReference(null, 0, 0),
+					new PcReference(null, 0, 0),
+					new EndpointReference(null, 0, 0),
+					new EndpointFileLineReference(null, 0, 0),
+					new CallReference(null, 0, 0),
+					new CallFileLineReference(null, 0, 0),
+					new CallPcReference(null, 0, 0),
+					new LabelReference(null, 0, 0)}));
 
 		m_referenceClasses.put(ReferenceClass.ANY_REF_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
-					new EverythingReference(null),
-					new PcReference(null),
-					new EndpointReference(null),
-					new EndpointFileLineReference(null),
-					new CallReference(null),
-					new CallFileLineReference(null),
-					new CallPcReference(null),
-					new SrcLabelReference(null),
-					new SrcLabelFileLineReference(null),
-					new LabelReference(null)}));
+					new EverythingReference(null, 0, 0),
+					new PcReference(null, 0, 0),
+					new EndpointReference(null, 0, 0),
+					new EndpointFileLineReference(null, 0, 0),
+					new CallReference(null, 0, 0),
+					new CallFileLineReference(null, 0, 0),
+					new CallPcReference(null, 0, 0),
+					new SrcLabelReference(null, 0, 0),
+					new SrcLabelFileLineReference(null, 0, 0),
+					new LabelReference(null, 0, 0)}));
 	}
 	private static Engine m_engine;
 
-	public static ReferenceType createReferenceType(String reference, ReferenceClass classType) {
+	public static ReferenceType createReferenceType(String reference, 
+			ReferenceClass classType, int nodeNumber, int coreNumber) {
+		
 		ReferenceClassType referenceClass = getReferenceClass(classType);
 		ReferenceType[] referenceTypes = referenceClass.getReferencTypes();
 		for (ReferenceType referenceType : referenceTypes) {
-			ReferenceType refType = referenceType.create(m_engine, reference);
+			ReferenceType refType = referenceType.create(m_engine, reference, nodeNumber, coreNumber);
 			if (refType != null) {
 				return refType;
 			}
 		}
-		return new ErrorReference(reference);
+		return new ErrorReference(reference, 0, 0);
 	}
-
+	
 	public static ReferenceClassType getReferenceClass(ReferenceClass classType) {
 		ReferenceClassType referenceClass = m_referenceClasses.get(classType);
 		assert(referenceClass != null);

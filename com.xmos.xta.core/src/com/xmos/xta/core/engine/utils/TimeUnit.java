@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine;
+package com.xmos.xta.core.engine.utils;
 
 import com.xmos.libs.util.Conversion;
 
@@ -10,7 +10,7 @@ public class TimeUnit {
 		INVALID,
 	}
 
-	private Config m_config;
+	private CoreConfig m_coreConfig;
 	private Units m_units;
 	private long m_cycles;
 	private double m_ns;
@@ -57,17 +57,17 @@ public class TimeUnit {
 		} catch (NumberFormatException e) {
 			m_units = Units.INVALID;
 		}
-		m_config = null;
+		m_coreConfig = null;
 	}
 
-	public TimeUnit(Config config, long value, Units units) {
+	public TimeUnit(CoreConfig coreConfig, long value, Units units) {
 		assert(units == Units.CYCLES);
    	    m_cycles = value;
    		m_units = Units.CYCLES;
-		m_config = config;
+   		m_coreConfig = coreConfig;
 	}
 
-	public TimeUnit(Config config, double value, Units units) {
+	public TimeUnit(CoreConfig coreConfig, double value, Units units) {
 		assert((units == Units.NS) || (units == Units.MHZ));
 		m_units = units;
 		switch (m_units) {
@@ -78,19 +78,19 @@ public class TimeUnit {
 			m_mhz = value;
 			break;
 		}
-		m_config = config;
+		m_coreConfig = coreConfig;
 	}
 
-	public TimeUnit(Config config, TimeUnit timeUnit) {
-		m_config = config;
+	public TimeUnit(CoreConfig coreConfig, TimeUnit timeUnit) {
+		m_coreConfig = coreConfig;
 		m_units = timeUnit.m_units;
 		m_cycles = timeUnit.m_cycles;
 		m_ns = timeUnit.m_ns;
 		m_mhz = timeUnit.m_mhz;
 	}
 
-	public void setConfig(Config config) {
-		m_config = config;
+	public void setCoreConfig(CoreConfig coreConfig) {
+		m_coreConfig = coreConfig;
 	}
 
 	public boolean isValid() {
@@ -131,18 +131,18 @@ public class TimeUnit {
        	assert(false);
        	return "";
 	}
-
+ 
 	public long getCycles() {
-		assert(m_config != null);
+		assert(m_coreConfig != null);
 
        	switch (m_units) {
        	case NS: {
-       		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-           	return (long)((m_ns * m_config.m_frequency) / (threadFactor * 1000));
+       		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+           	return (long)((m_ns * m_coreConfig.m_frequency) / (threadFactor * 1000));
        	}
        	case MHZ: {
-       		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-           	return (long)(m_config.m_frequency / (threadFactor * m_mhz));
+       		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+           	return (long)(m_coreConfig.m_frequency / (threadFactor * m_mhz));
        	}
        	case CYCLES:
            	return m_cycles;
@@ -152,7 +152,7 @@ public class TimeUnit {
 	}
 
 	public double getNs() {
-		assert(m_config != null);
+		assert(m_coreConfig != null);
 
        	switch (m_units) {
        	case NS:
@@ -162,15 +162,15 @@ public class TimeUnit {
        		return 1000.0 / m_mhz;
 
        	case CYCLES:
-       		int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-       	    return ((threadFactor * 1000) / m_config.m_frequency) * m_cycles;
+       		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+       	    return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
        	}
        	assert(false);
        	return 0;
 	}
 
 	public double getMhz() {
-		assert(m_config != null);
+		assert(m_coreConfig != null);
 
        	switch (m_units) {
        	case NS:
@@ -180,8 +180,8 @@ public class TimeUnit {
            	return m_mhz;
 
        	case CYCLES:
-       	  	int threadFactor = (m_config.m_numThreads > 4) ? m_config.m_numThreads : 4;
-            return m_config.m_frequency / (threadFactor * m_cycles);
+       	  	int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+            return m_coreConfig.m_frequency / (threadFactor * m_cycles);
        	}
        	assert(false);
        	return 0;

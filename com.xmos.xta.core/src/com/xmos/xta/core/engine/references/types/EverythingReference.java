@@ -3,14 +3,14 @@ package com.xmos.xta.core.engine.references.types;
 import com.xmos.xta.core.engine.Engine;
 
 public class EverythingReference extends ReferenceType {
-	EverythingReference(String ref) {
-		super(ref, Type.EVERYTHING);
+	EverythingReference(String ref, int nodeNumber, int coreNumber) {
+		super(ref, Type.EVERYTHING, nodeNumber, coreNumber);
 		setResolved(true);
 	}
 
-	public ReferenceType create(Engine engine, String reference) {
+	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (reference.equals("*")) {
-	    	return new EverythingReference(reference);
+	    	return new EverythingReference(reference, nodeNumber, coreNumber);
 		}
 		return null;
 	}

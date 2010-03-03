@@ -6,6 +6,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Sources extends Command {
 	public Sources() {
@@ -31,22 +32,24 @@ public class Sources extends Command {
         return new Sources();
     }
 
-    public void execute(Shell shell, Engine engine, Console console) {
+    public void execute(Shell shell, final Engine engine, final Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-	    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(engine.getNodeNumber(), engine.getCoreNumber());
-	    assert(debugInfo != null);
+		for (NodeCorePair activeCore : engine.getActiveCores()) {			
+		    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(activeCore.getNode(), activeCore.getCore());
+		    assert(debugInfo != null);
 
-	    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
+		    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
 
-	    	console.display(String.format("compilation dir: %s, filename: %s",
-	    			debugFile.getBaseDir(), debugFile.getFileName()));
+		    	console.display(String.format("node: %d, core %d, compilation dir: %s, filename: %s",
+		    			activeCore.getNode(), activeCore.getCore(), debugFile.getBaseDir(), debugFile.getFileName()));
 
-  	    	if (debugFile.getFile() == null) {
-  	    		console.display(" (File not found)");
-  	    	}
-  	    	console.display("\n");
-    	}
+	  	    	if (debugFile.getFile() == null) {
+	  	    		console.display(" (File not found)");
+	  	    	}
+	  	    	console.display("\n");
+	    	}				
+		}
     }
 }

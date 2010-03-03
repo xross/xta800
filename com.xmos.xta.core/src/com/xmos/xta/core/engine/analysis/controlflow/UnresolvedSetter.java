@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine;
+package com.xmos.xta.core.engine.analysis.controlflow;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,9 +9,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 
 public class UnresolvedSetter {
-
 	private Set<InstructionNode> m_functionStartNodes;
-
 
 	public UnresolvedSetter(Set<InstructionNode> functionStartNodes) {
 		m_functionStartNodes = functionStartNodes;
@@ -23,7 +21,6 @@ public class UnresolvedSetter {
 			Set<Node> isUnresolved = new TreeSet<Node>();
 			findUnresolved(inst, seen, isUnresolved);
 		}
-
 	}
 
 	private void findUnresolved(Node inst, Set<Node> seen, Set<Node> isUnresolved) {
@@ -71,6 +68,4 @@ public class UnresolvedSetter {
 		}
 		return false;
 	}
-
-
 }

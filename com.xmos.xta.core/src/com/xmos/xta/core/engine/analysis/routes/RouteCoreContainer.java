@@ -1,0 +1,163 @@
+package com.xmos.xta.core.engine.analysis.routes;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceType;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.utils.CoreConfig;
+
+public class RouteCoreContainer {
+	private Reference m_function;
+	private Reference m_from;
+	private Collection<Reference> m_to;
+	private RouteContainer m_routeContainer;
+	private int m_nodeNumber;
+	private int m_coreNumber;
+	private CoreConfig m_coreConfig;
+    private List<Route> m_routes;
+    private List<Boolean> m_exists;
+
+    public RouteCoreContainer(Reference from, Reference to, RouteContainer routeContainer, 
+    		Engine engine, int nodeNumber, int coreNumber) {
+    	
+    	m_from = from;
+		m_to = new ArrayList<Reference>();
+    	m_to.add(to);
+    	
+    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
+    }
+    
+    public RouteCoreContainer(Reference function, RouteContainer routeContainer, 
+    		Engine engine, int nodeNumber, int coreNumber) {
+    	
+    	m_function = function;
+		m_to = new ArrayList<Reference>();
+		StructureGraph sg = engine.getStructureGraph(nodeNumber, coreNumber);
+        findEndpoints(sg, nodeNumber, coreNumber);
+        for (Reference to : m_to)
+        	to.resolve(engine);
+		
+    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
+    }
+    
+	public Reference getFromReference() {
+		return m_from;
+	}
+
+	public Collection<Reference> getToReferences() {
+		return m_to;
+	}
+
+	public Reference getToReference() {
+		return m_to.iterator().next();
+	}
+	
+	public Reference getFunctionReference() {
+		return m_function;
+	}
+	
+	public RouteContainer getRouteContainer() {
+		return m_routeContainer;
+	}
+    
+    public void add(List<Route> routes) {
+    	m_routes.addAll(routes);
+    	for (int i = 0; i < m_routes.size(); ++i) {
+    		m_exists.add(true);
+    	}
+    }
+
+    public void remove(Route route) {
+    	int index = m_routes.indexOf(route);
+    	m_exists.set(index, false);
+    }
+
+    public List<Route> getRoutes() {
+    	return m_routes;
+    }
+
+    public boolean routeExists(Route route) {
+    	int index = m_routes.indexOf(route);
+    	return m_exists.get(index);
+    }
+
+    public int getNumExistingRoutes() {
+    	int num = 0;
+        for (Route route : m_routes) {
+        	if (routeExists(route)) {
+        		++num;
+        	}
+        }
+        return num;
+    }
+
+	public int getNodeNumber() {
+		return m_nodeNumber;
+	}
+
+	public int getCoreNumber() {
+		return m_coreNumber;
+	}
+
+	public CoreConfig getCoreConfig() {
+		return m_coreConfig;
+	}    
+	
+	private void initialise(RouteContainer routeContainer, Engine engine, int nodeNumber, int coreNumber) {
+		m_routeContainer = routeContainer;
+    	m_routes = new ArrayList<Route>();
+    	m_exists = new ArrayList<Boolean>(); 
+		m_nodeNumber = nodeNumber;
+		m_coreNumber = coreNumber;
+		m_coreConfig = new CoreConfig( 
+				engine.getNumThreads(nodeNumber, coreNumber), 
+				engine.getFrequency(nodeNumber));    			
+	}
+	
+	public List<FunctionNode> getFunction(String functionName, StructureGraph sg){
+		List<FunctionNode> functions = new LinkedList<FunctionNode>();
+		for (FunctionNode fn : sg.getFunctions()) {
+		    if (fn.getFunctionName().equals(m_routeContainer.getFunctionName())) {
+		        functions.add(fn);
+		    }
+		}
+		return functions;
+    }
+	
+	/**
+	 * This function is supposed to take a function start and find all the end points
+	 * could be done better with FunctionEndNodes and FunctionStartNodes
+	 * @param sg
+	 * @param functionNodes
+	 */
+	private void findEndpoints(StructureGraph sg, int nodeNumber, int coreNumber) {
+		for (FunctionNode fn : sg.getFunctions()) {
+			if (fn.getFunctionName().equals(m_routeContainer.getFunctionName())) {
+				Set<InstructionNode> endInstructions = sg.getFunctionsEndNodes(fn);
+				for (Node endPoint : endInstructions) {
+					StringBuffer to = new StringBuffer();
+			    	for (ReferenceType backTrail : m_function.getBackTrail()) {
+			    		to.append(backTrail.getRef());
+			    		to.append(",");
+			    	}
+					to.append("0x");
+					to.append(Long.toHexString(endPoint.getStartPc()));
+					m_to.add(ReferenceFactory.createReference(to.toString(), 
+							ReferenceClass.ENDPOINT_REF, nodeNumber, coreNumber));
+				}
+				break;
+			}
+		}
+	}	
+}

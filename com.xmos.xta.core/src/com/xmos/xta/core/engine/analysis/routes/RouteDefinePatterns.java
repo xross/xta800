@@ -3,7 +3,6 @@ package com.xmos.xta.core.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -11,6 +10,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public abstract class RouteDefinePatterns {
     abstract boolean match(Node fromBlock, Node from, Node toBlock, Node to);

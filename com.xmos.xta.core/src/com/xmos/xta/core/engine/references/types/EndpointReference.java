@@ -7,14 +7,14 @@ import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 
 public class EndpointReference extends ReferenceType {
-	EndpointReference(String ref) {
-		super(ref, Type.ENDPOINT);
+	EndpointReference(String ref, int nodeNumber, int coreNumber) {
+		super(ref, Type.ENDPOINT, nodeNumber, coreNumber);
 	}
 
-	public ReferenceType create(Engine engine, String reference) {
+	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.ENDPOINT, 1) &&
-		    isValid(engine.getEndpoints(), getLabel(reference))) {
-			return new EndpointReference(reference);
+		    isValid(engine.getEndpoints(getNodeNumber(), getCoreNumber()), getLabel(reference))) {
+			return new EndpointReference(reference, nodeNumber, coreNumber);
 		}
 		return null;
 	}
@@ -24,12 +24,12 @@ public class EndpointReference extends ReferenceType {
 		String label = getLabel(ref);
 
 		boolean found = false;
-		for (CodePointInfo info : engine.getEndpoints()) {
+		for (CodePointInfo info : engine.getEndpoints(getNodeNumber(), getCoreNumber())) {
 	    	if (labelsMatch(info.getLabel(), label)) {
 				long pc = info.getPc();
 				addPc(pc, info.getLabel());
 
-				Map<Long, CodePointTableInfo> endpointTable = engine.getEndpointTable();
+				Map<Long, CodePointTableInfo> endpointTable = engine.getEndpointTable(getNodeNumber(), getCoreNumber());
 				if (!endpointTable.containsKey(pc))
 					return false;
 

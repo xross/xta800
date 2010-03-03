@@ -4,14 +4,14 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 
 public class SrcLabelReference extends ReferenceType {
-	SrcLabelReference(String ref) {
-		super(ref, Type.SRCLABEL);
+	SrcLabelReference(String ref, int nodeNumber, int coreNumber) {
+		super(ref, Type.SRCLABEL, nodeNumber, coreNumber);
 	}
 
-	public ReferenceType create(Engine engine, String reference) {
+	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.SRCLABEL, 1) &&
-		    isValid(engine.getSrcLabels(), getLabel(reference))) {
-			return new SrcLabelReference(reference);
+		    isValid(engine.getSrcLabels(getNodeNumber(), getCoreNumber()), getLabel(reference))) {
+			return new SrcLabelReference(reference, nodeNumber, coreNumber);
 		}
 		return null;
 	}
@@ -21,7 +21,7 @@ public class SrcLabelReference extends ReferenceType {
 		String label = getLabel(ref);
 
 		boolean found = false;
-		for (CodePointInfo info : engine.getSrcLabels()) {
+		for (CodePointInfo info : engine.getSrcLabels(getNodeNumber(), getCoreNumber())) {
 			if (labelsMatch(info.getLabel(), label)) {
 				addPc(info.getPc(), info.getLabel());
 				found = true;

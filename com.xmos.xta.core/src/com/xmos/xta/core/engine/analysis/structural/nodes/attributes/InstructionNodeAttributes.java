@@ -1,20 +1,20 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
-import com.xmos.xta.core.engine.Config;
-import com.xmos.xta.core.engine.TimeUnit;
-import com.xmos.xta.core.engine.TimeUnit.Units;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.utils.CoreConfig;
+import com.xmos.xta.core.engine.utils.TimeUnit;
+import com.xmos.xta.core.engine.utils.TimeUnit.Units;
 
 public class InstructionNodeAttributes extends NodeAttributes {
 	private long m_numCycles;
 	private XtaInstruction m_instruction;
-	private Config m_config;
+	private CoreConfig m_coreConfig;
 	private Architecture m_architecture;
 	private String m_instructionTimeString;
 
@@ -22,25 +22,25 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		super(node);
 		m_instruction = node.getXtaInstruction();
 		m_numCycles = m_instruction.getNumCycles();
-		m_config = null;
+		m_coreConfig = null;
 		m_architecture = Architecture.UNKNOWN;
 	}
 
-	public void setConfig(Config config, Architecture architecture) {
-		m_config = config;
+	public void setCoreConfig(CoreConfig coreConfig, Architecture architecture) {
+		m_coreConfig = coreConfig;
 		m_architecture = architecture;
 		m_numCycles = getThreadAdjustedCycles();
 	}
 
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (m_config == null) {
+		if (m_coreConfig == null) {
 			status.mergeStatus(S.NOT_AVALIABLE);
 			return 0.0;
 		}
 		if (getNode().isUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
-		return new TimeUnit(m_config, m_numCycles, Units.CYCLES).getNs();
+		return new TimeUnit(m_coreConfig, m_numCycles, Units.CYCLES).getNs();
 	}
 
 	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
@@ -88,7 +88,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 
 	public TimeUnit getFixedTime() {
-		return new TimeUnit(m_config, m_numCycles, Units.CYCLES);
+		return new TimeUnit(m_coreConfig, m_numCycles, Units.CYCLES);
 	}
 
 	public String getFixedTimeString() {
@@ -98,12 +98,13 @@ public class InstructionNodeAttributes extends NodeAttributes {
 
 	private long getThreadAdjustedCycles() {
 		assert(m_architecture != Architecture.UNKNOWN);
+		assert(m_coreConfig != null);
 
 		InstructionMnemonics instructionMnemonics = new InstructionMnemonics(m_architecture);
 		if (instructionMnemonics.isDivide(m_instruction) ||
 			instructionMnemonics.isRemainder(m_instruction)) {
-			return (m_config.m_numThreads < 4) ?
-					m_instruction.getNumCycles() * m_config.m_numThreads :
+			return (m_coreConfig.m_numThreads < 4) ?
+					m_instruction.getNumCycles() * m_coreConfig.m_numThreads :
 					m_instruction.getNumCycles() * 4;
 		}
 		return m_instruction.getNumCycles();

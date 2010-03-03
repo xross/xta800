@@ -35,7 +35,9 @@ public class LoopPathInfo implements DefineInfo {
 		boolean ret = false;
 		if (o != null) {
 			if (o instanceof LoopPathInfo) {
-				ret = ((LoopPathInfo) o).m_reference.equals(m_reference);
+				ret = ((LoopPathInfo) o).m_reference.equals(m_reference) &&
+    	              (((LoopPathInfo)o).m_reference.getNodeNumber() == m_reference.getNodeNumber()) &&
+	                  (((LoopPathInfo)o).m_reference.getCoreNumber() == m_reference.getCoreNumber());
 			}
 		}
 		return ret;

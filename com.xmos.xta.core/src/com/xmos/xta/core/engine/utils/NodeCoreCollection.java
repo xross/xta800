@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine;
+package com.xmos.xta.core.engine.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;

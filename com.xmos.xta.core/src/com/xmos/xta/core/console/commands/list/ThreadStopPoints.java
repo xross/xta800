@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class ThreadStopPoints extends Command {
 	public ThreadStopPoints() {
@@ -39,15 +40,15 @@ public class ThreadStopPoints extends Command {
    		listThreadStopPoints(engine, console);
 	}
 
-	private void listThreadStopPoints(Engine engine, Console console) {
-		if (engine.getThreadStopPoints().size() == 0){
-			console.display("none\n");
-			return;
+	private void listThreadStopPoints(final Engine engine, final Console console) {
+		for (NodeCorePair activeCore : engine.getActiveCores()) {			
+			if (engine.getThreadStopPoints(activeCore.getNode(), activeCore.getCore()).size() > 0) {
+				console.display(String.format("node: %d, core: %d, ", activeCore.getNode(), activeCore.getCore()));
+				for (long pc : engine.getThreadStopPoints(activeCore.getNode(), activeCore.getCore())) {
+		    	    console.display(String.format("0x%x ", pc));
+		    	}					
+			}				
+		    console.display("\n");				
 		}
-
-		for (long pc : engine.getThreadStopPoints()) {
-    	    console.display(String.format("0x%x ", pc));
-    	}
-	    console.display("\n");
 	}
 }

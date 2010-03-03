@@ -27,16 +27,15 @@ public class AsmDisplayer {
 		m_console = console;
 	}
 
-    public void display(Node node) {
-
+    public void display(Node node, int nodeNumber, int coreNumber) {
   	    List<XtaInstruction> instructions = node.getInstructions();
 
-    	MemoryImage memoryImage = m_engine.getMemoryImage();
-    	SymbolTable symbolTable = m_engine.getSymbolTable();
+    	MemoryImage memoryImage = m_engine.getMemoryImage(nodeNumber, coreNumber);
+    	SymbolTable symbolTable = m_engine.getSymbolTable(nodeNumber, coreNumber);
 
         if (instructions.size() > 0) {
 	    	HashMap<String, TreeSet<Long>> asmLinesCovered =
-	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper());
+	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper(nodeNumber, coreNumber));
 
 	        for (Iterator<Map.Entry<String, TreeSet<Long>>> iter =
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {

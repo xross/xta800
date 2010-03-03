@@ -7,7 +7,6 @@ import java.util.Set;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -18,6 +17,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Sourc
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class RouteUnknowns {
 	private Route m_route;
@@ -241,7 +241,7 @@ public class RouteUnknowns {
 	}
 
 	public void setFixedTime(Node node, TimeUnit timeUnit, Reference reference, Type type, Source source) {
-		timeUnit.setConfig(m_route.getRouteDescription().getConfig());
+		timeUnit.setCoreConfig(m_route.getRouteCoreContainer().getCoreConfig());
 		invalidateCachedStats();
     	node.getAttributes().setFixedTime(timeUnit);
 	    node.getAttributes().addKnown(type, source, new Reference[] {reference});

@@ -78,10 +78,13 @@ public class Mix extends Command {
 
 		SrcDisplayer displayer = new SrcDisplayer(engine, console, true);
 		for (Route route : engine.getRoute(m_routeId)) {
+		    int nodeNumber = route.getRouteCoreContainer().getNodeNumber();
+		    int coreNumber = route.getRouteCoreContainer().getCoreNumber();
+
 			if (m_nodeIdSet) {
-				displayer.display(route.getNode(m_nodeId));
+				displayer.display(route.getNode(m_nodeId), nodeNumber, coreNumber);
 			} else {
-				displayer.display(route.getNode());
+				displayer.display(route.getNode(), nodeNumber, coreNumber);
 			}
 		}
    }

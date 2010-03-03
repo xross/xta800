@@ -5,7 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.TimeUnit;
+import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class InstructionTime extends Command {
 	private int m_routeId;

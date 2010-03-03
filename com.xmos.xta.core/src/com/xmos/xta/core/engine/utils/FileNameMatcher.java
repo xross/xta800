@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine;
+package com.xmos.xta.core.engine.utils;
 
 import com.xmos.libs.util.FileNameCompare;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;

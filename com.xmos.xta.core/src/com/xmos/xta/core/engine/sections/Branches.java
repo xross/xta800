@@ -107,9 +107,13 @@ public class Branches extends Section {
 	        	byteIndex += 4;
 
 	        	Collection<Reference> toRefs = new HashSet<Reference>();
-	    		Reference toRef = ReferenceFactory.createReference(String.format("0x%x", toPc), ReferenceClass.PC_REF);
+	    		Reference toRef = ReferenceFactory.createReference(String.format("0x%x", toPc), 
+	    				ReferenceClass.PC_REF, getNodeNumber(), getCoreNumber());
 	        	toRefs.add(toRef);
-	    		Reference fromRef = ReferenceFactory.createReference(String.format("0x%x", fromPc), ReferenceClass.PC_REF);
+	        	
+	    		Reference fromRef = ReferenceFactory.createReference(String.format("0x%x", fromPc), 
+	    				ReferenceClass.PC_REF, getNodeNumber(), getCoreNumber());
+	    		
 	    		add(src, fromRef, toRefs, false);
 	        }
 		} catch (Exception e) {

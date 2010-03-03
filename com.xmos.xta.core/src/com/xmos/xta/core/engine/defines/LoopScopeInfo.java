@@ -35,7 +35,9 @@ public class LoopScopeInfo implements DefineInfo {
 		boolean ret = false;
 		if(o != null) {
 			if(o instanceof LoopScopeInfo){
-				ret = ((LoopScopeInfo)o).m_reference.equals(m_reference);
+				ret = ((LoopScopeInfo)o).m_reference.equals(m_reference) &&
+	                  (((LoopScopeInfo)o).m_reference.getNodeNumber() == m_reference.getNodeNumber()) &&
+                      (((LoopScopeInfo)o).m_reference.getCoreNumber() == m_reference.getCoreNumber());
 			}
 		}
 		return ret;

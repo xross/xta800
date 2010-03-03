@@ -9,6 +9,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Branches extends Command {
 
@@ -51,22 +52,19 @@ public class Branches extends Command {
 		listBranches(engine, console);
 	}
 
-	private void listBranches(Engine engine, Console console) {
-		if (engine.getBranches().entrySet().size() == 0){
-			console.display("none\n");
-			return;
-		}
+	private void listBranches(final Engine engine, final Console console) {
+		for (NodeCorePair activeCore : engine.getActiveCores()) {			
+			Map<Reference, Set<BranchInfo>> branches = engine.getBranches(activeCore.getNode(), activeCore.getCore());
 
-		Map<Reference, Set<BranchInfo>> branches = engine.getBranches();
-
-		for (Reference fromRef : branches.keySet()) {
-			String to = getTo(branches, fromRef, false);
-			if (to.length() > 0) {
-	    	    console.display(String.format("- %s =>%s (binary)\n", fromRef.toString(), to));
-			}
-			to = getTo(branches, fromRef, true);
-			if (to.length() > 0) {
-	    	    console.display(String.format("- %s =>%s (user)\n", fromRef.toString(), to));
+			for (Reference fromRef : branches.keySet()) {
+				String to = getTo(branches, fromRef, false);
+				if (to.length() > 0) {
+		    	    console.display(String.format("- %s =>%s (binary)\n", fromRef.toString(), to));
+				}
+				to = getTo(branches, fromRef, true);
+				if (to.length() > 0) {
+		    	    console.display(String.format("- %s =>%s (user)\n", fromRef.toString(), to));
+				}
 			}
 		}
 	}

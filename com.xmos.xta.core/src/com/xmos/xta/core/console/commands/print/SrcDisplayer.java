@@ -25,9 +25,9 @@ public class SrcDisplayer {
 		m_displayAssembly = displayAssembly;
 	}
 
-	public void display(Node node) {
+	public void display(Node node, int nodeNumber, int coreNumber) {
   	    List<XtaInstruction> instructions = node.getInstructions();
-		SourceMapper sourceMapper = m_engine.getSourceMapper();
+		SourceMapper sourceMapper = m_engine.getSourceMapper(nodeNumber, coreNumber);
         HashMap<String, TreeSet<Long>> linesCovered =
         	createSrcLinesCovered(instructions, sourceMapper);
 

@@ -5,16 +5,18 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class ReferenceFactory {
-	public static Reference createReference(String refString, ReferenceClass referenceClass) {
+	public static Reference createReference(String refString, 
+			ReferenceClass referenceClass, int nodeNumber, int coreNumber) {
+		
     	String[] subRefs = refString.split(",");
 
         ReferenceType baseType = ReferenceTypeFactory.createReferenceType(
-        		subRefs[subRefs.length - 1], referenceClass);
+        		subRefs[subRefs.length - 1], referenceClass, nodeNumber, coreNumber);
 
         Reference reference = new Reference(baseType);
 		for (int index = 0; index < (subRefs.length - 1); ++index) {
 			reference.addToBackTrail(ReferenceTypeFactory.createReferenceType(
-					subRefs[index], ReferenceClass.ANY_REF));
+					subRefs[index], ReferenceClass.ANY_REF, nodeNumber, coreNumber));
 		}
 		return reference;
 	}

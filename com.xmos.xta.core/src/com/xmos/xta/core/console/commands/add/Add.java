@@ -6,6 +6,7 @@ import com.xmos.xta.core.console.commands.CommandContainer;
 public class Add extends CommandContainer {
 	static private Command[] m_options = {
 		new Branch(),
+		new Core(),
 		new Exclusion(),
 		new FunctionTime(),
 		new InstructionTime(),

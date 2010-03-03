@@ -6,7 +6,6 @@ import com.xmos.xta.core.console.commands.CommandContainer;
 public class Config extends CommandContainer {
 	static private Command[] m_options = {
 		new Case(),
-		new Core(),
 		new Freq(),
 		new Scale(),
 		new SrcPaths(),

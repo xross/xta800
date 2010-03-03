@@ -9,6 +9,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Labels extends Command {
 	public Labels() {
@@ -44,17 +45,15 @@ public class Labels extends Command {
        	listLabels(engine, console);
 	}
 
-	private void listLabels(Engine engine, Console console) {
-		if (engine.getLabels().entrySet().size() == 0){
-			console.display("none\n");
-			return;
+	private void listLabels(final Engine engine, final Console console) {
+		for (NodeCorePair activeCore : engine.getActiveCores()) {			
+	    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels(activeCore.getNode(), activeCore.getCore()).entrySet().iterator();
+	    	while (iter.hasNext()) {
+	    	    Map.Entry<String, Set<Long>> pair = iter.next();
+	    	    console.display(String.format("node: %d, core %d, label: %s, pcs: %s\n",
+	    	    		activeCore.getNode(), activeCore.getCore(), 
+	    	    		pair.getKey(), Conversion.pcSetToString(pair.getValue())));
+	    	}				
 		}
-
-    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels().entrySet().iterator();
-    	while (iter.hasNext()) {
-    	    Map.Entry<String, Set<Long>> pair = iter.next();
-    	    console.display(String.format("Label: %s, pcs: %s\n",
-    	    		pair.getKey(), Conversion.pcSetToString(pair.getValue())));
-    	}
 	}
 }

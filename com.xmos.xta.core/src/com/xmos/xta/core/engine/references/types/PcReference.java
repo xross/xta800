@@ -4,23 +4,23 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class PcReference extends ReferenceType {
-	PcReference(String ref) {
-		super(ref, Type.PC);
+	PcReference(String ref, int nodeNumber, int coreNumber) {
+		super(ref, Type.PC, nodeNumber, coreNumber);
 		if (ref != null) {
 		    addPc(getPcString(ref));
 		}
 	}
 
-	public ReferenceType create(Engine engine, String reference) {
+	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.PC, 1) &&
 		    isPcString(reference)) {
-			return new PcReference(reference);
+			return new PcReference(reference, nodeNumber, coreNumber);
 		}
 		return null;
 	}
 
 	public boolean resolve(Engine engine) {
-		SourceMapper sourceMapper = engine.getSourceMapper();
+		SourceMapper sourceMapper = engine.getSourceMapper(getNodeNumber(), getCoreNumber());
 		if (sourceMapper == null)
 			return false;
 

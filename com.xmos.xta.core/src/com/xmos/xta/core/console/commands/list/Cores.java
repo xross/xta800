@@ -1,0 +1,41 @@
+package com.xmos.xta.core.console.commands.list;
+
+import com.xmos.xta.core.console.Console;
+import com.xmos.xta.core.console.Shell;
+import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
+
+public class Cores extends Command {
+	public Cores() {
+	}
+
+	public int numArgs() {
+        return 0;
+	}
+
+	public String name() {
+  		return "cores";
+	}
+
+	public String commandLine() {
+   		return "cores";
+	}
+
+	public String description(Engine engine, boolean detailed) {
+        return "cores: Lists the active cores";
+	}
+
+	public Command clone(String[] args, int index) {
+		if ((index + numArgs()) >= args.length)
+			return null;
+
+   		return new Cores();
+	}
+
+	public void execute(Shell shell, final Engine engine, final Console console) {
+		for (NodeCorePair activeCore : engine.getActiveCores()) {			
+			console.display(String.format("node: %d, core %d\n", activeCore.getNode(), activeCore.getCore()));
+		}
+	}
+}

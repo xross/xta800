@@ -7,7 +7,6 @@ import java.util.List;
 import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
@@ -19,6 +18,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Sourc
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.TimeUnit;
 
 @SuppressWarnings("serial")
 class IgnoreCondIterationsException extends Exception {}

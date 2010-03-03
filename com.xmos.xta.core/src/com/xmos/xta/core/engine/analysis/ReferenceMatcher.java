@@ -24,11 +24,10 @@ import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 public class ReferenceMatcher {
 
-	public List<StackNode> getStackNode(Engine engine, Reference reference) {
-
+	public List<StackNode> getStackNode(Engine engine, Reference reference, int nodeNumber, int coreNumber) {
 
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
-		StructureGraph sg = engine.getStructureGraph();
+		StructureGraph sg = engine.getStructureGraph(nodeNumber, coreNumber);
 
 		for(long pc : reference.getPcs()){
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
@@ -37,7 +36,7 @@ public class ReferenceMatcher {
 
 			Collections.reverse(refList);
 
-			InstructionNode inst = engine.getInstructionDecoder().getNode(pc);
+			InstructionNode inst = engine.getInstructionDecoder(nodeNumber, coreNumber).getNode(pc);
 			List<Stack<FunctionReferenceNode>> stacks = new LinkedList<Stack<FunctionReferenceNode>>();
 
 			Set<FunctionNode> containedInFunction = sg.getFunctionsOfInstruction(inst);

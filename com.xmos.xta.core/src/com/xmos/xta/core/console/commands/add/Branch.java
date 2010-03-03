@@ -7,9 +7,6 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Branch extends Command {
 	private String m_fromRefString;
@@ -70,14 +67,6 @@ public class Branch extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		Reference fromRef = ReferenceFactory.createReference(m_fromRefString, ReferenceClass.LABEL_REF);
-
-		Collection<Reference> toRefs = new ArrayList<Reference>();
-		for (String toRefString : m_toRefStrings) {
-			Reference ref = ReferenceFactory.createReference(toRefString, ReferenceClass.LABEL_REF);
-			toRefs.add(ref);
-		}
-
-		engine.addBranch(getSrc(), fromRef, toRefs);
+		engine.addBranch(getSrc(), m_fromRefString, m_toRefStrings);
 	}
 }

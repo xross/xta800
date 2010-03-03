@@ -124,15 +124,6 @@ public class Reference implements Comparable<Reference>  {
     	return true;
     }
 
-    private boolean match(Set<Long> set1, Set<Long> set2) {
-    	Set<Long> intersection = new TreeSet<Long>(set1);
-    	intersection.retainAll(set2);
-    	if (intersection.isEmpty()) {
-    		return false;
-    	}
-    	return true;
-	}
-
 	public int hashCode() {
         int hash = 1;
         hash = hash * 31 + m_base.hashCode();
@@ -180,4 +171,21 @@ public class Reference implements Comparable<Reference>  {
 	public List<String> getPcBackTrail(long pc) {
 		return m_base.getPcBackTrail(pc);
 	}
+	
+	public int getNodeNumber() {
+		return m_base.getNodeNumber();
+	}
+
+	public int getCoreNumber() {
+		return m_base.getCoreNumber();
+	}
+	
+    private boolean match(Set<Long> set1, Set<Long> set2) {
+    	Set<Long> intersection = new TreeSet<Long>(set1);
+    	intersection.retainAll(set2);
+    	if (intersection.isEmpty()) {
+    		return false;
+    	}
+    	return true;
+	}	
 }

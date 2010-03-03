@@ -5,6 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class AllEndpoints extends Command {
 	public AllEndpoints() {
@@ -30,19 +31,17 @@ public class AllEndpoints extends Command {
         return new AllEndpoints();
     }
 
-    public void execute(Shell shell, Engine engine, Console console) {
+    public void execute(Shell shell, final Engine engine, final Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		if (engine.getEndpointTable().entrySet().size() == 0){
-			console.display("none\n");
-			return;
+		for (NodeCorePair activeCore : engine.getActiveCores()) {			
+			for (CodePointTableInfo info : engine.getEndpointTable(activeCore.getNode(), activeCore.getCore()).values()) {
+		   	    console.display(String.format("node: %d, core %d, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n",
+		   	    		activeCore.getNode(), activeCore.getCore(), 
+		   	    		info.getPc(), info.getCompilationDir(),
+		   	    		info.getFileName(), info.getLineNumber()));
+		   	}			
 		}
-
-		for (CodePointTableInfo info : engine.getEndpointTable().values()) {
-    	    console.display(String.format("pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n",
-    	    		info.getPc(), info.getCompilationDir(),
-    	    		info.getFileName(), info.getLineNumber()));
-    	}
     }
 }

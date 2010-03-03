@@ -2,14 +2,14 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.CommandSource;
-import com.xmos.xta.core.engine.Config;
-import com.xmos.xta.core.engine.TimeUnit;
-import com.xmos.xta.core.engine.TimeUnit.Units;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
+import com.xmos.xta.core.engine.utils.CoreConfig;
+import com.xmos.xta.core.engine.utils.TimeUnit;
+import com.xmos.xta.core.engine.utils.TimeUnit.Units;
 
 public class RouteTiming {
 	public enum Level {
@@ -20,21 +20,20 @@ public class RouteTiming {
 	}
 
 	private Route m_route;
-	private Config m_config;
+	private CoreConfig m_coreConfig;
 	private int m_nodeNumber;
 	private int m_coreNumber;
 	private TimeUnit m_maxTime;
 	private boolean m_maxTimeSet;
-
 	private CommandSource m_requirementsSrc;
 
-	RouteTiming(CommandSource src, Route route, Config config, int nodeNumber, int coreNumber) {
+	RouteTiming(CommandSource src, Route route, CoreConfig coreConfig, int nodeNumber, int coreNumber) {
 		m_requirementsSrc = src;
 		m_route = route;
-		m_config = config;
+		m_coreConfig = coreConfig;
 		m_nodeNumber = nodeNumber;
 		m_coreNumber = coreNumber;
-		m_maxTime = new TimeUnit(m_config, 0.0, Units.NS);
+		m_maxTime = new TimeUnit(m_coreConfig, 0.0, Units.NS);
 		m_maxTimeSet = false;
 	}
 
@@ -54,7 +53,7 @@ public class RouteTiming {
 		m_requirementsSrc = src;
 		m_maxTime = maxTime;
 		m_maxTimeSet = true;
-		m_maxTime.setConfig(m_config);
+		m_maxTime.setCoreConfig(m_coreConfig);
 	}
 
 	public TimeUnit getMaxTime() {
@@ -91,7 +90,7 @@ public class RouteTiming {
 	}
 
 	public int getMinFrequency(Status status) {
-		return (int)((getWorstTime(status) / m_maxTime.getNs()) * m_config.m_frequency);
+		return (int)((getWorstTime(status) / m_maxTime.getNs()) * m_coreConfig.m_frequency);
 	}
 
 	public String getDescription(Level level) {

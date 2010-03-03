@@ -9,7 +9,6 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.TimeUnit;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -18,6 +17,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactor
 import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.CoreConfig;
+import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class RouteDefines {
 	private static final boolean DEBUG_ROUTE_DEFINES = false;
@@ -61,7 +62,8 @@ public class RouteDefines {
 		Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
 		Collection<Node> toNodes = route.getReferencedNodes(toRef);
 
-		TimeUnit timeUnit = new TimeUnit(route.getRouteDescription().getConfig(), info.getTimeUnit());
+		CoreConfig coreConfig = route.getRouteCoreContainer().getCoreConfig();
+		TimeUnit timeUnit = new TimeUnit(coreConfig, info.getTimeUnit());
 
 		for (Node from : fromNodes) {
 			assert(from instanceof InstructionNode);
@@ -90,7 +92,7 @@ public class RouteDefines {
 
 			if (!success) {
 				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s",
-						info, route.getRouteDescription().getDescription()));
+						info, route.getRouteCoreContainer().getRouteContainer().getDescription()));
 			}
 		}
 

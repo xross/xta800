@@ -81,14 +81,14 @@ public class ScripterReference implements Comparable<ScripterReference> {
 		ReferenceType.Type type = ref.getBase().getType();
 		if (type == ReferenceType.Type.ENDPOINT) {
 			tryMatching(scripter, ref,
-					engine.getEndpoints(),
-					engine.getEndpointTable().values(),
+					engine.getEndpoints(m_ref.getNodeNumber(), m_ref.getCoreNumber()),
+					engine.getEndpointTable(m_ref.getNodeNumber(), m_ref.getCoreNumber()).values(),
 					ReferenceClass.ENDPOINT_REF);
 
 		} else {
 			boolean matched = tryMatching(scripter, ref,
-					engine.getSrcLabels(),
-					engine.getSrcLabelTable().values(),
+					engine.getSrcLabels(m_ref.getNodeNumber(), m_ref.getCoreNumber()),
+					engine.getSrcLabelTable(m_ref.getNodeNumber(), m_ref.getCoreNumber()).values(),
 					ReferenceClass.LABEL_REF);
 
 			if (!matched) {
@@ -107,7 +107,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 		for (String name : names) {
 			Set<Long> endPointPcs = getPcs(infos, name);
 			if (endPointPcs.equals(ref.getPcs())) {
-				initialise(ReferenceFactory.createReference(name, refClass), name, false);
+				initialise(ReferenceFactory.createReference(name, refClass, m_ref.getNodeNumber(), m_ref.getCoreNumber()), name, false);
 				return true;
 			}
 		}
@@ -117,7 +117,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 		for (String name : names) {
 			Set<Long> endPointPcs = getPcs(tableInfos, name);
 			if (endPointPcs.equals(ref.getPcs())) {
-				initialise(ReferenceFactory.createReference(name, refClass),
+				initialise(ReferenceFactory.createReference(name, refClass, m_ref.getNodeNumber(), m_ref.getCoreNumber()),
 						scripter.getUniqueLabel(), true);
 				return true;
 			}
@@ -126,10 +126,10 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	}
 
 	private void tryLabels(Engine engine, Scripter scripter, Reference ref) {
-		Map<String, Set<Long>> labels = engine.getLabels();
+		Map<String, Set<Long>> labels = engine.getLabels(m_ref.getNodeNumber(), m_ref.getCoreNumber());
 		for (String label : labels.keySet()) {
 			if (labels.get(label).equals(ref.getPcs())) {
-				initialise(ReferenceFactory.createReference(label, ReferenceClass.LABEL_REF),
+				initialise(ReferenceFactory.createReference(label, ReferenceClass.LABEL_REF, m_ref.getNodeNumber(), m_ref.getCoreNumber()),
 						label, false);
 				return;
 			}

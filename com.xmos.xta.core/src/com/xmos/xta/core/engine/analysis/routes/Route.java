@@ -8,7 +8,6 @@ import java.util.Stack;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
-import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
@@ -18,6 +17,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNode
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.CoreConfig;
 
 public class Route {
 	private static int s_routeCount;
@@ -27,8 +27,7 @@ public class Route {
 	}
 
 	private int m_routeId;
-	private RouteDescription m_description;
-	private RouteContainer m_container;
+	private RouteCoreContainer m_coreContainer;
 	private RouteTiming m_timing;
 	private RouteUnknowns m_unknowns;
 	private Node m_node;
@@ -37,15 +36,20 @@ public class Route {
 		s_routeCount = 0;
 	}
 
-	public Route(CommandSource src, Engine engine, Node node, RouteDescription description, RouteContainer container) {
-		m_description = description;
-		m_container = container;
+	public Route(CommandSource src, Engine engine, Node node, RouteCoreContainer routeCoreContainer) {
+		m_coreContainer = routeCoreContainer;
 		m_routeId = s_routeCount++;
 		m_node = node;
 		Architecture architecture = engine.getXeLoader().getArchitecture();
-		m_timing = new RouteTiming(src, this, description.getConfig(), engine.getNodeNumber(), engine.getCoreNumber());
+		
+		m_timing = new RouteTiming(src, this, 
+				m_coreContainer.getCoreConfig(), 
+				m_coreContainer.getNodeNumber(), 
+				m_coreContainer.getCoreNumber());
+		
 		m_unknowns = new RouteUnknowns(this);
-		setRouteSpecificConfigs(description.getConfig(), architecture);
+		
+		setRouteSpecificCoreConfigs(m_coreContainer.getCoreConfig(), architecture);
 	}
 
 	public int getRouteId() {
@@ -60,12 +64,8 @@ public class Route {
 		m_node = node;
 	}
 
-	public RouteDescription getRouteDescription() {
-		return m_description;
-	}
-
-    public RouteContainer getRouteContainer() {
-		return m_container;
+    public RouteCoreContainer getRouteCoreContainer() {
+		return m_coreContainer;
 	}
 
 	public RouteTiming getRouteTiming() {
@@ -148,10 +148,10 @@ public class Route {
 		return referencedNodes;
 	}
 
-	private void setRouteSpecificConfigs(final Config config, final Architecture architecture) {
+	private void setRouteSpecificCoreConfigs(final CoreConfig coreConfig, final Architecture architecture) {
 		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverserWithAncestors() {
 			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
-				((InstructionNodeAttributes)node.getAttributes()).setConfig(config, architecture);
+				((InstructionNodeAttributes)node.getAttributes()).setCoreConfig(coreConfig, architecture);
 				return TraverseStatus.CONTINUE;
 			}
 		});

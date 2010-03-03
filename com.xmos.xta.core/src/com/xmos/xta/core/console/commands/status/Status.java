@@ -2,6 +2,7 @@ package com.xmos.xta.core.console.commands.status;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.MemoryImage;
@@ -11,6 +12,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Status extends Command {
 	public Status() {
@@ -55,12 +57,9 @@ public class Status extends Command {
     		return;
     	}
 
-    	console.display(String.format("Current node: %d\n", engine.getNodeNumber()));
-    	console.display(String.format("Current core: %d\n", engine.getCoreNumber()));
-
     	console.display(String.format("Frequency:"));
     	for (int nodeNumber : engine.getXeLoader().getNodeNumbers()) {
-    		double mhz = (double)engine.getNodeHz(nodeNumber) / 1000000;
+    		double mhz = (double)engine.getFrequency(nodeNumber);
     		console.display(String.format(" Node %d, %.1f Mhz\n", nodeNumber, mhz));
     	}
 
@@ -87,7 +86,7 @@ public class Status extends Command {
 	    		for (Route route : routes) {
 		    		console.display(String.format("Loaded Route(%d): %s %s\n",
 		    				route.getRouteId(),
-		    				route.getRouteDescription().getDescription(),
+		    				route.getRouteCoreContainer().getRouteContainer().getDescription(),
 		    				route.getEndpointsPcsString()));
 	    		}
 
@@ -96,14 +95,16 @@ public class Status extends Command {
 	    	}
     	}
 
-    	Reference fromEndPoint = engine.getFromEndPoint();
-    	if ((fromEndPoint != null) && (fromEndPoint.getResolved())) {
-    		console.display(String.format("From endpoint '%s'\n", fromEndPoint.getRef()));
+    	Map<NodeCorePair, Reference> fromEndPoints = engine.getFromEndPoints();
+    	for (NodeCorePair activeCore : fromEndPoints.keySet()) {
+    		console.display(String.format("From endpoint '%s', node: %d, core: %d\n", 
+    				fromEndPoints.get(activeCore), activeCore.getNode(), activeCore.getCore()));
     	}
 
-    	Reference toEndPoint = engine.getToEndPoint();
-    	if ((toEndPoint != null) && (toEndPoint.getResolved())) {
-    		console.display(String.format("To endpoint '%s'\n", toEndPoint.getRef()));
+    	Map<NodeCorePair, Reference> toEndPoints = engine.getToEndPoints();
+    	for (NodeCorePair activeCore : toEndPoints.keySet()) {
+    		console.display(String.format("To endpoint '%s', node: %d, core: %d\n", 
+    				toEndPoints.get(activeCore), activeCore.getNode(), activeCore.getCore()));
     	}
     }
 }
