@@ -157,6 +157,15 @@ public class Scripter {
 		return m_references;
 	}
 
+	public boolean promptUser() {
+		for (ScripterReference scripterReference : m_references) {
+			if (scripterReference.isModifiable() && scripterReference.isEnabled()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void createRefs() {
 		m_autoLabels.clear();
 		m_references = new LinkedList<ScripterReference>();
