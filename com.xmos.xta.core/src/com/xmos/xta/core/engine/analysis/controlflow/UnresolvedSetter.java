@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -24,7 +23,7 @@ public class UnresolvedSetter {
 	}
 
 	private void findUnresolved(Node inst, Set<Node> seen, Set<Node> isUnresolved) {
-		Set<Node> following = new HashSet<Node>();
+		Set<Node> following = new TreeSet<Node>();
 		following.add(inst);
 		while(!following.isEmpty()){
 			Node current = following.iterator().next();

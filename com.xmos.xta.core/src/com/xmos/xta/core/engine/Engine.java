@@ -1551,7 +1551,7 @@ public class Engine implements Notifier, Aborter {
 			newStructuralGraph.add(nodeNumber, coreNumber, sae.getStructureGraph());
 
 			//Source Mapping Stage
-
+			
 			SourceMapper sourceMapper;
 			try {
 				sourceMapper = new SourceMapper(src, this, xeLoader, nodeNumber, coreNumber, functionStartNodes,
@@ -1697,7 +1697,7 @@ public class Engine implements Notifier, Aborter {
 			SymbolTable symbolTable, Map<String, List<InstructionNode>> functionNameToInstructions,
 			Set<InstructionNode> funcStarts, Map<String, Set<Long>> labelToPc) {
 
-		Map<Long, String> pcToLabel = new HashMap<Long, String>();
+		Map<Long, String> pcToLabel = new TreeMap<Long, String>();
 		for (String label : labelToPc.keySet()) {
 			for (Long pc : labelToPc.get(label)) {
 				pcToLabel.put(pc, label);

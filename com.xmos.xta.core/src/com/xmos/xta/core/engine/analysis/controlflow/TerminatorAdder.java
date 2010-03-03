@@ -37,7 +37,7 @@ public class TerminatorAdder {
 	}
 
 	private void findEndPoints(Node inst, Set<Node> seen, Set<Node> terminals) {
-		Set<Node> following = new HashSet<Node>();
+		Set<Node> following = new TreeSet<Node>();
 		following.add(inst);
 		while(!following.isEmpty()){
 			Node current = following.iterator().next();

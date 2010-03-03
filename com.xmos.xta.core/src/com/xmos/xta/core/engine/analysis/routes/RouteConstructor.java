@@ -562,15 +562,6 @@ public class RouteConstructor {
 	throws AbortedException {
 
 		Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet, aborter);
-		if(debug_route) {
-			System.out.println("on node "+ currentNode );
-			if(currentNode instanceof InstructionNode){
-				InstructionNode inst = (InstructionNode)currentNode;
-				System.out.println(inst.getXtaInstruction());
-				System.out.println(node.getNextNodes());
-
-			}
-		}
 
 		if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 			currentExclusionsFound.add(currentNode);
@@ -588,8 +579,6 @@ public class RouteConstructor {
 				return;
 			}
 		} else {
-
-			if(debug_route) System.out.println("adding node "+ currentNode + " to workingSet");
 			addToWorkingSet(parent, currentNode, workingSet);
 		}
 
@@ -645,8 +634,6 @@ public class RouteConstructor {
 						} else {
 							FunctionNode fn = makeFunction(newStack, frn, exclusionStackNodes, aborter, endStackNodes, false);
 							if(fn != null){
-								
-								
 								((FunctionReferenceNode)next).setFunction(frn.getFunctionName(), fn);
 							} else {
 								currentExclusionsFound.add(currentNode);
@@ -664,8 +651,6 @@ public class RouteConstructor {
 					Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
 					newStack.addAll(currentStack);
 					newStack.pop();
-
-					//need to update the currentEnds
 					findReachableGraph(currentNode, newStack, followingFunction, workingSet,
 							exclusionStackNodes, currentExclusionsFound, aborter, routeMode, endStackNodes,
 							nodeToWorkingSet, loopFormingEndNodes, false);
@@ -675,7 +660,6 @@ public class RouteConstructor {
 						exclusionStackNodes, currentExclusionsFound, aborter, routeMode, endStackNodes,
 						nodeToWorkingSet, loopFormingEndNodes, false);
 			} else {
-
 				Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
 				if(!stackNodesContainNode(endStackNodes, currentStack, next)){
 					CommonMethods.connect(nextWorkingSetNode, currentNode);
