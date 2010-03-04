@@ -121,7 +121,7 @@ public class Sections {
 
 	public boolean addToBranches(CommandSource src, int nodeNumber, int coreNumber,
 			Reference from, Collection<Reference> to) {
-
+		//TODO the user should not be able to override hard coded branches
 		Branches branches = (Branches)getSection(m_branches, nodeNumber, coreNumber);
 		return branches.add(src, from, to, true);
 	}
