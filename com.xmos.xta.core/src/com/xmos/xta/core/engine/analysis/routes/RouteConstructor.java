@@ -114,7 +114,7 @@ public class RouteConstructor {
 					FunctionNode newFunction = makeFunction(stack, fnRef, exclusionStackNodes, m_engine, endStackNodes, true);
 					if(newFunction != null){
 						setParent(newFunction);
-						Route route = new Route(src, m_engine, newFunction, m_description, m_container);
+						Route route = new Route(src, m_engine, stack, newFunction, m_description, m_container);
 						if (!alreadyContainRoute(newFunction)) {
 							m_routes.add(route);
 						}
@@ -133,7 +133,7 @@ public class RouteConstructor {
 					Node newPath = makePath(currentStack, startStackNode.getInstruction(), endStackNodes, exclusionStackNodes, m_engine);
 					if(newPath != null){
 						setParent(newPath);
-						Route route = new Route(src, m_engine, newPath, m_description, m_container);
+						Route route = new Route(src, m_engine, currentStack, newPath, m_description, m_container);
 						if (!alreadyContainRoute(newPath)) {
 							m_routes.add(route);
 						}
@@ -155,7 +155,7 @@ public class RouteConstructor {
 
 	private List<StackNode> referenceToStackNode(Reference startRef) {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
-		List<StackNode> stackNodes= referenceMatcher.getStackNode(m_engine, startRef);
+		List<StackNode> stackNodes= referenceMatcher.getStackNodeFromGlobalTree(m_engine, startRef);
 
 		return stackNodes;
 	}
@@ -298,6 +298,15 @@ public class RouteConstructor {
 
 			if(next instanceof FunctionReferenceNode){
 				FunctionReferenceNode frn = ((FunctionReferenceNode)next);
+				
+				ReferenceMatcher refMatcher = new ReferenceMatcher();
+				for(Reference ref : frn.getBackTrails()){
+					boolean matches = refMatcher.referenceMatchesNode(currentStack, ref, frn.getFunctionStartPc(), frn.getFunctionStartInstruction());
+					
+					System.out.println("mathces: " + matches);
+				}
+				
+				
 				
 				Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
 				newStack.addAll(currentStack);

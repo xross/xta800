@@ -41,7 +41,7 @@ public class StructuralAnalysisEngine {
 
 	private static final boolean REGISTER_CONFIG_ON_GLOBAL_TREE = false;
 	private static boolean debug_structure = false;
-	private static boolean sanity_debug = true;
+	private static boolean sanity_debug = false;
 
 	private StructureGraph m_structureGraph;
 	private List<PatternMatcher> m_patternMatchers;
