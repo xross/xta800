@@ -4,9 +4,8 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
+Active Core Set: \(0,0\)
 Loaded executable: test_1.xe
-Current node: 0
-Current core: 0
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 8 \(No debug information found\)
 No routes analysed
