@@ -138,7 +138,7 @@ public class Reference implements Comparable<Reference>  {
     }
 
     public String toString() {
-    	return getRef();
+    	return getRef() + String.format(" (node: %d, core: %d, args)", getNodeNumber(), getCoreNumber());
     }
 
 	public boolean matches(String s, Engine engine) {

@@ -47,10 +47,6 @@ public class FunctionTimes extends Command {
 		}
 
 		Collection<FunctionTimeInfo> infos = engine.getFunctionTimeDefines();
-	    if (infos.isEmpty()) {
-	    	console.display("none\n");
-	    	return;
-	    }
 		for (FunctionTimeInfo info : infos) {
 			console.display(info + "\n");
 		}

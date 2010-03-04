@@ -37,7 +37,7 @@ public class SrcCommands extends Command {
 
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 			for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands(activeCore.getNode(), activeCore.getCore())) {
-	    	    console.display(String.format("node: %d, core %d, %s\n", 
+	    	    console.display(String.format("node: %d, core: %d, %s\n", 
 	    	    		activeCore.getNode(), activeCore.getCore(), cmdInfo.getString()));
 	    	}			
 		}

@@ -47,10 +47,6 @@ public class LoopScopes extends Command {
 		}
 
 		Collection<LoopScopeInfo> infos = engine.getLoopScopeDefines();
-	    if (infos.isEmpty()) {
-	    	console.display("none\n");
-	    	return;
-	    }
 		for (LoopScopeInfo info : infos) {
 			console.display(info + "\n");
 		}

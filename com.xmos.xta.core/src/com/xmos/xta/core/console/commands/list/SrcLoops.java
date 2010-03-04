@@ -37,7 +37,7 @@ public class SrcLoops extends Command {
 
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 			for (SrcLevelLoopInfo srcLevelLoopInfo : engine.getSrcLevelLoops(activeCore.getNode(), activeCore.getCore())) {
-	    	    console.display(String.format("node: %d, core %d, 0x%x: %d\n",
+	    	    console.display(String.format("node: %d, core: %d, 0x%x: %d\n",
 	    	    		activeCore.getNode(), activeCore.getCore(), 
 	                    srcLevelLoopInfo.getPc(),
 	                    srcLevelLoopInfo.getNumIterations()));

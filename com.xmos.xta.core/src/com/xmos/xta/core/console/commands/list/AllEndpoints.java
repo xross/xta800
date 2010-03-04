@@ -37,7 +37,7 @@ public class AllEndpoints extends Command {
 
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 			for (CodePointTableInfo info : engine.getEndpointTable(activeCore.getNode(), activeCore.getCore()).values()) {
-		   	    console.display(String.format("node: %d, core %d, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n",
+		   	    console.display(String.format("node: %d, core: %d, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n",
 		   	    		activeCore.getNode(), activeCore.getCore(), 
 		   	    		info.getPc(), info.getCompilationDir(),
 		   	    		info.getFileName(), info.getLineNumber()));

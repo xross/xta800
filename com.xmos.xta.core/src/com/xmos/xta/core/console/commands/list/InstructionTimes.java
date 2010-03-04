@@ -47,10 +47,6 @@ public class InstructionTimes extends Command {
 		}
 
 		Collection<InstructionTimeInfo> infos = engine.getInstructionTimeDefines();
-	    if (infos.isEmpty()) {
-	    	console.display("none\n");
-	    	return;
-	    }
 		for (InstructionTimeInfo info : infos) {
 			console.display(info + "\n");
 		}

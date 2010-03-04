@@ -54,8 +54,9 @@ public class Branches extends Command {
 
 	private void listBranches(final Engine engine, final Console console) {
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			Map<Reference, Set<BranchInfo>> branches = engine.getBranches(activeCore.getNode(), activeCore.getCore());
+    	    console.display(String.format("node: %d, core: %d\n", activeCore.getNode(), activeCore.getCore()));
 
+			Map<Reference, Set<BranchInfo>> branches = engine.getBranches(activeCore.getNode(), activeCore.getCore());
 			for (Reference fromRef : branches.keySet()) {
 				String to = getTo(branches, fromRef, false);
 				if (to.length() > 0) {
@@ -66,6 +67,7 @@ public class Branches extends Command {
 		    	    console.display(String.format("- %s =>%s (user)\n", fromRef.toString(), to));
 				}
 			}
+			console.display("\n");
 		}
 	}
 

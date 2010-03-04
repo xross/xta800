@@ -47,10 +47,6 @@ public class LoopPath extends Command {
 		}
 
 		Collection<LoopPathInfo> infos = engine.getLoopPathDefines();
-	    if (infos.isEmpty()) {
-	    	console.display("none\n");
-	    	return;
-	    }
 		for (LoopPathInfo info : infos) {
 			console.display(info + "\n");
 		}
