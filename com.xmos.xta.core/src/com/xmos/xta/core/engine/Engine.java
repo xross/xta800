@@ -1427,7 +1427,7 @@ public class Engine implements Notifier, Aborter {
 			sa.process();
 
 			//add function reference nodes
-			FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(id, m_notifier, src, xeLoader, nodeNumber, coreNumber);
+			FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(id, m_notifier, src, xeLoader, nodeNumber, coreNumber, sections);
 			frna.process();
 
 			//add terminators(null nodes) to each of the functions

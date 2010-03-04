@@ -13,10 +13,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.references.Reference;
 
 public class FunctionReferenceNode extends Node {
 
-	private long m_functionStartPc;
+	private InstructionNode m_functionStartInstruction;
 	private long m_functionCallPc;
 
 	private String m_functionName;
@@ -26,31 +27,34 @@ public class FunctionReferenceNode extends Node {
 	private boolean m_cfgRef = false;
 	private FunctionNode m_recursiveFunction;
 	private FunctionNode m_unknownFunction;
-
+	private Set<Reference> m_appliesForReferences;
+	
 	public FunctionReferenceNode(FunctionReferenceNode old){
 		m_functionCallPc =old.m_functionCallPc;
 		m_functionName = old.m_functionName;
 		m_functionNode = old.m_functionNode;
-		m_functionStartPc = old.m_functionStartPc;
+		m_functionStartInstruction = old.m_functionStartInstruction;
 		m_isKnownFunctionTarget = old.m_isKnownFunctionTarget;
 		m_isRecursive = old.m_isRecursive;
 		m_alias = old.m_alias;
 		m_recursiveFunction = old.m_recursiveFunction;
 		m_unknownFunction = old.m_unknownFunction;
+		m_appliesForReferences = old.m_appliesForReferences;
 	}
 
 	public FunctionReferenceNode(InstructionNode source, InstructionNode target) {
 		m_isRecursive = false;
 		m_functionNode = null;
+		m_appliesForReferences = new TreeSet<Reference>();
 		m_functionCallPc = source.getXtaInstruction().getPc();
+		m_functionStartInstruction = target;
 		if(target == null){
 			m_functionName = "(Call to unknown function)";
 			m_isKnownFunctionTarget = false;
-			m_functionStartPc = 0x0;
 		} else {
 			m_functionName = "(unlinked to known function)";
 			m_isKnownFunctionTarget = true;
-			m_functionStartPc = target.getXtaInstruction().getPc();
+			
 		}
 		m_recursiveFunction = null;
 		m_unknownFunction = null;
@@ -59,12 +63,13 @@ public class FunctionReferenceNode extends Node {
 	public FunctionReferenceNode() {
 		m_functionName = null;
 		m_functionNode = null;
-		m_functionStartPc = 0x0;
+		m_functionStartInstruction = null;
 		m_functionCallPc = 0x0;
 		m_isKnownFunctionTarget = false;
 		m_isRecursive = false;
 		m_recursiveFunction = null;
 		m_unknownFunction = null;
+		m_appliesForReferences = new TreeSet<Reference>();;
 	}
 
 	public void getBackTrail(StringBuffer refStr) {
@@ -102,9 +107,17 @@ public class FunctionReferenceNode extends Node {
 		}
 		return ret;
 	}
+	
+	public InstructionNode getFunctionStartInstruction(){
+		return m_functionStartInstruction;
+	}
 
 	public long getFunctionStartPc(){
-		return m_functionStartPc;
+		if(m_isKnownFunctionTarget){
+			return m_functionStartInstruction.getPC();
+		} else {
+			return 0x0;
+		}
 	}
 
 	public boolean isKnownFunction(){
@@ -295,6 +308,12 @@ public class FunctionReferenceNode extends Node {
 		return;
 	}
 
+	public void setBackTrail(Reference ref) {
+		m_appliesForReferences.add(ref);
+	}
 
+	public Set<Reference> getBackTrails() {
+		return m_appliesForReferences;
+	}
 
 }

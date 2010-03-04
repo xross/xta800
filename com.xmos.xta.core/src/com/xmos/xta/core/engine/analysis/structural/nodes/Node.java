@@ -3,8 +3,10 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -14,6 +16,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.sections.BranchInfo;
 
 public abstract class Node implements Comparable<Node> {
 	public static int s_numNodes;
@@ -25,6 +29,8 @@ public abstract class Node implements Comparable<Node> {
 	private boolean m_unresolved;
 	private boolean m_isFolded;
 
+	private Map<Reference, Set<BranchInfo>> m_branchesWithBackTrails;
+	
 	public enum Case {
 		WORST,
 		BEST,
@@ -60,10 +66,16 @@ public abstract class Node implements Comparable<Node> {
 	public abstract void replaceChild(Node oldNode, Node newNode);
 	public abstract void replaceChildren(List<Node> newChildren);
 
+	public abstract List<Node> iChildren();
+	public abstract Set<Node> structurGraphNext(Node childNode);
+	public abstract void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start);
+	public abstract void buildListDown(List<Node> nodeList);
+	
 	public Node() {
 		m_id = s_numNodes++;
 		m_edges = new Edges();
 		m_isFolded = false;
+		m_branchesWithBackTrails = new TreeMap<Reference, Set<BranchInfo>>();
 	}
 
 	public Node(Node node) {
@@ -71,6 +83,7 @@ public abstract class Node implements Comparable<Node> {
 		m_id = s_numNodes++;
 		m_isFolded = false;
 		m_unresolved = node.m_unresolved;
+		m_branchesWithBackTrails = node.m_branchesWithBackTrails;
 	}
 
 	public boolean isCondNode()             { return false; }
@@ -292,10 +305,13 @@ public abstract class Node implements Comparable<Node> {
 		fnRef.addAll(node.getFunctionReferencesNodes());
 	}
 
-	public abstract List<Node> iChildren();
-	public abstract Set<Node> structurGraphNext(Node childNode);
-	public abstract void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start);
-	public abstract void buildListDown(List<Node> nodeList);
+	public void addBranchsWithBackTrail(Reference ref, Set<BranchInfo> targets) {
+		m_branchesWithBackTrails.put(ref, targets);
+	}
+	
+	public Map<Reference, Set<BranchInfo>> getBranchsWithBackTrail() {
+		return m_branchesWithBackTrails;
+	}
 
 }
 
