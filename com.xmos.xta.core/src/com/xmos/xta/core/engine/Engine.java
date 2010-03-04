@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -642,23 +643,34 @@ public class Engine implements Notifier, Aborter {
 		return new TreeSet<String>();
 	}
 
-	public Collection<String> getNonSystemFunctionNames(int nodeNumber, int coreNumber) {
-		if (!m_xeLoader.isLoaded(nodeNumber, coreNumber))
-			return new HashSet<String>();
+	public Collection<String> getNonSystemFunctionNames() {
+		List<String> functionNames = new LinkedList<String>();
 
-		List<String> functionNames = new ArrayList<String>();
-		functionNames.addAll(getFunctionNames(nodeNumber, coreNumber));
-		Collections.sort(functionNames);
+		for (NodeCorePair activeCore : getActiveCores()) {
+			int nodeNumber = activeCore.getNode();
+			int coreNumber = activeCore.getCore();
 
-		Set<String> systemFunctions = new HashSet<String>();
-		Collection<String> systems = m_sections.getSystems(nodeNumber, coreNumber);
-		for (String functionName : functionNames) {
-			if (isSystemFunction(systems, functionName)) {
-				systemFunctions.add(functionName);
+			if (!m_xeLoader.isLoaded(nodeNumber, coreNumber))
+				continue;
+
+			List<String> nodeCoreFunctions = new LinkedList<String>();
+			nodeCoreFunctions.addAll(getFunctionNames(nodeNumber, coreNumber));
+	
+			Set<String> systemFunctions = new HashSet<String>();
+			Collection<String> systems = m_sections.getSystems(nodeNumber, coreNumber);
+			for (String functionName : functionNames) {
+				if (isSystemFunction(systems, functionName)) {
+					systemFunctions.add(functionName);
+				}
 			}
+			nodeCoreFunctions.removeAll(systemFunctions);
+			functionNames.addAll(nodeCoreFunctions);
 		}
-		functionNames.removeAll(systemFunctions);
-		return functionNames;
+
+		Collections.sort(functionNames);
+		Set<String> uniqueNames = new HashSet<String>();
+		uniqueNames.addAll(functionNames);
+		return uniqueNames;
 	}
 	
 	public List<Long> getFunctionPcs(String functionName, int nodeNumber, int coreNumber) {		
