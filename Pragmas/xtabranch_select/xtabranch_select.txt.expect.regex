@@ -1,4 +1,4 @@
-- 0x[0-9a-fA-F]+ => 0x[0-9a-fA-F]+ 0x[0-9a-fA-F]+ \(binary\)
+- n0c0:0x[0-9a-fA-F]+ => n0c0:0x[0-9a-fA-F]+ n0c0:0x[0-9a-fA-F]+ \(binary\)
 Route\(0\) function: main
     No Timing Specified
 
