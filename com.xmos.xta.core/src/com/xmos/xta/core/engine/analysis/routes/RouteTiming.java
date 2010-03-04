@@ -51,9 +51,8 @@ public class RouteTiming {
 
 	public void setMaxTime(CommandSource src, TimeUnit maxTime) {
 		m_requirementsSrc = src;
-		m_maxTime = maxTime;
+		m_maxTime = new TimeUnit(m_coreConfig, maxTime);
 		m_maxTimeSet = true;
-		m_maxTime.setCoreConfig(m_coreConfig);
 	}
 
 	public TimeUnit getMaxTime() {
