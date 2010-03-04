@@ -30,16 +30,20 @@ public class Route {
 	private RouteCoreContainer m_coreContainer;
 	private RouteTiming m_timing;
 	private RouteUnknowns m_unknowns;
-	private Node m_node;
+	
+	private Stack<FunctionReferenceNode> m_stack;
+	private Node m_baseOfRouteNode;
+	
 	private Node m_searchNode;
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
 
-	public Route(CommandSource src, Engine engine, Node node, RouteCoreContainer routeCoreContainer) {
+	public Route(CommandSource src, Engine engine, Stack<FunctionReferenceNode> stack, Node node, RouteCoreContainer routeCoreContainer) {
 		m_coreContainer = routeCoreContainer;
 		m_routeId = s_routeCount++;
-		m_node = node;
+		m_stack = stack;
+		m_baseOfRouteNode = node;
 		Architecture architecture = engine.getXeLoader().getArchitecture();
 		
 		m_timing = new RouteTiming(src, this, 
@@ -57,11 +61,11 @@ public class Route {
 	}
 
 	public Node getNode() {
-		return m_node;
+		return m_baseOfRouteNode;
 	}
 
 	public void setNode(Node node) {
-		m_node = node;
+		m_baseOfRouteNode = node;
 	}
 
     public RouteCoreContainer getRouteCoreContainer() {
@@ -82,11 +86,11 @@ public class Route {
 
     public Node getNode(final int nodeId) {
     	if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
-    		return m_node;
+    		return m_baseOfRouteNode;
 
     	} else {
         	m_searchNode = null;
-        	m_node.traverse(new UntypedNodeTraverser() {
+        	m_baseOfRouteNode.traverse(new UntypedNodeTraverser() {
     			public TraverseStatus foundNode(Node node) {
     				if (node.getId() == nodeId) {
     					m_searchNode = node;
@@ -112,7 +116,7 @@ public class Route {
 		if (nodeString.charAt(nodeString.length() - 1) != '~')
 			return null;
 
-		Node node = m_node;
+		Node node = m_baseOfRouteNode;
 
 		String[] nodeIndecies = nodeString.substring(1, nodeString.length() - 1).split("~");
 		for (String nodeIndex : nodeIndecies) {
@@ -135,21 +139,21 @@ public class Route {
 
 	public Set<Node> getReferencedNodes(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
-		return referenceMatcher.getNodesMatchingReference(m_node, reference);
+		return referenceMatcher.getNodesMatchingReference(m_stack, m_baseOfRouteNode, reference);
 	}
 
 	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
 		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
 		Collection<Node> referencedNodes = new ArrayList<Node>();
 
-		for (Node function : referenceMatcher.getFunctionNodesMatchingReference(m_node, reference)) {
+		for (Node function : referenceMatcher.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference)) {
 			referencedNodes.add(function);
 		}
 		return referencedNodes;
 	}
 
 	private void setRouteSpecificCoreConfigs(final CoreConfig coreConfig, final Architecture architecture) {
-		m_node.traverse(new Stack<Node>(), new DefaultNodeTraverserWithAncestors() {
+		m_baseOfRouteNode.traverse(new Stack<Node>(), new DefaultNodeTraverserWithAncestors() {
 			public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
 				((InstructionNodeAttributes)node.getAttributes()).setCoreConfig(coreConfig, architecture);
 				return TraverseStatus.CONTINUE;

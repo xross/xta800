@@ -24,7 +24,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 public class ReferenceMatcher {
 
-	public List<StackNode> getStackNode(Engine engine, Reference reference, int nodeNumber, int coreNumber) {
+	public List<StackNode> getStackNodeFromGlobalTree(Engine engine, Reference reference, int nodeNumber, int coreNumber) {
 
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
 		StructureGraph sg = engine.getStructureGraph(nodeNumber, coreNumber);
@@ -45,6 +45,8 @@ public class ReferenceMatcher {
 				List<Stack<FunctionReferenceNode>> callStacks = sg.getFunctionCallStack(fn);
 				BlockNode block = getStartBlock(inst, fn);
 				List<Node> nodeList = new LinkedList<Node>();
+				
+				
 				for(Stack<FunctionReferenceNode> stack : callStacks){
 					block.buildListUp(nodeList, stack, inst);
 					if(validateList(nodeList, refList)){
@@ -61,7 +63,8 @@ public class ReferenceMatcher {
 		return stackNodes;
 	}
 
-	public Set<Node> getNodesMatchingReference(Node node, final Reference reference) {
+	public Set<Node> getNodesMatchingReference(Stack<FunctionReferenceNode> baseOfStack, Node node, final Reference reference) {
+		
 		Set<Node> matches = new TreeSet<Node>();
 		assert(reference.getBase().getType() != Type.EVERYTHING);
 		for(long pc : reference.getPcs()){
@@ -78,7 +81,9 @@ public class ReferenceMatcher {
 		    	}
 		    });
 			for(Node inst : insts){
+				
 				Stack<FunctionReferenceNode> stack = new Stack<FunctionReferenceNode>();
+				stack.addAll(baseOfStack);
 				Node current = inst;
 				while(current.getParent() != null){
 					if(current instanceof FunctionReferenceNode){
@@ -86,21 +91,28 @@ public class ReferenceMatcher {
 					}
 					current = current.getParent();
 				}
-				List<Node> nodeList = new LinkedList<Node>();
-	
-				inst.buildListUp(nodeList, stack, null);
-	
-				List<ReferenceType> refList = new LinkedList<ReferenceType>();
-	
-				matchLabel(reference, pc, refList);
-	
-				if(validateList(nodeList, refList)){
+
+				if(referenceMatchesNode(stack, reference, pc,inst)){
 					matches.add(inst);
 				}
 			}
 		}
 		
 		return matches;
+	}
+
+	public boolean referenceMatchesNode(Stack<FunctionReferenceNode> stack, Reference reference, long pc, Node inst) {
+		boolean matchesInstruction;
+		List<Node> nodeList = new LinkedList<Node>();
+
+		inst.buildListUp(nodeList, stack, null);
+
+		List<ReferenceType> refList = new LinkedList<ReferenceType>();
+
+		matchLabel(reference, pc, refList);
+
+		matchesInstruction = validateList(nodeList, refList);
+		return matchesInstruction;
 	}
 
 	public Set<Node>  getFunctionNodesMatchingReference(Node node, final Reference reference) {
