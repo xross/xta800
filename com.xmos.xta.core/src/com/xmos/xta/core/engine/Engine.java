@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Vector;
 import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
+import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
@@ -288,8 +290,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public boolean analyseFunction(CommandSource src, String functionName) {
-        RouteContainer routeContainer = new RouteContainer(functionName, 
-        		this, src, m_activeCores, m_exclusions, m_defines);		
+        RouteContainer routeContainer = new RouteContainer(functionName, this, src);		
 		
 		boolean routeFound = false;
 		for (NodeCorePair activeCore : m_activeCores) {			
@@ -312,8 +313,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void analysePath(CommandSource src) {
-        RouteContainer routeContainer = new RouteContainer(m_fromEndpointName, m_toEndpointName, 
-        		this, src, m_activeCores, m_exclusions, m_defines);
+        RouteContainer routeContainer = new RouteContainer(m_fromEndpointName, m_toEndpointName, this, src);
 		
 		boolean routeFound = false;
 		for (NodeCorePair activeCore : m_activeCores) {
@@ -515,22 +515,11 @@ public class Engine implements Notifier, Aborter {
 	// ===================================================================== //
 	// Get/Set Frequency.
 	// ===================================================================== //			
-	public void setFrequency(CommandSource src, double frequency) {
-		if (!checkFrequency(src, frequency))
-			return;
-
-		for (NodeCorePair activeCore : m_activeCores) {
-			m_nodeHz.put(activeCore.getNode(), (long)(frequency * 1000000));
-		}
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
-	}
-
 	public void setFrequency(CommandSource src, int nodeNumber, double frequency) {
-		if (!checkFrequency(src, frequency))
-			return;
-			
-		m_nodeHz.put(nodeNumber, (long)(frequency * 1000000));
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);
+		if (checkFrequency(src, frequency)) {
+			m_nodeHz.put(nodeNumber, (long)(frequency * 1000000));
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);			
+		}
 	}
 
 	public double getFrequency(int nodeNumber) {
@@ -541,31 +530,38 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 	
+	public Map<Integer, Double> getFrequencyMap() {
+		Map<Integer, Double> frequencies = new HashMap<Integer, Double>();
+		for (Integer nodeNumber : m_nodeHz.keySet()) {
+			double frequency = (double)m_nodeHz.get(nodeNumber) / 1000000;
+			frequencies.put(nodeNumber, frequency);
+		}
+		return frequencies;
+	}
+	
 	// ===================================================================== //
 	// Get/Set Num Threads.
 	// ===================================================================== //		
-	public void setNumThreads(CommandSource src, int numThreads) {
-		if (!checkNumThreads(src, numThreads))
-			return;
-		
-		for (NodeCorePair activeCore : m_activeCores) {
-		    m_coreThreads.add(activeCore.getNode(), activeCore.getCore(), numThreads);
-		}
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
-	}
-
 	public void setNumThreads(CommandSource src, int nodeNumber, int coreNumber, int numThreads) {
-		if (!checkNumThreads(src, numThreads)) {
-			return;
+		if (checkNumThreads(src, numThreads)) {
+   		    m_coreThreads.add(nodeNumber, coreNumber, numThreads);
+	    	notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
 		}
-		m_coreThreads.add(nodeNumber, coreNumber, numThreads);
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
 	}
 
 	public int getNumThreads(int nodeNumber, int coreNumber) {
 		Integer threads = m_coreThreads.get(nodeNumber, coreNumber);
 		if (threads == null) {
 			return CoreConfig.DEFAULT_THREADS;
+		}
+		return threads;
+	}
+
+	public Map<NodeCorePair, Integer> getNumThreadMap() {
+		Map<NodeCorePair, Integer> threads = new HashMap<NodeCorePair, Integer>();
+		for (Pair<Integer, Integer> nodeCore : m_coreThreads.getEntries()) {
+			threads.put(new NodeCorePair(nodeCore.first, nodeCore.second), 
+					m_coreThreads.get(nodeCore.first, nodeCore.second));
 		}
 		return threads;
 	}
@@ -1247,7 +1243,13 @@ public class Engine implements Notifier, Aborter {
 					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 			
 			if (resolveReference(reference)) {
-				m_exclusions.remove(reference);
+                Iterator<Reference> iter = m_exclusions.iterator();
+                while (iter.hasNext()) {
+                    Reference ref = iter.next();
+                    if (ref.equals(reference)) {
+                        iter.remove();
+                    }
+                }				
 				hit = true;
 			}
 		}

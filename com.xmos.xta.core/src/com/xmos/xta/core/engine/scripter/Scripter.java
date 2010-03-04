@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,8 @@ public class Scripter {
 	private Collection<Reference> m_currentExclusions;
 	private Map<Reference, List<Reference>> m_currentBranches;
 	private Defines m_currentDefines;
+	private Map<Integer, Double> m_currentFrequencies;
+	private Map<NodeCorePair, Integer> m_currentNumThreads;
 
 	// Can't use a Set because the compareTo won't do what we 
 	// need for matching references
@@ -65,6 +68,8 @@ public class Scripter {
 		m_autoLabels = new TreeSet<String>();
 		m_disables = new TreeSet<String>();
 		m_renames = new TreeMap<String, String>();
+		m_currentFrequencies = new HashMap<Integer, Double>();
+		m_currentNumThreads = new HashMap<NodeCorePair, Integer>();
 		m_references = null;
 	}
 
@@ -72,6 +77,8 @@ public class Scripter {
 		m_currentActiveCores = new ArrayList<NodeCorePair>(m_engine.getActiveCores());
 		m_currentExclusions = new ArrayList<Reference>(m_engine.getExclusions());
 		m_currentDefines = new Defines(m_engine.getDefines());
+		m_currentFrequencies = new HashMap<Integer, Double>(m_engine.getFrequencyMap());
+		m_currentNumThreads = new HashMap<NodeCorePair, Integer>(m_engine.getNumThreadMap());		
 		m_references = null;
 	}
 
@@ -243,7 +250,9 @@ public class Scripter {
        		script.append("\n");
 
        		routeComment(routeContainer, script);
-       		updateCoresSpecificConfig(routeContainer, script);
+       		updateActiveCores(routeContainer, script);
+       		updateFrequencies(routeContainer, script);
+       		updateNumThreads(routeContainer, script);       		
         	addBranches(routeContainer.getBranches(), script);
         	addDefines(routeContainer.getDefines(), script);
         	addExclusions(routeContainer.getExclusions(), script);
@@ -280,33 +289,47 @@ public class Scripter {
     	}
     	script.append("#\n");
 	}
-
-    private void updateCoresSpecificConfig(RouteContainer routeContainer, StringBuffer script) {
+	
+    private void updateActiveCores(RouteContainer routeContainer, StringBuffer script) {
     	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
-//TODO
-/*
-    	CoreConfig coreConfig = routeCoreContainer.getCoreConfig();
-    	
-    	if (m_currentCoreConfig.m_numThreads != coreConfig.m_numThreads) {
-        	script.append(String.format("config threads %s\n", coreConfig.m_numThreads));
-        	m_currentCoreConfig.m_numThreads = coreConfig.m_numThreads;
-    	}
- */
- /*
-    	CoreConfig coreConfig = routeCoreContainer.getCoreConfig();
-    	
-    	if (m_currentCoreConfig.m_frequency != coreConfig.m_frequency) {
-        	script.append(String.format("config freq %s\n", coreConfig.m_frequency));
-        	m_currentCoreConfig.m_frequency = coreConfig.m_frequency;
-    	}    	
-*/    	  	
+
     	if (!m_currentActiveCores.equals(activeCores)) {
     		script.append("remove core *\n");
     		for (NodeCorePair activeCore : activeCores) {
     			script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));
     		}
+    		m_currentActiveCores.clear();
+    		m_currentActiveCores.addAll(activeCores);
     	}
     }
+
+    private void updateFrequencies(RouteContainer routeContainer, StringBuffer script) {
+    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
+    	Map<Integer, Double> frequencies = routeContainer.getFrequencies();
+    	
+    	for (NodeCorePair activeCore : activeCores) {
+    		if (m_currentFrequencies.get(activeCore.getNode()) != frequencies.get(activeCore.getNode())) {
+    			script.append(String.format("config freq %d %d\n", 
+    					activeCore.getNode(), frequencies.get(activeCore.getNode())));
+    			
+    			m_currentFrequencies.put(activeCore.getNode(), frequencies.get(activeCore.getNode()));
+    		}
+    	}
+    }
+        
+	private void updateNumThreads(RouteContainer routeContainer, StringBuffer script) {
+    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();    	
+    	Map<NodeCorePair, Integer> numThreads = routeContainer.getNumThreads();
+
+    	for (NodeCorePair activeCore : activeCores) {
+    		if (m_currentNumThreads.get(activeCore) != numThreads.get(activeCore)) {
+    			script.append(String.format("config threads %d %d %d\n", 
+    					activeCore.getNode(), activeCore.getCore(), numThreads.get(activeCore)));
+    			
+    			m_currentNumThreads.put(activeCore, numThreads.get(activeCore));
+    		}
+    	}		
+	}
     
 	private void addDefines(Defines defines, StringBuffer script) {
 		defines.updateScript(m_currentDefines, script);

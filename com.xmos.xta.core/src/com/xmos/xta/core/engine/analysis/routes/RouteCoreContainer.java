@@ -30,25 +30,26 @@ public class RouteCoreContainer {
 
     public RouteCoreContainer(Reference from, Reference to, RouteContainer routeContainer, 
     		Engine engine, int nodeNumber, int coreNumber) {
+
+    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
     	
     	m_from = from;
 		m_to = new ArrayList<Reference>();
-    	m_to.add(to);
-    	
-    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
+    	m_to.add(to);    	
     }
     
     public RouteCoreContainer(Reference function, RouteContainer routeContainer, 
     		Engine engine, int nodeNumber, int coreNumber) {
-    	
+
+    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
+
     	m_function = function;
+    	m_from = function;
 		m_to = new ArrayList<Reference>();
 		StructureGraph sg = engine.getStructureGraph(nodeNumber, coreNumber);
         findEndpoints(sg, nodeNumber, coreNumber);
         for (Reference to : m_to)
-        	to.resolve(engine);
-		
-    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
+        	to.resolve(engine);		
     }
     
 	public Reference getFromReference() {

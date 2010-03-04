@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,31 +24,27 @@ public class RouteContainer {
 	private String m_functionName;
 	private String m_description;
 	private CommandSource m_src;
-    private Collection<NodeCorePair> m_activeCores;
     private Collection<RouteCoreContainer> m_routeCoreContainers;
+    private Collection<NodeCorePair> m_activeCores;
+	private Map<Integer, Double> m_frequencies;
+	private Map<NodeCorePair, Integer> m_numThreads;    
 	private Collection<Reference> m_exclusions;
 	private Map<Reference, List<Reference>> m_branches;
 	private Defines m_defines;
 	
-    public RouteContainer(String fromName, String toName, Engine engine, CommandSource src, 
-    		Collection<NodeCorePair> activeCores, 
-    		Collection<Reference> exclusions, Defines defines) {
-    	
+    public RouteContainer(String fromName, String toName, Engine engine, CommandSource src) {    	
 		m_mode = RouteMode.PATH;
 		m_fromName = fromName;
 		m_toName = toName;
 		m_description = String.format("path: %s to %s", fromName, toName);
-		initialise(engine, src, activeCores, exclusions, defines);
+		initialise(engine, src);
     }
 
-    public RouteContainer(String functionName, Engine engine, CommandSource src, 
-    		Collection<NodeCorePair> activeCores, 
-    		Collection<Reference> exclusions, Defines defines) {
-    	
+    public RouteContainer(String functionName, Engine engine, CommandSource src) {
 		m_mode = RouteMode.FUNCTION;
 		m_functionName = functionName;
 		m_description = String.format("function: %s", functionName);
-		initialise(engine, src, activeCores, exclusions, defines);
+		initialise(engine, src);
     }
 
 	public RouteMode getMode() {
@@ -76,6 +73,14 @@ public class RouteContainer {
 
     public Collection<NodeCorePair> getActiveCores() {
     	return m_activeCores;
+    }
+
+    public Map<Integer, Double> getFrequencies() {
+    	return m_frequencies;
+    }
+
+    public Map<NodeCorePair, Integer> getNumThreads() {
+    	return m_numThreads;
     }
     
     public void addRouteCoreContainer(RouteCoreContainer routeCoreContainer) {
@@ -106,15 +111,15 @@ public class RouteContainer {
     	return numExistingRoutes;
     }
     
-    private void initialise(Engine engine, CommandSource src, Collection<NodeCorePair> activeCores, 
-    		Collection<Reference> exclusions, Defines defines) {
-    	
+    private void initialise(Engine engine, CommandSource src) {
     	m_src = src;
-    	m_activeCores = new ArrayList<NodeCorePair>(activeCores);
+    	m_activeCores = new ArrayList<NodeCorePair>(engine.getActiveCores());
+		m_frequencies = new HashMap<Integer, Double>(engine.getFrequencyMap());
+		m_numThreads = new HashMap<NodeCorePair, Integer>(engine.getNumThreadMap());		    	
     	m_routeCoreContainers = new ArrayList<RouteCoreContainer>();
 		m_exclusions = new ArrayList<Reference>();
-		m_exclusions.addAll(exclusions);
-		m_defines = new Defines(defines);
+		m_exclusions.addAll(engine.getExclusions());
+		m_defines = new Defines(engine.getDefines());
 		m_branches = engine.getUserBranches();    	
     }
 }
