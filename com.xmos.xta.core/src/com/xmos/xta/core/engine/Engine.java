@@ -658,7 +658,7 @@ public class Engine implements Notifier, Aborter {
 	
 			Set<String> systemFunctions = new HashSet<String>();
 			Collection<String> systems = m_sections.getSystems(nodeNumber, coreNumber);
-			for (String functionName : functionNames) {
+			for (String functionName : nodeCoreFunctions) {
 				if (isSystemFunction(systems, functionName)) {
 					systemFunctions.add(functionName);
 				}

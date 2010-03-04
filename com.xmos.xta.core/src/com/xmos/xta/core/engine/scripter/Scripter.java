@@ -309,7 +309,7 @@ public class Scripter {
     	
     	for (NodeCorePair activeCore : activeCores) {
     		if (m_currentFrequencies.get(activeCore.getNode()) != frequencies.get(activeCore.getNode())) {
-    			script.append(String.format("config freq %d %d\n", 
+    			script.append(String.format("config freq %d %f\n", 
     					activeCore.getNode(), frequencies.get(activeCore.getNode())));
     			
     			m_currentFrequencies.put(activeCore.getNode(), frequencies.get(activeCore.getNode()));
