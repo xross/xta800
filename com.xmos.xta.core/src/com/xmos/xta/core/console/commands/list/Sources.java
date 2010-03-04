@@ -1,5 +1,8 @@
 package com.xmos.xta.core.console.commands.list;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.xta.core.console.Console;
@@ -36,20 +39,57 @@ public class Sources extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
+		Collection<SourceFile> sourcesFiles = getSourceFiles(engine);
+		for (SourceFile sourceFile : sourcesFiles) {
+	    	console.display(String.format("compilation dir: %s, filename: %s",
+	    			sourceFile.m_baseDir, sourceFile.m_fileName));
+
+  	    	if (!sourceFile.m_found) {
+  	    		console.display(" (File not found)");
+  	    	}
+  	    	console.display("\n");			
+		}
+    }
+    
+    private Collection<SourceFile> getSourceFiles(Engine engine) {
+    	Collection<SourceFile> sourceFiles = new ArrayList<SourceFile>();
+
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 		    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(activeCore.getNode(), activeCore.getCore());
 		    assert(debugInfo != null);
 
 		    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {
+		    	SourceFile sourceFile = new SourceFile(debugFile.getBaseDir(), debugFile.getFileName(), debugFile.getFile() != null);
 
-		    	console.display(String.format("node: %d, core %d, compilation dir: %s, filename: %s",
-		    			activeCore.getNode(), activeCore.getCore(), debugFile.getBaseDir(), debugFile.getFileName()));
-
-	  	    	if (debugFile.getFile() == null) {
-	  	    		console.display(" (File not found)");
-	  	    	}
-	  	    	console.display("\n");
+		    	if (!sourceFiles.contains(sourceFile)) {
+			    	sourceFiles.add(sourceFile);		    		
+		    	}
 	    	}				
-		}
+		}   		
+		return sourceFiles;
+    }
+    
+    private static class SourceFile {
+    	public String m_baseDir;
+    	public String m_fileName;
+    	public boolean m_found;
+    	
+    	public SourceFile(String baseDir, String fileName, boolean found) {
+    		m_baseDir = baseDir;
+    		m_fileName = fileName;
+    		m_found = found;
+    	}  
+    	
+        public boolean equals(Object obj) {
+        	if (obj == null)
+        	return false;
+
+            if(!(obj instanceof SourceFile))
+                return false;
+
+            SourceFile sourceFile = (SourceFile)obj;
+            return m_baseDir.equals(sourceFile.m_baseDir) &&
+                   m_fileName.equals(sourceFile.m_fileName);
+         }
     }
 }
