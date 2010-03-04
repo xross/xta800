@@ -699,7 +699,21 @@ public class Engine implements Notifier, Aborter {
 		}		
 	}
 
-	public void removeActiveCore(CommandSource src, NodeCorePair activeCore) {
+	public void removeActiveCores() {
+		m_activeCores.clear();
+	}
+
+	public void removeActiveCores(int nodeNumber) {
+		Iterator<NodeCorePair> iter = m_activeCores.iterator();
+		while (iter.hasNext()) {
+			NodeCorePair activeCore = iter.next();
+			if (activeCore.getNode() == nodeNumber) {
+				iter.remove();
+			}
+		}
+	}
+	
+	public void removeActiveCore(NodeCorePair activeCore) {
 		m_activeCores.remove(activeCore);
 	}
 

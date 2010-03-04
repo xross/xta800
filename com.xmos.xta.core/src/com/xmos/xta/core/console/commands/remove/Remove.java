@@ -6,6 +6,7 @@ import com.xmos.xta.core.console.commands.CommandContainer;
 public class Remove extends CommandContainer {
 	static private Command[] m_options = {
 		new Branch(),
+		new Core(),
 		new Exclusion(),
 		new From(),
 		new FunctionTime(),
