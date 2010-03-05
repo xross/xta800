@@ -104,7 +104,7 @@ public class RouteConstructor {
 		}
 
 		if (routeContainer.getMode() == RouteMode.FUNCTION){
-			List<FunctionNode> fns = m_coreContainer.getFunction(routeContainer.getFunctionName(), m_structureGraph);
+			List<FunctionNode> fns = m_coreContainer.getFunction(m_structureGraph);
 			for (FunctionNode fn : fns){
 				List<Stack<FunctionReferenceNode>> stacks = getCallStacks(fn);
 				for( Stack<FunctionReferenceNode> stack : stacks){
@@ -948,7 +948,7 @@ public class RouteConstructor {
 		Set<StackNode> stackNodes = new HashSet<StackNode>();
 		
 		if (routeContainer.getMode() == RouteMode.FUNCTION){
-			List<FunctionNode> fns = m_coreContainer.getFunction(routeContainer.getFunctionName(), m_structureGraph);
+			List<FunctionNode> fns = m_coreContainer.getFunction(m_structureGraph);
 			for(FunctionNode fn : fns){
 				for(InstructionNode inst : m_structureGraph.getFunctionsEndNodes(fn)){
 					StackNode stackNode = new StackNode(inst, getCallStacks(fn));
