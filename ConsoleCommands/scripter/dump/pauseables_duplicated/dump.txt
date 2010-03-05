@@ -1,0 +1,10 @@
+load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/pauseables_duplicated/csim__xs1b__default/test.xe"
+
+#
+# Route: main
+#
+config freq 0 400.000000
+analyse function main
+set instructiontime - f1,inst 100.0 ns
+set instructiontime - f2,inst 200.0 ns
+

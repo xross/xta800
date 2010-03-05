@@ -1,0 +1,26 @@
+load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/loops_duplicated/csim__xs1b__default/test.xe"
+
+#
+# Route: main
+#
+config freq 0 400.000000
+analyse function main
+set loop - f1,loop 10
+set loop - f1,loop_path 10
+set looppath - f1,loop_path 5
+# Warning: The following line contains a non-portable reference.
+set loop - CALL:0x10142,CALL:0x1013a,0x100f8 20
+# Warning: The following line contains a non-portable reference.
+set loop - CALL:0x10142,CALL:0x1013a,0x10114 20
+# Warning: The following line contains a non-portable reference.
+set looppath - CALL:0x10142,CALL:0x1013a,0x10126 10
+set loop - f2,loop 30
+set loop - f2,loop_path 30
+set looppath - f2,loop_path 15
+# Warning: The following line contains a non-portable reference.
+set loop - CALL:0x10142,CALL:0x1013c,0x100f8 40
+# Warning: The following line contains a non-portable reference.
+set loop - CALL:0x10142,CALL:0x1013c,0x10114 40
+# Warning: The following line contains a non-portable reference.
+set looppath - CALL:0x10142,CALL:0x1013c,0x10126 20
+

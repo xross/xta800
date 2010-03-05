@@ -1,0 +1,17 @@
+load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/loops/csim__xs1b__default/test.xe"
+
+#
+# Route: main
+#
+config freq 0 400.000000
+analyse function main
+set loop - loop 10
+set loop - loop_path 10
+set looppath - loop_path 5
+# Warning: The following line contains a non-portable reference.
+set loop - 0x100f8 10
+# Warning: The following line contains a non-portable reference.
+set loop - 0x10114 10
+# Warning: The following line contains a non-portable reference.
+set looppath - 0x10126 5
+
