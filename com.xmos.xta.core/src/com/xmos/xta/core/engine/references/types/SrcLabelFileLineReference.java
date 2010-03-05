@@ -12,7 +12,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
 	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.SRCLABEL, 2) &&
 		    isSourceReference(reference) &&
-			inSrcLabelTable(reference, engine.getSrcLabelTable(getNodeNumber(), getCoreNumber()), engine.getSourceMapper(getNodeNumber(), getCoreNumber()))) {
+			inSrcLabelTable(reference, engine.getSrcLabelTable(nodeNumber, coreNumber), engine.getSourceMapper(nodeNumber, coreNumber))) {
 	    	return new SrcLabelFileLineReference(reference, nodeNumber, coreNumber);
 		}
 	    return null;

@@ -12,7 +12,7 @@ public class EndpointFileLineReference extends ReferenceType {
 	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.ENDPOINT, 2) &&
 		    isSourceReference(reference) &&
-			inCodePointTable(reference, engine.getEndpointTable(getNodeNumber(), getCoreNumber()), engine.getSourceMapper(getNodeNumber(), getCoreNumber()))) {
+			inCodePointTable(reference, engine.getEndpointTable(nodeNumber, coreNumber), engine.getSourceMapper(nodeNumber, coreNumber))) {
 	    	return new EndpointFileLineReference(reference, nodeNumber, coreNumber);
 		}
 		return null;

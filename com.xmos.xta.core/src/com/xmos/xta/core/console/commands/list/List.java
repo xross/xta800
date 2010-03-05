@@ -6,11 +6,12 @@ import com.xmos.xta.core.console.commands.CommandContainer;
 public class List extends CommandContainer {
 
 	static private Command[] m_options = {
+		new AllCalls(),
+		new AllEndpoints(),
 		new Branches(),
 		new Calls(),
-		new AllCalls(),
+		new Cores(),
 		new Endpoints(),
-		new AllEndpoints(),
 		new Exclusions(),
 		new Functions(),
 		new FunctionTimes(),

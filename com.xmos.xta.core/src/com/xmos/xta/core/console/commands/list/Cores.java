@@ -35,7 +35,7 @@ public class Cores extends Command {
 
 	public void execute(Shell shell, final Engine engine, final Console console) {
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			console.display(String.format("node: %d, core %d\n", activeCore.getNode(), activeCore.getCore()));
+			console.display(String.format("node: %d, core: %d\n", activeCore.getNode(), activeCore.getCore()));
 		}
 	}
 }

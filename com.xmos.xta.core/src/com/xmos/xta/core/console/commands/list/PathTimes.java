@@ -47,10 +47,6 @@ public class PathTimes extends Command {
 		}
 
 		Collection<PathTimeInfo> infos = engine.getPathTimeDefines();
-	    if (infos.isEmpty()) {
-	    	console.display("none\n");
-	    	return;
-	    }
 		for (PathTimeInfo info : infos) {
 			console.display(info + "\n");
 		}

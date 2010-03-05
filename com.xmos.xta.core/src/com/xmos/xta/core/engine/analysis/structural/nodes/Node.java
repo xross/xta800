@@ -24,7 +24,7 @@ public abstract class Node implements Comparable<Node> {
 	private Edges m_edges;
 	private boolean m_unresolved;
 	private boolean m_isFolded;
-
+	
 	public enum Case {
 		WORST,
 		BEST,
@@ -60,6 +60,11 @@ public abstract class Node implements Comparable<Node> {
 	public abstract void replaceChild(Node oldNode, Node newNode);
 	public abstract void replaceChildren(List<Node> newChildren);
 
+	public abstract List<Node> iChildren();
+	public abstract Set<Node> structurGraphNext(Node childNode);
+	public abstract void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start);
+	public abstract void buildListDown(List<Node> nodeList);
+	
 	public Node() {
 		m_id = s_numNodes++;
 		m_edges = new Edges();
@@ -292,10 +297,6 @@ public abstract class Node implements Comparable<Node> {
 		fnRef.addAll(node.getFunctionReferencesNodes());
 	}
 
-	public abstract List<Node> iChildren();
-	public abstract Set<Node> structurGraphNext(Node childNode);
-	public abstract void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start);
-	public abstract void buildListDown(List<Node> nodeList);
 
 }
 

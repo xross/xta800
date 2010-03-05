@@ -47,20 +47,10 @@ public class SuccessorAdder {
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
 		Set<BranchInfo> targets = new HashSet<BranchInfo>();
-		Set<BranchInfo> targetsWithBacktrails = new HashSet<BranchInfo>();
 		for (Reference ref : m_branchMap.keySet()) {
-
-			
-			if(ref.getBackTrail().isEmpty()){
-				if (ref.matches(inst.getPc())) {
-					Set<BranchInfo> mapEntries = m_branchMap.get(ref);
-					targets.addAll(mapEntries);
-				}
-			} else {
-				if (ref.matches(inst.getPc())) {
-					Set<BranchInfo> mapEntries = m_branchMap.get(ref);
-					targetsWithBacktrails.addAll(mapEntries);
-				}
+			if (ref.matches(inst.getPc())) {
+				Set<BranchInfo> mapEntries = m_branchMap.get(ref);
+				targets.addAll(mapEntries);
 			}
 		}
 
@@ -69,7 +59,7 @@ public class SuccessorAdder {
 			for (long pc : target.getRef().getPcs()) {
 				connect(instruction, pc, true);
 			}
-		}
+		}		
 	}
 
 	private void addTargetsToAllNonBranchingInstructions(Node instruction, XtaInstruction inst) {

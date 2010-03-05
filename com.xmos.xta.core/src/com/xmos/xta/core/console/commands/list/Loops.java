@@ -47,10 +47,6 @@ public class Loops extends Command {
 		}
 
 		Collection<LoopInfo> infos = engine.getLoopDefines();
-	    if (infos.isEmpty()) {
-	    	console.display("none\n");
-	    	return;
-	    }
 		for (LoopInfo info : infos) {
 			console.display(info + "\n");
 		}

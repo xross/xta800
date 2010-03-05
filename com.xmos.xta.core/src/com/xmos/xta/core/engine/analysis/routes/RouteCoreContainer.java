@@ -129,10 +129,10 @@ public class RouteCoreContainer {
 				engine.getFrequency(nodeNumber));    			
 	}
 	
-	public List<FunctionNode> getFunction(String functionName, StructureGraph sg){
+	public List<FunctionNode> getFunction(StructureGraph sg){
 		List<FunctionNode> functions = new LinkedList<FunctionNode>();
 		for (FunctionNode fn : sg.getFunctions()) {
-		    if (fn.getFunctionName().equals(m_routeContainer.getFunctionName())) {
+		    if (fn.getFunctionName().equals(m_function.getBase().getRef())) {
 		        functions.add(fn);
 		    }
 		}

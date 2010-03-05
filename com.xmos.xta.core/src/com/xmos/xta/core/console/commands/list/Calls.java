@@ -44,7 +44,7 @@ public class Calls extends Command {
 	private void listCalls(final Engine engine, final Console console) {
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 			for (CodePointInfo info : engine.getCalls(activeCore.getNode(), activeCore.getCore())) {
-	    	    console.display(String.format("node: %d, core %d, label: %s, pc: 0x%x", 
+	    	    console.display(String.format("node: %d, core: %d, label: %s, pc: 0x%x", 
 	    	    		activeCore.getNode(), activeCore.getCore(), 
 	    	    		info.getLabel(), info.getPc()));
 
