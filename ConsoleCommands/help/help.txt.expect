@@ -18,6 +18,7 @@
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list
+      option: core [node id] <core id>: Add core to active set
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
       option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines
           mode: ns:     nanoseconds
@@ -42,11 +43,10 @@
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <BEST/WORST>: Sets the case (currently: WORST)
-      option: core [node id] <core id>: Change to core for following analysis (current: 0,0)
-      option: freq <core frequency>: Sets the core frequency in Mhz (currently: 400.000000)
+      option: freq <node number> <core frequency>: Sets the core frequency in Mhz for the given node
       option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
-      option: threads <num threads>: Sets number of threads currently executing (currently: 8)
+      option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not (currently: on)
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
@@ -57,11 +57,12 @@
       options: PC_REF, FUNCTION_REF, LABEL_REF, ENDPOINT_REF, ANY_REF
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
+      option: allcalls: Lists all the possible locations for calls
+      option: allendpoints: Lists all the possible locations for endpoints
       option: branches: Lists the branches
       option: calls: Lists the calls
-      option: allcalls: Lists all the possible locations for calls
+      option: cores: Lists the active cores
       option: endpoints: Lists the endpoints
-      option: allendpoints: Lists all the possible locations for endpoints
       option: exclusions: Displays the exclusions
       option: functions: Lists the functions in the loaded application
       option: functiontimes: Displays the function time defines
@@ -95,6 +96,7 @@
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF|*> <to LABEL_REF|*> <to LABEL_REF|*>: Removes the given from/to references from the branches list
+      option: core [node id] <core id|*>: Remove core from active set
       option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
       option: from: Removes the from endpoint
       option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
