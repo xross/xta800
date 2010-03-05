@@ -17,11 +17,11 @@ public abstract class Section {
 
 	abstract boolean load(CommandSource src, XeLoader xeLoader);
 
-	int getNodeNumber() {
+	public int getNodeNumber() {
 		return m_nodeNumber;
 	}
 
-	int getCoreNumber() {
+	public int getCoreNumber() {
 		return m_coreNumber;
 	}
 

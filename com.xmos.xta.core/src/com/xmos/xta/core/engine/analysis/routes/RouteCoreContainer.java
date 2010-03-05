@@ -16,14 +16,14 @@ import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.utils.CoreConfig;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class RouteCoreContainer {
 	private Reference m_function;
 	private Reference m_from;
 	private Collection<Reference> m_to;
 	private RouteContainer m_routeContainer;
-	private int m_nodeNumber;
-	private int m_coreNumber;
+	private NodeCorePair m_nodeCore;
 	private CoreConfig m_coreConfig;
     private List<Route> m_routes;
     private List<Boolean> m_exists;
@@ -103,12 +103,16 @@ public class RouteCoreContainer {
         return num;
     }
 
+	public NodeCorePair getNodeCore() {
+		return m_nodeCore;
+	}
+
 	public int getNodeNumber() {
-		return m_nodeNumber;
+		return m_nodeCore.getNode();
 	}
 
 	public int getCoreNumber() {
-		return m_coreNumber;
+		return m_nodeCore.getCore();
 	}
 
 	public CoreConfig getCoreConfig() {
@@ -119,8 +123,7 @@ public class RouteCoreContainer {
 		m_routeContainer = routeContainer;
     	m_routes = new ArrayList<Route>();
     	m_exists = new ArrayList<Boolean>(); 
-		m_nodeNumber = nodeNumber;
-		m_coreNumber = coreNumber;
+		m_nodeCore = new NodeCorePair(nodeNumber, coreNumber);
 		m_coreConfig = new CoreConfig( 
 				engine.getNumThreads(nodeNumber, coreNumber), 
 				engine.getFrequency(nodeNumber));    			

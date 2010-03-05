@@ -56,7 +56,7 @@ public class SrcLabelTable extends Section {
 	        		long location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-	        		m_locations.put(location, new SrcLabelTableInfo(location, compilationDir,
+	        		m_locations.put(location, new SrcLabelTableInfo(this, location, compilationDir,
 	        				fileName, lineNumberStart, lineNumberEnd));
 	        	}
 	        }

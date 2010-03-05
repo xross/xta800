@@ -1,14 +1,16 @@
 package com.xmos.xta.core.engine.sections;
 
-public class SrcLabelTableInfo implements Comparable<SrcLabelTableInfo>, ScriptableInfo {
+public class SrcLabelTableInfo extends SectionInfo implements Comparable<SrcLabelTableInfo>, ScriptableInfo {
     private long m_pc;
     private String m_compilationDir;
     private String m_fileName;
     private int m_lineNumberStart;
     private int m_lineNumberEnd;
 
-    public SrcLabelTableInfo(long pc, String compilationDir, String fileName,
+    public SrcLabelTableInfo(Section section, long pc, String compilationDir, String fileName,
     		int lineNumberStart, int lineNumberEnd) {
+    	super(section);
+    	
     	m_pc = pc;
     	m_compilationDir = compilationDir;
     	m_fileName = fileName;
