@@ -674,10 +674,12 @@ public class Engine implements Notifier, Aborter {
 			functionNames.addAll(nodeCoreFunctions);
 		}
 
-		Collections.sort(functionNames);
 		Set<String> uniqueNames = new HashSet<String>();
 		uniqueNames.addAll(functionNames);
-		return uniqueNames;
+		functionNames.clear();
+		functionNames.addAll(uniqueNames);
+		Collections.sort(functionNames);
+		return functionNames;
 	}
 	
 	public List<Long> getFunctionPcs(String functionName, int nodeNumber, int coreNumber) {		
