@@ -1,10 +1,12 @@
 package com.xmos.xta.core.engine.sections;
 
-public class SrcLevelLoopInfo {
+public class SrcLevelLoopInfo extends SectionInfo {
     private long m_pc;
     private int m_numIterations;
 
-    public SrcLevelLoopInfo(long pc, int numIterations) {
+    public SrcLevelLoopInfo(Section section, long pc, int numIterations) {
+    	super(section);
+    	
     	m_pc = pc;
     	m_numIterations = numIterations;
     }

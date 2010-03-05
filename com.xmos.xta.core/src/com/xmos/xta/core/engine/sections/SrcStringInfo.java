@@ -1,12 +1,15 @@
 package com.xmos.xta.core.engine.sections;
 
-public class SrcStringInfo {
+public class SrcStringInfo extends SectionInfo {
     private String m_string;
     private String m_compilationDir;
     private String m_fileName;
     private long m_lineNumber;
 
-    public SrcStringInfo(String string, String compilationDir, String fileName, long lineNumber) {
+    public SrcStringInfo(Section section, String string, String compilationDir,
+    		String fileName, long lineNumber) {
+    	super(section);
+    	
     	m_string = string;
     	m_compilationDir = compilationDir;
     	m_fileName = fileName;

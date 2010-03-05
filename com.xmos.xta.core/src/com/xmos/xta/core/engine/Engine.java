@@ -87,7 +87,6 @@ public class Engine implements Notifier, Aborter {
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
-	private boolean m_wasReload;
 	private Notifier m_notifier;
 	private ProgressMonitor m_progressMonitor;
 	private String m_srcPaths;
@@ -127,7 +126,6 @@ public class Engine implements Notifier, Aborter {
 		m_activeCores = new ArrayList<NodeCorePair>();
 		m_config = config;
 		m_executableFile = null;
-		m_wasReload = false;
 		m_srcPaths = ".";
 		m_progressMonitor = null;
 		m_sections = new Sections();
@@ -136,6 +134,8 @@ public class Engine implements Notifier, Aborter {
 		m_numErrors = 0;
 		m_scripter = new Scripter(this);
 		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
+		m_fromEndpointName = "";
+		m_toEndpointName = "";
 		m_fromEndPoints = new HashMap<NodeCorePair, Reference>();
 		m_toEndPoints = new HashMap<NodeCorePair, Reference>();
 		ReferenceTypeFactory.setEngine(this);
@@ -255,8 +255,7 @@ public class Engine implements Notifier, Aborter {
 			return false;
 		}
 
-		m_wasReload = isReloaded(executableFile);
-		if (!m_wasReload) {
+		if (!isReloaded(executableFile)) {
 			m_userSpecifedFileLocations.clear();
 		}
 
@@ -279,6 +278,8 @@ public class Engine implements Notifier, Aborter {
 		m_selectedRoute = null;
 		m_defines.clear();
 		Route.resetRouteCount();
+		m_fromEndpointName = "";
+		m_toEndpointName = "";
 		m_fromEndPoints.clear();
 		m_toEndPoints.clear();
 
@@ -489,10 +490,6 @@ public class Engine implements Notifier, Aborter {
 		return m_functionsVisited;
 	}
 
-	public boolean wasReload() {
-		return m_wasReload;
-	}
-
 	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
 		for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
 			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
@@ -629,7 +626,15 @@ public class Engine implements Notifier, Aborter {
 	public Map<NodeCorePair, Reference> getToEndPoints() {
 		return m_toEndPoints;
 	}
-	
+
+	public String getFromEndPointName() {
+		return m_fromEndpointName;
+	}
+
+	public String getToEndPointName() {
+		return m_toEndpointName;
+	}
+
 	// ===================================================================== //
 	// Function Names/Pcs
 	// ===================================================================== //

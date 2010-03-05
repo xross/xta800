@@ -13,6 +13,7 @@ import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public abstract class ReferenceType {
 	private String m_ref;
@@ -22,8 +23,7 @@ public abstract class ReferenceType {
 	private String m_fileName;
 	private long m_lineNum;
 	private Type m_type;
-	private int m_nodeNumber;
-	private int m_coreNumber;
+	private NodeCorePair m_nodeCore;
 
 	public enum Type {
 		PC,
@@ -44,8 +44,7 @@ public abstract class ReferenceType {
 		m_fileName = "";
 		m_lineNum = 0;
 		m_type = type;
-		m_nodeNumber = nodeNumber;
-		m_coreNumber = coreNumber;
+		m_nodeCore = new NodeCorePair(nodeNumber, coreNumber);
 	}
 
 	public abstract ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber);
@@ -293,7 +292,8 @@ public abstract class ReferenceType {
         	return false;
         }
 
-        if (FileNameMatcher.isMatch(fileName, getFileName(), engine.getSourceMapper(m_nodeNumber, m_coreNumber))) {
+        if (FileNameMatcher.isMatch(fileName, getFileName(),
+        		engine.getSourceMapper(m_nodeCore.getNode(), m_nodeCore.getCore()))) {
         	return true;
         }
 
@@ -305,11 +305,15 @@ public abstract class ReferenceType {
 		return m_pcBackTrails.get(pc);
 	}
 	
+	public NodeCorePair getNodeCore() {
+		return m_nodeCore;
+	}
+
 	public int getNodeNumber() {
-		return m_nodeNumber;		
+		return m_nodeCore.getNode();
 	}
 
 	public int getCoreNumber() {
-		return m_coreNumber;		
-	}	
+		return m_nodeCore.getCore();
+	}
 }

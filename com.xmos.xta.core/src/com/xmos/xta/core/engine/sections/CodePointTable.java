@@ -50,7 +50,7 @@ public class CodePointTable extends Section {
 	        		long location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-	        		m_locations.put(location, new CodePointTableInfo(location, compilationDir, fileName, lineNumber));
+	        		m_locations.put(location, new CodePointTableInfo(this, location, compilationDir, fileName, lineNumber));
 	        	}
 	        }
         } catch (Exception e) {

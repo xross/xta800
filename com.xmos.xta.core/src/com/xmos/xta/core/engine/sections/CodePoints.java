@@ -21,7 +21,7 @@ public class CodePoints extends Section  {
 	}
 
 	boolean add(CommandSource src, String label, int pc) {
-		m_codePoints.add(new CodePointInfo(pc, label, "", "", 0));
+		m_codePoints.add(new CodePointInfo(this, pc, label, "", "", 0));
 		return true;
 	}
 
@@ -82,7 +82,7 @@ public class CodePoints extends Section  {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-            		m_codePoints.add(new CodePointInfo(location, codePoint, compilationDir, fileName, lineNumber));
+            		m_codePoints.add(new CodePointInfo(this, location, codePoint, compilationDir, fileName, lineNumber));
 	        	}
 		    }
         } catch (Exception e) {
