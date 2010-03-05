@@ -1,5 +1,5 @@
-xta: error: 'CALL:test.xc:19' is not a valid endpoint
-xta: error: 'CALL:test.xc:13' is not a valid endpoint
+xta: cmds.txt:4: error: 'CALL:test.xc:19' is not a valid endpoint on any active core
+xta: cmds.txt:9: error: 'CALL:test.xc:13' is not a valid endpoint on any active core
 Route\(0\) path: CALL:test.xc:13 to CALL:test.xc:14
     No Timing Specified
 
