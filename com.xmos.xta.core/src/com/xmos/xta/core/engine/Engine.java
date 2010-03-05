@@ -670,7 +670,7 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		Collections.sort(functionNames);
-		Set<String> uniqueNames = new HashSet<String>();
+		Set<String> uniqueNames = new TreeSet<String>();
 		uniqueNames.addAll(functionNames);
 		return uniqueNames;
 	}
