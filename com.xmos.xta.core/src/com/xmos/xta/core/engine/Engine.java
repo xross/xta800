@@ -1305,7 +1305,8 @@ public class Engine implements Notifier, Aborter {
 					ReferenceClass.LABEL_REF, activeCore.getNode(), activeCore.getCore());
 			boolean fromResolved = resolveReference(fromRef);
 			
-			checkInstructionIsBranch(src, fromRef, activeCore);
+			if (fromResolved)			
+			    checkInstructionIsBranch(src, fromRef, activeCore);
 			
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
@@ -1334,27 +1335,6 @@ public class Engine implements Notifier, Aborter {
 		return hit;
 	}
 
-	private void checkInstructionIsBranch(CommandSource src, Reference ref, NodeCorePair activeCore) {
-		for (long pc : ref.getPcs()) {
-			InstructionNode node = m_sourceMapper.get(activeCore.getNode(), activeCore.getCore()).getInstructionNode(pc);
-			if (node == null) {
-				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from non-existant instruction at %s",
-						ref.toString()));
-				return;
-			}
-
-			XtaInstruction inst = node.getXtaInstruction();
-			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
-				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from instruction which is not a branch: %s",
-						inst.toString()));
-				return;
-			}
-		}
-	}
-
 	public boolean removeBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
 		boolean hit = false;
 		for (NodeCorePair activeCore : m_activeCores) {
@@ -1363,7 +1343,8 @@ public class Engine implements Notifier, Aborter {
 					ReferenceClass.LABEL_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 			boolean fromResolved = resolveReference(fromRef);
 			
-			checkInstructionIsBranch(src, fromRef, activeCore);
+			if (fromResolved)
+			    checkInstructionIsBranch(src, fromRef, activeCore);
 			
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
@@ -1392,6 +1373,27 @@ public class Engine implements Notifier, Aborter {
 		return hit;
 	}
 
+	private void checkInstructionIsBranch(CommandSource src, Reference ref, NodeCorePair activeCore) {
+		for (long pc : ref.getPcs()) {
+			InstructionNode node = m_sourceMapper.get(activeCore.getNode(), activeCore.getCore()).getInstructionNode(pc);
+			if (node == null) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from non-existant instruction at %s",
+						ref.toString()));
+				return;
+			}
+
+			XtaInstruction inst = node.getXtaInstruction();
+			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from instruction which is not a branch: %s",
+						inst.toString()));
+				return;
+			}
+		}
+	}
+	
 	public Map<Reference, List<Reference>> getUserBranches() {
 		Map<Reference, List<Reference>> branches = new TreeMap<Reference, List<Reference>>();
 		
