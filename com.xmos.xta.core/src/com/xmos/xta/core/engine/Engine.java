@@ -328,7 +328,7 @@ public class Engine implements Notifier, Aborter {
 			boolean toFound = true;
 			Reference toEndpoint = m_toEndPoints.get(activeCore);
 		    if ((toEndpoint == null) || toEndpoint.getRef().equals("")) {
-		    	fromFound = false;
+		    	toFound = false;
 		    }
 
 		    if (fromFound && toFound) {
@@ -571,7 +571,8 @@ public class Engine implements Notifier, Aborter {
 	// From/To Endpoints.
 	// ===================================================================== //	
 	public boolean setFromEndPoint(CommandSource src, String ref) {
-		m_fromEndpointName = ref;			
+		m_fromEndpointName = ref;
+		m_fromEndPoints.clear();
 		
 		boolean hit = false;		
 		for (NodeCorePair activeCore : m_activeCores) {
@@ -584,7 +585,7 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint", ref));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
 			return false;
 		}
 		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
@@ -598,6 +599,7 @@ public class Engine implements Notifier, Aborter {
 
 	public boolean setToEndPoint(CommandSource src, String ref) {
 		m_toEndpointName = ref;
+		m_toEndPoints.clear();
 		
 		boolean hit = false;		
 		for (NodeCorePair activeCore : m_activeCores) {
@@ -610,7 +612,7 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint", ref));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
 			return false;
 		}
 		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");

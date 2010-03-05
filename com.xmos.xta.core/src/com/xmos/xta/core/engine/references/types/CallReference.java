@@ -13,7 +13,7 @@ public class CallReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.CALL, 1) &&
-			isValid(engine.getCalls(getNodeNumber(), getCoreNumber()), getLabel(reference))) {
+			isValid(engine.getCalls(nodeNumber, coreNumber), getLabel(reference))) {
 			return new CallReference(reference, nodeNumber, coreNumber);
 		}
 		return null;

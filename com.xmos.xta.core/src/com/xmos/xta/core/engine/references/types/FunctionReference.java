@@ -11,7 +11,7 @@ public class FunctionReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.FUNCTION, 1) &&
-		    engine.getLabels(getNodeNumber(), getCoreNumber()).containsKey(getLabel(reference))) {
+		    engine.getLabels(nodeNumber, coreNumber).containsKey(getLabel(reference))) {
 			return new FunctionReference(reference, nodeNumber, coreNumber);
 		}
 		return null;
