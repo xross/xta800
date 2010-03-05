@@ -50,7 +50,7 @@ public class Labels extends Command {
 	    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels(activeCore.getNode(), activeCore.getCore()).entrySet().iterator();
 	    	while (iter.hasNext()) {
 	    	    Map.Entry<String, Set<Long>> pair = iter.next();
-	    	    console.display(String.format("Node: %d, Core: %d, label: %s, pcs: %s\n",
+	    	    console.display(String.format("node: %d, core: %d, label: %s, pcs: %s\n",
 	    	    		activeCore.getNode(), activeCore.getCore(), 
 	    	    		pair.getKey(), Conversion.pcSetToString(pair.getValue())));
 	    	}				
