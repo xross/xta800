@@ -84,7 +84,6 @@ public class Engine implements Notifier, Aborter {
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
-	private boolean m_wasReload;
 	private Notifier m_notifier;
 	private ProgressMonitor m_progressMonitor;
 	private String m_srcPaths;
@@ -124,7 +123,6 @@ public class Engine implements Notifier, Aborter {
 		m_activeCores = new ArrayList<NodeCorePair>();
 		m_config = config;
 		m_executableFile = null;
-		m_wasReload = false;
 		m_srcPaths = ".";
 		m_progressMonitor = null;
 		m_sections = new Sections();
@@ -133,6 +131,8 @@ public class Engine implements Notifier, Aborter {
 		m_numErrors = 0;
 		m_scripter = new Scripter(this);
 		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
+		m_fromEndpointName = "";
+		m_toEndpointName = "";
 		m_fromEndPoints = new HashMap<NodeCorePair, Reference>();
 		m_toEndPoints = new HashMap<NodeCorePair, Reference>();
 		ReferenceTypeFactory.setEngine(this);
@@ -252,8 +252,7 @@ public class Engine implements Notifier, Aborter {
 			return false;
 		}
 
-		m_wasReload = isReloaded(executableFile);
-		if (!m_wasReload) {
+		if (!isReloaded(executableFile)) {
 			m_userSpecifedFileLocations.clear();
 		}
 
@@ -276,6 +275,8 @@ public class Engine implements Notifier, Aborter {
 		m_selectedRoute = null;
 		m_defines.clear();
 		Route.resetRouteCount();
+		m_fromEndpointName = "";
+		m_toEndpointName = "";
 		m_fromEndPoints.clear();
 		m_toEndPoints.clear();
 
@@ -325,7 +326,7 @@ public class Engine implements Notifier, Aborter {
 			boolean toFound = true;
 			Reference toEndpoint = m_toEndPoints.get(activeCore);
 		    if ((toEndpoint == null) || toEndpoint.getRef().equals("")) {
-		    	fromFound = false;
+		    	toFound = false;
 		    }
 
 		    if (fromFound && toFound) {
@@ -486,10 +487,6 @@ public class Engine implements Notifier, Aborter {
 		return m_functionsVisited;
 	}
 
-	public boolean wasReload() {
-		return m_wasReload;
-	}
-
 	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
 		for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
 			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
@@ -568,7 +565,8 @@ public class Engine implements Notifier, Aborter {
 	// From/To Endpoints.
 	// ===================================================================== //	
 	public boolean setFromEndPoint(CommandSource src, String ref) {
-		m_fromEndpointName = ref;			
+		m_fromEndpointName = ref;
+		m_fromEndPoints.clear();
 		
 		boolean hit = false;		
 		for (NodeCorePair activeCore : m_activeCores) {
@@ -581,7 +579,7 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint", ref));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
 			return false;
 		}
 		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
@@ -595,6 +593,7 @@ public class Engine implements Notifier, Aborter {
 
 	public boolean setToEndPoint(CommandSource src, String ref) {
 		m_toEndpointName = ref;
+		m_toEndPoints.clear();
 		
 		boolean hit = false;		
 		for (NodeCorePair activeCore : m_activeCores) {
@@ -607,7 +606,7 @@ public class Engine implements Notifier, Aborter {
 			}
 		}
 		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint", ref));
+			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
 			return false;
 		}
 		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
@@ -626,7 +625,15 @@ public class Engine implements Notifier, Aborter {
 	public Map<NodeCorePair, Reference> getToEndPoints() {
 		return m_toEndPoints;
 	}
-	
+
+	public String getFromEndPointName() {
+		return m_fromEndpointName;
+	}
+
+	public String getToEndPointName() {
+		return m_toEndpointName;
+	}
+
 	// ===================================================================== //
 	// Function Names/Pcs
 	// ===================================================================== //
@@ -658,7 +665,7 @@ public class Engine implements Notifier, Aborter {
 	
 			Set<String> systemFunctions = new HashSet<String>();
 			Collection<String> systems = m_sections.getSystems(nodeNumber, coreNumber);
-			for (String functionName : functionNames) {
+			for (String functionName : nodeCoreFunctions) {
 				if (isSystemFunction(systems, functionName)) {
 					systemFunctions.add(functionName);
 				}
@@ -667,10 +674,12 @@ public class Engine implements Notifier, Aborter {
 			functionNames.addAll(nodeCoreFunctions);
 		}
 
-		Collections.sort(functionNames);
 		Set<String> uniqueNames = new HashSet<String>();
 		uniqueNames.addAll(functionNames);
-		return uniqueNames;
+		functionNames.clear();
+		functionNames.addAll(uniqueNames);
+		Collections.sort(functionNames);
+		return functionNames;
 	}
 	
 	public List<Long> getFunctionStartPcs(String functionName, int nodeNumber, int coreNumber) {		
@@ -698,7 +707,21 @@ public class Engine implements Notifier, Aborter {
 		}		
 	}
 
-	public void removeActiveCore(CommandSource src, NodeCorePair activeCore) {
+	public void removeActiveCores() {
+		m_activeCores.clear();
+	}
+
+	public void removeActiveCores(int nodeNumber) {
+		Iterator<NodeCorePair> iter = m_activeCores.iterator();
+		while (iter.hasNext()) {
+			NodeCorePair activeCore = iter.next();
+			if (activeCore.getNode() == nodeNumber) {
+				iter.remove();
+			}
+		}
+	}
+	
+	public void removeActiveCore(NodeCorePair activeCore) {
 		m_activeCores.remove(activeCore);
 	}
 
@@ -846,9 +869,9 @@ public class Engine implements Notifier, Aborter {
 		for (NodeCorePair activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 			Reference toRef = ReferenceFactory.createReference(to, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 
 			if (resolveReference(fromRef) && resolveReference(toRef)) {
 			    m_defines.removePathTime(fromRef, toRef);
@@ -1288,7 +1311,8 @@ public class Engine implements Notifier, Aborter {
 					ReferenceClass.LABEL_REF, activeCore.getNode(), activeCore.getCore());
 			boolean fromResolved = resolveReference(fromRef);
 			
-			checkInstructionIsBranch(src, fromRef, activeCore);
+			if (fromResolved)			
+			    checkInstructionIsBranch(src, fromRef, activeCore);
 			
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
@@ -1317,27 +1341,6 @@ public class Engine implements Notifier, Aborter {
 		return hit;
 	}
 
-	private void checkInstructionIsBranch(CommandSource src, Reference ref, NodeCorePair activeCore) {
-		for (long pc : ref.getPcs()) {
-			InstructionNode node = m_sourceMapper.get(activeCore.getNode(), activeCore.getCore()).getInstructionNode(pc);
-			if (node == null) {
-				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from non-existant instruction at %s",
-						ref.toString()));
-				return;
-			}
-
-			XtaInstruction inst = node.getXtaInstruction();
-			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
-				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from instruction which is not a branch: %s",
-						inst.toString()));
-				return;
-			}
-		}
-	}
-
 	public boolean removeBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
 		boolean hit = false;
 		for (NodeCorePair activeCore : m_activeCores) {
@@ -1346,7 +1349,8 @@ public class Engine implements Notifier, Aborter {
 					ReferenceClass.LABEL_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 			boolean fromResolved = resolveReference(fromRef);
 			
-			checkInstructionIsBranch(src, fromRef, activeCore);
+			if (fromResolved)
+			    checkInstructionIsBranch(src, fromRef, activeCore);
 			
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
@@ -1375,6 +1379,27 @@ public class Engine implements Notifier, Aborter {
 		return hit;
 	}
 
+	private void checkInstructionIsBranch(CommandSource src, Reference ref, NodeCorePair activeCore) {
+		for (long pc : ref.getPcs()) {
+			InstructionNode node = m_sourceMapper.get(activeCore.getNode(), activeCore.getCore()).getInstructionNode(pc);
+			if (node == null) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from non-existant instruction at %s",
+						ref.toString()));
+				return;
+			}
+
+			XtaInstruction inst = node.getXtaInstruction();
+			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from instruction which is not a branch: %s",
+						inst.toString()));
+				return;
+			}
+		}
+	}
+	
 	public Map<Reference, List<Reference>> getUserBranches() {
 		Map<Reference, List<Reference>> branches = new TreeMap<Reference, List<Reference>>();
 		
@@ -1744,12 +1769,12 @@ public class Engine implements Notifier, Aborter {
         sourceMapper.setFile(src, notifier, debugEngine, sf, file);
     }
 
-	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass ref) {		
+	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass refClass) {		
 		boolean hit = false;
 		for (NodeCorePair activeCore : m_activeCores) {
 			
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+					refClass, activeCore.getNode(), activeCore.getCore());
 			
 			if (resolveReference(reference)) {
 				update.run(reference);

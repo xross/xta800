@@ -21,11 +21,11 @@ public class FunctionTimeInfo implements DefineInfo {
 	}
 
 	public String toString() {
-		return String.format("%s: %s", m_function.toString(), m_timeUnit.getDescription(false));
+		return String.format("%s: %s", m_function.getRef(), m_timeUnit.getDescription(false));
 	}
 
     public String getDescription() {
-    	return m_function.toString();
+    	return m_function.getRef();
     }
 
     public String getValue() {

@@ -45,7 +45,7 @@ public class Branches extends Section {
 			}
 		}
 		for (Reference ref : to) {
-			pcs.add(new BranchInfo(ref, isUser));
+			pcs.add(new BranchInfo(this, ref, isUser));
 		}
 		return true;
 	}

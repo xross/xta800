@@ -21,5 +21,6 @@ Export-Package: com.xmos.xta.core.console,
  com.xmos.xta.core.engine.references.types,
  com.xmos.xta.core.engine.scripter,
  com.xmos.xta.core.engine.sections,
- com.xmos.xta.core.engine.sourcemapper
+ com.xmos.xta.core.engine.sourcemapper,
+ com.xmos.xta.core.engine.utils
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

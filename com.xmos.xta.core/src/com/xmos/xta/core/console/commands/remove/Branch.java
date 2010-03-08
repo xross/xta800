@@ -63,9 +63,6 @@ public class Branch extends Command {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
 		}
-
-		
-
 		engine.removeBranch(getSrc(), m_fromRefString, m_toRefStrings);
 	}
 }

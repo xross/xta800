@@ -104,7 +104,7 @@ public class Help extends Command {
     		console.display("  Any of the following are permitted:\n");
 
     		ReferenceClassType classType = ReferenceTypeFactory.getReferenceClass(m_referenceClass);
-    		ReferenceType[] referenceTypes = classType.getReferencTypes();
+    		ReferenceType[] referenceTypes = classType.getReferenceTypes();
     		for (ReferenceType referenceType : referenceTypes) {
     			console.display(String.format("    %s: %s\n",
     					referenceType.name(), referenceType.description()));

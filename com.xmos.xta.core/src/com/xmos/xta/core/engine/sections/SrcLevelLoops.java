@@ -32,7 +32,7 @@ public class SrcLevelLoops extends Section {
 	        	int numIterations = ByteArrayManipulation.readInt(data, byteIndex);
 	        	byteIndex += 4;
 
-	        	m_loops.add(new SrcLevelLoopInfo(pc, numIterations));
+	        	m_loops.add(new SrcLevelLoopInfo(this, pc, numIterations));
 	        }
 		} catch (Exception e) {
 		    getNotifier().notify(src, Notifier.NOTIFY_ERROR,

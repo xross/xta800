@@ -104,7 +104,7 @@ public class ReferenceTypeFactory {
 			ReferenceClass classType, int nodeNumber, int coreNumber) {
 		
 		ReferenceClassType referenceClass = getReferenceClass(classType);
-		ReferenceType[] referenceTypes = referenceClass.getReferencTypes();
+		ReferenceType[] referenceTypes = referenceClass.getReferenceTypes();
 		for (ReferenceType referenceType : referenceTypes) {
 			ReferenceType refType = referenceType.create(m_engine, reference, nodeNumber, coreNumber);
 			if (refType != null) {

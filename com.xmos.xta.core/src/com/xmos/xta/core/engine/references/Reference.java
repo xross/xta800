@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Reference implements Comparable<Reference>  {
 	private ReferenceType m_base;
@@ -94,7 +95,7 @@ public class Reference implements Comparable<Reference>  {
 
     public boolean equals(Object obj) {
     	if (obj == null)
-    	return false;
+    	    return false;
 
         if(!(obj instanceof Reference))
             return false;
@@ -138,7 +139,7 @@ public class Reference implements Comparable<Reference>  {
     }
 
     public String toString() {
-    	return getRef() + String.format(" (node: %d, core: %d, args)", getNodeNumber(), getCoreNumber());
+    	return  String.format("n%dc%d:", getNodeNumber(), getCoreNumber()) + getRef();
     }
 
 	public boolean matches(String s, Engine engine) {
@@ -169,12 +170,16 @@ public class Reference implements Comparable<Reference>  {
 		return m_base.getPcBackTrail(pc);
 	}
 	
+	public NodeCorePair getNodeCore() {
+		return m_base.getNodeCore();
+	}
+
 	public int getNodeNumber() {
-		return m_base.getNodeNumber();
+		return m_base.getNodeCore().getNode();
 	}
 
 	public int getCoreNumber() {
-		return m_base.getCoreNumber();
+		return m_base.getNodeCore().getCore();
 	}
 	
     private boolean match(Set<Long> set1, Set<Long> set2) {

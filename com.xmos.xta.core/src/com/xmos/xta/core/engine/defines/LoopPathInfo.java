@@ -20,11 +20,11 @@ public class LoopPathInfo implements DefineInfo {
 	}
 
 	public String toString() {
-		return String.format("%s: %d", m_reference.toString(), m_iterations);
+		return String.format("%s: %d", m_reference.getRef(), m_iterations);
 	}
 
 	public String getDescription() {
-		return m_reference.toString();
+		return m_reference.getRef();
 	}
 
 	public String getValue() {

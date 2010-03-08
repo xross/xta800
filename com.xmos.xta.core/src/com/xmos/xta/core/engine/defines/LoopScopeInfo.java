@@ -20,11 +20,11 @@ public class LoopScopeInfo implements DefineInfo {
 	}
 
 	public String toString() {
-		return String.format("%s: %s", m_reference.toString(), m_absolute ? "true" : "false");
+		return String.format("%s: %s", m_reference.getRef(), m_absolute ? "true" : "false");
 	}
 
     public String getDescription() {
-    	return m_reference.toString();
+    	return m_reference.getRef();
     }
 
     public String getValue() {

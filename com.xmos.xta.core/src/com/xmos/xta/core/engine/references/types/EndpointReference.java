@@ -13,7 +13,7 @@ public class EndpointReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.ENDPOINT, 1) &&
-		    isValid(engine.getEndpoints(getNodeNumber(), getCoreNumber()), getLabel(reference))) {
+		    isValid(engine.getEndpoints(nodeNumber, coreNumber), getLabel(reference))) {
 			return new EndpointReference(reference, nodeNumber, coreNumber);
 		}
 		return null;

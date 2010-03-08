@@ -48,7 +48,7 @@ public class SrcLevelCommands extends Section {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-	        		SrcStringInfo command = new SrcStringInfo(commandString, compilationDir, fileName, lineNumber);
+	        		SrcStringInfo command = new SrcStringInfo(this, commandString, compilationDir, fileName, lineNumber);
 	        		m_commands.add(command);
 	        	}
 		    }

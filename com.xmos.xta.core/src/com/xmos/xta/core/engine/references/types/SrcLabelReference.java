@@ -10,7 +10,7 @@ public class SrcLabelReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.SRCLABEL, 1) &&
-		    isValid(engine.getSrcLabels(getNodeNumber(), getCoreNumber()), getLabel(reference))) {
+		    isValid(engine.getSrcLabels(nodeNumber, coreNumber), getLabel(reference))) {
 			return new SrcLabelReference(reference, nodeNumber, coreNumber);
 		}
 		return null;

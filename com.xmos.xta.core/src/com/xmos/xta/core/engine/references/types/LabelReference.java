@@ -12,7 +12,7 @@ public class LabelReference extends ReferenceType {
 
 	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
 		if (checkTypeString(reference, Type.LABEL, 1) &&
-		    engine.getLabels(getNodeNumber(), getCoreNumber()).containsKey(getLabel(reference))) {
+		    engine.getLabels(nodeNumber, coreNumber).containsKey(getLabel(reference))) {
 			return new LabelReference(reference, nodeNumber, coreNumber);
 		}
 		return null;

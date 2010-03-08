@@ -27,11 +27,11 @@ public class PathTimeInfo implements DefineInfo {
 	}
 
 	public String toString() {
-		return String.format("%s to %s: %s", m_from.toString(), m_to.toString(), m_timeUnit.getDescription(false));
+		return String.format("%s to %s: %s", m_from.getRef(), m_to.getRef(), m_timeUnit.getDescription(false));
 	}
 
     public String getDescription() {
-    	return m_from + " " + m_to;
+    	return m_from.getRef() + " " + m_to.getRef();
     }
 
     public String getValue() {

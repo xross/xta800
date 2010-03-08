@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.defines;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.TimeUnit;
@@ -123,27 +124,63 @@ public class Defines {
 	}
 
 	public void removeFunctionTime(Reference function) {
-		m_functionTimes.remove(new FunctionTimeInfo(function, null));
+		Iterator<FunctionTimeInfo> iter = m_functionTimes.iterator();
+		while (iter.hasNext()) {
+			FunctionTimeInfo info = iter.next();
+			if (info.getFunction().equals(function)) {
+				iter.remove();
+			}
+		}
 	}
 
 	public void removePathTime(Reference from, Reference to) {
-		m_pathTimes.remove(new PathTimeInfo(from, to, null));
+		Iterator<PathTimeInfo> iter = m_pathTimes.iterator();
+		while (iter.hasNext()) {
+			PathTimeInfo info = iter.next();
+			if (info.getFrom().equals(from) && info.getTo().equals(to)) {
+				iter.remove();
+			}
+		}
 	}
 
 	public void removeInstructionTime(Reference reference) {
-		m_instructionTimes.remove(new InstructionTimeInfo(reference, null));
+		Iterator<InstructionTimeInfo> iter = m_instructionTimes.iterator();
+		while (iter.hasNext()) {
+			InstructionTimeInfo info = iter.next();
+			if (info.getReference().equals(reference)) {
+				iter.remove();
+			}
+		}		
 	}
 
 	public void removeLoop(Reference reference) {
-		m_loops.remove(new LoopInfo(reference, 0));
-	}
+		Iterator<LoopInfo> iter = m_loops.iterator();
+		while (iter.hasNext()) {
+			LoopInfo info = iter.next();
+			if (info.getReference().equals(reference)) {
+				iter.remove();
+			}
+		}		
+    }
 
 	public void removeLoopPath(Reference reference) {
-		m_loopPaths.remove(new LoopPathInfo(reference, 0));
+		Iterator<LoopPathInfo> iter = m_loopPaths.iterator();
+		while (iter.hasNext()) {
+			LoopPathInfo info = iter.next();
+			if (info.getReference().equals(reference)) {
+				iter.remove();
+			}
+		}		
 	}
 
 	public void removeLoopScope(Reference reference) {
-		m_loopScopes.remove(new LoopScopeInfo(reference, false));
+		Iterator<LoopScopeInfo> iter = m_loopScopes.iterator();
+		while (iter.hasNext()) {
+			LoopScopeInfo info = iter.next();
+			if (info.getReference().equals(reference)) {
+				iter.remove();
+			}
+		}		
 	}
 
 	private void updateScript(StringBuffer script,

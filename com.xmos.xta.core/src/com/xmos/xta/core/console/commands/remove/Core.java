@@ -41,7 +41,7 @@ public class Core extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return String.format("core [node id] <core id>: Remove core from active set");
+        return String.format("core [node id] <core id|*>: Remove core from active set");
     }
 
     public Command clone(String[] args, int index) {
@@ -58,10 +58,23 @@ public class Core extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
-
-		NodeCorePair ncPair = getNodeCore(engine, m_nodeId, m_coreId);
-		if (ncPair != null) {
-	        engine.removeActiveCore(getSrc(), ncPair);
+		
+		if (m_coreId.equals("*")) {
+			if (m_nodeId.equals("")) {
+				engine.removeActiveCores();
+				
+			} else {
+		        try { 
+					engine.removeActiveCores(Integer.parseInt(m_nodeId));
+		        } catch (NumberFormatException e) { }				
+			}
+		} else {
+			NodeCorePair ncPair = getNodeCore(engine, m_nodeId, m_coreId);
+			if (ncPair != null) {
+		        engine.removeActiveCore(ncPair);
+			}
 		}
     }
+    
+    
 }

@@ -13,7 +13,7 @@ public class ReferenceClassType {
 		return m_isVisible;
 	}
 
-	public ReferenceType[] getReferencTypes() {
+	public ReferenceType[] getReferenceTypes() {
     	return m_referenceTypes;
     }
 }
