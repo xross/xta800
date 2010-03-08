@@ -95,7 +95,7 @@ public class Reference implements Comparable<Reference>  {
 
     public boolean equals(Object obj) {
     	if (obj == null)
-    	return false;
+    	    return false;
 
         if(!(obj instanceof Reference))
             return false;

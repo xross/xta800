@@ -24,7 +24,7 @@ public class LoopScopeInfo implements DefineInfo {
 	}
 
     public String getDescription() {
-    	return m_reference.toString();
+    	return m_reference.getRef();
     }
 
     public String getValue() {

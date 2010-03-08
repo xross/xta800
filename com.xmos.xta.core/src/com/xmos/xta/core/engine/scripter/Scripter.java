@@ -306,29 +306,36 @@ public class Scripter {
     }
 
     private void updateFrequencies(RouteContainer routeContainer, StringBuffer script) {
-    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
     	Map<Integer, Double> frequencies = routeContainer.getFrequencies();
     	
+    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
     	for (NodeCorePair activeCore : activeCores) {
-    		if (m_currentFrequencies.get(activeCore.getNode()) != frequencies.get(activeCore.getNode())) {
-    			script.append(String.format("config freq %d %f\n", 
-    					activeCore.getNode(), frequencies.get(activeCore.getNode())));
-    			
-    			m_currentFrequencies.put(activeCore.getNode(), frequencies.get(activeCore.getNode()));
+    		int nodeNumber = activeCore.getNode();
+    		
+    		Double frequency = frequencies.get(nodeNumber);
+    		Double currentFrequency = m_currentFrequencies.get(nodeNumber);
+
+    		if (!currentFrequency.equals(frequency)) {
+    			script.append(String.format("config freq %d %f\n", nodeNumber, frequency));    			
+    			m_currentFrequencies.put(nodeNumber, frequency);
     		}
     	}
     }
         
 	private void updateNumThreads(RouteContainer routeContainer, StringBuffer script) {
-    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();    	
-    	Map<NodeCorePair, Integer> numThreads = routeContainer.getNumThreads();
+    	Map<NodeCorePair, Integer> numThreadsMap = routeContainer.getNumThreads();
 
+    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();    	
     	for (NodeCorePair activeCore : activeCores) {
-    		if (m_currentNumThreads.get(activeCore) != numThreads.get(activeCore)) {
-    			script.append(String.format("config threads %d %d %d\n", 
-    					activeCore.getNode(), activeCore.getCore(), numThreads.get(activeCore)));
-    			
-    			m_currentNumThreads.put(activeCore, numThreads.get(activeCore));
+    		int nodeNumber = activeCore.getNode();    		
+    		int coreNumber = activeCore.getCore();    		
+    		
+            int numThreads = numThreadsMap.get(activeCore);
+            int currentNumThreads = m_currentNumThreads.get(activeCore);
+    		
+    		if (currentNumThreads != numThreads) {
+    			script.append(String.format("config threads %d %d %d\n", nodeNumber, coreNumber, numThreads));    			
+    			m_currentNumThreads.put(activeCore, numThreads);
     		}
     	}		
 	}

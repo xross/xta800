@@ -25,7 +25,7 @@ public class FunctionTimeInfo implements DefineInfo {
 	}
 
     public String getDescription() {
-    	return m_function.toString();
+    	return m_function.getRef();
     }
 
     public String getValue() {
