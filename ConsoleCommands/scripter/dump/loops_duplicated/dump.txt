@@ -3,7 +3,6 @@ load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/d
 #
 # Route: main
 #
-config freq 0 400.000000
 analyse function main
 set loop - f1,loop 10
 set loop - f1,loop_path 10

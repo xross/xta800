@@ -15,4 +15,3 @@ add pathtime start stop 888\.000000 [mun]s
 add pathtime start2 stop2 888\.000000 [mun]s
 analyse function b
 
-remove pathtime \* \*

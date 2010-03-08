@@ -3,21 +3,18 @@ load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/d
 #
 # Route: main
 #
-config freq 0 400.000000
 analyse function main
 set instructiontime - inst 1000 cycles
 
 #
 # Route: main
 #
-config freq 0 400.000000
 analyse function main
 set instructiontime - inst 2.0 us
 
 #
 # Route: main
 #
-config freq 0 400.000000
 analyse function main
 set instructiontime - inst 0.1 mhz
 

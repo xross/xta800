@@ -1,3 +1,7 @@
+analyse function g
+
+remove exclusion *
 add exclusion y
+analyse function g
 
 scripter dump

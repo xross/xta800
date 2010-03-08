@@ -3,7 +3,7 @@ load ".*test\.xe"
 #
 # Route: main
 #
+config freq 0 100.000000
+config threads 0 0 5
 analyse function main
 
-config threads 5
-config freq 100.0
