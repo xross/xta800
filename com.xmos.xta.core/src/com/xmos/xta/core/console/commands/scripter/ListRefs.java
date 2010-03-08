@@ -49,7 +49,7 @@ public class ListRefs extends Command {
 				"Modifiable", "Enabled", "Reference", "MapsTo"));
 
 		for (ScripterReference ref : refs) {
-			String refString = ref.getReference().getRef();
+			String refString = ref.getBaseReference().getRef();
 			console.display(String.format("%-10s %-10s %-10s -> %10s\n",
 					ref.isModifiable(), ref.isEnabled(), refString, ref.getMapsToLabel()));
 		}

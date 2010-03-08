@@ -37,6 +37,7 @@ import com.xmos.xta.core.engine.defines.LoopPathInfo;
 import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
@@ -124,9 +125,9 @@ public class Scripter {
 	public void setEnable(ScripterReference scripterReference, boolean enable) {
 		scripterReference.setEnable(enable);
 		if (enable) {
-			m_disables.remove(scripterReference.getReference().getRef());
+			m_disables.remove(scripterReference.getBaseReference().getRef());
 		} else {
-			m_disables.add(scripterReference.getReference().getRef());
+			m_disables.add(scripterReference.getBaseReference().getRef());
 		}	
 	}
 
@@ -224,10 +225,11 @@ public class Scripter {
     			portable = false;
 
     		} else if (!reference.isPortable()) {
-    			if (reference.getRef().equals(getReferenceString(reference))) {
+    			ScripterReference scripterReference = getReference(reference.getRef());
+    			if (!(scripterReference.isModifiable() && scripterReference.isEnabled())) {
     				// Only emit the warning if the reference is not being mapped to a new value
     				script.append(String.format("# Warning: '%s' is a non-portable reference.\n",
-    					reference.getRef()));
+    					getReferenceString(reference)));
     			}
     		}
     	}
@@ -528,15 +530,22 @@ public class Scripter {
 		if (ref == null)
 			return;
 
-		ScripterReference scripterReference = getReference(ref.getRef());
+		for (ReferenceType baseRef : ref.getBackTrail()) {
+			addReference(baseRef);
+		}
+		addReference(ref.getBase());
+	}
+
+	private void addReference(ReferenceType baseRef) {
+		ScripterReference scripterReference = getReference(baseRef.getRef());
 		if (scripterReference == null) {
-			m_references.add(new ScripterReference(this, m_engine, ref));
+			m_references.add(new ScripterReference(this, m_engine, baseRef));
 		}
 	}
 
 	private ScripterReference getReference(String ref) {
 		for (ScripterReference scripterReference : m_references) {
-			if (scripterReference.getReference().matches(ref, m_engine)) {
+			if (scripterReference.getBaseReference().matches(ref, m_engine)) {
 				return scripterReference;
 			}
 		}
@@ -549,34 +558,22 @@ public class Scripter {
     		return ref.getRef();
     	}
 
-    	if (scripterReference.isEnabled()) {
-    		return scripterReference.getMapsToLabel();
-    	} else {
-    		return ref.getRef();
-    	}
+    	return scripterReference.getReferenceString();
 	}
 
 	private void disableRefsForInvalidFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
-		
-		
-		List<SourceFile> toRemove = new LinkedList<SourceFile>();
 		SourceMapper sourceMapper = getSourceMapper();
 		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
 			File file = sourceFile.getFile();
 			if ((file == null) || !file.canWrite() || sourceMapper.fileNewerThanBinary(file)) {
 				disableRefsForFile(sourceFile.getFileName());
-				toRemove.add(sourceFile);
 			}
-		}
-		
-		for (SourceFile sourceFile : toRemove) {
-			fileLineNumbers.remove(sourceFile);
 		}
 	}
 
 	private void disableRefsForFile(String fileName) {
 		for (ScripterReference scripterReference : m_references) {
-			String refFileName = scripterReference.getReference().getFileName();
+			String refFileName = scripterReference.getBaseReference().getFileName();
 			if (FileNameMatcher.isMatch(fileName, refFileName, getSourceMapper())) {
 				scripterReference.setEnable(false);
 				scripterReference.setModifiable(false);
@@ -603,12 +600,17 @@ public class Scripter {
 			String fileContents = "";
 			String line = "";
 			long lineNumber = 1;
+			long offset = 0;
 			while ((line = in.readLine()) != null) {
 				if (lineNumbers.contains(lineNumber)) {
-					String pragma = getPragmaString(sourceFile, lineNumber);
-					String indent = getIndent(line);
-					
-					fileContents += indent + pragma + "\n";
+					ScripterReference scripterReference = getReference(sourceFile, lineNumber + offset);
+					if (scripterReference.isModifiable() && scripterReference.isEnabled()) {
+						String pragma = getPragmaString(scripterReference);
+						String indent = getIndent(line);
+						fileContents += indent + pragma + "\n";
+						lineInserted(sourceFile, lineNumber);
+						offset += 1;
+					}
 				}
 				fileContents += line + "\n";
 				lineNumber++;
@@ -622,30 +624,38 @@ public class Scripter {
 		}
 	}
 
+	private void lineInserted(SourceFile sourceFile, long lineNumber) {
+		SourceMapper sourceMapper = getSourceMapper();
+		for (ScripterReference scripterReference : m_references) {
+			ReferenceType baseRef = scripterReference.getBaseReference();
+			baseRef.sourceLineInserted(sourceFile.getFileName(), lineNumber, sourceMapper);
+		}
+	}
+
 	private String getIndent(String line) {
 		String indent = line.replaceAll("[^\\s].*$", "");
 		return indent;
 	}
 
-	private String getPragmaString(SourceFile sourceFile, long lineNumber) {
+	private ScripterReference getReference(SourceFile sourceFile, long lineNumber) {
 		SourceMapper sourceMapper = getSourceMapper();
 		String sourceFileName = sourceFile.getFileName();
 
 		for (ScripterReference scripterReference : m_references) {
-			Reference reference = scripterReference.getReference();
-			if (FileNameMatcher.isMatch(sourceFileName, reference.getFileName(), sourceMapper) && 
-				(reference.getLineNum() == lineNumber)) {
+			ReferenceType baseRef = scripterReference.getBaseReference();
+			if (FileNameMatcher.isMatch(sourceFileName, baseRef.getFileName(), sourceMapper) && 
+				(baseRef.getLineNum() == lineNumber)) {
 				
-				return getPragmaString(scripterReference);
+				return scripterReference;
 			}
 		}
 		assert(false);
-		return "";
+		return null;
 	}
 	
 	private String getPragmaString(ScripterReference scripterReference) {
 		String type = "";
-		switch (scripterReference.getReference().getBase().getType()) {
+		switch (scripterReference.getBaseReference().getType()) {
 		case ENDPOINT:
 			type = "endpoint";
 			break;
@@ -691,20 +701,16 @@ public class Scripter {
 				
 				SourceMapper sourceMapper = m_engine.getSourceMapper(nodeNumber, coreNumber);				
 				for (ScripterReference scripterReference : m_references) {
-					if (!scripterReference.isEnabled() || !scripterReference.isModifiable()) {
-						continue;
-					}
-					
-					String fileName = scripterReference.getReference().getFileName();
+					String fileName = scripterReference.getBaseReference().getFileName();
 					if (!fileName.equals("")) {
 						SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
-						if(sourceFile != null){
+						if (sourceFile != null){
 							List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
 							if (lineNumbers == null) {
 								lineNumbers = new LinkedList<Long>();
 								fileLineNumbers.put(sourceFile, lineNumbers);
 							}
-							lineNumbers.add(scripterReference.getReference().getLineNum());
+							lineNumbers.add(scripterReference.getBaseReference().getLineNum());
 						}
 					}
 				}	

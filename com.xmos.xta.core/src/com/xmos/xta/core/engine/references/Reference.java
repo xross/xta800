@@ -192,5 +192,5 @@ public class Reference implements Comparable<Reference>  {
     		return false;
     	}
     	return true;
-	}	
+	}
 }
