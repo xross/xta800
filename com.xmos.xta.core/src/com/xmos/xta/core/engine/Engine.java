@@ -870,9 +870,9 @@ public class Engine implements Notifier, Aborter {
 		for (NodeCorePair activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 			Reference toRef = ReferenceFactory.createReference(to, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 
 			if (resolveReference(fromRef) && resolveReference(toRef)) {
 			    m_defines.removePathTime(fromRef, toRef);
@@ -1786,12 +1786,12 @@ public class Engine implements Notifier, Aborter {
         sourceMapper.setFile(src, notifier, debugEngine, sf, file);
     }
 
-	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass ref) {		
+	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass refClass) {		
 		boolean hit = false;
 		for (NodeCorePair activeCore : m_activeCores) {
 			
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+					refClass, activeCore.getNode(), activeCore.getCore());
 			
 			if (resolveReference(reference)) {
 				update.run(reference);
