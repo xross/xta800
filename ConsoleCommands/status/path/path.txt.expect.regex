@@ -3,11 +3,10 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
+Active Core Set: \(0,0\)
 Loaded executable: test.xe
-Current node: 0
-Current core: 0
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(Debug information avaliable\)
 Loaded Route\(0\): path: test.xc:8 to test.xc:10 
-From endpoint 'test.xc:8'
-To endpoint 'test.xc:10'
+From endpoint 'n0c0:test.xc:8', node: 0, core: 0
+To endpoint 'n0c0:test.xc:10', node: 0, core: 0

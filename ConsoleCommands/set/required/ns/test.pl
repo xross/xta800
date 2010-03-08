@@ -12,10 +12,8 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 
 system("@ARGV load $genDir/test.xe " .
-       "config threads 1 " .
-       "config core 0 0 " .
+       "config threads 0 0 1 " .
        "-analyse function test0 " .
-       "config core 0 1 " .
        "-analyse function test1 " .
 
        "-set required 0 10 ns " .

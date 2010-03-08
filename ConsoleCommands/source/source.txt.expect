@@ -3,5 +3,6 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
+Active Core Set:
 No executable loaded
 xta: cmds.txt:5: error: invalid command
