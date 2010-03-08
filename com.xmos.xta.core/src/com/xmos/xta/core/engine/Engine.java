@@ -29,17 +29,14 @@ import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionConstructor;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionReferenceNodeAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
-import com.xmos.xta.core.engine.analysis.controlflow.TerminatorAdder;
-import com.xmos.xta.core.engine.analysis.controlflow.UnreachableCodeFinder;
-import com.xmos.xta.core.engine.analysis.controlflow.UnresolvedSetter;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
-import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
@@ -102,8 +99,8 @@ public class Engine implements Notifier, Aborter {
 	private NodeCoreCollection<Boolean> m_structuralGraphUpToDate;
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
-	private NodeCoreCollection<StructureGraph> m_structuralGraph;
-	private NodeCoreCollection<Map<String, List<InstructionNode>>> m_functionNameToInsts;
+	private NodeCoreCollection<CallGraph> m_callGraphs;
+	private NodeCoreCollection<Set<FunctionContainer>> m_functionContainer;
 	private Collection<FileLocation> m_userSpecifedFileLocations;
 	private Scripter m_scripter;
 	private String m_fromEndpointName;
@@ -114,8 +111,8 @@ public class Engine implements Notifier, Aborter {
 
 	public Engine(Config config) {
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
-		m_structuralGraph = new NodeCoreCollection<StructureGraph>();
-		m_functionNameToInsts = new NodeCoreCollection<Map<String, List<InstructionNode>>>();
+		m_callGraphs = new NodeCoreCollection<CallGraph>();
+		m_functionContainer = new NodeCoreCollection<Set<FunctionContainer>>();
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
 		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		m_nodeHz = new TreeMap<Integer, Long>();
@@ -183,8 +180,8 @@ public class Engine implements Notifier, Aborter {
 		return m_sourceMapper.get(nodeNumber, coreNumber);
 	}
 
-	public StructureGraph getStructureGraph(int nodeNumber, int coreNumber) {
-		return m_structuralGraph.get(nodeNumber, coreNumber);
+	public CallGraph getStructureGraph(int nodeNumber, int coreNumber) {
+		return m_callGraphs.get(nodeNumber, coreNumber);
 	}
 
 	public InstructionDecoder getInstructionDecoder(int nodeNumber, int coreNumber){
@@ -634,11 +631,14 @@ public class Engine implements Notifier, Aborter {
 	// Function Names/Pcs
 	// ===================================================================== //
 	public Set<String> getFunctionNames(int nodeNumber, int coreNumber) {
-		Map<String, List<InstructionNode>> functionNames = m_functionNameToInsts.get(nodeNumber, coreNumber);
-		if (functionNames != null) {
-			Set<String> names = new TreeSet<String>(functionNames.keySet());
-			names.removeAll(getUnreachableFunctions(nodeNumber, coreNumber));
-		    return names;
+		Set<FunctionContainer> functionContainers = m_functionContainer.get(nodeNumber, coreNumber);
+		if (functionContainers != null) {
+			Set<String> functionNames = new TreeSet<String>();
+			for(FunctionContainer fc : functionContainers){
+				functionNames.add(fc.getFunctionName());
+			}
+			
+		    return functionNames;
 	    }
 		return new TreeSet<String>();
 	}
@@ -673,13 +673,12 @@ public class Engine implements Notifier, Aborter {
 		return uniqueNames;
 	}
 	
-	public List<Long> getFunctionPcs(String functionName, int nodeNumber, int coreNumber) {		
+	public List<Long> getFunctionStartPcs(String functionName, int nodeNumber, int coreNumber) {		
 		List<Long> pcs = new LinkedList<Long>();		
-		List<InstructionNode> insts = m_functionNameToInsts.get(nodeNumber, coreNumber).get(functionName);		
-		assert((insts != null) && !insts.isEmpty());
-		
-		for(InstructionNode inst : insts){
-			pcs.add(inst.getPC());
+		for(FunctionContainer fc : m_functionContainer.get(nodeNumber, coreNumber)){
+			if(functionName.equals(fc.getFunctionName())){
+				pcs.add(fc.getStartInstruction().getPC());
+			}
 		}		
 		return pcs;
 	}
@@ -1467,21 +1466,17 @@ public class Engine implements Notifier, Aborter {
 			boolean clearPrevious, int nodeNumber, int coreNumber) {
 
 		if (clearPrevious) {
-			m_structuralGraph = null;
-			m_functionNameToInsts = null;
+			m_callGraphs = null;
+			m_functionContainer = null;
 			m_sourceMapper = null;
 		}
 
 		m_loadStartTime = System.currentTimeMillis();
 		notify(src, Notifier.HOLD_MESSAGES, "");
-		NodeCoreCollection<StructureGraph> newStructuralGraph =
-			new NodeCoreCollection<StructureGraph>(m_structuralGraph);
-		NodeCoreCollection<InstructionDecoder> newInstructionDecoder =
-			new NodeCoreCollection<InstructionDecoder>(m_instructionDecoder);
-		NodeCoreCollection<Map<String, List<InstructionNode>>> newFunctionNames =
-			new NodeCoreCollection<Map<String, List<InstructionNode>>>(m_functionNameToInsts);
-		NodeCoreCollection<SourceMapper> newSourceMappers =
-			new NodeCoreCollection<SourceMapper>(m_sourceMapper);
+		NodeCoreCollection<CallGraph> newCallGraph = new NodeCoreCollection<CallGraph>(m_callGraphs);
+		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>(m_instructionDecoder);
+		NodeCoreCollection<Set<FunctionContainer>> newFunctionContainers = new NodeCoreCollection<Set<FunctionContainer>>(m_functionContainer);
+		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMapper);
 
 		if (m_structuralGraphUpToDate.get(nodeNumber, coreNumber) != null &&
 			m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
@@ -1505,12 +1500,8 @@ public class Engine implements Notifier, Aborter {
 			newInstructionDecoder.add(nodeNumber, coreNumber, id);
 			//Control Flow Stage
 
-			newFunctionNames.add(nodeNumber, coreNumber, new TreeMap<String, List<InstructionNode>>());
+			
 
-			//collect the thread starts
-			//collect the function targets
-			//collect the thread ends
-			//collect the function ends
 			FunctionConstructor fc = new FunctionConstructor(id, this, sections, nodeNumber, coreNumber, src, mnenonics);
 
 			try {
@@ -1522,6 +1513,8 @@ public class Engine implements Notifier, Aborter {
 
 
 			Set<InstructionNode> functionStartNodes = fc.getFunctionStarts();
+			//push this into function constructor
+			
 			Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
 
 			//add all the successors
@@ -1530,46 +1523,33 @@ public class Engine implements Notifier, Aborter {
 
 			//add function reference nodes
 			FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(id, m_notifier, src, xeLoader, nodeNumber, coreNumber, sections);
-			frna.process();
+			frna.process(functionStartNodes);
 
-			//add terminators(null nodes) to each of the functions
-			TerminatorAdder ta = new TerminatorAdder(functionStartNodes);
-			ta.process();
+			
+			Set<FunctionContainer> functionContainers = frna.getFunctionContainers();
+			
+			
+			System.out.println("adding callgraph for " + nodeNumber + " "+ coreNumber);
+			newCallGraph.add(nodeNumber, coreNumber, new CallGraph(functionContainers));
+			
+			newFunctionContainers.add(nodeNumber, coreNumber, functionContainers);
+			
+			FnopAdder fa = new FnopAdder(functionContainers);
+			fa.process();
+			
+			ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeNumber, coreNumber), functionContainers, 
+					sections.getLabels(nodeNumber, coreNumber));
 
-			UnresolvedSetter us = new UnresolvedSetter(functionStartNodes);
+			setBranchTargets(id, functionContainers);
 
-			us.process();
-
-			//name all the functions
-			ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeNumber, coreNumber),
-					newFunctionNames.get(nodeNumber, coreNumber), functionStartNodes, sections.getLabels(nodeNumber, coreNumber));
-
-			setBranchTargets(id, newFunctionNames.get(nodeNumber, coreNumber));
-
-			UnreachableCodeFinder uca = new UnreachableCodeFinder();
-			uca.analyseReachable(id, functionStartNodes);
-
-			//Structural Stage
-
-			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-			try {
-				if (!sae.analyse(this, functionStartNodes, newFunctionNames.get(nodeNumber, coreNumber), sections, nodeNumber, coreNumber)) {
-					return false;
-				}
-			} catch (AbortedException e) {
-				System.err.println("problem");
-				return false;
-			}
-
-
-			newStructuralGraph.add(nodeNumber, coreNumber, sae.getStructureGraph());
+			linkFunctions(functionContainers);
 
 			//Source Mapping Stage
 			
 			SourceMapper sourceMapper;
 			try {
 				sourceMapper = new SourceMapper(src, this, xeLoader, nodeNumber, coreNumber, functionStartNodes,
-						id, newFunctionNames.get(nodeNumber, coreNumber), sections.getLabels(nodeNumber, coreNumber));
+						id, functionContainers, sections.getLabels(nodeNumber, coreNumber));
 
 			} catch (AbortedException e) {
 				return false;
@@ -1581,17 +1561,33 @@ public class Engine implements Notifier, Aborter {
 							fileLocation.m_fileName, fileLocation.m_file, nodeNumber, coreNumber);
 				}
 			}
-
 			newSourceMappers.add(nodeNumber, coreNumber, sourceMapper);
 		}
 
 		m_structuralGraphUpToDate.add(nodeNumber, coreNumber, true);
-		m_structuralGraph = newStructuralGraph;
-		m_functionNameToInsts = newFunctionNames;
+		m_callGraphs = newCallGraph;
+		m_functionContainer = newFunctionContainers;
 		m_sourceMapper = newSourceMappers;
 		m_instructionDecoder = newInstructionDecoder;
 		notify(src, Notifier.RELEASE_MESSAGES, "");
 		return true;
+	}
+	
+	
+	private void linkFunctions(Set<FunctionContainer> functionContainers) {
+		Map<Long, FunctionContainer> pcToFunctionStartNode = new HashMap<Long, FunctionContainer>();
+		for(FunctionContainer fc : functionContainers){
+			pcToFunctionStartNode.put(fc.getStartInstruction().getPC(), fc);
+		}
+		
+		for(FunctionContainer fc : functionContainers){
+			for (FunctionReferenceNode g : fc.getFunctionReferenceNodes()){
+				if(g.isKnownFunction()){
+					FunctionContainer link = pcToFunctionStartNode.get(g.getFunctionStartPc());
+					g.setFunction(link);
+				}
+			}
+		}
 	}
 
 	private boolean analyseRouteSafely(CommandSource src, RouteContainer routeContainer,
@@ -1631,7 +1627,7 @@ public class Engine implements Notifier, Aborter {
 				return false;
 		}
 
-		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(nodeNumber, coreNumber), routeCoreContainer);
+		RouteConstructor routeConstructor = new RouteConstructor(this, m_callGraphs.get(nodeNumber, coreNumber), routeCoreContainer);
 		RouteError error = routeConstructor.analyse(src);
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
@@ -1678,18 +1674,15 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
-	private void setBranchTargets(InstructionDecoder id, Map<String, List<InstructionNode>> treeMap) {
-
+	private void setBranchTargets(InstructionDecoder id, Set<FunctionContainer> functionContainers) {
 		for (InstructionNode inst : id.getInstructions()) {
 			if (inst.getXtaInstruction().getBranchPcRelative()) {
 				long branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
 				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Long.toHexString(branchTarget));
-				for (String fn : treeMap.keySet()) {
-					for (InstructionNode fnInst : treeMap.get(fn)) {
-						if (fnInst.getStartPc() == branchTarget){
-							inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fn);
-							break;
-						}
+				for(FunctionContainer fc : functionContainers){
+					if(branchTarget == fc.getStartInstruction().getPC()){
+						inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fc.getFunctionName());
+						break;
 					}
 				}
 			}
@@ -1707,9 +1700,8 @@ public class Engine implements Notifier, Aborter {
 		return false;
 	}
 
-	private void ensureAllFunctionsAreNamed(
-			SymbolTable symbolTable, Map<String, List<InstructionNode>> functionNameToInstructions,
-			Set<InstructionNode> funcStarts, Map<String, Set<Long>> labelToPc) {
+	private void ensureAllFunctionsAreNamed( SymbolTable symbolTable, 
+			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labelToPc) {
 
 		Map<Long, String> pcToLabel = new TreeMap<Long, String>();
 		for (String label : labelToPc.keySet()) {
@@ -1717,28 +1709,19 @@ public class Engine implements Notifier, Aborter {
 				pcToLabel.put(pc, label);
 			}
 		}
-		
-		for(InstructionNode inst : funcStarts){
+		Set<String> seen = new HashSet<String>();
+		for(FunctionContainer fc : functionContainers){
+			InstructionNode inst = fc.getStartInstruction();
 			String functionName = symbolTable.functionName(inst.getStartPc());
-			
-			if (functionNameToInstructions.containsKey(functionName)) {
+			if (seen.contains(functionName)) {
 				String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 				if(label != null){
 					functionName = label;
 				}
 			}			
-			addToMap(functionNameToInstructions, inst, functionName);
+			fc.setFunctionName(functionName);
+			seen.add(functionName);
 		}
-	}
-
-	private void addToMap(Map<String, List<InstructionNode>> treeMap,
-			InstructionNode inst, String name) {
-		List<InstructionNode> list = treeMap.get(name);
-		if (list == null){
-			list = new LinkedList<InstructionNode>();
-		}
-		list.add(inst);
-		treeMap.put(name, list);
 	}
 
 	private boolean resolveReference(Reference ref) {

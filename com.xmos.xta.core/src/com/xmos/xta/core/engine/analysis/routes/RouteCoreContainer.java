@@ -1,26 +1,21 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.CallGraph;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.FunctionContainer;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
-import com.xmos.xta.core.engine.references.types.ReferenceType;
-import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.utils.CoreConfig;
 
 public class RouteCoreContainer {
 	private Reference m_function;
 	private Reference m_from;
-	private Collection<Reference> m_to;
+	private Set<Reference> m_to;
 	private RouteContainer m_routeContainer;
 	private int m_nodeNumber;
 	private int m_coreNumber;
@@ -34,7 +29,7 @@ public class RouteCoreContainer {
     	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
     	
     	m_from = from;
-		m_to = new ArrayList<Reference>();
+		m_to = new TreeSet<Reference>();
     	m_to.add(to);    	
     }
     
@@ -45,9 +40,7 @@ public class RouteCoreContainer {
 
     	m_function = function;
     	m_from = function;
-		m_to = new ArrayList<Reference>();
-		StructureGraph sg = engine.getStructureGraph(nodeNumber, coreNumber);
-        findEndpoints(sg, nodeNumber, coreNumber);
+		m_to = new TreeSet<Reference>();
         for (Reference to : m_to)
         	to.resolve(engine);		
     }
@@ -56,12 +49,8 @@ public class RouteCoreContainer {
 		return m_from;
 	}
 
-	public Collection<Reference> getToReferences() {
+	public Set<Reference> getToReferences() {
 		return m_to;
-	}
-
-	public Reference getToReference() {
-		return m_to.iterator().next();
 	}
 	
 	public Reference getFunctionReference() {
@@ -126,39 +115,13 @@ public class RouteCoreContainer {
 				engine.getFrequency(nodeNumber));    			
 	}
 	
-	public List<FunctionNode> getFunction(String functionName, StructureGraph sg){
-		List<FunctionNode> functions = new LinkedList<FunctionNode>();
-		for (FunctionNode fn : sg.getFunctions()) {
+	public List<FunctionContainer> getFunction(String functionName, CallGraph sg){
+		List<FunctionContainer> functions = new LinkedList<FunctionContainer>();
+		for (FunctionContainer fn : sg.getFunctionContainers()) {
 		    if (fn.getFunctionName().equals(m_routeContainer.getFunctionName())) {
 		        functions.add(fn);
 		    }
 		}
 		return functions;
     }
-	
-	/**
-	 * This function is supposed to take a function start and find all the end points
-	 * could be done better with FunctionEndNodes and FunctionStartNodes
-	 * @param sg
-	 * @param functionNodes
-	 */
-	private void findEndpoints(StructureGraph sg, int nodeNumber, int coreNumber) {
-		for (FunctionNode fn : sg.getFunctions()) {
-			if (fn.getFunctionName().equals(m_routeContainer.getFunctionName())) {
-				Set<InstructionNode> endInstructions = sg.getFunctionsEndNodes(fn);
-				for (Node endPoint : endInstructions) {
-					StringBuffer to = new StringBuffer();
-			    	for (ReferenceType backTrail : m_function.getBackTrail()) {
-			    		to.append(backTrail.getRef());
-			    		to.append(",");
-			    	}
-					to.append("0x");
-					to.append(Long.toHexString(endPoint.getStartPc()));
-					m_to.add(ReferenceFactory.createReference(to.toString(), 
-							ReferenceClass.ENDPOINT_REF, nodeNumber, coreNumber));
-				}
-				break;
-			}
-		}
-	}	
 }

@@ -23,7 +23,7 @@ public class FunctionReference extends ReferenceType {
 
         Collection<String> functionNames = engine.getFunctionNames(getNodeNumber(), getCoreNumber());
         if (functionNames.contains(functionName)) {
-        	for(long pc : engine.getFunctionPcs(functionName, getNodeNumber(), getCoreNumber())){
+        	for(long pc : engine.getFunctionStartPcs(functionName, getNodeNumber(), getCoreNumber())){
         		addPc(pc);
         	}
 	        setResolved(true);

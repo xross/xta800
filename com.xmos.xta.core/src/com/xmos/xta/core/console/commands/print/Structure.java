@@ -96,15 +96,19 @@ public class Structure extends Command {
 
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 			console.display(String.format("Node: %d, Core: %d\n", activeCore.getNode(), activeCore.getCore()));
-				
+			//TODO
+			/*
 			Collection<Node> nodes = null;
     		if (m_nodeIdSet) {
     			nodes = getCollection(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getNode(m_nodeId));
     		} else {
     			nodes = new TreeSet<Node>();
+    			
     			nodes.addAll(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getFunctions());
     		}
+    		
     		displayer.display(nodes);
+    		*/
 		}				
     }
     

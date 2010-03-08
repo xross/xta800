@@ -23,7 +23,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 public class ReferenceMatcher {
-
+/*
 	public List<StackNode> getStackNodeFromGlobalTree(Engine engine, Reference reference, int nodeNumber, int coreNumber) {
 
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
@@ -63,6 +63,7 @@ public class ReferenceMatcher {
 		return stackNodes;
 	}
 
+	
 	public Set<Node> getNodesMatchingReference(Stack<FunctionReferenceNode> baseOfStack, Node node, final Reference reference) {
 		
 		Set<Node> matches = new TreeSet<Node>();
@@ -100,7 +101,7 @@ public class ReferenceMatcher {
 		
 		return matches;
 	}
-
+*/
 	public boolean referenceMatchesNode(Stack<FunctionReferenceNode> stack, Reference reference, long pc, Node inst) {
 		boolean matchesInstruction;
 		List<Node> nodeList = new LinkedList<Node>();

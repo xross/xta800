@@ -394,11 +394,11 @@ public class Scripter {
 
     	case PATH:
 		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getFromReference()});
-		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getToReference()});
+		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getToReferences().iterator().next()});
 
 		    script.append(String.format("analyse path %s %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
-		    		getReferenceString(routeCoreContainer.getToReference())));
+		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
     	}
     }

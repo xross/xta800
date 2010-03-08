@@ -33,7 +33,7 @@ public class FnopAnalyser {
 
 		//TODO -- refactor this to not be such a mess!
 		if(isWordAligned(startPc)){
-			if(block.getPrevNodes().size() == 1){
+			if(getPrevNodeSize(block) == 1){
 				if(returningFromAFunction(block)){
 					ib = new InstructionBuffer(startPc, 0);
 				} else {
@@ -43,7 +43,7 @@ public class FnopAnalyser {
 				ib = new InstructionBuffer(startPc, 4);
 			}
 		} else {
-			if(block.getPrevNodes().size() == 1){
+			if(getPrevNodeSize(block) == 1){
 				if(returningFromAFunction(block)){
 					ib = new InstructionBuffer(startPc, 0);
 				} else {
@@ -61,6 +61,12 @@ public class FnopAnalyser {
 		}
 
 	}
+	
+	private int getPrevNodeSize(BlockNode block){
+		InstructionNode firstInst = block.getInstructionList().get(0);
+		return firstInst.getPrevNodes().size();
+	}
+	
 
 	private void update(InstructionBuffer ib, List<InstructionNode> blockInstructions, InstructionNode instNode) {
 		XtaInstruction inst = instNode.getXtaInstruction();
@@ -98,13 +104,14 @@ public class FnopAnalyser {
             return false;
     }
 
-	private boolean returningFromAFunction(Node block){
-		Node prev = block.getPrevNodes().iterator().next();
-		if(prev instanceof FunctionReferenceNode){
-			return true;
-		} else {
-			return false;
-		}
+	private boolean returningFromAFunction(BlockNode block){
+		InstructionNode firstInst = block.getInstructionList().get(0);
+		for(Node prev : firstInst.getPrevNodes()){
+			if(prev instanceof FunctionReferenceNode){
+				return true;
+			} 
+		} 
+		return false;
 	}
 
 }

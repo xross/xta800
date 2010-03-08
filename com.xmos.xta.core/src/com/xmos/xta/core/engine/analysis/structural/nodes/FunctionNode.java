@@ -263,7 +263,7 @@ public class FunctionNode extends Node {
 		Stack<FunctionReferenceNode> copyStack = new Stack<FunctionReferenceNode>();
 		copyStack.addAll(stack);
 		if(!copyStack.isEmpty()){
-			FunctionReferenceNode parent = copyStack.pop().getAlias();
+			FunctionReferenceNode parent = copyStack.pop();
 			if(parent!= null){
 				parent.buildListUp(nodeList, copyStack, this);
 			}

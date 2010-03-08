@@ -53,11 +53,14 @@ public class SuccessorAdder {
 				targets.addAll(mapEntries);
 			}
 		}
-
-		//FIXME - this should not be allowed for instruction that are not branches
+		
 		for (BranchInfo target : targets) {
 			for (long pc : target.getRef().getPcs()) {
-				connect(instruction, pc, true);
+				if(inst.isBranch()){
+					connect(instruction, pc, true);
+				} else {
+					System.err.println("trying to add branch to non branching instruction");
+				}
 			}
 		}		
 	}

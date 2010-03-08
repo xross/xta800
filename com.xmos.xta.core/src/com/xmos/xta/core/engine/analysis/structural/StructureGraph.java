@@ -31,7 +31,7 @@ public class StructureGraph {
 	private Map<FunctionNode, Set<InstructionNode>> m_instructionWithinFunction;
 
 	private Map<FunctionNode, FunctionReferenceNode> m_uncalledFunctionReference;
-
+/*
 	public StructureGraph(Map<FunctionNode , Set<InstructionNode>>functionToEndNodes,
 			Map<FunctionNode , InstructionNode>functionToStartNode,
 			Map<FunctionNode, Set<FunctionReferenceNode>> functionReferencesWithinFunction,
@@ -79,7 +79,7 @@ public class StructureGraph {
 		assert(m_functionToEndNodes != null);
 		assert(!m_functionToEndNodes.isEmpty());
 	}
-
+*/
 	public Collection<FunctionNode> getFunctions() {
 		return m_functionToEndNodes.keySet();
 	}

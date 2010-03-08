@@ -138,8 +138,8 @@ public class Route {
 	}
 
 	public Set<Node> getReferencedNodes(Reference reference) throws AbortedException {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
-		return referenceMatcher.getNodesMatchingReference(m_stack, m_baseOfRouteNode, reference);
+		RouteReferenceMatcher rrm = new RouteReferenceMatcher();
+		return rrm.matchReference(reference);
 	}
 
 	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
