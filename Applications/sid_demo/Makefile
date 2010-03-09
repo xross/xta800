@@ -24,13 +24,13 @@ $(TARGETDIR)/test.xe: $(OBJECTS)
 	xcc -target=$(TARGET) -g -o $(TARGETDIR)/test.xe $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
-	xcc -target=$(TARGET) $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
+	xcc -target=$(TARGET) $(INCLUDES) -g -O3 -Wall -c -o "$@" "$<"
 
 $(TARGETDIR)/main.o: main.xc
-	xcc $(INCLUDES) -target=$(TARGET) -g -O3 -Wall -Werror -c -o "$@" "$<"
+	xcc $(INCLUDES) -target=$(TARGET) -g -O3 -Wall -c -o "$@" "$<"
 
 $(TARGETDIR)/%.o: %.xc
-	xcc -target=$(TARGET) $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
+	xcc -target=$(TARGET) $(INCLUDES) -g -O3 -Wall -c -o "$@" "$<"
 
 clean:
 	rm -rf $(OBJECTS)
