@@ -27,7 +27,6 @@ import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.defines.Defines;
@@ -37,7 +36,9 @@ import com.xmos.xta.core.engine.defines.LoopPathInfo;
 import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
@@ -55,7 +56,10 @@ public class Scripter {
 
 	// Can't use a Set because the compareTo won't do what we 
 	// need for matching references
-	List<ScripterReference> m_references;
+	List<ScripterReference> m_uniqueReferences;
+	
+	// Need to keep track of all references in order to do the line numbering
+	List<ScripterReference> m_allReferences;
 	private Set<String> m_autoLabels;
 	private Set<String> m_disables;
 	private Map<String, String> m_renames;
@@ -71,7 +75,8 @@ public class Scripter {
 		m_renames = new TreeMap<String, String>();
 		m_currentFrequencies = new HashMap<Integer, Double>();
 		m_currentNumThreads = new HashMap<NodeCorePair, Integer>();
-		m_references = null;
+		m_uniqueReferences = null;
+		m_allReferences = null;
 	}
 
 	public void setEngineLoadAndRunDone() {
@@ -80,7 +85,8 @@ public class Scripter {
 		m_currentDefines = new Defines(m_engine.getDefines());
 		m_currentFrequencies = new HashMap<Integer, Double>(m_engine.getFrequencyMap());
 		m_currentNumThreads = new HashMap<NodeCorePair, Integer>(m_engine.getNumThreadMap());		
-		m_references = null;
+		m_uniqueReferences = null;
+		m_allReferences = null;
 	}
 
 	public String dump() {
@@ -125,9 +131,9 @@ public class Scripter {
 	public void setEnable(ScripterReference scripterReference, boolean enable) {
 		scripterReference.setEnable(enable);
 		if (enable) {
-			m_disables.remove(scripterReference.getBaseReference().getRef());
+			m_disables.remove(scripterReference.getRef());
 		} else {
-			m_disables.add(scripterReference.getBaseReference().getRef());
+			m_disables.add(scripterReference.getRef());
 		}	
 	}
 
@@ -152,12 +158,12 @@ public class Scripter {
 	}
 
 	public Collection<ScripterReference> getRefs() {
-		assert(m_references != null);
-		return m_references;
+		assert(m_uniqueReferences != null);
+		return m_uniqueReferences;
 	}
 
 	public boolean promptUser() {
-		for (ScripterReference scripterReference : m_references) {
+		for (ScripterReference scripterReference : m_uniqueReferences) {
 			if (scripterReference.isModifiable() && scripterReference.isEnabled()) {
 				return true;
 			}
@@ -167,7 +173,8 @@ public class Scripter {
 
 	public void createRefs() {
 		m_autoLabels.clear();
-		m_references = new LinkedList<ScripterReference>();
+		m_uniqueReferences = new LinkedList<ScripterReference>();
+		m_allReferences = new LinkedList<ScripterReference>();
 
 		// Create references for the existing routes
 		for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
@@ -202,7 +209,7 @@ public class Scripter {
 	       				}
 	       				
 	       				for (Reference ref : unknown.getReferences()) {
-	       					addReference(ref);
+	       					addReference(ref, unknown);
 	       				}
 	       			}
 	    		}
@@ -218,23 +225,32 @@ public class Scripter {
     	disableRefsForInvalidFiles(fileLineNumbers);
 	}
 
-    public void outputPortableWarnings(StringBuffer script, Reference[] references) {
-    	boolean portable = true;
-    	for (Reference reference : references) {
-    		if (reference == null) {
-    			portable = false;
-
-    		} else if (!reference.isPortable()) {
-    			ScripterReference scripterReference = getReference(reference.getRef());
-    			if (!(scripterReference.isModifiable() && scripterReference.isEnabled())) {
-    				// Only emit the warning if the reference is not being mapped to a new value
-    				script.append(String.format("# Warning: '%s' is a non-portable reference.\n",
-    					getReferenceString(reference)));
-    			}
+    public void outputPortableWarnings(StringBuffer script, Unknown unknown) {
+    	for (Reference ref : unknown.getReferences()) {
+    		if (ref == null) {
+    			ref = createReferenceForUnknown(unknown);
     		}
+   			outputPortableWarnings(script, ref);
     	}
-    	if (!portable) {
-			script.append("# Warning: The following line contains a non-portable reference.\n");
+    }
+
+    public void outputPortableWarnings(StringBuffer script, Reference ref) {
+		for (ReferenceType baseRef : ref.getBackTrail()) {
+			outputPortableWarnings(script, baseRef);
+		}
+		outputPortableWarnings(script, ref.getBase());
+    }
+
+    public void outputPortableWarnings(StringBuffer script, ReferenceType baseRef) {
+    	ScripterReference scripterReference = getReference(baseRef.getScripterRef());
+		if (scripterReference.isPortable()) {
+			return;
+		}
+		
+		if (!(scripterReference.isModifiable() && scripterReference.isEnabled())) {
+			// Only emit the warning if the reference is not being mapped to a new value
+			script.append(String.format("# Warning: '%s' is a non-portable reference.\n",
+				getReferenceString(baseRef)));
 		}
     }
 
@@ -352,9 +368,9 @@ public class Scripter {
         		m_currentBranches.clear();
     		}
     		for (Reference fromRef : branches.keySet()) {
-    			outputPortableWarnings(script, new Reference[]{fromRef});
+    			outputPortableWarnings(script, fromRef);
     			for (Reference toRef : branches.get(fromRef)) {
-        			outputPortableWarnings(script, new Reference[]{toRef});
+        			outputPortableWarnings(script, toRef);
     			}
 
     			List<Reference> toRefs = new ArrayList<Reference>();
@@ -376,7 +392,7 @@ public class Scripter {
         	    script.append("remove exclusion *\n");
     		}
         	for (Reference exclusion : exclusions) {
-    			outputPortableWarnings(script, new Reference[]{exclusion});
+    			outputPortableWarnings(script, exclusion);
             	script.append(String.format("add exclusion %s\n",
             			getReferenceString(exclusion)));
         	}
@@ -395,15 +411,15 @@ public class Scripter {
     	
     	switch (routeContainer.getMode()) {
     	case FUNCTION:
-		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getFunctionReference()});
+		    outputPortableWarnings(script, routeCoreContainer.getFunctionReference());
 
 		    script.append(String.format("analyse function %s\n",
 		    		getReferenceString(routeCoreContainer.getFunctionReference())));
     		break;
 
     	case PATH:
-		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getFromReference()});
-		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getToReference()});
+		    outputPortableWarnings(script, routeCoreContainer.getFromReference());
+		    outputPortableWarnings(script, routeCoreContainer.getToReference());
 
 		    script.append(String.format("analyse path %s %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
@@ -432,7 +448,7 @@ public class Scripter {
 
 		    try {
 		    	String scriptStr = unknown.getScriptStr(routeIdStr, refStrs);
-			    outputPortableWarnings(script, unknown.getReferences());
+			    outputPortableWarnings(script, unknown);
 		    	script.append(scriptStr);
 		    } catch (Exception e) {}
 		}
@@ -454,28 +470,6 @@ public class Scripter {
 			routeIdStr = String.format("%d", m_currentRouteId);
 		}
 		return routeIdStr;
-    }
-
-    private String[] getReferenceStrings(Unknown unknown) {
-    	Collection<String> refStrings = new ArrayList<String>();
-    	for (Reference reference : unknown.getReferences()) {
-    		refStrings.add(getReferenceString(reference, unknown.getNode()));
-    	}
-    	return refStrings.toArray(new String[0]);
-    }
-
-    private String getReferenceString(Reference reference, Node node) {
-	    String refStr = "";
-		if (reference == null) {
-			// This unknown was set directly onto a node (and not via a reference),
-			// so we need to generate a suitable reference to use in the script.
-			refStr = node.getReferenceStr();
-
-		} else {
-			// This unknown was set via a reference, so can use this directly in the script.
-			refStr = getReferenceString(reference);
-		}
-		return refStr;
     }
 
 	private void disableReferences() {
@@ -533,9 +527,15 @@ public class Scripter {
 		}
 	}
 
+	private void addReference(Reference ref, Unknown unknown) {
+		if (ref == null) {
+			ref = createReferenceForUnknown(unknown);
+		} 
+		addReference(ref);
+	}
+
 	private void addReference(Reference ref) {
-		if (ref == null)
-			return;
+		assert(ref != null);
 
 		for (ReferenceType baseRef : ref.getBackTrail()) {
 			addReference(baseRef);
@@ -544,14 +544,23 @@ public class Scripter {
 	}
 
 	private void addReference(ReferenceType baseRef) {
-		ScripterReference scripterReference = getReference(baseRef.getRef());
+		for (ScripterReference ref : m_allReferences) {
+			if (ref.getBaseReference() == baseRef) {
+				return;
+			}
+		}
+		
+		ScripterReference newRef = new ScripterReference(this, m_engine, baseRef);
+		m_allReferences.add(newRef);
+		
+		ScripterReference scripterReference = getReference(baseRef.getScripterRef());
 		if (scripterReference == null) {
-			m_references.add(new ScripterReference(this, m_engine, baseRef));
+			m_uniqueReferences.add(newRef);
 		}
 	}
 
 	private ScripterReference getReference(String ref) {
-		for (ScripterReference scripterReference : m_references) {
+		for (ScripterReference scripterReference : m_uniqueReferences) {
 			if (scripterReference.getBaseReference().matches(ref, m_engine)) {
 				return scripterReference;
 			}
@@ -559,10 +568,39 @@ public class Scripter {
 		return null;
 	}
 
-    private String getReferenceString(Reference ref) {
-    	ScripterReference scripterReference = getReference(ref.getRef());
+    private String[] getReferenceStrings(Unknown unknown) {
+    	Collection<String> refStrings = new ArrayList<String>();
+    	for (Reference ref : unknown.getReferences()) {
+    		if (ref == null) {
+    			ref = createReferenceForUnknown(unknown);
+    		}
+    		refStrings.add(getReferenceString(ref));
+    	}
+    	return refStrings.toArray(new String[0]);
+    }
+
+    private Reference createReferenceForUnknown(Unknown unknown) {
+		String refString = unknown.getNode().getReferenceStr();
+		NodeCorePair nodeCore = unknown.getRoute().getRouteCoreContainer().getNodeCore();
+		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF,
+				nodeCore.getNode(), nodeCore.getCore());
+		return ref;
+	}
+
+	private String getReferenceString(Reference ref) {
+    	StringBuffer str = new StringBuffer();
+    	for (ReferenceType backTrail : ref.getBackTrail()) {
+    		str.append(getReferenceString(backTrail));
+    		str.append(",");
+    	}
+    	str.append(getReferenceString(ref.getBase()));
+    	return str.toString();
+	}
+
+    private String getReferenceString(ReferenceType baseRef) {
+    	ScripterReference scripterReference = getReference(baseRef.getScripterRef());
     	if (scripterReference == null) {
-    		return ref.getRef();
+    		return baseRef.getRef();
     	}
 
     	return scripterReference.getReferenceString();
@@ -579,8 +617,8 @@ public class Scripter {
 	}
 
 	private void disableRefsForFile(String fileName) {
-		for (ScripterReference scripterReference : m_references) {
-			String refFileName = scripterReference.getBaseReference().getFileName();
+		for (ScripterReference scripterReference : m_uniqueReferences) {
+			String refFileName = scripterReference.getFileName();
 			if (FileNameMatcher.isMatch(fileName, refFileName, getSourceMapper())) {
 				scripterReference.setEnable(false);
 				scripterReference.setModifiable(false);
@@ -590,15 +628,30 @@ public class Scripter {
 
 	private void addPragmasToFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
 		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
+			List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
+
+			if (!fileContainsActivePragmas(sourceFile, lineNumbers)) {
+				continue;
+			}
+			
 			boolean ok = backupFile(sourceFile);
 			if (!ok) {
 				continue;
 			}
 			
-			List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
 			Collections.sort(lineNumbers);
 			addPragmasToFile(sourceFile, lineNumbers);
 		}
+	}
+
+	private boolean fileContainsActivePragmas(SourceFile sourceFile, List<Long> lineNumbers) {
+		for (long lineNumber : lineNumbers) {
+			ScripterReference scripterReference = getReference(sourceFile, lineNumber);
+			if (scripterReference.isModifiable() && scripterReference.isEnabled()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void addPragmasToFile(SourceFile sourceFile, List<Long> lineNumbers) {
@@ -615,7 +668,7 @@ public class Scripter {
 						String pragma = getPragmaString(scripterReference);
 						String indent = getIndent(line);
 						fileContents += indent + pragma + "\n";
-						lineInserted(sourceFile, lineNumber);
+						sourceLineInserted(sourceFile, lineNumber);
 						offset += 1;
 					}
 				}
@@ -631,11 +684,10 @@ public class Scripter {
 		}
 	}
 
-	private void lineInserted(SourceFile sourceFile, long lineNumber) {
+	private void sourceLineInserted(SourceFile sourceFile, long lineNumber) {
 		SourceMapper sourceMapper = getSourceMapper();
-		for (ScripterReference scripterReference : m_references) {
-			ReferenceType baseRef = scripterReference.getBaseReference();
-			baseRef.sourceLineInserted(sourceFile.getFileName(), lineNumber, sourceMapper);
+		for (ScripterReference scripterReference : m_allReferences) {
+			scripterReference.sourceLineInserted(sourceFile, lineNumber, sourceMapper);
 		}
 	}
 
@@ -646,12 +698,11 @@ public class Scripter {
 
 	private ScripterReference getReference(SourceFile sourceFile, long lineNumber) {
 		SourceMapper sourceMapper = getSourceMapper();
-		String sourceFileName = sourceFile.getFileName();
+		String sourceFileName = sourceFile.getFullFileName();
 
-		for (ScripterReference scripterReference : m_references) {
-			ReferenceType baseRef = scripterReference.getBaseReference();
-			if (FileNameMatcher.isMatch(sourceFileName, baseRef.getFileName(), sourceMapper) && 
-				(baseRef.getLineNum() == lineNumber)) {
+		for (ScripterReference scripterReference : m_uniqueReferences) {
+			if (FileNameMatcher.isMatch(sourceFileName, scripterReference.getFileName(), sourceMapper) && 
+				(scripterReference.getLineNum() == lineNumber)) {
 				
 				return scripterReference;
 			}
@@ -662,7 +713,7 @@ public class Scripter {
 	
 	private String getPragmaString(ScripterReference scripterReference) {
 		String type = "";
-		switch (scripterReference.getBaseReference().getType()) {
+		switch (scripterReference.getType()) {
 		case ENDPOINT:
 			type = "endpoint";
 			break;
@@ -707,8 +758,8 @@ public class Scripter {
 			for (int coreNumber : m_engine.getXeLoader().getCoreNumbers(nodeNumber)) {
 				
 				SourceMapper sourceMapper = m_engine.getSourceMapper(nodeNumber, coreNumber);				
-				for (ScripterReference scripterReference : m_references) {
-					String fileName = scripterReference.getBaseReference().getFileName();
+				for (ScripterReference scripterReference : m_uniqueReferences) {
+					String fileName = scripterReference.getFileName();
 					if (!fileName.equals("")) {
 						SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
 						if (sourceFile != null){
@@ -717,7 +768,7 @@ public class Scripter {
 								lineNumbers = new LinkedList<Long>();
 								fileLineNumbers.put(sourceFile, lineNumbers);
 							}
-							lineNumbers.add(scripterReference.getBaseReference().getLineNum());
+							lineNumbers.add(scripterReference.getLineNum());
 						}
 					}
 				}	

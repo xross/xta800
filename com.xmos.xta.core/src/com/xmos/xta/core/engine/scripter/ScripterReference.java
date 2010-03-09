@@ -9,30 +9,32 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.ScriptableInfo;
+import com.xmos.xta.core.engine.sourcemapper.SourceFile;
+import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class ScripterReference implements Comparable<ScripterReference> {
+	private Engine m_engine;
 	private boolean m_isEnabled;
 	private boolean m_isModifiable;
 	private ReferenceType m_baseRef;
 	private Reference m_mapsTo;
 	private String m_mapsToLabel;
+	private boolean m_useBaseFileLine;
 
 	public ScripterReference(Scripter scripter, Engine engine, ReferenceType baseRef) {
+		m_engine = engine;
 		m_isEnabled = true;
-		m_isModifiable = true;
+		m_isModifiable = false;
 		m_baseRef = baseRef;
+		m_mapsTo = null;
+		m_mapsToLabel = "";
+		m_useBaseFileLine = true;
 
-		if (baseRef.isPortable()) {
-			initialise(baseRef.getRef(), ReferenceClass.ANY_REF, baseRef.getRef(), false);
-
-		} else {
-			tryHighestLevelReference(scripter, engine, baseRef);
-			if (m_mapsTo == null) {
-				// Failed to find/create a valid reference to handle this
-				initialise(baseRef.getRef(), ReferenceClass.ANY_REF, baseRef.getRef(), false);
-			}
+		if (!baseRef.isPortable()) {
+			tryHighestLevelReference(scripter, baseRef);
 		}
 	}
 
@@ -52,17 +54,53 @@ public class ScripterReference implements Comparable<ScripterReference> {
     	return m_isModifiable;
     }
 
+	public String getRef() {
+		return m_baseRef.getRef();
+	}
+	
 	public ReferenceType getBaseReference() {
     	return m_baseRef;
     }
 
-	public Reference getMapsTo() {
-    	return m_mapsTo;
-    }
+	public String getFileName() {
+		if (m_useBaseFileLine) {
+			return m_baseRef.getFileName();
+		} else {
+			return m_mapsTo.getFileName();
+		}
+	}
+
+	public long getLineNum() {
+		if (m_useBaseFileLine) {
+			return m_baseRef.getLineNum();
+		} else {
+			return m_mapsTo.getLineNum();
+		}
+	}
+
+	public boolean isPortable() {
+		if (m_mapsTo != null) {
+			return m_mapsTo.isPortable();
+		} else {
+			return m_baseRef.isPortable();
+		}
+	}
 
 	public String getMapsToLabel() {
-    	return m_mapsToLabel;
+		if (m_mapsTo != null) {
+			return m_mapsToLabel;
+		} else {
+			return m_baseRef.getRef();
+		}
     }
+
+	public Type getType() {
+		if (m_mapsTo != null && m_mapsTo.getResolved()) {
+			return m_mapsTo.getBase().getType();
+		} else {
+			return m_baseRef.getType();
+		}
+	}
 
 	public void setEnable(boolean isEnabled) {
 		m_isEnabled = isEnabled;
@@ -81,27 +119,43 @@ public class ScripterReference implements Comparable<ScripterReference> {
     		return getMapsToLabel();
     		
     	} else {
-			return m_baseRef.getRef();
+			return m_baseRef.getScripterRef();
     	}
 	}
 
-	private void tryHighestLevelReference(Scripter scripter, Engine engine, ReferenceType baseRef) {
+	public void sourceLineInserted(SourceFile sourceFile, long lineNumber, SourceMapper sourceMapper) {
+		String sourceFileName = sourceFile.getFileName();
+		m_baseRef.sourceLineInserted(sourceFileName, lineNumber, sourceMapper);
+		if (m_mapsTo != null) {
+			m_mapsTo.getBase().sourceLineInserted(sourceFileName, lineNumber, sourceMapper);
+		}
+	}
+
+	private void tryHighestLevelReference(Scripter scripter, ReferenceType baseRef) {
 
 		ReferenceType.Type type = baseRef.getType();
+		int nodeNumber = m_baseRef.getNodeNumber();
+		int coreNumber = m_baseRef.getCoreNumber();
 		if (type == ReferenceType.Type.ENDPOINT) {
 			tryMatching(scripter, baseRef,
-					engine.getEndpoints(m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber()),
-					engine.getEndpointTable(m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber()).values(),
+					m_engine.getEndpoints(nodeNumber, coreNumber),
+					m_engine.getEndpointTable(nodeNumber, coreNumber).values(),
 					ReferenceClass.ENDPOINT_REF);
+
+		} else if (type == ReferenceType.Type.CALL) {
+			tryMatching(scripter, baseRef,
+					m_engine.getCalls(nodeNumber, coreNumber),
+					m_engine.getCallTable(nodeNumber, coreNumber).values(),
+					ReferenceClass.ANY_REF);
 
 		} else {
 			boolean matched = tryMatching(scripter, baseRef,
-					engine.getSrcLabels(m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber()),
-					engine.getSrcLabelTable(m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber()).values(),
+					m_engine.getSrcLabels(nodeNumber, coreNumber),
+					m_engine.getSrcLabelTable(nodeNumber, coreNumber).values(),
 					ReferenceClass.LABEL_REF);
 
 			if (!matched) {
-				tryLabels(engine, scripter, baseRef);
+				tryLabels(scripter, baseRef);
 			}
 		}
 	}
@@ -133,8 +187,8 @@ public class ScripterReference implements Comparable<ScripterReference> {
 		return false;
 	}
 
-	private void tryLabels(Engine engine, Scripter scripter, ReferenceType baseRef) {
-		Map<String, Set<Long>> labels = engine.getLabels(m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber());
+	private void tryLabels(Scripter scripter, ReferenceType baseRef) {
+		Map<String, Set<Long>> labels = m_engine.getLabels(m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber());
 		for (String label : labels.keySet()) {
 			if (labels.get(label).equals(baseRef.getPcs())) {
 				initialise(label, ReferenceClass.LABEL_REF, label, false);
@@ -164,8 +218,11 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	private void initialise(String mapsToLabel, ReferenceClass mapsToClass, String label, boolean isModifiable) {
 		m_mapsTo = ReferenceFactory.createReference(mapsToLabel, mapsToClass,
 				m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber());
+		m_mapsTo.resolve(m_engine);
 
 		m_mapsToLabel = label;
 		m_isModifiable = isModifiable;
+		
+		m_useBaseFileLine = (m_mapsTo.getLineNum() == 0);
 	}
 }

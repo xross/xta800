@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.unknowns;
 
+import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
@@ -21,6 +22,7 @@ public abstract class Unknown implements Comparable<Unknown> {
 		BINARY,
 	}
 
+	private Route m_route;
 	private Node m_node;
 	private Type m_type;
 	private State m_state;
@@ -30,8 +32,12 @@ public abstract class Unknown implements Comparable<Unknown> {
     public abstract String getDescription();
     public abstract String getScriptStr(String routeIdStr, String[] refStrs) throws Exception;
 
-	public Unknown(Node node, Type type, State state, Source source, Reference[] references) {
-		initialise(node, type, state, source, references);
+	public Unknown(Route route, Node node, Type type, State state, Source source, Reference[] references) {
+		initialise(route, node, type, state, source, references);
+	}
+
+	public Route getRoute() {
+		return m_route;
 	}
 
 	public Node getNode() {
@@ -73,7 +79,8 @@ public abstract class Unknown implements Comparable<Unknown> {
 		m_state = state;
 	}
 
-	private void initialise(Node node, Type type, State state, Source source, Reference[] references) {
+	private void initialise(Route route, Node node, Type type, State state, Source source, Reference[] references) {
+		m_route = route;
 		m_node = node;
 		m_type = type;
 		m_state = state;

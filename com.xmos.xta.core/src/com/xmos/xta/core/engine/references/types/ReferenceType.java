@@ -54,7 +54,11 @@ public abstract class ReferenceType {
 	public abstract boolean isPortable();
 
 	public String getRef() {
-		if (m_lineNum > 0) {
+		return m_ref;
+	}
+
+	public String getScripterRef() {
+		if (!isPortable() && (m_lineNum > 0)) {
 			return String.format("%s:%d", m_fileName, m_lineNum);
 		} else {
 			return m_ref;
@@ -249,7 +253,7 @@ public abstract class ReferenceType {
 	}
 
 	public boolean matches(String s, Engine engine) {
-		return false;
+		return m_ref.matches(s);
 	}
 
     public int hashCode() {

@@ -104,7 +104,7 @@ public class RouteUnknowns {
 		invalidateCachedStats();
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
 	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
-        enclosingLoopNode.getAttributes().addKnown(Type.LOOP_ITERATIONS, source, new Reference[] {reference});
+        enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_ITERATIONS, source, new Reference[] {reference});
    		clearPathIterations(enclosingLoopNode);
 		refreshDisplayedUnknowns();
 	}
@@ -175,7 +175,7 @@ public class RouteUnknowns {
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
 	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);
-	    optionNode.getAttributes().addKnown(Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
+	    optionNode.getAttributes().addKnown(m_route, Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
 		refreshDisplayedUnknowns();
 	}
 
@@ -221,7 +221,7 @@ public class RouteUnknowns {
 		invalidateCachedStats();
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
 		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-		enclosingLoopNode.getAttributes().addKnown(Type.LOOP_SCOPE, source, new Reference[] {reference});
+		enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_SCOPE, source, new Reference[] {reference});
 	}
 
 	// ===================================================================== //
@@ -244,7 +244,7 @@ public class RouteUnknowns {
 		timeUnit.setCoreConfig(m_route.getRouteCoreContainer().getCoreConfig());
 		invalidateCachedStats();
     	node.getAttributes().setFixedTime(timeUnit);
-	    node.getAttributes().addKnown(type, source, new Reference[] {reference});
+	    node.getAttributes().addKnown(m_route, type, source, new Reference[] {reference});
 		refreshDisplayedUnknowns();
 	}
 

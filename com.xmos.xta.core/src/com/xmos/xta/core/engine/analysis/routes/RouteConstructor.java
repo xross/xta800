@@ -721,7 +721,7 @@ public class RouteConstructor {
 	}
 
 	private void setUnknowns() {
-		for (Route route : m_routes) {
+		for (final Route route : m_routes) {
 			Node node = route.getNode();
 			node.traverse( new DefaultNodeTraverser() {
 				// Sets all the pausing instructions to unknown.
@@ -729,20 +729,20 @@ public class RouteConstructor {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
 						NodeAttributes nodeAttributes = node.getAttributes();
-						nodeAttributes.addUnknown(UnknownFactory.Type.INSTRUCTION_TIME);
+						nodeAttributes.addUnknown(route, UnknownFactory.Type.INSTRUCTION_TIME);
 					}
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the loop iterations to unknown.
 				public TraverseStatus foundLoopNode(Node node) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the self loop iterations to unknown.
 				public TraverseStatus foundSelfLoopNode(Node node) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
 				}
 		    });

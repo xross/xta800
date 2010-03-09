@@ -97,7 +97,7 @@ public class Reference implements Comparable<Reference>  {
     	if (obj == null)
     	    return false;
 
-        if(!(obj instanceof Reference))
+        if (!(obj instanceof Reference))
             return false;
 
     	// A reference is equal to another if its base pc, and
