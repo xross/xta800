@@ -51,7 +51,6 @@ public class FunctionReferenceNodeAdder {
 		
 		
 		for(InstructionNode startOfFunction : functionStartNodes){
-			
 			Map<Node, Node> seen = new HashMap<Node, Node>();
 			
 			Set<InstructionNode> toDo = new TreeSet<InstructionNode>();
@@ -80,17 +79,19 @@ public class FunctionReferenceNodeAdder {
 				
 				if(xtaInst.isLink()){
 					long returnPc = xtaInst.getPc() + xtaInst.getNumBytes();
-					InstructionNode branchLinkReturn = (InstructionNode) getInstruction(m_instDecoder.getNode(returnPc), seen, functionContents);
+					InstructionNode originalBLReturn = m_instDecoder.getNode(returnPc);
+					boolean found = seen.containsKey(originalBLReturn);
+					InstructionNode branchLinkReturn = (InstructionNode) getInstruction(originalBLReturn, seen, functionContents);
 					//add a function reference node into the graph
 					if(m_mnenonics.isImplicitBranchAndLinkLocation(xtaInst)){
 						long targetPc = getBranchAndLinkTargetPC(inst);
 						InstructionNode target = m_instDecoder.getNode(targetPc);
 						FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionContents);
-						
+						CommonMethods.connect(fr, parent);
 						if (branchLinkReturn != null) {	
 							CommonMethods.connect(branchLinkReturn, fr);
-							if(!seen.containsKey(branchLinkReturn)){
-								toDo.add(branchLinkReturn);		
+							if(!found){
+								toDo.add(originalBLReturn);		
 							}
 						} 
 					} else {
@@ -102,6 +103,7 @@ public class FunctionReferenceNodeAdder {
 									for (long targetPc : refTarget.getRef().getPcs()) {
 										InstructionNode target = (InstructionNode) getInstruction(m_instDecoder.getNode(targetPc), seen, functionContents);
 										FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionContents);
+										CommonMethods.connect(fr, parent);
 										if(target != null) {
 											foundATarget = true;
 										}
@@ -110,8 +112,8 @@ public class FunctionReferenceNodeAdder {
 										}
 										if (branchLinkReturn != null) {	
 											CommonMethods.connect(branchLinkReturn, fr);
-											if(!seen.containsKey(branchLinkReturn)){
-												toDo.add(branchLinkReturn);		
+											if(!found){
+												toDo.add(originalBLReturn);		
 											}
 										} 
 									}
@@ -121,9 +123,10 @@ public class FunctionReferenceNodeAdder {
 						if(!foundATarget){
 							FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, null, functionContents);
 							if (branchLinkReturn != null) {	
+								CommonMethods.connect(fr, parent);
 								CommonMethods.connect(branchLinkReturn, fr);
-								if(!seen.containsKey(branchLinkReturn)){
-									toDo.add(branchLinkReturn);		
+								if(!found){
+									toDo.add(originalBLReturn);		
 								}
 							}
 						}

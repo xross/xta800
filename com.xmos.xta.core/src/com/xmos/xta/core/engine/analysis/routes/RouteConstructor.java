@@ -74,14 +74,13 @@ public class RouteConstructor {
 	
 	public RouteConstructor(Engine engine, CallGraph callGraph,
 			RouteCoreContainer routeCoreContainer) throws AbortedException {
-		assert(m_callGraph != null);
-		assert(m_engine != null);
-		
-		
 		m_callGraph = callGraph;
 		m_routes = new ArrayList<Route>();
 		m_engine = engine;
-		m_coreContainer = routeCoreContainer;		
+		m_coreContainer = routeCoreContainer;	
+		
+		assert(m_callGraph != null);
+		assert(m_engine != null);
 	}
 
 	public List<Route> getRoutes() {
@@ -104,7 +103,7 @@ public class RouteConstructor {
 		}
 		
 		if (routeContainer.getMode() == RouteMode.FUNCTION){
-			List<StackNode> startStackNodes = getFunctionStartStackNodes(m_callGraph, routeContainer.getFunctionName());
+			List<StackNode> startStackNodes = getFunctionStartStackNodes(m_callGraph, m_coreContainer.getFromReference());
 			for(StackNode startStackNode : startStackNodes){
 				for(Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()){
 					List<StackNode> endStackNodes = getFunctionEndStackNodes(stack);
@@ -162,16 +161,41 @@ public class RouteConstructor {
 		return prm.matchReference(callGraph, ref);
 	}
 
-	private List<StackNode> getFunctionStartStackNodes(CallGraph callGraph, String function) {
+	private List<StackNode> getFunctionStartStackNodes(CallGraph callGraph, Reference reference) {
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(callGraph, function);
+		return prm.matchReference(callGraph, reference);
 	}
 
 	private List<StackNode> getFunctionEndStackNodes(Stack<FunctionReferenceNode> stack) {
-		// TODO Auto-generated method stub
-		//get all the end 
-		
-		return null;
+		//TODO remove recursion from this
+		List<StackNode> endStacks = new LinkedList<StackNode>();
+		Set<Node> seen = new HashSet<Node>();
+		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
+		walk(stack.peek().getFunctionStartInstruction(), seen, endNodes);
+		for(InstructionNode endInst : endNodes){
+			List<Stack<FunctionReferenceNode>> stacks = new LinkedList<Stack<FunctionReferenceNode>>();
+			stacks.add(stack);
+			StackNode end = new StackNode(endInst, stacks);
+			endStacks.add(end);
+		}
+		return endStacks;
+	}
+	
+	private void walk(Node node, Set<Node> seen, Set<InstructionNode> endNodes) {
+		if(node.getNextNodes().isEmpty()){
+			if(node instanceof InstructionNode){
+				endNodes.add((InstructionNode)node);
+			} else {
+				assert(false);
+			}
+		} else {
+			seen.add(node);
+			for(Node next : node.getNextNodes()){
+				if(!seen.contains(next)){
+					walk(next, seen, endNodes);
+				}
+			}
+		}
 	}
 
 	private FunctionNode makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
@@ -250,7 +274,6 @@ public class RouteConstructor {
 	throws AbortedException {
 
 		Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet, aborter);
-		
 		if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 			currentExclusionsFound.add(currentNode);
 			addToWorkingSet(parent, currentNode, workingSet);
@@ -274,13 +297,16 @@ public class RouteConstructor {
 			Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
 			newStack.addAll(currentStack);
 			newStack.add(frn);
+			
 			if(endPointsWithin){
 				InstructionNode inst = frn.getFunctionStartInstruction();
 				findReachableGraph(currentNode, newStack, inst, workingSet,
 						exclusionStackNodes, currentExclusionsFound, aborter, routeMode,
 						endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false);
 			} else {
-				FunctionNode fn = makeFunction(newStack, exclusionStackNodes, aborter, endStackNodes, false);
+				
+				List<StackNode> newEndStackNodes = getFunctionEndStackNodes(newStack);
+				FunctionNode fn = makeFunction(newStack, exclusionStackNodes, aborter, newEndStackNodes, false);
 				if(fn != null){
 					addToWorkingSet(parent, fn, workingSet);
 					currentNode = fn;
@@ -360,6 +386,7 @@ public class RouteConstructor {
 			Map<NodeDescriptor, Node> nodeToWorkingSet) throws AbortedException {
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 		Node startNode = makeBasicBlocks(workingSet, startNodeDescriptor, nodeToWorkingSet);
+		dumpGraph(workingSet);
 		sae.createStructure(workingSet, startNode, m_engine, "Converting CFG to structure");
 		assert(workingSet.size() == 1);
 		Node structuralNode = workingSet.iterator().next();
@@ -382,6 +409,8 @@ public class RouteConstructor {
 			}
 		}
 
+		dumpGraph(workingSet);
+		
 		assert(!toDo.isEmpty());
 
 		Map<Node, Set<Node>> nexts = new TreeMap<Node, Set<Node>>();
@@ -413,25 +442,18 @@ public class RouteConstructor {
 			newWorkingSet.add(basicBlock);
 
 			for(Node next : current.getNextNodes()){
-				if(next instanceof FunctionReferenceNode){
+				if(next instanceof FunctionNode){
 					next.getPrevNodes().clear();
-					FunctionReferenceNode frn = new FunctionReferenceNode((FunctionReferenceNode) next);
-
-					if(!frn.isKnownFunction()){
-						frn.setUnresolved(true);
-					}
-					newWorkingSet.add(frn);
+					newWorkingSet.add(next);
 					seenNodes.add(next);
-					instToBlock.put(next, frn);
-					nexts.put(frn, new HashSet<Node>(next.getNextNodes()));
+					instToBlock.put(next, next);
+					nexts.put(next, new HashSet<Node>(next.getNextNodes()));
 					for(Node nextNext : next.getNextNodes()){
 						if(!seenNodes.contains(nextNext)){
-
 							toDo.add(nextNext);
 						}
 					}
 					next.getNextNodes().clear();
-
 				} else if(!seenNodes.contains(next)){
 					toDo.add(next);
 				}

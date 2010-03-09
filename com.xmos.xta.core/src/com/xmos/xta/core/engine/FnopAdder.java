@@ -1,0 +1,52 @@
+package com.xmos.xta.core.engine;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.xmos.xta.core.engine.analysis.structural.BasicBlockMatcher;
+import com.xmos.xta.core.engine.analysis.structural.FnopAnalyser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+
+public class FnopAdder {
+	
+	private Set<FunctionContainer> m_functionContainers;
+
+	public FnopAdder(Set<FunctionContainer> functionContainers) {
+		m_functionContainers = functionContainers;
+	}
+
+	public void process() {
+		for(FunctionContainer fc : m_functionContainers){
+			Collection<Node> basicBlocks = new TreeSet<Node>();
+			reduceGraphToBasicBlocks(fc.getStartInstruction(), fc.getFunctionContents(), basicBlocks);
+			FnopAnalyser fa = new FnopAnalyser();
+			fa.analyse(basicBlocks);
+		}
+	}
+
+	private void reduceGraphToBasicBlocks(Node treeStart, Collection<Node> currentGraph, Collection<Node> basicBlocks) {
+		Set<Node> seen = new TreeSet<Node>();
+		for (Node node : currentGraph) {
+			if (!seen.contains(node)) {
+				if (node instanceof InstructionNode) {
+					BasicBlockMatcher bbpm = new BasicBlockMatcher();
+					if (bbpm.match(node, treeStart, currentGraph)) {
+						BlockNode basicBlock = bbpm.getBlock();
+						seen.addAll(basicBlock.getInstructionList());
+						basicBlocks.add(basicBlock);
+						treeStart = bbpm.getTreeStart();
+					}
+				} else if(node instanceof FunctionReferenceNode){
+					seen.add(node);
+					basicBlocks.add(node);
+				} else {
+					assert(false);
+				}
+			}
+		}	
+	}
+}

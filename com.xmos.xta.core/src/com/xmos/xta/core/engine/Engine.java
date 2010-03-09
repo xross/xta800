@@ -35,7 +35,6 @@ import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
-import com.xmos.xta.core.engine.analysis.structural.StructureGraph;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -99,7 +98,6 @@ public class Engine implements Notifier, Aborter {
 	private NodeCoreCollection<InstructionDecoder> m_instructionDecoder;
 	private NodeCoreCollection<SourceMapper> m_sourceMapper;
 	private NodeCoreCollection<CallGraph> m_callGraphs;
-	private NodeCoreCollection<Set<FunctionContainer>> m_functionContainer;
 	private Collection<FileLocation> m_userSpecifedFileLocations;
 	private Scripter m_scripter;
 	private String m_fromEndpointName;
@@ -111,7 +109,6 @@ public class Engine implements Notifier, Aborter {
 	public Engine(Config config) {
 		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
 		m_callGraphs = new NodeCoreCollection<CallGraph>();
-		m_functionContainer = new NodeCoreCollection<Set<FunctionContainer>>();
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
 		m_instructionDecoder = new NodeCoreCollection<InstructionDecoder>();
 		m_nodeHz = new TreeMap<Integer, Long>();
@@ -638,7 +635,7 @@ public class Engine implements Notifier, Aborter {
 	// Function Names/Pcs
 	// ===================================================================== //
 	public Set<String> getFunctionNames(int nodeNumber, int coreNumber) {
-		Set<FunctionContainer> functionContainers = m_functionContainer.get(nodeNumber, coreNumber);
+		Set<FunctionContainer> functionContainers = m_callGraphs.get(nodeNumber, coreNumber).getFunctionContainers();
 		if (functionContainers != null) {
 			Set<String> functionNames = new TreeSet<String>();
 			for(FunctionContainer fc : functionContainers){
@@ -684,7 +681,7 @@ public class Engine implements Notifier, Aborter {
 	
 	public List<Long> getFunctionStartPcs(String functionName, int nodeNumber, int coreNumber) {		
 		List<Long> pcs = new LinkedList<Long>();		
-		for(FunctionContainer fc : m_functionContainer.get(nodeNumber, coreNumber)){
+		for(FunctionContainer fc : m_callGraphs.get(nodeNumber, coreNumber).getFunctionContainers()){
 			if(functionName.equals(fc.getFunctionName())){
 				pcs.add(fc.getStartInstruction().getPC());
 			}
@@ -1491,8 +1488,7 @@ public class Engine implements Notifier, Aborter {
 			boolean clearPrevious, int nodeNumber, int coreNumber) {
 
 		if (clearPrevious) {
-			m_callGraphs = null;
-			m_functionContainer = null;
+			m_callGraphs = new NodeCoreCollection<CallGraph>();
 			m_sourceMapper = null;
 		}
 
@@ -1500,7 +1496,6 @@ public class Engine implements Notifier, Aborter {
 		notify(src, Notifier.HOLD_MESSAGES, "");
 		NodeCoreCollection<CallGraph> newCallGraph = new NodeCoreCollection<CallGraph>(m_callGraphs);
 		NodeCoreCollection<InstructionDecoder> newInstructionDecoder = new NodeCoreCollection<InstructionDecoder>(m_instructionDecoder);
-		NodeCoreCollection<Set<FunctionContainer>> newFunctionContainers = new NodeCoreCollection<Set<FunctionContainer>>(m_functionContainer);
 		NodeCoreCollection<SourceMapper> newSourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMapper);
 
 		if (m_structuralGraphUpToDate.get(nodeNumber, coreNumber) != null &&
@@ -1551,13 +1546,8 @@ public class Engine implements Notifier, Aborter {
 			frna.process(functionStartNodes);
 
 			
+			
 			Set<FunctionContainer> functionContainers = frna.getFunctionContainers();
-			
-			
-			System.out.println("adding callgraph for " + nodeNumber + " "+ coreNumber);
-			newCallGraph.add(nodeNumber, coreNumber, new CallGraph(functionContainers));
-			
-			newFunctionContainers.add(nodeNumber, coreNumber, functionContainers);
 			
 			FnopAdder fa = new FnopAdder(functionContainers);
 			fa.process();
@@ -1569,7 +1559,14 @@ public class Engine implements Notifier, Aborter {
 
 			linkFunctions(functionContainers);
 
-			//Source Mapping Stage
+			for(FunctionContainer f : functionContainers){
+				//f.dumpGraph();
+			}
+			
+			
+			
+			CallGraph cg = new CallGraph(functionContainers);
+			newCallGraph.add(nodeNumber, coreNumber, cg);
 			
 			SourceMapper sourceMapper;
 			try {
@@ -1591,7 +1588,6 @@ public class Engine implements Notifier, Aborter {
 
 		m_structuralGraphUpToDate.add(nodeNumber, coreNumber, true);
 		m_callGraphs = newCallGraph;
-		m_functionContainer = newFunctionContainers;
 		m_sourceMapper = newSourceMappers;
 		m_instructionDecoder = newInstructionDecoder;
 		notify(src, Notifier.RELEASE_MESSAGES, "");
@@ -1610,6 +1606,7 @@ public class Engine implements Notifier, Aborter {
 				if(g.isKnownFunction()){
 					FunctionContainer link = pcToFunctionStartNode.get(g.getFunctionStartPc());
 					g.setFunction(link);
+					
 				}
 			}
 		}
@@ -1652,7 +1649,11 @@ public class Engine implements Notifier, Aborter {
 				return false;
 		}
 
-		RouteConstructor routeConstructor = new RouteConstructor(this, m_callGraphs.get(nodeNumber, coreNumber), routeCoreContainer);
+		
+		
+		CallGraph cg = m_callGraphs.get(nodeNumber, coreNumber);
+		
+		RouteConstructor routeConstructor = new RouteConstructor(this, cg, routeCoreContainer);
 		RouteError error = routeConstructor.analyse(src);
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {

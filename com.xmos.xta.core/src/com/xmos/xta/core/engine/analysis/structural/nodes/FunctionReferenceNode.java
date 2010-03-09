@@ -27,7 +27,7 @@ public class FunctionReferenceNode extends Node {
 	private String m_functionName;
 	private boolean m_isKnownFunctionTarget;
 	
-	private FunctionNode m_cachedFunctionNode;
+	//private FunctionNode m_cachedFunctionNode;
 
 	private Set<Reference> m_appliesForReferences;
 
@@ -112,6 +112,7 @@ public class FunctionReferenceNode extends Node {
 		m_functionName = fc.getFunctionName();
 		m_functionContainer = fc;
 		m_isKnownFunctionTarget = true;
+		m_functionStartInstruction = fc.getStartInstruction();
 		assert(m_functionName != null);
 	}
 
