@@ -3,7 +3,6 @@ load ".*test\.xe"
 #
 # Route: test
 #
-remove branch \*
 add branch source1 target2 target3 target4
 analyse function test
 
@@ -27,4 +26,3 @@ add branch source1 source2 target2 target3 target4
 add branch source2 target2 target3 target4
 analyse function test
 
-remove branch \*

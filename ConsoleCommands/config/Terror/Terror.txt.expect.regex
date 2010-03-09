@@ -1,10 +1,9 @@
   \[-\]config <option> <arg0> <arg1>\.\.\.: Configures the given option
       option: case <BEST/WORST>: Sets the case \(currently: WORST\)
-      option: core \[node id\] <core id>: Change to core for following analysis \(current: 0,0\)
-      option: freq <core frequency>: Sets the core frequency in Mhz \(currently: 400\.000000\)
+      option: freq <node number> <core frequency>: Sets the core frequency in Mhz for the given node
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
       option: srcpaths <paths>: Sets the \(semicolon separated\) source search path
-      option: threads <num threads>: Sets number of threads currently executing \(currently: 1\)
+      option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not \(currently: off\)
       option: verbosity <level>: Sets the tool verbosity level \(range: -10 -> \+10, default: 0\)
@@ -14,9 +13,8 @@ WarnAsError: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
+Active Core Set: \(0,0\)
 Loaded executable: test.xe
-Current node: 0
-Current core: 0
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analysed
@@ -27,11 +25,10 @@ Fail, 1/1, Max Violation: \d+\.\d [mun]s
 RETURN CODE OK
   \[-\]config <option> <arg0> <arg1>\.\.\.: Configures the given option
       option: case <BEST/WORST>: Sets the case \(currently: WORST\)
-      option: core \[node id\] <core id>: Change to core for following analysis \(current: 0,0\)
-      option: freq <core frequency>: Sets the core frequency in Mhz \(currently: 400\.000000\)
+      option: freq <node number> <core frequency>: Sets the core frequency in Mhz for the given node
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
       option: srcpaths <paths>: Sets the \(semicolon separated\) source search path
-      option: threads <num threads>: Sets number of threads currently executing \(currently: 1\)
+      option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not \(currently: on\)
       option: verbosity <level>: Sets the tool verbosity level \(range: -10 -> \+10, default: 0\)
@@ -41,9 +38,8 @@ WarnAsError: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
+Active Core Set: \(0,0\)
 Loaded executable: test.xe
-Current node: 0
-Current core: 0
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analysed

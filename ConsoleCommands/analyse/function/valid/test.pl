@@ -11,17 +11,6 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/valid.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "config core 0 0 " .
-       "-analyse function test0 " .
-       "print summary " .
-       "-config core 0 1 " .
-       "-analyse function test1 " .
-       "print summary " .
-       "-config core 0 2 " .
-       "-analyse function test2 " .
-       "print summary " .
-       "-config core 0 3 " .
-       "-analyse function test3 " .
-       "print summary " .
+       "source cmds.txt " .
        "exit > $genDir/valid.txt 2>&1");
 

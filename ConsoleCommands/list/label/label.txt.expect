@@ -1,5 +1,5 @@
-Label: A, pcs: 0x10004
-Label: B, pcs: 0x1000c
-Label: C, pcs: 0x10014
-Label: _start, pcs: 0x10000
-Label: main, pcs: 0x10002
+node: 0, core: 0, label: A, pcs: 0x10004
+node: 0, core: 0, label: B, pcs: 0x1000c
+node: 0, core: 0, label: C, pcs: 0x10014
+node: 0, core: 0, label: _start, pcs: 0x10000
+node: 0, core: 0, label: main, pcs: 0x10002

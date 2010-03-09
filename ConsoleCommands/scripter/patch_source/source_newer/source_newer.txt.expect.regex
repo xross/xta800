@@ -1,11 +1,11 @@
 xta: warning: Source file 'foo.xc' newer than binary
-Enabled    Modifiable Reference  ->     MapsTo
+Modifiable Enabled    Reference  ->     MapsTo
 false      false      foo.xc:15  ->    label_0
 true       true       .+/bar.xc:11 ->    label_1
 true       true       .+/bar.xc:6 ->    label_2
 true       true       .+/bar.xc:9 ->    label_3
 xta: .+/cmds.txt:9: error: Reference 'foo.xc:15' cannot be renamed
-Enabled    Modifiable Reference  ->     MapsTo
+Modifiable Enabled    Reference  ->     MapsTo
 false      false      foo.xc:15  ->    label_0
 true       true       .+/bar.xc:11 -> out_of_bounds
 true       true       .+/bar.xc:6 ->      start

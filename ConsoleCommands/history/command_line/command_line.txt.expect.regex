@@ -9,44 +9,43 @@
 7: set pathtime - 0x10000 0x10002 5003 us
 8: add functiontime main 10001 ns
 9: add pathtime 0x10000 0x10002 10001 ns
-10: config core 0 0
-11: config freq 999
-12: config threads 99
-13: config case BEST
-14: config case WORST
-15: config srcpaths /test/path/srcpath/
-16: clear
-17: echo
-18: pwd
-19: help
-20: help history
-21: load invalid.xe
-22: list branches
-23: list labels
-24: list srclabels
-25: list endpoints
-26: list allsrclabels
-27: list allendpoints
-28: list functions
-29: list sources
-30: list exclusions
-31: list unknowns -
-32: list knowns -
-33: print asm -
-34: print src -
-35: print mix -
-36: print trace -
-37: print structure -
-38: print summary
-39: print nodeinfo - 0
-40: print routeinfo 0
-41: remove branch branch1 branch1
-42: set loop - a 99
-43: set instructiontime - test.xc:12 9901 ns
-44: set instructiontime - label1 99 cycles
-45: set instructiontime - 0x1000 50000 cycles
-46: add instructiontime 0x10000 50008 us
-47: source invalid.txt
-48: status
-49: version
-50: history
+10: config freq 0 999.000000
+11: config threads 0 0 99
+12: config case BEST
+13: config case WORST
+14: config srcpaths /test/path/srcpath/
+15: clear
+16: echo
+17: pwd
+18: help
+19: help history
+20: load invalid.xe
+21: list branches
+22: list labels
+23: list srclabels
+24: list endpoints
+25: list allsrclabels
+26: list allendpoints
+27: list functions
+28: list sources
+29: list exclusions
+30: list unknowns -
+31: list knowns -
+32: print asm -
+33: print src -
+34: print mix -
+35: print trace -
+36: print structure -
+37: print summary
+38: print nodeinfo - 0
+39: print routeinfo 0
+40: remove branch branch1 branch1
+41: set loop - a 99
+42: set instructiontime - test.xc:12 9901 ns
+43: set instructiontime - label1 99 cycles
+44: set instructiontime - 0x1000 50000 cycles
+45: add instructiontime 0x10000 50008 us
+46: source invalid.txt
+47: status
+48: version
+49: history

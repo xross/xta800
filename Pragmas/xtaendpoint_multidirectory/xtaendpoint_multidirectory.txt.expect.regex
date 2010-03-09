@@ -1,18 +1,18 @@
-Label: input_8A, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
-Label: input_8B, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
-Label: input_1A, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 9
-Label: input_1B, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 13
-Label: input_1C, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 9
-Label: input_1D, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 13
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 13
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 14
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 17
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 18
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 10
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 11
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 14
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 15
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 10
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 11
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 14
-pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 15
+node: 0, core: 0, label: input_8A, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
+node: 0, core: 0, label: input_8B, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
+node: 0, core: 0, label: input_1A, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 9
+node: 0, core: 0, label: input_1B, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 13
+node: 0, core: 0, label: input_1C, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 9
+node: 0, core: 0, label: input_1D, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 13
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 13
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 14
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 17
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 18
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 10
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 11
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 14
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 15
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 10
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 11
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 14
+node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 15

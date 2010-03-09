@@ -1,5 +1,5 @@
-xta: error: 'test.xc:19' is not a valid endpoint
-xta: error: 'test.xc:13' is not a valid endpoint
+xta: cmds.txt:4: error: 'test.xc:19' is not a valid endpoint on any active core
+xta: cmds.txt:9: error: 'test.xc:13' is not a valid endpoint on any active core
 Route\(0\) path: test.xc:13 to test.xc:14
     No Timing Specified
 

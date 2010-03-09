@@ -1,18 +1,12 @@
 f: 1.0 us
 g: 2.0 us
-none
 start1 to stop1: 1.0 us
 start2 to stop2: 2.0 us
-none
 inst1: 1.0 us
 inst2: 2.0 us
-none
 l1: 10
 l2: 20
-none
 lp1: 22
 lp2: 23
-none
 l1: false
 l2: false
-none

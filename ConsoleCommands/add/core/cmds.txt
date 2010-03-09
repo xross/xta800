@@ -1,0 +1,9 @@
+status
+list cores
+remove core *
+status
+list cores
+add core 0 1
+add core 0 2
+status
+list cores

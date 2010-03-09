@@ -493,7 +493,7 @@ void audioManager(
 #pragma xta command "add exclusion audio_48_wipebuf"
 #pragma xta command "add exclusion audio_48_freqadjust"
 #pragma xta command "add exclusion audio_flashupgrade"
-#pragma xta command "config freq 500"
+#pragma xta command "config freq 0 500"
 #pragma xta command "analyse path audio_48_left_o0 audio_48_left_o2"
 #pragma xta command "set required - 1300 ns"
 #pragma xta command "analyse path audio_48_left_o1 audio_48_left_o3"

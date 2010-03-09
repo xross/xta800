@@ -1,7 +1,7 @@
-analyse function main
+config threads 0 0 5
+config freq 0 100
 
-config threads 5
-config freq 100
+analyse function main
 
 scripter dump
 exit

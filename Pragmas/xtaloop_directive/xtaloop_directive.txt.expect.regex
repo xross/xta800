@@ -1,4 +1,4 @@
-0x1000c: 22
+node: 0, core: 0, 0x1000c: 22
 function\(\d+\)   : \d+\.\d [mun]s / \d+\.\d [mun]s main
 .    block\(\d+\)      : \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .    selfloop\(\d+\)   : \d+\.\d [mun]s / \d+\.\d [mun]s 

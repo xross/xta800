@@ -1,4 +1,4 @@
-load "/home/andrew/sandbox/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/loop_scope/csim__xs1b__default/test.xe"
+load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/loop_scope/csim__xs1b__default/test.xe"
 
 #
 # Route: main
@@ -8,18 +8,18 @@ set loop - f1,outer 10
 set loop - f1,inner 20
 set loopscope - f1,inner a
 # Warning: The following line contains a non-portable reference.
-set loop - CALL:0x1013a,CALL:0x10132,0x100f6 30
+set loop - CALL:0x10136,CALL:0x1012e,0x100f2 30
 # Warning: The following line contains a non-portable reference.
-set loop - CALL:0x1013a,CALL:0x10132,0x10104 40
+set loop - CALL:0x10136,CALL:0x1012e,0x10100 40
 # Warning: The following line contains a non-portable reference.
-set loopscope - CALL:0x1013a,CALL:0x10132,0x10104 a
+set loopscope - CALL:0x10136,CALL:0x1012e,0x10100 a
 set loop - f2,outer 50
 set loop - f2,inner 60
 set loopscope - f2,inner a
 # Warning: The following line contains a non-portable reference.
-set loop - CALL:0x1013a,CALL:0x10134,0x100f6 70
+set loop - CALL:0x10136,CALL:0x10130,0x100f2 70
 # Warning: The following line contains a non-portable reference.
-set loop - CALL:0x1013a,CALL:0x10134,0x10104 80
+set loop - CALL:0x10136,CALL:0x10130,0x10100 80
 # Warning: The following line contains a non-portable reference.
-set loopscope - CALL:0x1013a,CALL:0x10134,0x10104 a
+set loopscope - CALL:0x10136,CALL:0x10130,0x10100 a
 

@@ -1,9 +1,9 @@
-Label: call_function_a0, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 13
-Label: call_function_b0, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 15
-xta: error: 'call_function_a1' is not a valid endpoint
-Label: call_function_a1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 21
-Label: call_function_b1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 23
-xta: error: 'call_function_a0' is not a valid endpoint
+node: 0, core: 0, label: call_function_a0, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 13
+node: 0, core: 0, label: call_function_b0, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 15
+xta: cmds.txt:5: error: 'call_function_a1' is not a valid endpoint on any active core
+node: 0, core: 1, label: call_function_a1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 21
+node: 0, core: 1, label: call_function_b1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 23
+xta: cmds.txt:11: error: 'call_function_a0' is not a valid endpoint on any active core
 Route\(0\) path: call_function_a0 to call_function_b0
     No Timing Specified
 

@@ -1,4 +1,4 @@
-load "/home/andrew/sandbox/software/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/pauseables/csim__xs1b__default/test.xe"
+load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/pauseables/csim__xs1b__default/test.xe"
 
 #
 # Route: main

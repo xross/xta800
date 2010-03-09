@@ -21,6 +21,3 @@ remove loopscope \*
 add loopscope inner2 true
 analyse function g
 
-remove loop \*
-remove looppath \*
-remove loopscope \*

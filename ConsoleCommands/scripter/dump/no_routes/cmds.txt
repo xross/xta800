@@ -1,6 +1,5 @@
-config core 0 1
-config freq 100
-config threads 5
+config freq 0 100
+config threads 0 0 5
 config case BEST
 
 add branch source1 target2 target3 target4

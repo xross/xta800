@@ -1,7 +1,7 @@
-Enabled    Modifiable Reference  ->     MapsTo
+Modifiable Enabled    Reference  ->     MapsTo
 true       true       test.xc:13 ->    label_0
 true       true       .+/test.xc:25 ->    label_1
-Enabled    Modifiable Reference  ->     MapsTo
+Modifiable Enabled    Reference  ->     MapsTo
 true       true       test.xc:13 ->          x
 true       true       .+/test.xc:25 -> out_of_bounds
 load ".+test.xe"

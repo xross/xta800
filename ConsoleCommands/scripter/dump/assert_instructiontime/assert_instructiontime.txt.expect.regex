@@ -3,8 +3,8 @@ load ".*test\.xe"
 #
 # Route: a
 #
-add instructiontime t_f 111\.000000 [mun]s
-add instructiontime t_g 111\.000000 [mun]s
+add instructiontime t_f 111\.000000 ns
+add instructiontime t_g 111\.000000 ns
 analyse function a
 
 #
@@ -16,8 +16,8 @@ analyse function a
 # Route: b
 #
 remove instructiontime \*
-add instructiontime t_f 111\.000000 [mun]s
-add instructiontime t_h 111\.000000 [mun]s
+add instructiontime t_f 111\.000000 ns
+add instructiontime t_h 111\.000000 ns
 analyse function b
 
 #
@@ -25,4 +25,3 @@ analyse function b
 #
 analyse function b
 
-remove instructiontime \*

@@ -18,10 +18,10 @@ $(TARGETDIR)/test.xe: $(OBJECTS)
 	xcc -target=$(TARGET) -o $(TARGETDIR)/test.xe $(OBJECTS)
 
 $(TARGETDIR)/%.o: %.c
-	xcc $(INCLUDES) -g -O3 -Wall -Werror -c -o "$@" "$<"
+	xcc $(INCLUDES) -g -O3 -Wall -c -o "$@" "$<"
 
 $(TARGETDIR)/%.o: %.xc
-	xcc $(INCLUDES) -fxta-info -g -O3 -Wall -Werror -c -o "$@" "$<"
+	xcc $(INCLUDES) -fxta-info -g -O3 -Wall -c -o "$@" "$<"
 
 clean:
 	rm -rf $(OBJECTS)

@@ -17,6 +17,11 @@ my $filename = "trace";
 my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
+        "remove core 0 0 " .
+        "remove core 0 1 " .
+        "remove core 0 2 " .
+        "remove core 0 3 " .
+        "add core 0 1 " .
 
         "analyse path sdr_input0_0 sdr_input0_1 " .
         "set required - 333 ns " .

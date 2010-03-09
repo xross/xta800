@@ -15,7 +15,6 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "config core 0 1 " .
         "-analyse path a a " .
         "print structure - " .
         "-exit > $genDir/$directory.txt 2>&1");
