@@ -21,9 +21,23 @@ public class PreanalysisReferenceMatcher {
 		matchingContainers = getBaseContianers(ref, callGraph);
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
 		for(FunctionContainer matchingContainer : matchingContainers){
-			stackNodes.add(new StackNode(matchingContainer.getStartInstruction(), callGraph.getStacks(matchingContainer)));
+			stackNodes.add(new StackNode(getInstructionFromContainer(matchingContainer,ref), callGraph.getStacks(matchingContainer)));
 		}
 		return refineStackNodes(stackNodes, ref);
+	}
+	
+	private InstructionNode getInstructionFromContainer(FunctionContainer fc, Reference ref){
+		
+		for(Node node : fc.getFunctionContents()){
+			if(node instanceof InstructionNode){
+				InstructionNode inst = (InstructionNode)node;
+				if(ref.getPcs().contains(inst.getPC())){
+					return inst;
+				}
+			}
+		}
+		assert(false);
+		return null;
 	}
 	
 	private List<FunctionContainer> getBaseContianers(Reference ref, CallGraph callGraph){

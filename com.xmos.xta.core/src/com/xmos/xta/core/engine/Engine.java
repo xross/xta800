@@ -1520,8 +1520,6 @@ public class Engine implements Notifier, Aborter {
 			newInstructionDecoder.add(nodeNumber, coreNumber, id);
 			//Control Flow Stage
 
-			
-
 			FunctionConstructor fc = new FunctionConstructor(id, this, sections, nodeNumber, coreNumber, src, mnenonics);
 
 			try {
@@ -1533,7 +1531,6 @@ public class Engine implements Notifier, Aborter {
 
 
 			Set<InstructionNode> functionStartNodes = fc.getFunctionStarts();
-			//push this into function constructor
 			
 			Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
 
@@ -1559,12 +1556,6 @@ public class Engine implements Notifier, Aborter {
 
 			linkFunctions(functionContainers);
 
-			for(FunctionContainer f : functionContainers){
-				//f.dumpGraph();
-			}
-			
-			
-			
 			CallGraph cg = new CallGraph(functionContainers);
 			newCallGraph.add(nodeNumber, coreNumber, cg);
 			
@@ -1624,6 +1615,8 @@ public class Engine implements Notifier, Aborter {
 			return false;
 
 		} catch (final java.lang.StackOverflowError e) {
+			e.printStackTrace();
+			
 			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
 			return false;
 

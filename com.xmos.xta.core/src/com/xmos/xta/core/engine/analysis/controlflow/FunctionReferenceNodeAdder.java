@@ -141,6 +141,7 @@ public class FunctionReferenceNodeAdder {
 	}
 
 	private Node getInstruction(Node next, Map<Node, Node> seen, Set<Node> functionContents) {
+		assert(next instanceof InstructionNode);
 		if(seen.containsKey(next)){
 			return seen.get(next);
 		} else {
