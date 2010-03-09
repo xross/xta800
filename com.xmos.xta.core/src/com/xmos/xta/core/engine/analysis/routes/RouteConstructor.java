@@ -166,6 +166,45 @@ public class RouteConstructor {
 		return prm.matchReference(callGraph, reference);
 	}
 
+	class GraphState{
+		private boolean m_isStartInstruction;
+		private Node m_parent;
+		private Stack<FunctionReferenceNode> m_currentStack;
+		private Node m_node;
+		private RouteMode m_routeMode;
+		
+		public GraphState(boolean isStartInstruction, Node parent,
+				Stack<FunctionReferenceNode> currentStack, Node node,
+				RouteMode mode) {
+			super();
+			m_isStartInstruction = isStartInstruction;
+			m_parent = parent;
+			m_currentStack = currentStack;
+			m_node = node;
+			m_routeMode = mode;
+		}
+
+		public boolean isIsStartInstruction() {
+			return m_isStartInstruction;
+		}
+
+		public Node getParent() {
+			return m_parent;
+		}
+
+		public Stack<FunctionReferenceNode> getCurrentStack() {
+			return m_currentStack;
+		}
+
+		public Node getNode() {
+			return m_node;
+		}
+
+		public RouteMode getRouteMode() {
+			return m_routeMode;
+		}
+	}
+	
 	private FunctionNode makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
 			List<StackNode> endStackNodes, boolean start) throws AbortedException{
 		
@@ -184,6 +223,13 @@ public class RouteConstructor {
 		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
 
 		Set<Node> loopFormingEndNodes = new TreeSet<Node>();
+		
+		//GraphState gs = new GraphState(start, null, currentStack, startInst, RouteMode.FUNCTION);
+		
+		//GraphState nextGs = findReachableGraph(gs, workingSet, exclusionStackNodes, currentExclusionsFound, 
+		//		endStackNodes, nodeToWorkingSet, loopFormingEndNodes);
+		
+		
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound, RouteMode.FUNCTION,
 				endStackNodes, nodeToWorkingSet, loopFormingEndNodes, start);
@@ -222,7 +268,6 @@ public class RouteConstructor {
 		dumpGraph(workingSet);
 		removeExclusionBranches(workingSet, currentExclusionsFound, loopFormingEndNodes);
 
-
 		if(workingSet.isEmpty()){
 			return null;
 		}
@@ -242,9 +287,6 @@ public class RouteConstructor {
 			Map<NodeDescriptor, Node> nodeToWorkingSet, Set<Node> loopFormingEndNodes,
 			boolean firstInstruction)
 	throws AbortedException {
-
-		//System.out.println(nodeToWorkingSet.size() + " "+ workingSet.size() + " "+nodeToWorkingSet.values().containsAll(workingSet));
-		
 		
 		Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
 	/*
@@ -264,7 +306,6 @@ public class RouteConstructor {
 		}
 		
 		if(node instanceof FunctionReferenceNode){
-			
 			FunctionReferenceNode frn = ((FunctionReferenceNode)node);
 			
 			boolean endPointsWithin = false; 
@@ -320,13 +361,12 @@ public class RouteConstructor {
 		
 		if(!node.getNextNodes().isEmpty()){
 			for(Node next : node.getNextNodes()){
-				if(containsNode(next, currentStack, nodeToWorkingSet) == null){
-					System.out.println(next);
+				Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
+				if(nextWorkingSetNode == null){
 					findReachableGraph(currentNode, currentStack, next, workingSet,
 							exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
 							nodeToWorkingSet, loopFormingEndNodes, false);
 				} else {
-					Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
 					if(!stackNodesContainNode(endStackNodes, currentStack, next)){
 						CommonMethods.connect(nextWorkingSetNode, currentNode);
 					} else {
@@ -337,12 +377,19 @@ public class RouteConstructor {
 		} else {
 			FunctionReferenceNode callingFnRef = currentStack.peek();
 			for(Node followingFunction : callingFnRef.getNextNodes()){
+				
 				Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
 				newStack.addAll(currentStack);
 				newStack.pop();
 				findReachableGraph(currentNode, newStack, followingFunction, workingSet,
 						exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
 						nodeToWorkingSet, loopFormingEndNodes, false);
+				
+				//currentStack.pop();
+				//findReachableGraph(currentNode, currentStack, followingFunction, workingSet,
+				//		exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
+				//		nodeToWorkingSet, loopFormingEndNodes, false);
+				//currentStack.push(callingFnRef);
 			}
 		}
 	}
