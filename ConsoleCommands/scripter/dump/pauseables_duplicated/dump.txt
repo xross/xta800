@@ -1,4 +1,4 @@
-load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/pauseables_duplicated/csim__xs1b__default/test.xe"
+load "C:\peter\git\software\verif_tests_sw\Tools\xta\ConsoleCommands\scripter\dump\pauseables_duplicated\csim__xs1b__default\test.xe"
 
 #
 # Route: main

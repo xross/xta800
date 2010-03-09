@@ -1,17 +1,34 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use File::Copy;
 
 my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
-if (!$noBuild) {
-    system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/loops_duplicated.log 2>&1");
-}
+open(LOG, ">$genDir/loops_duplicated.log");
+copy("test.xc", "$genDir/test.xc") or print(LOG "Failed to copy source\n");
+copy("test.xc", "test.xc.bak.expect") or print(LOG "Failed to copy expect\n");
+close(LOG);
 
-system("@ARGV load $genDir/test.xe " .
-       "source cmds.txt " .
-       "-exit > $genDir/loops_duplicated.txt 2>&1");
+chdir("$genDir");
 
+system("xcc -target=$target -march=$arch -g test.xc -o test.xe >> loops_duplicated.log 2>&1");
+
+system("@ARGV load test.xe " .
+       "source ../cmds.txt " .
+       "echo ONE " .
+       "scripter listrefs " .
+       "-exit > loops_duplicated.txt 2>&1");
+
+system("xcc -target=$target -march=$arch -g test.xc -o test.xe >> loops_duplicated.log 2>&1");
+
+system("@ARGV source dump.txt " .
+       "echo TWO " .
+       "scripter listrefs " .
+       "scripter dump " .
+       "-exit >> loops_duplicated.txt 2>&1");
+
+chdir("..");
