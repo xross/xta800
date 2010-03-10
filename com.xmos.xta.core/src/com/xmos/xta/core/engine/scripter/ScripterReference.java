@@ -124,7 +124,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	}
 
 	public void sourceLineInserted(SourceFile sourceFile, long lineNumber, SourceMapper sourceMapper) {
-		String sourceFileName = sourceFile.getFileName();
+		String sourceFileName = sourceFile.getFullFileName();
 		m_baseRef.sourceLineInserted(sourceFileName, lineNumber, sourceMapper);
 		if (m_mapsTo != null) {
 			m_mapsTo.getBase().sourceLineInserted(sourceFileName, lineNumber, sourceMapper);

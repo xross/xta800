@@ -302,7 +302,10 @@ public class Scripter {
     		break;
 
     	case PATH:
-    		script.append(String.format("# Route: %s => %s\n", routeContainer.getFromName(), routeContainer.getToName()));
+        	RouteCoreContainer routeCoreContainer = routeContainer.getRouteCoreContainers().iterator().next();
+    		script.append(String.format("# Route: %s => %s\n",
+		    		getReferenceString(routeCoreContainer.getFromReference()),
+		    		getReferenceString(routeCoreContainer.getToReference())));
     		break;
     	}
     	script.append("#\n");
@@ -722,7 +725,7 @@ public class Scripter {
 			break;
 		case LABEL:
 		case SRCLABEL:
-			type = "call";
+			type = "label";
 			break;
 		default:
 			assert(false);
