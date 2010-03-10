@@ -15,7 +15,7 @@ Route\(3\) function: testAorB
 
 Fail, Timing Unspecified
 =======================
-- 0x[0-9a-z]+: n0c0:test.xc:3
+n0c0:test.xc:3: 0x[0-9a-z]+
 =======================
 xta: cmds.txt:22: warning: no valid paths of execution
 xta: cmds.txt:24: warning: no valid paths of execution
@@ -27,7 +27,7 @@ Route\(1\) function: testAorB
 
 Fail, Timing Unspecified
 =======================
-- 0x[0-9a-z]+: n0c0:test.xc:7
+n0c0:test.xc:7: 0x[0-9a-z]+
 =======================
 xta: cmds.txt:37: warning: no valid paths of execution
 xta: cmds.txt:38: warning: no valid paths of execution
@@ -39,8 +39,8 @@ Route\(1\) function: testAorB
 
 Fail, Timing Unspecified
 =======================
-- 0x[0-9a-z]+: n0c0:test.xc:3
-- 0x[0-9a-z]+: n0c0:test.xc:7
+n0c0:test.xc:3: 0x[0-9a-z]+
+n0c0:test.xc:7: 0x[0-9a-z]+
 =======================
 xta: cmds.txt:51: warning: no valid paths of execution
 xta: cmds.txt:52: warning: no valid paths of execution
