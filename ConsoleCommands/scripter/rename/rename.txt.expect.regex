@@ -51,7 +51,7 @@ analyse path x x
 analyse path test.xc:21 test.xc:22
 
 #
-# Route: .+test.xc:21 => .+test.xc:22
+# Route: test.xc:21 => test.xc:22
 #
 # Warning: 'test.xc:21' is a non-portable reference.
 # Warning: 'test.xc:22' is a non-portable reference.

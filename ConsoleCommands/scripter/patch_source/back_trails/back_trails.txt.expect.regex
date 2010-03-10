@@ -13,7 +13,7 @@ true       true       .+/bar.xc:11 ->    label_5
 load ".+test.xe"
 
 #
-# Route: bar.xc:7,foo.xc:15 => .+/bar.xc:9,.+/foo.xc:15
+# Route: startCall,x => stopCall,x
 #
 add exclusion label_4,label_5
 analyse path startCall,x stopCall,x

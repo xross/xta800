@@ -23,7 +23,7 @@ int bar(){
         x = foo();
         x = foo();
     }
-    #pragma xta call "label_2"
+    #pragma xta label "label_2"
     return x;
 }
 

@@ -7,7 +7,7 @@ true       true       .+/test.xc:25 -> out_of_bounds
 load ".+test.xe"
 
 #
-# Route: test.xc:13 => .+/test.xc:13
+# Route: x => x
 #
 add exclusion out_of_bounds
 analyse path x x

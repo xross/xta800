@@ -10,6 +10,6 @@ int bar(){
         #pragma xta call "stopCall"
         x = foo();
     }
-    #pragma xta call "label_5"
+    #pragma xta label "label_5"
     return x;
 }

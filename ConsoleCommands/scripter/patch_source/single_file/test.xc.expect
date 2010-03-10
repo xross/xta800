@@ -23,7 +23,7 @@ int bar(){
         x = foo();
         x = foo();
     }
-    #pragma xta call "out_of_bounds"
+    #pragma xta label "out_of_bounds"
     return x;
 }
 

@@ -11,18 +11,18 @@ true       true       .+/bar.xc:9 ->       stop
 load ".+test.xe"
 
 #
-# Route: foo.xc:15 => .+/foo.xc:15
+# Route: x => x
 #
 add exclusion out_of_bounds
 analyse path x x
 
 #
-# Route: .+/bar.xc:6 => .+/bar.xc:9
+# Route: start => stop
 #
 analyse path start stop
 
 #
-# Route: bar.xc:6 => bar.xc:6
+# Route: start => start
 #
 analyse path start start
 
