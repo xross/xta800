@@ -17,8 +17,3 @@ set loop - ~1~3~7~ 40
 set looppath - ~1~3~7~1~1~0~ 20
 
 scripter dump > dump.txt
-source dump.txt
-scripter dump
-
-exit
-

@@ -1,0 +1,20 @@
+Modifiable Enabled    Reference  ->     MapsTo
+true       true       bar.xc:7   ->    label_0
+true       true       foo.xc:15  ->    label_1
+true       true       .+/bar.xc:9 ->    label_2
+true       true       foo.xc:21  ->    label_4
+true       true       .+/bar.xc:11 ->    label_5
+Modifiable Enabled    Reference  ->     MapsTo
+true       true       bar.xc:7   ->  startCall
+true       true       foo.xc:15  ->          x
+true       true       .+/bar.xc:9 ->   stopCall
+true       true       foo.xc:21  ->    label_4
+true       true       .+/bar.xc:11 ->    label_5
+load ".+test.xe"
+
+#
+# Route: bar.xc:7,foo.xc:15 => .+/bar.xc:9,.+/foo.xc:15
+#
+add exclusion label_4,label_5
+analyse path startCall,x stopCall,x
+
