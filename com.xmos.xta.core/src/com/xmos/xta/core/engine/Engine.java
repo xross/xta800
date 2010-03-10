@@ -306,7 +306,10 @@ public class Engine implements Notifier, Aborter {
 				analyseRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
 				routeFound = true;
 			}		
-		}
+		}		
+		if (routeContainer.getNumExistingRoutes() > 0)   			
+			m_routeContainers.add(routeContainer);
+		
 	    if (!routeFound) {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", functionName));
 		    return false;
@@ -340,6 +343,8 @@ public class Engine implements Notifier, Aborter {
 				routeFound = true;
     		}			
 		}
+		if (routeContainer.getNumExistingRoutes() > 0)   			
+			m_routeContainers.add(routeContainer);
 
 	    if (!routeFound) {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));
@@ -1691,7 +1696,6 @@ public class Engine implements Notifier, Aborter {
 			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {				
 				routeCoreContainer.add(routeConstructor.getRoutes());
 				routeContainer.addRouteCoreContainer(routeCoreContainer);				
-    			m_routeContainers.add(routeContainer);
 
 				setSelectedRoute(src, m_routes.get(currentSize));
 			    notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
