@@ -1,6 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class LoopInfo implements DefineInfo {
 	private Reference m_reference;
@@ -30,6 +31,10 @@ public class LoopInfo implements DefineInfo {
     public String getValue() {
     	return String.format("%d", m_iterations);
     }
+
+	public NodeCorePair getNodeCorePair() {
+		return m_reference.getNodeCore();
+	}
 
 	public boolean equals(Object o) {
 		boolean ret = false;
