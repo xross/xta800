@@ -21,7 +21,7 @@ public class InstructionTimeInfo implements DefineInfo {
 	}
 
 	public String toString() {
-		return String.format("%s: %s", m_reference.getRef(), m_timeUnit.getDescription(false));
+		return String.format("%s: %s", m_reference, m_timeUnit.getDescription(false));
 	}
 
     public String getDescription() {

@@ -56,8 +56,8 @@ public class Exclusions extends Command {
 
 	    if (exclusions.size() > 0) {
 	    	for (Reference exclusion : exclusions) {
-	    	    console.display(String.format("- %s: %s\n",
-	    	    		exclusion.getPcString(), exclusion)); 
+	    	    console.display(String.format("%s: %s\n",
+	    	    		exclusion, exclusion.getPcString())); 
 	    	}
 	    } else {
 	    	console.display("none\n");
