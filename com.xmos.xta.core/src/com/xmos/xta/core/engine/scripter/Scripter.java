@@ -173,7 +173,7 @@ public class Scripter {
 
 	public boolean promptUser() {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
-			if (scripterReference.isModifiable() && scripterReference.isEnabled()) {
+			if (scripterReference.isModifiable()) {
 				return true;
 			}
 		}
