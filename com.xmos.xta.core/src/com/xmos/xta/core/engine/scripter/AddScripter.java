@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.defines.ScriptUpdater;
@@ -22,10 +21,10 @@ public class AddScripter {
 		m_scripter = scripter;
 	}
 	
-    void addDefines(RouteContainer routeContainer, Defines currentDefines, final StringBuffer script) {    	
-    	final Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
-    	
-		routeContainer.getDefines().updateScript(currentDefines, new ScriptUpdater() {
+    void addDefines(Defines defines, Defines currentDefines, 
+    		final StringBuffer script, final Collection<NodeCorePair> activeCores) {
+    	    	
+    	defines.updateScript(currentDefines, new ScriptUpdater() {
 			public void update(
 					Collection<? extends DefineInfo> newList,
 					Collection<? extends DefineInfo> oldList, 
@@ -37,13 +36,11 @@ public class AddScripter {
 				List<DefineInfo> processed = new ArrayList<DefineInfo>();
 				for (DefineInfo info : newList) {
 					if (!processed.contains(info)) {
-						if (defineSetForAllActiveCores(info, newList, activeCores, processed)) {							
+						if (defineSetForAllActiveCores(newList, info, activeCores, processed)) {							
 							outputDefineInfo(script, command, info);
 
 						} else {
-							NodeCorePair activeCore = info.getNodeCore();							
-							script.append("remove core *\n");
-							script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							
+							outputNodeCore(script, info.getNodeCore());
 							outputDefineInfo(script, command, info);
 						}						
 						processed.add(info);						
@@ -53,9 +50,8 @@ public class AddScripter {
 		});
     }
     
-    void addExclusions(RouteContainer routeContainer, Collection<Reference> currentExclusions, StringBuffer script) {
-    	Collection<Reference> exclusions = routeContainer.getExclusions();    	    	
-    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
+    void addExclusions(Collection<Reference> exclusions, Collection<Reference> currentExclusions, 
+    		StringBuffer script, Collection<NodeCorePair> activeCores) {
 
     	if (!currentExclusions.equals(exclusions)) {
     		if (!currentExclusions.isEmpty())
@@ -68,9 +64,7 @@ public class AddScripter {
 	    		    	outputExclusion(script, exclusion);
 
 	        		} else {
-						NodeCorePair activeCore = exclusion.getNodeCore();							
-						script.append("remove core *\n");
-						script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							
+						outputNodeCore(script, exclusion.getNodeCore());
 	    		    	outputExclusion(script, exclusion);
 	        		}
 	    		    processed.add(exclusion);	
@@ -79,9 +73,8 @@ public class AddScripter {
     	}
     }
     
-    void addBranches(RouteContainer routeContainer, Map<Reference, List<Reference>> currentBranches, StringBuffer script) {
-    	Map<Reference, List<Reference>> branches = routeContainer.getBranches();    	    	
-    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
+    void addBranches(Map<Reference, List<Reference>> branches, Map<Reference, List<Reference>> currentBranches, 
+    		StringBuffer script, Collection<NodeCorePair> activeCores) {
   
     	if (!currentBranches.equals(branches)) {
 		    if (!currentBranches.isEmpty())
@@ -97,9 +90,7 @@ public class AddScripter {
 	    		    	outputBranch(script, branch);
 
 	        		} else {
-						NodeCorePair activeCore = branch.getKey().getNodeCore();							
-						script.append("remove core *\n");
-						script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							
+						outputNodeCore(script, branch.getKey().getNodeCore());
 	    		    	outputBranch(script, branch);
 	        		}
 	    		    processed.add(branch);	
@@ -108,16 +99,17 @@ public class AddScripter {
     	}    	
     }
     	
-    private boolean defineSetForAllActiveCores(DefineInfo thisInfo,
-    		Collection<? extends DefineInfo> defines, 
-    		Collection<NodeCorePair> activeCores,
+    private boolean defineSetForAllActiveCores(Collection<? extends DefineInfo> defines, 
+    		DefineInfo thisInfo, Collection<NodeCorePair> activeCores,
     		List<DefineInfo> processed) {
     	
 		Map<NodeCorePair, DefineInfo> matched = new HashMap<NodeCorePair, DefineInfo>();
 		for (NodeCorePair activeCore : activeCores)
 			matched.put(activeCore, null);
 
-		for (DefineInfo info : defines) {
+    	Iterator<? extends DefineInfo> iter = defines.iterator();
+   		while (iter.hasNext()) {
+   			DefineInfo info = iter.next();
 			if (defineInfoMatch(thisInfo, info)) {
 				matched.put(info.getNodeCore(), info);
 			}
@@ -138,8 +130,10 @@ public class AddScripter {
 		for (NodeCorePair activeCore : activeCores)
 			matched.put(activeCore, null);
 
-		for (Reference exclusion : exclusions) {
-			if (exclusionMatch(thisExclusion, exclusion)) {
+    	Iterator<Reference> iter = exclusions.iterator();
+   		while (iter.hasNext()) {
+   			Reference exclusion = iter.next();
+   			if (exclusionMatch(thisExclusion, exclusion)) {
 				matched.put(exclusion.getNodeCore(), exclusion);
 			}
 		}    	
@@ -154,7 +148,7 @@ public class AddScripter {
     private boolean branchSetOnAllActiveCores(Map<Reference, List<Reference>> branches, 
     		Entry<Reference, List<Reference>> thisBranch, Collection<NodeCorePair> activeCores, 
     		List<Entry<Reference, List<Reference>>> processed) {
-
+    	
 		Map<NodeCorePair, Entry<Reference, List<Reference>>> matched = new HashMap<NodeCorePair, Entry<Reference, List<Reference>>>();
 		for (NodeCorePair activeCore : activeCores)
 			matched.put(activeCore, null);
@@ -162,7 +156,6 @@ public class AddScripter {
     	Iterator<Entry<Reference, List<Reference>>> iter = branches.entrySet().iterator();
    		while (iter.hasNext()) {
    			Entry<Reference, List<Reference>> branch = iter.next();
-   	
    			if (branchMatch(thisBranch, branch)) {
 				matched.put(branch.getKey().getNodeCore(), branch); 				
      		}
@@ -211,7 +204,7 @@ public class AddScripter {
 	    }    	
     	return true;
     }    
-    
+        
     private void outputDefineInfo(StringBuffer script, String command, DefineInfo info) {
 		for (Reference reference : info.getReferences()) {
 			m_scripter.outputPortableWarnings(script, reference);
@@ -241,4 +234,9 @@ public class AddScripter {
 		}
     	script.append(String.format("\n"));    	
     }
+    
+    private void outputNodeCore(StringBuffer script, NodeCorePair activeCore) {
+		script.append("remove core *\n");
+		script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							    	
+    }    
 }

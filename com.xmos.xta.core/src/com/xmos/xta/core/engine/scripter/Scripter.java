@@ -360,19 +360,25 @@ public class Scripter {
     
     private void addBranches(RouteContainer routeContainer, StringBuffer script) {
     	AddScripter scripter = new AddScripter(this);
-    	scripter.addBranches(routeContainer, m_currentBranches, script);		
+    	scripter.addBranches(routeContainer.getBranches(), 
+    			m_currentBranches, script, routeContainer.getActiveCores());		
+    	
     	m_currentBranches = routeContainer.getBranches();    
     }
 
     private void addExclusions(RouteContainer routeContainer, StringBuffer script) {
     	AddScripter scripter = new AddScripter(this);
-    	scripter.addExclusions(routeContainer, m_currentExclusions, script);		
+    	scripter.addExclusions(routeContainer.getExclusions(), 
+    			m_currentExclusions, script, routeContainer.getActiveCores());
+    	
     	m_currentExclusions = routeContainer.getExclusions();
     }
 
 	private void addDefines(RouteContainer routeContainer, StringBuffer script) {		
     	AddScripter scripter = new AddScripter(this);
-    	scripter.addDefines(routeContainer, m_currentDefines, script);		
+    	scripter.addDefines(routeContainer.getDefines(), 
+    			m_currentDefines, script, routeContainer.getActiveCores());
+    	
 		m_currentDefines = routeContainer.getDefines();
 	}
 
