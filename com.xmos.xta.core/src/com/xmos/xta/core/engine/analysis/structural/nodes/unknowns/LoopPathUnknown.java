@@ -11,6 +11,8 @@ public class LoopPathUnknown extends Unknown {
 	}
 
 	public String getDescription() {
+		Node condNode = getNode().getEnclosingCondNode();
+		
 		switch(getState()) {
 		case UNKNOWN:
 			return String.format("Loop path iterations (node id: " +
@@ -18,7 +20,8 @@ public class LoopPathUnknown extends Unknown {
 
 		case KNOWN:
 			return String.format("Loop path iterations (node id: " +
-					getNode().getId() + ") are known");
+					getNode().getId() + ") are set to " + 
+					condNode.getAttributes().getSetLoopPathIterations(getNode()));
 		}
 		assert(false);
 		return "";

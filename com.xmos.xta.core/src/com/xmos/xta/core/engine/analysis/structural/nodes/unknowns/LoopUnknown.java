@@ -18,7 +18,8 @@ public class LoopUnknown extends Unknown {
 
 		case KNOWN:
 			return String.format("Loop iterations (node id: " +
-					getNode().getId() + ") are known");
+					getNode().getId() + ") are set to " + 
+					getNode().getAttributes().getLoopIterations());
 		}
 		assert(false);
 		return "";
