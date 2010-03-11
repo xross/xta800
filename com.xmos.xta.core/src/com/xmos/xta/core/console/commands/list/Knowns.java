@@ -60,8 +60,7 @@ public class Knowns extends Command {
 		    Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.KNOWN);
 		    if (unknowns.size() > 0) {
 				for (Unknown unknown : unknowns) {
-				    console.display(String.format("%s: %s, pc: 0x%x, backtrace: %s",
-				    		unknown.getLevel().toString(),
+				    console.display(String.format("%s, pc: 0x%x, backtrace: %s",
 				    		unknown.getDescription(),
 				    		unknown.getNode().getStartPc(),
 				    		unknown.getNode().getBackTrace("")));

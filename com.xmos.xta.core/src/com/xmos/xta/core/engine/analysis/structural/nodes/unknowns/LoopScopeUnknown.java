@@ -18,7 +18,8 @@ public class LoopScopeUnknown extends Unknown {
 
 		case KNOWN:
 			return String.format("Loop scope (node id: " +
-					getNode().getId() + ") has been set");
+					getNode().getId() + ") has been set to '" + 
+					(getNode().getAttributes().getIsAbsolute() ? "a" : "r") + "'");
 		}
 		assert(false);
 		return "";
