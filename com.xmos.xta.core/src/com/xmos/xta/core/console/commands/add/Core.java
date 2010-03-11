@@ -59,6 +59,11 @@ public class Core extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
+    	if ((m_nodeId.length() == 0) && m_coreId.equals("*")) {
+    		engine.addActiveCores();
+    		return;
+    	}
+		
 		NodeCorePair ncPair = getNodeCore(engine, m_nodeId, m_coreId);
 		if (ncPair != null) {
 	        engine.addActiveCore(getSrc(), ncPair);
