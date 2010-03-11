@@ -1,8 +1,8 @@
 Modifiable Enabled    Reference  ->     MapsTo
-true       true       foo.xc:15  ->    label_0
-true       true       .+/bar.xc:11 ->    label_1
-true       true       .+/bar.xc:6 ->    label_2
-true       true       .+/bar.xc:9 ->    label_3
+true       true       foo.xc:15  ->    label_\d+
+true       true       .+/bar.xc:11 ->    label_\d+
+true       true       .+/bar.xc:6 ->    label_\d+
+true       true       .+/bar.xc:9 ->    label_\d+
 Modifiable Enabled    Reference  ->     MapsTo
 true       true       foo.xc:15  ->          x
 true       true       .+/bar.xc:11 -> out_of_bounds
@@ -11,18 +11,18 @@ true       true       .+/bar.xc:9 ->       stop
 load ".+test.xe"
 
 #
-# Route: foo.xc:15 => .+/foo.xc:15
+# Route: x => x
 #
 add exclusion out_of_bounds
 analyse path x x
 
 #
-# Route: .+/bar.xc:6 => .+/bar.xc:9
+# Route: start => stop
 #
 analyse path start stop
 
 #
-# Route: bar.xc:6 => bar.xc:6
+# Route: start => start
 #
 analyse path start start
 

@@ -1,6 +1,6 @@
-f: 2.0 us
-start to stop: 2.0 us
-inst: 2.0 us
-l: 20
-lp: 23
-l: true
+n0c0:f: 2.0 us
+n0c0:start to n0c0:stop: 2.0 us
+n0c0:inst: 2.0 us
+n0c0:l: 20
+n0c0:lp: 23
+n0c0:l: true

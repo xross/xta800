@@ -10,6 +10,6 @@ int bar(){
         #pragma xta call "stop"
         x = foo();
     }
-    #pragma xta call "out_of_bounds"
+    #pragma xta label "out_of_bounds"
     return x;
 }

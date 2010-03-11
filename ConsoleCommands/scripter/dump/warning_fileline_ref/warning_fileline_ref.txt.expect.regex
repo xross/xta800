@@ -4,8 +4,8 @@ load ".*test\.xe"
 # Route: main
 #
 analyse function main
-# Warning: 'ENDPOINT:test.xc:12' is a non-portable reference.
-set loop - ENDPOINT:test.xc:12 10
-# Warning: 'CALL:test.xc:22' is a non-portable reference.
-set loop - CALL:test.xc:22 10
+# Warning: 'test.xc:12' is a non-portable reference.
+set loop - test.xc:12 10
+# Warning: 'test.xc:22' is a non-portable reference.
+set loop - test.xc:22 10
 

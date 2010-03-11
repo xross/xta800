@@ -1,4 +1,28 @@
-load ".*test\.xe"
+ONE
+Modifiable Enabled    Reference  ->     MapsTo
+false      true       main       ->       main
+false      false      f1         ->         f1
+false      true       loop       ->       loop
+false      true       loop_path  ->  loop_path
+false      false      CALL:0x[0-9a-fA-F]{5} ->    label_0
+false      false      CALL:0x[0-9a-fA-F]{5} ->         f1
+false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+false      false      f2         ->         f2
+false      false      CALL:0x[0-9a-fA-F]{5} ->         f2
+TWO
+Modifiable Enabled    Reference  ->     MapsTo
+false      true       main       ->       main
+false      true       f1         ->         f1
+false      true       loop       ->       loop
+false      true       loop_path  ->  loop_path
+false      true       label_0    ->    label_0
+false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+false      true       f2         ->         f2
+load ".+test.xe"
 
 #
 # Route: main
@@ -7,19 +31,19 @@ analyse function main
 set loop - f1,loop 10
 set loop - f1,loop_path 10
 set looppath - f1,loop_path 5
-# Warning: 'CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 20
-# Warning: 'CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 20
-# Warning: 'CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5}' is a non-portable reference.
-set looppath - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 10
+# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
+set loop - label_0,f1,0x[0-9a-fA-F]{5} 20
+# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
+set loop - label_0,f1,0x[0-9a-fA-F]{5} 20
+# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
+set looppath - label_0,f1,0x[0-9a-fA-F]{5} 10
 set loop - f2,loop 30
 set loop - f2,loop_path 30
 set looppath - f2,loop_path 15
-# Warning: 'CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 40
-# Warning: 'CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 40
-# Warning: 'CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5}' is a non-portable reference.
-set looppath - CALL:0x[0-9a-fA-F]{5},CALL:0x[0-9a-fA-F]{5},0x[0-9a-fA-F]{5} 20
+# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
+set loop - label_0,f2,0x[0-9a-fA-F]{5} 40
+# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
+set loop - label_0,f2,0x[0-9a-fA-F]{5} 40
+# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
+set looppath - label_0,f2,0x[0-9a-fA-F]{5} 20
 

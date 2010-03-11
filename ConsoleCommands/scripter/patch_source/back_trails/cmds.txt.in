@@ -1,0 +1,12 @@
+
+add exclusion foo.xc:21,BAR:11
+analyse path bar.xc:7,foo.xc:15 BAR:9,FOO:15
+
+scripter listrefs
+scripter rename BAR:7 startCall
+scripter rename bar.xc:9 stopCall
+scripter rename foo.xc:15 x
+scripter listrefs
+
+scripter dump
+exit
