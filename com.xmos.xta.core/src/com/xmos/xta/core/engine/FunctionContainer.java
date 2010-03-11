@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -13,29 +14,40 @@ public class FunctionContainer {
 
 	private String m_functionName;
 	private InstructionNode m_startInstruction;
-	private Collection<Node> m_functionContents;
 	
-	public FunctionContainer(InstructionNode startOfFunction, Collection<Node> functionContents) {
+	private Set<InstructionNode> m_functionInstructions;
+	private Set<FunctionReferenceNode> m_functionRefNodes;
+	
+	private Node m_cachedFunction;
+	
+	public FunctionContainer(InstructionNode startOfFunction, 
+			Set<InstructionNode> functionInstructions,
+			Set<FunctionReferenceNode> functionRefNodes) {
 		m_startInstruction = startOfFunction;
-		m_functionContents = functionContents;
+		m_functionRefNodes = functionRefNodes;
+		m_functionInstructions = functionInstructions;
+		m_cachedFunction = null;
+		m_functionName = "unnamed_function";
 	}
+
 
 	public InstructionNode getStartInstruction() {
 		return m_startInstruction;
 	}
 	
 	public Collection<Node> getFunctionContents() {
-		return m_functionContents;
+		Collection<Node> contents = new TreeSet<Node>();
+		contents.addAll(m_functionInstructions);
+		contents.addAll(m_functionRefNodes);
+		return contents;
 	}
 	
 	public Set<FunctionReferenceNode> getFunctionReferenceNodes() {
-		Set<FunctionReferenceNode> fnRefs = new TreeSet<FunctionReferenceNode>();
-		for(Node node : m_functionContents){
-			if(node instanceof FunctionReferenceNode){
-				fnRefs.add((FunctionReferenceNode) node);
-			}
-		}
-		return fnRefs;
+		return m_functionRefNodes;
+	}
+	
+	public Set<InstructionNode> getFunctionInstructionNodes() {
+		return m_functionInstructions;
 	}
 	
 	public void setFunctionName(String functionName){
@@ -84,5 +96,25 @@ public class FunctionContainer {
 			todo.remove(currentNode);
 		}
 		System.out.println("}");
+	}
+
+
+	public InstructionNode getInstruction(long pc) {
+		for(InstructionNode inst : m_functionInstructions){
+			if(inst.getPC() == pc){
+				return inst;
+			}
+		}
+		assert(false);
+		return null;
+	}
+
+
+	public Node getCachedFunction(Engine engine) {
+		if(m_cachedFunction == null){
+			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
+			m_cachedFunction = sae.makeFnContainerIntoStructure(this, engine);
+		}
+		return m_cachedFunction;
 	}
 }

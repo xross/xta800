@@ -197,10 +197,9 @@ public class InfiniteLoopNode extends Node {
 		return fnRef;
 	}
 
-	public void buildListUp(List<Node> nodeList,
-			Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList, Node start) {
 		if(m_parent!= null){
-			m_parent.buildListUp(nodeList, stack, this);
+			m_parent.buildListUp(nodeList, this);
 		}
 		if(m_loops.contains(start)){
 			m_loopHeader.buildListDown(nodeList);

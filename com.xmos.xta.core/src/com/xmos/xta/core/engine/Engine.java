@@ -1615,7 +1615,7 @@ public class Engine implements Notifier, Aborter {
 			return false;
 
 		} catch (final java.lang.StackOverflowError e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			
 			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
 			return false;

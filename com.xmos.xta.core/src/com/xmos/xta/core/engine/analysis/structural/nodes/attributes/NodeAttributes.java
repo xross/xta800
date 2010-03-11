@@ -259,6 +259,7 @@ public class NodeAttributes {
 		return value;
 	}
 
+
 	public long getNumPaths() throws NumPathsOverflowException {
 		long value = 1;
 		for (Node child : getNode().iChildren()) {

@@ -62,7 +62,7 @@ public abstract class Node implements Comparable<Node> {
 
 	public abstract List<Node> iChildren();
 	public abstract Set<Node> structurGraphNext(Node childNode);
-	public abstract void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start);
+	public abstract void buildListUp(List<Node> nodeList, Node start);
 	public abstract void buildListDown(List<Node> nodeList);
 	
 	public Node() {

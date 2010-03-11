@@ -47,9 +47,6 @@ public class FunctionReferenceNodeAdder {
 
 
 	public void process(Set<InstructionNode> functionStartNodes) {
-		
-		
-		
 		for(InstructionNode startOfFunction : functionStartNodes){
 			Map<Node, Node> seen = new HashMap<Node, Node>();
 			
@@ -57,22 +54,22 @@ public class FunctionReferenceNodeAdder {
 			
 			toDo.add(startOfFunction);
 			
-			Set<Node> functionContents = new TreeSet<Node>();
-			InstructionNode copyStart = (InstructionNode) getInstruction(startOfFunction, seen, functionContents);
+			Set<InstructionNode> functionInstructions = new TreeSet<InstructionNode>();
+			Set<FunctionReferenceNode> functionRefNodes = new TreeSet<FunctionReferenceNode>();
+			InstructionNode copyStart = (InstructionNode) getInstruction(startOfFunction, seen, functionInstructions);
 			
 			while(!toDo.isEmpty()){
 				
 				InstructionNode inst = toDo.iterator().next();
 				
-				Node parent = getInstruction(inst, seen, functionContents);
+				Node parent = getInstruction(inst, seen, functionInstructions);
 				for(Node next : inst.getNextNodes()){
 					if(!seen.containsKey(next)){
 						toDo.add((InstructionNode)next);		
 					}
-					Node copyInst = getInstruction(next, seen, functionContents);
+					Node copyInst = getInstruction(next, seen, functionInstructions);
 					CommonMethods.connect(copyInst, parent);
 					seen.put(next, copyInst);
-					functionContents.add(copyInst);
 				}
 				
 				XtaInstruction xtaInst = inst.getXtaInstruction();
@@ -81,12 +78,12 @@ public class FunctionReferenceNodeAdder {
 					long returnPc = xtaInst.getPc() + xtaInst.getNumBytes();
 					InstructionNode originalBLReturn = m_instDecoder.getNode(returnPc);
 					boolean found = seen.containsKey(originalBLReturn);
-					InstructionNode branchLinkReturn = (InstructionNode) getInstruction(originalBLReturn, seen, functionContents);
+					InstructionNode branchLinkReturn = (InstructionNode) getInstruction(originalBLReturn, seen, functionInstructions);
 					//add a function reference node into the graph
 					if(m_mnenonics.isImplicitBranchAndLinkLocation(xtaInst)){
 						long targetPc = getBranchAndLinkTargetPC(inst);
 						InstructionNode target = m_instDecoder.getNode(targetPc);
-						FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionContents);
+						FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionRefNodes);
 						CommonMethods.connect(fr, parent);
 						if (branchLinkReturn != null) {	
 							CommonMethods.connect(branchLinkReturn, fr);
@@ -101,8 +98,8 @@ public class FunctionReferenceNodeAdder {
 							if (ref.matches(inst.getPC())) {
 								for (BranchInfo refTarget : m_branchMap.get(ref)) {
 									for (long targetPc : refTarget.getRef().getPcs()) {
-										InstructionNode target = (InstructionNode) getInstruction(m_instDecoder.getNode(targetPc), seen, functionContents);
-										FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionContents);
+										InstructionNode target = (InstructionNode) getInstruction(m_instDecoder.getNode(targetPc), seen, functionInstructions);
+										FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionRefNodes);
 										CommonMethods.connect(fr, parent);
 										if(target != null) {
 											foundATarget = true;
@@ -121,7 +118,7 @@ public class FunctionReferenceNodeAdder {
 							}
 						}
 						if(!foundATarget){
-							FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, null, functionContents);
+							FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, null, functionRefNodes);
 							if (branchLinkReturn != null) {	
 								CommonMethods.connect(fr, parent);
 								CommonMethods.connect(branchLinkReturn, fr);
@@ -135,19 +132,19 @@ public class FunctionReferenceNodeAdder {
 				
 				toDo.remove(inst);
 			}
-			FunctionContainer fc = new FunctionContainer(copyStart, functionContents);
+			FunctionContainer fc = new FunctionContainer(copyStart, functionInstructions, functionRefNodes);
 			m_functionContainer.add(fc);
 		}
 	}
 
-	private Node getInstruction(Node next, Map<Node, Node> seen, Set<Node> functionContents) {
+	private Node getInstruction(Node next, Map<Node, Node> seen, Set<InstructionNode> functionInstructions) {
 		assert(next instanceof InstructionNode);
 		if(seen.containsKey(next)){
 			return seen.get(next);
 		} else {
 			Node copy = next.copyStructure();
 			seen.put(next, copy);
-			functionContents.add(copy);
+			functionInstructions.add((InstructionNode) copy);
 			return copy;
 		}
 	}
@@ -158,7 +155,7 @@ public class FunctionReferenceNodeAdder {
 	}
 
 	private FunctionReferenceNode addFunctionReferenceNode(
-			InstructionNode inst, Node parent, InstructionNode target, Set<Node> functionContents) {
+			InstructionNode inst, Node parent, InstructionNode target, Set<FunctionReferenceNode> functionRefNodes) {
 		FunctionReferenceNode fr;
 		if(target!= null){
 			fr = new FunctionReferenceNode(inst, target);
@@ -168,7 +165,7 @@ public class FunctionReferenceNodeAdder {
 		}
 		assert(fr != null);
 		CommonMethods.connect(fr, parent);
-		functionContents.add(fr);
+		functionRefNodes.add(fr);
 		return fr;
 	}
 

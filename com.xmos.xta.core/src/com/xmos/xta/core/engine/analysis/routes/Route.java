@@ -9,7 +9,6 @@ import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
@@ -143,12 +142,15 @@ public class Route {
 	}
 
 	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
+		assert(false);
+		
+		//ReferenceMatcher referenceMatcher = new ReferenceMatcher();
 		Collection<Node> referencedNodes = new ArrayList<Node>();
-
+/*
 		for (Node function : referenceMatcher.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference)) {
 			referencedNodes.add(function);
 		}
+		*/
 		return referencedNodes;
 	}
 

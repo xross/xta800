@@ -71,7 +71,11 @@ public class FunctionReferenceNode extends Node {
 	}
 
 	public long getFunctionCallPc(){
-		return m_functionCallInstruction.getPC();
+		if(m_functionCallInstruction != null){
+			return m_functionCallInstruction.getPC();
+		} else {
+			return 0x0;
+		}
 	}
 
 	public String toString(){
@@ -167,13 +171,11 @@ public class FunctionReferenceNode extends Node {
 	}
 	
 	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-		assert(false);
-		return TraverseStatus.ABORT;
+		return TraverseStatus.CONTINUE;
 	}
 
 	public List<Node> iChildren() {
-		assert(false);
-		return null;
+		return new LinkedList<Node>();
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
@@ -191,10 +193,9 @@ public class FunctionReferenceNode extends Node {
 		return null;
 	}
 
-	public void buildListUp(List<Node> nodeList,
-			Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList, Node start) {
 		if(m_parent!= null){
-			m_parent.buildListUp(nodeList, stack, this);
+			m_parent.buildListUp(nodeList, this);
 		}
 		nodeList.add(this);
 
