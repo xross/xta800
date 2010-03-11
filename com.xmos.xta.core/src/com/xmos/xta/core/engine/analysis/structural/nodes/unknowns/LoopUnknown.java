@@ -25,11 +25,15 @@ public class LoopUnknown extends Unknown {
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() == Source.BINARY) {
+    	if (getSource() != Source.SET) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
     	return String.format("set loop %s %s %d\n",
 	    		routeIdStr, refStrs[0],
 	    		getNode().getAttributes().getLoopIterations());
 	}
+
+    public String getValueStr() {
+    	return String.format("%d", getNode().getAttributes().getLoopIterations());
+    }	
 }

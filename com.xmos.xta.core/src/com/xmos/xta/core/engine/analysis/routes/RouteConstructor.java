@@ -817,13 +817,13 @@ public class RouteConstructor {
 		for (Route route : m_routes) {
 			for (FunctionTimeInfo info : m_engine.getFunctionTimeDefines()) {
 				if (coreMatch(route, info.getFunction())) {
-    				defines.applyFunctionDefine(src, route, info, Source.BINARY);
+    				defines.applyFunctionDefine(src, route, info, Source.ADD);
 				}
 			}
 			for (PathTimeInfo info : m_engine.getPathTimeDefines()) {
 				if (coreMatch(route, info.getFrom()) && 
 					coreMatch(route, info.getTo())) {
-    				defines.applyPathDefine(m_engine, src, route, info, Source.BINARY);
+    				defines.applyPathDefine(m_engine, src, route, info, Source.ADD);
 				}
 			}
 		}
@@ -838,7 +838,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     				    route.getRouteUnknowns().setLoopIterations(src, m_engine,
-				    		info.getReference(), info.getIterations(), false, Source.BINARY);
+				    		info.getReference(), info.getIterations(), false, Source.ADD);
 					}
 				}				
 			} catch (Exception e) {}
@@ -854,7 +854,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     				    route.getRouteUnknowns().setLoopPathIterations(
-				    		info.getReference(), info.getIterations(), Source.BINARY);
+				    		info.getReference(), info.getIterations(), Source.ADD);
 					}
 				}
 			} catch (Exception e) {}
@@ -870,7 +870,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     				    route.getRouteUnknowns().setLoopScope(
-				    		info.getReference(), info.getAbsolute(), Source.BINARY);
+				    		info.getReference(), info.getAbsolute(), Source.ADD);
 					}
 				}
 			} catch (Exception e) {}
@@ -886,7 +886,7 @@ public class RouteConstructor {
 			    for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     			        route.getRouteUnknowns().setFixedTime(info.getReference(), 
-    			        		info.getTimeUnit(), UnknownFactory.Type.INSTRUCTION_TIME, Source.BINARY);
+    			        		info.getTimeUnit(), UnknownFactory.Type.INSTRUCTION_TIME, Source.ADD);
 					}
     			}				
 			} catch (Exception e) {}

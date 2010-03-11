@@ -25,7 +25,7 @@ public class LoopPathUnknown extends Unknown {
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() == Source.BINARY) {
+    	if (getSource() != Source.SET) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
 		Node condNode = getNode().getEnclosingCondNode();
@@ -33,4 +33,9 @@ public class LoopPathUnknown extends Unknown {
     			routeIdStr, refStrs[0],
     			condNode.getAttributes().getSetLoopPathIterations(getNode()));
 	}
+	
+    public String getValueStr() {
+		Node condNode = getNode().getEnclosingCondNode();
+    	return String.format("%d", condNode.getAttributes().getSetLoopPathIterations(getNode()));
+    }		
 }

@@ -27,11 +27,15 @@ public class FunctionTimeUnknown extends Unknown {
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() == Source.BINARY) {
+    	if (getSource() != Source.SET) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
     	return String.format("set functiontime %s %s %s\n",
     			routeIdStr, refStrs[0],
     			getNode().getAttributes().getFixedTimeString());
 	}
+	
+    public String getValueStr() {
+    	return getNode().getAttributes().getFixedTimeString();
+    }
 }

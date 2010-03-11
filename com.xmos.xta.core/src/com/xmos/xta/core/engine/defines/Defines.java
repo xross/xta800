@@ -33,24 +33,24 @@ public class Defines {
     	m_loopScopes       = new ArrayList<LoopScopeInfo>(defines.m_loopScopes);
     }
 
-	public void updateScript(Defines defines, StringBuffer script) {
+	public void updateScript(Defines defines, ScriptUpdater updater) {
 		if (!m_functionTimes.equals(defines.getFunctionTimes())) {
-			updateScript(script, m_functionTimes, defines.getFunctionTimes(), "functiontime", "*");
+			updater.update(m_functionTimes, defines.getFunctionTimes(), "functiontime", "*");
 		}
 		if (!m_pathTimes.equals(defines.getPathTimes())) {
-			updateScript(script, m_pathTimes, defines.getPathTimes(), "pathtime", "* *");
+			updater.update(m_pathTimes, defines.getPathTimes(), "pathtime", "* *");
 		}
 		if (!m_instructionTimes.equals(defines.getInstructionTimes())) {
-			updateScript(script, m_instructionTimes, defines.getInstructionTimes(), "instructiontime", "*");
+			updater.update(m_instructionTimes, defines.getInstructionTimes(), "instructiontime", "*");
 		}
 		if (!m_loops.equals(defines.getLoops())) {
-			updateScript(script, m_loops, defines.getLoops(), "loop", "*");
+			updater.update(m_loops, defines.getLoops(), "loop", "*");
 		}
 		if (!m_loopPaths.equals(defines.getLoopPaths())) {
-			updateScript(script, m_loopPaths, defines.getLoopPaths(), "looppath", "*");
+			updater.update(m_loopPaths, defines.getLoopPaths(), "looppath", "*");
 		}
 		if (!m_loopScopes.equals(defines.getLoopScopes())) {
-			updateScript(script, m_loopScopes, defines.getLoopScopes(), "loopscope", "*");
+			updater.update(m_loopScopes, defines.getLoopScopes(), "loopscope", "*");
 		}
 	}
 
@@ -181,19 +181,6 @@ public class Defines {
 				iter.remove();
 			}
 		}		
-	}
-
-	private void updateScript(StringBuffer script,
-			Collection<? extends DefineInfo> newList,
-			Collection<? extends DefineInfo> oldList,
-			String command, String removeStr) {
-
-		if (!oldList.isEmpty()) {
-		    script.append("remove " + command + " " + removeStr + "\n");
-		}
-		for (DefineInfo info : newList) {
-			script.append("add " + command + " " + info.getDescription() + " " + info.getValue() + "\n");
-		}
 	}
 }
 

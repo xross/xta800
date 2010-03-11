@@ -17,7 +17,7 @@ public class UnknownFactory {
     }
 
     public static Unknown createUnknown(Route route, Node node, Type type, State state) {
-        return create(route, node, type, state, Source.USER, new Reference[]{});
+        return create(route, node, type, state, Source.NONE, new Reference[]{});
     }
 
     public static Unknown createKnown(Route route, Node node, Type type,

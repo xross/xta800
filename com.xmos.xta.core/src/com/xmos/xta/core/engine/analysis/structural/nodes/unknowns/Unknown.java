@@ -18,7 +18,9 @@ public abstract class Unknown implements Comparable<Unknown> {
 	}
 
 	public enum Source {
-		USER,
+		NONE,
+		ADD,
+		SET,
 		BINARY,
 	}
 
@@ -31,6 +33,7 @@ public abstract class Unknown implements Comparable<Unknown> {
 
     public abstract String getDescription();
     public abstract String getScriptStr(String routeIdStr, String[] refStrs) throws Exception;
+    public abstract String getValueStr();
 
 	public Unknown(Route route, Node node, Type type, State state, Source source, Reference[] references) {
 		initialise(route, node, type, state, source, references);

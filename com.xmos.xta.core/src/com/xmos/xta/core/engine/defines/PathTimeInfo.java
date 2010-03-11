@@ -1,6 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.NodeCorePair;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class PathTimeInfo implements DefineInfo {
@@ -38,6 +39,11 @@ public class PathTimeInfo implements DefineInfo {
     	return m_timeUnit.getDescription(true);
     }
 
+    public NodeCorePair getNodeCore() {
+    	assert(m_from.getNodeCore().equals(m_to.getNodeCore()));
+    	return m_from.getNodeCore();
+    }
+    
 	public boolean equals(Object o) {
 		if (o != null){
 			if (o instanceof PathTimeInfo){
