@@ -43,8 +43,8 @@ public class PathTimeInfo implements DefineInfo {
     	assert(m_from.getNodeCore().equals(m_to.getNodeCore()));
     	return m_from.getNodeCore();
     }
-    
-	public boolean equals(Object o) {
+
+    public boolean equals(Object o) {
 		if (o != null){
 			if (o instanceof PathTimeInfo){
 				PathTimeInfo pti = (PathTimeInfo)o;

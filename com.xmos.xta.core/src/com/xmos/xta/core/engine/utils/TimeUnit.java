@@ -103,7 +103,7 @@ public class TimeUnit {
        		return Conversion.getTimeString(precise, m_ns);
        	case MHZ:
            	return precise ?
-           		    String.format("%f mhz", m_mhz) :
+           			Conversion.stripTrailingZeros(String.format("%f", m_mhz)) + " mhz" :
            		    String.format("%.1f mhz", m_mhz);
        	case CYCLES:
            	return String.format("%d cycles", m_cycles);

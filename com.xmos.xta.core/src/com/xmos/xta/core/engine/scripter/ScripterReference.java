@@ -124,7 +124,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	}
 
 	public void sourceLineInserted(SourceFile sourceFile, long lineNumber, SourceMapper sourceMapper) {
-		String sourceFileName = sourceFile.getFileName();
+		String sourceFileName = sourceFile.getFullFileName();
 		m_baseRef.sourceLineInserted(sourceFileName, lineNumber, sourceMapper);
 		if (m_mapsTo != null) {
 			m_mapsTo.getBase().sourceLineInserted(sourceFileName, lineNumber, sourceMapper);
@@ -152,7 +152,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 			boolean matched = tryMatching(scripter, baseRef,
 					m_engine.getSrcLabels(nodeNumber, coreNumber),
 					m_engine.getSrcLabelTable(nodeNumber, coreNumber).values(),
-					ReferenceClass.LABEL_REF);
+					ReferenceClass.ANY_REF);
 
 			if (!matched) {
 				tryLabels(scripter, baseRef);
@@ -175,13 +175,17 @@ public class ScripterReference implements Comparable<ScripterReference> {
 			}
 		}
 
-		// Try the ones from the compiler
-		names = getNames(tableInfos);
-		for (String name : names) {
-			Set<Long> endPointPcs = getPcs(tableInfos, name);
-			if (endPointPcs.equals(baseRef.getPcs())) {
-				initialise(name, refClass, scripter.getUniqueLabel(), true);
-				return true;
+		if (baseRef.getLineNum() > 0) {
+			initialise(baseRef.getRef(), refClass, scripter.getUniqueLabel(), true);
+		} else {
+			// Try the ones from the compiler
+			names = getNames(tableInfos);
+			for (String name : names) {
+				Set<Long> endPointPcs = getPcs(tableInfos, name);
+				if (endPointPcs.equals(baseRef.getPcs())) {
+					initialise(name, refClass, scripter.getUniqueLabel(), true);
+					return true;
+				}
 			}
 		}
 		return false;
@@ -200,7 +204,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	private Set<String> getNames(Collection<? extends ScriptableInfo> infos) {
 		Set<String> names = new TreeSet<String>();
 		for (ScriptableInfo info : infos) {
-			names.add(info.toString());
+			names.add(info.toReferenceString());
 		}
 		return names;
 	}

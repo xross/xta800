@@ -35,8 +35,8 @@ public class LoopScopeInfo implements DefineInfo {
     public NodeCorePair getNodeCore() {
     	return m_reference.getNodeCore();
     }
-    
-	public boolean equals(Object o) {
+
+    public boolean equals(Object o) {
 		boolean ret = false;
 		if(o != null) {
 			if(o instanceof LoopScopeInfo){

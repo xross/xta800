@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.sections;
 
-public class CodePointTableInfo extends SectionInfo implements ScriptableInfo {
+public class CodePointTableInfo extends SectionInfo implements FileLineInfo {
     private long m_pc;
     private String m_compilationDir;
     private String m_fileName;
@@ -34,5 +34,9 @@ public class CodePointTableInfo extends SectionInfo implements ScriptableInfo {
 
     public String toString() {
 		return m_compilationDir + "\\" + m_fileName + ":" + Long.toString(m_lineNumber);
+    }
+
+    public String toReferenceString() {
+    	return toString();
     }
 }

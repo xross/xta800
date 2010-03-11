@@ -106,23 +106,35 @@ public class Scripter {
 	}
 
 	public void enable(CommandSource src, Notifier notifier, String ref) {
-		ScripterReference scripterReference = getReference(ref);
-		if (scripterReference != null) {
-			setEnable(scripterReference, true);
+		if (ref.equals("*")) {
+			for (ScripterReference scripterReference : m_uniqueReferences) {
+				setEnable(scripterReference, true);
+			}			
 		} else {
-			notifier.notify(src, Notifier.NOTIFY_ERROR,
-					String.format("Reference '%s' not used in scripter", ref));
-		}
+			ScripterReference scripterReference = getReference(ref);
+			if (scripterReference != null) {
+				setEnable(scripterReference, true);
+			} else {
+				notifier.notify(src, Notifier.NOTIFY_ERROR,
+						String.format("Reference '%s' not used in scripter", ref));
+			}			
+		}		
 	}
 
 	public void disable(CommandSource src, Notifier notifier, String ref) {
-		ScripterReference scripterReference = getReference(ref);
-		if (scripterReference != null) {
-			setEnable(scripterReference, false);
+		if (ref.equals("*")) {
+			for (ScripterReference scripterReference : m_uniqueReferences) {
+				setEnable(scripterReference, false);
+			}			
 		} else {
-			notifier.notify(src, Notifier.NOTIFY_ERROR,
-					String.format("Reference '%s' not used in scripter", ref));
-		}
+			ScripterReference scripterReference = getReference(ref);
+			if (scripterReference != null) {
+				setEnable(scripterReference, false);
+			} else {
+				notifier.notify(src, Notifier.NOTIFY_ERROR,
+						String.format("Reference '%s' not used in scripter", ref));
+			}			
+		}		
 	}
 
 	public void setEnable(ScripterReference scripterReference, boolean enable) {
@@ -293,7 +305,10 @@ public class Scripter {
     		break;
 
     	case PATH:
-    		script.append(String.format("# Route: %s => %s\n", routeContainer.getFromName(), routeContainer.getToName()));
+        	RouteCoreContainer routeCoreContainer = routeContainer.getRouteCoreContainers().iterator().next();
+    		script.append(String.format("# Route: %s => %s\n",
+		    		getReferenceString(routeCoreContainer.getFromReference()),
+		    		getReferenceString(routeCoreContainer.getToReference())));
     		break;
     	}
     	script.append("#\n");
@@ -633,7 +648,7 @@ public class Scripter {
 			break;
 		case LABEL:
 		case SRCLABEL:
-			type = "call";
+			type = "label";
 			break;
 		default:
 			assert(false);
