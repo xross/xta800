@@ -44,6 +44,10 @@ public class PathTimeInfo implements DefineInfo {
     	return m_from.getNodeCore();
     }
 
+    public Reference[] getReferences() {
+    	return new Reference[] {m_from, m_to};
+    }
+    
     public boolean equals(Object o) {
 		if (o != null){
 			if (o instanceof PathTimeInfo){
