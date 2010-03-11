@@ -43,3 +43,9 @@ Node: 0, Core: 3, Threads: 1 \(No debug information found\)
 No routes analysed
 node: 0, core: 1
 node: 0, core: 2
+removed
+added
+node: 0, core: 0
+node: 0, core: 1
+node: 0, core: 2
+node: 0, core: 3
