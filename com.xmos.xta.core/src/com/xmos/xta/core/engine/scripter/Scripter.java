@@ -562,6 +562,7 @@ public class Scripter {
 			
 			boolean ok = backupFile(sourceFile);
 			if (!ok) {
+				disableRefsForFile(sourceFile.getFullFileName());
 				continue;
 			}
 			
