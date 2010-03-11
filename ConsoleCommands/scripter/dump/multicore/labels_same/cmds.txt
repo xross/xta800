@@ -1,0 +1,22 @@
+add branch Lbranch Ltarget1 Ltarget2 Ltarget3 Ltarget4
+add exclusion then
+
+add loop loop1 10
+add loop loop1_inner 5
+add loopscope loop1_inner a
+add looppath loop1_if 8
+add functiontime g 1 us
+add instructiontime timer1 2 us 
+
+analyse function f
+set required - 10 us
+
+set loop - loop2 10
+set loop - loop2_inner 5
+set loopscope - loop2_inner a
+set looppath - loop2_if 8
+set functiontime - h 1 us
+set instructiontime - timer2 2 us 
+
+scripter dump
+exit
