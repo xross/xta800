@@ -1,0 +1,6 @@
+analyse function f
+set loop - test.xc:8 10
+
+scripter dump
+exit
+

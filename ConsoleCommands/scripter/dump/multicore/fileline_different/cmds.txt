@@ -1,0 +1,71 @@
+
+remove core *
+add core 0 0
+add exclusion test.xc:25
+add loop test.xc:46 10
+add loop test.xc:43 5
+add loopscope test.xc:43 a
+add looppath test.xc:47 8
+add instructiontime test.xc:37 20 us 
+
+remove core *
+add core 0 1
+add exclusion test.xc:27
+add loop test.xc:46 20
+add loop test.xc:43 15
+add loopscope test.xc:43 r
+add looppath test.xc:47 18
+add instructiontime test.xc:37 30 us 
+
+remove core *
+add core 0 2
+add exclusion test.xc:29
+add loop test.xc:46 30
+add loop test.xc:43 25
+add loopscope test.xc:43 a
+add looppath test.xc:47 28
+add instructiontime test.xc:37 40 us 
+
+remove core *
+add core 0 3
+add exclusion test.xc:31
+add loop test.xc:46 40
+add loop test.xc:43 35
+add loopscope test.xc:43 r
+add looppath test.xc:47 38
+add instructiontime test.xc:37 50 us 
+
+remove core *
+add core 0 0
+add core 0 1
+add core 0 2
+add core 0 3
+analyse function f
+
+set loop 0 test.xc:64 10
+set loop 0 test.xc:61 5
+set loopscope 0 test.xc:61 a
+set looppath 0 test.xc:65 8
+set instructiontime 0 test.xc:55 20 us 
+
+set loop 1 test.xc:64 20
+set loop 1 test.xc:61 15
+set loopscope 1 test.xc:61 r
+set looppath 1 test.xc:65 18
+set instructiontime 1 test.xc:55 30 us 
+
+set loop 2 test.xc:64 30
+set loop 2 test.xc:61 25
+set loopscope 2 test.xc:61 a
+set looppath 2 test.xc:65 28
+set instructiontime 2 test.xc:55 40 us 
+
+set loop 3 test.xc:64 40
+set loop 3 test.xc:61 35
+set loopscope 3 test.xc:61 r
+set looppath 3 test.xc:65 38
+set instructiontime 3 test.xc:55 50 us 
+
+scripter disable *
+scripter dump
+exit
