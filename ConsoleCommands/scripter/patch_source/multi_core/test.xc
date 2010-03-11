@@ -1,0 +1,22 @@
+#include <xs1.h>
+#include <platform.h>
+
+int f(int i) {
+  int j = 0;
+  int k = 0;
+  for (j = 0; j < i; ++j) {
+    ++k;
+  }
+  return j + k;
+}
+
+int main() {
+  par {
+    on stdcore[0] : f(10);
+    on stdcore[1] : f(10);
+    on stdcore[2] : f(10);
+    on stdcore[3] : f(10);
+  }
+  return 0;
+}
+
