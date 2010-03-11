@@ -53,7 +53,7 @@ public class Defines {
 			updater.update(m_loopScopes, defines.getLoopScopes(), "loopscope", "*");
 		}
 	}
-
+	
     public void clear() {
     	m_functionTimes.clear();
     	m_pathTimes.clear();
@@ -63,6 +63,17 @@ public class Defines {
     	m_loopScopes.clear();
     }
 
+    public Collection<DefineInfo> getDefines() {
+    	Collection<DefineInfo> defines = new ArrayList<DefineInfo>();
+    	defines.addAll(m_functionTimes);
+    	defines.addAll(m_pathTimes);
+    	defines.addAll(m_instructionTimes);
+    	defines.addAll(m_loops);
+    	defines.addAll(m_loopPaths);
+    	defines.addAll(m_loopScopes);
+    	return defines;
+    }
+    
     public Collection<FunctionTimeInfo> getFunctionTimes() {
     	return m_functionTimes;
     }

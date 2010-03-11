@@ -36,6 +36,10 @@ public class LoopPathInfo implements DefineInfo {
     	return m_reference.getNodeCore();
     }
     	
+    public Reference[] getReferences() {
+    	return new Reference[] {m_reference};
+    }
+    
 	public boolean equals(Object o) {
 		boolean ret = false;
 		if (o != null) {

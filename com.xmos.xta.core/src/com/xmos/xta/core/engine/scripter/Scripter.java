@@ -27,12 +27,8 @@ import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
+import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.defines.Defines;
-import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
-import com.xmos.xta.core.engine.defines.LoopInfo;
-import com.xmos.xta.core.engine.defines.LoopPathInfo;
-import com.xmos.xta.core.engine.defines.LoopScopeInfo;
-import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
@@ -457,22 +453,10 @@ public class Scripter {
 	}
 
 	private void addDefineReferences(Defines defines) {
-
-		for (InstructionTimeInfo info : defines.getInstructionTimes()) {
-			addReference(info.getReference());
-		}
-		for (LoopPathInfo info : defines.getLoopPaths()) {
-			addReference(info.getReference());
-		}
-		for (LoopInfo info : defines.getLoops()) {
-			addReference(info.getReference());
-		}
-		for (LoopScopeInfo info : defines.getLoopScopes()) {
-			addReference(info.getReference());
-		}
-		for (PathTimeInfo info : defines.getPathTimes()) {
-			addReference(info.getFrom());
-			addReference(info.getTo());
+		for (DefineInfo info : defines.getDefines()) {
+			for (Reference reference : info.getReferences()) {
+				addReference(reference);
+			}
 		}
 	}
 

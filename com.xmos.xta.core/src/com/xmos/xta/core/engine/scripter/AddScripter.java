@@ -37,14 +37,14 @@ public class AddScripter {
 				List<DefineInfo> processed = new ArrayList<DefineInfo>();
 				for (DefineInfo info : newList) {
 					if (!processed.contains(info)) {
-						if (defineSetForAllActiveCores(info, newList, activeCores, processed)) {
-							script.append("add " + command + " " + info.getDescription() + " " + info.getValue() + "\n");						
+						if (defineSetForAllActiveCores(info, newList, activeCores, processed)) {							
+							outputDefineInfo(script, command, info);
 
 						} else {
 							NodeCorePair activeCore = info.getNodeCore();							
 							script.append("remove core *\n");
 							script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							
-							script.append("add " + command + " " + info.getDescription() + " " + info.getValue() + "\n");						
+							outputDefineInfo(script, command, info);
 						}						
 						processed.add(info);						
 					}					
@@ -65,15 +65,13 @@ public class AddScripter {
         	for (Reference exclusion : exclusions) {    
 				if (!processed.contains(exclusion)) {
 	    		    if (exclusionSetOnAllActiveCores(exclusions, exclusion, activeCores, processed)) {
-						m_scripter.outputPortableWarnings(script, exclusion);
-						script.append("add exclusion " + m_scripter.getReferenceString(exclusion) + "\n");						        			
+	    		    	outputExclusion(script, exclusion);
 
 	        		} else {
 						NodeCorePair activeCore = exclusion.getNodeCore();							
 						script.append("remove core *\n");
 						script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							
-						m_scripter.outputPortableWarnings(script, exclusion);
-						script.append("add exclusion " + m_scripter.getReferenceString(exclusion) + "\n");						        			
+	    		    	outputExclusion(script, exclusion);
 	        		}
 	    		    processed.add(exclusion);	
 				}
@@ -96,33 +94,13 @@ public class AddScripter {
    				
 				if (!processed.contains(branch)) {
 	    		    if (branchSetOnAllActiveCores(branches, branch, activeCores, processed)) {
-
-	    		    	m_scripter.outputPortableWarnings(script, branch.getKey());
-	        			for (Reference toRef : branch.getValue()) {
-	        				m_scripter.outputPortableWarnings(script, toRef);
-	        			}
-	    		    	
-	                	script.append(String.format("add branch %s", m_scripter.getReferenceString(branch.getKey())));
-	        			for (Reference toRef : branch.getValue()) {
-	        				script.append(String.format(" %s", m_scripter.getReferenceString(toRef)));
-	        			}
-	                	script.append(String.format("\n"));
+	    		    	outputBranch(script, branch);
 
 	        		} else {
 						NodeCorePair activeCore = branch.getKey().getNodeCore();							
 						script.append("remove core *\n");
 						script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							
-
-	    		    	m_scripter.outputPortableWarnings(script, branch.getKey());
-	        			for (Reference toRef : branch.getValue()) {
-	        				m_scripter.outputPortableWarnings(script, toRef);
-	        			}						
-						
-	                	script.append(String.format("add branch %s", m_scripter.getReferenceString(branch.getKey())));
-	        			for (Reference toRef : branch.getValue()) {
-	        				script.append(String.format(" %s", m_scripter.getReferenceString(toRef)));
-	        			}	        			
-	                	script.append(String.format("\n"));
+	    		    	outputBranch(script, branch);
 	        		}
 	    		    processed.add(branch);	
 				}
@@ -152,16 +130,6 @@ public class AddScripter {
 		return true;
     }
 
-    private boolean defineInfoMatch(DefineInfo thisInfo, DefineInfo thatInfo) {
-    	if (!thisInfo.getDescription().equals(thatInfo.getDescription())) 
-    		return false;
-    	
-    	if (!thisInfo.getValue().equals(thatInfo.getValue())) 
-    		return false;
-    	
-    	return true;
-    }
-
     private boolean exclusionSetOnAllActiveCores(Collection<Reference> exclusions, 
     		Reference thisExclusion, Collection<NodeCorePair> activeCores, 
     		List<Reference> processed) {
@@ -182,13 +150,6 @@ public class AddScripter {
 		processed.addAll(matched.values());    	
     	return true;
     }
-    
-    private boolean exclusionMatch(Reference thisExclusion, Reference thatExclusion) {
-    	if (!thisExclusion.equals(thatExclusion))
-    		return false;
-    	
-    	return true;
-    }    
     
     private boolean branchSetOnAllActiveCores(Map<Reference, List<Reference>> branches, 
     		Entry<Reference, List<Reference>> thisBranch, Collection<NodeCorePair> activeCores, 
@@ -214,6 +175,23 @@ public class AddScripter {
     	return true;
     }
     
+    private boolean defineInfoMatch(DefineInfo thisInfo, DefineInfo thatInfo) {
+    	if (!thisInfo.getDescription().equals(thatInfo.getDescription())) 
+    		return false;
+    	
+    	if (!thisInfo.getValue().equals(thatInfo.getValue())) 
+    		return false;
+    	
+    	return true;
+    }
+        
+    private boolean exclusionMatch(Reference thisExclusion, Reference thatExclusion) {
+    	if (!thisExclusion.equals(thatExclusion))
+    		return false;
+    	
+    	return true;
+    }    
+        
     private boolean branchMatch(Entry<Reference, List<Reference>> thisBranch, Entry<Reference, List<Reference>> thatBranch) {
     	Reference thisFromRef = thisBranch.getKey();
     	Reference thatFromRef = thatBranch.getKey();
@@ -233,4 +211,34 @@ public class AddScripter {
 	    }    	
     	return true;
     }    
+    
+    private void outputDefineInfo(StringBuffer script, String command, DefineInfo info) {
+		for (Reference reference : info.getReferences()) {
+			m_scripter.outputPortableWarnings(script, reference);
+		}
+
+    	script.append("add " + command);
+		for (Reference reference : info.getReferences()) {
+			script.append(" " + m_scripter.getReferenceString(reference));
+		}
+		script.append(" " + info.getValue() + "\n");							    	
+    }
+    
+    private void outputExclusion(StringBuffer script, Reference exclusion) {
+		m_scripter.outputPortableWarnings(script, exclusion);
+		script.append("add exclusion " + m_scripter.getReferenceString(exclusion) + "\n");						        			    	
+    }
+    
+    private void outputBranch(StringBuffer script, Entry<Reference, List<Reference>> branch) {
+    	m_scripter.outputPortableWarnings(script, branch.getKey());
+		for (Reference toRef : branch.getValue()) {
+			m_scripter.outputPortableWarnings(script, toRef);
+		}
+
+    	script.append(String.format("add branch %s", m_scripter.getReferenceString(branch.getKey())));
+		for (Reference toRef : branch.getValue()) {
+			script.append(String.format(" %s", m_scripter.getReferenceString(toRef)));
+		}
+    	script.append(String.format("\n"));    	
+    }
 }
