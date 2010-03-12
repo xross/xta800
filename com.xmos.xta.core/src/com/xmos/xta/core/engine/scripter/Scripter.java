@@ -121,7 +121,7 @@ public class Scripter {
 		if (ref.equals("*")) {
 			for (ScripterReference scripterReference : m_uniqueReferences) {
 				setEnable(scripterReference, false);
-			}			
+			}
 		} else {
 			ScripterReference scripterReference = getReference(ref);
 			if (scripterReference != null) {
@@ -532,11 +532,11 @@ public class Scripter {
 		}
 	}
 
-	private void disableRefsForFile(String fileName) {
+	public void disableRefsForFile(String fileName) {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
 			String refFileName = scripterReference.getFileName();
 			if (FileNameMatcher.isMatch(fileName, refFileName, getSourceMapper())) {
-				scripterReference.setEnable(false);
+				setEnable(scripterReference, false);
 				scripterReference.setModifiable(false);
 			}
 		}
