@@ -93,12 +93,28 @@ public class Scripter {
 	public String getUniqueLabel() {
 		int i = 0;
 		String label = "label_" + Integer.toString(i);
-		while (m_autoLabels.contains(label)) {
+		while (labelExists(label)) {
 			i++;
 			label = "label_" + Integer.toString(i);
 		}
 		m_autoLabels.add(label);
 		return label;
+	}
+
+	private boolean labelExists(String label) {
+		if (m_autoLabels.contains(label)) {
+			return true;
+		}
+		
+		for (int nodeNumber : m_engine.getXeLoader().getNodeNumbers()) {
+			for (int coreNumber : m_engine.getXeLoader().getCoreNumbers(nodeNumber)) {
+				Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY_REF, nodeNumber, coreNumber);
+				if (ref.resolve(m_engine)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void enable(CommandSource src, Notifier notifier, String ref) {
