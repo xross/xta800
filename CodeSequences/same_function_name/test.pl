@@ -12,7 +12,8 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-       "analyse function same " .
-       "print structure - " .
-       "exit > $genDir/same_function_name.txt 2>&1");
+       "-analyse function f " .
+       "-config verbosity 10000 " .
+       "-print structure - " .
+       "-exit > $genDir/same_function_name.txt 2>&1");
 
