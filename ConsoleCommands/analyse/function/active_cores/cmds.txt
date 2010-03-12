@@ -1,0 +1,63 @@
+add exclusion then
+list exclusions
+
+add loop loop 10
+list loops
+
+add functiontime g 1 us
+list functiontimes
+
+echo "----------------------"
+echo "All Cores"
+echo "----------------------"
+analyse function f
+set required - 10 us
+print summary
+
+echo "----------------------"
+echo "Cores 0"
+echo "----------------------"
+remove route *
+remove core *
+add core 0 0
+analyse function f
+set required - 10 us
+print summary
+
+echo "----------------------"
+echo "Cores 0 1"
+echo "----------------------"
+remove route *
+remove core *
+add core 0 0
+add core 0 1
+analyse function f
+set required - 10 us
+print summary
+
+echo "----------------------"
+echo "Core 0 1 2"
+echo "----------------------"
+remove route *
+remove core *
+add core 0 0
+add core 0 1
+add core 0 2
+analyse function f
+set required - 10 us
+print summary
+
+echo "----------------------"
+echo "Core 0 1 2 3"
+echo "----------------------"
+remove route *
+remove core *
+add core 0 0
+add core 0 1
+add core 0 2
+add core 0 3
+analyse function f
+set required - 10 us
+print summary
+
+exit

@@ -1,0 +1,20 @@
+add exclusion test.xc:25
+
+add loop test.xc:40 10
+add loop test.xc:37 5
+add loopscope test.xc:37 a
+add looppath test.xc:41 8
+add instructiontime test.xc:31 2 us 
+
+analyse function f
+set required - 10 us
+
+set loop - test.xc:58 10
+set loop - test.xc:55 5
+set loopscope - test.xc:55 a
+set looppath - test.xc:59 8
+set instructiontime - test.xc:49 2 us 
+
+scripter disable *
+scripter dump
+exit
