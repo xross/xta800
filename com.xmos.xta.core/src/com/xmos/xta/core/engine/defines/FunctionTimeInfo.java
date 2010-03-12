@@ -37,6 +37,10 @@ public class FunctionTimeInfo implements DefineInfo {
     	return m_function.getNodeCore();
     }
     
+    public Reference[] getReferences() {
+    	return new Reference[] {m_function};
+    }
+    
 	public boolean equals(Object o) {
 		boolean ret = false;
 		if (o != null) {

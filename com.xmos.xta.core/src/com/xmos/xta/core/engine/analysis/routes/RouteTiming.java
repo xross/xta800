@@ -213,7 +213,12 @@ public class RouteTiming {
 				}
 			}
 		} else {
-			description += "    No Timing Specified\n";
+			if (level == Level.COMPLETE) {
+				description += String.format("Node: %d, Core: %d\n", m_nodeNumber, m_coreNumber);
+			} else {
+				description += "    ";
+			}
+			description += "No Timing Specified\n";
 		}
 		return description;
 	}

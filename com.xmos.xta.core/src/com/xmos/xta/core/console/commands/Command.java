@@ -234,7 +234,7 @@ public abstract class Command {
 		if (nodeId.length() == 0) {
 			Pair<Integer,Integer> nodeCore = xnLoader.getNodeCore(coreId);
 			if (nodeCore == null) {
-	    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format("code '%s' not found", coreId));
+	    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreId));
 	    		return null;
 			}
 			nodeNumber = nodeCore.first;

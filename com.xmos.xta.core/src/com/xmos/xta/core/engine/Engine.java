@@ -697,6 +697,16 @@ public class Engine implements Notifier, Aborter {
 	// ===================================================================== //
 	// Active Core Methods
 	// ===================================================================== //
+	public void addActiveCores() {
+		if (m_xeLoader.isLoaded()) {
+			for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
+				for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
+					m_activeCores.add(new NodeCorePair(nodeNumber, coreNumber));
+				}
+			}
+		}
+	}	
+
 	public void addActiveCore(CommandSource src, NodeCorePair activeCore) {		
 		if (m_xeLoader.isLoaded(activeCore.getNode(), activeCore.getCore())) {
 			if (!m_activeCores.contains(activeCore)) {
@@ -1889,7 +1899,7 @@ public class Engine implements Notifier, Aborter {
 
 	private boolean validateRouteCount(){
 		return m_routes.size() >= getNumLastRoutesAnalysed();
-	}	
+	}
 }
 
 class FileLocation {

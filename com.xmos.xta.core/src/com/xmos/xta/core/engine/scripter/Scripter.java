@@ -27,12 +27,8 @@ import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
+import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.defines.Defines;
-import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
-import com.xmos.xta.core.engine.defines.LoopInfo;
-import com.xmos.xta.core.engine.defines.LoopPathInfo;
-import com.xmos.xta.core.engine.defines.LoopScopeInfo;
-import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
@@ -97,12 +93,28 @@ public class Scripter {
 	public String getUniqueLabel() {
 		int i = 0;
 		String label = "label_" + Integer.toString(i);
-		while (m_autoLabels.contains(label)) {
+		while (labelExists(label)) {
 			i++;
 			label = "label_" + Integer.toString(i);
 		}
 		m_autoLabels.add(label);
 		return label;
+	}
+
+	private boolean labelExists(String label) {
+		if (m_autoLabels.contains(label)) {
+			return true;
+		}
+		
+		for (int nodeNumber : m_engine.getXeLoader().getNodeNumbers()) {
+			for (int coreNumber : m_engine.getXeLoader().getCoreNumbers(nodeNumber)) {
+				Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY_REF, nodeNumber, coreNumber);
+				if (ref.resolve(m_engine)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void enable(CommandSource src, Notifier notifier, String ref) {
@@ -125,7 +137,7 @@ public class Scripter {
 		if (ref.equals("*")) {
 			for (ScripterReference scripterReference : m_uniqueReferences) {
 				setEnable(scripterReference, false);
-			}			
+			}
 		} else {
 			ScripterReference scripterReference = getReference(ref);
 			if (scripterReference != null) {
@@ -173,7 +185,7 @@ public class Scripter {
 
 	public boolean promptUser() {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
-			if (scripterReference.isModifiable() && scripterReference.isEnabled()) {
+			if (scripterReference.isModifiable()) {
 				return true;
 			}
 		}
@@ -364,19 +376,25 @@ public class Scripter {
     
     private void addBranches(RouteContainer routeContainer, StringBuffer script) {
     	AddScripter scripter = new AddScripter(this);
-    	scripter.addBranches(routeContainer, m_currentBranches, script);		
+    	scripter.addBranches(routeContainer.getBranches(), 
+    			m_currentBranches, script, routeContainer.getActiveCores());		
+    	
     	m_currentBranches = routeContainer.getBranches();    
     }
 
     private void addExclusions(RouteContainer routeContainer, StringBuffer script) {
     	AddScripter scripter = new AddScripter(this);
-    	scripter.addExclusions(routeContainer, m_currentExclusions, script);		
+    	scripter.addExclusions(routeContainer.getExclusions(), 
+    			m_currentExclusions, script, routeContainer.getActiveCores());
+    	
     	m_currentExclusions = routeContainer.getExclusions();
     }
 
 	private void addDefines(RouteContainer routeContainer, StringBuffer script) {		
     	AddScripter scripter = new AddScripter(this);
-    	scripter.addDefines(routeContainer, m_currentDefines, script);		
+    	scripter.addDefines(routeContainer.getDefines(), 
+    			m_currentDefines, script, routeContainer.getActiveCores());
+    	
 		m_currentDefines = routeContainer.getDefines();
 	}
 
@@ -462,22 +480,10 @@ public class Scripter {
 	}
 
 	private void addDefineReferences(Defines defines) {
-
-		for (InstructionTimeInfo info : defines.getInstructionTimes()) {
-			addReference(info.getReference());
-		}
-		for (LoopPathInfo info : defines.getLoopPaths()) {
-			addReference(info.getReference());
-		}
-		for (LoopInfo info : defines.getLoops()) {
-			addReference(info.getReference());
-		}
-		for (LoopScopeInfo info : defines.getLoopScopes()) {
-			addReference(info.getReference());
-		}
-		for (PathTimeInfo info : defines.getPathTimes()) {
-			addReference(info.getFrom());
-			addReference(info.getTo());
+		for (DefineInfo info : defines.getDefines()) {
+			for (Reference reference : info.getReferences()) {
+				addReference(reference);
+			}
 		}
 	}
 
@@ -547,11 +553,11 @@ public class Scripter {
 		}
 	}
 
-	private void disableRefsForFile(String fileName) {
+	public void disableRefsForFile(String fileName) {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
 			String refFileName = scripterReference.getFileName();
 			if (FileNameMatcher.isMatch(fileName, refFileName, getSourceMapper())) {
-				scripterReference.setEnable(false);
+				setEnable(scripterReference, false);
 				scripterReference.setModifiable(false);
 			}
 		}
