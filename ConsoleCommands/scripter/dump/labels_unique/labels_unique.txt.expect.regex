@@ -1,0 +1,3 @@
+Modifiable Enabled    Reference  ->     MapsTo
+true       true       test\.xc:6  ->    label_1
+true       true       test\.xc:7  ->    label_2
