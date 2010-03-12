@@ -70,9 +70,11 @@ public class CallGraph {
 			List<Stack<FunctionReferenceNode>> foundStacks) {
 		if(m_fnRefToCallees.containsKey(fc)){
 			for(FunctionReferenceNode previous : m_fnRefToCallees.get(fc)){
-				stack.push(previous);
-				climb(m_containingFunction.get(previous), stack, foundStacks);
-				stack.pop();
+				if(!stack.contains(previous)){
+					stack.push(previous);
+					climb(m_containingFunction.get(previous), stack, foundStacks);
+					stack.pop();
+				}
 			}
 		} else {
 			Stack<FunctionReferenceNode> copy = new Stack<FunctionReferenceNode>();

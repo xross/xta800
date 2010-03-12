@@ -103,10 +103,8 @@ public class RouteConstructor {
 			System.out.println("exclusions are:");
 			for(StackNode sn : exclusionStackNodes){
 				System.out.println(sn);
-			}
-			
+			}	
 		}
-		
 		
 		if (routeContainer.getMode() == RouteMode.FUNCTION){
 			List<StackNode> startStackNodes = getFunctionStartStackNodes(m_callGraph, m_coreContainer.getFromReference());
@@ -120,8 +118,8 @@ public class RouteConstructor {
 					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, endStackNodes, true);
 					if (newFunction != null){
 						setParent(newFunction);
-						Route route = new Route(src, m_engine, stack, newFunction, m_coreContainer);
 						if (!alreadyContainRoute(newFunction)) {
+							Route route = new Route(src, m_engine, stack, newFunction, m_coreContainer);
 							m_routes.add(route);
 						}
 					}
@@ -134,6 +132,7 @@ public class RouteConstructor {
 			Collection<Reference> endRefs = m_coreContainer.getToReferences();
 			List<StackNode> endStackNodes = new LinkedList<StackNode>();
 			for(Reference end : endRefs){
+				
 				endStackNodes.addAll(getPathStackNodes(m_callGraph, end));
 			}
 			boolean foundAtLeastOneStartPoint = false;
@@ -143,8 +142,9 @@ public class RouteConstructor {
 					Node newPath = makePath(currentStack, startStackNode.getInstruction(), endStackNodes, exclusionStackNodes);
 					if (newPath != null){
 						setParent(newPath);
-						Route route = new Route(src, m_engine, currentStack, newPath, m_coreContainer);
+						
 						if (!alreadyContainRoute(newPath)) {
+							Route route = new Route(src, m_engine, currentStack, newPath, m_coreContainer);
 							m_routes.add(route);
 						}
 					}
@@ -239,12 +239,6 @@ public class RouteConstructor {
 
 		Set<Node> loopFormingEndNodes = new TreeSet<Node>();
 		
-		//GraphState gs = new GraphState(start, null, currentStack, startInst, RouteMode.FUNCTION);
-		
-		//GraphState nextGs = findReachableGraph(gs, workingSet, exclusionStackNodes, currentExclusionsFound, 
-		//		endStackNodes, nodeToWorkingSet, loopFormingEndNodes);
-		
-		
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound, RouteMode.FUNCTION,
 				endStackNodes, nodeToWorkingSet, loopFormingEndNodes, start);
@@ -327,52 +321,66 @@ public class RouteConstructor {
 		if(node instanceof FunctionReferenceNode){
 			FunctionReferenceNode frn = ((FunctionReferenceNode)node);
 			
-			boolean endPointsWithin = false; 
-			for(StackNode endStackNode : endStackNodes){
-				for(Stack<FunctionReferenceNode> stack : endStackNode.getNodeStacks()){
-					if(stack.contains(node)){
-						endPointsWithin = true;
+			
+			List<InstructionNode> functionCallInstructions = new LinkedList<InstructionNode>();
+			for(FunctionReferenceNode f : currentStack){
+				functionCallInstructions.add(f.getFunctionStartInstruction());
+			}
+			if(functionCallInstructions.contains(frn.getFunctionStartInstruction())){
+
+				FunctionNode fn = new FunctionNode(frn.getFunctionName());
+				currentNode = fn;
+			} else {
+				boolean endPointsWithin = false; 
+				for(StackNode endStackNode : endStackNodes){
+					for(Stack<FunctionReferenceNode> stack : endStackNode.getNodeStacks()){
+						if(stack.contains(node)){
+							endPointsWithin = true;
+						}
 					}
 				}
-			}
-			
-			Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
-			newStack.addAll(currentStack);
-			newStack.add(frn);
-			
-			if(endPointsWithin){
-				InstructionNode inst = frn.getFunctionStartInstruction();
 				
-				findReachableGraph(parent, newStack, inst, workingSet,
-						exclusionStackNodes, currentExclusionsFound, routeMode,
-						endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false);
-				return;
-			} else {
-				FunctionNode fn = null;
-				if(frn.isKnownFunction()){
-					List<StackNode> newEndStackNodes = getFunctionEndStackNodes(newStack);
-					fn = makeFunction(newStack, exclusionStackNodes, newEndStackNodes, false);
+				Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
+				newStack.addAll(currentStack);
+				newStack.add(frn);
+				
+				if(endPointsWithin){
+					InstructionNode inst = frn.getFunctionStartInstruction();
 					
-				} else {
-					fn = new FunctionNode();
-				}
-				if(fn != null){
-					currentNode = fn;
-				} else {
-					currentExclusionsFound.add(parent);
+					findReachableGraph(parent, newStack, inst, workingSet,
+							exclusionStackNodes, currentExclusionsFound, routeMode,
+							endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false);
 					return;
+				} else {
+					FunctionNode fn = null;
+					if(frn.isKnownFunction()){
+						List<StackNode> newEndStackNodes = getFunctionEndStackNodes(newStack);
+						fn = makeFunction(newStack, exclusionStackNodes, newEndStackNodes, false);
+						
+					} else {
+						fn = new FunctionNode();
+					}
+					if(fn != null){
+						currentNode = fn;
+					} else {
+						currentExclusionsFound.add(parent);
+						return;
+					}
+					
 				}
-				
-				
 			}
-		} else if(stackNodesContainNode(endStackNodes, currentStack, node) && !workingSet.isEmpty()){
+		} else if(stackNodesContainNode(endStackNodes, currentStack, node) ){
 			switch (routeMode) {
 			case FUNCTION:
 				addToWorkingSet(parent, currentNode, workingSet);
+				return;
 			case PATH:
-				loopFormingEndNodes.add(parent);
+				if(!workingSet.isEmpty()){
+					loopFormingEndNodes.add(parent);
+					return;
+				}
 			}
-			return;
+
 		} 
 			
 		addToWorkingSet(parent, currentNode, workingSet);
@@ -385,9 +393,11 @@ public class RouteConstructor {
 							exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
 							nodeToWorkingSet, loopFormingEndNodes, false);
 				} else {
-					CommonMethods.connect(nextWorkingSetNode, currentNode);
+					if(routeMode == RouteMode.FUNCTION || !stackNodesContainNode(endStackNodes, currentStack, next)){
+						CommonMethods.connect(nextWorkingSetNode, currentNode);
+					}
+					
 					if(stackNodesContainNode(endStackNodes, currentStack, next)){
-						
 						loopFormingEndNodes.add(currentNode);
 					} 
 				}
@@ -487,10 +497,6 @@ public class RouteConstructor {
 		}
 		return endStacks;
 	}
-	
-	
-
-	
 
 	private void removeExclusionBranches(Set<Node> workingSet,
 			Set<Node> currentExclusions, Set<Node> endNodes) {
@@ -639,7 +645,7 @@ public class RouteConstructor {
 	}
 
 	private void setUnknowns() {
-		for (Route route : m_routes) {
+		for (final Route route : m_routes) {
 			Node node = route.getNode();
 			node.traverse( new DefaultNodeTraverser() {
 				// Sets all the pausing instructions to unknown.
@@ -647,20 +653,20 @@ public class RouteConstructor {
 					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
 					if (instruction.canPause()) {
 						NodeAttributes nodeAttributes = node.getAttributes();
-						nodeAttributes.addUnknown(UnknownFactory.Type.INSTRUCTION_TIME);
+						nodeAttributes.addUnknown(route, UnknownFactory.Type.INSTRUCTION_TIME);
 					}
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the loop iterations to unknown.
 				public TraverseStatus foundLoopNode(Node node) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the self loop iterations to unknown.
 				public TraverseStatus foundSelfLoopNode(Node node) {
 					NodeAttributes nodeAttributes = node.getAttributes();
-					nodeAttributes.addUnknown(UnknownFactory.Type.LOOP_ITERATIONS);
+					nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
 				}
 		    });
@@ -735,13 +741,13 @@ public class RouteConstructor {
 		for (Route route : m_routes) {
 			for (FunctionTimeInfo info : m_engine.getFunctionTimeDefines()) {
 				if (coreMatch(route, info.getFunction())) {
-    				defines.applyFunctionDefine(src, route, info, Source.BINARY);
+    				defines.applyFunctionDefine(src, route, info, Source.ADD);
 				}
 			}
 			for (PathTimeInfo info : m_engine.getPathTimeDefines()) {
 				if (coreMatch(route, info.getFrom()) && 
 					coreMatch(route, info.getTo())) {
-    				defines.applyPathDefine(m_engine, src, route, info, Source.BINARY);
+    				defines.applyPathDefine(m_engine, src, route, info, Source.ADD);
 				}
 			}
 		}
@@ -756,7 +762,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     				    route.getRouteUnknowns().setLoopIterations(src, m_engine,
-				    		info.getReference(), info.getIterations(), false, Source.BINARY);
+				    		info.getReference(), info.getIterations(), false, Source.ADD);
 					}
 				}				
 			} catch (Exception e) {}
@@ -772,7 +778,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     				    route.getRouteUnknowns().setLoopPathIterations(
-				    		info.getReference(), info.getIterations(), Source.BINARY);
+				    		info.getReference(), info.getIterations(), Source.ADD);
 					}
 				}
 			} catch (Exception e) {}
@@ -788,7 +794,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     				    route.getRouteUnknowns().setLoopScope(
-				    		info.getReference(), info.getAbsolute(), Source.BINARY);
+				    		info.getReference(), info.getAbsolute(), Source.ADD);
 					}
 				}
 			} catch (Exception e) {}
@@ -804,7 +810,7 @@ public class RouteConstructor {
 			    for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     			        route.getRouteUnknowns().setFixedTime(info.getReference(), 
-    			        		info.getTimeUnit(), UnknownFactory.Type.INSTRUCTION_TIME, Source.BINARY);
+    			        		info.getTimeUnit(), UnknownFactory.Type.INSTRUCTION_TIME, Source.ADD);
 					}
     			}				
 			} catch (Exception e) {}

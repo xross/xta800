@@ -54,7 +54,7 @@ class SameBlockPattern extends RouteDefinePatterns {
 		if (createBlock(blocks, children, children.indexOf(from), children.indexOf(to))) {
 			Node block = blocks.get(blocks.size() - 1);
 			block.getAttributes().setFixedTime(time);
-			block.getAttributes().addKnown(Type.PATH_TIME, source, new Reference[] {fromRef, toRef});
+			block.getAttributes().addKnown(route, Type.PATH_TIME, source, new Reference[] {fromRef, toRef});
 		}
 
 		createBlock(blocks, children, children.indexOf(to), children.size());
@@ -108,7 +108,7 @@ class DifferentBlockPattern extends RouteDefinePatterns {
 
 		Node sequence = new SequenceNode(timingChildren);
 		sequence.getAttributes().setFixedTime(time);
-		sequence.getAttributes().addKnown(Type.PATH_TIME, source, new Reference[] {fromRef, toRef});
+		sequence.getAttributes().addKnown(route, Type.PATH_TIME, source, new Reference[] {fromRef, toRef});
 		newChildren.add(sequence);
 
 		createBlock(newChildren, toBlock.iChildren(),

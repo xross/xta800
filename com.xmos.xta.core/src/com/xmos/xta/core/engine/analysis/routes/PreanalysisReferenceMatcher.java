@@ -1,10 +1,10 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.CallGraph;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.FunctionContainer;
@@ -15,7 +15,7 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
-public class PreanalysisReferenceMatcher {
+public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 
 	private static final boolean debug = false;
 	
@@ -78,7 +78,7 @@ public class PreanalysisReferenceMatcher {
 			
 			matchLabel(reference, pc, refList);
 			
-			Collections.reverse(refList);
+			//Collections.reverse(refList);
 			
 			
 			if (debug) {
@@ -119,23 +119,29 @@ public class PreanalysisReferenceMatcher {
 					copy.addAll(stack);
 					List<ReferenceType> matchingList = new LinkedList<ReferenceType>(refList);
 					
-					
-					while(!copy.isEmpty()){
-						FunctionReferenceNode frn = copy.pop();
-						Long currentPc = new Long(0x0);
-						if (debug) System.out.println("checking function " + frn.getFunctionName());
-						while(fnRefContainsReference(frn, currentPc, matchingList, engine)){
+					Long currentPc = new Long(pc);
+					FunctionReferenceNode frn = copy.pop();
+					while(!copy.isEmpty() && !matchingList.isEmpty()){
+						if (debug) System.out.println("checking function " + frn.getFunctionName() + " from pc 0x" + Long.toHexString(currentPc));
+						Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, engine);
+						while(res.first){
 							ReferenceType r = matchingList.get(matchingList.size() -1);
+							
 							if (debug) {
 								System.out.print("found ");
 								System.out.print( r.getType() + "(" + r.getRef() );
 								for(long refPc : r.getPcs()){
 									System.out.print(", 0x" + Long.toHexString(refPc));
 								}
-								System.out.print(") in the function");
+								System.out.print(") in the function " + frn.getFunctionName() + "\n");
 							}
+							currentPc = res.second;
 							matchingList.remove(r);
+							
+							res = fnRefContainsReference(frn, currentPc, matchingList, engine);
 						} 
+						currentPc = frn.getFunctionCallPc();
+						frn = copy.pop();
 						
 					}
 					
@@ -155,24 +161,25 @@ public class PreanalysisReferenceMatcher {
 		return refinedStackNodes;
 	}
 	
-	private boolean fnRefContainsReference(FunctionReferenceNode frn, Long currentPc, List<ReferenceType> refList, Engine engine ) {
+	private Pair<Boolean, Long> fnRefContainsReference(FunctionReferenceNode frn, Long currentPc, List<ReferenceType> refList, Engine engine ) {
 		
-		if(refList.isEmpty()) return false;
+		if(refList.isEmpty()) return new Pair<Boolean, Long>(false, new Long(0x0));
+		
 		ReferenceType r = refList.get(refList.size() -1);
 		
 		if(r.getType() == ReferenceType.Type.CALL){
 			if(r.getPcs().contains(frn.getFunctionCallPc())){
-				return true;
+				return new Pair<Boolean, Long>(true, new Long(0x0));
 			}
 		} else if(r.getType() == ReferenceType.Type.ENDPOINT){
 			return matchRefPc(frn, engine, currentPc, r);
 		} else if(r.getType() == ReferenceType.Type.ERROR){
-			return false;
+			return new Pair<Boolean, Long>(false, new Long(0x0));
 		} else if(r.getType() == ReferenceType.Type.EVERYTHING){
-			return true;
+			return new Pair<Boolean, Long>(true, new Long(currentPc));
 		} else if(r.getType() == ReferenceType.Type.FUNCTION){
 			if(r.getPcs().contains(frn.getFunctionStartPc())){
-				return true;
+				return new Pair<Boolean, Long>(true, new Long(frn.getFunctionStartPc()));
 			}
 		} else if(r.getType() == ReferenceType.Type.LABEL){
 			return matchRefPc(frn, engine, currentPc, r);
@@ -183,12 +190,11 @@ public class PreanalysisReferenceMatcher {
 		} else assert(false); 
 		
 		
-		return false;
+		return new Pair<Boolean, Long>(false, new Long(0x0));
 	}
 
 	//this matches references that resolve to a set of pcs
-	private boolean matchRefPc(FunctionReferenceNode frn, Engine engine,
-			Long latestPc, ReferenceType r) {
+	private Pair<Boolean, Long> matchRefPc(FunctionReferenceNode frn, Engine engine, Long latestPc, ReferenceType r) {
 		FunctionContainer fc = frn.getFunctionContainer();
 		Node node = fc.getCachedFunction(engine);
 		setParent(node);
@@ -197,6 +203,7 @@ public class PreanalysisReferenceMatcher {
 		if(latestPc == 0x0){
 			for(long pc : r.getPcs()){
 				latestPc = pc;
+				found = true;
 			}
 		} else {
 		
@@ -213,11 +220,11 @@ public class PreanalysisReferenceMatcher {
 				}
 			}
 		}
-		return found;
+		return new Pair<Boolean, Long>(found, new Long(latestPc));
 	}
 	
 	private int getIndexOfInst(List<Node> nodeList, long pc) {
-		for(int i=nodeList.size()-2; i > 0;i--){
+		for(int i=nodeList.size()-2; i >= 0;i--){
 			if(nodeList.get(i) instanceof InstructionNode){
 				InstructionNode inst = (InstructionNode)nodeList.get(i);
 				if(inst.getPC() == pc){
@@ -228,45 +235,7 @@ public class PreanalysisReferenceMatcher {
 		return -1;
 	}
 
-	private void matchLabel(Reference reference, long pc, List<ReferenceType> refList){
-		List<String> backTrailForPc = new LinkedList<String>(reference.getPcBackTrail(pc));
-		for(int i=reference.getBackTrail().size()-1; i>=0; i--){
-			ReferenceType refType = reference.getBackTrail().get(i);
-			int index = getIndexOf(backTrailForPc, refType.getRef());
-			if(index != -1){
-				backTrailForPc = backTrailForPc.subList(0, index);
-			} else {
-				refList.add(0, refType);
-			}
-		}
-	}
-
-	private int getIndexOf(List<String> backTrailForPc, String string){
-		int i=0;
-		for(String backTrail : backTrailForPc){
-			int rightBra = backTrail.indexOf(")");
-			int leftBra = backTrail.indexOf("(");
-
-			if(rightBra != -1 && leftBra != -1){
-				String bracketedString = backTrail.substring(leftBra+1, rightBra);
-				String [] parts = bracketedString.split(",");
-				for(String part : parts){
-					if(part.equals(string)){
-						return i;
-					}
-				}
-			}
-
-			if(backTrail.equals(string)){
-				return i;
-			}
-
-			i++;
-		}
-
-
-		return -1;
-	}
+	
 
 	private void setParent(Node node) {
 		for (Node child : node.iChildren()){

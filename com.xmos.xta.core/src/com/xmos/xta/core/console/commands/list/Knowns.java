@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
@@ -59,11 +60,17 @@ public class Knowns extends Command {
 		    Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.KNOWN);
 		    if (unknowns.size() > 0) {
 				for (Unknown unknown : unknowns) {
-				    console.display(String.format("%s: %s, pc: 0x%x, backtrace: %s\n",
+				    console.display(String.format("%s: %s, pc: 0x%x, backtrace: %s",
 				    		unknown.getLevel().toString(),
 				    		unknown.getDescription(),
 				    		unknown.getNode().getStartPc(),
 				    		unknown.getNode().getBackTrace("")));
+				    
+				    if (engine.getVerbosity() >= Config.VERBOSITY_DISPLAY_KNOWNS_INFO) {
+					    console.display(String.format(", source: %s", unknown.getSource().toString()));				    	
+					    console.display(String.format(", routeId: %d", unknown.getRoute().getRouteId()));				    	
+				    }
+				    console.display("\n");
 				}
 				found = true;
 		    }

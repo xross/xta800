@@ -16,6 +16,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
@@ -245,8 +246,8 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 	
-	private void dumpTree(String text, Collection<Node> workingSet) {
-		if(debug_structure){
+	private void dumpTree(String text, Collection<Node> workingSet, boolean override) {
+		if(debug_structure || override){
 			StringBuffer sb = new StringBuffer();
 			if (workingSet.size() > 1) {
 				sb.append("digraph "+ text + "{");
@@ -278,7 +279,7 @@ public class StructuralAnalysisEngine {
 			e.printStackTrace();
 		}
 		assert(workingSet.size() == 1);
-		dumpTree("finished_"+ functionContainer.getFunctionName(), workingSet);
+		dumpTree("finished_"+ functionContainer.getFunctionName(), workingSet, false);
 		Node structuralNode = workingSet.iterator().next();
 		normaliseGraph(structuralNode);
 		return structureNode;
@@ -287,7 +288,7 @@ public class StructuralAnalysisEngine {
 	
 	public Node basicBlock(Set<Node> workingSet, Node originalStartNode, Engine engine, String string) {
 		
-		dumpTree("start_"+ string, workingSet);
+		dumpTree("start_"+ string, workingSet, false);
 		Set<Node> toDo = new TreeSet<Node>();
 		toDo.add(originalStartNode);
 		Node firstNode = null;
@@ -324,24 +325,18 @@ public class StructuralAnalysisEngine {
 			newWorkingSet.add(basicBlock);
 
 			for(Node next : current.getNextNodes()){
-				/*
 				if(next instanceof FunctionReferenceNode){
-					FunctionReferenceNode frn = (FunctionReferenceNode)next;
-					FunctionReferenceNode fn = new FunctionReferenceNode(frn);
-					newWorkingSet.add(fn);
-					seenNodes.add(next);
-					instToBlock.put(next, fn);
-					nexts.put(fn, new HashSet<Node>(next.getNextNodes()));
+					FunctionReferenceNode copy = new FunctionReferenceNode((FunctionReferenceNode) next);
+					newWorkingSet.add(copy);
+					seenNodes.add(copy);
+					instToBlock.put(next, copy);
+					nexts.put(copy, new HashSet<Node>(next.getNextNodes()));
 					for(Node nextNext : next.getNextNodes()){
 						if(!seenNodes.contains(nextNext)){
 							toDo.add(nextNext);
 						}
 					}
-
-				} else 
-					*/
-					
-					if(next instanceof FunctionNode){
+				} else if(next instanceof FunctionNode){
 					next.getPrevNodes().clear();
 					newWorkingSet.add(next);
 					seenNodes.add(next);
@@ -374,7 +369,7 @@ public class StructuralAnalysisEngine {
 		newWorkingSet.add(n);
 		workingSet.clear();
 		workingSet.addAll(newWorkingSet);
-		dumpTree("after_BB_"+ string, workingSet);
+		dumpTree("after_BB_"+ string, workingSet, false);
 		return firstNode;
 	}
 	

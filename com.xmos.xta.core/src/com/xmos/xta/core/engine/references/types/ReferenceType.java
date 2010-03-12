@@ -54,7 +54,15 @@ public abstract class ReferenceType {
 	public abstract boolean isPortable();
 
 	public String getRef() {
-	    return m_ref;
+		return m_ref;
+	}
+
+	public String getScripterRef() {
+		if (!isPortable() && (m_lineNum > 0)) {
+			return String.format("%s:%d", m_fileName, m_lineNum);
+		} else {
+			return m_ref;
+		}
 	}
 
 	public void setRef(String ref) {
@@ -245,7 +253,7 @@ public abstract class ReferenceType {
 	}
 
 	public boolean matches(String s, Engine engine) {
-		return false;
+		return m_ref.matches(s);
 	}
 
     public int hashCode() {
@@ -315,5 +323,11 @@ public abstract class ReferenceType {
 
 	public int getCoreNumber() {
 		return m_nodeCore.getCore();
+	}
+
+	public void sourceLineInserted(String sourceFileName, long lineNumber, SourceMapper sourceMapper) {
+		if ((m_lineNum >= lineNumber) && FileNameMatcher.isMatch(sourceFileName, m_fileName, sourceMapper)) {
+			m_lineNum += 1;
+		}
 	}
 }

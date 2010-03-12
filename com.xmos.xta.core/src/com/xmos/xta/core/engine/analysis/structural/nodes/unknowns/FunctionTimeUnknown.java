@@ -1,13 +1,14 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.unknowns;
 
 import com.xmos.libs.util.Conversion;
+import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class FunctionTimeUnknown extends Unknown {
-	FunctionTimeUnknown(Node node, Type type, State state, Source source, Reference[] references) {
-		super(node, type, state, source, references);
+	FunctionTimeUnknown(Route route, Node node, Type type, State state, Source source, Reference[] references) {
+		super(route, node, type, state, source, references);
 	}
 
 	public String getDescription() {
@@ -26,11 +27,15 @@ public class FunctionTimeUnknown extends Unknown {
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() == Source.BINARY) {
+    	if (getSource() != Source.SET) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
     	return String.format("set functiontime %s %s %s\n",
     			routeIdStr, refStrs[0],
     			getNode().getAttributes().getFixedTimeString());
 	}
+	
+    public String getValueStr() {
+    	return getNode().getAttributes().getFixedTimeString();
+    }
 }

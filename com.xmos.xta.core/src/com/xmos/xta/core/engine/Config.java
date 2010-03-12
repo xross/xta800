@@ -14,6 +14,7 @@ public class Config {
 	static final public int VERBOSITY_DISPLAY_ATTRIBUTES = 50;
 	static final public int VERBOSITY_DISPLAY_ANCESTORS = 50;
 	static final public int VERBOSITY_PROGRESS_MONITOR_ENABLED = 10;
+	static final public int VERBOSITY_DISPLAY_KNOWNS_INFO = 50;
 
 	public Config() {
 		m_verbosity = 0;

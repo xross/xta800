@@ -136,21 +136,22 @@ public class Route {
 		return node;
 	}
 
-	public Set<Node> getReferencedNodes(Reference reference) throws AbortedException {
+	public Set<Node> getReferencedNodes(Reference ref) throws AbortedException {
 		RouteReferenceMatcher rrm = new RouteReferenceMatcher();
-		return rrm.matchReference(reference);
+		Set<Node> r = rrm.matchReference(m_baseOfRouteNode, ref);
+		assert(r != null);
+		return r;
 	}
 
 	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
-		assert(false);
+		RouteReferenceMatcher rrm = new RouteReferenceMatcher();
 		
-		//ReferenceMatcher referenceMatcher = new ReferenceMatcher();
 		Collection<Node> referencedNodes = new ArrayList<Node>();
-/*
-		for (Node function : referenceMatcher.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference)) {
+
+		for (Node function : rrm.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference)) {
 			referencedNodes.add(function);
 		}
-		*/
+		
 		return referencedNodes;
 	}
 

@@ -300,7 +300,10 @@ public class Engine implements Notifier, Aborter {
 				analyseRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
 				routeFound = true;
 			}		
-		}
+		}		
+		if (routeContainer.getNumExistingRoutes() > 0)   			
+			m_routeContainers.add(routeContainer);
+		
 	    if (!routeFound) {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", functionName));
 		    return false;
@@ -334,6 +337,8 @@ public class Engine implements Notifier, Aborter {
 				routeFound = true;
     		}			
 		}
+		if (routeContainer.getNumExistingRoutes() > 0)   			
+			m_routeContainers.add(routeContainer);
 
 	    if (!routeFound) {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));
@@ -959,7 +964,7 @@ public class Engine implements Notifier, Aborter {
 				
 				if (resolveReference(functionRef)) {
 					FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);					
-					defines.applyFunctionDefine(src, route, info, Source.USER);
+					defines.applyFunctionDefine(src, route, info, Source.SET);
 					hit = true;
 				}
 			}
@@ -973,7 +978,7 @@ public class Engine implements Notifier, Aborter {
 	public void setFunctionTime(CommandSource src, Node node, TimeUnit timeUnit) {
 		if (node.isFunctionNode()) {
 			Route route = getSelectedRoute();
-			route.getRouteUnknowns().setFixedTime(node, timeUnit, Type.FUNCTION_TIME, Source.USER);
+			route.getRouteUnknowns().setFixedTime(node, timeUnit, Type.FUNCTION_TIME, Source.SET);
 		}
 	}
 
@@ -996,7 +1001,7 @@ public class Engine implements Notifier, Aborter {
 
 				if (resolveReference(fromRef) && resolveReference(toRef)) {
 					PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);					
-					defines.applyPathDefine(this, src, route, info, Source.USER);
+					defines.applyPathDefine(this, src, route, info, Source.SET);
 					hit = true;
 				}
 			}
@@ -1034,7 +1039,7 @@ public class Engine implements Notifier, Aborter {
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {
 			        route.getRouteUnknowns().setLoopIterations(src, this,
-			        	refMap.get(route), iterations, false, Source.USER);
+			        	refMap.get(route), iterations, false, Source.SET);
 				}
 			}
 
@@ -1047,7 +1052,7 @@ public class Engine implements Notifier, Aborter {
 
 	public void setLoop(CommandSource src, Node node, long iterations) {
 		try {
-			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations, Source.USER);
+			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations, Source.SET);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 
 		} catch (Exception e) {
@@ -1093,7 +1098,7 @@ public class Engine implements Notifier, Aborter {
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {
-			        route.getRouteUnknowns().setLoopPathIterations(refMap.get(route), iterations, Source.USER);
+			        route.getRouteUnknowns().setLoopPathIterations(refMap.get(route), iterations, Source.SET);
 				}
 			}			
 			
@@ -1106,7 +1111,7 @@ public class Engine implements Notifier, Aborter {
 
 	public void setLoopPath(CommandSource src, Node node, long iterations) {
 		try {
-			m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations, Source.USER);
+			m_selectedRoute.getRouteUnknowns().setLoopPathIterations(node, iterations, Source.SET);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 
 		} catch (Exception e) {
@@ -1152,7 +1157,7 @@ public class Engine implements Notifier, Aborter {
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {
-			        route.getRouteUnknowns().setLoopScope(refMap.get(route), absolute, Source.USER);
+			        route.getRouteUnknowns().setLoopScope(refMap.get(route), absolute, Source.SET);
 				}
 			}			
 			
@@ -1165,7 +1170,7 @@ public class Engine implements Notifier, Aborter {
 
 	public void setLoopScope(CommandSource src, Node node, boolean absolute) {
 		try {
-		    m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute, Source.USER);
+		    m_selectedRoute.getRouteUnknowns().setLoopScope(node, absolute, Source.SET);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 
     	} catch (Exception e) {
@@ -1212,7 +1217,7 @@ public class Engine implements Notifier, Aborter {
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {				
-			        route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.USER);
+			        route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
 				}
 			}
 		} catch (AbortedException e) { 
@@ -1224,7 +1229,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void setInstructionTime(CommandSource src, Node node, TimeUnit timeUnit) {
-		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.USER);
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 
@@ -1681,7 +1686,6 @@ public class Engine implements Notifier, Aborter {
 			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {				
 				routeCoreContainer.add(routeConstructor.getRoutes());
 				routeContainer.addRouteCoreContainer(routeCoreContainer);				
-    			m_routeContainers.add(routeContainer);
 
 				setSelectedRoute(src, m_routes.get(currentSize));
 			    notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));

@@ -19,7 +19,6 @@ public class FunctionNode extends Node {
 	private NodeAttributes m_attributes;
 	private String m_functionName;
 	private List<Node> m_functionSequence;
-	private static int functionId;
 
 	public FunctionNode() {
 		super();
@@ -27,6 +26,19 @@ public class FunctionNode extends Node {
 		setUnresolved(true);
 	}
 
+	/**
+	 * recursive function constructor
+
+	 */
+	public FunctionNode(String functionName) {
+		super();
+		m_attributes = new NodeAttributes(this);
+		m_functionName = functionName + "(Recursive)";
+		m_functionSequence = new LinkedList<Node>();
+		setUnresolved(true);
+	}
+	
+	
 	public FunctionNode(Node function, String functionName) {
 		super();
 		if (function.isSequenceNode()){
@@ -67,7 +79,7 @@ public class FunctionNode extends Node {
 	}
 
 	public Node deepCopy(Aborter aborter) throws AbortedException {
-		aborter.getAbort();
+		//aborter.getAbort();
 
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;

@@ -7,6 +7,7 @@ import java.util.List;
 import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
@@ -385,14 +386,14 @@ public class NodeAttributes {
     	return m_unknowns;
     }
 
-    public void addUnknown(Type type) {
+    public void addUnknown(Route route, Type type) {
     	removeUnknownOfType(type);
-    	m_unknowns.add(UnknownFactory.createUnknown(m_node, type, State.UNKNOWN));
+    	m_unknowns.add(UnknownFactory.createUnknown(route, m_node, type, State.UNKNOWN));
     }
 
-    public void addKnown(Type type, Source source, Reference[] references) {
+    public void addKnown(Route route, Type type, Source source, Reference[] references) {
     	removeUnknownOfType(type);
-    	m_unknowns.add(UnknownFactory.createKnown(m_node, type, State.KNOWN, source, references));
+    	m_unknowns.add(UnknownFactory.createKnown(route, m_node, type, State.KNOWN, source, references));
     }
 
 	public boolean hasUnknowns() {

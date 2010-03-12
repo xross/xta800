@@ -100,7 +100,7 @@ public class FunctionReferenceNodeAdder {
 									for (long targetPc : refTarget.getRef().getPcs()) {
 										InstructionNode target = (InstructionNode) getInstruction(m_instDecoder.getNode(targetPc), seen, functionInstructions);
 										FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionRefNodes);
-										CommonMethods.connect(fr, parent);
+										CommonMethods.connect(fr, parent);	
 										if(target != null) {
 											foundATarget = true;
 										}
@@ -119,6 +119,7 @@ public class FunctionReferenceNodeAdder {
 						}
 						if(!foundATarget){
 							FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, null, functionRefNodes);
+							fr.setUnresolved(true);
 							if (branchLinkReturn != null) {	
 								CommonMethods.connect(fr, parent);
 								CommonMethods.connect(branchLinkReturn, fr);
@@ -161,7 +162,7 @@ public class FunctionReferenceNodeAdder {
 			fr = new FunctionReferenceNode(inst, target);
 		} else {
 			fr = new FunctionReferenceNode(inst);
-			parent.setUnresolved(true);
+			//parent.setUnresolved(true);
 		}
 		assert(fr != null);
 		CommonMethods.connect(fr, parent);
