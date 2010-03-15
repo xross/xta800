@@ -11,7 +11,6 @@ xta: warning: target (0x100c8) of: (main+66) 0x10048 brff (ru6) r0, i 0x3f not f
 xta: warning: target (0x3004c) of: (main+68) 0x1004a brff (lru6) r0, i 0xffff not found in executable sections
 xta: warning: target (0x30052) of: (main+74) 0x10050 brft (lru6) r0, i 0xffff not found in executable sections
 xta: warning: target (0x30058) of: (main+80) 0x10056 brfu (lu6) i 0xffff not found in executable sections
-xta: warning: CP address 0x410238 out of bounds
   0.0: (20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
   20.0: (20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, i 0x1
   40.0: (20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0
