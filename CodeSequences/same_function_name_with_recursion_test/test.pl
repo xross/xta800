@@ -12,7 +12,7 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-       "analyse function same " .
-       "print structure - " .
-       "exit > $genDir/same_function_name_with_recursion_test.txt 2>&1");
+       "-analyse function f " .
+       "-print structure - " .
+       "-exit > $genDir/same_function_name_with_recursion_test.txt 2>&1");
 
