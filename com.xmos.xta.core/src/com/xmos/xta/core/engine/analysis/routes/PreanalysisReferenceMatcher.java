@@ -38,7 +38,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 	
 	private InstructionNode getInstructionFromContainer(FunctionContainer fc, Reference ref){
 		for(InstructionNode inst : fc.getFunctionInstructionNodes()){
-			if(ref.getPcs().contains(inst.getPC())){
+			if(ref.getPcs().contains(inst.getPC()) && ! inst.getXtaInstruction().isFnop()){
 				return inst;
 			}
 		}

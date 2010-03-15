@@ -252,7 +252,7 @@ public class RouteConstructor {
 		}
 		Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
 
-		FunctionNode newFunction = new FunctionNode(node, fnRef.getFunctionName());
+		FunctionNode newFunction = new FunctionNode(node, fnRef);
 
 		return newFunction;
 	}

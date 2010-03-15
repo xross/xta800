@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +12,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNode
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 public class RouteReferenceMatcher extends ReferenceMatcher {
 
@@ -27,7 +27,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 		baseOfRouteNode.traverse(new DefaultNodeTraverser() {
 			public TraverseStatus foundInstructionNode(Node node) {
 				InstructionNode inst = (InstructionNode)node;
-				if(ref.getPcs().contains(inst.getPC())){
+				if(ref.getPcs().contains(inst.getPC()) && !inst.getXtaInstruction().isFnop()){
 					matchingNodes.add(node);
 				}
 				return TraverseStatus.CONTINUE;
@@ -37,8 +37,10 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 		
 		//refine the matchingNodes down to the ones that match the backtrail
 		Set<Node> refinedNodes = refineMatchingNodes(ref, matchingNodes);
-		
-		if (debug) System.out.println("####### end reference match " + ref + " ###########");
+		if (debug) {
+			System.out.println("matched: " + refinedNodes);
+		}
+		if (debug) System.out.println("####### end reference match " + ref + " ###########\n\n");
 		return refinedNodes;
 	}
 
@@ -70,6 +72,16 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 	private Set<Node> refineMatchingNodes(Reference ref, Set<Node> matchingNodes) {
 		// TODO Auto-generated method stub
 		Set<Node> refinedNodes = new TreeSet<Node>();
+		
+		
+		if (debug) {
+			System.out.println("base: " + ref.getRef() + ppPcs(ref.getPcs()));
+			for(ReferenceType bt : ref.getBackTrail()){
+				System.out.println("back trail: " + bt.getRef() + ppPcs(bt.getPcs()));
+			}
+			
+		}
+		
 		for(long pc : ref.getPcs()){
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
 			
@@ -77,7 +89,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 			
 			matchLabel(ref, pc, refList);
 			
-			Collections.reverse(refList);
+			//Collections.reverse(refList);
 		
 			for(Node node : matchingNodes){
 				LinkedList<ReferenceType> matchingList = new LinkedList<ReferenceType>(refList);
@@ -85,6 +97,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 				
 				LinkedList<Node> nodeList = new LinkedList<Node>();
 				node.buildListUp(nodeList, null);
+				if (debug) System.out.println(nodeList);
 				
 				//now match the matchingList
 				while(!nodeList.isEmpty()){
@@ -100,7 +113,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 			}
 		}
 		
-		return matchingNodes;
+		return refinedNodes;
 	}
 	
 	private boolean matchesInstruction(LinkedList<ReferenceType> matchingList, Node endOfList) {
@@ -108,17 +121,33 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 			return false;
 		
 		ReferenceType ref = matchingList.getLast();
-		if(endOfList instanceof InstructionNode){
-			InstructionNode inst = (InstructionNode)endOfList;
-			if(ref.getPcs().contains(inst.getPC())){
-				return true;
+		
+		if(ref.getType() == Type.CALL){
+			if(endOfList instanceof FunctionNode){
+				FunctionNode fn = (FunctionNode) endOfList;
+				if(ref.getPcs().contains(fn.getCallingFunctionRef().getFunctionCallPc())){
+					return true;
+				}
 			}
-		} 
+		} else {
+			if(endOfList instanceof InstructionNode){
+				InstructionNode inst = (InstructionNode)endOfList;
+				if(ref.getPcs().contains(inst.getPC())){
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
 
-
+	private String ppPcs(Set<Long> set){
+		String s= "[";
+		for(long pc : set){
+			s += "0x"+Long.toHexString(pc)+", ";
+		}
+		return s +"]";
+	}
 	
 	
 }

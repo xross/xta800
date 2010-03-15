@@ -19,7 +19,8 @@ public class FunctionNode extends Node {
 	private NodeAttributes m_attributes;
 	private String m_functionName;
 	private List<Node> m_functionSequence;
-
+	private FunctionReferenceNode m_callingFnRef;
+	
 	public FunctionNode() {
 		super();
 		m_attributes = new NodeAttributes(this);
@@ -39,8 +40,9 @@ public class FunctionNode extends Node {
 	}
 	
 	
-	public FunctionNode(Node function, String functionName) {
+	public FunctionNode(Node function, FunctionReferenceNode fnRef) {
 		super();
+		m_callingFnRef = fnRef;
 		if (function.isSequenceNode()){
 			SequenceNode sn = (SequenceNode)function;
 
@@ -50,10 +52,10 @@ public class FunctionNode extends Node {
 			m_functionSequence.add(function);
 		}
 
-		if (functionName == null){
+		if (fnRef == null){
 			m_functionName = "(Call to unknown function)";
 		} else {
-			m_functionName = functionName;
+			m_functionName = m_callingFnRef.getFunctionName();
 		}
 		m_attributes = new NodeAttributes(this);
 	}
@@ -74,6 +76,17 @@ public class FunctionNode extends Node {
 
 	}
 
+	public FunctionReferenceNode getCallingFunctionRef(){
+		return m_callingFnRef;
+	}
+	
+	public void getBackTrail(StringBuffer refStr) {
+		super.getBackTrail(refStr);
+		if(m_parent != null){
+			refStr.append(String.format("CALL:0x%x,", m_callingFnRef.getFunctionCallPc()));
+		}
+	}
+	
 	public Node copyStructure() {
     	return new FunctionNode(this);
 	}
@@ -272,17 +285,13 @@ public class FunctionNode extends Node {
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {
-		/*
-		Stack<FunctionReferenceNode> copyStack = new Stack<FunctionReferenceNode>();
-		copyStack.addAll(stack);
-		if(!copyStack.isEmpty()){
-			FunctionReferenceNode parent = copyStack.pop();
-			if(parent!= null){
-				parent.buildListUp(nodeList, this);
-			}
 
+		
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, this);
 		}
-		*/
+		nodeList.add(this);
+		
 		for(Node node : m_functionSequence){
 			if(start == node) break;
 			node.buildListDown(nodeList);
@@ -291,9 +300,6 @@ public class FunctionNode extends Node {
 	}
 
 	public void buildListDown(List<Node> nodeList) {
-		for(Node node : m_functionSequence){
-			node.buildListDown(nodeList);
-		}
 	}
 
 }

@@ -415,14 +415,8 @@ public class Scripter {
     		break;
 
     	case PATH:
-//<<<<<<< HEAD:com.xmos.xta.core/src/com/xmos/xta/core/engine/scripter/Scripter.java
-//		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getFromReference()});
-//		    outputPortableWarnings(script, new Reference[]{routeCoreContainer.getToReferences().iterator().next()});
-////=======
 		    outputPortableWarnings(script, routeCoreContainer.getFromReference());
 		    outputPortableWarnings(script, routeCoreContainer.getToReferences().iterator().next());
-//>>>>>>> 62cc370c03f0661a99be28e9ca716f3d951e710e:com.xmos.xta.core/src/com/xmos/xta/core/engine/scripter/Scripter.java
-
 		    script.append(String.format("analyse path %s %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
 		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
