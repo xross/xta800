@@ -59,7 +59,9 @@ public class SuccessorAdder {
 				if(inst.isBranch()){
 					connect(instruction, pc, true);
 				} else {
-					System.err.println("trying to add branch to non branching instruction");
+					//TODO warn if this is not a branch --- usb code seems to set a branch on setsr!
+					
+					//System.err.println("trying to add branch to non branching instruction " + inst);
 				}
 			}
 		}		

@@ -29,6 +29,7 @@ import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionConstructor;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionReferenceNodeAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
+import com.xmos.xta.core.engine.analysis.controlflow.UnresolvedSetter;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
@@ -72,9 +73,8 @@ import com.xmos.xta.core.engine.utils.TimeUnit;
 public class Engine implements Notifier, Aborter {
 	public static final int ROUTE_ID_LAST     = -1;
 	public static final int ROUTE_ID_INVALID  = -2;
-	public static final int ROUTE_ID_GLOBAL   = -3;
-	public static final int ROUTE_ID_ALL      = -4;
-	public static final int NODE_ID_TOP_LEVEL = -5;
+	public static final int ROUTE_ID_ALL      = -3;
+	public static final int NODE_ID_TOP_LEVEL = -4;
 
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
@@ -665,7 +665,7 @@ public class Engine implements Notifier, Aborter {
 			List<String> nodeCoreFunctions = new LinkedList<String>();
 			nodeCoreFunctions.addAll(getFunctionNames(nodeNumber, coreNumber));
 	
-			Set<String> systemFunctions = new HashSet<String>();
+			Set<String> systemFunctions = new TreeSet<String>();
 			Collection<String> systems = m_sections.getSystems(nodeNumber, coreNumber);
 			for (String functionName : nodeCoreFunctions) {
 				if (isSystemFunction(systems, functionName)) {
@@ -676,7 +676,7 @@ public class Engine implements Notifier, Aborter {
 			functionNames.addAll(nodeCoreFunctions);
 		}
 
-		Set<String> uniqueNames = new HashSet<String>();
+		Set<String> uniqueNames = new TreeSet<String>();
 		uniqueNames.addAll(functionNames);
 		functionNames.clear();
 		functionNames.addAll(uniqueNames);
@@ -1553,6 +1553,9 @@ public class Engine implements Notifier, Aborter {
 			SuccessorAdder sa = new SuccessorAdder(nodeNumber, coreNumber, id, sections, functionEndNodes, this, src, mnenonics);
 			sa.process();
 
+			UnresolvedSetter us = new UnresolvedSetter(functionStartNodes);
+			us.process();
+			
 			//add function reference nodes
 			FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(id, m_notifier, src, xeLoader, nodeNumber, coreNumber, sections);
 			frna.process(functionStartNodes);
@@ -1567,6 +1570,8 @@ public class Engine implements Notifier, Aborter {
 			ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeNumber, coreNumber), functionContainers, 
 					sections.getLabels(nodeNumber, coreNumber));
 
+			
+			
 			setBranchTargets(id, functionContainers);
 
 			linkFunctions(functionContainers);

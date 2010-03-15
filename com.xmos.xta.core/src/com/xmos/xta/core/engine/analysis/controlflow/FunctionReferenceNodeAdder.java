@@ -1,7 +1,6 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -42,7 +41,7 @@ public class FunctionReferenceNodeAdder {
 		m_branchMap = sections.getBranches(nodeId, coreId);
 		m_cpPointer = xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
 		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());
-		m_functionContainer = new HashSet<FunctionContainer>();
+		m_functionContainer = new TreeSet<FunctionContainer>();
 	}
 
 

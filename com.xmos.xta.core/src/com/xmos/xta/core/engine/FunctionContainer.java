@@ -10,7 +10,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
-public class FunctionContainer {
+public class FunctionContainer implements Comparable<FunctionContainer> {
 
 	private String m_functionName;
 	private InstructionNode m_startInstruction;
@@ -116,5 +116,10 @@ public class FunctionContainer {
 			m_cachedFunction = sae.makeFnContainerIntoStructure(this, engine);
 		}
 		return m_cachedFunction;
+	}
+
+
+	public int compareTo(FunctionContainer o) {
+		return (int)Math.signum(this.getStartInstruction().getPC() - o.getStartInstruction().getPC());
 	}
 }

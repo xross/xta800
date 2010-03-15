@@ -75,47 +75,45 @@ public abstract class Command {
     }
 
     public boolean validateRouteId(Engine engine, Console console, int routeId) {
-    	if (routeId != Engine.ROUTE_ID_GLOBAL) {
-    	    if (engine.getRoutes().size() == 0) {
-       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
-    		    return false;
-    	    }
-        	Collection<Route> routes = engine.getRoute(routeId);
-        	if (routes.size() == 0) {
-       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"invalid route id: %d", routeId));
-        		return false;
-        	}
+
+	    if (engine.getRoutes().size() == 0) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
+		    return false;
+	    }
+    	Collection<Route> routes = engine.getRoute(routeId);
+    	if (routes.size() == 0) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   					"invalid route id: %d", routeId));
+    		return false;
     	}
+
     	return true;
     }
 
     public boolean validateNodeId(Engine engine, Console console, int routeId, int nodeId) {
-    	if (routeId != Engine.ROUTE_ID_GLOBAL) {
-	    	if (engine.getRoutes().size() == 0) {
-	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
-	    		return false;
-	    	}
-        	Collection<Route> routes = engine.getRoute(routeId);
-        	if (routes.size() == 0) {
-       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"invalid route id: %d", routeId));
-        		return false;
-        	}
+    	if (engine.getRoutes().size() == 0) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
+    		return false;
+    	}
+    	Collection<Route> routes = engine.getRoute(routeId);
+    	if (routes.size() == 0) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   					"invalid route id: %d", routeId));
+    		return false;
+    	}
 
-        	boolean found = false;
-        	for (Route route : routes) {
-            	Node node = route.getNode(nodeId);
-            	if (node != null) {
-            		found = true;
-            		break;
-            	}
+    	boolean found = false;
+    	for (Route route : routes) {
+        	Node node = route.getNode(nodeId);
+        	if (node != null) {
+        		found = true;
+        		break;
         	}
-        	if (!found) {
-       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-       					"invalid node id: %d", nodeId));
-        		return false;
-        	}
+    	}
+    	if (!found) {
+   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+   					"invalid node id: %d", nodeId));
+    		return false;
     	}
     	return true;
     }
@@ -123,9 +121,7 @@ public abstract class Command {
     public static int getRouteId(String routeId) {
     	if (routeId.equals("-")) {
     		return Engine.ROUTE_ID_LAST;
-    	} else if (routeId.equals("#")) {
-    		return Engine.ROUTE_ID_GLOBAL;
-    	} else if (routeId.equals("*")) {
+    	}else if (routeId.equals("*")) {
     		return Engine.ROUTE_ID_ALL;
     	}
     	int route = Integer.parseInt(routeId);
@@ -135,8 +131,6 @@ public abstract class Command {
     public static String getRouteId(int routeId) {
     	if (routeId == Engine.ROUTE_ID_LAST) {
     		return "-";
-    	} else if (routeId == Engine.ROUTE_ID_GLOBAL) {
-    		return "#";
     	} else if (routeId == Engine.ROUTE_ID_ALL) {
     		return "*";
     	}

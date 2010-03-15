@@ -63,7 +63,7 @@ public class UnresolvedSetter {
 	private boolean isBranch(Node current) {
 		if(current instanceof InstructionNode){
 			InstructionNode inst = (InstructionNode)current;
-			return inst.getXtaInstruction().isBranch();
+			return inst.getXtaInstruction().isBranch() && !inst.getXtaInstruction().isLink() && !inst.getXtaInstruction().getReturn();
 		}
 		return false;
 	}

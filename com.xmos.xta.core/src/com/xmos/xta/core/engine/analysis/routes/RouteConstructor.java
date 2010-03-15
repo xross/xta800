@@ -305,7 +305,7 @@ public class RouteConstructor {
 		
 		if(debug_route){
 			if(currentNode instanceof InstructionNode){
-				System.out.println("on node " + ((InstructionNode)currentNode).getXtaInstruction());
+				System.out.println("on node " + ((InstructionNode)currentNode).getXtaInstruction() + " "+ currentNode.isUnresolved() + " "+ node.isUnresolved());
 			} else {
 				System.out.println("on node " + currentNode);
 			}
