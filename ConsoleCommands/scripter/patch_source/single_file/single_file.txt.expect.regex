@@ -4,7 +4,7 @@ true       true       .+/test.xc:25 ->    label_\d+
 Modifiable Enabled    Reference  ->     MapsTo
 true       true       test.xc:13 ->          x
 true       true       .+/test.xc:25 -> out_of_bounds
-load ".+test.xe"
+# load ".+test.xe"
 
 #
 # Route: x => x

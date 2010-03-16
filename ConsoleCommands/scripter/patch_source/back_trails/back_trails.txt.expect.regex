@@ -10,7 +10,7 @@ true       true       foo.xc:15  ->          x
 true       true       .+/bar.xc:9 ->   stopCall
 true       true       foo.xc:21  ->    label_4
 true       true       .+/bar.xc:11 ->    label_5
-load ".+test.xe"
+# load ".+test.xe"
 
 #
 # Route: startCall,x => stopCall,x

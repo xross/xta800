@@ -13,5 +13,8 @@ if (!$noBuild) {
 
 system("@ARGV load $genDir/test.xe " .
        "source cmds.txt " .
+       "load $genDir/test.xe " .
+       "source dump.txt " .
+       "scripter dump " .
        "-exit > $genDir/loops.txt 2>&1");
 

@@ -25,7 +25,8 @@ system("@ARGV load test.xe " .
 
 system("xcc -target=$target -march=$arch -g test.xc -o test.xe >> loops_duplicated.log 2>&1");
 
-system("@ARGV source dump.txt " .
+system("@ARGV load test.xe " .
+       "source dump.txt " .
        "echo TWO " .
        "scripter listrefs " .
        "scripter dump " .
