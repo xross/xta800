@@ -1,12 +1,12 @@
 remove core *
 add core 0 0
-analyse path ENDPOINT:test.xc:16 ENDPOINT:test.xc:17
-analyse path ENDPOINT:test.xc:7 ENDPOINT:test.xc:8
+analyze path ENDPOINT:test.xc:16 ENDPOINT:test.xc:17
+analyze path ENDPOINT:test.xc:7 ENDPOINT:test.xc:8
 
 remove core *
 add core 0 1
-analyse path ENDPOINT:test.xc:7 ENDPOINT:test.xc:8
-analyse path ENDPOINT:test.xc:16 ENDPOINT:test.xc:17
+analyze path ENDPOINT:test.xc:7 ENDPOINT:test.xc:8
+analyze path ENDPOINT:test.xc:16 ENDPOINT:test.xc:17
 
 print summary
 

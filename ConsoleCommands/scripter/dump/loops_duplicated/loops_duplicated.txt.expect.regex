@@ -27,7 +27,7 @@ load ".+test.xe"
 #
 # Route: main
 #
-analyse function main
+analyze function main
 set loop - f1,loop 10
 set loop - f1,loop_path 10
 set looppath - f1,loop_path 5

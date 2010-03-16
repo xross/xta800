@@ -11,13 +11,13 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g test.xc func.s -o $genDir/test.xe > $genDir/call_srclabel.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "-analyse path label1 label2 " .
+       "-analyze path label1 label2 " .
        "-print structure - " .
-       "-analyse path LABEL:label1 LABEL:label2 " .
+       "-analyze path LABEL:label1 LABEL:label2 " .
        "-print structure - " .
-       "-analyse path ENDPOINT:label1 ENDPOINT:label2 " .
+       "-analyze path ENDPOINT:label1 ENDPOINT:label2 " .
        "-print structure - " .
-       "-analyse path CALL:label2 CALL:label1 " .
+       "-analyze path CALL:label2 CALL:label1 " .
        "-print structure - " .
        "-exit > $genDir/call_srclabel.txt 2>&1");
 

@@ -8,7 +8,7 @@ add looppath loop1_if 8
 add functiontime g 1 us
 add instructiontime timer1 2 us 
 
-analyse function f
+analyze function f
 set required - 10 us
 
 set loop - loop2 10

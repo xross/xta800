@@ -9,4 +9,4 @@ Route(1) function: test1
     No Timing Specified
 
 Fail, Timing Unspecified
-xta: error: no routes analysed
+xta: error: no routes analyzed

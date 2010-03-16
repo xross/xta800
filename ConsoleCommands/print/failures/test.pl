@@ -11,12 +11,12 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g -O1 test.xc -o $genDir/test.xe > $genDir/failures.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function div " .
-       "analyse function test " .
+       "analyze function div " .
+       "analyze function test " .
        "-set required - 10 ns " .
-       "analyse function test " .
+       "analyze function test " .
        "-set required - 2000 ns " .
-       "analyse function pausable " .
+       "analyze function pausable " .
        "-set required - 1000 ns " .
        "source cmds.txt " .
        "-config Werror on " .

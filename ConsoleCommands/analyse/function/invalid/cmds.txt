@@ -1,25 +1,25 @@
 remove core *
 add core 0 3
--analyse function test0
-analyse function test1
-analyse function test2
-analyse function test3
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
 remove core *
 add core 0 2
--analyse function test0
-analyse function test1
-analyse function test2
-analyse function test3
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
 remove core *
 add core 0 1
--analyse function test0
-analyse function test1
-analyse function test2
-analyse function test3
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
 remove core *
 add core 0 0
--analyse function test0
-analyse function test1
-analyse function test2
-analyse function test3
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
 print summary

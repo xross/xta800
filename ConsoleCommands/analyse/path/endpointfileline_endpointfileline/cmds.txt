@@ -1,12 +1,12 @@
 remove core *
 add core 0 0
-analyse path test.xc:16 test.xc:17
-analyse path test.xc:7 test.xc:8
+analyze path test.xc:16 test.xc:17
+analyze path test.xc:7 test.xc:8
 
 remove core *
 add core 0 1
-analyse path test.xc:7 test.xc:8
-analyse path test.xc:16 test.xc:17
+analyze path test.xc:7 test.xc:8
+analyze path test.xc:16 test.xc:17
 
 print summary
 

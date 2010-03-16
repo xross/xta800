@@ -1,9 +1,9 @@
 
 add exclusion BAR:11
-analyse path foo.xc:15 FOO:15
+analyze path foo.xc:15 FOO:15
 
-analyse path BAR:6 BAR:9
-analyse path bar.xc:6 bar.xc:6
+analyze path BAR:6 BAR:9
+analyze path bar.xc:6 bar.xc:6
 
 scripter listrefs
 scripter rename foo.xc:15 x

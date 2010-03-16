@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/nested_loop_in_path.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "set loop - loop 5 " .
        "set loop - a_loop 3 " .
        "set loop - b_loop 2 " .

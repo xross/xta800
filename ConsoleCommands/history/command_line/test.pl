@@ -14,10 +14,10 @@ system("@ARGV  " .
 
        "-add branch 0x10000 0x10000 " .
 
-       "-analyse function main " .
+       "-analyze function main " .
        "-set functiontime - main 8801 ns " .
-       "-analyse path label1 label2 " .
-       "-analyse path 0x10000 0x10002 " .
+       "-analyze path label1 label2 " .
+       "-analyze path 0x10000 0x10002 " .
        "-set required - 10000 ns " .
        "-set pathtime - 0x10000 0x10002 5003 us " .
        

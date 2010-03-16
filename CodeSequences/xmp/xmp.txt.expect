@@ -149,7 +149,7 @@ Node: 15, Core: 0, Threads: 1 (Debug information avaliable)
 Node: 15, Core: 1, Threads: 1 (Debug information avaliable)
 Node: 15, Core: 2, Threads: 1 (Debug information avaliable)
 Node: 15, Core: 3, Threads: 1 (Debug information avaliable)
-No routes analysed
+No routes analyzed
 Route(0) path: loop to loop
     No Timing Specified
 

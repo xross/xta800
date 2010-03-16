@@ -10,5 +10,5 @@ load ".+test.xe"
 # Route: x => x
 #
 add exclusion out_of_bounds
-analyse path x x
+analyze path x x
 

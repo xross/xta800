@@ -21,7 +21,7 @@ my $retval = system("@ARGV load $genDir/test.xe " .
        "status " .
        "config Werror on " .
        "status " .
-       "analyse function main " .
+       "analyze function main " .
        "-set required - 10000 ns " .
        "print summary " .
        "-exit > $genDir/Werror.txt 2>&1");

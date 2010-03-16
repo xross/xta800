@@ -16,5 +16,5 @@ load ".+test.xe"
 # Route: startCall,x => stopCall,x
 #
 add exclusion label_4,label_5
-analyse path startCall,x stopCall,x
+analyze path startCall,x stopCall,x
 

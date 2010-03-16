@@ -1,4 +1,4 @@
-analyse function main
+analyze function main
 add loop l 10 
 add looppath l 10 
 list knowns -

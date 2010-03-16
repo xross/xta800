@@ -4,26 +4,26 @@ load ".*test\.xe"
 # Route: a
 #
 config freq 0 100.000000
-analyse function a
+analyze function a
 
 #
 # Route: b
 #
 config freq 0 200.000000
 config threads 0 1 2
-analyse function b
+analyze function b
 
 #
 # Route: c
 #
 config freq 0 300.000000
 config threads 0 2 3
-analyse function c
+analyze function c
 
 #
 # Route: d
 #
 config freq 0 400.000000
 config threads 0 3 4
-analyse function d
+analyze function d
 

@@ -13,5 +13,5 @@ load ".+test.xe"
 #
 add exclusion label_2
 # Warning: 'test.xc:24' is a non-portable reference.
-analyse path label_0 test.xc:24
+analyze path label_0 test.xc:24
 

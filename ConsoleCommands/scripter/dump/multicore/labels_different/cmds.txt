@@ -48,7 +48,7 @@ add core 0 0
 add core 0 1
 add core 0 2
 add core 0 3
-analyse function f
+analyze function f
 set required 0 10 us
 set required 1 20 us
 set required 2 30 us

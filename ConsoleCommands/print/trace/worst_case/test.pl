@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/worst_case.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "-config case WORST " .
        "-print trace - " .
        "-exit > $genDir/worst_case.txt 2>&1");

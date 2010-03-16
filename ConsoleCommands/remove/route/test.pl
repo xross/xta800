@@ -11,8 +11,8 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/route.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function test0 " .
-       "analyse function test1 " .
+       "analyze function test0 " .
+       "analyze function test1 " .
        "print summary " .
        "-remove route 0 " .
        "print summary " .

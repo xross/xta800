@@ -1,5 +1,5 @@
 add exclusion the_great_outdoors
-analyse path x x
+analyze path x x
 
 set required 0 100.0 ns
 set required 1 200.0 ns

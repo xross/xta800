@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/loop_multi_path.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "set loop - loop 5 " .
        "set looppath - else 3 " .
        "set looppath - case4 1 " .

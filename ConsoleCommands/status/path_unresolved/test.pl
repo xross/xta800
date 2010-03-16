@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/path_unresolved.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " . 
-       "analyse path test.xc:3 test.xc:4 " .
+       "analyze path test.xc:3 test.xc:4 " .
        "status " .
        "exit > $genDir/path_unresolved.txt 2>&1");
 

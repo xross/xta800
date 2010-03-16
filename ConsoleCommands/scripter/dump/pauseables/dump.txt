@@ -1,20 +1,20 @@
-load "/home/kris/Views/Tools/verif_tests_sw/Tools/xta/ConsoleCommands/scripter/dump/pauseables/csim__xs1b__default/test.xe"
+load "C:\peter\git\software\verif_tests_sw\Tools\xta\ConsoleCommands\scripter\dump\pauseables\csim__xs1b__default\test.xe"
 
 #
 # Route: main
 #
-analyse function main
+analyze function main
 set instructiontime - inst 1000 cycles
 
 #
 # Route: main
 #
-analyse function main
+analyze function main
 set instructiontime - inst 2.0 us
 
 #
 # Route: main
 #
-analyse function main
+analyze function main
 set instructiontime - inst 0.1 mhz
 

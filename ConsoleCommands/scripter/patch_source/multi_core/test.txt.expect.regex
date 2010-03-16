@@ -3,6 +3,6 @@ load ".*test\.xe"
 #
 # Route: f
 #
-analyse function f
+analyze function f
 set loop - label_0 10
 

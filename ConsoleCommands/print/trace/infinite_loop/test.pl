@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/infinite_loop.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "-print trace - " .
        "-exit > $genDir/infinite_loop.txt 2>&1");
 

@@ -1,4 +1,4 @@
-analyse function main
+analyze function main
 
 set loop - ENDPOINT:test.xc:12 10
 #src label example commented out due to compiler bug.

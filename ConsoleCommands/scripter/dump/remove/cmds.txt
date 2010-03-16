@@ -1,8 +1,8 @@
-analyse function main
+analyze function main
 remove route -
-analyse function main
+analyze function main
 remove route -
-analyse function main
+analyze function main
 remove route -
 
 scripter dump

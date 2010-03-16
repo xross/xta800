@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/scale.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "-analyse function main " .
+       "-analyze function main " .
        "-set loop - l 1000 " .
        "-print structure - " .
        "-config scale false " .

@@ -18,7 +18,7 @@ my $retval = system("@ARGV load $genDir/test.xe " .
        "config Terror off " .
        "help config " .
        "status " .
-       "analyse function main " .
+       "analyze function main " .
        "-set required - 10 ns " .
        "print summary " .
        "-exit > $genDir/Terror.txt 2>&1");
@@ -35,7 +35,7 @@ close(FILE);
 $retval = system("@ARGV load $genDir/test.xe " .
        "help config " .
        "status " .
-       "analyse function main " .
+       "analyze function main " .
        "-set required - 10 ns " .
        "print summary " .
        "-exit >> $genDir/Terror.txt 2>&1");

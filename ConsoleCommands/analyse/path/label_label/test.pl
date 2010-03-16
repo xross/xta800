@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -nostartfiles -g test.s -o $genDir/test.xe > $genDir/label_label.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse path INPUT_1 INPUT_2 " .
+       "analyze path INPUT_1 INPUT_2 " .
        "print summary " .
        "-exit > $genDir/label_label.txt 2>&1");
 

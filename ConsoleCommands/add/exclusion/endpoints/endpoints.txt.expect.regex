@@ -46,4 +46,4 @@ xta: cmds.txt:51: warning: no valid paths of execution
 xta: cmds.txt:52: warning: no valid paths of execution
 xta: cmds.txt:53: warning: no valid paths of execution
 xta: cmds.txt:54: warning: no valid paths of execution
-xta: cmds.txt:55: error: no routes analysed
+xta: cmds.txt:55: error: no routes analyzed

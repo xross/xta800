@@ -99,7 +99,7 @@ remove core \*
 add core 0 3
 # Warning: 'test.xc:43' is a non-portable reference.
 add loopscope test.xc:43 false
-analyse function f
+analyze function f
 # Warning: 'test.xc:55' is a non-portable reference.
 set instructiontime 0 test.xc:55 20.0 us
 # Warning: 'test.xc:64' is a non-portable reference.

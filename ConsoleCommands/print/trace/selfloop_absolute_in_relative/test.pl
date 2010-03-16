@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/selfloop_absolute_in_relative.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "set loopscope - loopA absolute " .
        "set loop - loopA 15 " .
        "set loop - loopR 5 " .

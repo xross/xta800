@@ -13,11 +13,11 @@ system("xcc -target=$target -march=$arch test2.xc -o $genDir/test2.xe > $genDir/
 }
 system("@ARGV load $genDir/test1.xe " .
        "status " .
-       "analyse function main " .
+       "analyze function main " .
        "status " .
        "load $genDir/test2.xe " .
        "status " .
-       "analyse function main " .
+       "analyze function main " .
        "status " .
        "exit > $genDir/twice.txt 2>&1");
 

@@ -3,13 +3,13 @@ load ".*test\.xe"
 #
 # Route: main
 #
-analyse function main
+analyze function main
 # Warning: '0x1000a' is a non-portable reference.
 set loop - 0x1000a 10
 
 #
 # Route: main
 #
-analyse function main
+analyze function main
 set loop - loop 10
 

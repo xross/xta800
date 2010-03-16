@@ -3,7 +3,7 @@ load ".*test\.xe"
 #
 # Route: main
 #
-analyse function main
+analyze function main
 # Warning: 'test.xc:12' is a non-portable reference.
 set loop - test.xc:12 10
 # Warning: 'test.xc:22' is a non-portable reference.

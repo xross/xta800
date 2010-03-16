@@ -1,4 +1,4 @@
-analyse function main
+analyze function main
 set pathtime - start stop 999.0 ns
 list knowns -
 scripter dump

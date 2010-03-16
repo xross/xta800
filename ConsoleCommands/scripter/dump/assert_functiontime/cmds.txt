@@ -1,11 +1,11 @@
 add functiontime f 999.01 ns 
 add functiontime a 111.01 ns 
-analyse function g
+analyze function g
 remove functiontime *
 
 add functiontime f 888.01 ns 
 add functiontime b 222.01 ns 
-analyse function h
+analyze function h
 remove functiontime *
 
 scripter dump

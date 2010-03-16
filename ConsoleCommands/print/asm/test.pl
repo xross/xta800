@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g test.s -o $genDir/test.xe > $genDir/asm.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "print summary " .
        "-print asm 0 " .
        "-exit > $genDir/asm.txt 2>&1");

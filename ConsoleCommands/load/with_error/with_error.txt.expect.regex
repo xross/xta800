@@ -7,7 +7,7 @@ Active Core Set: \(0,0\)
 Loaded executable: test.xe
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
-No routes analysed
+No routes analyzed
 xta: error: the file '.*not_found\.xe' could not be loaded\.
 TimingFailAsError: true
 WarnAsError: false
@@ -18,4 +18,4 @@ Active Core Set: \(0,0\)
 Loaded executable: test.xe
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
-No routes analysed
+No routes analyzed

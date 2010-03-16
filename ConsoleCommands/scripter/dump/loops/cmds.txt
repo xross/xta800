@@ -1,4 +1,4 @@
-analyse function main
+analyze function main
 
 set loop - loop 10
 set loop - loop_path 10

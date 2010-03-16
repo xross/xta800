@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/underscore.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function _a " .
+       "analyze function _a " .
        "print summary " .
        "exit > $genDir/underscore.txt 2>&1");
 

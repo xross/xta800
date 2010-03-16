@@ -13,7 +13,7 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 
 system("@ARGV " .
        "load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "set instructiontime - main 100.0 ns " .
        "set instructiontime - main 100 cycles " .
        "set instructiontime - main 50 mhz " .

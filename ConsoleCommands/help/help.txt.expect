@@ -1,5 +1,5 @@
   [-]add <option> <arg0> <arg1>...: Add item to given list
-  [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
+  [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
   [-]echo "text": prints the text to the console
@@ -37,9 +37,9 @@
           mode: ns:     nanoseconds
           mode: mhz:    megahertz
           mode: cycles: processor thread cycles
-  [-]analyse <option> <arg0> <arg1>...: Perform timing analysis
-      option: function <FUNCTION_REF>: Analyse the given function
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path
+  [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
+      option: function <FUNCTION_REF>: Analyze the given function
+      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyze the given path
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <BEST/WORST>: Sets the case (currently: WORST)
@@ -66,7 +66,7 @@
       option: exclusions: Displays the exclusions
       option: functions: Lists the functions in the loaded application
       option: functiontimes: Displays the function time defines
-      option: instructiontime: Displays the instruction time defines
+      option: instructiontimes: Displays the instruction time defines
       option: knowns <route id>: Displays the list of knowns set for the given route
       option: labels: Lists the labels
       option: loops: Displays the loop defines
@@ -74,8 +74,8 @@
       option: loopscopes: Displays the loop scope defines
       option: pathtimes: Displays the path time defines
       option: sources: Lists the source files
-      option: srccommands : Displays the command list embedded in the loaded executable
-      option: srcloops : Displays the loop counts embedded in the loaded executable
+      option: srccommands: Displays the command list embedded in the loaded executable
+      option: srcloops: Displays the loop counts embedded in the loaded executable
       option: srclabels: Lists the source labels
       option: allsrclabels: Lists all the possible locations for source labels
       option: threadstartpoints: Lists the thread start points

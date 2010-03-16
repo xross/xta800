@@ -99,7 +99,7 @@ add loopscope loop1_inner true
 remove core \*
 add core 0 3
 add loopscope loop1_inner false
-analyse function f
+analyze function f
 set instructiontime 0 timer2 20.0 us
 set loop 0 loop2 10
 set loop 0 loop2_inner 5

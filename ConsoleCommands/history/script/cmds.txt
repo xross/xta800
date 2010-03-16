@@ -1,9 +1,9 @@
 add branch fromRef toRef
 add branch 0x10000 0x10000
 
-analyse function main
-analyse path label1 label2
-analyse path 0x10000 0x10002
+analyze function main
+analyze path label1 label2
+analyze path 0x10000 0x10002
 
 invalid command with arguments
 

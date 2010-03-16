@@ -6,7 +6,7 @@ config threads 0 0 4
 # =========================================================================== #
 
 add exclusion commandReceived
-analyse path dataReceiveLoop dataReceiveLoop
+analyze path dataReceiveLoop dataReceiveLoop
 set required - 250 ns
 
 print summary

@@ -1,5 +1,5 @@
 add loop l 10
 add looppath l 10
-analyse function main
+analyze function main
 print structure -
 list knowns -

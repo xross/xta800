@@ -4,7 +4,7 @@ load ".*test\.xe"
 # Route: x => x
 #
 add exclusion the_great_outdoors
-analyse path x x
+analyze path x x
 # Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
 set loop 0 0x[0-9a-fA-F]{5} 10
 # Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.

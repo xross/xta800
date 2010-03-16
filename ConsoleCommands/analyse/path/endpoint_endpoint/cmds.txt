@@ -1,14 +1,14 @@
 remove core *
 add core 0 0
 list endpoints
-analyse path output1 input1
-analyse path output0 input0
+analyze path output1 input1
+analyze path output0 input0
 
 remove core *
 add core 0 1
 list endpoints
-analyse path output0 input0
-analyse path output1 input1
+analyze path output0 input0
+analyze path output1 input1
 
 print summary
 

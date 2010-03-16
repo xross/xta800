@@ -12,7 +12,7 @@ system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test
 }
 system("@ARGV load $genDir/test.xe " .
        "config threads 0 0 1 " .
-       "analyse function main " .
+       "analyze function main " .
        "-print trace - " .
        "-set loop - loop 5 " .
        "-print trace - " .

@@ -17,7 +17,7 @@ my $filename = "trace";
 my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
-        "analyse function _Encrypt " .
+        "analyze function _Encrypt " .
         "print trace - " .
         "-exit > $genDir/$directory.txt 2>&1");
 

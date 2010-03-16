@@ -6,7 +6,7 @@ add loopscope test.xc:37 a
 add looppath test.xc:41 8
 add instructiontime test.xc:31 2 us 
 
-analyse function f
+analyze function f
 set required - 10 us
 
 set loop - test.xc:58 10

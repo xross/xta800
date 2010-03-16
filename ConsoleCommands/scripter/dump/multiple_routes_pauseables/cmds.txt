@@ -1,5 +1,5 @@
 add exclusion the_great_outdoors
-analyse path x x
+analyze path x x
 
 set instructiontime 0 x 100.0 ns
 set instructiontime 1 x 200.0 ns

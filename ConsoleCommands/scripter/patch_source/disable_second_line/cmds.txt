@@ -1,6 +1,6 @@
 
 add exclusion test.xc:25
-analyse path test.xc:21 test.xc:23
+analyze path test.xc:21 test.xc:23
 
 scripter listrefs
 scripter disable test.xc:23

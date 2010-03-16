@@ -4,6 +4,6 @@ load ".*test\.xe"
 #
 # Route: main
 #
-analyse function main
+analyze function main
 set functiontime - f 999.0 [mun]s
 

@@ -3,7 +3,7 @@ load ".*test\.xe"
 #
 # Route: main
 #
-analyse function main
+analyze function main
 set loop - loop 10
 set loop - loop_path 10
 set looppath - loop_path 5

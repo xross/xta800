@@ -1,4 +1,4 @@
-analyse function main
+analyze function main
 add functiontime f 999.0 ns 
 list knowns -
 

@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir/node_info.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "-print nodeinfo - - " .
        "-exit > $genDir/node_info.txt 2>&1");
 

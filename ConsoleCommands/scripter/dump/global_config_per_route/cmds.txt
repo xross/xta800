@@ -1,18 +1,18 @@
 config threads 0 0 1
 config freq 0 100
-analyse function a
+analyze function a
 
 config threads 0 1 2
 config freq 0 200
-analyse function b
+analyze function b
 
 config threads 0 2 3
 config freq 0 300
-analyse function c
+analyze function c
 
 config threads 0 3 4
 config freq 0 400
-analyse function d
+analyze function d
 
 scripter dump
 exit

@@ -1,4 +1,4 @@
 add loop l 10
-analyse function main
+analyze function main
 print structure -
 list knowns -

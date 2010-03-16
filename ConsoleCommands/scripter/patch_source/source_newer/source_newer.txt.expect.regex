@@ -18,15 +18,15 @@ load ".+test.xe"
 add exclusion out_of_bounds
 # Warning: 'foo.xc:15' is a non-portable reference.
 # Warning: 'foo.xc:15' is a non-portable reference.
-analyse path foo.xc:15 foo.xc:15
+analyze path foo.xc:15 foo.xc:15
 
 #
 # Route: start => stop
 #
-analyse path start stop
+analyze path start stop
 
 #
 # Route: start => start
 #
-analyse path start start
+analyze path start start
 

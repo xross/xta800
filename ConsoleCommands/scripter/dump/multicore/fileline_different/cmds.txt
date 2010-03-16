@@ -40,7 +40,7 @@ add core 0 0
 add core 0 1
 add core 0 2
 add core 0 3
-analyse function f
+analyze function f
 
 set loop 0 test.xc:64 10
 set loop 0 test.xc:61 5

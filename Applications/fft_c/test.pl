@@ -10,7 +10,7 @@ if (!$noBuild) {
   system("xcc -target=$target -march=$arch -g -O3 fft.c -o $genDir/test.xe > $genDir/fft_c.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function fix_fft_64 " .
+       "analyze function fix_fft_64 " .
        "print structure - " .
        "-exit > $genDir/fft_c.txt 2>&1");
 

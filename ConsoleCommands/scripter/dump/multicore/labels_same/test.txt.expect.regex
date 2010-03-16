@@ -11,7 +11,7 @@ add loop loop1 10
 add loop loop1_inner 5
 add looppath loop1_if 8
 add loopscope loop1_inner true
-analyse function f
+analyze function f
 set instructiontime - timer2 2.0 us
 set loop - loop2 10
 set loop - loop2_inner 5

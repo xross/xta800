@@ -1,5 +1,5 @@
 add exclusion the_great_outdoors
-analyse path x x
+analyze path x x
 
 set loop 0 ~3~ 10
 set loop 1 ~3~ 20

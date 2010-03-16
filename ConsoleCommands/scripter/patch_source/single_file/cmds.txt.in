@@ -1,6 +1,6 @@
 
 add exclusion SOURCE:25
-analyse path test.xc:13 SOURCE:13
+analyze path test.xc:13 SOURCE:13
 
 scripter listrefs
 scripter rename test.xc:13 x

@@ -17,7 +17,7 @@ Active Core Set: \(0,0\)
 Loaded executable: test.xe
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
-No routes analysed
+No routes analyzed
 Route\(0\) function: main
     Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 
@@ -42,7 +42,7 @@ Active Core Set: \(0,0\)
 Loaded executable: test.xe
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
-No routes analysed
+No routes analyzed
 Route\(0\) function: main
     Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
 

@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -nostartfiles test.s -o $genDir/test.xe > $genDir/multiroute.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "analyse function main " .
+       "analyze function main " .
        "-set instructiontime - main 100.0 ns " .
        "-print structure - " .
        "-config threads 0 0 1 " .

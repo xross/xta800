@@ -1,4 +1,4 @@
-analyse function main
+analyze function main
 
 set loop - f1,outer 10
 set loop - f1,inner 20

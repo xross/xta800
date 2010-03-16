@@ -1,4 +1,4 @@
-analyse function f
+analyze function f
 set loop - test.xc:8 10
 
 scripter dump

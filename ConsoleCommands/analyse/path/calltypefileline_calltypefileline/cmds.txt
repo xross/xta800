@@ -1,12 +1,12 @@
 remove core *
 add core 0 0
-analyse path CALL:test.xc:13 CALL:test.xc:14
-analyse path CALL:test.xc:19 CALL:test.xc:20
+analyze path CALL:test.xc:13 CALL:test.xc:14
+analyze path CALL:test.xc:19 CALL:test.xc:20
 
 remove core *
 add core 0 1
-analyse path CALL:test.xc:19 CALL:test.xc:20
-analyse path CALL:test.xc:13 CALL:test.xc:14
+analyze path CALL:test.xc:19 CALL:test.xc:20
+analyze path CALL:test.xc:13 CALL:test.xc:14
 
 print summary
 

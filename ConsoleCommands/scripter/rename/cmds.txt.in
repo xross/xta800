@@ -1,9 +1,9 @@
 
 
 add exclusion the_great_outdoors
-analyse path x x
+analyze path x x
 
-analyse path test.xc:21 test.xc:22
+analyze path test.xc:21 test.xc:22
 scripter listrefs
 scripter rename test.xc:21 start
 scripter listrefs
@@ -19,7 +19,7 @@ scripter listrefs
 scripter enable SOURCE:21
 scripter listrefs
 
-analyse path SOURCE:21 SOURCE:22
+analyze path SOURCE:21 SOURCE:22
 
 scripter disable test.xc:21
 scripter disable test.xc:22

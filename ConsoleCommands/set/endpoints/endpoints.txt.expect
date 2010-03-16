@@ -8,7 +8,7 @@ Active Core Set: (0,0)
 Loaded executable: test.xe
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
-No routes analysed
+No routes analyzed
 point 2
 TimingFailAsError: true
 WarnAsError: false
@@ -19,7 +19,7 @@ Active Core Set: (0,0)
 Loaded executable: test.xe
 Frequency: Node 0, 400.0 Mhz
 Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
-No routes analysed
+No routes analyzed
 From endpoint 'n0c0:start', node: 0, core: 0
 To endpoint 'n0c0:stop', node: 0, core: 0
 point 3

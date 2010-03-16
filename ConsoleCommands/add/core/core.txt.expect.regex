@@ -10,7 +10,7 @@ Node: 0, Core: 0, Threads: 2 \(No debug information found\)
 Node: 0, Core: 1, Threads: 1 \(No debug information found\)
 Node: 0, Core: 2, Threads: 1 \(No debug information found\)
 Node: 0, Core: 3, Threads: 1 \(No debug information found\)
-No routes analysed
+No routes analyzed
 node: 0, core: 0
 node: 0, core: 1
 node: 0, core: 2
@@ -27,7 +27,7 @@ Node: 0, Core: 0, Threads: 2 \(No debug information found\)
 Node: 0, Core: 1, Threads: 1 \(No debug information found\)
 Node: 0, Core: 2, Threads: 1 \(No debug information found\)
 Node: 0, Core: 3, Threads: 1 \(No debug information found\)
-No routes analysed
+No routes analyzed
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
@@ -40,7 +40,7 @@ Node: 0, Core: 0, Threads: 2 \(No debug information found\)
 Node: 0, Core: 1, Threads: 1 \(No debug information found\)
 Node: 0, Core: 2, Threads: 1 \(No debug information found\)
 Node: 0, Core: 3, Threads: 1 \(No debug information found\)
-No routes analysed
+No routes analyzed
 node: 0, core: 1
 node: 0, core: 2
 removed

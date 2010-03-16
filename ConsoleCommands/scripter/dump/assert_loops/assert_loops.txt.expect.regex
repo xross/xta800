@@ -7,7 +7,7 @@ add loop outer1 10
 add loop inner1 20
 add looppath inner1 15
 add loopscope inner1 true
-analyse function f
+analyze function f
 
 #
 # Route: g
@@ -19,5 +19,5 @@ remove looppath \*
 add looppath inner2 15
 remove loopscope \*
 add loopscope inner2 true
-analyse function g
+analyze function g
 
