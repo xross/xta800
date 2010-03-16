@@ -285,8 +285,8 @@ public class Scripter {
 	private StringBuffer createScript() {
 		StringBuffer script = new StringBuffer();
  	
-    	script.append(String.format("load \"%s\"\n", m_engine.getExecutable().toString()));
-    	    	    	
+    	script.append(String.format("# load \"%s\"\n", m_engine.getExecutable().toString()));
+
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
         	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
         	    (routeContainer.getNumExistingRoutes() <= 0))
@@ -320,7 +320,7 @@ public class Scripter {
         	RouteCoreContainer routeCoreContainer = routeContainer.getRouteCoreContainers().iterator().next();
     		script.append(String.format("# Route: %s => %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
-		    		getReferenceString(routeCoreContainer.getToReference())));
+		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
     	}
     	script.append("#\n");
@@ -416,11 +416,10 @@ public class Scripter {
 
     	case PATH:
 		    outputPortableWarnings(script, routeCoreContainer.getFromReference());
-		    outputPortableWarnings(script, routeCoreContainer.getToReference());
-
+		    outputPortableWarnings(script, routeCoreContainer.getToReferences().iterator().next());
 		    script.append(String.format("analyze path %s %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
-		    		getReferenceString(routeCoreContainer.getToReference())));
+		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
     	}
     }

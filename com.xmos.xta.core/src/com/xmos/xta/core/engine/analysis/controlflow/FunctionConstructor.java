@@ -90,8 +90,10 @@ public class FunctionConstructor {
 	}
 
 	private void addThreadStartsToFunctionStarts(){
+		
 		for (long pc : m_sections.getThreadStartPoints(m_nodeId, m_coreId)) {
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
+			
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
 			} else {

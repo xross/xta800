@@ -1,8 +1,12 @@
 package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 
@@ -19,16 +23,18 @@ public class CommonMethods {
 		leaf.addPrevNode(root);
 	}
 
-	public static boolean wedgeUp(Node node, Collection<Node> workingSet){
+	public static boolean wedgeUp(Node node, Collection<Node> workingSet, Aborter aborter) throws AbortedException{
 
 		if (node.getNextNodesSize() < 2) {
 			return false;
 		}
 		Collection<Node> newNodes = new TreeSet<Node>();
 
+		
+		
 		for (Node next : node.getNextNodes()) {
-			Node newNode = node.copyStructure();
-
+			Node newNode = null;
+			newNode = node.deepCopy(aborter);
 			newNodes.add(newNode);
 			next.addPrevNode(newNode);
 			next.removePrevNode(node);
@@ -54,18 +60,18 @@ public class CommonMethods {
 	//TODO find out why these functions aren't symmetric
 
 
-	public static boolean wedgeDown(Node node, Collection<Node> workingSet){
+	public static boolean wedgeDown(Node node, Collection<Node> workingSet, Aborter aborter) throws AbortedException{
 
 		if (node.getPrevNodesSize() < 2) {
 			return false;
 		}
 
 		Collection<Node> newNodes = new TreeSet<Node>();
-
 		for (Node prev : node.getPrevNodes()){
 
-			//make the new node
-			Node newNode = node.copyStructure();
+			Node newNode = null;
+			newNode = node.deepCopy(aborter);
+			
 			newNodes.add(newNode);
 
 			prev.removeNextNode(node);
@@ -90,6 +96,16 @@ public class CommonMethods {
 		return true;
 	}
 
+	public static Set<Node> getAllContainedNodes(Node node) {
+		Set<Node> seen = new HashSet<Node>();
+		seen.add(node);
+		for(Node child : node.iChildren()){
+			seen.addAll(getAllContainedNodes(child));
+		}
+		
+		return seen;
+	}
+	
 	public static Node findNullNode(Collection<Node> workingSet){
 		for(Node node : workingSet){
 			if(node.isNullNode()){

@@ -1,7 +1,6 @@
 package com.xmos.xta.core.console.commands.print;
 
 import java.util.Collection;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -9,7 +8,6 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Structure extends Command {
 	private static final String[] COMMAND_NAMES = { "structure" };
@@ -81,31 +79,34 @@ public class Structure extends Command {
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;
 
-		if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
-			displayGlobalTree(engine, console);
-			
-		} else {
+		//if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
+		//	displayGlobalTree(engine, console);
+		//	
+		//} else {
 			displayRouteTree(engine, console);
-		}
+		//}
     }
-
+/*
     private void displayGlobalTree(final Engine engine, final Console console) {
 		final StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
 
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 			console.display(String.format("Node: %d, Core: %d\n", activeCore.getNode(), activeCore.getCore()));
-				
+
 			Collection<Node> nodes = null;
     		if (m_nodeIdSet) {
     			nodes = getCollection(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getNode(m_nodeId));
     		} else {
     			nodes = new TreeSet<Node>();
+    			
     			nodes.addAll(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getFunctions());
     		}
+    		
     		displayer.display(nodes);
+
 		}				
     }
-    
+ */   
     private void displayRouteTree(final Engine engine, final Console console) {
 		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
 		

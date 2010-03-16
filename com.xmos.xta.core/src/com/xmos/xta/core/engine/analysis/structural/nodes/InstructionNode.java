@@ -42,6 +42,7 @@ public class InstructionNode extends Node {
 	}
 
 	public String toString() {
+		//return this.getXtaInstruction().toString();
 		return String.format("%s (0x%x)", super.toString(), m_inst.getPc());
 	}
 
@@ -136,11 +137,10 @@ public class InstructionNode extends Node {
 	}
 
 
-	public void buildListUp(List<Node> nodeList,
-			Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList, Node start) {
 		assert(start == null);
 		if(m_parent!= null){
-			m_parent.buildListUp(nodeList, stack, this);
+			m_parent.buildListUp(nodeList, this);
 		}
 		nodeList.add(this);
 	}

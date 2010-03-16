@@ -5,12 +5,14 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
 
 public class SequencePatternMatcher extends PatternMatcher {
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart, Aborter aborter ) throws AbortedException {
 
 		m_treeStart = treeStart;
 		LinkedList<Node> pathList = new LinkedList<Node>();

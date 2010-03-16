@@ -63,6 +63,7 @@ public class Loop extends Command {
 
 		Node node = getReferencedNode(engine, m_routeId, m_refString);
 		if (node != null) {
+
 			engine.setSelectedRouteId(getSrc(), m_routeId);
    		    engine.setLoop(getSrc(), node, m_iterations);
 

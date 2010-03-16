@@ -151,10 +151,7 @@ public class Reference implements Comparable<Reference>  {
 	}
 
 	public boolean matches(long pc) {
-		if (m_base.getPcs().contains(pc)) {
-			return true;
-		}
-		return false;
+		return m_base.getPcs().contains(pc);
 	}
 
 	public boolean checkPcsMatch() {

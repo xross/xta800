@@ -94,8 +94,7 @@ public class NullNode extends Node {
 	public void buildListDown(List<Node> nodeList) {
 
 	}
-	public void buildListUp(List<Node> nodeList,
-			Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList,Node start) {
 	}
 
 	public TraverseStatus traverse(NodeTraverser nodeTraverser) {

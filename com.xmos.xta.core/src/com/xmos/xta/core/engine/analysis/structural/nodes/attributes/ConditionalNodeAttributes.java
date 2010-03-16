@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
@@ -13,7 +13,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
 	public ConditionalNodeAttributes(Node node) {
 		super(node);
-		m_setIterations = new HashMap<Node, Long>();
+		m_setIterations = new TreeMap<Node, Long>();
 		m_cachedWorstCaseOption = null;
 		m_cachedBestCaseOption = null;
 	}
