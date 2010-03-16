@@ -80,7 +80,7 @@ public class StructuralAnalysisEngine {
 				}
 				for (Node node : postOrder) {
 					engine.getAbort();
-					if (pm.isMatch(node, workingSet, treeStart)) {
+					if (pm.isMatch(node, workingSet, treeStart, engine)) {
 						assert(sanityCheckGraph(workingSet));
 						treeStart = pm.getTreeStart();
 						assert (workingSet.contains(treeStart));

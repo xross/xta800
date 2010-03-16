@@ -6,12 +6,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class ConditionalPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart, Aborter aborter ) throws AbortedException {
 		m_treeStart = treeStart;
 
 		if (currentNode.getNextNodesSize() < 2) {

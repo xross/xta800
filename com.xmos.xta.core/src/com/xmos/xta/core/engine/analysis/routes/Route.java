@@ -30,7 +30,7 @@ public class Route {
 	private RouteTiming m_timing;
 	private RouteUnknowns m_unknowns;
 	
-	private Stack<FunctionReferenceNode> m_stack;
+	//private Stack<FunctionReferenceNode> m_stack;
 	private Node m_baseOfRouteNode;
 	
 	private Node m_searchNode;
@@ -41,7 +41,7 @@ public class Route {
 	public Route(CommandSource src, Engine engine, Stack<FunctionReferenceNode> stack, Node node, RouteCoreContainer routeCoreContainer) {
 		m_coreContainer = routeCoreContainer;
 		m_routeId = s_routeCount++;
-		m_stack = stack;
+		//m_stack = stack;
 		m_baseOfRouteNode = node;
 		Architecture architecture = engine.getXeLoader().getArchitecture();
 		

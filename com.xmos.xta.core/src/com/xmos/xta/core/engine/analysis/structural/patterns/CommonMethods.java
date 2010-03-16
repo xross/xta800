@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 
@@ -22,7 +23,7 @@ public class CommonMethods {
 		leaf.addPrevNode(root);
 	}
 
-	public static boolean wedgeUp(Node node, Collection<Node> workingSet){
+	public static boolean wedgeUp(Node node, Collection<Node> workingSet, Aborter aborter) throws AbortedException{
 
 		if (node.getNextNodesSize() < 2) {
 			return false;
@@ -33,13 +34,7 @@ public class CommonMethods {
 		
 		for (Node next : node.getNextNodes()) {
 			Node newNode = null;
-			try {
-				newNode = node.deepCopy(null);
-			} catch (AbortedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			newNode = node.deepCopy(aborter);
 			newNodes.add(newNode);
 			next.addPrevNode(newNode);
 			next.removePrevNode(node);
@@ -65,7 +60,7 @@ public class CommonMethods {
 	//TODO find out why these functions aren't symmetric
 
 
-	public static boolean wedgeDown(Node node, Collection<Node> workingSet){
+	public static boolean wedgeDown(Node node, Collection<Node> workingSet, Aborter aborter) throws AbortedException{
 
 		if (node.getPrevNodesSize() < 2) {
 			return false;
@@ -75,12 +70,7 @@ public class CommonMethods {
 		for (Node prev : node.getPrevNodes()){
 
 			Node newNode = null;
-			try {
-				newNode = node.deepCopy(null);
-			} catch (AbortedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			newNode = node.deepCopy(aborter);
 			
 			newNodes.add(newNode);
 
