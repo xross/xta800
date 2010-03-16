@@ -46,6 +46,7 @@ public class SuccessorAdder {
 	}
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
+		
 		Set<BranchInfo> targets = new HashSet<BranchInfo>();
 		for (Reference ref : m_branchMap.keySet()) {
 			if (ref.matches(inst.getPc())) {

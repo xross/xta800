@@ -47,6 +47,7 @@ public class RouteConstructor {
 
 	private static boolean debug_route = false;
 	private static boolean debug_exculsions = false;
+	private static boolean debug_branches = false;
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1;
 
@@ -99,9 +100,21 @@ public class RouteConstructor {
 			exclusionStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
 		}
 		
+		List<StackNode> branchStackNodes = new LinkedList<StackNode>();
+		for(Reference ref : m_engine.getUserBranches().keySet()){
+			branchStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
+		}
+		
 		if (debug_exculsions) {
 			System.out.println("exclusions are:");
 			for(StackNode sn : exclusionStackNodes){
+				System.out.println(sn);
+			}	
+		}
+		
+		if (debug_branches) {
+			System.out.println("branches are:");
+			for(StackNode sn : branchStackNodes){
 				System.out.println(sn);
 			}	
 		}
