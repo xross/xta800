@@ -4,8 +4,4 @@ set instructiontime - f1,inst 100.0 ns
 set instructiontime - f2,inst 200.0 ns
 
 scripter dump > dump.txt
-source dump.txt
-scripter dump
-
-exit
 

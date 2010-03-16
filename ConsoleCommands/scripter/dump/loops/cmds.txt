@@ -8,8 +8,4 @@ set loop - ~7~ 10
 set looppath - ~7~1~1~0~ 5
 
 scripter dump > dump.txt
-source dump.txt
-scripter dump
-
-exit
 

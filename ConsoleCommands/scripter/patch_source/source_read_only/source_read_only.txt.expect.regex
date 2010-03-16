@@ -9,7 +9,7 @@ false      false      foo.xc:15  ->    label_\d+
 true       true       .+/bar.xc:11 -> out_of_bounds
 true       true       .+/bar.xc:6 ->      start
 true       true       .+/bar.xc:9 ->       stop
-load ".+test.xe"
+# load ".+test.xe"
 
 #
 # Route: foo.xc:15 => foo.xc:15

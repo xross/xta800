@@ -1,5 +1,5 @@
 Time taken for path \(node id: \d+\) is set to 999.0 [mun]s, pc: 0x[0-9a-z]+, backtrace: main:g:
-load ".*test\.xe"
+# load ".*test\.xe"
 
 #
 # Route: main

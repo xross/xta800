@@ -1,0 +1,8 @@
+function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] f \[ANCESTORS: \]
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) \[1\]  \[ANCESTORS: \d+ \]
+.    .  F instruction\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] 0x100ac: retsp \(u6\) i 0x0 \[ANCESTORS: \d+ \d+ \]
+
+function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] f \[ANCESTORS: \]
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) \[1\]  \[ANCESTORS: \d+ \]
+.    .  F instruction\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] 0x100bc: retsp \(u6\) i 0x0 \[ANCESTORS: \d+ \d+ \]
+

@@ -14,9 +14,7 @@ function\(\d+\)\s+: Unresolved / \d+.\d+ ns main
 .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .  \* loop\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
 .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns __misaligned_load
@@ -42,26 +40,9 @@ function\(\d+\)\s+: Unresolved / \d+.\d+ ns main
 .    .    .    .    function\(\d+\)\s+: Unresolved / Unresolved sort\(Recursive\)
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
 .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .  \* loop\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
-.    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .  \* loop\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
@@ -71,44 +52,45 @@ function\(\d+\)\s+: Unresolved / \d+.\d+ ns main
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 
-function\(\d+\)\s+: Unresolved / Unresolved sort
+function\(\d+\)\s+: Unresolved / \d+.\d+ ns sort
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns __misaligned_load
-.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.  \* cond\(\d+\)\s+: Unresolved / \d+.\d+ ns 
+.    .  \* seq\(\d+\)\s+: Unresolved / Unresolved 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.  \* loop\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns __misaligned_load
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    .    .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .  \* loop\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
+.    .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns __misaligned_load
 .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
-.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
-.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    function\(\d+\)\s+: Unresolved / Unresolved sort\(Recursive\)
-.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    function\(\d+\)\s+: Unresolved / Unresolved sort\(Recursive\)
+.    .    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    seq\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
+.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    function\(\d+\)\s+: Unresolved / Unresolved sort\(Recursive\)
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    function\(\d+\)\s+: Unresolved / Unresolved sort\(Recursive\)
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 

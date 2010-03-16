@@ -35,7 +35,7 @@ false      true       the_great_outdoors -> the_great_outdoors
 true       false      test.xc:21 ->      start
 true       false      test.xc:22 ->       stop
 xta: cmds.txt:28: error: Reference 'x' cannot be renamed
-load ".*test.xe"
+# load ".*test.xe"
 
 #
 # Route: x => x

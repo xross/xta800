@@ -2,16 +2,13 @@ seq\(\d+\) +: \d+\.\d [mun]s \/ \d+\.\d [mun]s
 .  \* block\(\d+\) +: \d+\.\d [mun]s \(x 1\) \/ \d+\.\d [mun]s \(x 1\) 
 .  \* selfloop\(\d+\) +: \d+\.\d [mun]s \/ \d+\.\d [mun]s 
 .    .  \* seq\(\d+\) +: \d+\.\d [mun]s \/ \d+\.\d [mun]s 
-.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 240\) \/ \d+\.\d [mun]s \(x 240\) 
 .    .    .  \* block\(\d+\) +: \d+\.\d [mun]s \(x 240\) \/ \d+\.\d [mun]s \(x 240\) 
 .    .    .  \* selfloop\(\d+\) +: \d+\.\d [mun]s \/ \d+\.\d [mun]s 
 .    .    .    .  \* seq\(\d+\) +: \d+\.\d [mun]s \/ \d+\.\d [mun]s 
-.    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 76800\) \/ \d+\.\d [mun]s \(x 76800\) 
 .    .    .    .    .  \* block\(\d+\) +: \d+\.\d [mun]s \(x 76800\) \/ \d+\.\d [mun]s \(x 76800\) 
 .    .    .    .    .    cond\(\d+\) +: \d+\.\d [mun]s \/ \d+\.\d [mun]s 
 .    .    .    .    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) \/ \d+\.\d [mun]s \(x 76800\) 
 .    .    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 76800\) \/ 0.0 [mun]s \(x 0\) 
-.    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 76800\) \/ \d+\.\d [mun]s \(x 76800\) 
 .    .    .    .    .  \* block\(\d+\) +: \d+\.\d [mun]s \(x 76800\) \/ \d+\.\d [mun]s \(x 76800\) 
 .    .    .  \* block\(\d+\) +: \d+\.\d [mun]s \(x 240\) \/ \d+\.\d [mun]s \(x 240\) 
 .  \* block\(\d+\) +: \d+\.\d [mun]s \(x 1\) \/ \d+\.\d [mun]s \(x 1\) 
