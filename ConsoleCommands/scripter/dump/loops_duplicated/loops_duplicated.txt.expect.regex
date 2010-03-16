@@ -22,7 +22,7 @@ false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
 false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
 false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
 false      true       f2         ->         f2
-load ".+test.xe"
+# load ".+test.xe"
 
 #
 # Route: main

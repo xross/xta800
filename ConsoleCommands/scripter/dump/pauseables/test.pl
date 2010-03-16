@@ -13,5 +13,9 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 
 system("@ARGV " .
        "load $genDir/test.xe " .
-       "source cmds.txt > $genDir/pauseables.txt 2>&1");
+       "source cmds.txt " .
+       "load $genDir/test.xe " .
+       "source dump.txt " .
+       "scripter dump " .
+       "exit > $genDir/pauseables.txt 2>&1");
 
