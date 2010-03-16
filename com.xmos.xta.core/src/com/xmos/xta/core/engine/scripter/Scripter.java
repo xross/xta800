@@ -285,8 +285,8 @@ public class Scripter {
 	private StringBuffer createScript() {
 		StringBuffer script = new StringBuffer();
  	
-    	script.append(String.format("load \"%s\"\n", m_engine.getExecutable().toString()));
-    	    	    	
+    	script.append(String.format("# load \"%s\"\n", m_engine.getExecutable().toString()));
+
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
         	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
         	    (routeContainer.getNumExistingRoutes() <= 0))
