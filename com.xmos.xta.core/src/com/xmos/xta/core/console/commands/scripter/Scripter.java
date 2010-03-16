@@ -5,6 +5,8 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Scripter extends CommandContainer {
+	private static final String[] COMMAND_NAMES = { "scripter" };
+
 	static private Command[] m_options = {
 		new Disable(),
 		new Dump(),
@@ -13,8 +15,8 @@ public class Scripter extends CommandContainer {
 		new Rename(),
 	};
 
-	public Scripter() { super("scripter"); }
-	public Scripter(Command command) { super("scripter", command); }
+	public Scripter() { super(COMMAND_NAMES); }
+	public Scripter(Command command) { super(COMMAND_NAMES, command); }
 
 	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Work with the script generator"; }

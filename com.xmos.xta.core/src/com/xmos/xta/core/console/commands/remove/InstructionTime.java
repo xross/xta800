@@ -6,12 +6,16 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class InstructionTime extends Command {
+	private static final String[] COMMAND_NAMES = { "instructiontime" };
+
 	private String m_refString;
 
 	public InstructionTime() {
+		super(COMMAND_NAMES);
 	}
 
 	public InstructionTime(String refString) {
+		super(COMMAND_NAMES);
 		m_refString = refString;
 	}
 
@@ -23,16 +27,12 @@ public class InstructionTime extends Command {
 		return new Command.ArgType[] {ArgType.ENDPOINT};
 	}
 
-    public String name() {
-		return "instructiontime";
-    }
-
     public String commandLine() {
-       	return "instructiontime " + m_refString;
+       	return name() + " " + m_refString;
     }
 
     public String description(Engine engine, boolean detailed) {
-		return "instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines";
+		return name() + " <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines";
     }
 
     public Command clone(String[] args, int index) {

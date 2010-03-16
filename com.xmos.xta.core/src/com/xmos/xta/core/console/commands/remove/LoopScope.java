@@ -6,12 +6,16 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class LoopScope extends Command {
+	private static final String[] COMMAND_NAMES = { "loopscope" };
+
 	private String m_refString;
 
 	public LoopScope() {
+		super(COMMAND_NAMES);
 	}
 
 	public LoopScope(String refString) {
+		super(COMMAND_NAMES);
 		m_refString = refString;
 	}
 
@@ -23,16 +27,12 @@ public class LoopScope extends Command {
 		return new Command.ArgType[] {ArgType.ALLREFS};
 	}
 
-    public String name() {
-		return "loopscope";
-    }
-
     public String commandLine() {
-       	return "loopscope " + " " + m_refString;
+       	return name() + " " + " " + m_refString;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "loopscope <ANY_REF|*>: Removes the given loop scope define to the list of defines";
+    	return name() + " <ANY_REF|*>: Removes the given loop scope define to the list of defines";
     }
 
     public Command clone(String[] args, int index) {

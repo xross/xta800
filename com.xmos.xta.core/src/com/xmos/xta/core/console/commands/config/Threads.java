@@ -6,17 +6,21 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Threads extends Command {
+	private static final String[] COMMAND_NAMES = { "threads" };
+
 	private int m_nodeNumber;
 	private int m_coreNumber;
 	private int m_numThreads;
 
 	public Threads() {
+		super(COMMAND_NAMES);
 		m_nodeNumber = 0;
 		m_coreNumber = 0;
 		m_numThreads = 0;
 	}
 
 	public Threads(int nodeNumber, int coreNumber, int threads) {
+		super(COMMAND_NAMES);
 		m_nodeNumber = nodeNumber;
 		m_coreNumber = coreNumber;
 		m_numThreads = threads;
@@ -26,16 +30,12 @@ public class Threads extends Command {
     	return 3;
     }
 
-    public String name() {
-    	return "threads";
-    }
-
     public String commandLine() {
-    	return String.format("threads %d %d %d", m_nodeNumber, m_coreNumber, m_numThreads);
+    	return name() + String.format(" %d %d %d", m_nodeNumber, m_coreNumber, m_numThreads);
     }
 
     public String description(Engine engine, boolean detailed) {
-        return String.format("threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core");
+        return name() + " <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core";
     }
 
     public Command clone(String[] args, int index) {

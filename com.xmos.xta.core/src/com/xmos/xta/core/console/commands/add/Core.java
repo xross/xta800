@@ -7,15 +7,19 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Core extends Command {
+	private static final String[] COMMAND_NAMES = { "core" };
+
 	private String m_nodeId;
 	private String m_coreId;
 
 	public Core() {
+		super(COMMAND_NAMES);
 		m_nodeId = "";
 		m_coreId = "";
 	}
 
 	public Core(String nodeId, String coreId) {
+		super(COMMAND_NAMES);
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 	}
@@ -28,20 +32,16 @@ public class Core extends Command {
     	}
     }
 
-    public String name() {
-    	return "core";
-    }
-
     public String commandLine() {
     	if (m_nodeId.length() == 0) {
-    		return String.format("core %s", m_coreId);
+    		return name() + String.format(" %s", m_coreId);
     	} else {
-    		return String.format("core %s %s", m_nodeId, m_coreId);
+    		return name() + String.format(" %s %s", m_nodeId, m_coreId);
     	}
     }
 
     public String description(Engine engine, boolean detailed) {
-        return String.format("core [node id] <core id>: Add core to active set");
+        return name() + " [node id] <core id>: Add core to active set";
     }
 
     public Command clone(String[] args, int index) {

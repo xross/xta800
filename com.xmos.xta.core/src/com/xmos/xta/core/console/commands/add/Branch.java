@@ -9,14 +9,18 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Branch extends Command {
+	private static final String[] COMMAND_NAMES = { "branch" };
+
 	private String m_fromRefString;
 	private Collection<String> m_toRefStrings;
 
 	public Branch() {
+		super(COMMAND_NAMES);
 		m_toRefStrings = new ArrayList<String>();
 	}
 
 	public Branch(String fromRefString, Collection<String> toRefStrings) {
+		super(COMMAND_NAMES);
 		m_fromRefString = fromRefString;
 		m_toRefStrings = toRefStrings;
 	}
@@ -33,12 +37,8 @@ public class Branch extends Command {
      			ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL, ArgType.LABEL};
 	}
 
-	public String name() {
-		return "branch";
-	}
-
 	public String commandLine() {
-		String str = "branch " + m_fromRefString;
+		String str = name() + " " + m_fromRefString;
 		for (String toRefString : m_toRefStrings) {
 			str += " " + toRefString;
 		}
@@ -46,7 +46,7 @@ public class Branch extends Command {
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list";
+        return name() + " <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list";
 	}
 
 	public Command clone(String[] args, int index) {

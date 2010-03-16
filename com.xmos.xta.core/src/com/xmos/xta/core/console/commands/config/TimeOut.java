@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class TimeOut extends Command {
+	private static final String[] COMMAND_NAMES = { "timeout" };
+
 	private int m_time;
 
 	public TimeOut() {
+		super(COMMAND_NAMES);
 		m_time = 0;
 	}
 
 	public TimeOut(int time) {
+		super(COMMAND_NAMES);
 		m_time = time;
 	}
 
@@ -20,16 +24,12 @@ public class TimeOut extends Command {
 		return 1;
 	}
 
-	public String name() {
-		return "timeout";
-	}
-
 	public String commandLine() {
-		return String.format("timeout %d", m_time);
+		return name() + String.format(" %d", m_time);
 	}
 
 	public String description(Engine engine, boolean detailed) {
-		return "timeout <seconds>: Sets the tools timeout on load";
+		return name() + " <seconds>: Sets the tools timeout on load";
 	}
 
 	public Command clone(String[] args, int index) {

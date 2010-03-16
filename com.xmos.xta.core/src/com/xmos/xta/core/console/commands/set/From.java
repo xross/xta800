@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class From extends Command {
+	private static final String[] COMMAND_NAMES = { "from" };
+
 	private String m_fromRef;
 
 	public From() {
+		super(COMMAND_NAMES);
 		m_fromRef = "";
 	}
 
 	public From(String fromRef) {
+		super(COMMAND_NAMES);
 		m_fromRef = fromRef;
 	}
 
@@ -20,16 +24,12 @@ public class From extends Command {
    		return 1;
     }
 
-    public String name() {
-    	return "from";
-    }
-
     public String commandLine() {
-       	return String.format("from %s", m_fromRef);
+       	return name() + String.format(" %s", m_fromRef);
     }
 
     public String description(Engine engine, boolean detailed) {
-       	return "from <ENDPOINT_REF>: Sets the from endpoint";
+       	return name() + " <ENDPOINT_REF>: Sets the from endpoint";
     }
 
     public Command clone(String[] args, int index) {

@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class PathTime extends Command {
+	private static final String[] COMMAND_NAMES = { "pathtime" };
+
 	private String m_fromRef;
 	private String m_toRef;
 
 	public PathTime() {
+		super(COMMAND_NAMES);
 	}
 
 	public PathTime(String fromRef, String toRef) {
+		super(COMMAND_NAMES);
 		m_fromRef = fromRef;
 		m_toRef = toRef;
 	}
@@ -25,16 +29,12 @@ public class PathTime extends Command {
 		return new Command.ArgType[] {ArgType.ENDPOINT, ArgType.ENDPOINT};
 	}
 
-    public String name() {
-		return "pathtime";
-    }
-
     public String commandLine() {
-       	return "pathtime " + m_fromRef + " " + m_toRef;
+       	return name() + " " + m_fromRef + " " + m_toRef;
     }
 
     public String description(Engine engine, boolean detailed) {
-		return "pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines";
+		return name() + " <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines";
     }
 
     public Command clone(String[] args, int index) {

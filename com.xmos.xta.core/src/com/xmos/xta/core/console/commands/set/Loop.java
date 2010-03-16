@@ -7,17 +7,21 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class Loop extends Command {
+	private static final String[] COMMAND_NAMES = { "loop" };
+
 	private int m_routeId;
 	private String m_refString;
 	private int m_iterations;
 
 	public Loop() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 		m_refString = "";
 		m_iterations = 0;
 	}
 
 	public Loop(int routeId, String refString, int iterations) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_refString = refString;
 		m_iterations = iterations;
@@ -31,16 +35,12 @@ public class Loop extends Command {
 		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS};
 	}
 
-    public String name() {
-    	return "loop";
-    }
-
     public String commandLine() {
-       	return "loop " + getRouteId(m_routeId) + " " + m_refString + " " + m_iterations;
+       	return name() + " " + getRouteId(m_routeId) + " " + m_refString + " " + m_iterations;
     }
 
     public String description(Engine engine, boolean detailed) {
-   		return "loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified";
+   		return name() + " <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified";
     }
 
     public Command clone(String[] args, int index) {

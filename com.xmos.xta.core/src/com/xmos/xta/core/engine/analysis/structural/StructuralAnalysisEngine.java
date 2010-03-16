@@ -95,7 +95,7 @@ public class StructuralAnalysisEngine {
 		return true;
 	}
 
-	public boolean analyse(Engine engine, Set<InstructionNode> functionStartNodes,
+	public boolean analyze(Engine engine, Set<InstructionNode> functionStartNodes,
 			Map<String, List<InstructionNode>> functionNameToInstructions, Sections sections,
 			int nodeId,  int coreId) throws AbortedException {
 
@@ -229,8 +229,8 @@ public class StructuralAnalysisEngine {
 			Set<FunctionReferenceNode> functionReferences = new TreeSet<FunctionReferenceNode>();
 			Node initialBasicBlock = reduceGraphToBasicBlocks(basicBlocks, graphStart, currentGraph, functionReferences);
 
-			FnopAnalyser fa = new FnopAnalyser();
-			fa.analyse(basicBlocks);
+			FnopAnalyzer fa = new FnopAnalyzer();
+			fa.analyze(basicBlocks);
 
 			//dumpTree("after", basicBlocks);
 

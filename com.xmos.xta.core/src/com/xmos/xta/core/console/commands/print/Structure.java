@@ -12,18 +12,21 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Structure extends Command {
+	private static final String[] COMMAND_NAMES = { "structure" };
 
 	private int m_routeId;
 	private int m_nodeId;
 	private boolean m_nodeIdSet;
 
 	public Structure() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 		m_nodeId = 0;
 		m_nodeIdSet = false;
 	}
 
 	public Structure(int routeId, int nodeId, boolean nodeIdSpecified) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_nodeId = nodeId;
 		m_nodeIdSet = nodeIdSpecified;
@@ -36,20 +39,15 @@ public class Structure extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "structure";
-    }
-
     public String commandLine() {
        	if (m_nodeIdSet) {
-           	return "structure " + getRouteId(m_routeId) + " " + m_nodeId;
+           	return name() + " " + getRouteId(m_routeId) + " " + m_nodeId;
        	}
-   		return "structure " + getRouteId(m_routeId);
+   		return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "structure <route id> [node id]: Display the structure for given route/node (verbosity 0|1)";
-    	return descString;
+    	return name() + " <route id> [node id]: Display the structure for given route/node (verbosity 0|1)";
     }
 
     public Command clone(String[] args, int index) {

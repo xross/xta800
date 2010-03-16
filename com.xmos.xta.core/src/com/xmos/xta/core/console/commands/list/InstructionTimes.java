@@ -9,8 +9,10 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
 
 public class InstructionTimes extends Command {
+	private static final String[] COMMAND_NAMES = { "instructiontimes" };
 
 	public InstructionTimes() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
@@ -21,16 +23,12 @@ public class InstructionTimes extends Command {
         return super.getArgTypes();
 	}
 
-    public String name() {
-		return "instructiontimes";
-    }
-
     public String commandLine() {
-   		return "instructiontimes";
+   		return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "instructiontime: Displays the instruction time defines";
+    	return name() + ": Displays the instruction time defines";
     }
 
     public Command clone(String[] args, int index) {

@@ -12,23 +12,22 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Labels extends Command {
+	private static final String[] COMMAND_NAMES = { "labels" };
+
 	public Labels() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-  		return "labels";
-	}
-
 	public String commandLine() {
-   		return "labels";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "labels: Lists the labels";
+        return name() + ": Lists the labels";
 	}
 
 	public Command clone(String[] args, int index) {

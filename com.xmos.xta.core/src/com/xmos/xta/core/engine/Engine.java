@@ -213,7 +213,7 @@ public class Engine implements Notifier, Aborter {
 		if (routeId == ROUTE_ID_LAST) {
 			assert(validateRouteCount());
 			int toIndex = m_routes.size();
-			int fromIndex = toIndex - getNumLastRoutesAnalysed();
+			int fromIndex = toIndex - getNumLastRoutesAnalyzed();
 			routes.addAll(m_routes.subList(fromIndex, toIndex));
 
 		} else if (routeId == ROUTE_ID_ALL) {
@@ -291,7 +291,7 @@ public class Engine implements Notifier, Aborter {
 		return true;
 	}
 
-	public boolean analyseFunction(CommandSource src, String functionName) {
+	public boolean analyzeFunction(CommandSource src, String functionName) {
         RouteContainer routeContainer = new RouteContainer(functionName, this, src);		
 		
 		boolean routeFound = false;
@@ -303,7 +303,7 @@ public class Engine implements Notifier, Aborter {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 
 						routeContainer, this, activeCore.getNode(), activeCore.getCore());
 				
-				analyseRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
+				analyzeRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
 				routeFound = true;
 			}		
 		}		
@@ -317,7 +317,7 @@ public class Engine implements Notifier, Aborter {
 	    return true;
 	}
 
-	public void analysePath(CommandSource src) {
+	public void analyzePath(CommandSource src) {
         RouteContainer routeContainer = new RouteContainer(m_fromEndpointName, m_toEndpointName, this, src);
 		
 		boolean routeFound = false;
@@ -339,7 +339,7 @@ public class Engine implements Notifier, Aborter {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(fromEndpoint, toEndpoint,
 						routeContainer, this, activeCore.getNode(), activeCore.getCore());
 				
-				analyseRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
+				analyzeRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
 				routeFound = true;
     		}			
 		}
@@ -1587,13 +1587,13 @@ public class Engine implements Notifier, Aborter {
 			setBranchTargets(id, newFunctionNames.get(nodeNumber, coreNumber));
 
 			UnreachableCodeFinder uca = new UnreachableCodeFinder();
-			uca.analyseReachable(id, functionStartNodes);
+			uca.analyzeReachable(id, functionStartNodes);
 
 			//Structural Stage
 
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 			try {
-				if (!sae.analyse(this, functionStartNodes, newFunctionNames.get(nodeNumber, coreNumber), sections, nodeNumber, coreNumber)) {
+				if (!sae.analyze(this, functionStartNodes, newFunctionNames.get(nodeNumber, coreNumber), sections, nodeNumber, coreNumber)) {
 					return false;
 				}
 			} catch (AbortedException e) {
@@ -1634,7 +1634,7 @@ public class Engine implements Notifier, Aborter {
 		return true;
 	}
 
-	private boolean analyseRouteSafely(CommandSource src, RouteContainer routeContainer,
+	private boolean analyzeRouteSafely(CommandSource src, RouteContainer routeContainer,
 			RouteCoreContainer routeCoreContainer, int nodeNumber, int coreNumber) {
 		
 		boolean success = false;
@@ -1672,7 +1672,7 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		RouteConstructor routeConstructor = new RouteConstructor(this, m_structuralGraph.get(nodeNumber, coreNumber), routeCoreContainer);
-		RouteError error = routeConstructor.analyse(src);
+		RouteError error = routeConstructor.analyze(src);
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
 			notify(src, Notifier.NOTIFY_ERROR, "no paths of execution could reach the endpoint(s)");
@@ -1904,7 +1904,7 @@ public class Engine implements Notifier, Aborter {
 		return true;
 	}
 	
-	private int getNumLastRoutesAnalysed() {
+	private int getNumLastRoutesAnalyzed() {
 		if (m_routeContainers.isEmpty()) { 
 			return 0;
 		}
@@ -1921,7 +1921,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	private boolean validateRouteCount(){
-		return m_routes.size() >= getNumLastRoutesAnalysed();
+		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
 }
 

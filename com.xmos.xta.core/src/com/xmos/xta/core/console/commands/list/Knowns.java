@@ -12,12 +12,16 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class Knowns extends Command {
+	private static final String[] COMMAND_NAMES = { "knowns" };
+
 	private int m_routeId;
 
 	public Knowns() {
+		super(COMMAND_NAMES);
 	}
 
 	public Knowns(int routeId) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 	}
 
@@ -25,16 +29,12 @@ public class Knowns extends Command {
    		return 1;
     }
 
-    public String name() {
-    	return "knowns";
-    }
-
     public String commandLine() {
-   		return "knowns " + getRouteId(m_routeId);
+   		return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "knowns <route id>: Displays the list of knowns set for the given route";
+        return name() + " <route id>: Displays the list of knowns set for the given route";
     }
 
     public Command clone(String[] args, int index) {

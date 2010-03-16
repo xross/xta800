@@ -7,13 +7,17 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.scripter.Scripter;
 
 public class Rename extends Command {
+	private static final String[] COMMAND_NAMES = { "rename" };
+
 	private String m_from;
 	private String m_to;
 
 	public Rename() {
+		super(COMMAND_NAMES);
 	}
 
 	public Rename(String from, String to) {
+		super(COMMAND_NAMES);
 		m_from = from;
 		m_to = to;
 	}
@@ -22,16 +26,12 @@ public class Rename extends Command {
     	return 2;
     }
 
-    public String name() {
-    	return "rename";
-    }
-
     public String commandLine() {
-    	return "rename " + m_from + " " + m_to;
+    	return name() + " " + m_from + " " + m_to;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "rename: Rename a mapping";
+        return name() + ": Rename a mapping";
     }
 
     public Command clone(String[] args, int index) {

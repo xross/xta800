@@ -8,15 +8,19 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class InstructionTime extends Command {
+	private static final String[] COMMAND_NAMES = { "instructiontime" };
+
 	private int m_routeId;
 	private String m_refString;
 	private String m_value;
 	private String m_mode;
 
 	public InstructionTime() {
+		super(COMMAND_NAMES);
 	}
 
 	public InstructionTime(int routeId, String refString, String value, String mode) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_refString = refString;
 		m_value = value;
@@ -31,17 +35,13 @@ public class InstructionTime extends Command {
 		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ENDPOINT};
 	}
 
-    public String name() {
-    	return "instructiontime";
-    }
-
     public String commandLine() {
-       	return String.format("instructiontime %s %s %s %s", getRouteId(m_routeId),
+       	return name() + String.format(" %s %s %s %s", getRouteId(m_routeId),
        			m_refString, m_value, m_mode);
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = "instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";
+        String descString = name() + " <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc";
        	if (detailed) {
            	descString += "\n";
            	descString += TimeUnit.getHelp();

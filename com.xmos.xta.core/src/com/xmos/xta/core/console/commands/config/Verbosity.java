@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Verbosity extends Command {
+	private static final String[] COMMAND_NAMES = { "verbosity" };
+
 	private int m_verbosity;
 
 	public Verbosity() {
+		super(COMMAND_NAMES);
 		m_verbosity = 0;
 	}
 
 	public Verbosity(int verbosity) {
+		super(COMMAND_NAMES);
 		m_verbosity = verbosity;
 	}
 
@@ -20,16 +24,12 @@ public class Verbosity extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "verbosity";
-    }
-
     public String commandLine() {
-    	return String.format("verbosity %d", m_verbosity);
+    	return name() + String.format(" %d", m_verbosity);
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)";
+        return name() + " <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)";
     }
 
     public Command clone(String[] args, int index) {

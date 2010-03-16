@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class List extends CommandContainer {
+	private static final String[] COMMAND_NAMES = { "list" };
 
 	static private Command[] m_options = {
 		new AllCalls(),
@@ -19,7 +20,7 @@ public class List extends CommandContainer {
 		new Knowns(),
 		new Labels(),
 		new Loops(),
-		new LoopPath(),
+		new LoopPaths(),
 		new LoopScopes(),
 		new PathTimes(),
 		new Sources(),
@@ -32,8 +33,8 @@ public class List extends CommandContainer {
 		new Unknowns(),
 	};
 
-	public List() { super("list"); }
-	public List(Command command) { super("list", command); }
+	public List() { super(COMMAND_NAMES); }
+	public List(Command command) { super(COMMAND_NAMES, command); }
 
 	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Lists the given set of items"; }

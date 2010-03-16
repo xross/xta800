@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class LoopScope extends Command {
+	private static final String[] COMMAND_NAMES = { "loopscope" };
+
 	private String m_refString;
 	private boolean m_absolute;
 
 	public LoopScope() {
+		super(COMMAND_NAMES);
 	}
 
 	public LoopScope(String refString, boolean absolute) {
+		super(COMMAND_NAMES);
 		m_refString = refString;
 		m_absolute = absolute;
 	}
@@ -25,16 +29,12 @@ public class LoopScope extends Command {
 		return new Command.ArgType[] {ArgType.ALLREFS};
 	}
 
-    public String name() {
-		return "loopscope";
-    }
-
     public String commandLine() {
-       	return "loopscope " + " " + m_refString + " " + (m_absolute ? "absolute" : "relative");
+       	return name() + " " + " " + m_refString + " " + (m_absolute ? "absolute" : "relative");
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loopscope <ANY_REF> <scope>: Adds the given loop scope define to the list of defines";
+    	String descString = name() + " <ANY_REF> <scope>: Adds the given loop scope define to the list of defines";
     	if (detailed) {
         	descString += "\n";
     		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";

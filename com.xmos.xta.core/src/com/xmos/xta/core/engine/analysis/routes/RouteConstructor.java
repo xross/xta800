@@ -87,7 +87,7 @@ public class RouteConstructor {
 		return m_routes;
 	}
 
-	public RouteError analyse(CommandSource src) throws Exception {
+	public RouteError analyze(CommandSource src) throws Exception {
 		RouteContainer routeContainer = m_coreContainer.getRouteContainer();
 
 		if (m_coreContainer.getFromReference() == null) {

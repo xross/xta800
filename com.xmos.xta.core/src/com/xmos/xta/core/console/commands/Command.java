@@ -36,13 +36,30 @@ public abstract class Command {
     private CommandSource m_src;
     private String m_fileRedirect;
     private RedirectMode m_fileRedirectMode;
+	private String[] m_commandNames;
 
     public abstract int numArgs();
-    public abstract String name();
     public abstract String commandLine();
     public abstract String description(Engine engine, boolean detailed);
     public abstract Command clone(String[] args, int index);
     public abstract void execute(Shell shell, Engine engine, Console console);
+
+    public Command(String[] commandNames) {
+    	m_commandNames = commandNames;
+    }
+    
+    public String name() {
+    	return m_commandNames[0];
+    }
+   
+    public boolean matches(String arg) {
+    	for (String command : m_commandNames) {
+    		if (command.equals(arg)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
 	public String toString(){
 		return commandLine();
@@ -68,7 +85,7 @@ public abstract class Command {
     public boolean validateRoutes(Engine engine, Console console) {
        	if (engine.getRoutes().size() == 0) {
     		engine.notify(m_src, Notifier.NOTIFY_ERROR,
-    				"no routes analysed");
+    				"no routes analyzed");
     		return false;
      	}
         return true;
@@ -77,7 +94,7 @@ public abstract class Command {
     public boolean validateRouteId(Engine engine, Console console, int routeId) {
     	if (routeId != Engine.ROUTE_ID_GLOBAL) {
     	    if (engine.getRoutes().size() == 0) {
-       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
+       			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analyzed");
     		    return false;
     	    }
         	Collection<Route> routes = engine.getRoute(routeId);
@@ -93,7 +110,7 @@ public abstract class Command {
     public boolean validateNodeId(Engine engine, Console console, int routeId, int nodeId) {
     	if (routeId != Engine.ROUTE_ID_GLOBAL) {
 	    	if (engine.getRoutes().size() == 0) {
-	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
+	   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analyzed");
 	    		return false;
 	    	}
         	Collection<Route> routes = engine.getRoute(routeId);

@@ -7,13 +7,17 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 
 public class TimingErrors extends Command {
+	private static final String[] COMMAND_NAMES = { "Terror" };
+
 	private boolean m_errorOn;
 
 	public TimingErrors() {
+		super(COMMAND_NAMES);
 		m_errorOn = false;
 	}
 
 	public TimingErrors(boolean errorOn) {
+		super(COMMAND_NAMES);
 		m_errorOn = errorOn;
 	}
 
@@ -21,21 +25,17 @@ public class TimingErrors extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "Terror";
-    }
-
     public String commandLine() {
     	if (m_errorOn) {
-    		return String.format("Terror on");
+    		return name() + " on";
     	} else {
-    		return String.format("Terror off");
+    		return name() + " off";
     	}
     }
 
     public String description(Engine engine, boolean detailed) {
     	Config config = engine.getConfig();
-        return String.format("Terror <on/off>: treat timing failures as errors or not (currently: %s)",
+        return name() + String.format(" <on/off>: treat timing failures as errors or not (currently: %s)",
         	config.m_timingFailuresAsErrors ? "on" : "off");
     }
 

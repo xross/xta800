@@ -6,23 +6,22 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class From extends Command {
+	private static final String[] COMMAND_NAMES = { "from" };
+
 	public From() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
    		return 0;
     }
 
-    public String name() {
-    	return "from";
-    }
-
     public String commandLine() {
-    	return "from";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-       	return "from: Removes the from endpoint";
+       	return name()  + ": Removes the from endpoint";
     }
 
     public Command clone(String[] args, int index) {

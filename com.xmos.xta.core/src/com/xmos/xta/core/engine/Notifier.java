@@ -29,8 +29,8 @@ public interface Notifier {
 	public static final String STATE_CASE        = "Case";
 	public static final String STATE_SCALE       = "Scale";
 
-	public static final String RUN_MODE_FUNCTION = "Analyse function";
-	public static final String RUN_MODE_PATH     = "Analyse path";
+	public static final String RUN_MODE_FUNCTION = "Analyze function";
+	public static final String RUN_MODE_PATH     = "Analyze path";
 
 	public static final String CLEAR_LOG         = "Clear log";
 	public static final String HOLD_MESSAGES     = "Hold messages";

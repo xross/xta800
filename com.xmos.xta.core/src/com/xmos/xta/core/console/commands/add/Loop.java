@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Loop extends Command {
+	private static final String[] COMMAND_NAMES = { "loop" };
+
 	private String m_refString;
 	private int m_iterations;
 
 	public Loop() {
+		super(COMMAND_NAMES);
 	}
 
 	public Loop(String refString, int iterations) {
+		super(COMMAND_NAMES);
 		m_refString = refString;
 		m_iterations = iterations;
 	}
@@ -25,16 +29,12 @@ public class Loop extends Command {
 		return new Command.ArgType[] {ArgType.ALLREFS};
 	}
 
-    public String name() {
-		return "loop";
-    }
-
     public String commandLine() {
-       	return "loop " + " " + m_refString + " " + m_iterations;
+       	return name() + " " + " " + m_refString + " " + m_iterations;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "loop <ANY_REF> <iterations>: Adds the given loop count define to the list of defines";
+    	return name() + " <ANY_REF> <iterations>: Adds the given loop count define to the list of defines";
     }
 
     public Command clone(String[] args, int index) {

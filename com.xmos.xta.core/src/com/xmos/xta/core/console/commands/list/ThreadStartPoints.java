@@ -7,23 +7,22 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class ThreadStartPoints extends Command {
+	private static final String[] COMMAND_NAMES = { "threadstartpoints" };
+
 	public ThreadStartPoints() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-   		return "threadstartpoints";
-	}
-
 	public String commandLine() {
-   		return "threadstartpoints";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "threadstartpoints: Lists the thread start points";
+        return name() + ": Lists the thread start points";
 	}
 
 	public Command clone(String[] args, int index) {

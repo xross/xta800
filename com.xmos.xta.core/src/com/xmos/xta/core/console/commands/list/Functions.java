@@ -8,23 +8,22 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Functions extends Command {
+	private static final String[] COMMAND_NAMES = { "functions" };
+
 	public Functions() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "functions";
-    }
-
     public String commandLine() {
-    	return "functions";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "functions: Lists the functions in the loaded application";
+        return name() + ": Lists the functions in the loaded application";
     }
 
     public Command clone(String[] args, int index) {

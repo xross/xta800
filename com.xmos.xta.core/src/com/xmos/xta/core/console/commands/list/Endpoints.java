@@ -8,23 +8,22 @@ import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Endpoints extends Command {
+	private static final String[] COMMAND_NAMES = { "endpoints" };
+
 	public Endpoints() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-   		return "endpoints";
-	}
-
 	public String commandLine() {
-   		return "endpoints";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "endpoints: Lists the endpoints";
+        return name() + ": Lists the endpoints";
 	}
 
 	public Command clone(String[] args, int index) {

@@ -9,8 +9,10 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
 
 public class PathTimes extends Command {
+	private static final String[] COMMAND_NAMES = { "pathtimes" };
 
 	public PathTimes() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
@@ -21,16 +23,12 @@ public class PathTimes extends Command {
         return super.getArgTypes();
 	}
 
-    public String name() {
-		return "pathtimes";
-    }
-
     public String commandLine() {
-   		return "pathtimes";
+   		return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "pathtimes: Displays the path time defines";
+    	return name() + ": Displays the path time defines";
     }
 
     public Command clone(String[] args, int index) {

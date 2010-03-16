@@ -23,7 +23,7 @@ public class UnreachableCodeFinder {
 	 * It needs removing from the graph so that functions
 	 * and threads don't have invalid predecessors.
 	 */
-	public void analyseReachable(InstructionDecoder id, Set<InstructionNode> functionStarts) {
+	public void analyzeReachable(InstructionDecoder id, Set<InstructionNode> functionStarts) {
 		m_unreachable.clear();
 		m_unreachable.addAll(id.getInstructions());
 		Set<Node> reachable = new TreeSet<Node>();

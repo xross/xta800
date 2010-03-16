@@ -6,12 +6,16 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Echo extends Command {
+	private static final String[] COMMAND_NAMES = { "echo" };
+
 	private String m_string;
 
 	public Echo() {
+		super(COMMAND_NAMES);
 	}
 
 	public Echo(String string) {
+		super(COMMAND_NAMES);
 		m_string = string;
 	}
 
@@ -19,16 +23,12 @@ public class Echo extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "echo";
-    }
-
     public String commandLine() {
-    	return "echo";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "echo \"text\": prints the text to the console";
+        return name() + " \"text\": prints the text to the console";
     }
 
     public Command clone(String[] args, int index) {

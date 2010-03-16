@@ -8,13 +8,17 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 
 public class Scale extends Command {
+	private static final String[] COMMAND_NAMES = { "scale" };
+
 	private boolean m_scale;
 
 	public Scale() {
+		super(COMMAND_NAMES);
 		m_scale = true;
 	}
 
 	public Scale(boolean scale) {
+		super(COMMAND_NAMES);
 		m_scale = scale;
 	}
 
@@ -22,20 +26,16 @@ public class Scale extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "scale";
-    }
-
     public String commandLine() {
     	if (m_scale) {
-    		return "scale true";
+    		return name() + " true";
     	} else {
-    		return "scale false";
+    		return name() + " false";
     	}
     }
 
     public String description(Engine engine, boolean detailed) {
-        return String.format("scale <true/false>: Configures whether results are scales (currently: %s)",
+        return name() + String.format(" <true/false>: Configures whether results are scales (currently: %s)",
         		Conversion.getScale());
     }
 

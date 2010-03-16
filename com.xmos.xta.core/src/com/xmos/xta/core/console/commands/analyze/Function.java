@@ -1,4 +1,4 @@
-package com.xmos.xta.core.console.commands.analyse;
+package com.xmos.xta.core.console.commands.analyze;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Function extends Command {
+	private static final String[] COMMAND_NAMES = { "function" };
+
 	private String m_functionName;
 
 	public Function() {
+		super(COMMAND_NAMES);
 		m_functionName = "";
 	}
 
 	public Function(String functionName) {
+		super(COMMAND_NAMES);
 		m_functionName = functionName;
 	}
 
@@ -24,16 +28,12 @@ public class Function extends Command {
 		return new Command.ArgType[] {ArgType.FUNCTION};
 	}
 
-    public String name() {
-    	return "function";
-    }
-
     public String commandLine() {
-    	return "function " + m_functionName;
+    	return name() + " " + m_functionName;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "function <FUNCTION_REF>: Analyse the given function";
+        return name() + " <FUNCTION_REF>: Analyze the given function";
     }
 
     public Command clone(String[] args, int index) {
@@ -48,6 +48,6 @@ public class Function extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        engine.analyseFunction(getSrc(), m_functionName);
+        engine.analyzeFunction(getSrc(), m_functionName);
     }
 }
