@@ -10,9 +10,11 @@ public class ConsoleProgessMonitor implements ProgressMonitor {
 	}
 
 	public void beginTask(String name, int totalWork) {
+		m_console.display(name+ "\n");
 	}
 
 	public void setTaskName(String name) {
+		m_console.display(name + "\n");
 	}
 
 	public boolean isCanceled() {

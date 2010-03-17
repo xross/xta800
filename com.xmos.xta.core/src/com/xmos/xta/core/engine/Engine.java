@@ -267,21 +267,21 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		initialiseCoreStates(xeLoader);
+	    initialiseActiveCores(xeLoader);		
 
 		m_exclusions = new ArrayList<Reference>();
 		m_executableFile = executableFile;
 		m_xeLoader = xeLoader;
 		m_sections = sections;
-	    initialiseActiveCores(xeLoader);		
 		m_routes.clear();
 		m_routeContainers.clear();
 		m_selectedRoute = null;
 		m_defines.clear();
-		Route.resetRouteCount();
 		m_fromEndpointName = "";
 		m_toEndpointName = "";
 		m_fromEndPoints.clear();
 		m_toEndPoints.clear();
+		Route.resetRouteCount();
 
 		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
 
@@ -1827,27 +1827,30 @@ public class Engine implements Notifier, Aborter {
 		if (commandRunner != null) {
 			int commandNum = 0;
 			
-			for (NodeCorePair activeCore : m_activeCores) {
-				Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore.getNode(), activeCore.getCore());
+			// All the source level commands are present on each core, 
+			// so make sure we only run them once..
+			assert(!m_activeCores.isEmpty());
+			NodeCorePair activeCore = m_activeCores.iterator().next();
+			
+			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore.getNode(), activeCore.getCore());
+			startAnalysis("Running source level commands", srcStringInfos.size());
+			
+		    for (SrcStringInfo cmdInfo : srcStringInfos) {
+	            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
+	            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
 
-				String desc = String.format("Running commands: Node: %d, Core: %d", activeCore.getNode(), activeCore.getCore());
-				startAnalysis(desc, srcStringInfos.size());
+	            String command = cmdInfo.getString();
+		        setAnalysisName("Running command: '" + command + "'");
+		        commandRunner.run(command, commandSource, commandNum);
+		        ++commandNum;
+		        provideWorkDone(1);
 
-			    for (SrcStringInfo cmdInfo : srcStringInfos) {
-		            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
-		            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
-		            String command = cmdInfo.getString();
-		            setAnalysisName("Running commands: '" + command + "'");
-		            commandRunner.run(command, commandSource, commandNum);
-		            ++commandNum;
-		            provideWorkDone(1);
-
-		            try {
-						getAbort();
-					} catch (AbortedException e) {
-						break;
-					}
-			    }				
+		        try {
+			    	getAbort();
+			    	
+				} catch (AbortedException e) {
+					break;
+				}
 			}
 		}
 	}
