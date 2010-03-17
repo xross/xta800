@@ -245,15 +245,14 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		boolean successfulInit = initControlFlowGraphs(src, xeLoader, sections);
-
-		if(successfulInit){
+		if (successfulInit){
 			initialiseCoreStates(xeLoader);
+		    initialiseActiveCores(xeLoader);		
 	
 			m_exclusions = new ArrayList<Reference>();
 			m_executableFile = executableFile;
 			m_xeLoader = xeLoader;
 			m_sections = sections;
-		    initialiseActiveCores(xeLoader);		
 			m_routes.clear();
 			m_routeContainers.clear();
 			m_selectedRoute = null;
@@ -1301,6 +1300,47 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	// ===================================================================== //
+	// Exclusion Immediately Methods
+	// ===================================================================== //
+	public boolean setExclusion(CommandSource src, int routeId, String refString) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty()) {
+			return false;
+		}
+	    try {
+	    	Map<Route, Reference> refMap = new HashMap<Route, Reference>();
+			for (Route route : routes) {
+				Reference reference = ReferenceFactory.createReference(refString, 
+						ReferenceClass.ENDPOINT_REF,
+				        route.getRouteCoreContainer().getNodeNumber(),
+				        route.getRouteCoreContainer().getCoreNumber());
+								
+				if (resolveReference(reference)) {
+					if (!route.getRouteUnknowns().canInstructionPause(reference))
+						return false;
+					
+					refMap.put(route, reference);
+				}				
+			}
+			for (Route route : routes) {
+				if (refMap.containsKey(route)) {				
+			       // route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+				}
+			}
+		} catch (AbortedException e) { 
+			return false;			
+		}
+				
+	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	    return true;
+	}
+
+	public void setExclusion(CommandSource src, Node node) {
+		//m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
+	// ===================================================================== //
 	// Section Methods
 	// ===================================================================== //
 	public boolean addBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
@@ -1805,27 +1845,30 @@ public class Engine implements Notifier, Aborter {
 		if (commandRunner != null) {
 			int commandNum = 0;
 			
-			for (NodeCorePair activeCore : m_activeCores) {
-				Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore.getNode(), activeCore.getCore());
+			// All the source level commands are present on each core, 
+			// so make sure we only run them once..
+			assert(!m_activeCores.isEmpty());
+			NodeCorePair activeCore = m_activeCores.iterator().next();
+			
+			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore.getNode(), activeCore.getCore());
+			startAnalysis("Running source level commands", srcStringInfos.size());
+			
+		    for (SrcStringInfo cmdInfo : srcStringInfos) {
+	            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
+	            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
 
-				String desc = String.format("Running commands: Node: %d, Core: %d", activeCore.getNode(), activeCore.getCore());
-				startAnalysis(desc, srcStringInfos.size());
+	            String command = cmdInfo.getString();
+		        setAnalysisName("Running command: '" + command + "'");
+		        commandRunner.run(command, commandSource, commandNum);
+		        ++commandNum;
+		        provideWorkDone(1);
 
-			    for (SrcStringInfo cmdInfo : srcStringInfos) {
-		            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
-		            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
-		            String command = cmdInfo.getString();
-		            setAnalysisName("Running commands: '" + command + "'");
-		            commandRunner.run(command, commandSource, commandNum);
-		            ++commandNum;
-		            provideWorkDone(1);
-
-		            try {
-						getAbort();
-					} catch (AbortedException e) {
-						break;
-					}
-			    }				
+		        try {
+			    	getAbort();
+			    	
+				} catch (AbortedException e) {
+					break;
+				}
 			}
 		}
 	}

@@ -16,6 +16,7 @@ public class Set extends CommandContainer {
 		new PathTime(),
 		new Required(),
 		new To(),
+		//new Exclusion(),
 	};
 
 	public Set() { super(COMMAND_NAMES); }

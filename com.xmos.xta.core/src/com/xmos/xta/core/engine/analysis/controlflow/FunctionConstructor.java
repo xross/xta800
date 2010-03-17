@@ -1,5 +1,7 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -8,6 +10,9 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
+import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
 
 public class FunctionConstructor {
@@ -41,7 +46,8 @@ public class FunctionConstructor {
 
 		addBranchTargetsToFunctionStarts();
 		addThreadStartsToFunctionStarts();
-
+		addUserBranchTargetsToFunctionStarts();
+		
 		addThreadStopsToFunctionEnds();
 		addRetspsToFunctionEnds();
 		addHaltsToFunctionEnds();
@@ -86,6 +92,33 @@ public class FunctionConstructor {
 					} 
 				}
 			}
+		}
+	}
+	
+	private void addUserBranchTargetsToFunctionStarts(){
+		for(InstructionNode instruction : m_instDecoder.getInstructions()){
+			XtaInstruction inst = instruction.getXtaInstruction();
+			
+			Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_nodeId, m_coreId);
+			Set<BranchInfo> targets = new HashSet<BranchInfo>();
+			
+			for (Reference ref : branchMap.keySet()) {
+				if (ref.matches(inst.getPc())) {
+					Set<BranchInfo> mapEntries = branchMap.get(ref);
+					targets.addAll(mapEntries);
+				}
+			}
+			
+			if(!targets.isEmpty() ){
+				for (BranchInfo target : targets) {
+					for (long pc : target.getRef().getPcs()) {
+						if(inst.isLink()){
+							m_functionStarts.add(m_instDecoder.getNode(pc));
+						} 
+					}
+				}	
+			}
+			
 		}
 	}
 
