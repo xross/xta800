@@ -254,6 +254,7 @@ public class RouteUnknowns {
 
 	public boolean canInstructionPause(Reference reference) throws AbortedException {
 		boolean canPause = false;
+		
         for (Node node : m_route.getReferencedNodes(reference)) {
         	if (((InstructionNode)node).getXtaInstruction().canPause()) {
         		canPause = true;

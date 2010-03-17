@@ -21,9 +21,11 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.FunctionContainer;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class SourceMapper {
 
@@ -37,7 +39,7 @@ public class SourceMapper {
 
 	private InstructionDecoder m_instructionDecoder;
 	private Set<InstructionNode> m_starts;
-	private Map<String, List<InstructionNode>> m_functionNames;
+	private Set<FunctionContainer> m_functionContainers;
 	private Map<Long, AssemblyLine> m_pcToAsm;
 	private Map<Long, Function> m_pcToFunction;
 	private Map<String, String> m_functionToFile;
@@ -46,11 +48,11 @@ public class SourceMapper {
 
     public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, int nodeNumber, int coreNumber,
 			Set<InstructionNode> starts, InstructionDecoder instructionDecoder,
-			Map<String, List<InstructionNode>> treeMap, Map<String, Set<Long>> labels) throws AbortedException {
+			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labels) throws AbortedException {
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
         m_starts = starts;
-        m_functionNames = treeMap;
+        m_functionContainers = functionContainers;
         m_pcToAsm = new TreeMap<Long, AssemblyLine>();
         m_pcToFunction = new TreeMap<Long, Function>();
         m_functionToFile = new TreeMap<String, String>();
@@ -350,13 +352,13 @@ public class SourceMapper {
 
     private String getFunctionName(InstructionNode inst) {
 
-    	for (String functionName : m_functionNames.keySet()) {
-    		for (InstructionNode fnInst : m_functionNames.get(functionName)) {
-				if (fnInst.getStartPc() == inst.getStartPc()) {
-					return functionName;
-				}
+    	for(FunctionContainer fc : m_functionContainers){
+    		for(Node node : fc.getFunctionContents()){
+    			if(node instanceof InstructionNode && node.getStartPc() == inst.getPC()){
+    				return fc.getFunctionName();
+    			}
     		}
-		}
+    	}
 		//FIXME
 		System.err.println("cound not find the function corresponding to " + inst.getXtaInstruction());
 

@@ -7,17 +7,21 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 
 public class Mix extends Command {
+	private static final String[] COMMAND_NAMES = { "mix" };
+
 	private int m_routeId;
 	private int m_nodeId;
 	private boolean m_nodeIdSet;
 
 	public Mix() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 		m_nodeId = 0;
 		m_nodeIdSet = false;
 	}
 
 	public Mix(int routeId, int nodeId, boolean nodeIdSpecified) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_nodeId = nodeId;
 		m_nodeIdSet = nodeIdSpecified;
@@ -30,19 +34,15 @@ public class Mix extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "mix";
-    }
-
     public String commandLine() {
     	if (m_nodeIdSet) {
-        	return "mix " + getRouteId(m_routeId) + " " + m_nodeId;
+        	return name() + " " + getRouteId(m_routeId) + " " + m_nodeId;
     	}
-    	return "mix " + getRouteId(m_routeId);
+    	return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "mix <route id> [node id]: Display annotated source file(s) + assembly instructions for the given route/node";
+        return name() + " <route id> [node id]: Display annotated source file(s) + assembly instructions for the given route/node";
     }
 
     public Command clone(String[] args, int index) {

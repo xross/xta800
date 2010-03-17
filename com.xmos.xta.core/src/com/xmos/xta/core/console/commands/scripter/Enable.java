@@ -7,12 +7,16 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.scripter.Scripter;
 
 public class Enable extends Command {
+	private static final String[] COMMAND_NAMES = { "enable" };
+
 	private String m_reference;
 
 	public Enable() {
+		super(COMMAND_NAMES);
 	}
 
 	public Enable(String reference) {
+		super(COMMAND_NAMES);
 		m_reference = reference;
 	}
 
@@ -20,16 +24,12 @@ public class Enable extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "enable";
-    }
-
     public String commandLine() {
-    	return "enable " + m_reference;
+    	return name() + " " + m_reference;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "enable: Enable a mapping";
+        return name() + ": Enable a mapping";
     }
 
     public Command clone(String[] args, int index) {

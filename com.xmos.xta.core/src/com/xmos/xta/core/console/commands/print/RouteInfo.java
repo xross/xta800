@@ -9,13 +9,17 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 
 public class RouteInfo extends Command {
+	private static final String[] COMMAND_NAMES = { "routeinfo" };
+
 	private int m_routeId;
 
 	public RouteInfo() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 	}
 
 	public RouteInfo(int routeId) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 	}
 
@@ -23,16 +27,12 @@ public class RouteInfo extends Command {
    		return 1;
     }
 
-    public String name() {
-    	return "routeinfo";
-    }
-
     public String commandLine() {
-   	    return "routeinfo " + getRouteId(m_routeId);
+   	    return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "routeinfo <route id>: Show detailed information for the given route";
+    	return name() + " <route id>: Show detailed information for the given route";
     }
 
     public Command clone(String[] args, int index) {

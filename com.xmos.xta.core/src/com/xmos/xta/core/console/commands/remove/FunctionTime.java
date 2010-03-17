@@ -6,12 +6,16 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class FunctionTime extends Command {
+	private static final String[] COMMAND_NAMES = { "functiontime" };
+
 	private String m_functionName;
 
 	public FunctionTime() {
+		super(COMMAND_NAMES);
 	}
 
 	public FunctionTime(String functionName) {
+		super(COMMAND_NAMES);
 		m_functionName = functionName;
 	}
 
@@ -23,16 +27,12 @@ public class FunctionTime extends Command {
 		return new Command.ArgType[] {ArgType.FUNCTION};
 	}
 
-    public String name() {
-		return "functiontime";
-    }
-
     public String commandLine() {
-       	return "functiontime " + m_functionName;
+       	return name() + " " + m_functionName;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines";
+    	return name() + " <FUNCTION_REF|*>: Removes the given functon time from the list of defines";
     }
 
     public Command clone(String[] args, int index) {

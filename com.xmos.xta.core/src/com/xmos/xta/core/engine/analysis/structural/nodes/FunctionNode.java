@@ -19,16 +19,30 @@ public class FunctionNode extends Node {
 	private NodeAttributes m_attributes;
 	private String m_functionName;
 	private List<Node> m_functionSequence;
-	private static int functionId;
-
+	private FunctionReferenceNode m_callingFnRef;
+	
 	public FunctionNode() {
 		super();
 		m_attributes = new NodeAttributes(this);
 		setUnresolved(true);
 	}
 
-	public FunctionNode(Node function, String functionName) {
+	/**
+	 * recursive function constructor
+
+	 */
+	public FunctionNode(String functionName) {
 		super();
+		m_attributes = new NodeAttributes(this);
+		m_functionName = functionName + "(Recursive)";
+		m_functionSequence = new LinkedList<Node>();
+		setUnresolved(true);
+	}
+	
+	
+	public FunctionNode(Node function, FunctionReferenceNode fnRef) {
+		super();
+		m_callingFnRef = fnRef;
 		if (function.isSequenceNode()){
 			SequenceNode sn = (SequenceNode)function;
 
@@ -38,10 +52,10 @@ public class FunctionNode extends Node {
 			m_functionSequence.add(function);
 		}
 
-		if (functionName == null){
-			m_functionName = "Unnamed function " + functionId++;
+		if (fnRef == null){
+			m_functionName = "(Call to unknown function)";
 		} else {
-			m_functionName = functionName;
+			m_functionName = m_callingFnRef.getFunctionName();
 		}
 		m_attributes = new NodeAttributes(this);
 	}
@@ -62,12 +76,23 @@ public class FunctionNode extends Node {
 
 	}
 
+	public FunctionReferenceNode getCallingFunctionRef(){
+		return m_callingFnRef;
+	}
+	
+	public void getBackTrail(StringBuffer refStr) {
+		super.getBackTrail(refStr);
+		if(m_parent != null){
+			refStr.append(String.format("CALL:0x%x,", m_callingFnRef.getFunctionCallPc()));
+		}
+	}
+	
 	public Node copyStructure() {
     	return new FunctionNode(this);
 	}
 
 	public Node deepCopy(Aborter aborter) throws AbortedException {
-		aborter.getAbort();
+		//aborter.getAbort();
 
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
@@ -102,14 +127,14 @@ public class FunctionNode extends Node {
 
 	public String getDescription() {
 		if (m_functionName == null) {
-			m_functionName = "Unnamed function " + functionId++;
+			m_functionName = "(Call to unknown function)";
 		}
 		return m_functionName;
 	}
 
 	public String getFunctionName() {
 		if (m_functionName == null) {
-			m_functionName = "Unnamed function " + functionId++;
+			m_functionName = "(Call to unknown function)";
 		}
 		return m_functionName;
 	}
@@ -259,16 +284,14 @@ public class FunctionNode extends Node {
 		return fnRef;
 	}
 
-	public void buildListUp(List<Node> nodeList, Stack<FunctionReferenceNode> stack, Node start) {
-		Stack<FunctionReferenceNode> copyStack = new Stack<FunctionReferenceNode>();
-		copyStack.addAll(stack);
-		if(!copyStack.isEmpty()){
-			FunctionReferenceNode parent = copyStack.pop().getAlias();
-			if(parent!= null){
-				parent.buildListUp(nodeList, copyStack, this);
-			}
+	public void buildListUp(List<Node> nodeList, Node start) {
 
+		
+		if(m_parent!= null){
+			m_parent.buildListUp(nodeList, this);
 		}
+		nodeList.add(this);
+		
 		for(Node node : m_functionSequence){
 			if(start == node) break;
 			node.buildListDown(nodeList);
@@ -277,9 +300,6 @@ public class FunctionNode extends Node {
 	}
 
 	public void buildListDown(List<Node> nodeList) {
-		for(Node node : m_functionSequence){
-			node.buildListDown(nodeList);
-		}
 	}
 
 }

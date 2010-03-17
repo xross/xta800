@@ -8,23 +8,22 @@ import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class SrcLabels extends Command {
+	private static final String[] COMMAND_NAMES = { "srclabels" };
+
 	public SrcLabels() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-   		return "srclabels";
-	}
-
 	public String commandLine() {
-   		return "srclabels";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "srclabels: Lists the source labels";
+        return name() + ": Lists the source labels";
 	}
 
 	public Command clone(String[] args, int index) {

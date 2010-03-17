@@ -10,23 +10,22 @@ import com.xmos.xta.core.engine.scripter.Scripter;
 import com.xmos.xta.core.engine.scripter.ScripterReference;
 
 public class ListRefs extends Command {
+	private static final String[] COMMAND_NAMES = { "listrefs" };
+
 	public ListRefs() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "listrefs";
-    }
-
     public String commandLine() {
-    	return "listrefs";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "listrefs: List all references which will be used in the script";
+        return name() + ": List all references which will be used in the script";
     }
 
     public Command clone(String[] args, int index) {

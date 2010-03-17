@@ -8,9 +8,11 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.LoopPathInfo;
 
-public class LoopPath extends Command {
+public class LoopPaths extends Command {
+	private static final String[] COMMAND_NAMES = { "looppaths" };
 
-	public LoopPath() {
+	public LoopPaths() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
@@ -21,16 +23,12 @@ public class LoopPath extends Command {
         return super.getArgTypes();
 	}
 
-    public String name() {
-		return "looppaths";
-    }
-
     public String commandLine() {
-   		return "looppaths";
+   		return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "looppaths: Displays the loop path defines";
+    	return name() + ": Displays the loop path defines";
     }
 
     public Command clone(String[] args, int index) {
@@ -38,7 +36,7 @@ public class LoopPath extends Command {
 			return null;
 		}
 
-    	return new LoopPath();
+    	return new LoopPaths();
     }
 
     public void execute(Shell shell, Engine engine, Console console) {

@@ -7,14 +7,18 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class InstructionTime extends Command {
+	private static final String[] COMMAND_NAMES = { "instructiontime" };
+
 	private String m_refString;
 	private String m_value;
 	private String m_mode;
 
 	public InstructionTime() {
+		super(COMMAND_NAMES);
 	}
 
 	public InstructionTime(String refString, String value, String mode) {
+		super(COMMAND_NAMES);
 		m_refString = refString;
 		m_value = value;
 		m_mode = mode;
@@ -28,16 +32,12 @@ public class InstructionTime extends Command {
 		return new Command.ArgType[] {ArgType.ENDPOINT};
 	}
 
-    public String name() {
-		return "instructiontime";
-    }
-
     public String commandLine() {
-       	return "instructiontime " + m_refString + " " + m_value + " " + m_mode;
+       	return name() + " " + m_refString + " " + m_value + " " + m_mode;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines";
+    	String descString = name() + " <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

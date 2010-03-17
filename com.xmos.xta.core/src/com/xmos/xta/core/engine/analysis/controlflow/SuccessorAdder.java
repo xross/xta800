@@ -46,6 +46,7 @@ public class SuccessorAdder {
 	}
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
+		
 		Set<BranchInfo> targets = new HashSet<BranchInfo>();
 		for (Reference ref : m_branchMap.keySet()) {
 			if (ref.matches(inst.getPc())) {
@@ -53,11 +54,16 @@ public class SuccessorAdder {
 				targets.addAll(mapEntries);
 			}
 		}
-
-		//FIXME - this should not be allowed for instruction that are not branches
+		
 		for (BranchInfo target : targets) {
 			for (long pc : target.getRef().getPcs()) {
-				connect(instruction, pc, true);
+				if(inst.isBranch()){
+					connect(instruction, pc, true);
+				} else {
+					//TODO warn if this is not a branch --- usb code seems to set a branch on setsr!
+					
+					//System.err.println("trying to add branch to non branching instruction " + inst);
+				}
 			}
 		}		
 	}

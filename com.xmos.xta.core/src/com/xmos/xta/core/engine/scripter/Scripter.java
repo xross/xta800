@@ -300,7 +300,7 @@ public class Scripter {
         	addExclusions(routeContainer, script);
         	addDefines(routeContainer, script);
        		updateActiveCores(routeContainer, script);
-        	analyseRoutes(routeContainer, script);
+        	analyzeRoutes(routeContainer, script);
         	removeRoutes(routeContainer, script);
         	setKnowns(routeContainer, script);
         	setRequired(routeContainer, script);  
@@ -320,7 +320,7 @@ public class Scripter {
         	RouteCoreContainer routeCoreContainer = routeContainer.getRouteCoreContainers().iterator().next();
     		script.append(String.format("# Route: %s => %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
-		    		getReferenceString(routeCoreContainer.getToReference())));
+		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
     	}
     	script.append("#\n");
@@ -398,7 +398,7 @@ public class Scripter {
 		m_currentDefines = routeContainer.getDefines();
 	}
 
-    private void analyseRoutes(RouteContainer routeContainer, StringBuffer script) {
+    private void analyzeRoutes(RouteContainer routeContainer, StringBuffer script) {
     	
     	// Uses the first core container in the list, as from the string point of view,
     	// all the references should be the same (i.e. they only differ with respect
@@ -410,17 +410,16 @@ public class Scripter {
     	case FUNCTION:
 		    outputPortableWarnings(script, routeCoreContainer.getFunctionReference());
 
-		    script.append(String.format("analyse function %s\n",
+		    script.append(String.format("analyze function %s\n",
 		    		getReferenceString(routeCoreContainer.getFunctionReference())));
     		break;
 
     	case PATH:
 		    outputPortableWarnings(script, routeCoreContainer.getFromReference());
-		    outputPortableWarnings(script, routeCoreContainer.getToReference());
-
-		    script.append(String.format("analyse path %s %s\n",
+		    outputPortableWarnings(script, routeCoreContainer.getToReferences().iterator().next());
+		    script.append(String.format("analyze path %s %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
-		    		getReferenceString(routeCoreContainer.getToReference())));
+		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
     	}
     }

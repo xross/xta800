@@ -6,12 +6,16 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Exclusion extends Command {
+	private static final String[] COMMAND_NAMES = { "exclusion" };
+
 	private String m_reference;
 
 	public Exclusion() {
+		super(COMMAND_NAMES);
 	}
 
 	public Exclusion(String reference) {
+		super(COMMAND_NAMES);
 		m_reference = reference;
 	}
 
@@ -23,16 +27,12 @@ public class Exclusion extends Command {
 		return new Command.ArgType[] {ArgType.ALLREFS};
 	}
 
-    public String name() {
-		return "exclusion";
-    }
-
     public String commandLine() {
-   		return "exclusion " + m_reference;
+   		return name() + " " + m_reference;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "exclusion <ANY_REF>: Adds the given reference to the list of exclusions";
+    	return name() + " <ANY_REF>: Adds the given reference to the list of exclusions";
     }
 
     public Command clone(String[] args, int index) {

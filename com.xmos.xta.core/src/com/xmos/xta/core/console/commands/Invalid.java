@@ -6,10 +6,13 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 
 public class Invalid extends Command {
+	private static final String[] COMMAND_NAMES = { "" };
+
 	private String m_invalidCommand;
 	private String m_errorMessage;
 
 	public Invalid(String invalidCommand, String errorMessage, CommandSource source) {
+		super(COMMAND_NAMES);
 		m_invalidCommand = invalidCommand;
 		m_errorMessage = errorMessage;
 		setSrc(source);
@@ -17,10 +20,6 @@ public class Invalid extends Command {
 
     public int numArgs() {
     	return 1;
-    }
-
-    public String name() {
-    	return "";
     }
 
     public String commandLine() {

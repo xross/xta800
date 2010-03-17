@@ -11,18 +11,22 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 
 public class Summary extends Command {
+	private static final String[] COMMAND_NAMES = { "summary" };
+
 	public Summary() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name()        { return "summary"; }
-    public String commandLine() { return "summary"; }
+    public String commandLine() {
+    	return name();
+    }
 
     public String description(Engine engine, boolean detailed) {
-    	return "summary: Show routes summary (verbosity -2|-1|0)";
+    	return name() + ": Show routes summary (verbosity -2|-1|0)";
     }
 
     public Command clone(String[] args, int index) {

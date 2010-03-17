@@ -4,6 +4,8 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Config extends CommandContainer {
+	private static final String[] COMMAND_NAMES = { "config" };
+
 	static private Command[] m_options = {
 		new Case(),
 		new Freq(),
@@ -16,8 +18,8 @@ public class Config extends CommandContainer {
 		new WarnAsErrors(),
 	};
 
-	public Config() { super("config"); }
-	public Config(Command command) { super("config", command); }
+	public Config() { super(COMMAND_NAMES); }
+	public Config(Command command) { super(COMMAND_NAMES, command); }
 
 	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Configures the given option"; }

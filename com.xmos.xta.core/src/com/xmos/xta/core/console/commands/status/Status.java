@@ -15,23 +15,22 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Status extends Command {
+	private static final String[] COMMAND_NAMES = { "status" };
+
 	public Status() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "status";
-    }
-
     public String commandLine() {
-    	return "status";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "status: Display current status";
+        return name() + ": Display current status";
     }
 
     public Command clone(String[] args, int index) {
@@ -97,7 +96,7 @@ public class Status extends Command {
 	    		}
 
 	    	} else {
-	    		console.display(String.format("No routes analysed\n"));
+	    		console.display(String.format("No routes analyzed\n"));
 	    	}
     	}
 

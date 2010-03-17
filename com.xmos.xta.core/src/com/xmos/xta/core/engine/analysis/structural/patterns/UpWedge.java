@@ -4,11 +4,13 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class UpWedge extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart, Aborter aborter ) throws AbortedException {
 		m_treeStart = treeStart;
 
 		//the set of least dominant nodes is the set of nodes that cause a loop to be formed.
@@ -31,9 +33,9 @@ public class UpWedge extends PatternMatcher {
 			}
 
 			if (piviot.getPrevNodesSize() > 1) {
-				return CommonMethods.wedgeDown(piviot, workingSet);
+				return CommonMethods.wedgeDown(piviot, workingSet, aborter);
 			} else {
-				return CommonMethods.wedgeUp(piviot, workingSet);
+				return CommonMethods.wedgeUp(piviot, workingSet, aborter);
 			}
 
 		}

@@ -7,15 +7,19 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class PathTime extends Command {
+	private static final String[] COMMAND_NAMES = { "pathtime" };
+
 	private String m_fromRef;
 	private String m_toRef;
 	private String m_value;
 	private String m_mode;
 
 	public PathTime() {
+		super(COMMAND_NAMES);
 	}
 
 	public PathTime(String fromRef, String toRef, String value, String mode) {
+		super(COMMAND_NAMES);
 		m_fromRef = fromRef;
 		m_toRef = toRef;
 		m_value = value;
@@ -30,16 +34,12 @@ public class PathTime extends Command {
 		return new Command.ArgType[] {ArgType.ENDPOINT, ArgType.ENDPOINT};
 	}
 
-    public String name() {
-		return "pathtime";
-    }
-
     public String commandLine() {
-       	return "pathtime " + m_fromRef + " " + m_toRef + " " + m_value + " " + m_mode;
+       	return name() + " " + m_fromRef + " " + m_toRef + " " + m_value + " " + m_mode;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of defines";
+    	String descString = name() + " <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of defines";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

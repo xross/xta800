@@ -35,6 +35,7 @@ public class BlockNode extends Node {
 
 	//this is for empty basic blocks for conditionals
 	public BlockNode() {
+		super();
 		m_insts = new LinkedList<InstructionNode>();
 		m_attributes = new BlockNodeAttributes(this);
 	}
@@ -182,10 +183,9 @@ public class BlockNode extends Node {
 		return fnRef;
 	}
 
-	public void buildListUp(List<Node> nodeList,
-			Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList, Node start) {
 		if(m_parent!= null){
-			m_parent.buildListUp(nodeList, stack, this);
+			m_parent.buildListUp(nodeList, this);
 		}
 		for(InstructionNode inst : m_insts){
 			if(inst == start) break;

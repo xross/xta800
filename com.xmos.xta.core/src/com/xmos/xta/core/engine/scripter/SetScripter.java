@@ -27,6 +27,7 @@ class SetScripter {
    	    List<Unknown> processed = new ArrayList<Unknown>();
 
         List<Unknown> setKnowns = getSetKnownsList(routeContainer);
+        
    	    for (Unknown known : setKnowns) {
        	    if (!processed.contains(known)) {
                 String routeIdStr = String.format("%d", known.getRoute().getRouteId());       				    
@@ -39,6 +40,8 @@ class SetScripter {
                 	String scriptStr = known.getScriptStr(routeIdStr, refStrs);
                 	outputPortableWarnings(script, known);
            		   	script.append(scriptStr);
+           		   	
+           		   	//System.out.println("know: " +scriptStr);
            		} catch (Exception e) {}
            		
            		processed.add(known);       	    	
@@ -92,7 +95,7 @@ class SetScripter {
        			if (routeCoreContainer.routeExists(route)) {
        				for (Unknown known : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {
        					if (known.getSource() == Source.SET) {
-       						setKnownsList.add(known);					
+       						setKnownsList.add(known);	
        					}
        				}       				
        			}

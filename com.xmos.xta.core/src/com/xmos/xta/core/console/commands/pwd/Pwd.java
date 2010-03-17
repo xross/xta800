@@ -6,23 +6,22 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Pwd extends Command {
+	private static final String[] COMMAND_NAMES = { "pwd" };
+
 	public Pwd() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "pwd";
-    }
-
     public String commandLine() {
-    	return "pwd";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "pwd: Displays the current working directory";
+        return name() + ": Displays the current working directory";
     }
 
     public Command clone(String[] args, int index) {

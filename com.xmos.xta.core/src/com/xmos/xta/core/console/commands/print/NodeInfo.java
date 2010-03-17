@@ -9,15 +9,19 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class NodeInfo extends Command {
+	private static final String[] COMMAND_NAMES = { "nodeinfo" };
+
 	private int m_routeId;
 	private int m_nodeId;
 
 	public NodeInfo() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 		m_nodeId = 0;
 	}
 
 	public NodeInfo(int routeId, int nodeId) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_nodeId = nodeId;
 	}
@@ -26,16 +30,12 @@ public class NodeInfo extends Command {
    		return 2;
     }
 
-    public String name() {
-    	return "nodeinfo";
-    }
-
     public String commandLine() {
-   	    return "nodeinfo " + getRouteId(m_routeId) + " " + getNodeId(m_nodeId);
+   	    return name() + " " + getRouteId(m_routeId) + " " + getNodeId(m_nodeId);
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "nodeinfo <route id> <node id>: Show detailed information for the given node in the given route";
+    	return name() + " <route id> <node id>: Show detailed information for the given node in the given route";
     }
 
     public Command clone(String[] args, int index) {

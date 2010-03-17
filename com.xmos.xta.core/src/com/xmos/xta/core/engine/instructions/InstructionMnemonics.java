@@ -9,21 +9,15 @@ public class InstructionMnemonics {
 	public InstructionMnemonics(Architecture arch) {
 		m_arch = arch;
 	}
-	/*
-	public boolean isMultiCycle(Instruction inst) {
-		switch (m_arch) {
-		case REVB: return (inst.getClass() == xs1bXtaInstruction_divs_l3r.class) ||
-                          (inst.getClass() == xs1bXtaInstruction_divu_l3r.class) ||
-                          (inst.getClass() == xs1bXtaInstruction_rems_l3r.class) ||
-                          (inst.getClass() == xs1bXtaInstruction_remu_l3r.class);
-		case REVC: return (inst.getClass() == xs1bXtaInstruction_divs_l3r.class) ||
-			              (inst.getClass() == xs1bXtaInstruction_divu_l3r.class) ||
-			              (inst.getClass() == xs1bXtaInstruction_rems_l3r.class) ||
-			              (inst.getClass() == xs1bXtaInstruction_remu_l3r.class);
+	
+	
+	public boolean isImplicitBranchAndLinkLocation(Instruction inst) {
+		if(isBlacpShort(inst) || isBlacpLong(inst) || inst.getBranchPcRelative()){
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
-	*/
 
 
 	public boolean isFreet(Instruction inst) {

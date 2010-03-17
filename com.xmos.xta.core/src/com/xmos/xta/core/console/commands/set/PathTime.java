@@ -7,6 +7,8 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class PathTime extends Command {
+	private static final String[] COMMAND_NAMES = { "pathtime" };
+
 	private int m_routeId;
 	private String m_fromRef;
 	private String m_toRef;
@@ -14,9 +16,11 @@ public class PathTime extends Command {
 	private String m_mode;
 
 	public PathTime() {
+		super(COMMAND_NAMES);
 	}
 
 	public PathTime(int routeId, String fromRef, String toRef, String value, String mode) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_fromRef = fromRef;
 		m_toRef = toRef;
@@ -37,11 +41,11 @@ public class PathTime extends Command {
     }
 
     public String commandLine() {
-    	return "pathtime " + getRouteId(m_routeId) + " " + m_fromRef + " " + m_toRef + " " + m_value + " " + m_mode;
+    	return name() + " " + getRouteId(m_routeId) + " " + m_fromRef + " " + m_toRef + " " + m_value + " " + m_mode;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "pathtime <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route";
+    	String descString = name() + " <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

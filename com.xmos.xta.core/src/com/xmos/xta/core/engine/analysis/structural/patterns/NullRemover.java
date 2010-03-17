@@ -2,11 +2,13 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
 
+import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class NullRemover  extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart) {
+	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart, Aborter aborter ) throws AbortedException {
 		m_treeStart = treeStart;
 		
 		if(!currentNode.isNullNode()){

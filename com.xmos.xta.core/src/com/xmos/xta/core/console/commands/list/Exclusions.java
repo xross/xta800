@@ -9,8 +9,10 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Exclusions extends Command {
+	private static final String[] COMMAND_NAMES = { "exclusions" };
 
 	public Exclusions() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
@@ -21,16 +23,12 @@ public class Exclusions extends Command {
         return super.getArgTypes();
 	}
 
-    public String name() {
-		return "exclusions";
-    }
-
     public String commandLine() {
-   		return "exclusions";
+   		return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "exclusions: Displays the exclusions";
+    	return name() + ": Displays the exclusions";
     }
 
     public Command clone(String[] args, int index) {

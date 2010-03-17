@@ -8,23 +8,22 @@ import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class SrcLoops extends Command {
+	private static final String[] COMMAND_NAMES = { "srcloops" };
+
 	public SrcLoops() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-  		return "srcloops";
-	}
-
 	public String commandLine() {
-   		return "srcloops";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "srcloops : Displays the loop counts embedded in the loaded executable";
+        return name() + ": Displays the loop counts embedded in the loaded executable";
 	}
 
 	public Command clone(String[] args, int index) {

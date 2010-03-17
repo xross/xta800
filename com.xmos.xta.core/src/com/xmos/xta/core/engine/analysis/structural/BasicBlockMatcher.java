@@ -111,7 +111,7 @@ public class BasicBlockMatcher {
 		}
 	}
 
-	public Node getLastBlock() {
+	public Node getLastInst() {
 		return m_lastInstruction;
 	}
 }

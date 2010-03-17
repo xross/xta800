@@ -12,23 +12,22 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Sources extends Command {
+	private static final String[] COMMAND_NAMES = { "sources" };
+
 	public Sources() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "sources";
-    }
-
     public String commandLine() {
-    	return "sources";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "sources: Lists the source files";
+        return name() + ": Lists the source files";
     }
 
     public Command clone(String[] args, int index) {

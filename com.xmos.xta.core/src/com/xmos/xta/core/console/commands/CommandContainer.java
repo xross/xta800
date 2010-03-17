@@ -5,16 +5,15 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.engine.Engine;
 
 public abstract class CommandContainer extends Command {
-	private String m_commandName;
 	private Command m_option;
 
-	public CommandContainer(String commandName) {
-		m_commandName = commandName;
+	public CommandContainer(String[] commandNames) {
+		super(commandNames);
 		m_option = null;
 	}
 
-	public CommandContainer(String commandName, Command option) {
-		m_commandName = commandName;
+	public CommandContainer(String[] commandNames, Command option) {
+		super(commandNames);
 		m_option = option;
 	}
 
@@ -25,16 +24,12 @@ public abstract class CommandContainer extends Command {
     	return m_option.numArgs() + 1;
     }
 
-    public String name() {
-    	return m_commandName;
-    }
-
     public String commandLine() {
-    	return String.format("%s %s", m_commandName, m_option.commandLine());
+    	return String.format("%s %s", name(), m_option.commandLine());
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = String.format("%s <option> <arg0> <arg1>...: %s", m_commandName, getDescription());
+    	String descString = String.format("%s <option> <arg0> <arg1>...: %s", name(), getDescription());
     	if (detailed) {
         	StringBuffer sb = new StringBuffer();
         	sb.append("\n");
@@ -55,7 +50,7 @@ public abstract class CommandContainer extends Command {
 
     	String arg = args[index + 1];
     	for (Command option : getSubCommands()) {
-    		if (arg.equals(option.name())) {
+    		if (option.matches(arg)) {
     			Command opt = option.clone(args, index + 1);
     			if (opt == null)
     				return null;

@@ -12,18 +12,22 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class Warnings extends Command {
+	private static final String[] COMMAND_NAMES = { "warnings" };
+
 	public Warnings() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name()        { return "warnings"; }
-    public String commandLine() { return "warnings"; }
+    public String commandLine() {
+    	return name();
+    }
 
     public String description(Engine engine, boolean detailed) {
-    	return "warnings: Print all timing warnings";
+    	return name() + ": Print all timing warnings";
     }
 
     public Command clone(String[] args, int index) {

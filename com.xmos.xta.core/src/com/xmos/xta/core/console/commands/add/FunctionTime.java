@@ -7,14 +7,18 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class FunctionTime extends Command {
+	private static final String[] COMMAND_NAMES = { "functiontime" };
+	
 	private String m_functionName;
 	private String m_value;
 	private String m_mode;
 
     public FunctionTime() {
+		super(COMMAND_NAMES);
 	}
 
     public FunctionTime(String functionName, String value, String mode) {
+		super(COMMAND_NAMES);
 		m_functionName = functionName;
 		m_value = value;
 		m_mode = mode;
@@ -29,16 +33,12 @@ public class FunctionTime extends Command {
 		return new Command.ArgType[] {ArgType.FUNCTION};
 	}
 
-    public String name() {
-		return "functiontime";
-    }
-
     public String commandLine() {
-       	return "functiontime " + m_functionName + " " + m_value + " " + m_mode;
+       	return name() + " " + m_functionName + " " + m_value + " " + m_mode;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines";
+    	String descString = name() + " <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

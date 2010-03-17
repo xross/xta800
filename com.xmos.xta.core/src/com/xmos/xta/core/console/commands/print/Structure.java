@@ -1,7 +1,6 @@
 package com.xmos.xta.core.console.commands.print;
 
 import java.util.Collection;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -9,21 +8,23 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Structure extends Command {
+	private static final String[] COMMAND_NAMES = { "structure" };
 
 	private int m_routeId;
 	private int m_nodeId;
 	private boolean m_nodeIdSet;
 
 	public Structure() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 		m_nodeId = 0;
 		m_nodeIdSet = false;
 	}
 
 	public Structure(int routeId, int nodeId, boolean nodeIdSpecified) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_nodeId = nodeId;
 		m_nodeIdSet = nodeIdSpecified;
@@ -36,20 +37,15 @@ public class Structure extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "structure";
-    }
-
     public String commandLine() {
        	if (m_nodeIdSet) {
-           	return "structure " + getRouteId(m_routeId) + " " + m_nodeId;
+           	return name() + " " + getRouteId(m_routeId) + " " + m_nodeId;
        	}
-   		return "structure " + getRouteId(m_routeId);
+   		return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "structure <route id> [node id]: Display the structure for given route/node (verbosity 0|1)";
-    	return descString;
+    	return name() + " <route id> [node id]: Display the structure for given route/node (verbosity 0|1)";
     }
 
     public Command clone(String[] args, int index) {
@@ -83,31 +79,34 @@ public class Structure extends Command {
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;
 
-		if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
-			displayGlobalTree(engine, console);
-			
-		} else {
+		//if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
+		//	displayGlobalTree(engine, console);
+		//	
+		//} else {
 			displayRouteTree(engine, console);
-		}
+		//}
     }
-
+/*
     private void displayGlobalTree(final Engine engine, final Console console) {
 		final StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
 
 		for (NodeCorePair activeCore : engine.getActiveCores()) {			
 			console.display(String.format("Node: %d, Core: %d\n", activeCore.getNode(), activeCore.getCore()));
-				
+
 			Collection<Node> nodes = null;
     		if (m_nodeIdSet) {
     			nodes = getCollection(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getNode(m_nodeId));
     		} else {
     			nodes = new TreeSet<Node>();
+    			
     			nodes.addAll(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getFunctions());
     		}
+    		
     		displayer.display(nodes);
+
 		}				
     }
-    
+ */   
     private void displayRouteTree(final Engine engine, final Console console) {
 		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
 		

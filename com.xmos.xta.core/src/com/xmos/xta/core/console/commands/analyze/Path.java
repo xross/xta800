@@ -1,4 +1,4 @@
-package com.xmos.xta.core.console.commands.analyse;
+package com.xmos.xta.core.console.commands.analyze;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -6,15 +6,19 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Path extends Command {
+	private static final String[] COMMAND_NAMES = { "path" };
+
 	private String m_fromRef;
 	private String m_toRef;
 
 	public Path() {
+		super(COMMAND_NAMES);
 		m_fromRef = "";
 		m_toRef = "";
 	}
 
 	public Path(String fromRef, String toRef) {
+		super(COMMAND_NAMES);
 		m_fromRef = fromRef;
 		m_toRef = toRef;
 	}
@@ -31,20 +35,16 @@ public class Path extends Command {
 		return new Command.ArgType[] {ArgType.ENDPOINT, ArgType.ENDPOINT};
 	}
 
-    public String name() {
-    	return "path";
-    }
-
     public String commandLine() {
     	if (hasEndPoints()) {
-        	return "path " + m_fromRef + " " + m_toRef;
+        	return name() + " " + m_fromRef + " " + m_toRef;
     	} else {
-    		return "path";
+    		return name();
     	}
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyse the given path";
+        return name() + " <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyze the given path";
     }
 
     public Command clone(String[] args, int index) {
@@ -76,7 +76,7 @@ public class Path extends Command {
 				return;
 			}
 		}
-		engine.analysePath(getSrc());
+		engine.analyzePath(getSrc());
     }
 
 	private boolean hasEndPoints() {

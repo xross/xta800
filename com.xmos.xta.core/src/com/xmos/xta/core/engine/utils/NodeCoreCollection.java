@@ -23,7 +23,8 @@ public class NodeCoreCollection<E> {
 	}
 
 	public E get(int nodeNumber, int coreNumber) {
-		return m_collectedObjects.get(nodeCoreToString(nodeNumber, coreNumber));
+		String s = nodeCoreToString(nodeNumber, coreNumber);
+		return m_collectedObjects.get(s);
 	}
 
 	public void clear() {

@@ -9,7 +9,6 @@ import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.ReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
@@ -31,7 +30,7 @@ public class Route {
 	private RouteTiming m_timing;
 	private RouteUnknowns m_unknowns;
 	
-	private Stack<FunctionReferenceNode> m_stack;
+	//private Stack<FunctionReferenceNode> m_stack;
 	private Node m_baseOfRouteNode;
 	
 	private Node m_searchNode;
@@ -42,7 +41,7 @@ public class Route {
 	public Route(CommandSource src, Engine engine, Stack<FunctionReferenceNode> stack, Node node, RouteCoreContainer routeCoreContainer) {
 		m_coreContainer = routeCoreContainer;
 		m_routeId = s_routeCount++;
-		m_stack = stack;
+		//m_stack = stack;
 		m_baseOfRouteNode = node;
 		Architecture architecture = engine.getXeLoader().getArchitecture();
 		
@@ -137,18 +136,22 @@ public class Route {
 		return node;
 	}
 
-	public Set<Node> getReferencedNodes(Reference reference) throws AbortedException {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
-		return referenceMatcher.getNodesMatchingReference(m_stack, m_baseOfRouteNode, reference);
+	public Set<Node> getReferencedNodes(Reference ref) throws AbortedException {
+		RouteReferenceMatcher rrm = new RouteReferenceMatcher();
+		Set<Node> r = rrm.matchReference(m_baseOfRouteNode, ref);
+		assert(r != null);
+		return r;
 	}
 
 	public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
-		ReferenceMatcher referenceMatcher = new ReferenceMatcher();
+		RouteReferenceMatcher rrm = new RouteReferenceMatcher();
+		
 		Collection<Node> referencedNodes = new ArrayList<Node>();
 
-		for (Node function : referenceMatcher.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference)) {
+		for (Node function : rrm.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference)) {
 			referencedNodes.add(function);
 		}
+		
 		return referencedNodes;
 	}
 

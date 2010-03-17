@@ -12,8 +12,10 @@ import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Branches extends Command {
+	private static final String[] COMMAND_NAMES = { "branches" };
 
 	public Branches() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
@@ -24,16 +26,12 @@ public class Branches extends Command {
         return super.getArgTypes();
 	}
 
-	public String name() {
-		return "branches";
-	}
-
 	public String commandLine() {
-		return "branches";
+		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "branches: Lists the branches";
+        return name() + ": Lists the branches";
 	}
 
 	public Command clone(String[] args, int index) {

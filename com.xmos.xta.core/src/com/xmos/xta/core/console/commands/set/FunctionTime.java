@@ -7,17 +7,21 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class FunctionTime extends Command {
+	private static final String[] COMMAND_NAMES = { "functiontime" };
+
 	private int m_routeId;
 	private String m_functionName;
 	private String m_value;
 	private String m_mode;
 
 	public FunctionTime() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 		m_functionName = "";
 	}
 
 	public FunctionTime(int routeId, String functionName, String value, String mode) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_functionName = functionName;
 		m_value = value;
@@ -32,16 +36,12 @@ public class FunctionTime extends Command {
 		return new Command.ArgType[] {ArgType.IGNORE, ArgType.FUNCTION};
 	}
 
-    public String name() {
-    	return "functiontime";
-    }
-
     public String commandLine() {
-    	return "functiontime " + getRouteId(m_routeId) + " " + m_functionName + " " + m_value + " " + m_mode;
+    	return name() + " " + getRouteId(m_routeId) + " " + m_functionName + " " + m_value + " " + m_mode;
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = "functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route";
+        String descString = name() + " <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

@@ -141,10 +141,9 @@ public class InfiniteSelfLoopNode extends Node{
 		m_loop.buildListDown(nodeList);
 	}
 
-	public void buildListUp(List<Node> nodeList,
-			Stack<FunctionReferenceNode> stack, Node start) {
+	public void buildListUp(List<Node> nodeList, Node start) {
 		if(m_parent!= null){
-			m_parent.buildListUp(nodeList, stack, this);
+			m_parent.buildListUp(nodeList, this);
 		}
 	}
 }
