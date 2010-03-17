@@ -4,6 +4,8 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Remove extends CommandContainer {
+	private static final String[] COMMAND_NAMES = { "remove" };
+
 	static private Command[] m_options = {
 		new Branch(),
 		new Core(),
@@ -19,8 +21,8 @@ public class Remove extends CommandContainer {
 		new To(),
 	};
 
-	public Remove() { super("remove"); }
-	public Remove(Command command) { super("remove", command); }
+	public Remove() { super(COMMAND_NAMES); }
+	public Remove(Command command) { super(COMMAND_NAMES, command); }
 
 	public Command[] getSubCommands() { return m_options; }
 	protected String getDescription() { return "Remove item from given list"; }

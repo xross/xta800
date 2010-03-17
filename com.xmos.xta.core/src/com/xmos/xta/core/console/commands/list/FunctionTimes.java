@@ -9,8 +9,10 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
 
 public class FunctionTimes extends Command {
+	private static final String[] COMMAND_NAMES = { "functiontimes" };
 
 	public FunctionTimes() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
@@ -21,16 +23,12 @@ public class FunctionTimes extends Command {
         return super.getArgTypes();
 	}
 
-    public String name() {
-		return "functiontimes";
-    }
-
     public String commandLine() {
-   		return "functiontimes";
+   		return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "functiontimes: Displays the function time defines";
+    	return name() + ": Displays the function time defines";
     }
 
     public Command clone(String[] args, int index) {

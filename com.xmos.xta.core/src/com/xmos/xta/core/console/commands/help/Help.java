@@ -11,19 +11,24 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Help extends Command {
+	private static final String[] COMMAND_NAMES = { "help" };
+
 	private Command m_command;
 	private ReferenceClass m_referenceClass;
 
 	public Help() {
+		super(COMMAND_NAMES);
 		m_command = null;
 		m_referenceClass = null;
 	}
 
 	public Help(Command command) {
+		super(COMMAND_NAMES);
 		m_command = command;
 	}
 
 	public Help(ReferenceClass referenceClass) {
+		super(COMMAND_NAMES);
 		m_referenceClass = referenceClass;
 	}
 
@@ -41,22 +46,18 @@ public class Help extends Command {
 		return new Command.ArgType[] {ArgType.HELP};
 	}
 
-    public String name() {
-    	return "help";
-    }
-
     public String commandLine() {
     	if (m_command != null) {
-        	return "help " + m_command.name();
+        	return name() + " " + m_command.name();
     	}
     	if (m_referenceClass != null) {
-        	return "help " + m_referenceClass.name();
+        	return name() + " " + m_referenceClass.name();
     	}
-   		return "help";
+   		return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        String desc = "help [command/option]: Displays help message for the given command/option";
+        String desc = name() + " [command/option]: Displays help message for the given command/option";
 
         if (detailed) {
             desc += "\n      options: ";

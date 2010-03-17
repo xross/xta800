@@ -7,17 +7,21 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class LoopScope extends Command {
+	private static final String[] COMMAND_NAMES = { "loopscope" };
+
 	private int m_routeId;
 	private String m_refString;
 	private boolean m_absolute;
 
 	public LoopScope() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 		m_refString = "";
 		m_absolute = false;
 	}
 
 	public LoopScope(int routeId, String refString, boolean absolute) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_refString = refString;
 		m_absolute = absolute;
@@ -31,19 +35,15 @@ public class LoopScope extends Command {
 		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS};
 	}
 
-    public String name() {
-    	return "loopscope";
-    }
-
     public String commandLine() {
-    	return "loopscope " +
+    	return name() + " " +
     	    getRouteId(m_routeId) + " " +
     	    m_refString + " " +
     	    (m_absolute ? "absolute" : "relative");
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = "loopscope <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop";
+    	String descString = name() + " <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop";
     	if (detailed) {
         	descString += "\n";
     		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";

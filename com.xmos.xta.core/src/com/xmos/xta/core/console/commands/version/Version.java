@@ -15,23 +15,22 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 
 public class Version extends Command {
+	private static final String[] COMMAND_NAMES = { "version" };
+
 	public Version() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "version";
-    }
-
     public String commandLine() {
-    	return "version";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "version: Displays the version information";
+        return name() + ": Displays the version information";
     }
 
     public Command clone(String[] args, int index) {

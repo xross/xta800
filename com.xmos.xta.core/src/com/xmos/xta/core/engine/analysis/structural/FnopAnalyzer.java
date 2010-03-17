@@ -12,13 +12,13 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.instructions.NullInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
-public class FnopAnalyser {
+public class FnopAnalyzer {
 
-	public FnopAnalyser() {
+	public FnopAnalyzer() {
 
 	}
 
-	public void analyse(Collection<Node> workingSet) {
+	public void analyze(Collection<Node> workingSet) {
 		for(Node node : workingSet){
 			if(node instanceof BlockNode){
 				BlockNode block = (BlockNode)node;

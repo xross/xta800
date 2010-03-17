@@ -8,23 +8,22 @@ import com.xmos.xta.core.engine.sections.SrcStringInfo;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class SrcCommands extends Command {
+	private static final String[] COMMAND_NAMES = { "srccommands" };
+
 	public SrcCommands() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-  		return "srccommands";
-	}
-
 	public String commandLine() {
-   		return "srccommands";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "srccommands : Displays the command list embedded in the loaded executable";
+        return name() + ": Displays the command list embedded in the loaded executable";
 	}
 
 	public Command clone(String[] args, int index) {

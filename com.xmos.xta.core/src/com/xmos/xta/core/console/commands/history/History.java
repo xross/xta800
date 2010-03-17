@@ -6,23 +6,22 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class History extends Command {
+	private static final String[] COMMAND_NAMES = { "history" };
+
 	public History() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "history";
-    }
-
     public String commandLine() {
-    	return "history";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "history: Displays the command history";
+        return name() + ": Displays the command history";
     }
 
     public Command clone(String[] args, int index) {

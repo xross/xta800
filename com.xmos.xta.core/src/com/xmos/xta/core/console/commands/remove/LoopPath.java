@@ -6,12 +6,16 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class LoopPath extends Command {
+	private static final String[] COMMAND_NAMES = { "looppath" };
+
 	private String m_refString;
 
 	public LoopPath() {
+		super(COMMAND_NAMES);
 	}
 
 	public LoopPath(String refString) {
+		super(COMMAND_NAMES);
 		m_refString = refString;
 	}
 
@@ -23,16 +27,12 @@ public class LoopPath extends Command {
 		return new Command.ArgType[] {ArgType.ALLREFS};
 	}
 
-    public String name() {
-		return "looppath";
-    }
-
     public String commandLine() {
-       	return "looppath " + " " + m_refString;
+       	return name() + " " + " " + m_refString;
     }
 
     public String description(Engine engine, boolean detailed) {
-		return "looppath <ANY_REF|*>: Removes the given loop path count define to the list of defines";
+		return name() + " <ANY_REF|*>: Removes the given loop path count define to the list of defines";
     }
 
     public Command clone(String[] args, int index) {

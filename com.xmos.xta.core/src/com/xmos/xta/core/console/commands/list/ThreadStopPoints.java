@@ -7,23 +7,22 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class ThreadStopPoints extends Command {
+	private static final String[] COMMAND_NAMES = { "threadstoppoints" };
+
 	public ThreadStopPoints() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-  		return "threadstoppoints";
-	}
-
 	public String commandLine() {
-   		return "threadstoppoints";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "threadstoppoints: Lists the thread stop points";
+        return name() + ": Lists the thread stop points";
 	}
 
 	public Command clone(String[] args, int index) {

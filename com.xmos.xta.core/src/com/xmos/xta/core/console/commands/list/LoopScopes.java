@@ -9,8 +9,10 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 
 public class LoopScopes extends Command {
+	private static final String[] COMMAND_NAMES = { "loopscopes" };
 
 	public LoopScopes() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
@@ -21,16 +23,12 @@ public class LoopScopes extends Command {
         return super.getArgTypes();
 	}
 
-    public String name() {
-		return "loopscopes";
-    }
-
     public String commandLine() {
-   		return "loopscopes";
+   		return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return "loopscopes: Displays the loop scope defines";
+    	return name() + ": Displays the loop scope defines";
     }
 
     public Command clone(String[] args, int index) {

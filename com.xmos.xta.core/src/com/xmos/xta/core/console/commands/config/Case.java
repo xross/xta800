@@ -7,13 +7,17 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class Case extends Command {
+	private static final String[] COMMAND_NAMES = { "case" };
+
 	private Node.Case m_case;
 
 	public Case() {
+		super(COMMAND_NAMES);
 		m_case = Node.Case.WORST;
 	}
 
 	public Case(Node.Case c) {
+		super(COMMAND_NAMES);
 		m_case = c;
 	}
 
@@ -21,21 +25,17 @@ public class Case extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "case";
-    }
-
     public String commandLine() {
     	switch (m_case) {
-    	case BEST:  return "case BEST";
-    	case WORST: return "case WORST";
+    	case BEST:  return name() + " BEST";
+    	case WORST: return name() + " WORST";
     	}
     	assert(false);
     	return "";
     }
 
     public String description(Engine engine, boolean detailed) {
-        return String.format("case <BEST/WORST>: Sets the case (currently: %s)",
+        return name() + String.format(" <BEST/WORST>: Sets the case (currently: %s)",
         		engine.getCase().toString());
     }
 

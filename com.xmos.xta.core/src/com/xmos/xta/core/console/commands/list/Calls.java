@@ -8,23 +8,22 @@ import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Calls extends Command {
+	private static final String[] COMMAND_NAMES = { "calls" };
+
 	public Calls() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-  		return "calls";
-	}
-
 	public String commandLine() {
-   		return "calls";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "calls: Lists the calls";
+        return name() + ": Lists the calls";
 	}
 
 	public Command clone(String[] args, int index) {

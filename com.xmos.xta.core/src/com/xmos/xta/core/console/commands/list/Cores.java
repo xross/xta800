@@ -7,23 +7,22 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Cores extends Command {
+	private static final String[] COMMAND_NAMES = { "cores" };
+
 	public Cores() {
+		super(COMMAND_NAMES);
 	}
 
 	public int numArgs() {
         return 0;
 	}
 
-	public String name() {
-  		return "cores";
-	}
-
 	public String commandLine() {
-   		return "cores";
+   		return name();
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return "cores: Lists the active cores";
+        return name() + ": Lists the active cores";
 	}
 
 	public Command clone(String[] args, int index) {

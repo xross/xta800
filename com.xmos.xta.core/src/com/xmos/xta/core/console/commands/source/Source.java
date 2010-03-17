@@ -17,13 +17,17 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 
 public class Source extends Command {
+	private static final String[] COMMAND_NAMES = { "source" };
+
 	private String m_fileName;
 
 	public Source() {
+		super(COMMAND_NAMES);
 		m_fileName = "";
 	}
 
 	public Source(String fileName) {
+		super(COMMAND_NAMES);
 		m_fileName = fileName;
 	}
 
@@ -35,16 +39,12 @@ public class Source extends Command {
 		return new Command.ArgType[] {ArgType.FILE};
 	}
 
-    public String name() {
-    	return "source";
-    }
-
     public String commandLine() {
-    	return "source " + m_fileName;
+    	return name() + " " + m_fileName;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "source <file name>: Sources the given command file";
+        return name() + " <file name>: Sources the given command file";
     }
 
     public Command clone(String[] args, int index) {

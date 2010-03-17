@@ -9,23 +9,22 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class Exit extends Command {
+	private static final String[] COMMAND_NAMES = { "exit" };
+
 	public Exit() {
+		super(COMMAND_NAMES);
 	}
 
     public int numArgs() {
     	return 0;
     }
 
-    public String name() {
-    	return "exit";
-    }
-
     public String commandLine() {
-    	return "exit";
+    	return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "exit: Quits the application";
+        return name() + ": Quits the application";
     }
 
     public Command clone(String[] args, int index) {

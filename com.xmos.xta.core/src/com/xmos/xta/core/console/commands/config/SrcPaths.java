@@ -6,13 +6,17 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class SrcPaths extends Command {
+	private static final String[] COMMAND_NAMES = { "srcpaths" };
+
 	private String m_paths;
 
 	public SrcPaths() {
+		super(COMMAND_NAMES);
 		m_paths = "";
 	}
 
 	public SrcPaths(String paths) {
+		super(COMMAND_NAMES);
 		m_paths = paths;
 	}
 
@@ -20,16 +24,12 @@ public class SrcPaths extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "srcpaths";
-    }
-
     public String commandLine() {
-   		return "srcpaths " + m_paths;
+   		return name() + " " + m_paths;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "srcpaths <paths>: Sets the (semicolon separated) source search path";
+        return name() + " <paths>: Sets the (semicolon separated) source search path";
     }
 
     public Command clone(String[] args, int index) {

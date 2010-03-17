@@ -197,7 +197,7 @@ public class Engine implements Notifier, Aborter {
 		if (routeId == ROUTE_ID_LAST) {
 			assert(validateRouteCount());
 			int toIndex = m_routes.size();
-			int fromIndex = toIndex - getNumLastRoutesAnalysed();
+			int fromIndex = toIndex - getNumLastRoutesAnalyzed();
 			routes.addAll(m_routes.subList(fromIndex, toIndex));
 
 		} else if (routeId == ROUTE_ID_ALL) {
@@ -245,15 +245,14 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		boolean successfulInit = initControlFlowGraphs(src, xeLoader, sections);
-
-		if(successfulInit){
+		if (successfulInit){
 			initialiseCoreStates(xeLoader);
+		    initialiseActiveCores(xeLoader);		
 	
 			m_exclusions = new ArrayList<Reference>();
 			m_executableFile = executableFile;
 			m_xeLoader = xeLoader;
 			m_sections = sections;
-		    initialiseActiveCores(xeLoader);		
 			m_routes.clear();
 			m_routeContainers.clear();
 			m_selectedRoute = null;
@@ -269,12 +268,11 @@ public class Engine implements Notifier, Aborter {
 			runSrcLevelCommands(src, commandRunner);
 			m_scripter.setEngineLoadAndRunDone();
 			
-		}
-		
+		}		
 		return successfulInit;
 	}
 
-	public boolean analyseFunction(CommandSource src, String functionName) {
+	public boolean analyzeFunction(CommandSource src, String functionName) {
         RouteContainer routeContainer = new RouteContainer(functionName, this, src);		
 		
 		boolean routeFound = false;
@@ -286,7 +284,7 @@ public class Engine implements Notifier, Aborter {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 
 						routeContainer, this, activeCore.getNode(), activeCore.getCore());
 				
-				analyseRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
+				analyzeRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
 				routeFound = true;
 			}		
 		}		
@@ -300,7 +298,7 @@ public class Engine implements Notifier, Aborter {
 	    return true;
 	}
 
-	public void analysePath(CommandSource src) {
+	public void analyzePath(CommandSource src) {
         RouteContainer routeContainer = new RouteContainer(m_fromEndpointName, m_toEndpointName, this, src);
 		
 		boolean routeFound = false;
@@ -322,7 +320,7 @@ public class Engine implements Notifier, Aborter {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(fromEndpoint, toEndpoint,
 						routeContainer, this, activeCore.getNode(), activeCore.getCore());
 				
-				analyseRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
+				analyzeRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
 				routeFound = true;
     		}			
 		}
@@ -1656,7 +1654,7 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
-	private boolean analyseRouteSafely(CommandSource src, RouteContainer routeContainer,
+	private boolean analyzeRouteSafely(CommandSource src, RouteContainer routeContainer,
 			RouteCoreContainer routeCoreContainer, int nodeNumber, int coreNumber) {
 		
 		boolean success = false;
@@ -1705,7 +1703,7 @@ public class Engine implements Notifier, Aborter {
 		CallGraph cg = m_callGraphs.get(nodeNumber, coreNumber);
 		
 		RouteConstructor routeConstructor = new RouteConstructor(this, cg, routeCoreContainer);
-		RouteError error = routeConstructor.analyse(src);
+		RouteError error = routeConstructor.analyze(src);
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
 			notify(src, Notifier.NOTIFY_ERROR, "no paths of execution could reach the endpoint(s)");
@@ -1847,27 +1845,30 @@ public class Engine implements Notifier, Aborter {
 		if (commandRunner != null) {
 			int commandNum = 0;
 			
-			for (NodeCorePair activeCore : m_activeCores) {
-				Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore.getNode(), activeCore.getCore());
+			// All the source level commands are present on each core, 
+			// so make sure we only run them once..
+			assert(!m_activeCores.isEmpty());
+			NodeCorePair activeCore = m_activeCores.iterator().next();
+			
+			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore.getNode(), activeCore.getCore());
+			startAnalysis("Running source level commands", srcStringInfos.size());
+			
+		    for (SrcStringInfo cmdInfo : srcStringInfos) {
+	            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
+	            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
 
-				String desc = String.format("Running commands: Node: %d, Core: %d", activeCore.getNode(), activeCore.getCore());
-				startAnalysis(desc, srcStringInfos.size());
+	            String command = cmdInfo.getString();
+		        setAnalysisName("Running command: '" + command + "'");
+		        commandRunner.run(command, commandSource, commandNum);
+		        ++commandNum;
+		        provideWorkDone(1);
 
-			    for (SrcStringInfo cmdInfo : srcStringInfos) {
-		            CommandSource commandSource = new CommandSource(CommandSource.Type.SRC_LEVEL_COMMAND,
-		            		cmdInfo.getFileName(), cmdInfo.getLineNumber());
-		            String command = cmdInfo.getString();
-		            setAnalysisName("Running commands: '" + command + "'");
-		            commandRunner.run(command, commandSource, commandNum);
-		            ++commandNum;
-		            provideWorkDone(1);
-
-		            try {
-						getAbort();
-					} catch (AbortedException e) {
-						break;
-					}
-			    }				
+		        try {
+			    	getAbort();
+			    	
+				} catch (AbortedException e) {
+					break;
+				}
 			}
 		}
 	}
@@ -1924,7 +1925,7 @@ public class Engine implements Notifier, Aborter {
 		return true;
 	}
 	
-	private int getNumLastRoutesAnalysed() {
+	private int getNumLastRoutesAnalyzed() {
 		if (m_routeContainers.isEmpty()) { 
 			return 0;
 		}
@@ -1941,7 +1942,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	private boolean validateRouteCount(){
-		return m_routes.size() >= getNumLastRoutesAnalysed();
+		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
 }
 

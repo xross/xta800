@@ -7,15 +7,19 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class Required extends Command {
+	private static final String[] COMMAND_NAMES = { "required" };
+
 	private int m_routeId;
 	private String m_value;
 	private String m_mode;
 
 	public Required() {
+		super(COMMAND_NAMES);
 		m_routeId = 0;
 	}
 
 	public Required(int routeId, String value, String mode) {
+		super(COMMAND_NAMES);
 		m_routeId = routeId;
 		m_value = value;
 		m_mode = mode;
@@ -25,17 +29,13 @@ public class Required extends Command {
    		return 3;
     }
 
-    public String name() {
-    	return "required";
-    }
-
     public String commandLine() {
-       	return String.format("required %s %s %s", getRouteId(m_routeId),
+       	return name() + String.format(" %s %s %s", getRouteId(m_routeId),
        			m_value, m_mode);
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = "required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route";
+        String descString = name() + " <route id> <value> <mode>: Sets the maximum allowed time taken for the given route";
       	if (detailed) {
            	descString += "\n" + TimeUnit.getHelp();
        	}

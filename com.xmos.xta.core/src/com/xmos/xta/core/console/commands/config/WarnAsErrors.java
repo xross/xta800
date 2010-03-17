@@ -7,13 +7,17 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 
 public class WarnAsErrors extends Command {
+	private static final String[] COMMAND_NAMES = { "Werror" };
+
 	private boolean m_errorOn;
 
 	public WarnAsErrors() {
+		super(COMMAND_NAMES);
 		m_errorOn = false;
 	}
 
 	public WarnAsErrors(boolean errorOn) {
+		super(COMMAND_NAMES);
 		m_errorOn = errorOn;
 	}
 
@@ -21,21 +25,17 @@ public class WarnAsErrors extends Command {
     	return 1;
     }
 
-    public String name() {
-    	return "Werror";
-    }
-
     public String commandLine() {
     	if (m_errorOn) {
-    		return String.format("Werror on");
+    		return name() + " on";
     	} else {
-    		return String.format("Werror off");
+    		return name() + " off";
     	}
     }
 
     public String description(Engine engine, boolean detailed) {
     	Config config = engine.getConfig();
-        return String.format("Werror <on/off>: treat warnings as errors or not (currently: %s)",
+        return name() + String.format(" <on/off>: treat warnings as errors or not (currently: %s)",
             	config.m_warnAsErrors ? "on" : "off");
     }
 

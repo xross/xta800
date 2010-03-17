@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.analysis.structural.BasicBlockMatcher;
-import com.xmos.xta.core.engine.analysis.structural.FnopAnalyser;
+import com.xmos.xta.core.engine.analysis.structural.FnopAnalyzer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -23,8 +23,8 @@ public class FnopAdder {
 		for(FunctionContainer fc : m_functionContainers){
 			Collection<Node> basicBlocks = new TreeSet<Node>();
 			reduceGraphToBasicBlocks(fc.getStartInstruction(), fc.getFunctionContents(), basicBlocks);
-			FnopAnalyser fa = new FnopAnalyser();
-			fa.analyse(basicBlocks);
+			FnopAnalyzer fa = new FnopAnalyzer();
+			fa.analyze(basicBlocks);
 		}
 	}
 

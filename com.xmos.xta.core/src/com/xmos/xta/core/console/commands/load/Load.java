@@ -13,9 +13,12 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 
 public class Load extends Command {
+	private static final String[] COMMAND_NAMES = { "load" };
+
 	private String m_executableName;
 
 	public Load() {
+		super(COMMAND_NAMES);
 		m_executableName = "";
 	}
 	
@@ -24,6 +27,7 @@ public class Load extends Command {
 	}
 
 	public Load(String executableName) {
+		super(COMMAND_NAMES);
 		m_executableName = executableName;
 	}
 
@@ -35,16 +39,12 @@ public class Load extends Command {
 		return new Command.ArgType[] {ArgType.FILE};
 	}
 
-    public String name() {
-    	return "load";
-    }
-
     public String commandLine() {
-    	return "load " + m_executableName;
+    	return name() + " " + m_executableName;
     }
 
     public String description(Engine engine, boolean detailed) {
-        return "load <xe file>: Loads the given xmos executable file";
+        return name() + " <xe file>: Loads the given xmos executable file";
     }
 
     public Command clone(String[] args, int index) {

@@ -6,15 +6,19 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Freq extends Command {
+	private static final String[] COMMAND_NAMES = { "freq" };
+
 	private int m_nodeNumber;
 	private double m_frequency;
 
 	public Freq() {
+		super(COMMAND_NAMES);
 		m_nodeNumber = 0;
 		m_frequency = 0.0;
 	}
 
 	public Freq(int nodeNumber, double frequency) {
+		super(COMMAND_NAMES);
 		m_nodeNumber = nodeNumber;
 		m_frequency = frequency;
 	}
@@ -23,16 +27,12 @@ public class Freq extends Command {
     	return 2;
     }
 
-    public String name() {
-    	return "freq";
-    }
-
     public String commandLine() {
-    	return String.format("freq %d %f", m_nodeNumber, m_frequency);
+    	return name() + String.format(" %d %f", m_nodeNumber, m_frequency);
     }
 
     public String description(Engine engine, boolean detailed) {
-        return String.format("freq <node number> <core frequency>: Sets the core frequency in Mhz for the given node");
+        return name() + " <node number> <core frequency>: Sets the core frequency in Mhz for the given node";
     }
 
     public Command clone(String[] args, int index) {

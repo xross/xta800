@@ -5,7 +5,7 @@ import java.util.Vector;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.commands.Command.RedirectMode;
 import com.xmos.xta.core.console.commands.add.Add;
-import com.xmos.xta.core.console.commands.analyse.Analyse;
+import com.xmos.xta.core.console.commands.analyze.Analyze;
 import com.xmos.xta.core.console.commands.clear.Clear;
 import com.xmos.xta.core.console.commands.config.Config;
 import com.xmos.xta.core.console.commands.echo.Echo;
@@ -27,7 +27,7 @@ import com.xmos.xta.core.engine.CommandSource;
 public class CommandFactory {
 	static private Command[] m_commands = {
 		new Add(),
-		new Analyse(),
+		new Analyze(),
 		new Config(),
 		new Clear(),
 	    new Echo(),
@@ -69,7 +69,7 @@ public class CommandFactory {
 
     	arg = stripLeadingDash(arg);
     	for (Command command : m_commands) {
-    		if (arg.equals(command.name())) {
+    		if (command.matches(arg)) {
     			Command cloned = command.clone(args, index);
     			if (cloned == null) {
     		    	console.display("xta: " + src.getFileName() + ":" + src.getLineNum() + ": error: " +
