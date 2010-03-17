@@ -264,11 +264,10 @@ public class Engine implements Notifier, Aborter {
 			m_fromEndPoints.clear();
 			m_toEndPoints.clear();
 	
-			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
-	
 			runSrcLevelCommands(src, commandRunner);
+
 			m_scripter.setEngineLoadAndRunDone();
-			
+			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
 		}
 		
 		return successfulInit;
