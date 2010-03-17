@@ -1302,6 +1302,47 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	// ===================================================================== //
+	// Exclusion Immediately Methods
+	// ===================================================================== //
+	public boolean setExclusion(CommandSource src, int routeId, String refString) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty()) {
+			return false;
+		}
+	    try {
+	    	Map<Route, Reference> refMap = new HashMap<Route, Reference>();
+			for (Route route : routes) {
+				Reference reference = ReferenceFactory.createReference(refString, 
+						ReferenceClass.ENDPOINT_REF,
+				        route.getRouteCoreContainer().getNodeNumber(),
+				        route.getRouteCoreContainer().getCoreNumber());
+								
+				if (resolveReference(reference)) {
+					if (!route.getRouteUnknowns().canInstructionPause(reference))
+						return false;
+					
+					refMap.put(route, reference);
+				}				
+			}
+			for (Route route : routes) {
+				if (refMap.containsKey(route)) {				
+			        route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+				}
+			}
+		} catch (AbortedException e) { 
+			return false;			
+		}
+				
+	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	    return true;
+	}
+
+	public void setExclusion(CommandSource src, Node node) {
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+	
+	// ===================================================================== //
 	// Section Methods
 	// ===================================================================== //
 	public boolean addBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {

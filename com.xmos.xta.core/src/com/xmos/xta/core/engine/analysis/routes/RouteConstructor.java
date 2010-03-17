@@ -95,15 +95,16 @@ public class RouteConstructor {
 			return RouteError.ENDPOINTS_MISSING;
 		}
 
+		List<StackNode> branchStackNodes = new LinkedList<StackNode>();
+		Map<StackNode, Set<Node>> branchToNext = new HashMap<StackNode, Set<Node>>();
+		buildBranchStackNodes(branchStackNodes, branchToNext);
+		
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
 		for(Reference ref : m_engine.getExclusions()){
 			exclusionStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
 		}
 		
-		List<StackNode> branchStackNodes = new LinkedList<StackNode>();
-		for(Reference ref : m_engine.getUserBranches().keySet()){
-			branchStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
-		}
+		
 		
 		if (debug_exculsions) {
 			System.out.println("exclusions are:");
@@ -128,7 +129,7 @@ public class RouteConstructor {
 					}
 					
 					List<StackNode> endStackNodes = getFunctionEndStackNodes(stack);
-					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, endStackNodes, true);
+					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, endStackNodes, branchStackNodes, true, branchToNext);
 					if (newFunction != null){
 						setParent(newFunction);
 						if (!alreadyContainRoute(newFunction)) {
@@ -152,7 +153,7 @@ public class RouteConstructor {
 			for (StackNode startStackNode : startStackNodes){
 				for (Stack<FunctionReferenceNode> currentStack : startStackNode.getNodeStacks()){
 					foundAtLeastOneStartPoint = true;
-					Node newPath = makePath(currentStack, startStackNode.getInstruction(), endStackNodes, exclusionStackNodes);
+					Node newPath = makePath(currentStack, startStackNode.getInstruction(), endStackNodes, exclusionStackNodes, branchStackNodes, branchToNext);
 					if (newPath != null){
 						setParent(newPath);
 						
@@ -179,6 +180,33 @@ public class RouteConstructor {
 		return RouteError.SUCCESS;
 	}
 
+	private void buildBranchStackNodes(List<StackNode> branchStackNodes,
+			Map<StackNode, Set<Node>> branchToNext) {
+		for(Reference ref : m_engine.getUserBranches().keySet()){
+			List<StackNode> stackNodes = getPathStackNodes(m_callGraph, ref);
+			branchStackNodes.addAll(stackNodes);
+			for(StackNode sn : stackNodes){
+				branchToNext.put(sn, new TreeSet<Node>());
+				for(Reference next : m_engine.getUserBranches().get(ref)){
+					for(StackNode nextStackNode : getPathStackNodes(m_callGraph, next)){
+						if(sn.getInstruction().getXtaInstruction().isLink()){
+							for(Node nextFrn : sn.getInstruction().getNextNodes()){
+								if(nextFrn instanceof FunctionReferenceNode){
+									FunctionReferenceNode frn = (FunctionReferenceNode)nextFrn;
+									if(frn.getFunctionStartInstruction() == nextStackNode.getInstruction()){
+										branchToNext.get(sn).add(frn);	
+									}
+								}
+							}
+						} else {
+							branchToNext.get(sn).add(nextStackNode.getInstruction());	
+						}						
+					}
+				}
+			}
+		}
+	}
+
 	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference ref) {
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 		return prm.matchReference(callGraph, ref, m_engine);
@@ -190,7 +218,7 @@ public class RouteConstructor {
 	}
 	
 	private FunctionNode makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
-			List<StackNode> endStackNodes, boolean start) throws AbortedException{
+			List<StackNode> endStackNodes, List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
 		
 		FunctionReferenceNode fnRef = currentStack.peek();
 		
@@ -210,7 +238,7 @@ public class RouteConstructor {
 		
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound, RouteMode.FUNCTION,
-				endStackNodes, nodeToWorkingSet, loopFormingEndNodes, start);
+				endStackNodes, nodeToWorkingSet, loopFormingEndNodes, start, branchStackNodes, branchToNext);
 
 		dumpGraph(workingSet);
 		removeExclusionBranches(workingSet, currentExclusionsFound, loopFormingEndNodes);
@@ -227,7 +255,7 @@ public class RouteConstructor {
 	}
 
 	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
-			List<StackNode> exclusionStackNodes) throws AbortedException{
+			List<StackNode> exclusionStackNodes, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
 
 		Set<Node> workingSet = new TreeSet<Node>();
 		Set<Node> currentExclusionsFound = new TreeSet<Node>();
@@ -237,7 +265,7 @@ public class RouteConstructor {
 		Set<Node> loopFormingEndNodes = new TreeSet<Node>();
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound,
-				RouteMode.PATH, endStackNodes, nodeToWorkingSet, loopFormingEndNodes, true);
+				RouteMode.PATH, endStackNodes, nodeToWorkingSet, loopFormingEndNodes, true, branchStackNodes, branchToNext);
 
 		dumpGraph(workingSet);
 		removeExclusionBranches(workingSet, currentExclusionsFound, loopFormingEndNodes);
@@ -261,7 +289,7 @@ public class RouteConstructor {
 			List<StackNode> endStackNodes,
 			Map<NodeDescriptor, Node> nodeToWorkingSet, 
 			Set<Node> loopFormingEndNodes,
-			boolean firstInstruction)
+			boolean firstInstruction, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext)
 	throws AbortedException {
 		
 		boolean repeat = true;
@@ -271,6 +299,7 @@ public class RouteConstructor {
 			
 			Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
 			
+
 			if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 				currentExclusionsFound.add(currentNode);
 				addToWorkingSet(parent, currentNode, workingSet);
@@ -308,13 +337,13 @@ public class RouteConstructor {
 						
 						findReachableGraph(parent, newStack, inst, workingSet,
 								exclusionStackNodes, currentExclusionsFound, routeMode,
-								endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false);
+								endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
 						return;
 					} else {
 						FunctionNode fn = null;
 						if(frn.isKnownFunction()){
 							List<StackNode> newEndStackNodes = getFunctionEndStackNodes(newStack);
-							fn = makeFunction(newStack, exclusionStackNodes, newEndStackNodes, false);
+							fn = makeFunction(newStack, exclusionStackNodes, newEndStackNodes, branchStackNodes, false, branchToNext);
 							
 						} else {
 							fn = new FunctionNode();
@@ -344,7 +373,9 @@ public class RouteConstructor {
 				
 			addToWorkingSet(parent, currentNode, workingSet);
 			
-			if(node.getNextNodes().size() == 0){
+			Set<Node> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
+			
+			if(nextNodes.size() == 0){
 				FunctionReferenceNode callingFnRef = currentStack.peek();
 				for(Node followingFunction : callingFnRef.getNextNodes()){
 					Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
@@ -352,11 +383,11 @@ public class RouteConstructor {
 					newStack.pop();
 					findReachableGraph(currentNode, newStack, followingFunction, workingSet,
 							exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
-							nodeToWorkingSet, loopFormingEndNodes, false);
+							nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
 					 
 				}
-			} else if(node.getNextNodes().size() == 1){
-				Node next = node.getNextNodes().iterator().next();
+			} else if(nextNodes.size() == 1){
+				Node next = nextNodes.iterator().next();
 				Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
 				if(nextWorkingSetNode == null){
 					parent = currentNode;
@@ -371,13 +402,13 @@ public class RouteConstructor {
 						loopFormingEndNodes.add(currentNode);
 					} 
 				}
-			} else if(node.getNextNodes().size() > 1){
-				for(Node next : node.getNextNodes()){
+			} else if(nextNodes.size() > 1){
+				for(Node next : nextNodes){
 					Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
 					if(nextWorkingSetNode == null){
 						findReachableGraph(currentNode, currentStack, next, workingSet,
 								exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
-								nodeToWorkingSet, loopFormingEndNodes, false);
+								nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
 					} else {
 						if(routeMode == RouteMode.FUNCTION || !stackNodesContainNode(endStackNodes, currentStack, next)){
 							CommonMethods.connect(nextWorkingSetNode, currentNode);
@@ -391,6 +422,20 @@ public class RouteConstructor {
 		}
 	}
 	
+	private Set<Node> getValidBranches(List<StackNode> branchStackNodes,
+			Stack<FunctionReferenceNode> currentStack, Node node, Map<StackNode, Set<Node>> branchToNext) {
+		Set<Node> validNextNodes = new TreeSet<Node>();
+		
+		validNextNodes.addAll(node.getNextNodes());
+		
+		for(StackNode sn : branchStackNodes){
+			if(!sn.getNodeStacks().contains(currentStack)){
+				validNextNodes.removeAll(branchToNext.get(sn));
+			}
+		}
+		return validNextNodes;
+	}
+
 	private boolean alreadyContainRoute(Node newGraph) {
 		final List<String> newNodeList = createRouteDescription(newGraph);
 
@@ -432,6 +477,8 @@ public class RouteConstructor {
 		assert(originalStartNode != null);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 		Node startNode = sae.basicBlock(workingSet, originalStartNode, m_engine, "route");
+		
+		dumpGraph(workingSet);
 		Node structuralNode = sae.createStructure(workingSet, startNode, m_engine, "Converting CFG to structure");
 		assert(workingSet.size() == 1);
 		sae.normaliseGraph(structuralNode);
@@ -583,8 +630,6 @@ public class RouteConstructor {
 
 	private void addToWorkingSet(Node parent, Node currentNode, Set<Node> workingSet) {
 		if(parent!= null){
-			
-			if(debug_route) System.out.println("\t\t" + parent+ "->"  + currentNode );
 			CommonMethods.connect(currentNode, parent);
 		}
 		
