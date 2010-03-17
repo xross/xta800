@@ -1324,7 +1324,7 @@ public class Engine implements Notifier, Aborter {
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {				
-			        route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+			       // route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
 				}
 			}
 		} catch (AbortedException e) { 
@@ -1336,7 +1336,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void setExclusion(CommandSource src, Node node) {
-		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+		//m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
 		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 	
