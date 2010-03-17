@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
@@ -21,18 +23,25 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 public class ConditionalNode extends Node {
 	private ConditionalNodeAttributes m_attributes;
 	private Collection<Node> m_options;
-
+	private Map<Node, Boolean> m_alive;
+	
 	public ConditionalNode() {
 		super();
 		m_options = new TreeSet<Node>();
+		m_alive = new TreeMap<Node, Boolean>();
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
 	public ConditionalNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
-		if (isOptional)
+		m_alive = new TreeMap<Node, Boolean>();
+		if (isOptional){
 			m_options.add(new BlockNode());
+		}
+		for(Node option : m_options){
+			m_alive.put(option, true);
+		}	
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
@@ -51,6 +60,7 @@ public class ConditionalNode extends Node {
 		for (Node option : m_options) {
 			Node clone = option.deepCopy(aborter);
 			sn.m_options.add(clone);
+			sn.m_alive.put(clone, m_alive.get(option));
 		}
 		sn.m_attributes = new ConditionalNodeAttributes(sn);
 		return sn;
@@ -64,9 +74,19 @@ public class ConditionalNode extends Node {
     	return m_attributes;
     }
 
+    private Collection<Node> getAliveOptions(){
+    	Collection<Node> aliveOptions = new TreeSet<Node>();
+    	for(Node option : m_options){
+    		if(m_alive.get(option)){
+    			aliveOptions.add(option);
+    		}
+    	}
+    	return aliveOptions;
+    }
+    
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
-		for (Node node : m_options){
+		for (Node node : getAliveOptions()){
 			list.addAll(node.getInstructions());
 		}
 		return list;
@@ -81,7 +101,7 @@ public class ConditionalNode extends Node {
 		TraverseStatus status = nodeTraverser.foundConditionalNode(this, ancestors);
 		if (status == TraverseStatus.CONTINUE) {
 			ancestors.push(this);
-			for (Node node : m_options) {
+			for (Node node : getAliveOptions()) {
 				status = node.traverse(ancestors, nodeTraverser);
 				if (status != TraverseStatus.CONTINUE) {
 					break;
@@ -99,7 +119,7 @@ public class ConditionalNode extends Node {
 	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundConditionalNode(this);
 		if (status == TraverseStatus.CONTINUE) {
-			for (Node node : m_options) {
+			for (Node node : getAliveOptions()) {
 				status = node.traverse(nodeTraverser);
 				if (status != TraverseStatus.CONTINUE) {
 					break;
@@ -135,7 +155,7 @@ public class ConditionalNode extends Node {
 
 	public List<Node> getAllUnsetOptions() {
 		List<Node> unsetOptions = new LinkedList<Node>();
-		for (Node option : m_options) {
+		for (Node option : getAliveOptions()) {
 			if (!getAttributes().getSetOption(option)) {
 				unsetOptions.add(option);
 			}
@@ -186,7 +206,7 @@ public class ConditionalNode extends Node {
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
 		Collection<TimeDistributionBuckets> tdbs = new LinkedList<TimeDistributionBuckets>();
-		for(Node node : m_options){
+		for(Node node : getAliveOptions()){
 			tdbs.add(node.getTimeSpread());
 		}
 		tdb.merge(tdbs);
@@ -194,30 +214,30 @@ public class ConditionalNode extends Node {
 	}
 
 	public void replaceChild(Node oldNode, Node newNode) {
-		m_options.remove(oldNode);
-		m_options.add(newNode);
+		getAliveOptions().remove(oldNode);
+		getAliveOptions().add(newNode);
 	}
 
 	public void replaceChildren(List<Node> children) {
-		m_options.clear();
-		m_options.addAll(children);
+		getAliveOptions().clear();
+		getAliveOptions().addAll(children);
 	}
 
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {
-		return new LinkedList<Node>(m_options);
+		return new LinkedList<Node>(getAliveOptions());
 	}
 
 	public Set<Node> structurGraphNext(Node childNode) {
-		assert(m_options.contains(childNode));
+		assert(getAliveOptions().contains(childNode));
 		assert(getParent() != null);
 		return getParent().structurGraphNext(this);
 	}
 
 	public Set<InstructionNode> getInstructionNodes() {
 		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
-		for (Node node : m_options) {
+		for (Node node : getAliveOptions()) {
 			insts.addAll(node.getInstructionNodes());
 		}
 		return insts;
@@ -225,7 +245,7 @@ public class ConditionalNode extends Node {
 
 	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
 		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
-		for(Node node : m_options){
+		for(Node node : getAliveOptions()){
 			addFunctionRefToRefSet(fnRef, node);
 		}
 		return fnRef;
@@ -239,5 +259,10 @@ public class ConditionalNode extends Node {
 
 	public void buildListDown(List<Node> nodeList) {
 		return;
+	}
+
+	public void setAlive(Node currentNode, boolean b) {
+		assert(m_alive.containsKey(currentNode));
+		m_alive.put(currentNode, b);
 	}
 }

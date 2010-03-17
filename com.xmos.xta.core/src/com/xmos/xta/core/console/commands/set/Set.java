@@ -7,6 +7,7 @@ public class Set extends CommandContainer {
 	private static final String[] COMMAND_NAMES = { "set" };
 
 	static private Command[] m_options = {
+		new Exclusion(),
 		new From(),
 		new FunctionTime(),
 		new InstructionTime(),
@@ -16,7 +17,6 @@ public class Set extends CommandContainer {
 		new PathTime(),
 		new Required(),
 		new To(),
-		//new Exclusion(),
 	};
 
 	public Set() { super(COMMAND_NAMES); }

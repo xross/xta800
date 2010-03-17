@@ -1307,37 +1307,58 @@ public class Engine implements Notifier, Aborter {
 		if (routes.isEmpty()) {
 			return false;
 		}
+		boolean success = false;
 	    try {
-	    	Map<Route, Reference> refMap = new HashMap<Route, Reference>();
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ENDPOINT_REF,
+						ReferenceClass.ANY_REF,
 				        route.getRouteCoreContainer().getNodeNumber(),
 				        route.getRouteCoreContainer().getCoreNumber());
 								
-				if (resolveReference(reference)) {
-					if (!route.getRouteUnknowns().canInstructionPause(reference))
-						return false;
-					
-					refMap.put(route, reference);
-				}				
-			}
-			for (Route route : routes) {
-				if (refMap.containsKey(route)) {				
-			       // route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+				Set<Node> nodes = route.getReferencedNodes(reference);
+				
+				boolean okToSetExclusion = true;
+				for(Node node : nodes){
+					okToSetExclusion &= canSetExclusion(node);
 				}
+				if(okToSetExclusion){			
+					success = route.getRouteUnknowns().setExclusion(reference, Type.EXCLUSION, Source.SET);	
+				}
+				
 			}
+			
 		} catch (AbortedException e) { 
 			return false;			
 		}
-				
-	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-	    return true;
+
+	    if(success){
+	    	notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
+	    	return true;
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
+			return false;	
+		}
 	}
 
 	public void setExclusion(CommandSource src, Node node) {
-		//m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
-		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+		
+		if(canSetExclusion(node)){
+			m_selectedRoute.getRouteUnknowns().setExclusion(node, Type.EXCLUSION, Source.SET);		
+			notify(src, Notifier.NOTIFY_ROUTE_CHANGED, "");
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
+		}
+		
+	}
+	
+	public boolean canSetExclusion(Node node) {
+		try {
+			m_selectedRoute.getRouteUnknowns().checkExclusionWillLeaveAPath(node);
+			return true;
+
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	// ===================================================================== //
