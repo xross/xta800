@@ -2,9 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -37,14 +35,10 @@ public class SequenceNode extends Node {
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public Node copyStructure() {
-		return new SequenceNode(this);
-	}
-
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		SequenceNode pn = new SequenceNode();
 		for (Node path : m_nodes) {
-			Node clone = path.deepCopy(aborter);
+			Node clone = path.copyRouteStructure(aborter);
 			pn.m_nodes.add(clone);
 		}
 		pn.m_attributes = new NodeAttributes(pn);
@@ -138,40 +132,6 @@ public class SequenceNode extends Node {
 
 	public List<Node> iChildren() {
 		return m_nodes;
-	}
-
-	public Set<Node> structurGraphNext(Node childNode) {
-		assert (m_nodes.contains(childNode));
-		int index = m_nodes.indexOf(childNode);
-		if (index < m_nodes.size() - 1) {
-			Set<Node> next = new TreeSet<Node>();
-			next.add(m_nodes.get(index + 1));
-			return next;
-		}  else if (childNode.isInfiniteLoopNode() ||
-				childNode.isInfiniteSelfLoopNode()) {
-			Set<Node> next = new TreeSet<Node>();
-			next.add(childNode);
-			return next;
-		} else {
-			assert(getParent() != null);
-			return getParent().structurGraphNext(this);
-		}
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
-		for(Node node : m_nodes){
-			insts.addAll(node.getInstructionNodes());
-		}
-		return insts;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
-		for(Node node : m_nodes){
-			addFunctionRefToRefSet(fnRef, node);
-		}
-		return fnRef;
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {

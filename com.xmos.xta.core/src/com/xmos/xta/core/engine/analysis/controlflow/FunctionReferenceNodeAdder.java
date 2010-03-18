@@ -1,6 +1,8 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,6 +34,9 @@ public class FunctionReferenceNodeAdder {
 	private Map<Reference, Set<BranchInfo>> m_branchMap;
 	private Set<FunctionContainer> m_functionContainer;
 
+	private int m_executableBytes;
+	private int m_unreachableBytes;
+	
 	public FunctionReferenceNodeAdder(InstructionDecoder instDecoder, Notifier notifier, CommandSource src,
 			XeLoader xeLoader, int nodeId, int coreId, Sections sections){
 		m_instDecoder = instDecoder;
@@ -46,6 +51,11 @@ public class FunctionReferenceNodeAdder {
 
 
 	public void process(Set<InstructionNode> functionStartNodes) {
+		
+		List<InstructionNode> remainingInsts = new LinkedList<InstructionNode>(m_instDecoder.getInstructions());
+		
+		m_executableBytes = countBytes(remainingInsts);
+		
 		for(InstructionNode startOfFunction : functionStartNodes){
 			Map<Node, Node> seen = new HashMap<Node, Node>();
 			
@@ -60,7 +70,7 @@ public class FunctionReferenceNodeAdder {
 			while(!toDo.isEmpty()){
 				
 				InstructionNode inst = toDo.iterator().next();
-				
+				remainingInsts.remove(inst);
 				Node parent = getInstruction(inst, seen, functionInstructions);
 				for(Node next : inst.getNextNodes()){
 					if(!seen.containsKey(next)){
@@ -135,14 +145,34 @@ public class FunctionReferenceNodeAdder {
 			FunctionContainer fc = new FunctionContainer(copyStart, functionInstructions, functionRefNodes);
 			m_functionContainer.add(fc);
 		}
+		
+		m_unreachableBytes = countBytes(remainingInsts);
+		
 	}
+
+	public int getExecuableBytes(){
+		return m_executableBytes;
+	}
+	
+	public int getUnreachableBytes(){
+		return m_unreachableBytes;
+	}
+	
+	private int countBytes(List<InstructionNode> insts) {
+		int totalBytes = 0;
+		for(InstructionNode inst : insts){
+			totalBytes += inst.getXtaInstruction().getNumBytes();
+		}
+		return totalBytes;
+	}
+
 
 	private Node getInstruction(Node next, Map<Node, Node> seen, Set<InstructionNode> functionInstructions) {
 		assert(next instanceof InstructionNode);
 		if(seen.containsKey(next)){
 			return seen.get(next);
 		} else {
-			Node copy = next.copyStructure();
+			Node copy = new InstructionNode((InstructionNode)next);
 			seen.put(next, copy);
 			functionInstructions.add((InstructionNode) copy);
 			return copy;
@@ -161,7 +191,6 @@ public class FunctionReferenceNodeAdder {
 			fr = new FunctionReferenceNode(inst, target);
 		} else {
 			fr = new FunctionReferenceNode(inst);
-			//parent.setUnresolved(true);
 		}
 		assert(fr != null);
 		CommonMethods.connect(fr, parent);

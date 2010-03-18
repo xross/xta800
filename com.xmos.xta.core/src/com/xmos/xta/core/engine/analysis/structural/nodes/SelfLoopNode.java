@@ -2,9 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -37,13 +35,9 @@ public class SelfLoopNode extends Node{
 		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
-	public SelfLoopNode copyStructure() {
-		return new SelfLoopNode(this);
-	}
-
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		SelfLoopNode ln = new SelfLoopNode();
-		ln.m_loop = m_loop.deepCopy(aborter);
+		ln.m_loop = m_loop.copyRouteStructure(aborter);
 		ln.m_attributes = new SelfLoopNodeAttributes(ln);
 		return ln;
 	}
@@ -123,27 +117,6 @@ public class SelfLoopNode extends Node{
 		List<Node> children = new LinkedList<Node>();
 		children.add(m_loop);
 		return children;
-	}
-
-	public Set<Node> structurGraphNext(Node childNode) {
-		Set<Node> next = new TreeSet<Node>();
-		assert(getParent()!=null);
-		next.addAll(getParent().structurGraphNext(this));
-		//TODO check that this is correct
-		next.add(m_loop);
-		return next;
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
-		insts.addAll(m_loop.getInstructionNodes());
-		return insts;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
-		addFunctionRefToRefSet(fnRef, m_loop);
-		return fnRef;
 	}
 
 	public void buildListDown(List<Node> nodeList) {

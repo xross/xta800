@@ -1599,7 +1599,8 @@ public class Engine implements Notifier, Aborter {
 		
 		//Control Flow Stage
 
-		FunctionConstructor fc = new FunctionConstructor(id, this, sections, nodeNumber, coreNumber, src, mnenonics);
+		FunctionConstructor fc = new FunctionConstructor(id, this, sections, nodeNumber, coreNumber, src, 
+				mnenonics, xeLoader.getSymbolTable(nodeNumber, coreNumber));
 
 		try {
 			fc.process();
@@ -1637,7 +1638,6 @@ public class Engine implements Notifier, Aborter {
 
 		CallGraph cg = new CallGraph(functionContainers);
 		callGraphs.add(nodeNumber, coreNumber, cg);
-		
 		
 		SourceMapper sourceMapper;
 		try {
@@ -1703,13 +1703,6 @@ public class Engine implements Notifier, Aborter {
 		assert(m_xeLoader.isLoaded(nodeNumber, coreNumber));
 	    notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 	    
-	    /*
-		if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeNumber, coreNumber))
-				return false;
-		}
-	    */
-		
 	    if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
 			NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>(m_callGraphs);
 			NodeCoreCollection<SourceMapper> sourceMapper = new NodeCoreCollection<SourceMapper>(m_sourceMapper);

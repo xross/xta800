@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -54,17 +53,13 @@ public class InfiniteLoopNode extends Node {
 		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
-	public InfiniteLoopNode copyStructure() {
-		return new InfiniteLoopNode(this);
-	}
-
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		InfiniteLoopNode ln = new InfiniteLoopNode();
 		for (Node loop : m_loops) {
-			Node clone = loop.deepCopy(aborter);
+			Node clone = loop.copyRouteStructure(aborter);
 			ln.m_loops.add(clone);
 		}
-		ln.m_loopHeader = m_loopHeader.deepCopy(aborter);
+		ln.m_loopHeader = m_loopHeader.copyRouteStructure(aborter);
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
 		ln.m_attributes = new InfiniteLoopNodeAttributes(ln);
 		return ln;
@@ -167,34 +162,6 @@ public class InfiniteLoopNode extends Node {
 			children.add(node);
 		}
 		return children;
-	}
-
-	public Set<Node> structurGraphNext(Node childNode) {
-		Set<Node> next = new TreeSet<Node>();
-		if (m_loopHeader == childNode) {
-			next.addAll(m_loops);
-		} else {
-			next.add(m_loopHeader);
-		}
-		return next;
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
-		insts.addAll(m_loopHeader.getInstructionNodes());
-		for (Node node : m_loops) {
-			insts.addAll(node.getInstructionNodes());
-		}
-		return insts;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
-		addFunctionRefToRefSet(fnRef, m_loopHeader);
-		for(Node node : m_loops){
-			addFunctionRefToRefSet(fnRef, node);
-		}
-		return fnRef;
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {

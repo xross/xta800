@@ -43,6 +43,9 @@ public class Set implements Command {
 			addTo(sb);
 			break;
 		case 9 :
+			addExclude(sb);
+			break;
+		case 10 :
 			Mess mess = new Mess();
 			sb.append(mess.getCommand());
 			break;
@@ -59,6 +62,14 @@ public class Set implements Command {
 	private void addTo(StringBuffer sb){
 		sb.append("to  ");
 		Reference ref = new Reference();
+		sb.append(ref.getCommand()); // ref
+	}
+	
+	private void addExclude(StringBuffer sb){
+		sb.append("exclusion  ");
+		RouteId ri = new RouteId();
+		Reference ref = new Reference();
+		sb.append(ri.getCommand());		// routeid
 		sb.append(ref.getCommand()); // ref
 	}
 	

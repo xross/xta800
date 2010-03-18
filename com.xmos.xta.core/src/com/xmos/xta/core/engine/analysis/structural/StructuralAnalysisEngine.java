@@ -271,6 +271,8 @@ public class StructuralAnalysisEngine {
 		Set<Node> workingSet = new TreeSet<Node>();
 		workingSet.addAll(functionContainer.getFunctionContents());
 		assert(workingSet.contains(functionContainer.getStartInstruction()));
+		dumpTree("started_"+ functionContainer.getFunctionName(), workingSet, false);
+		
 		Node startNode = basicBlock(workingSet, functionContainer.getStartInstruction(), engine, functionContainer.getFunctionName());
 		Node structureNode = null;
 		try {
@@ -326,11 +328,14 @@ public class StructuralAnalysisEngine {
 
 			for(Node next : current.getNextNodes()){
 				if(next instanceof FunctionReferenceNode){
-					FunctionReferenceNode copy = new FunctionReferenceNode((FunctionReferenceNode) next);
-					newWorkingSet.add(copy);
-					seenNodes.add(copy);
-					instToBlock.put(next, copy);
-					nexts.put(copy, new HashSet<Node>(next.getNextNodes()));
+					FunctionReferenceNode fnRef = (FunctionReferenceNode) next;
+					FunctionNode fnNode= new FunctionNode(fnRef.getFunctionContainer().getCachedFunction(engine), fnRef);
+					
+					
+					newWorkingSet.add(fnNode);
+					seenNodes.add(fnNode);
+					instToBlock.put(next, fnNode);
+					nexts.put(fnNode, new HashSet<Node>(next.getNextNodes()));
 					for(Node nextNext : next.getNextNodes()){
 						if(!seenNodes.contains(nextNext)){
 							toDo.add(nextNext);

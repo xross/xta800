@@ -19,7 +19,7 @@ public class NullNode extends Node {
 		super();
 	}
 
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		return new NullNode();
 	}
 
@@ -48,10 +48,6 @@ public class NullNode extends Node {
 		return "null";
 	}
 
-	public Node copyStructure() {
-		return new NullNode();
-	}
-
 	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
 		return TraverseStatus.CONTINUE;
 	}
@@ -74,21 +70,6 @@ public class NullNode extends Node {
 
 	public List<Node> iChildren() {
 		return new LinkedList<Node>();
-	}
-
-	public Set<Node> structurGraphNext(Node childNode) {
-		assert(false);
-		return null;
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		assert(false);
-		return null;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		assert(false);
-		return null;
 	}
 
 	public void buildListDown(List<Node> nodeList) {

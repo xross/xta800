@@ -15,6 +15,7 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CallGraph;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.FunctionContainer;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
@@ -141,6 +142,7 @@ public class RouteConstructor {
 			}
 		} else if (routeContainer.getMode() == RouteMode.PATH){
 			Reference startRef = m_coreContainer.getFromReference();
+			
 			List<StackNode> startStackNodes = getPathStackNodes(m_callGraph, startRef);
 			
 			Collection<Reference> endRefs = m_coreContainer.getToReferences();
@@ -225,35 +227,30 @@ public class RouteConstructor {
 		if(!fnRef.isKnownFunction()){
 			return new FunctionNode();
 		}
-		
 		InstructionNode startInst = fnRef.getStartInstruction();
-		
+
 		Set<Node> workingSet = new TreeSet<Node>();
 		Set<Node> currentExclusionsFound = new TreeSet<Node>();
 		Map<NodeDescriptor, Node> nodeToWorkingSet = new HashMap<NodeDescriptor, Node>();
-
+		
 		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
-
 		Set<Node> loopFormingEndNodes = new TreeSet<Node>();
 		
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound, RouteMode.FUNCTION,
 				endStackNodes, nodeToWorkingSet, loopFormingEndNodes, start, branchStackNodes, branchToNext);
 
-		dumpGraph(workingSet);
 		removeExclusionBranches(workingSet, currentExclusionsFound, loopFormingEndNodes);
-		dumpGraph(workingSet);
 
 		if(workingSet.isEmpty()){
 			return null;
 		}
+		
 		Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
 
-		FunctionNode newFunction = new FunctionNode(node, fnRef);
-
-		return newFunction;
+		return new FunctionNode(node, fnRef);
 	}
-
+	
 	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
 			List<StackNode> exclusionStackNodes, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
 
@@ -266,8 +263,6 @@ public class RouteConstructor {
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound,
 				RouteMode.PATH, endStackNodes, nodeToWorkingSet, loopFormingEndNodes, true, branchStackNodes, branchToNext);
-
-		dumpGraph(workingSet);
 		removeExclusionBranches(workingSet, currentExclusionsFound, loopFormingEndNodes);
 
 		if(workingSet.isEmpty()){
@@ -314,8 +309,9 @@ public class RouteConstructor {
 				for(FunctionReferenceNode f : currentStack){
 					functionCallInstructions.add(f.getFunctionStartInstruction());
 				}
+				
 				if(functionCallInstructions.contains(frn.getFunctionStartInstruction())){
-	
+					//recursion detected
 					FunctionNode fn = new FunctionNode(frn.getFunctionName());
 					currentNode = fn;
 				} else {
@@ -604,7 +600,7 @@ public class RouteConstructor {
 		if(nodeToWorkingSet.containsKey(nd)){
 			return nodeToWorkingSet.get(nd);
 		} else {
-			Node copy = node.deepCopy(m_engine);
+			Node copy = node.copyRouteStructure(m_engine);
 			nodeToWorkingSet.put(nd, copy);
 			return copy;
 		}
@@ -645,19 +641,23 @@ public class RouteConstructor {
 
 	private void dumpGraph(Set<Node> workingSet) {
 		if(!debug_route) return;
-		System.out.println("digraph g {");
+		System.out.print("digraph g {");
 		for(Node node : workingSet){
-			System.out.println("node" +node.getId() + " [label=\"" + node + "\"];");
+			if(node instanceof InstructionNode){
+				System.out.print("node" +node.getId() + " [label=\"" + ((InstructionNode)node).getXtaInstruction() + "\"];");
+			} else {
+				System.out.print("node" +node.getId() + " [label=\"" + node + "\"];");
+			}
 			for(Node next : node.getNextNodes()){
-				System.out.println("node" +node.getId() + " -> node" + next.getId() + ";");
+				System.out.print("node" +node.getId() + " -> node" + next.getId() + ";");
 				if(!workingSet.contains(next)){
-					System.out.println("node" +next.getId() + " [label=\"" + next + "\", style=filled, color=blue];");
+					System.out.print("node" +next.getId() + " [label=\"" + next + "\", style=filled, color=blue];");
 				}
 			}
 			for(Node prev : node.getPrevNodes()){
-				System.out.println("node" +prev.getId() + " -> node" + node.getId() + "[style=dotted];");
+				System.out.print("node" +prev.getId() + " -> node" + node.getId() + "[style=dotted];");
 				if(!workingSet.contains(prev)){
-					System.out.println("node" +prev.getId() + " [label=\"" + prev + "\", style=filled, color=red];");
+					System.out.print("node" +prev.getId() + " [label=\"" + prev + "\", style=filled, color=red];");
 				}
 			}
 		}

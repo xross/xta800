@@ -33,16 +33,7 @@ public abstract class Node implements Comparable<Node> {
 	public abstract String getTypeName();
 	public abstract NodeAttributes getAttributes();
 
-	/**
-	 * This copies all the structure of the node and everything within it but leaves all pointers to instruction
-	 * pointing to the same instruction nodes.
-	 */
-	public abstract Node copyStructure();
-
-	/**
-	 * This copies all the structure of the node and everything within it and also copies the instruction nodes
-	 */
-	public abstract Node deepCopy(Aborter abort) throws AbortedException;
+	public abstract Node copyRouteStructure(Aborter abort) throws AbortedException;
 
 	public abstract TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser);
 	public abstract TraverseStatus traverse(NodeTraverser nodeTraverser);
@@ -52,16 +43,11 @@ public abstract class Node implements Comparable<Node> {
 	//need to take a look at this one
 	public abstract long getStartPc();
 
-	//
-	public abstract Set<InstructionNode> getInstructionNodes();
-	public abstract Set<FunctionReferenceNode> getFunctionReferencesNodes();
-
 	//these are for timing defines
 	public abstract void replaceChild(Node oldNode, Node newNode);
 	public abstract void replaceChildren(List<Node> newChildren);
 
 	public abstract List<Node> iChildren();
-	public abstract Set<Node> structurGraphNext(Node childNode);
 	public abstract void buildListUp(List<Node> nodeList, Node start);
 	public abstract void buildListDown(List<Node> nodeList);
 	
@@ -228,13 +214,6 @@ public abstract class Node implements Comparable<Node> {
 		return backTrace;
 	}
 
-	public void addBranchTarget(Node newNode){
-		m_edges.addBranchTarget(newNode);
-	}
-
-	public Set<Node> getBranchTargets(){
-		return m_edges.getBranchTargets();
-	}
 
 	public String getDescription() {
 		return "";
@@ -288,15 +267,6 @@ public abstract class Node implements Comparable<Node> {
 			m_parent.getBackTrail(refStr);
 		}
 	}
-
-	protected void addFunctionRefToRefSet(Set<FunctionReferenceNode> fnRef,
-			Node node) {
-		if(node instanceof FunctionReferenceNode){
-			fnRef.add((FunctionReferenceNode) node);
-		}
-		fnRef.addAll(node.getFunctionReferencesNodes());
-	}
-
 
 }
 

@@ -94,9 +94,6 @@ public class SuccessorAdder {
 	private void connect(Node instruction, long pc, boolean branching) {
 		Node target = m_instDecoder.getNode(pc);
 		if (target != null) {
-			if (branching){
-				instruction.addBranchTarget(target);
-			}
 			CommonMethods.connect(target, instruction);
 		} else {
 			if(!m_mnenonics.isLdap(((InstructionNode)instruction).getXtaInstruction())){

@@ -120,11 +120,7 @@ public class FunctionReferenceNode extends Node {
 		assert(m_functionName != null);
 	}
 
-	public Node copyStructure() {
-		return new FunctionReferenceNode(this);
-	}
-
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		FunctionReferenceNode newFrn = new FunctionReferenceNode(this);
 		return newFrn;
 	}
@@ -176,21 +172,6 @@ public class FunctionReferenceNode extends Node {
 
 	public List<Node> iChildren() {
 		return new LinkedList<Node>();
-	}
-
-	public Set<Node> structurGraphNext(Node childNode) {
-		assert(getParent() != null);
-		return getParent().structurGraphNext(childNode);
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		assert(false);
-		return null;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		assert(false);
-		return null;
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {

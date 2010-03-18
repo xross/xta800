@@ -2,9 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -19,8 +17,6 @@ import com.xmos.xta.core.engine.utils.TimeUnit;
 public class BlockNode extends Node {
 	private BlockNodeAttributes m_attributes;
 	private List<InstructionNode> m_insts;
-
-	private static final boolean COPY_INSTRUCTIONS = true;
 
 	public BlockNode(BlockNode block) {
 		m_insts = block.m_insts;
@@ -39,27 +35,20 @@ public class BlockNode extends Node {
 		m_insts = new LinkedList<InstructionNode>();
 		m_attributes = new BlockNodeAttributes(this);
 	}
-
-	public BlockNode copyStructure() {
-		return new BlockNode(this);
+	
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+		List<InstructionNode> insts = new LinkedList<InstructionNode>();
+		for (InstructionNode inst : m_insts){
+			insts.add((InstructionNode) inst.copyRouteStructure(aborter));
+		}
+		return new BlockNode(insts);
 	}
-
+	
 	public List<InstructionNode> getInstructionList(){
 		return m_insts;
 	}
 
-	public Node deepCopy(Aborter aborter) throws AbortedException {
-		List<InstructionNode> insts;
-		if (COPY_INSTRUCTIONS){
-			insts = new LinkedList<InstructionNode>();
-			for (InstructionNode inst : m_insts){
-				insts.add((InstructionNode) inst.deepCopy(aborter));
-			}
-		} else {
-			insts = m_insts;
-		}
-		return new BlockNode(insts);
-	}
+	
 
     public String getTypeName() {
         return "block";
@@ -80,11 +69,7 @@ public class BlockNode extends Node {
 		}
 		return insts;
 	}
-
-	public XtaInstruction getStartInstruction() {
-		return m_insts.get(0).getXtaInstruction();
-	}
-
+	
 	public long getStartPc() {
 		return getInstructions().getFirst().getPc();
 	}
@@ -158,29 +143,6 @@ public class BlockNode extends Node {
 
 	public List<Node> iChildren() {
 		return new LinkedList<Node>(m_insts);
-	}
-
-	public Set<Node> structurGraphNext(Node currentNode) {
-		assert(m_insts.contains(currentNode));
-		int index = m_insts.indexOf(currentNode);
-		if (index < m_insts.size() - 1) {
-			Set<Node> next = new TreeSet<Node>();
-			next.add(m_insts.get(index +1));
-			return next;
-		} else {
-			assert(getParent() != null);
-			return getParent().structurGraphNext(this);
-		}
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		Set<InstructionNode> insts = new TreeSet<InstructionNode>(m_insts);
-		return insts;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
-		return fnRef;
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {

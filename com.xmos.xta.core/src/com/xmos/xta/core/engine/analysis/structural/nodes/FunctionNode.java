@@ -2,9 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -29,7 +27,6 @@ public class FunctionNode extends Node {
 
 	/**
 	 * recursive function constructor
-
 	 */
 	public FunctionNode(String functionName) {
 		super();
@@ -86,12 +83,8 @@ public class FunctionNode extends Node {
 			refStr.append(String.format("CALL:0x%x,", m_callingFnRef.getFunctionCallPc()));
 		}
 	}
-	
-	public Node copyStructure() {
-    	return new FunctionNode(this);
-	}
 
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		//aborter.getAbort();
 
 		FunctionNode fn = new FunctionNode();
@@ -101,7 +94,7 @@ public class FunctionNode extends Node {
 		if (m_functionSequence != null) {
 			List<Node> nodes = new LinkedList<Node>();
 			for (Node node : m_functionSequence){
-				nodes.add(node.deepCopy(aborter));
+				nodes.add(node.copyRouteStructure(aborter));
 			}
 			fn.m_functionSequence = nodes;
 		}
@@ -250,43 +243,7 @@ public class FunctionNode extends Node {
 
 	}
 
-	public Set<Node> structurGraphNext(Node childNode) {
-		assert (m_functionSequence.contains(childNode));
-		Set<Node> next = new TreeSet<Node>();
-		int index = m_functionSequence.indexOf(childNode);
-		if (index < m_functionSequence.size() - 1) {
-			next.add(m_functionSequence.get(index + 1));
-			return next;
-		} else if (childNode.isInfiniteLoopNode() ||
-				childNode.isInfiniteSelfLoopNode()) {
-			next.add(childNode);
-			return next;
-		} else {
-			//this shouldn't be called as the route construction should have caught it
-			assert(false);
-			return next;
-		}
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
-		for (Node node : m_functionSequence) {
-			insts.addAll(node.getInstructionNodes());
-		}
-		return insts;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
-		for(Node node : m_functionSequence){
-			addFunctionRefToRefSet(fnRef, node);
-		}
-		return fnRef;
-	}
-
 	public void buildListUp(List<Node> nodeList, Node start) {
-
-		
 		if(m_parent!= null){
 			m_parent.buildListUp(nodeList, this);
 		}

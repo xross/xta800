@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
@@ -26,11 +27,12 @@ public class FunctionConstructor {
 	private Set<InstructionNode> m_functionEnds;
 	private Sections m_sections;
 	private InstructionMnemonics m_mnenonics;
+	private SymbolTable m_symbolTable;
 
 	private static final int RAMBASE = 0x10000;
 
 	public FunctionConstructor(InstructionDecoder instDecoder, Notifier notifier, Sections sections,
-			int node, int core, CommandSource src, InstructionMnemonics mnenonics) {
+			int node, int core, CommandSource src, InstructionMnemonics mnenonics, SymbolTable symbolTable) {
 		m_instDecoder = instDecoder;
 		m_notifier = notifier;
 		m_functionStarts = new TreeSet<InstructionNode>();
@@ -40,6 +42,7 @@ public class FunctionConstructor {
 		m_nodeId = node;
 		m_coreId = core;
 		m_src = src;
+		m_symbolTable = symbolTable;
 	}
 
 	public boolean process() {
@@ -48,11 +51,28 @@ public class FunctionConstructor {
 		addThreadStartsToFunctionStarts();
 		addUserBranchTargetsToFunctionStarts();
 		
+		//last resort
+		addUnreachableFunctionStarts();
+		
 		addThreadStopsToFunctionEnds();
 		addRetspsToFunctionEnds();
 		addHaltsToFunctionEnds();
 
 		return ensureAtLeastOneStartExists();
+	}
+
+	private void addUnreachableFunctionStarts() {
+		
+		for(String functionName : m_symbolTable.getFunctionNames()){
+			
+			InstructionNode threadNode = m_instDecoder.getNode(m_symbolTable.symbolAddress(functionName));
+			if (threadNode != null) {
+				m_functionStarts.add(threadNode);
+			} else {
+				m_notifier.notify(m_src, Notifier.NOTIFY_WARNING,
+						"failed to find instruction at PC 0x" + Long.toHexString(RAMBASE));
+			}
+		}
 	}
 
 	public Set<InstructionNode> getFunctionStarts(){
@@ -80,18 +100,21 @@ public class FunctionConstructor {
 
 	private void addBranchTargetsToFunctionStarts(){
 		for(InstructionNode i : m_instDecoder.getInstructions()){
-			if(i.getXtaInstruction().getBranchLink() && i.getXtaInstruction().getBranchPcRelative()){
-				long pc = i.getXtaInstruction().getBranchPcRelativeTargetPc();
-				InstructionNode threadNode = m_instDecoder.getNode(pc);
-				if (threadNode != null) {
-					m_functionStarts.add(threadNode);
-				} else {
-					if(!m_mnenonics.isLdap(i.getXtaInstruction())){
-						m_notifier.notify(m_src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) +
-								") of: " + i.getXtaInstruction().toString() + " not found in executable sections");
-					} 
+			if(i.getXtaInstruction().getBranchLink()){
+				
+				if(i.getXtaInstruction().getBranchPcRelative()){
+					long pc = i.getXtaInstruction().getBranchPcRelativeTargetPc();
+					InstructionNode threadNode = m_instDecoder.getNode(pc);
+					if (threadNode != null) {
+						m_functionStarts.add(threadNode);
+					} else {
+						if(!m_mnenonics.isLdap(i.getXtaInstruction())){
+							m_notifier.notify(m_src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) +
+									") of: " + i.getXtaInstruction().toString() + " not found in executable sections");
+						} 
+					}
 				}
-			}
+			} 
 		}
 	}
 	

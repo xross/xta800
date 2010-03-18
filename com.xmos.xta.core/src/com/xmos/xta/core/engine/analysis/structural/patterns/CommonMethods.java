@@ -34,7 +34,7 @@ public class CommonMethods {
 		
 		for (Node next : node.getNextNodes()) {
 			Node newNode = null;
-			newNode = node.deepCopy(aborter);
+			newNode = node.copyRouteStructure(aborter);
 			newNodes.add(newNode);
 			next.addPrevNode(newNode);
 			next.removePrevNode(node);
@@ -70,7 +70,7 @@ public class CommonMethods {
 		for (Node prev : node.getPrevNodes()){
 
 			Node newNode = null;
-			newNode = node.deepCopy(aborter);
+			newNode = node.copyRouteStructure(aborter);
 			
 			newNodes.add(newNode);
 

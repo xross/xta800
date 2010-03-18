@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -51,14 +50,10 @@ public class ConditionalNode extends Node {
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
-	public Node copyStructure() {
-		return new ConditionalNode(this);
-	}
-
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		ConditionalNode sn = new ConditionalNode();
 		for (Node option : m_options) {
-			Node clone = option.deepCopy(aborter);
+			Node clone = option.copyRouteStructure(aborter);
 			sn.m_options.add(clone);
 			sn.m_alive.put(clone, m_alive.get(option));
 		}
@@ -227,28 +222,6 @@ public class ConditionalNode extends Node {
 
 	public List<Node> iChildren() {
 		return new LinkedList<Node>(getAliveOptions());
-	}
-
-	public Set<Node> structurGraphNext(Node childNode) {
-		assert(getAliveOptions().contains(childNode));
-		assert(getParent() != null);
-		return getParent().structurGraphNext(this);
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		Set<InstructionNode> insts = new TreeSet<InstructionNode>();
-		for (Node node : getAliveOptions()) {
-			insts.addAll(node.getInstructionNodes());
-		}
-		return insts;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		Set<FunctionReferenceNode> fnRef = new TreeSet<FunctionReferenceNode>();
-		for(Node node : getAliveOptions()){
-			addFunctionRefToRefSet(fnRef, node);
-		}
-		return fnRef;
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {

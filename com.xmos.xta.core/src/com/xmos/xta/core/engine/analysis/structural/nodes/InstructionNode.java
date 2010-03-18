@@ -2,9 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
@@ -31,11 +29,7 @@ public class InstructionNode extends Node {
 		m_attributes = new InstructionNodeAttributes(this);
 	}
 
-	public Node copyStructure() {
-		return new InstructionNode(this);
-	}
-
-	public Node deepCopy(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		InstructionNode in = new InstructionNode(this);
 		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;
@@ -109,22 +103,6 @@ public class InstructionNode extends Node {
 	public List<Node> iChildren() {
 		List<Node> children = new LinkedList<Node>();
 		return children;
-	}
-
-	public Set<Node> structurGraphNext(Node childNode) {
-		//This cannot have any children as its a instruction node
-		assert(false);
-		return null;
-	}
-
-	public Set<InstructionNode> getInstructionNodes() {
-		Set<InstructionNode> inst = new TreeSet<InstructionNode>();
-		inst.add(this);
-		return inst;
-	}
-
-	public Set<FunctionReferenceNode> getFunctionReferencesNodes() {
-		return new TreeSet<FunctionReferenceNode>();
 	}
 
 	public void buildList(List<Node> nodeList,

@@ -10,13 +10,11 @@ public class Edges {
 	Set<Node> m_nextNodes;
 	Set<Node> m_prevNodes;
 	Set<Node> m_dominators;
-	Set<Node> m_branchTargets;
 
 	public Edges() {
 		m_nextNodes = null;
 		m_prevNodes = null;
 		m_dominators = null;
-		m_branchTargets = null;
 	}
 
 	public Node getNextNode() {
@@ -122,24 +120,6 @@ public class Edges {
 			m_dominators = new TreeSet<Node>();
 		}
 		m_dominators.addAll(nodes);
-	}
-
-	public void addBranchTarget(Node newNode) {
-		if (newNode == null) {
-			return;
-		}
-
-		if (m_branchTargets == null) {
-			m_branchTargets = new TreeSet<Node>();
-		}
-		m_branchTargets.add(newNode);
-	}
-
-	public Set<Node> getBranchTargets() {
-		if (m_branchTargets == null) {
-			m_branchTargets = new TreeSet<Node>();
-		}
-		return m_branchTargets;
 	}
 
 }
