@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
-import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
@@ -28,116 +26,32 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class SourceMapper {
-
-	private static final boolean DEBUG = false;
-
 	private long m_xeLastModified;
     private List<Function> m_functions;
 	private List<SourceFile> m_sourceFiles;
-	private List<AssemblyLine> m_instructions;
-	private Map<Long, SourceFile> m_pcToFile;
-
+	private List<AssemblyLine> m_assemblyLines;
 	private InstructionDecoder m_instructionDecoder;
-	private Set<InstructionNode> m_starts;
 	private Set<FunctionContainer> m_functionContainers;
 	private Map<Long, AssemblyLine> m_pcToAsm;
 	private Map<Long, Function> m_pcToFunction;
-	private Map<String, String> m_functionToFile;
-
 	private Map<String, Set<Long>> m_labels;
 
     public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, int nodeNumber, int coreNumber,
 			Set<InstructionNode> starts, InstructionDecoder instructionDecoder,
 			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labels) throws AbortedException {
+    	
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
-        m_starts = starts;
         m_functionContainers = functionContainers;
         m_pcToAsm = new TreeMap<Long, AssemblyLine>();
         m_pcToFunction = new TreeMap<Long, Function>();
-        m_functionToFile = new TreeMap<String, String>();
 
-        m_pcToFile = new TreeMap <Long, SourceFile>();
-        m_instructions = createAssemblyLines();
-        m_functions = createFunctions();
+        m_assemblyLines = createAssemblyLines();
+        m_functions = createFunctions(starts);
 
         // Must record the XE timestamp before loading files
         m_xeLastModified = xeLoader.getFile().lastModified();
         m_sourceFiles = createSourceFiles(src, engine, xeLoader, nodeNumber, coreNumber);
-	}
-
-	private SourceFile getSourceFile(DebugFile debugFile, List<SourceFile> sourceFiles){
-    	// Every source file added should have been canonicalised as should have the file
-        for (SourceFile sourceFile : sourceFiles) {
-            if (debugFile == sourceFile.getDebugFile()) {
-                return sourceFile;
-            }
-        }
-        return null;
-    }
-
-    private List<SourceFile> createSourceFiles(CommandSource src, Engine engine, XeLoader xeLoader,
-    		int nodeNumber, int coreNumber) throws AbortedException {
-
-    	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
-
-    	DebugInfo di = xeLoader.getDebugInfo(nodeNumber, coreNumber);
-        DebugEngine de = di.getDebugEngine();
-
-        if (DEBUG) System.out.printf("createSourceFiles: node: %d, core: %d\n", nodeNumber, coreNumber);
-
-		Collection<DebugFile> debugFiles = de.getDebugFiles();
-		engine.startAnalysis("Processing sources", debugFiles.size());
-      	for (DebugFile debugFile : debugFiles) {
-			File file = new File(debugFile.getFullFileName());
-    		engine.provideFeedback(file.getName());
-
-			boolean done = false;
-			while (!done) {
-				Notifier notifier = engine.getNotifier();
-				if (file.exists()) {
-					try {
-						file = file.getCanonicalFile();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
-					done = true;
-
-				} else {
-					file = findFileInSrcPaths(engine.getSrcPaths(), debugFile.getFileName());
-					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
-					done = true;
-				}
-			}
-			engine.provideWorkDone(1);
-			engine.getAbort();
-		}
-
-        return sourceFiles;
-    }
-
-	private File findFileInSrcPaths(String srcPathsString, String fileName) {
-		String[] srcPaths = srcPathsString.split(";");
-		for (String srcPath : srcPaths) {
-		    File file = new File(srcPath + File.separator + fileName);
-	        if (file.exists()) {
-	    	    return file;
-	        }
-		}
-		return null;
-	}
-
-	private void addSourceFile(CommandSource src, Notifier notifier,
-			DebugEngine debugEngine, DebugFile debugFile,
-			File file, List<SourceFile> sourceFiles) {
-
-    	SourceFile sourceFile = getSourceFile(debugFile, sourceFiles);
-    	if (sourceFile == null) {
-    		sourceFile = new SourceFile(debugFile);
-    	}
-		sourceFiles.add(sourceFile);
-    	setFile(src, notifier, debugEngine, sourceFile, file);
 	}
 
     public File findFileForSourceFile(SourceFile sourceFile, FileFinder fileFinder) {
@@ -177,7 +91,6 @@ public class SourceMapper {
     	DebugFile debugFile = sourceFile.getDebugFile();
 		debugFile.setFile(file);
 		sourceFile.readFile();
-		mapSourceFileLines(debugEngine, sourceFile);
 
 		checkSourceFileDate(src, notifier, file);
     }
@@ -188,14 +101,7 @@ public class SourceMapper {
     	return (sourceLastModified > m_xeLastModified);
 	}
 
-    private void checkSourceFileDate(CommandSource src, Notifier notifier, File file) {
-    	if (fileNewerThanBinary(file)) {
-    		notifier.notify(src, Notifier.NOTIFY_WARNING,
-    				String.format("Source file '%s' newer than binary", file.getName()));
-    	}
-	}
-
-	public String getDebugFileName(String diskFileName) {
+    public String getDebugFileName(String diskFileName) {
         for (SourceFile sourceFile : m_sourceFiles) {
         	try {
         		File fileOnDisk = sourceFile.getFile();
@@ -245,62 +151,85 @@ public class SourceMapper {
 		return m_pcToFunction.get(pc);
 	}
 
-	public String getFunctionFileName(String string) {
-		return m_functionToFile.get(string);
+    private void checkSourceFileDate(CommandSource src, Notifier notifier, File file) {
+    	if (fileNewerThanBinary(file)) {
+    		notifier.notify(src, Notifier.NOTIFY_WARNING,
+    				String.format("Source file '%s' newer than binary", file.getName()));
+    	}
 	}
-
-	public InstructionNode getInstructionNode(long pc) {
-		return m_instructionDecoder.getNode(pc);
-	}
-
-    private void mapSourceFileLines(DebugEngine debugEngine, SourceFile sourceFile) {
-    	for (SourceLine sourceLine : sourceFile.getSourceLines()) {
-    		long lineNumber = sourceLine.getLineNumber();
-			Collection<Pair<Long,Long>> addressRanges = debugEngine.getAddressRangesMatchingPath(
-        			sourceFile.getFullFileName(), lineNumber);
-        	Collection<Long> addresses = rangesToAddresses(addressRanges);
-
-            for (long pc : addresses) {
-            	if (m_pcToAsm.containsKey(pc)) {
-                    AssemblyLine assemblyLine = m_pcToAsm.get(pc);
-                    Function fn = m_pcToFunction.get(pc);
-                    if(fn != null){
-                    	m_functionToFile.put(fn.getText(), sourceFile.getFileName());
-                    	sourceLine.addAssembly(assemblyLine);
-                    }
-            	} else {
-            		System.err.println("Could not find assembly line correspinding to 0x" +
-            				Long.toHexString(pc) + " in debug information. ");
-            		assert(false);
-            	}
-
-            	m_pcToFile.put(pc, sourceFile);
+	
+	private SourceFile getSourceFile(DebugFile debugFile, List<SourceFile> sourceFiles){
+    	// Every source file added should have been canonicalised as should have the file
+        for (SourceFile sourceFile : sourceFiles) {
+            if (debugFile == sourceFile.getDebugFile()) {
+                return sourceFile;
             }
-
-        	Collection<Long> statementPcs = debugEngine.getStatementPcsMatchingPath(
-        			sourceFile.getFullFileName(), lineNumber);
-        	sourceLine.addStatementPcs(statementPcs);
-
-        	for (long statementPc : statementPcs) {
-        		sourceFile.addPcToLine(statementPc, sourceLine);
-        	}
         }
-	}
+        return null;
+    }
 
-	private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
-    	Set<Long> addresses = new TreeSet<Long>();
-		for (Pair<Long, Long> range : addressRanges) {
-			long endPc = m_instructionDecoder.getEndPc();
-			for (long pc = range.first; (pc < range.second) && (pc <= endPc); pc += 2) {
-				InstructionNode node = m_instructionDecoder.getNode(pc);
-				if (node != null) {
-					addresses.add(pc);
+    private List<SourceFile> createSourceFiles(CommandSource src, Engine engine, XeLoader xeLoader,
+    		int nodeNumber, int coreNumber) throws AbortedException {
+
+    	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
+
+    	DebugInfo di = xeLoader.getDebugInfo(nodeNumber, coreNumber);
+        DebugEngine de = di.getDebugEngine();
+
+		Collection<DebugFile> debugFiles = de.getDebugFiles();
+		engine.startAnalysis("Processing sources", debugFiles.size());
+      	for (DebugFile debugFile : debugFiles) {
+			File file = new File(debugFile.getFullFileName());
+    		engine.provideFeedback(file.getName());
+
+			boolean done = false;
+			while (!done) {
+				Notifier notifier = engine.getNotifier();
+				if (file.exists()) {
+					try {
+						file = file.getCanonicalFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
+					done = true;
+
+				} else {
+					file = findFileInSrcPaths(engine.getSrcPaths(), debugFile.getFileName());
+					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
+					done = true;
 				}
 			}
+			engine.provideWorkDone(1);
+			engine.getAbort();
 		}
-		return addresses;
+
+        return sourceFiles;
+    }
+
+	private File findFileInSrcPaths(String srcPathsString, String fileName) {
+		String[] srcPaths = srcPathsString.split(";");
+		for (String srcPath : srcPaths) {
+		    File file = new File(srcPath + File.separator + fileName);
+	        if (file.exists()) {
+	    	    return file;
+	        }
+		}
+		return null;
 	}
 
+	private void addSourceFile(CommandSource src, Notifier notifier,
+			DebugEngine debugEngine, DebugFile debugFile,
+			File file, List<SourceFile> sourceFiles) {
+
+    	SourceFile sourceFile = getSourceFile(debugFile, sourceFiles);
+    	if (sourceFile == null) {
+    		sourceFile = new SourceFile(this, debugFile, debugEngine, m_instructionDecoder);
+    	}
+		sourceFiles.add(sourceFile);
+    	setFile(src, notifier, debugEngine, sourceFile, file);
+	}
+	
 	private List<AssemblyLine> createAssemblyLines() {
 		List<AssemblyLine> asmLines = new ArrayList<AssemblyLine>();
 		for (InstructionNode instNode : m_instructionDecoder.getInstructions()){
@@ -311,21 +240,17 @@ public class SourceMapper {
         return asmLines;
     }
 
-    private List<Function> createFunctions() {
+    private List<Function> createFunctions(Set<InstructionNode> starts) {
     	List<InstructionNode> instList = m_instructionDecoder.getInstructions();
-
     	Map<Long, Function> pcToFunction = new HashMap<Long, Function>();
-
     	
-    	
-    	for (InstructionNode inst : m_starts) {
-    		
+    	for (InstructionNode inst : starts) {    		
     		int startIndex = instList.indexOf(inst);
     		List<AssemblyLine> functionAssembly = new ArrayList<AssemblyLine>();
-    		functionAssembly.add(m_instructions.get(startIndex));
+    		functionAssembly.add(m_assemblyLines.get(startIndex));
     		int index = startIndex +1;
-    		while (index < instList.size() && !m_starts.contains(instList.get(index))) {
-    			functionAssembly.add(m_instructions.get(index));
+    		while (index < instList.size() && !starts.contains(instList.get(index))) {
+    			functionAssembly.add(m_assemblyLines.get(index));
     			index++;
     		}
 
@@ -351,7 +276,6 @@ public class SourceMapper {
     }
 
     private String getFunctionName(InstructionNode inst) {
-
     	for(FunctionContainer fc : m_functionContainers){
     		for(Node node : fc.getFunctionContents()){
     			if(node instanceof InstructionNode && node.getStartPc() == inst.getPC()){
@@ -359,9 +283,6 @@ public class SourceMapper {
     			}
     		}
     	}
-		//FIXME
-		System.err.println("cound not find the function corresponding to " + inst.getXtaInstruction());
-
 		assert(false);
 		return "";
 	}

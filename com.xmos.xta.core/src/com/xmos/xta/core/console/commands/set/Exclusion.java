@@ -31,16 +31,12 @@ public class Exclusion extends Command {
 		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS};
 	}
 
-    public String name() {
-    	return "exclusion";
-    }
-
     public String commandLine() {
-       	return String.format("exclusion %s %s", getRouteId(m_routeId), m_refString);
+       	return name() + String.format(" %s %s", getRouteId(m_routeId), m_refString);
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = "exclusion <route id> <ANY_REF> : Sets an exclusion on the given reference";
+        String descString = name() + " <route id> <ANY_REF>: Sets an exclusion on the given reference";
        	return descString;
     }
 

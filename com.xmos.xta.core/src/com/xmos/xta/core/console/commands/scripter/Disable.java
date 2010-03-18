@@ -29,7 +29,7 @@ public class Disable extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + ": Disable a mapping";
+        return name() + " <ANY_REF>: Disable a mapping";
     }
 
     public Command clone(String[] args, int index) {

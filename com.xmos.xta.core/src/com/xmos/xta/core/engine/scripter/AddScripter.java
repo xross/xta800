@@ -31,7 +31,7 @@ public class AddScripter {
 					String command, String removeStr) {
 				
 				if (!oldList.isEmpty())
-					script.append("remove " + command + " " + removeStr + "\n");
+					m_scripter.addScriptCommand(script, "remove " + command + " " + removeStr);
 
 				List<DefineInfo> processed = new ArrayList<DefineInfo>();
 				for (DefineInfo info : newList) {
@@ -54,8 +54,9 @@ public class AddScripter {
     		StringBuffer script, Collection<NodeCorePair> activeCores) {
 
     	if (!currentExclusions.equals(exclusions)) {
-    		if (!currentExclusions.isEmpty())
-        	    script.append("remove exclusion *\n");
+    		if (!currentExclusions.isEmpty()) {
+    			m_scripter.addScriptCommand(script, "remove exclusion *");
+    		}
 
 			List<Reference> processed = new ArrayList<Reference>();    		
         	for (Reference exclusion : exclusions) {    
@@ -77,8 +78,9 @@ public class AddScripter {
     		StringBuffer script, Collection<NodeCorePair> activeCores) {
   
     	if (!currentBranches.equals(branches)) {
-		    if (!currentBranches.isEmpty())
-    	        script.append("remove branch *\n");
+		    if (!currentBranches.isEmpty()) {
+    	        m_scripter.addScriptCommand(script, "remove branch *");
+		    }
     	
    			List<Entry<Reference, List<Reference>>> processed = new ArrayList<Entry<Reference, List<Reference>>>();   			   			   			
    			Iterator<Entry<Reference, List<Reference>>> iter = branches.entrySet().iterator();
@@ -210,16 +212,18 @@ public class AddScripter {
 			m_scripter.outputPortableWarnings(script, reference);
 		}
 
-    	script.append("add " + command);
+		String commandString = "add " + command;
 		for (Reference reference : info.getReferences()) {
-			script.append(" " + m_scripter.getReferenceString(reference));
+			commandString += " " + m_scripter.getReferenceString(reference);
 		}
-		script.append(" " + info.getValue() + "\n");							    	
+		commandString += " " + info.getValue();
+
+		m_scripter.addScriptCommand(script, commandString);
     }
     
     private void outputExclusion(StringBuffer script, Reference exclusion) {
 		m_scripter.outputPortableWarnings(script, exclusion);
-		script.append("add exclusion " + m_scripter.getReferenceString(exclusion) + "\n");						        			    	
+		m_scripter.addScriptCommand(script, "add exclusion " + m_scripter.getReferenceString(exclusion));						        			    	
     }
     
     private void outputBranch(StringBuffer script, Entry<Reference, List<Reference>> branch) {
@@ -228,15 +232,16 @@ public class AddScripter {
 			m_scripter.outputPortableWarnings(script, toRef);
 		}
 
-    	script.append(String.format("add branch %s", m_scripter.getReferenceString(branch.getKey())));
+		String commandString = String.format("add branch %s", m_scripter.getReferenceString(branch.getKey()));
 		for (Reference toRef : branch.getValue()) {
-			script.append(String.format(" %s", m_scripter.getReferenceString(toRef)));
+			commandString += String.format(" %s", m_scripter.getReferenceString(toRef));
 		}
-    	script.append(String.format("\n"));    	
+    	
+    	m_scripter.addScriptCommand(script, commandString);
     }
     
     private void outputNodeCore(StringBuffer script, NodeCorePair activeCore) {
-		script.append("remove core *\n");
-		script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));							    	
+    	m_scripter.addScriptCommand(script, "remove core *");
+    	m_scripter.addScriptCommand(script, String.format("add core %d %d", activeCore.getNode(), activeCore.getCore()));							    	
     }    
 }
