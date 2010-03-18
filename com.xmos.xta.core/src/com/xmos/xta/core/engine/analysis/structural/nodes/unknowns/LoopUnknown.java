@@ -29,7 +29,7 @@ public class LoopUnknown extends Unknown {
     	if (getSource() != Source.SET) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
-    	return String.format("set loop %s %s %d\n",
+    	return String.format("set loop %s %s %d",
 	    		routeIdStr, refStrs[0],
 	    		getNode().getAttributes().getLoopIterations());
 	}

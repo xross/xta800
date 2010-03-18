@@ -29,7 +29,7 @@ public class Enable extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + ": Enable a mapping";
+        return name() + " <ANY_REF>: Enable a mapping";
     }
 
     public Command clone(String[] args, int index) {

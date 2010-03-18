@@ -29,7 +29,7 @@ public class LoopScopeUnknown extends Unknown {
     	if (getSource() != Source.SET) {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
-    	return String.format("set loopscope %s %s %s\n",
+    	return String.format("set loopscope %s %s %s",
     			routeIdStr, refStrs[0],
     			getNode().getAttributes().getIsAbsolute() ? "a" : "r");
 	}

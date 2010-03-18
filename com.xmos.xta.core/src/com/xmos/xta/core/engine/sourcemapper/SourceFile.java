@@ -90,4 +90,12 @@ public class SourceFile implements Comparable<SourceFile> {
 	public int compareTo(SourceFile o) {
 		return m_debugFile.compareTo(o.getDebugFile());
 	}
+
+	public boolean okToWrite(SourceMapper sourceMapper) {
+		File file = m_debugFile.getFile();
+		if ((file == null) || !file.canWrite() || sourceMapper.fileNewerThanBinary(file)) {
+			return false;
+		}
+		return true;
+	}
 }

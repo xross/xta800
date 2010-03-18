@@ -32,7 +32,7 @@ public class LoopPathUnknown extends Unknown {
     		throw new Exception("No script command avaliable (Not explicitly set by user)");
     	}
 		Node condNode = getNode().getEnclosingCondNode();
-		return String.format("set looppath %s %s %d\n",
+		return String.format("set looppath %s %s %d",
     			routeIdStr, refStrs[0],
     			condNode.getAttributes().getSetLoopPathIterations(getNode()));
 	}
