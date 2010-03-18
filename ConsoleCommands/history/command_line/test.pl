@@ -51,7 +51,6 @@ system("@ARGV  " .
 
        "-print asm - " .
        "-print src - " .
-       "-print mix - " .
        "-print trace - " .
        "-print structure - " .
        "-print summary " .

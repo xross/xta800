@@ -33,19 +33,18 @@
 31: list knowns -
 32: print asm -
 33: print src -
-34: print mix -
-35: print trace -
-36: print structure -
-37: print summary
-38: print nodeinfo - 0
-39: print routeinfo 0
-40: remove branch branch1 branch1
-41: set loop - a 99
-42: set instructiontime - test.xc:12 9901 ns
-43: set instructiontime - label1 99 cycles
-44: set instructiontime - 0x1000 50000 cycles
-45: add instructiontime 0x10000 50008 us
-46: source invalid.txt
-47: status
-48: version
-49: history
+34: print trace -
+35: print structure -
+36: print summary
+37: print nodeinfo - 0
+38: print routeinfo 0
+39: remove branch branch1 branch1
+40: set loop - a 99
+41: set instructiontime - test.xc:12 9901 ns
+42: set instructiontime - label1 99 cycles
+43: set instructiontime - 0x1000 50000 cycles
+44: add instructiontime 0x10000 50008 us
+45: source invalid.txt
+46: status
+47: version
+48: history

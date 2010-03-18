@@ -5,7 +5,6 @@ xta 2>he  help pr  print
       option: structure <route id> \[node id\]: Display the structure for given route/node \(verbosity 0|1\)
       option: asm <route id> \[node id\]: Display annotated assembly for the given route/node
       option: src <route id> \[node id\]: Display annotated source file\(s\) for given route/node
-      option: mix <route id> \[node id\]: Display annotated source file\(s\) \+ assembly instructio[mun]s for the given route/node
       option: trace <route id> \[node id\]: Display instruction trace for the worst case path of the given route/node
       option: routeinfo <route id>: Show detailed information for the given route
       option: nodeinfo <route id> <node id>: Show detailed information for the given node in the given route
