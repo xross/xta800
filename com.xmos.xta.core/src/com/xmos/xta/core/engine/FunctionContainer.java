@@ -14,10 +14,8 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 
 	private String m_functionName;
 	private InstructionNode m_startInstruction;
-	
 	private Set<InstructionNode> m_functionInstructions;
 	private Set<FunctionReferenceNode> m_functionRefNodes;
-	
 	private Node m_cachedFunction;
 	
 	public FunctionContainer(InstructionNode startOfFunction, 
@@ -29,7 +27,6 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		m_cachedFunction = null;
 		m_functionName = "unnamed_function";
 	}
-
 
 	public InstructionNode getStartInstruction() {
 		return m_startInstruction;
@@ -60,7 +57,6 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		} else {
 			return m_functionName;
 		}
-		
 	}
 	
 	public void dumpGraph() {
@@ -98,7 +94,6 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		System.out.println("}");
 	}
 
-
 	public InstructionNode getInstruction(long pc) {
 		for(InstructionNode inst : m_functionInstructions){
 			if(inst.getPC() == pc){
@@ -109,7 +104,6 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		return null;
 	}
 
-
 	public Node getCachedFunction(Engine engine) {
 		if(m_cachedFunction == null){
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
@@ -117,7 +111,6 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		}
 		return m_cachedFunction;
 	}
-
 
 	public int compareTo(FunctionContainer o) {
 		return (int)Math.signum(this.getStartInstruction().getPC() - o.getStartInstruction().getPC());

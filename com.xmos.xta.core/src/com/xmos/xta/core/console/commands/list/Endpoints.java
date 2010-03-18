@@ -47,11 +47,9 @@ public class Endpoints extends Command {
 	    	    		activeCore.getNode(), activeCore.getCore(), 
 	    	    		info.getLabel(), info.getPc()));
 
-	    	    if (!info.getCompilationDir().equals("")) {
-	    	    	console.display(", compilation dir: " + info.getCompilationDir());
-	    	    	console.display(", filename: " + info.getFileName());
-	    	    	console.display(", line number: " + info.getLineNumber());
-	    	    }
+    	    	console.display(", compilation dir: " + info.getCompilationDir());
+    	    	console.display(", filename: " + info.getFileName());
+    	    	console.display(", line number: " + info.getLineNumber());
 	    	    console.display("\n");
 	    	}				
 		}

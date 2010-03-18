@@ -76,7 +76,7 @@ public class Src extends Command {
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;
 
-		SrcDisplayer displayer = new SrcDisplayer(engine, console, false);
+		SrcDisplayer displayer = new SrcDisplayer(engine, console);
 		for (Route route : engine.getRoute(m_routeId)) {
 		    int nodeNumber = route.getRouteCoreContainer().getNodeNumber();
 		    int coreNumber = route.getRouteCoreContainer().getCoreNumber();

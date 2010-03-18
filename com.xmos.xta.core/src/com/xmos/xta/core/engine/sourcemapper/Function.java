@@ -12,7 +12,7 @@ public class Function implements Line, Comparable<Object> {
 		m_functionName = name;
 	}
 
-	public List<AssemblyLine> getChildern() {
+	public List<AssemblyLine> getChildren() {
 		return m_assembly;
 	}
 
