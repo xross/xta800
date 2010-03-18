@@ -35,7 +35,7 @@ INCLUDE_DIRS += $(DEMO_SOURCE_DIRS) $(LIB_DIRS)
 
 EXCLUDE_FILES = 
 
-XCC_FLAGS += -lflash $(TIMING) -O3 -g --show-report -Wall -save-temps
+XCC_FLAGS += -lflash $(TIMING) -O3 -g -report -Wall -save-temps
 
 include $(BASE_DIR)/build/common/Makefile.common
 
