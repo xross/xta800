@@ -257,6 +257,5 @@ void audioManager(
 #pragma xta command "remove exclusion audio_48_waitforinput"
 #pragma xta command "remove exclusion audio_flashupgrade"
 #pragma xta command "print summary"
-//#pragma xta command "exit"
 
 #endif

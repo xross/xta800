@@ -713,5 +713,4 @@ void audioManager(
 #pragma xta command "remove exclusion audio_48_wipebuf"
 #pragma xta command "remove exclusion audio_48_freqadjust"
 #pragma xta command "print summary"
-#pragma xta command "exit"
 #endif

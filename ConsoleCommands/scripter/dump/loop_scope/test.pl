@@ -20,7 +20,8 @@ system("xcc -target=$target -march=$arch -g test.xc -o test.xe >> loop_scope.log
 system("@ARGV load test.xe " .
        "source ../cmds.txt " .
        "echo ONE " .
-       "scripter listrefs " .
+       "-scripter listrefs " .
+       "source ../dump.txt " .
        "-exit > loop_scope.txt 2>&1");
 
 system("xcc -target=$target -march=$arch -g test.xc -o test.xe >> loop_scope.log 2>&1");
