@@ -11,7 +11,6 @@ public class Print extends CommandContainer {
 		new Structure(),
 		new Asm(),
 		new Src(),
-		new Mix(),
 		new Trace(),
 		new RouteInfo(),
 		new NodeInfo(),

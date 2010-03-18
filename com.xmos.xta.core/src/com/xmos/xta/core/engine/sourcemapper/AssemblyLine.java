@@ -48,7 +48,7 @@ public class AssemblyLine implements Line {
 		return m_resourceName;
 	}
 
-	public List<AssemblyLine> getChildern() {
+	public List<AssemblyLine> getChildren() {
 		return new LinkedList<AssemblyLine>();
 	}
 

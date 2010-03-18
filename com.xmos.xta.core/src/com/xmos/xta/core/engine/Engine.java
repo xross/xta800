@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -95,7 +94,8 @@ public class Engine implements Notifier, Aborter {
 	private Map<Integer, Long> m_nodeHz;
 	private NodeCoreCollection<Integer> m_coreThreads;
 	private NodeCoreCollection<Boolean> m_structuralGraphUpToDate;
-	private NodeCoreCollection<SourceMapper> m_sourceMapper;
+	private NodeCoreCollection<SourceMapper> m_sourceMappers;
+	private NodeCoreCollection<InstructionDecoder> m_instructionDecoders;
 	private NodeCoreCollection<CallGraph> m_callGraphs;
 	private Collection<FileLocation> m_userSpecifedFileLocations;
 	private Scripter m_scripter;
@@ -106,7 +106,8 @@ public class Engine implements Notifier, Aborter {
 	private Collection<NodeCorePair> m_activeCores;
 
 	public Engine(Config config) {
-		m_sourceMapper = new NodeCoreCollection<SourceMapper>();
+		m_sourceMappers = new NodeCoreCollection<SourceMapper>();
+		m_instructionDecoders = new NodeCoreCollection<InstructionDecoder>();
 		m_callGraphs = new NodeCoreCollection<CallGraph>();
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
 		m_nodeHz = new TreeMap<Integer, Long>();
@@ -172,7 +173,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public SourceMapper getSourceMapper(int nodeNumber, int coreNumber) {
-		return m_sourceMapper.get(nodeNumber, coreNumber);
+		return m_sourceMappers.get(nodeNumber, coreNumber);
 	}
 
 	public String getSrcPaths() {
@@ -479,7 +480,7 @@ public class Engine implements Notifier, Aborter {
 	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
 		for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
 			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
-				SourceMapper sourceMapper = m_sourceMapper.get(nodeNumber, coreNumber);
+				SourceMapper sourceMapper = m_sourceMappers.get(nodeNumber, coreNumber);
 				if (sourceMapper != null) {
 					updateSourceMapper(src, notifier, sourceMapper, fileName, file, nodeNumber, coreNumber);
 				}
@@ -1380,7 +1381,7 @@ public class Engine implements Notifier, Aborter {
 
 	private void checkInstructionIsBranch(CommandSource src, Reference ref, NodeCorePair activeCore) {
 		for (long pc : ref.getPcs()) {
-			InstructionNode node = m_sourceMapper.get(activeCore.getNode(), activeCore.getCore()).getInstructionNode(pc);
+			InstructionNode node = m_instructionDecoders.get(activeCore.getNode(), activeCore.getCore()).getNode(pc);
 			if (node == null) {
 				notify(src, Notifier.NOTIFY_WARNING,
 						String.format("adding branch from non-existant instruction at %s",
@@ -1482,7 +1483,6 @@ public class Engine implements Notifier, Aborter {
 	public Collection<String> getUnreachableFunctions(int nodeNumber, int coreNumber) {
 		return m_sections.getUnreachableFunctions(nodeNumber, coreNumber);
 	}
-
 	
 	/** 
 	 * Try to load an executable. If this fails then it returns the xta to its original state
@@ -1495,21 +1495,23 @@ public class Engine implements Notifier, Aborter {
 		
 		NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>();
 		NodeCoreCollection<Boolean> structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
-		NodeCoreCollection<SourceMapper> sourceMapper = new NodeCoreCollection<SourceMapper>();
+		NodeCoreCollection<SourceMapper> sourceMappers = new NodeCoreCollection<SourceMapper>();
+		NodeCoreCollection<InstructionDecoder> instructionDecoders = new NodeCoreCollection<InstructionDecoder>();
 		
 		for(int nodeNumber : xeLoader.getNodeNumbers()){
 			for(int coreNumber : xeLoader.getCoreNumbers(nodeNumber)){
-				boolean success = buildNodeCore(callGraphs, sourceMapper, xeLoader, sections, src, nodeNumber, coreNumber);
-				if(success){
+				boolean success = buildNodeCore(callGraphs, instructionDecoders, sourceMappers, xeLoader, sections, src, nodeNumber, coreNumber);
+				if (success){
 					structuralGraphUpToDate.add(nodeNumber, coreNumber, true);
 				} else {
 					return false;
 				}
 			}
 		}
-		
+
 		m_callGraphs = callGraphs;
-		m_sourceMapper = sourceMapper;
+		m_sourceMappers = sourceMappers;
+		m_instructionDecoders = instructionDecoders;
 		m_structuralGraphUpToDate = structuralGraphUpToDate;
 		
 		notify(src, Notifier.RELEASE_MESSAGES, "");
@@ -1519,25 +1521,26 @@ public class Engine implements Notifier, Aborter {
 	
 	
 	private boolean buildNodeCore(NodeCoreCollection<CallGraph> callGraphs,
-			NodeCoreCollection<SourceMapper> sourceMappers, XeLoader xeLoader,
-			Sections sections, CommandSource src, int nodeNumber, int coreNumber) {
+			NodeCoreCollection<InstructionDecoder> instructionDecoders,
+			NodeCoreCollection<SourceMapper> sourceMappers, 
+			XeLoader xeLoader, Sections sections, CommandSource src, 
+			int nodeNumber, int coreNumber) {
 		
 		setAnalysisName(String.format("Processing node: %d, core: %d", nodeNumber, coreNumber));
 		InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 		
 		//Binary Stage
-		InstructionDecoder id = new InstructionDecoder(nodeNumber, coreNumber, xeLoader, m_config);
-
+		InstructionDecoder instructionDecoder = new InstructionDecoder(nodeNumber, coreNumber, xeLoader, m_config);
 		try {
-			id.decode();
+			instructionDecoder.decode();
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return false;
 		}
+		instructionDecoders.add(nodeNumber, coreNumber, instructionDecoder);
 		
 		//Control Flow Stage
-
-		FunctionConstructor fc = new FunctionConstructor(id, this, sections, nodeNumber, coreNumber, src, mnenonics);
+		FunctionConstructor fc = new FunctionConstructor(instructionDecoder, this, sections, nodeNumber, coreNumber, src, mnenonics);
 
 		try {
 			fc.process();
@@ -1551,14 +1554,14 @@ public class Engine implements Notifier, Aborter {
 		Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
 
 		//add all the successors
-		SuccessorAdder sa = new SuccessorAdder(nodeNumber, coreNumber, id, sections, functionEndNodes, this, src, mnenonics);
+		SuccessorAdder sa = new SuccessorAdder(nodeNumber, coreNumber, instructionDecoder, sections, functionEndNodes, this, src, mnenonics);
 		sa.process();
 
 		UnresolvedSetter us = new UnresolvedSetter(functionStartNodes);
 		us.process();
 		
 		//add function reference nodes
-		FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(id, m_notifier, src, xeLoader, nodeNumber, coreNumber, sections);
+		FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(instructionDecoder, m_notifier, src, xeLoader, nodeNumber, coreNumber, sections);
 		frna.process(functionStartNodes);
 
 		Set<FunctionContainer> functionContainers = frna.getFunctionContainers();
@@ -1569,18 +1572,17 @@ public class Engine implements Notifier, Aborter {
 		ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeNumber, coreNumber), functionContainers, 
 				sections.getLabels(nodeNumber, coreNumber));
 
-		setBranchTargets(id, functionContainers);
+		setBranchTargets(instructionDecoder, functionContainers);
 
 		linkFunctions(functionContainers);
 
 		CallGraph cg = new CallGraph(functionContainers);
 		callGraphs.add(nodeNumber, coreNumber, cg);
-		
-		
+				
 		SourceMapper sourceMapper;
 		try {
 			sourceMapper = new SourceMapper(src, this, xeLoader, nodeNumber, coreNumber, functionStartNodes,
-					id, functionContainers, sections.getLabels(nodeNumber, coreNumber));
+					instructionDecoder, functionContainers, sections.getLabels(nodeNumber, coreNumber));
 
 		} catch (AbortedException e) {
 			return false;
@@ -1641,19 +1643,15 @@ public class Engine implements Notifier, Aborter {
 		assert(m_xeLoader.isLoaded(nodeNumber, coreNumber));
 	    notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");
 	    
-	    /*
-		if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
-			if (!initialiseGlobalStructure(src, m_xeLoader, m_sections, false, nodeNumber, coreNumber))
-				return false;
-		}
-	    */
-		
 	    if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
 			NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>(m_callGraphs);
-			NodeCoreCollection<SourceMapper> sourceMapper = new NodeCoreCollection<SourceMapper>(m_sourceMapper);
-			if (buildNodeCore(callGraphs, sourceMapper, m_xeLoader, m_sections, src, nodeNumber, coreNumber)){
+			NodeCoreCollection<SourceMapper> sourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMappers);
+			NodeCoreCollection<InstructionDecoder> instructionDecoders = new NodeCoreCollection<InstructionDecoder>(m_instructionDecoders);
+			
+			if (buildNodeCore(callGraphs, instructionDecoders, sourceMappers, m_xeLoader, m_sections, src, nodeNumber, coreNumber)) {
 				m_callGraphs = callGraphs;
-				m_sourceMapper = sourceMapper;
+				m_sourceMappers = sourceMappers;
+				m_instructionDecoders = instructionDecoders;
 			} else {
 				return false;
 			}

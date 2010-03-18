@@ -8,21 +8,17 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.sourcemapper.Line;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceLine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
 public class SrcDisplayer {
-
 	private Engine m_engine;
 	private Console m_console;
-	private boolean m_displayAssembly;
 
-	public SrcDisplayer(Engine engine, Console console, boolean displayAssembly) {
+	public SrcDisplayer(Engine engine, Console console) {
 		m_engine = engine;
 		m_console = console;
-		m_displayAssembly = displayAssembly;
 	}
 
 	public void display(Node node, int nodeNumber, int coreNumber) {
@@ -48,12 +44,6 @@ public class SrcDisplayer {
 					m_console.display(String.format(" %d: %s\n",
 							sourceLine.getLineNumber(),
 							sourceLine.getText()));
-
-					if (m_displayAssembly) {
-					    for (Line assemblyLine : sourceLine.getChildern()) {
-							m_console.display(String.format("       -- %s\n", assemblyLine.getText()));
-					    }
-					}
 				}
 	        }
 		}
@@ -76,15 +66,12 @@ public class SrcDisplayer {
 				}
 
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {
-					for (Line assembly : sourceLine.getChildern()) {
-						if (assembly.getLineNumber() == inst.getPc()) {
-							sourceLines.add(sourceLine.getLineNumber());
-						}
+					if (sourceLine.getPcs().contains(inst.getPc())) {					
+						sourceLines.add(sourceLine.getLineNumber());
 					}
 				}
 			}
 		}
 		return linesCovered;
 	}
-
 }

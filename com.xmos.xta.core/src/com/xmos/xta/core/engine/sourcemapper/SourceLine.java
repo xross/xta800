@@ -3,45 +3,48 @@ package com.xmos.xta.core.engine.sourcemapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.xmos.libs.dwarfhandler.DebugEngine;
+import com.xmos.libs.util.Pair;
+import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 
 public class SourceLine implements Line {
-
 	private String             m_line;
-    private List<AssemblyLine> m_assembly;
 	private long               m_lineNumber;
-	private List<Long>         m_statementPcs;
-	private List<Long>         m_allPcs;
-
-	public SourceLine(String line, long lineNumber) {
-	    assert(line!=null);
-	    assert(lineNumber>0);
+	private List<Long>         m_pcs;
+	private SourceMapper       m_sourceMapper;
+	private SourceFile         m_sourceFile;
+	private DebugEngine        m_debugEngine;
+	private InstructionDecoder m_instructionDecoder;
+	
+	public SourceLine(String line, long lineNumber, 
+			SourceMapper sourceMapper, SourceFile sourceFile, 
+			DebugEngine debugEngine, InstructionDecoder instructionDecoder) {
+		
+	    assert(line != null);
+	    assert(lineNumber > 0);
 		m_line = line;
 		m_lineNumber = lineNumber;
-		m_assembly = new ArrayList<AssemblyLine>();
-		m_statementPcs = new ArrayList<Long>();
-		m_allPcs = new ArrayList<Long>();
+		m_sourceMapper = sourceMapper;
+		m_sourceFile = sourceFile;
+		m_debugEngine = debugEngine;
+		m_instructionDecoder = instructionDecoder;
 	}
 
-	public void addAssembly(AssemblyLine newInst){
-	    assert(newInst!=null);
-		m_assembly.add(newInst);
-		m_allPcs.add(newInst.getPc());
+	public void addPc(long pc) {
+		m_pcs.add(pc);
 	}
 
-	public void addStatementPcs(Collection<Long> pcs) {
-		for (long pc : pcs) {
-			m_statementPcs.add(pc);
-		}
+	public Collection<Long> getPcs() {
+		if (m_pcs == null) {
+			initialisePcsMap();
+		}		
+		return m_pcs;
 	}
-
-	public Collection<Long> getStatementPcs() {
-		return m_statementPcs;
-	}
-
-	public Collection<Long> getAllPcs() {
-		return m_allPcs;
-	}
-
+	
 	public long getLineNumber() {
 		return m_lineNumber;
 	}
@@ -49,10 +52,34 @@ public class SourceLine implements Line {
     public String getText() {
         return m_line;
     }
+    
+    private void initialisePcsMap() {
+    	m_pcs = new ArrayList<Long>();
+    	
+		Collection<Pair<Long,Long>> addressRanges = m_debugEngine.getAddressRangesMatchingPath(
+				m_sourceFile.getFullFileName(), m_lineNumber);
+       	Collection<Long> addresses = rangesToAddresses(addressRanges);
 
-    public List<AssemblyLine> getChildern() {
-        return m_assembly;
+        for (long pc : addresses) {
+            if (m_sourceMapper.getFunction(pc) != null) {
+              	m_pcs.add(pc);
+            }
+        }
     }
+
+    private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
+		Set<Long> addresses = new TreeSet<Long>();
+		for (Pair<Long, Long> range : addressRanges) {
+			long endPc = m_instructionDecoder.getEndPc();
+			for (long pc = range.first; (pc < range.second) && (pc <= endPc); pc += 2) {
+				InstructionNode node = m_instructionDecoder.getNode(pc);
+				if (node != null) {
+					addresses.add(pc);
+				}
+			}
+		}
+		return addresses;
+	}
 }
 
 
