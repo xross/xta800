@@ -29,7 +29,7 @@ public class Embed extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <FILENAME>: Embed the script into the designated file - also embed active pragmas into source";
+        return name() + " <filename>: Embed the script into the designated file - also embed active pragmas into source";
     }
 
     public Command clone(String[] args, int index) {
