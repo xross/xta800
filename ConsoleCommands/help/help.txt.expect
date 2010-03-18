@@ -114,6 +114,7 @@
       option: listrefs: List all references which will be used in the script
       option: rename: Rename a mapping
   [-]set <option> <arg0> <arg1>...: Set path information
+      option: exclusion <route id> <ANY_REF>: Sets an exclusion on the given reference
       option: from <ENDPOINT_REF>: Sets the from endpoint
       option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
           mode: ns:     nanoseconds
