@@ -7,6 +7,7 @@ import java.util.Set;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -178,20 +179,17 @@ public class RouteUnknowns {
 	    optionNode.getAttributes().addKnown(m_route, Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
 		refreshDisplayedUnknowns();
 	}
-
+	
 	// ===================================================================== //
 	// Setting Loop Scope
 	// ===================================================================== //
 	public void setLoopScope(Reference reference, boolean isAbsolute, Source source) throws AbortedException {
-
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopScopeNoCheck(node, isAbsolute, reference, source);
 		}
 	}
 
 	public void checkSetLoopScope(Reference reference, boolean isAbsolute) throws Exception {
-
-
 		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
 		if (referencedNodes.size() > 0) {
 			for (Node node : referencedNodes) {
@@ -223,7 +221,62 @@ public class RouteUnknowns {
 		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
 		enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_SCOPE, source, new Reference[] {reference});
 	}
+	
+	// ===================================================================== //
+	// Setting Exclusions
+	// ===================================================================== //
+	
+	public boolean setExclusion(Reference reference, Type type, Source source) throws AbortedException {
+		Set<Node> nodes = m_route.getReferencedNodes(reference);
+		for (Node node : nodes) {
+	    	setExclusion(node, type, source);
+		}
+		return true;
+	}
 
+	public boolean checkExclusionWillLeaveAPath(Node node) throws Exception {
+		boolean aPathRemains = node.getEnclosingCondNode() != null;
+		Node currentNode = node;
+		while(currentNode.getParent()!= null){
+			Node parent = currentNode.getParent();
+			
+			if(parent instanceof ConditionalNode){
+				
+				if(!aPathRemains && parent.iChildren().size() > 1){
+					return true;
+				}
+				if(parent.iChildren().size() < 2){
+					aPathRemains = false;
+				}
+			}
+			currentNode = parent;
+		}
+		if(!aPathRemains){
+			throw new Exception("Must be within a loop to be able to set loop scope");
+		}
+		
+		return aPathRemains;
+	}
+
+	public void setExclusion(Node node, Type type, Source source) {
+		invalidateCachedStats();
+		Node currentNode = node;
+		while(currentNode.getParent()!= null){
+			if(currentNode.getParent() instanceof ConditionalNode){
+				ConditionalNode cn = (ConditionalNode)currentNode.getParent();
+				cn.setAlive(currentNode, false);
+				if(!cn.iChildren().isEmpty()){
+					break;
+				}
+			}
+			currentNode = currentNode.getParent();
+		}
+		refreshDisplayedUnknowns();
+	}
+	
+	
+	
+	
 	// ===================================================================== //
 	// Fixed Time Methods
 	// ===================================================================== //
@@ -315,4 +368,6 @@ public class RouteUnknowns {
 	    	}
 	    });
 	}
+
+
 }

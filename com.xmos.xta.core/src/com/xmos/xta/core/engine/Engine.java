@@ -264,12 +264,12 @@ public class Engine implements Notifier, Aborter {
 			m_fromEndPoints.clear();
 			m_toEndPoints.clear();
 	
-			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
-	
 			runSrcLevelCommands(src, commandRunner);
+
 			m_scripter.setEngineLoadAndRunDone();
-			
-		}		
+			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
+		}
+		
 		return successfulInit;
 	}
 
@@ -1300,6 +1300,68 @@ public class Engine implements Notifier, Aborter {
 		return m_exclusions;
 	}
 
+	// ===================================================================== //
+	// Exclusion Immediately Methods
+	// ===================================================================== //
+	public boolean setExclusion(CommandSource src, int routeId, String refString) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty()) {
+			return false;
+		}
+		boolean success = false;
+	    try {
+			for (Route route : routes) {
+				Reference reference = ReferenceFactory.createReference(refString, 
+						ReferenceClass.ANY_REF,
+				        route.getRouteCoreContainer().getNodeNumber(),
+				        route.getRouteCoreContainer().getCoreNumber());
+								
+				Set<Node> nodes = route.getReferencedNodes(reference);
+				
+				boolean okToSetExclusion = true;
+				for(Node node : nodes){
+					okToSetExclusion &= canSetExclusion(node);
+				}
+				if(okToSetExclusion){			
+					success = route.getRouteUnknowns().setExclusion(reference, Type.EXCLUSION, Source.SET);	
+				}
+				
+			}
+			
+		} catch (AbortedException e) { 
+			return false;			
+		}
+
+	    if(success){
+	    	notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
+	    	return true;
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
+			return false;	
+		}
+	}
+
+	public void setExclusion(CommandSource src, Node node) {
+		
+		if(canSetExclusion(node)){
+			m_selectedRoute.getRouteUnknowns().setExclusion(node, Type.EXCLUSION, Source.SET);		
+			notify(src, Notifier.NOTIFY_ROUTE_CHANGED, "");
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
+		}
+		
+	}
+	
+	public boolean canSetExclusion(Node node) {
+		try {
+			m_selectedRoute.getRouteUnknowns().checkExclusionWillLeaveAPath(node);
+			return true;
+
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	// ===================================================================== //
 	// Section Methods
 	// ===================================================================== //

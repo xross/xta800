@@ -13,7 +13,8 @@ public class UnknownFactory {
     	LOOP_SCOPE,
     	INSTRUCTION_TIME,
     	PATH_TIME,
-    	FUNCTION_TIME,
+    	FUNCTION_TIME, 
+    	EXCLUSION,
     }
 
     public static Unknown createUnknown(Route route, Node node, Type type, State state) {
