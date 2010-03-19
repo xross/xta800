@@ -1,16 +1,16 @@
 ONE
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       main       ->       main
-false      false      f1         ->         f1
+false      true       f1         ->         f1
 false      true       loop       ->       loop
 false      true       loop_path  ->  loop_path
-false      false      CALL:0x[0-9a-fA-F]{5} ->    label_0
-false      false      CALL:0x[0-9a-fA-F]{5} ->         f1
+true       true       CALL:0x[0-9a-fA-F]{5} ->    label_0
+false      true       CALL:0x[0-9a-fA-F]{5} ->         f1
 false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
 false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
 false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
-false      false      f2         ->         f2
-false      false      CALL:0x[0-9a-fA-F]{5} ->         f2
+false      true       f2         ->         f2
+false      true       CALL:0x[0-9a-fA-F]{5} ->         f2
 TWO
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       main       ->       main

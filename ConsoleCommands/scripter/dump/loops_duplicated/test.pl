@@ -21,6 +21,7 @@ system("@ARGV load test.xe " .
        "source ../cmds.txt " .
        "echo ONE " .
        "scripter listrefs " .
+       "source ../dump.txt " .
        "-exit > loops_duplicated.txt 2>&1");
 
 system("xcc -target=$target -march=$arch -g test.xc -o test.xe >> loops_duplicated.log 2>&1");
