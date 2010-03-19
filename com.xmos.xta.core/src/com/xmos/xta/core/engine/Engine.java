@@ -358,7 +358,7 @@ public class Engine implements Notifier, Aborter {
 	
 	public void setCase(CommandSource src, Case c) {
 		m_config.m_case = c;
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_CASE);
+		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public Case getCase() {
@@ -503,7 +503,7 @@ public class Engine implements Notifier, Aborter {
 	public void setFrequency(CommandSource src, int nodeNumber, double frequency) {
 		if (checkFrequency(src, frequency)) {
 			m_nodeHz.put(nodeNumber, (long)(frequency * 1000000));
-			notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_FREQUENCY);			
+			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");			
 		}
 	}
 
@@ -530,7 +530,7 @@ public class Engine implements Notifier, Aborter {
 	public void setNumThreads(CommandSource src, int nodeNumber, int coreNumber, int numThreads) {
 		if (checkNumThreads(src, numThreads)) {
    		    m_coreThreads.add(nodeNumber, coreNumber, numThreads);
-	    	notify(src, Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_NUM_THREADS);
+	    	notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		}
 	}
 
@@ -1729,10 +1729,8 @@ public class Engine implements Notifier, Aborter {
 
 	private boolean doRouteAnalysis(CommandSource src, RouteContainer routeContainer,
 			RouteCoreContainer routeCoreContainer, int nodeNumber, int coreNumber) throws Exception {
-				
-		assert(m_xeLoader.isLoaded(nodeNumber, coreNumber));
-	    notify(src, Notifier.NOTIFY_ANALYSIS_BEGIN, "");
-	    
+
+		assert(m_xeLoader.isLoaded(nodeNumber, coreNumber));	    
 	    if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
 			NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>(m_callGraphs);
 			NodeCoreCollection<SourceMapper> sourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMappers);

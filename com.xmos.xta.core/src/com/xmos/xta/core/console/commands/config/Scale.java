@@ -57,7 +57,7 @@ public class Scale extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	if (Conversion.getScale() != m_scale) {
 	    	Conversion.setScale(m_scale);
-	    	engine.notify(getSrc(), Notifier.NOTIFY_UPDATE_STATE, Notifier.STATE_SCALE);
+	    	engine.notify(getSrc(), Notifier.NOTIFY_UPDATE_STATE, "");
     	}
     }
 }
