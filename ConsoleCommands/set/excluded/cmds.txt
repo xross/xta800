@@ -1,0 +1,4 @@
+analyse function main
+set exclusion - 0x100ac
+print structure -
+exit
