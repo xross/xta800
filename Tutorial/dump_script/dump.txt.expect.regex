@@ -1,0 +1,32 @@
+# load ".*uart-loopback.xe"
+
+#
+# Route: tx_start => tx_loop
+#
+analyze path tx_start tx_loop
+set required - 8.68 us
+
+#
+# Route: tx_loop => tx_loop
+#
+add exclusion tx_stop
+analyze path tx_loop tx_loop
+set required - 8.68 us
+
+#
+# Route: tx_loop => tx_stop
+#
+remove exclusion \*
+add exclusion tx_loop_exclusion
+analyze path tx_loop tx_stop
+set required - 8.68 us
+
+#
+# Route: tx_stop => tx_start
+#
+remove exclusion \*
+add exclusion tx_loop_exclusion
+add exclusion tx_done
+analyze path tx_stop tx_start
+set required - 8.68 us
+
