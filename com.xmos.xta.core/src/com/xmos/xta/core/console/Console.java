@@ -43,7 +43,7 @@ public abstract class Console {
 			    break;
 			}
 		} catch (IOException e) {
-			System.out.printf("Unable to open file for writing:", fileName);
+			System.out.printf("Unable to open file for writing: %s", fileName);
 			m_fileWriter = null;
 		}
 	}

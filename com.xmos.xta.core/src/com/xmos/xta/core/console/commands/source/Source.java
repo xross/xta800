@@ -110,7 +110,7 @@ public class Source extends Command {
 	                            }
 
 	                            if (invalidCommand) {
-	                            	String errorMessage = String.format("invalid command\n", m_fileName, lineNumber);
+	                            	String errorMessage = String.format("invalid command\n");
 	                            	shell.addCommand(new Invalid(commandString, errorMessage, src), location+1);
 	                            	location++;
 	                            }

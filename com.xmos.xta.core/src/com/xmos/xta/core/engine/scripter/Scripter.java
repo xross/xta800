@@ -626,7 +626,7 @@ public class Scripter {
 	private void addPragmasToFile(SourceFile sourceFile, List<Long> lineNumbers) {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(sourceFile.getFile()));
-			String fileContents = "";
+			StringBuffer fileContents = new StringBuffer();
 			String line = "";
 			long lineNumber = 1;
 			long offset = 0;
@@ -636,18 +636,21 @@ public class Scripter {
 					if (scripterReference.isModifiable() && scripterReference.isEnabled()) {
 						String pragma = getPragmaString(scripterReference);
 						String indent = getIndent(line);
-						fileContents += indent + pragma + "\n";
+						fileContents.append(indent);
+						fileContents.append(pragma);
+						fileContents.append("\n");
 						sourceLineInserted(sourceFile, lineNumber);
 						offset += 1;
 					}
 				}
-				fileContents += line + "\n";
+				fileContents.append(line);
+				fileContents.append("\n");
 				lineNumber++;
 			}
 			in.close();
 			
 			BufferedWriter out = new BufferedWriter(new FileWriter(sourceFile.getFile()));
-			out.write(fileContents);
+			out.write(fileContents.toString());
             out.close();
 		} catch(IOException e) {
 		}

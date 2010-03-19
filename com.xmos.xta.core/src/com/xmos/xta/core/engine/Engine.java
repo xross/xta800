@@ -25,7 +25,10 @@ import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
+import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
+import com.xmos.xta.core.engine.analysis.controlflow.FnopAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionConstructor;
+import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionReferenceNodeAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.UnresolvedSetter;
@@ -1746,7 +1749,6 @@ public class Engine implements Notifier, Aborter {
 			return false;
 
 		} else if (error == RouteError.ABORTED ) {
-			System.gc();
 			return false;
 
 		} else {

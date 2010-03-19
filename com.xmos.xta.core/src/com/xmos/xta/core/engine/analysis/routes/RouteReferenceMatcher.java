@@ -73,15 +73,6 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 		// TODO Auto-generated method stub
 		Set<Node> refinedNodes = new TreeSet<Node>();
 		
-		
-		if (debug) {
-			System.out.println("base: " + ref.getRef() + ppPcs(ref.getPcs()));
-			for(ReferenceType bt : ref.getBackTrail()){
-				System.out.println("back trail: " + bt.getRef() + ppPcs(bt.getPcs()));
-			}
-			
-		}
-		
 		for(long pc : ref.getPcs()){
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
 			
@@ -139,15 +130,5 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 		}
 		return false;
 	}
-
-
-	private String ppPcs(Set<Long> set){
-		String s= "[";
-		for(long pc : set){
-			s += "0x"+Long.toHexString(pc)+", ";
-		}
-		return s +"]";
-	}
-	
 	
 }

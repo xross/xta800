@@ -12,7 +12,6 @@ import com.xmos.libs.isa.Instruction;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
-import com.xmos.xta.core.engine.FunctionContainer;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;

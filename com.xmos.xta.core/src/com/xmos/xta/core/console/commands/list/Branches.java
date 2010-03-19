@@ -67,12 +67,12 @@ public class Branches extends Command {
 	}
 
 	private String getTo(Map<Reference, Set<BranchInfo>> branches, Reference fromRef, boolean isUser) {
-		String result = "";
+		StringBuffer result = new StringBuffer();
 		for (BranchInfo info : branches.get(fromRef)) {
 			if (isUser == info.isUser()) {
-				result += String.format(" %s", info.getRef().toString());
+				result.append(String.format(" %s", info.getRef().toString()));
 			}
 		}
-		return result;
+		return result.toString();
 	}
 }

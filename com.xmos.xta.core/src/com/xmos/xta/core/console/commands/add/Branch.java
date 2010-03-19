@@ -38,11 +38,15 @@ public class Branch extends Command {
 	}
 
 	public String commandLine() {
-		String str = name() + " " + m_fromRefString;
+		StringBuffer str = new StringBuffer();
+		str.append(name());
+		str.append(" ");
+		str.append(m_fromRefString);
 		for (String toRefString : m_toRefStrings) {
-			str += " " + toRefString;
+			str.append(" ");
+			str.append(toRefString);
 		}
-		return str;
+		return str.toString();
 	}
 
 	public String description(Engine engine, boolean detailed) {

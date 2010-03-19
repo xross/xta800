@@ -212,13 +212,17 @@ public class AddScripter {
 			m_scripter.outputPortableWarnings(script, reference);
 		}
 
-		String commandString = "add " + command;
+		StringBuffer commandString = new StringBuffer();
+		commandString.append("add ");
+		commandString.append(command);
 		for (Reference reference : info.getReferences()) {
-			commandString += " " + m_scripter.getReferenceString(reference);
+			commandString.append(" ");
+			commandString.append(m_scripter.getReferenceString(reference));
 		}
-		commandString += " " + info.getValue();
+		commandString.append(" ");
+		commandString.append(info.getValue());
 
-		m_scripter.addScriptCommand(script, commandString);
+		m_scripter.addScriptCommand(script, commandString.toString());
     }
     
     private void outputExclusion(StringBuffer script, Reference exclusion) {
@@ -231,13 +235,13 @@ public class AddScripter {
 		for (Reference toRef : branch.getValue()) {
 			m_scripter.outputPortableWarnings(script, toRef);
 		}
-
-		String commandString = String.format("add branch %s", m_scripter.getReferenceString(branch.getKey()));
+		StringBuffer commandString = new StringBuffer();
+		commandString.append(String.format("add branch %s", m_scripter.getReferenceString(branch.getKey())));
 		for (Reference toRef : branch.getValue()) {
-			commandString += String.format(" %s", m_scripter.getReferenceString(toRef));
+			commandString.append(String.format(" %s", m_scripter.getReferenceString(toRef)));
 		}
     	
-    	m_scripter.addScriptCommand(script, commandString);
+    	m_scripter.addScriptCommand(script, commandString.toString());
     }
     
     private void outputNodeCore(StringBuffer script, NodeCorePair activeCore) {

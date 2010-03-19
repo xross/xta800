@@ -12,12 +12,11 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.CallGraph;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.FunctionContainer;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
+import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -565,7 +564,7 @@ public class RouteConstructor {
 	}
 
 	
-	class NodeDescriptor {
+	static class NodeDescriptor {
 		private Node m_node;
 		private Stack<FunctionReferenceNode> m_stack;
 

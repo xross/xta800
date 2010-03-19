@@ -57,18 +57,20 @@ public class Help extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        String desc = name() + " [command/option]: Displays help message for the given command/option";
+        StringBuffer desc = new StringBuffer();
+        desc.append(name());
+        desc.append(" [command/option]: Displays help message for the given command/option");
 
         if (detailed) {
-            desc += "\n      options: ";
+        	desc.append("\n      options: ");
             for (ReferenceClass referenceClass : ReferenceClass.values()) {
             	if (ReferenceTypeFactory.getReferenceClass(referenceClass).isVisible()) {
-            		desc += String.format("%s, ", referenceClass.name());
+            		desc.append(String.format("%s, ", referenceClass.name()));
             	}
             }
-            desc = desc.substring(0, desc.length() - 2);
+            desc.setLength(desc.length() - 2);
         }
-        return desc;
+        return desc.toString();
     }
 
     public Command clone(String[] args, int index) {

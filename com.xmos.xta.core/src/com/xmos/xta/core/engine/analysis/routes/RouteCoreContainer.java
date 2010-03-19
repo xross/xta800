@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.xmos.xta.core.engine.CallGraph;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
+import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.CoreConfig;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
