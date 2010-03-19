@@ -10,6 +10,7 @@ public class Scripter extends CommandContainer {
 	static private Command[] m_options = {
 		new Disable(),
 		new Dump(),
+		new Embed(),
 		new Enable(),
 		new ListRefs(),
 		new Rename(),

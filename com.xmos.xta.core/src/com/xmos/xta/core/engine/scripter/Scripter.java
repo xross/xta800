@@ -56,6 +56,8 @@ public class Scripter {
 	private Set<String> m_autoLabels;
 	private Set<String> m_disables;
 	private Map<String, String> m_renames;
+	private boolean m_embedIntoSource;
+	private String m_embedFileName;
 
 	public Scripter(Engine engine) {
 		m_engine = engine;
@@ -70,6 +72,9 @@ public class Scripter {
 		m_currentNumThreads = new HashMap<NodeCorePair, Integer>();
 		m_uniqueReferences = null;
 		m_allReferences = null;
+		
+		m_embedIntoSource = false;
+		m_embedFileName = null;
 	}
 
 	public void setEngineLoadAndRunDone() {
@@ -83,11 +88,27 @@ public class Scripter {
 	}
 
 	public String dump() {
+		if (m_embedIntoSource) {
+			// Ensure it is ok to modify the source file
+			if (m_embedFileName == null) {
+				return "";
+			}
+			SourceFile sourceFile = getSourceMapper().getSourceFile(m_embedFileName);
+			if ((sourceFile == null) || !sourceFile.okToWrite(getSourceMapper())) {
+				return "";
+			}
+		}
+		
 		createRefs();
 		Map<SourceFile, List<Long>> fileLineNumbers = getFileLineNumbers();
 		addPragmasToFiles(fileLineNumbers);
 		StringBuffer script = createScript();
-    	return script.toString();
+		if (m_embedIntoSource) {
+			addCommandsToFile(m_embedFileName, script);
+			return "";
+		} else {
+			return script.toString();
+		}
 	}
 	
 	public String getUniqueLabel() {
@@ -259,12 +280,28 @@ public class Scripter {
 		
 		if (!(scripterReference.isModifiable() && scripterReference.isEnabled())) {
 			// Only emit the warning if the reference is not being mapped to a new value
-			script.append(String.format("# Warning: '%s' is a non-portable reference.\n",
-				getReferenceString(baseRef)));
+			script.append(String.format(commentString() + " Warning: '%s' is a non-portable reference.\n",
+					getReferenceString(baseRef)));
 		}
     }
 
-    Reference createReferenceForUnknown(Unknown unknown) {
+	public boolean getEmbedIntoSource() {
+		return m_embedIntoSource;
+	}
+
+	public void setEmbedIntoSource(boolean embedIntoSource) {
+		m_embedIntoSource = embedIntoSource;
+	}
+
+	public void setEmbedFileName(String embedFileName) {
+		m_embedFileName = embedFileName;
+	}
+
+	public String getEmbedFileName() {
+		return m_embedFileName;
+	}
+
+	Reference createReferenceForUnknown(Unknown unknown) {
 		String refString = unknown.getNode().getReferenceStr();
 		NodeCorePair nodeCore = unknown.getRoute().getRouteCoreContainer().getNodeCore();
 		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF,
@@ -285,7 +322,9 @@ public class Scripter {
 	private StringBuffer createScript() {
 		StringBuffer script = new StringBuffer();
  	
-    	script.append(String.format("# load \"%s\"\n", m_engine.getExecutable().toString()));
+		if (!m_embedIntoSource) {
+			script.append(String.format("# load \"%s\"\n", m_engine.getExecutable().toString()));
+		}
 
     	for (RouteContainer routeContainer : m_engine.getRouteContainers()) {
         	if ((routeContainer.getCommandSrc().getType() == Type.SRC_LEVEL_COMMAND) ||
@@ -310,29 +349,29 @@ public class Scripter {
     }
  	
 	private void routeComment(RouteContainer routeContainer, StringBuffer script) {
-    	script.append("#\n");
+    	script.append(commentString() + "\n");
     	switch (routeContainer.getMode()) {
     	case FUNCTION:
-    		script.append(String.format("# Route: %s\n", routeContainer.getFunctionName()));
+    		script.append(String.format(commentString() + " Route: %s\n", routeContainer.getFunctionName()));
     		break;
 
     	case PATH:
         	RouteCoreContainer routeCoreContainer = routeContainer.getRouteCoreContainers().iterator().next();
-    		script.append(String.format("# Route: %s => %s\n",
+    		script.append(String.format(commentString() + " Route: %s => %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
 		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
     	}
-    	script.append("#\n");
+    	script.append(commentString() + "\n");
 	}
 	
-    private void updateActiveCores(RouteContainer routeContainer, StringBuffer script) {
+	private void updateActiveCores(RouteContainer routeContainer, StringBuffer script) {
     	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
 
     	if (!m_currentActiveCores.equals(activeCores)) {
-    		script.append("remove core *\n");
+    		addScriptCommand(script, "remove core *");
     		for (NodeCorePair activeCore : activeCores) {
-    			script.append(String.format("add core %d %d\n", activeCore.getNode(), activeCore.getCore()));
+    			addScriptCommand(script, String.format("add core %d %d", activeCore.getNode(), activeCore.getCore()));
     		}
     		m_currentActiveCores.clear();
     		m_currentActiveCores.addAll(activeCores);
@@ -350,7 +389,7 @@ public class Scripter {
     		Double currentFrequency = m_currentFrequencies.get(nodeNumber);
 
     		if (!currentFrequency.equals(frequency)) {
-    			script.append(String.format("config freq %d %f\n", nodeNumber, frequency));    			
+    			addScriptCommand(script, String.format("config freq %d %f", nodeNumber, frequency));    			
     			m_currentFrequencies.put(nodeNumber, frequency);
     		}
     	}
@@ -368,13 +407,13 @@ public class Scripter {
             int currentNumThreads = m_currentNumThreads.get(activeCore);
     		
     		if (currentNumThreads != numThreads) {
-    			script.append(String.format("config threads %d %d %d\n", nodeNumber, coreNumber, numThreads));    			
+    			addScriptCommand(script, String.format("config threads %d %d %d", nodeNumber, coreNumber, numThreads));    			
     			m_currentNumThreads.put(activeCore, numThreads);
     		}
     	}		
 	}
     
-    private void addBranches(RouteContainer routeContainer, StringBuffer script) {
+	private void addBranches(RouteContainer routeContainer, StringBuffer script) {
     	AddScripter scripter = new AddScripter(this);
     	scripter.addBranches(routeContainer.getBranches(), 
     			m_currentBranches, script, routeContainer.getActiveCores());		
@@ -410,14 +449,14 @@ public class Scripter {
     	case FUNCTION:
 		    outputPortableWarnings(script, routeCoreContainer.getFunctionReference());
 
-		    script.append(String.format("analyze function %s\n",
+		    addScriptCommand(script, String.format("analyze function %s",
 		    		getReferenceString(routeCoreContainer.getFunctionReference())));
     		break;
 
     	case PATH:
 		    outputPortableWarnings(script, routeCoreContainer.getFromReference());
 		    outputPortableWarnings(script, routeCoreContainer.getToReferences().iterator().next());
-		    script.append(String.format("analyze path %s %s\n",
+		    addScriptCommand(script, String.format("analyze path %s %s",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
 		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
@@ -428,7 +467,7 @@ public class Scripter {
     	for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
        		for (Route route : routeCoreContainer.getRoutes()) {
       			if (!routeCoreContainer.routeExists(route)) {
-      				script.append(String.format("remove route %d\n", route.getRouteId()));
+      				addScriptCommand(script, String.format("remove route %d", route.getRouteId()));
    		    	}
        		}
    		}
@@ -538,10 +577,8 @@ public class Scripter {
 	}
 
 	private void disableRefsForInvalidFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
-		SourceMapper sourceMapper = getSourceMapper();
 		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
-			File file = sourceFile.getFile();
-			if ((file == null) || !file.canWrite() || sourceMapper.fileNewerThanBinary(file)) {
+			if (!sourceFile.okToWrite(getSourceMapper())) {
 				disableRefsForFile(sourceFile.getFileName());
 			}
 		}
@@ -611,6 +648,28 @@ public class Scripter {
 			
 			BufferedWriter out = new BufferedWriter(new FileWriter(sourceFile.getFile()));
 			out.write(fileContents);
+            out.close();
+		} catch(IOException e) {
+		}
+	}
+	
+	private void addCommandsToFile(String fileName, StringBuffer script) {
+		try {
+			SourceFile sourceFile = getSourceMapper().getSourceFile(fileName);
+			assert(sourceFile != null);
+			assert(sourceFile.getFile() != null);
+			
+			BufferedReader in = new BufferedReader(new FileReader(sourceFile.getFile()));
+			StringBuffer fileContents = new StringBuffer();
+			String line = "";
+			while ((line = in.readLine()) != null) {
+				fileContents.append(line + "\n");
+			}
+			in.close();
+			
+			fileContents.append("\n" + script);
+			BufferedWriter out = new BufferedWriter(new FileWriter(sourceFile.getFile()));
+			out.write(fileContents.toString());
             out.close();
 		} catch(IOException e) {
 		}
@@ -713,5 +772,24 @@ public class Scripter {
 		int nodeNumber = m_engine.getXeLoader().getNodeNumbers().get(0);
 		int coreNumber = m_engine.getXeLoader().getCoreNumbers(0).get(0);
 		return m_engine.getSourceMapper(nodeNumber, coreNumber);
+	}
+
+    public void addScriptCommand(StringBuffer script, String command) {
+    	// All commands should be single line
+    	assert(command.lastIndexOf("\n") == -1);
+    	
+		if (m_embedIntoSource) {
+			script.append("#pragma xta command \"" + command + "\"\n"); 		
+		} else {
+			script.append(command + "\n");
+		}
+	}
+
+    private String commentString() {
+		if (m_embedIntoSource) {
+			return "//";
+		} else {
+			return "#";
+		}
 	}
 }

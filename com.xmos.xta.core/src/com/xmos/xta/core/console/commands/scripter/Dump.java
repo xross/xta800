@@ -22,7 +22,7 @@ public class Dump extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + ": Dump script which represents the current state";
+        return name() + ": Dump script which represents the current state - also embeds active pragmas into source";
     }
 
     public Command clone(String[] args, int index) {
@@ -34,7 +34,6 @@ public class Dump extends Command {
 			return;
 
 		Scripter scripter = engine.getScripter();
-		scripter.createRefs();
 		console.display(scripter.dump());
     }
 }

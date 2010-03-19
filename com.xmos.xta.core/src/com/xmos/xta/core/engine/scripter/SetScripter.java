@@ -39,7 +39,7 @@ class SetScripter {
               	    String[] refStrs = getReferenceStrings(known);
                 	String scriptStr = known.getScriptStr(routeIdStr, refStrs);
                 	outputPortableWarnings(script, known);
-           		   	script.append(scriptStr);
+                	m_scripter.addScriptCommand(script, scriptStr);
            		   	
            		   	//System.out.println("know: " +scriptStr);
            		} catch (Exception e) {}
@@ -51,7 +51,7 @@ class SetScripter {
     
     void setRequired(RouteContainer routeContainer, StringBuffer script) {
     	if (areRequirementsSameOnAllRoutes(routeContainer)) {
-	    	script.append(String.format("set required - %s\n", m_description));
+    		m_scripter.addScriptCommand(script, String.format("set required - %s", m_description));
 	    	
     	} else {
         	for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
@@ -59,7 +59,7 @@ class SetScripter {
            			if (routeCoreContainer.routeExists(route)) {
            				RouteTiming routeTiming = route.getRouteTiming();
            				if (routeTiming.isTimingSpecified()) {
-           			    	script.append(String.format("set required %d %s\n", route.getRouteId(),
+           					m_scripter.addScriptCommand(script, String.format("set required %d %s", route.getRouteId(),
            			    			routeTiming.getDescription(Level.REQUIRED)));
            				}
            			}
