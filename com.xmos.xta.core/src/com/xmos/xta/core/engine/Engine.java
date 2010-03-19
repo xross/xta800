@@ -946,7 +946,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	// ===================================================================== //
-	// Set Function Methods
+	// Set Function Time Methods
 	// ===================================================================== //
 	public void setFunctionTime(CommandSource src, int routeId, String functionName, TimeUnit timeUnit) {		
 		RouteDefines defines = new RouteDefines();
@@ -968,7 +968,9 @@ public class Engine implements Notifier, Aborter {
 			}
 		} catch (AbortedException e) {	}
 		
-		if (!hit) {
+		if (hit) {
+		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", functionName));			
 		}
 	}
@@ -981,7 +983,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	// ===================================================================== //
-	// Set Path Methods
+	// Set Path Time Methods
 	// ===================================================================== //	
 	public void setPathTime(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
 		RouteDefines defines = new RouteDefines();
@@ -1013,6 +1015,59 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	// ===================================================================== //
+	// Set Instruction Time Methods
+	// ===================================================================== //
+	public boolean setInstructionTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
+		Collection<Route> routes = getRoute(routeId);
+		if (routes.isEmpty()) {
+			return false;
+		}
+
+		boolean hit = false;		
+		try {
+	    	Map<Route, Reference> refMap = new HashMap<Route, Reference>();
+			for (Route route : routes) {
+				Reference reference = ReferenceFactory.createReference(refString, 
+						ReferenceClass.ENDPOINT_REF,
+				        route.getRouteCoreContainer().getNodeNumber(),
+				        route.getRouteCoreContainer().getCoreNumber());
+								
+				if (resolveReference(reference)) {
+					if (!route.getRouteUnknowns().canInstructionPause(reference))
+						return false;
+					
+					refMap.put(route, reference);
+					hit = true;
+				}				
+			}
+			for (Route route : routes) {
+				if (refMap.containsKey(route)) {				
+			        route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+				}
+			}
+		} catch (AbortedException e) { 
+			return false;			
+		}
+				
+		if (hit) {
+		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		} else {
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
+		}		
+	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	    return true;
+	}
+
+	public void setInstructionTime(CommandSource src, Node node, TimeUnit timeUnit) {
+		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	}
+
+	public TimeUnit getInstructionTime(Node node) {
+		return m_selectedRoute.getRouteUnknowns().getFixedTime(node);
+	}
+	
+	// ===================================================================== //
 	// Set Loop Methods
 	// ===================================================================== //
 	public void setLoop(CommandSource src, int routeId, String refString, long iterations) {
@@ -1021,6 +1076,8 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
 			return;
 		}
+
+		boolean hit = false;		
 		try {
 			Map<Route, Reference> refMap = new HashMap<Route, Reference>();
 			for (Route route : routes) {				
@@ -1032,6 +1089,7 @@ public class Engine implements Notifier, Aborter {
 				if (resolveReference(reference)) {
 					route.getRouteUnknowns().checkSetLoopIterations(reference, iterations);
 					refMap.put(route, reference);
+					hit = true;
 				}								
 			}
 			for (Route route : routes) {
@@ -1045,13 +1103,19 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;
 		}
-	    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		if (hit) {
+		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		} else {
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
+		}		
+	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	}
 
 	public void setLoop(CommandSource src, Node node, long iterations) {
 		try {
 			m_selectedRoute.getRouteUnknowns().setLoopIterations(src, this, node, iterations, Source.SET);
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
@@ -1081,6 +1145,8 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
 			return;
 		}
+		
+		boolean hit = false;				
 		try {
 			Map<Route, Reference> refMap = new HashMap<Route, Reference>();
 			for (Route route : routes) {				
@@ -1092,6 +1158,7 @@ public class Engine implements Notifier, Aborter {
 				if (resolveReference(reference)) {
 					route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations);
 					refMap.put(route, reference);
+					hit = true;
 				}								
 			}
 			for (Route route : routes) {
@@ -1104,7 +1171,11 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;
 		}
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		if (hit) {
+		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		} else {
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
+		}		
 	}
 
 	public void setLoopPath(CommandSource src, Node node, long iterations) {
@@ -1140,6 +1211,8 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
 			return;
 		}
+		
+		boolean hit = false;				
 		try {
 			Map<Route, Reference> refMap = new HashMap<Route, Reference>();
 			for (Route route : routes) {				
@@ -1151,6 +1224,7 @@ public class Engine implements Notifier, Aborter {
 				if (resolveReference(reference)) {
 					route.getRouteUnknowns().checkSetLoopScope(reference, absolute);
 					refMap.put(route, reference);
+					hit = true;
 				}								
 			}
 			for (Route route : routes) {
@@ -1163,7 +1237,11 @@ public class Engine implements Notifier, Aborter {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return;
 		}
-		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		if (hit) {
+		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		} else {
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
+		}		
 	}
 
 	public void setLoopScope(CommandSource src, Node node, boolean absolute) {
@@ -1191,50 +1269,67 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	// ===================================================================== //
-	// Instruction Time Methods
+	// Set Exclusion Methods
 	// ===================================================================== //
-	public boolean setInstructionTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
+	public boolean setExclusion(CommandSource src, int routeId, String refString) {
 		Collection<Route> routes = getRoute(routeId);
 		if (routes.isEmpty()) {
 			return false;
 		}
+		
+		boolean hit = false;
 	    try {
-	    	Map<Route, Reference> refMap = new HashMap<Route, Reference>();
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ENDPOINT_REF,
+						ReferenceClass.ANY_REF,
 				        route.getRouteCoreContainer().getNodeNumber(),
 				        route.getRouteCoreContainer().getCoreNumber());
-								
+
 				if (resolveReference(reference)) {
-					if (!route.getRouteUnknowns().canInstructionPause(reference))
-						return false;
-					
-					refMap.put(route, reference);
-				}				
-			}
-			for (Route route : routes) {
-				if (refMap.containsKey(route)) {				
-			        route.getRouteUnknowns().setFixedTime(refMap.get(route), timeUnit, Type.INSTRUCTION_TIME, Source.SET);
+					Set<Node> nodes = route.getReferencedNodes(reference);
+
+					boolean okToSetExclusion = true;
+					for (Node node : nodes) {
+						okToSetExclusion &= canSetExclusion(node);
+					}
+					if (okToSetExclusion && !nodes.isEmpty()) {			
+						hit = route.getRouteUnknowns().setExclusion(reference, Type.EXCLUSION, Source.SET);	
+					}					
 				}
 			}
+			
 		} catch (AbortedException e) { 
 			return false;			
 		}
-				
-	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
-	    return true;
+
+	    if (hit) {
+	    	notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Unable to set exclusion for reference: %s", refString));
+		}
+	    return hit;
 	}
 
-	public void setInstructionTime(CommandSource src, Node node, TimeUnit timeUnit) {
-		m_selectedRoute.getRouteUnknowns().setFixedTime(node, timeUnit, Type.INSTRUCTION_TIME, Source.SET);
-		notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	public void setExclusion(CommandSource src, Node node) {
+		
+		if(canSetExclusion(node)){
+			m_selectedRoute.getRouteUnknowns().setExclusion(node, Type.EXCLUSION, Source.SET);		
+			notify(src, Notifier.NOTIFY_ROUTE_CHANGED, "");
+		} else {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
+		}		
 	}
+	
+	public boolean canSetExclusion(Node node) {
+		try {
+			m_selectedRoute.getRouteUnknowns().checkExclusionWillLeaveAPath(node);
+			return true;
 
-	public TimeUnit getInstructionTime(Node node) {
-		return m_selectedRoute.getRouteUnknowns().getFixedTime(node);
+		} catch (Exception e) {
+			return false;
+		}
 	}
-
+	
 	// ===================================================================== //
 	// Exclusion Methods
 	// ===================================================================== //
@@ -1298,68 +1393,6 @@ public class Engine implements Notifier, Aborter {
 
 	public Collection<Reference> getExclusions() {
 		return m_exclusions;
-	}
-
-	// ===================================================================== //
-	// Exclusion Immediately Methods
-	// ===================================================================== //
-	public boolean setExclusion(CommandSource src, int routeId, String refString) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty()) {
-			return false;
-		}
-		boolean success = false;
-	    try {
-			for (Route route : routes) {
-				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY_REF,
-				        route.getRouteCoreContainer().getNodeNumber(),
-				        route.getRouteCoreContainer().getCoreNumber());
-								
-				Set<Node> nodes = route.getReferencedNodes(reference);
-				
-				boolean okToSetExclusion = true;
-				for(Node node : nodes){
-					okToSetExclusion &= canSetExclusion(node);
-				}
-				if(okToSetExclusion){			
-					success = route.getRouteUnknowns().setExclusion(reference, Type.EXCLUSION, Source.SET);	
-				}
-				
-			}
-			
-		} catch (AbortedException e) { 
-			return false;			
-		}
-
-	    if(success){
-	    	notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
-	    	return true;
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
-			return false;	
-		}
-	}
-
-	public void setExclusion(CommandSource src, Node node) {
-		
-		if(canSetExclusion(node)){
-			m_selectedRoute.getRouteUnknowns().setExclusion(node, Type.EXCLUSION, Source.SET);		
-			notify(src, Notifier.NOTIFY_ROUTE_CHANGED, "");
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
-		}
-		
-	}
-	
-	public boolean canSetExclusion(Node node) {
-		try {
-			m_selectedRoute.getRouteUnknowns().checkExclusionWillLeaveAPath(node);
-			return true;
-
-		} catch (Exception e) {
-			return false;
-		}
 	}
 	
 	// ===================================================================== //
@@ -1546,9 +1579,6 @@ public class Engine implements Notifier, Aborter {
 		return m_sections.getUnreachableFunctions(nodeNumber, coreNumber);
 	}
 	
-	/** 
-	 * Try to load an executable. If this fails then it returns the xta to its original state
-	 */
 	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){
 		
 		m_loadStartTime = System.currentTimeMillis();
@@ -1579,8 +1609,6 @@ public class Engine implements Notifier, Aborter {
 		notify(src, Notifier.RELEASE_MESSAGES, "");
 		return true;
 	}
-	
-	
 	
 	private boolean buildNodeCore(NodeCoreCollection<CallGraph> callGraphs,
 			NodeCoreCollection<InstructionDecoder> instructionDecoders,

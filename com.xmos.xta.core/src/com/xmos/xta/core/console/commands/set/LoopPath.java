@@ -66,6 +66,7 @@ public class LoopPath extends Command {
 
 		Node node = getReferencedNode(engine, m_routeId, m_refString);
 		if (node != null) {
+			engine.setSelectedRouteId(getSrc(), m_routeId);
    		    engine.setLoopPath(getSrc(), node, m_iterations);
 
 		} else {
