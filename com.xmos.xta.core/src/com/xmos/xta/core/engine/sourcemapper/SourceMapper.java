@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,6 @@ import com.xmos.xta.core.engine.FunctionContainer;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class SourceMapper {
 	private long m_xeLastModified;
@@ -35,11 +35,12 @@ public class SourceMapper {
 	private Map<Long, AssemblyLine> m_pcToAsm;
 	private Map<Long, Function> m_pcToFunction;
 	private Map<String, Set<Long>> m_labels;
-
+	private Map<InstructionNode, InstructionNode> m_functionInstuctionToOriginal;
+	
     public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, int nodeNumber, int coreNumber,
-			Set<InstructionNode> starts, InstructionDecoder instructionDecoder,
+			Map<InstructionNode, InstructionNode> map, InstructionDecoder instructionDecoder,
 			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labels) throws AbortedException {
-    	
+    	m_functionInstuctionToOriginal = map;
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
         m_functionContainers = functionContainers;
@@ -47,7 +48,7 @@ public class SourceMapper {
         m_pcToFunction = new TreeMap<Long, Function>();
 
         m_assemblyLines = createAssemblyLines();
-        m_functions = createFunctions(starts);
+        m_functions = createFunctions();
 
         // Must record the XE timestamp before loading files
         m_xeLastModified = xeLoader.getFile().lastModified();
@@ -240,11 +241,20 @@ public class SourceMapper {
         return asmLines;
     }
 
-    private List<Function> createFunctions(Set<InstructionNode> starts) {
+    private List<Function> createFunctions() {
     	List<InstructionNode> instList = m_instructionDecoder.getInstructions();
     	Map<Long, Function> pcToFunction = new HashMap<Long, Function>();
     	
-    	for (InstructionNode inst : starts) {    		
+
+    	Set<InstructionNode> starts = new HashSet<InstructionNode>();
+    	for(FunctionContainer fc : m_functionContainers){
+    		starts.add(m_functionInstuctionToOriginal.get(fc.getStartInstruction()));
+    	}
+    	
+    	for(FunctionContainer fc : m_functionContainers){	
+    		
+    		InstructionNode inst = m_functionInstuctionToOriginal.get(fc.getStartInstruction());
+    		
     		int startIndex = instList.indexOf(inst);
     		List<AssemblyLine> functionAssembly = new ArrayList<AssemblyLine>();
     		functionAssembly.add(m_assemblyLines.get(startIndex));
@@ -254,13 +264,14 @@ public class SourceMapper {
     			index++;
     		}
 
-    		String fnName = getFunctionName(inst);
+    		String fnName = fc.getFunctionName();
+    		
     		Function function = new Function(fnName, functionAssembly);
     		for (Line assembly : functionAssembly) {
     			m_pcToFunction.put(assembly.getLineNumber(), function);
     		}
 
-    		pcToFunction.put(inst.getStartPc(), function);
+    		pcToFunction.put(inst.getPC(), function);
     	}
 
     	//sort the functions into ascending pc order
@@ -275,15 +286,4 @@ public class SourceMapper {
     	return sortedFunctions;
     }
 
-    private String getFunctionName(InstructionNode inst) {
-    	for(FunctionContainer fc : m_functionContainers){
-    		for(Node node : fc.getFunctionContents()){
-    			if(node instanceof InstructionNode && node.getStartPc() == inst.getPC()){
-    				return fc.getFunctionName();
-    			}
-    		}
-    	}
-		assert(false);
-		return "";
-	}
 }

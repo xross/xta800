@@ -1644,7 +1644,7 @@ public class Engine implements Notifier, Aborter {
 		callGraphs.add(nodeNumber, coreNumber, cg);
 		SourceMapper sourceMapper;
 		try {
-			sourceMapper = new SourceMapper(src, this, xeLoader, nodeNumber, coreNumber, functionStartNodes,
+			sourceMapper = new SourceMapper(src, this, xeLoader, nodeNumber, coreNumber, frna.getFunctionInstuctionToOriginal(),
 					instructionDecoder, functionContainers, sections.getLabels(nodeNumber, coreNumber));
 
 		} catch (AbortedException e) {

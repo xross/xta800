@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.xmos.libs.isa.Instruction;
@@ -33,6 +34,7 @@ public class FunctionReferenceNodeAdder {
 	private long m_cpPointer;
 	private Map<Reference, Set<BranchInfo>> m_branchMap;
 	private Set<FunctionContainer> m_functionContainer;
+	private Map<InstructionNode, InstructionNode> m_functionInstuctionToOriginal;
 
 	private int m_executableBytes;
 	private int m_unreachableBytes;
@@ -47,6 +49,7 @@ public class FunctionReferenceNodeAdder {
 		m_cpPointer = xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
 		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());
 		m_functionContainer = new TreeSet<FunctionContainer>();
+		m_functionInstuctionToOriginal = new TreeMap<InstructionNode, InstructionNode>();
 	}
 
 
@@ -144,12 +147,18 @@ public class FunctionReferenceNodeAdder {
 			}
 			FunctionContainer fc = new FunctionContainer(copyStart, functionInstructions, functionRefNodes);
 			m_functionContainer.add(fc);
+			m_functionInstuctionToOriginal.put(copyStart, startOfFunction);
 		}
 		
 		m_unreachableBytes = countBytes(remainingInsts);
 		
 	}
 
+	public Map<InstructionNode, InstructionNode> getFunctionInstuctionToOriginal(){
+		return m_functionInstuctionToOriginal;
+	}
+	
+	
 	public int getExecuableBytes(){
 		return m_executableBytes;
 	}
