@@ -1,0 +1,3 @@
+analyse function main
+set loop - test.xc:5 10
+print structure -
