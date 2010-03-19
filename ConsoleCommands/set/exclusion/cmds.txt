@@ -1,0 +1,9 @@
+analyse function main
+set exclusion - if
+print structure -
+
+analyse function main
+set exclusion - ~1~1~
+print structure -
+
+exit
