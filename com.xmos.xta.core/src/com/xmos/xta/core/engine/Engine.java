@@ -1291,9 +1291,9 @@ public class Engine implements Notifier, Aborter {
 					for (Node node : nodes) {
 						okToSetExclusion &= canSetExclusion(node);
 					}
-					if (okToSetExclusion && !nodes.isEmpty()) {			
+					if (okToSetExclusion && !nodes.isEmpty()) {
 						hit = route.getRouteUnknowns().setExclusion(reference, Type.EXCLUSION, Source.SET);	
-					}					
+					}
 				}
 			}
 			
@@ -1310,10 +1310,10 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void setExclusion(CommandSource src, Node node) {
-		
-		if(canSetExclusion(node)){
+		if (canSetExclusion(node)) {
 			m_selectedRoute.getRouteUnknowns().setExclusion(node, Type.EXCLUSION, Source.SET);		
-			notify(src, Notifier.NOTIFY_ROUTE_CHANGED, "");
+			notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", getSelectedRouteId()));
+			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
 		}		
