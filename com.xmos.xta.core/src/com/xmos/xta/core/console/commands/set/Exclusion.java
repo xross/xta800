@@ -4,7 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class Exclusion extends Command {
 	private static final String[] COMMAND_NAMES = { "exclusion" };
@@ -58,9 +58,13 @@ public class Exclusion extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        if (!engine.setExclusion(getSrc(), m_routeId, m_refString)) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   	       			"failed to set exclusion on reference id: %s", m_refString));
-		}
+		Node node = getReferencedNode(engine, m_routeId, m_refString);
+		if (node != null) {
+			engine.setSelectedRouteId(getSrc(), m_routeId);
+   		    engine.setExclusion(getSrc(), node);
+
+		} else {
+   		    engine.setExclusion(getSrc(), m_routeId, m_refString);
+		}        
     }
 }
