@@ -8,6 +8,9 @@ use XmosBuildLib;
 use XmosArg;
 use File::Temp qw/ :mktemp  /;
 use File::Path;
+use Cwd;
+
+use File::Find;
 
 my $MAKE_FLAGS;
 my $CONFIG;
@@ -182,9 +185,39 @@ sub DoBuild
     or die("Failed to find com.xmos.xta.core\n");
   system("ant"); 
     die() if ($? != 0);
+  
+  SignOffTests();
   chdir("../");
 
+  
+
   chdir("$BUILDPATH") or die("oops");
+}
+
+sub SignOffTests {
+  find(\&d, cwd);
+}
+
+sub d {
+
+  my $file = $File::Find::name;
+ 
+  return unless -e $file;
+  return unless $file =~ m/java$/;
+  open(F, $file) or print "couldn't open $file\n" && return;
+  while (my $line = <F>) {
+    if ($line =~ m/HashSet/ or 
+        $line =~ m/HashMap/ or 
+        $line =~ m/TreeSet/ or 
+        $line =~ m/TreeMap/) {
+
+      print "Warning: $file contains $line\n";
+
+      last;
+    } 
+  }
+  close F;
+
 }
 
 sub DoInstall
