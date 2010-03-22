@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -15,7 +15,7 @@ public class UnreachableCodeFinder {
 	private Set<Node> m_unreachable;
 
 	public UnreachableCodeFinder() {
-		m_unreachable = new TreeSet<Node>();
+		m_unreachable = new NonIteratableSet<Node>();
 	}
 
 	/**
@@ -26,9 +26,9 @@ public class UnreachableCodeFinder {
 	public void analyzeReachable(InstructionDecoder id, Set<InstructionNode> functionStarts) {
 		m_unreachable.clear();
 		m_unreachable.addAll(id.getInstructions());
-		Set<Node> reachable = new TreeSet<Node>();
+		Set<Node> reachable = new NonIteratableSet<Node>();
 		for (Node node : functionStarts){
-			Set<Node> seen = new TreeSet<Node>();
+			Set<Node> seen = new NonIteratableSet<Node>();
 			explore(node, seen);
 			reachable.addAll(seen);
 		}

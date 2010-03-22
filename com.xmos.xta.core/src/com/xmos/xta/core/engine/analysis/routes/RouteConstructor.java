@@ -2,15 +2,15 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -46,8 +46,6 @@ import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 public class RouteConstructor {
 
 	private static boolean debug_route = false;
-	private static boolean debug_exculsions = false;
-	private static boolean debug_branches = false;
 	private static final int SR_IEBLE_SHIFT = 1;
 	private static final int SR_IEBLE_SIZE = 1;
 
@@ -96,7 +94,7 @@ public class RouteConstructor {
 		}
 
 		List<StackNode> branchStackNodes = new LinkedList<StackNode>();
-		Map<StackNode, Set<Node>> branchToNext = new HashMap<StackNode, Set<Node>>();
+		Map<StackNode, Set<Node>> branchToNext = new IteratableMap<StackNode, Set<Node>>();
 		buildBranchStackNodes(branchStackNodes, branchToNext);
 		
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
@@ -104,30 +102,10 @@ public class RouteConstructor {
 			exclusionStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
 		}
 		
-		
-		
-		if (debug_exculsions) {
-			System.out.println("exclusions are:");
-			for(StackNode sn : exclusionStackNodes){
-				System.out.println(sn);
-			}	
-		}
-		
-		if (debug_branches) {
-			System.out.println("branches are:");
-			for(StackNode sn : branchStackNodes){
-				System.out.println(sn);
-			}	
-		}
-		
 		if (routeContainer.getMode() == RouteMode.FUNCTION){
 			List<StackNode> startStackNodes = getFunctionStartStackNodes(m_callGraph, m_coreContainer.getFromReference());
 			for(StackNode startStackNode : startStackNodes){
 				for(Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()){
-					if (debug_exculsions) {
-						System.out.println("starting from " +stack +  " " + startStackNode.getInstruction());
-					}
-					
 					List<StackNode> endStackNodes = getFunctionEndStackNodes(stack);
 					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, endStackNodes, branchStackNodes, true, branchToNext);
 					if (newFunction != null){
@@ -187,7 +165,7 @@ public class RouteConstructor {
 			List<StackNode> stackNodes = getPathStackNodes(m_callGraph, ref);
 			branchStackNodes.addAll(stackNodes);
 			for(StackNode sn : stackNodes){
-				branchToNext.put(sn, new TreeSet<Node>());
+				branchToNext.put(sn, new IteratableSet<Node>());
 				for(Reference next : m_engine.getUserBranches().get(ref)){
 					for(StackNode nextStackNode : getPathStackNodes(m_callGraph, next)){
 						if(sn.getInstruction().getXtaInstruction().isLink()){
@@ -228,12 +206,12 @@ public class RouteConstructor {
 		}
 		InstructionNode startInst = fnRef.getStartInstruction();
 
-		Set<Node> workingSet = new TreeSet<Node>();
-		Set<Node> currentExclusionsFound = new TreeSet<Node>();
-		Map<NodeDescriptor, Node> nodeToWorkingSet = new HashMap<NodeDescriptor, Node>();
+		Set<Node> workingSet = new IteratableSet<Node>();
+		Set<Node> currentExclusionsFound = new IteratableSet<Node>();
+		Map<NodeDescriptor, Node> nodeToWorkingSet = new IteratableMap<NodeDescriptor, Node>();
 		
 		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
-		Set<Node> loopFormingEndNodes = new TreeSet<Node>();
+		Set<Node> loopFormingEndNodes = new NonIteratableSet<Node>();
 		
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound, RouteMode.FUNCTION,
@@ -253,12 +231,12 @@ public class RouteConstructor {
 	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
 			List<StackNode> exclusionStackNodes, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
 
-		Set<Node> workingSet = new TreeSet<Node>();
-		Set<Node> currentExclusionsFound = new TreeSet<Node>();
+		Set<Node> workingSet = new IteratableSet<Node>();
+		Set<Node> currentExclusionsFound = new IteratableSet<Node>();
 
-		Map<NodeDescriptor, Node> nodeToWorkingSet = new HashMap<NodeDescriptor, Node>();
+		Map<NodeDescriptor, Node> nodeToWorkingSet = new IteratableMap<NodeDescriptor, Node>();
 		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
-		Set<Node> loopFormingEndNodes = new TreeSet<Node>();
+		Set<Node> loopFormingEndNodes = new NonIteratableSet<Node>();
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound,
 				RouteMode.PATH, endStackNodes, nodeToWorkingSet, loopFormingEndNodes, true, branchStackNodes, branchToNext);
@@ -419,7 +397,7 @@ public class RouteConstructor {
 	
 	private Set<Node> getValidBranches(List<StackNode> branchStackNodes,
 			Stack<FunctionReferenceNode> currentStack, Node node, Map<StackNode, Set<Node>> branchToNext) {
-		Set<Node> validNextNodes = new TreeSet<Node>();
+		Set<Node> validNextNodes = new IteratableSet<Node>();
 		
 		validNextNodes.addAll(node.getNextNodes());
 		
@@ -483,9 +461,9 @@ public class RouteConstructor {
 	//TODO clean up the next two functions
 	private List<StackNode> getFunctionEndStackNodes(Stack<FunctionReferenceNode> stack) {
 		List<StackNode> endStacks = new LinkedList<StackNode>();
-		Set<Node> seen = new HashSet<Node>();
-		Set<InstructionNode> endNodes = new TreeSet<InstructionNode>();
-		Set<Node> following = new TreeSet<Node>();
+		Set<Node> seen = new NonIteratableSet<Node>();
+		Set<InstructionNode> endNodes = new IteratableSet<InstructionNode>();
+		Set<Node> following = new IteratableSet<Node>();
 		following.add(stack.peek().getFunctionStartInstruction());
 		while(!following.isEmpty()){
 			Node current = following.iterator().next();
@@ -564,13 +542,16 @@ public class RouteConstructor {
 	}
 
 	
-	static class NodeDescriptor {
+	static class NodeDescriptor implements Comparable<NodeDescriptor>{
+		private static int id;
+		private int m_id;
 		private Node m_node;
 		private Stack<FunctionReferenceNode> m_stack;
 
 		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
 			m_node = node;
 			m_stack = stack;
+			m_id = id++;
 		}
 
 		public Node getNode(){
@@ -590,6 +571,11 @@ public class RouteConstructor {
 
 			}
 			return false;
+		}
+
+		public int compareTo(NodeDescriptor o) {
+			
+			return this.m_id - o.m_id;
 		}
 	}
 

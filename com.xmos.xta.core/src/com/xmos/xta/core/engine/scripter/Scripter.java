@@ -9,14 +9,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -64,12 +65,12 @@ public class Scripter {
 		m_currentActiveCores = new ArrayList<NodeCorePair>();
 		m_currentExclusions = new ArrayList<Reference>();
 		m_currentDefines = new Defines();
-		m_currentBranches = new TreeMap<Reference, List<Reference>>();
-		m_autoLabels = new TreeSet<String>();
-		m_disables = new TreeSet<String>();
-		m_renames = new TreeMap<String, String>();
-		m_currentFrequencies = new HashMap<Integer, Double>();
-		m_currentNumThreads = new HashMap<NodeCorePair, Integer>();
+		m_currentBranches = new NonIteratableMap<Reference, List<Reference>>();
+		m_autoLabels = new NonIteratableSet<String>();
+		m_disables = new IteratableSet<String>();
+		m_renames = new IteratableMap<String, String>();
+		m_currentFrequencies = new NonIteratableMap<Integer, Double>();
+		m_currentNumThreads = new NonIteratableMap<NodeCorePair, Integer>();
 		m_uniqueReferences = null;
 		m_allReferences = null;
 		
@@ -81,8 +82,8 @@ public class Scripter {
 		m_currentActiveCores = new ArrayList<NodeCorePair>(m_engine.getActiveCores());
 		m_currentExclusions = new ArrayList<Reference>(m_engine.getExclusions());
 		m_currentDefines = new Defines(m_engine.getDefines());
-		m_currentFrequencies = new HashMap<Integer, Double>(m_engine.getFrequencyMap());
-		m_currentNumThreads = new HashMap<NodeCorePair, Integer>(m_engine.getNumThreadMap());		
+		m_currentFrequencies = new NonIteratableMap<Integer, Double>(m_engine.getFrequencyMap());
+		m_currentNumThreads = new NonIteratableMap<NodeCorePair, Integer>(m_engine.getNumThreadMap());		
 		m_uniqueReferences = null;
 		m_allReferences = null;
 	}
@@ -484,7 +485,7 @@ public class Scripter {
     }
 
 	private void disableReferences() {
-		Set<String> toRemove = new TreeSet<String>();
+		Set<String> toRemove = new IteratableSet<String>();
 		for (String disable : m_disables) {
 			ScripterReference ref = getReference(disable);
 			if (ref == null) {
@@ -497,7 +498,7 @@ public class Scripter {
 	}
 
 	private void renameReferences() {
-		Set<String> toRemove = new TreeSet<String>();
+		Set<String> toRemove = new IteratableSet<String>();
 		for (String rename : m_renames.keySet()) {
 			ScripterReference ref = getReference(rename);
 			if (ref == null) {
@@ -746,7 +747,7 @@ public class Scripter {
 	}
 
 	private Map<SourceFile, List<Long>> getFileLineNumbers() {
-		TreeMap<SourceFile, List<Long>> fileLineNumbers = new TreeMap<SourceFile, List<Long>>();
+		Map<SourceFile, List<Long>> fileLineNumbers = new IteratableMap<SourceFile, List<Long>>();
 
 		for (int nodeNumber : m_engine.getXeLoader().getNodeNumbers()) {
 			for (int coreNumber : m_engine.getXeLoader().getCoreNumbers(nodeNumber)) {

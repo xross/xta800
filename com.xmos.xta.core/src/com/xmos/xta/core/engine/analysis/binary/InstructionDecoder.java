@@ -1,11 +1,10 @@
 package com.xmos.xta.core.engine.analysis.binary;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import com.xmos.libs.elfhandler.ElfSection;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
@@ -19,7 +18,7 @@ public class InstructionDecoder {
 	private int m_nodeId;
 	private int m_coreId;
 	private long m_endPc;
-	private Map<Long, InstructionNode> m_decodedInstructions;
+	private NonIteratableMap<Long, InstructionNode> m_decodedInstructions;
 	private List<InstructionNode> m_orderedInstructions;
 	private XeLoader m_xeLoader;
 
@@ -28,7 +27,7 @@ public class InstructionDecoder {
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
 		m_endPc = Long.MIN_VALUE;
-		m_decodedInstructions = new HashMap<Long, InstructionNode>();
+		m_decodedInstructions = new NonIteratableMap<Long, InstructionNode>();
 		m_orderedInstructions = new LinkedList<InstructionNode>();
 	}
 

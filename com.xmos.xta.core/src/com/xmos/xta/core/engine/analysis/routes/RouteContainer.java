@@ -2,10 +2,10 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.Defines;
@@ -114,8 +114,8 @@ public class RouteContainer {
     private void initialise(Engine engine, CommandSource src) {
     	m_src = src;
     	m_activeCores = new ArrayList<NodeCorePair>(engine.getActiveCores());
-		m_frequencies = new HashMap<Integer, Double>(engine.getFrequencyMap());
-		m_numThreads = new HashMap<NodeCorePair, Integer>(engine.getNumThreadMap());		    	
+		m_frequencies = new NonIteratableMap<Integer, Double>(engine.getFrequencyMap());
+		m_numThreads = new NonIteratableMap<NodeCorePair, Integer>(engine.getNumThreadMap());		    	
     	m_routeCoreContainers = new ArrayList<RouteCoreContainer>();
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(engine.getExclusions());

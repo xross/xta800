@@ -1,10 +1,10 @@
 package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -28,7 +28,7 @@ public class CommonMethods {
 		if (node.getNextNodesSize() < 2) {
 			return false;
 		}
-		Collection<Node> newNodes = new TreeSet<Node>();
+		Collection<Node> newNodes = new IteratableSet<Node>();
 
 		
 		
@@ -66,7 +66,7 @@ public class CommonMethods {
 			return false;
 		}
 
-		Collection<Node> newNodes = new TreeSet<Node>();
+		Collection<Node> newNodes = new IteratableSet<Node>();
 		for (Node prev : node.getPrevNodes()){
 
 			Node newNode = null;
@@ -97,7 +97,7 @@ public class CommonMethods {
 	}
 
 	public static Set<Node> getAllContainedNodes(Node node) {
-		Set<Node> seen = new HashSet<Node>();
+		Set<Node> seen = new NonIteratableSet<Node>();
 		seen.add(node);
 		for(Node child : node.iChildren()){
 			seen.addAll(getAllContainedNodes(child));

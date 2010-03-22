@@ -1,22 +1,22 @@
 package com.xmos.xta.core.engine.sections;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 import com.xmos.libs.elfhandler.ElfHandler;
 import com.xmos.libs.elfhandler.Symbol;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 
 public class LabelMap {
 	private int m_nodeNumber;
 	private int m_coreNumber;
-	private TreeMap<String, Long> m_labels;
+	private NonIteratableMap<String, Long> m_labels;
 
 	LabelMap(int nodeNumber, int coreNumber) {
 		m_nodeNumber = nodeNumber;
 		m_coreNumber = coreNumber;
-		m_labels = new TreeMap<String, Long>();
+		m_labels = new NonIteratableMap<String, Long>();
 	}
 
 	int getNodeNumber() {

@@ -1,9 +1,8 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
@@ -18,8 +17,8 @@ public class TerminatorAdder {
 
 	public void process() {
 		for(InstructionNode inst : m_functionStartNodes){
-			Set<Node> terminals = new TreeSet<Node>();
-			Set<Node> seen = new HashSet<Node>();
+			Set<Node> terminals = new NonIteratableSet<Node>();
+			Set<Node> seen = new NonIteratableSet<Node>();
 			findEndPoints(inst, seen, terminals);
 			NullNode nullNode = null;
 			for(Node node : terminals){
@@ -37,7 +36,7 @@ public class TerminatorAdder {
 	}
 
 	private void findEndPoints(Node inst, Set<Node> seen, Set<Node> terminals) {
-		Set<Node> following = new TreeSet<Node>();
+		Set<Node> following = new NonIteratableSet<Node>();
 		following.add(inst);
 		while(!following.isEmpty()){
 			Node current = following.iterator().next();

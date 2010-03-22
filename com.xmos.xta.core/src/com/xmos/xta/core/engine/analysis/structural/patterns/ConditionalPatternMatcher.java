@@ -3,9 +3,10 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
@@ -20,8 +21,8 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 			return false;
 		}
 
-		Map<Node, Set<Node>> condNodeMap = new TreeMap<Node, Set<Node>>();
-		Set<Node> isOptionalSet = new TreeSet<Node>();
+		Map<Node, Set<Node>> condNodeMap = new IteratableMap<Node, Set<Node>>();
+		Set<Node> isOptionalSet = new NonIteratableSet<Node>();
 		for (Node node : currentNode.getNextNodes()) {
 			Set<Node> nodes = getConditionalDepth(node, 0, currentNode, condNodeMap, isOptionalSet);
 			if (nodes == null) {
@@ -41,7 +42,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 				numNodes += 1;
 			}
 			if (numNodes > 1) {
-				assert(condSanityCheck(currentNode, condNodes, isOptional ? endNode : null, endNode));
+				//assert(condSanityCheck(currentNode, condNodes, isOptional ? endNode : null, endNode));
 				updateGraph(currentNode, condNodes, isOptional, workingSet, endNode);
 				return true;
 			}
@@ -58,7 +59,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 		} else if (currentNode.getPrevNodesSize() > 1) {
 			Set<Node> condNodes = endNodeMap.get(currentNode);
 			if (condNodes == null) {
-				condNodes = new TreeSet<Node>();
+				condNodes = new IteratableSet<Node>();
 				endNodeMap.put(currentNode, condNodes);
 			}
 			if (depth == 0) {
@@ -67,7 +68,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 			return condNodes;
 
 		} else if (currentNode.getNextNodesSize() == 0) {
-			return new TreeSet<Node>();
+			return new NonIteratableSet<Node>();
 
 		} else if (currentNode.getNextNodesSize() != 1) {
 			return null;
@@ -82,31 +83,6 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 			return condNodes;
 
 		}
-	}
-
-	private boolean condSanityCheck(Node startNode, Collection<Node> condNodes, Node jumpNode, Node endNode) {
-
-		if (!startNode.getNextNodes().containsAll(condNodes)) {
-			return false;
-		}
-
-		int edgeCount = condNodes.size();
-		if (jumpNode != null) {
-			edgeCount++;
-		}
-
-		if (edgeCount < 2) {
-			return false;
-		}
-
-		if (!endNode.getPrevNodes().containsAll(condNodes)) {
-			return false;
-		}
-
-		if (jumpNode != null && jumpNode != endNode) {
-			return false;
-		}
-		return true;
 	}
 
 	protected void updateGraph(Node startNode, Collection<Node> condNodes, boolean isOptional,

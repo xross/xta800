@@ -1,13 +1,14 @@
 package com.xmos.xta.core.console.commands.print;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.Vector;
 
 import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.xta.core.console.Console;
@@ -34,19 +35,19 @@ public class AsmDisplayer {
     	SymbolTable symbolTable = m_engine.getSymbolTable(nodeNumber, coreNumber);
 
         if (instructions.size() > 0) {
-	    	HashMap<String, TreeSet<Long>> asmLinesCovered =
+	    	Map<String, Set<Long>> asmLinesCovered =
 	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper(nodeNumber, coreNumber));
 
-	        for (Iterator<Map.Entry<String, TreeSet<Long>>> iter =
+	        for (Iterator<Map.Entry<String, Set<Long>>> iter =
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
 
-	            Map.Entry<String, TreeSet<Long>> entry =
+	            Map.Entry<String, Set<Long>> entry =
 	                iter.next();
 
 	            String functionName = entry.getKey();
-	            TreeSet<Long> functionLinesCovered = entry.getValue();
+	            Set<Long> functionLinesCovered = entry.getValue();
 
-	            long functionAddress = symbolTable.functionAddress(functionLinesCovered.first());
+	            long functionAddress = symbolTable.functionAddress(functionLinesCovered.iterator().next());
 	            long functionSize = symbolTable.functionSize(functionAddress);
 
 	            //TODO figure out if this can actually happen
@@ -63,7 +64,7 @@ public class AsmDisplayer {
 	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
 	            		m_engine.getConfig());
 
-	            HashMap<Long, String> branchTargetMap = Disassembler.createBranchTargetMap(
+	            NonIteratableMap<Long, String> branchTargetMap = Disassembler.createBranchTargetMap(
 	            		symbolTable, disassemblyVector);
 
 	            for (Instruction instruction : disassemblyVector) {
@@ -86,10 +87,10 @@ public class AsmDisplayer {
         }
     }
 
-    private HashMap<String, TreeSet<Long>> createAsmPcsCovered(
+    private Map<String, Set<Long>> createAsmPcsCovered(
     		List<XtaInstruction> instructions, SourceMapper sourceMapper) {
 
-        HashMap<String, TreeSet<Long>> asmLinesCovered = new HashMap<String, TreeSet<Long>>();
+        Map<String, Set<Long>> asmLinesCovered = new NonIteratableMap<String, Set<Long>>();
         for (XtaInstruction inst : instructions){
             Function function = sourceMapper.getFunction(inst.getPc());
             if (function != null) {
@@ -97,7 +98,7 @@ public class AsmDisplayer {
 	            if (asmLinesCovered.containsKey(instString)){
 	                asmLinesCovered.get(instString).add(inst.getPc());
 	            } else {
-	                TreeSet<Long> treeList = new TreeSet<Long>();
+	                Set<Long> treeList = new IteratableSet<Long>();
 	                treeList.add(inst.getPc());
 	                asmLinesCovered.put(instString, treeList);
 	            }
@@ -106,7 +107,7 @@ public class AsmDisplayer {
         return asmLinesCovered;
 	}
 
-    private String getBranchDest(HashMap<Long, String> branchTargetMap,
+    private String getBranchDest(NonIteratableMap<Long, String> branchTargetMap,
     		Instruction instruction) {
 
 	    String branchDest = "";
@@ -117,7 +118,7 @@ public class AsmDisplayer {
 	    return branchDest;
     }
 
-    private String getBranchTarget(HashMap<Long, String> branchTargetMap,
+    private String getBranchTarget(NonIteratableMap<Long, String> branchTargetMap,
     		Instruction instruction, SymbolTable symbolTable) {
 
 	    String branchTarget = "";

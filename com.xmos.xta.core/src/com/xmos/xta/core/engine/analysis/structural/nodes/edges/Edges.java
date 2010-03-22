@@ -2,8 +2,8 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.edges;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class Edges {
@@ -32,14 +32,14 @@ public class Edges {
 
 	public Set<Node> getNextNodes(){
 		if (m_nextNodes == null) {
-			m_nextNodes = new TreeSet<Node>();
+			m_nextNodes = new IteratableSet<Node>();
 		}
 		return m_nextNodes;
 	}
 
 	public Set<Node> getPrevNodes() {
 		if(m_prevNodes == null){
-			m_prevNodes = new TreeSet<Node>();
+			m_prevNodes = new IteratableSet<Node>();
 		}
 		return m_prevNodes;
 	}
@@ -91,7 +91,7 @@ public class Edges {
 
 	public Set<Node> getDominators() {
 		if (m_dominators == null) {
-			m_dominators = new TreeSet<Node>();
+			m_dominators = new IteratableSet<Node>();
 		}
 		return m_dominators;
 	}
@@ -110,14 +110,14 @@ public class Edges {
 
 	public void addDominator(Node node) {
 		if (m_dominators == null) {
-			m_dominators = new TreeSet<Node>();
+			m_dominators = new IteratableSet<Node>();
 		}
 		m_dominators.add(node);
 	}
 
 	public void addAllDominators(Collection<Node> nodes) {
 		if (m_dominators == null) {
-			m_dominators = new TreeSet<Node>();
+			m_dominators = new IteratableSet<Node>();
 		}
 		m_dominators.addAll(nodes);
 	}

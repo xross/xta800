@@ -1,14 +1,13 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
@@ -47,8 +46,8 @@ public class FunctionReferenceNodeAdder {
 		m_branchMap = sections.getBranches(nodeId, coreId);
 		m_cpPointer = xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
 		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());
-		m_functionContainer = new TreeSet<FunctionContainer>();
-		m_functionInstuctionToOriginal = new TreeMap<InstructionNode, InstructionNode>();
+		m_functionContainer = new IteratableSet<FunctionContainer>();
+		m_functionInstuctionToOriginal = new NonIteratableMap<InstructionNode, InstructionNode>();
 	}
 
 
@@ -59,14 +58,14 @@ public class FunctionReferenceNodeAdder {
 		m_executableBytes = countBytes(remainingInsts);
 		
 		for(InstructionNode startOfFunction : functionStartNodes){
-			Map<Node, Node> seen = new HashMap<Node, Node>();
+			Map<Node, Node> seen = new NonIteratableMap<Node, Node>();
 			
-			Set<InstructionNode> toDo = new TreeSet<InstructionNode>();
+			Set<InstructionNode> toDo = new IteratableSet<InstructionNode>();
 			
 			toDo.add(startOfFunction);
 			
-			Set<InstructionNode> functionInstructions = new TreeSet<InstructionNode>();
-			Set<FunctionReferenceNode> functionRefNodes = new TreeSet<FunctionReferenceNode>();
+			Set<InstructionNode> functionInstructions = new IteratableSet<InstructionNode>();
+			Set<FunctionReferenceNode> functionRefNodes = new IteratableSet<FunctionReferenceNode>();
 			InstructionNode copyStart = (InstructionNode) getInstruction(startOfFunction, seen, functionInstructions);
 			
 			while(!toDo.isEmpty()){

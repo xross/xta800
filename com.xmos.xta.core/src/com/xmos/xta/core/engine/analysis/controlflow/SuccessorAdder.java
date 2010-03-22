@@ -1,9 +1,9 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
@@ -47,7 +47,7 @@ public class SuccessorAdder {
 
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
 		
-		Set<BranchInfo> targets = new HashSet<BranchInfo>();
+		Set<BranchInfo> targets = new IteratableSet<BranchInfo>();
 		for (Reference ref : m_branchMap.keySet()) {
 			if (ref.matches(inst.getPc())) {
 				Set<BranchInfo> mapEntries = m_branchMap.get(ref);

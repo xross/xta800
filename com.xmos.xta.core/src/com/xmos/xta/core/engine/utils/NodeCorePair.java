@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.utils;
 
-public class NodeCorePair {
+public class NodeCorePair implements Comparable<NodeCorePair>{
     private int m_node;
     private int m_core;
     
@@ -33,5 +33,12 @@ public class NodeCorePair {
 	   result = HashCodeUtil.hash(result, m_node);
 	   result = HashCodeUtil.hash(result, m_core);
 	   return result;
+	}
+
+	public int compareTo(NodeCorePair o) {
+		if(m_node == o.m_node) {
+			return m_core - o.m_core;
+		}
+		return m_node - o.m_node;
 	}    
 }

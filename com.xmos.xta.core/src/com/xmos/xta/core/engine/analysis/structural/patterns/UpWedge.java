@@ -2,8 +2,8 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -14,7 +14,7 @@ public class UpWedge extends PatternMatcher {
 		m_treeStart = treeStart;
 
 		//the set of least dominant nodes is the set of nodes that cause a loop to be formed.
-		Set<Node> leastDominantNodes = new TreeSet<Node>();
+		Set<Node> leastDominantNodes = new NonIteratableSet<Node>();
 		for (Node node : workingSet) {
 			for (Node next : node.getNextNodes()) {
 				if (node.dominatorsContain(next)) {

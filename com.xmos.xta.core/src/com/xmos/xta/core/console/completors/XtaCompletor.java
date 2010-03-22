@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 import jline.ArgumentCompletor;
 import jline.Completor;
@@ -13,6 +12,7 @@ import jline.FileNameCompletor;
 import jline.NullCompletor;
 import jline.SimpleCompletor;
 
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.engine.Engine;
@@ -26,7 +26,7 @@ public class XtaCompletor implements Completor {
 
 	public XtaCompletor(Engine engine) {
 		m_engine = engine;
-		m_subCompletors = new TreeMap<String, Completor>();
+		m_subCompletors = new NonIteratableMap<String, Completor>();
 		createCommandCompletors();
 		if (DEBUG) displayCommandCompletors();
 	}

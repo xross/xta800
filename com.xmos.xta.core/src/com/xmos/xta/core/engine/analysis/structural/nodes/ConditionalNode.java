@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.ConditionalNodeAttributes;
@@ -26,15 +26,15 @@ public class ConditionalNode extends Node {
 	
 	public ConditionalNode() {
 		super();
-		m_options = new TreeSet<Node>();
-		m_alive = new TreeMap<Node, Boolean>();
+		m_options = new IteratableSet<Node>();
+		m_alive = new NonIteratableMap<Node, Boolean>();
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
 	public ConditionalNode(Collection<Node> options, boolean isOptional) {
 		super();
 		m_options = options;
-		m_alive = new TreeMap<Node, Boolean>();
+		m_alive = new NonIteratableMap<Node, Boolean>();
 		if (isOptional){
 			m_options.add(new BlockNode());
 		}
@@ -70,7 +70,7 @@ public class ConditionalNode extends Node {
     }
 
     private Collection<Node> getAliveOptions(){
-    	Collection<Node> aliveOptions = new TreeSet<Node>();
+    	Collection<Node> aliveOptions = new IteratableSet<Node>();
     	for(Node option : m_options){
     		if(m_alive.get(option)){
     			aliveOptions.add(option);

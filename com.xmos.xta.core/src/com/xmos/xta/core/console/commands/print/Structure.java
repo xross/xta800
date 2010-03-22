@@ -97,7 +97,7 @@ public class Structure extends Command {
     		if (m_nodeIdSet) {
     			nodes = getCollection(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getNode(m_nodeId));
     		} else {
-    			nodes = new TreeSet<Node>();
+    			nodes = new NonIteratableSet<Node>();
     			
     			nodes.addAll(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getFunctions());
     		}

@@ -1,9 +1,9 @@
 package com.xmos.xta.core.engine.sections;
 
 import java.util.Collection;
-import java.util.TreeSet;
 
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
@@ -16,7 +16,7 @@ public class ThreadDelimiters extends Section {
 	ThreadDelimiters(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
-		m_pcs = new TreeSet<Long>();
+		m_pcs = new IteratableSet<Long>();
 	}
 
 

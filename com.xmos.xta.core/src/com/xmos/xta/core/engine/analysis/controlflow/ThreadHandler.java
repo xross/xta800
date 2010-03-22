@@ -3,9 +3,9 @@ package com.xmos.xta.core.engine.analysis.controlflow;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
@@ -25,7 +25,7 @@ public class ThreadHandler {
 
 
 	public Set<InstructionNode> getThreadNodes(CommandSource src, Collection<Long> threadPcs, String type) {
-		Set<InstructionNode> nodes = new TreeSet<InstructionNode>();
+		Set<InstructionNode> nodes = new NonIteratableSet<InstructionNode>();
 		for (long pc : threadPcs) {
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null) {
@@ -56,10 +56,10 @@ public class ThreadHandler {
 	}
 
 	public Map<Long, Set<Node>> addTerminators(Collection<InstructionNode> threadStarts) {
-		Map<Long, Set<Node>> threadToEndPoints = new TreeMap<Long, Set<Node>>();
+		Map<Long, Set<Node>> threadToEndPoints = new NonIteratableMap<Long, Set<Node>>();
 		for (InstructionNode threadStart : threadStarts) {
-			TreeSet<Node> terminals  = new TreeSet<Node>();
-			findTerminals(threadStart, new TreeSet<Node>(), terminals);
+			NonIteratableSet<Node> terminals  = new NonIteratableSet<Node>();
+			findTerminals(threadStart, new NonIteratableSet<Node>(), terminals);
 			NullNode nullNode = new NullNode();
 			threadToEndPoints.put(threadStart.getStartPc(), terminals);
 			int nullNodeCount = 0;

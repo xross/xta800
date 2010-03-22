@@ -6,7 +6,7 @@ import java.util.Stack;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 
-public class StackNode{
+public class StackNode implements Comparable<StackNode>{
 	private List<Stack<FunctionReferenceNode>> m_nodeStacks;
 	private InstructionNode m_instruction;
 	public StackNode(InstructionNode instruction, List<Stack<FunctionReferenceNode>> stacks){
@@ -30,5 +30,9 @@ public class StackNode{
 			stacks.append("\n");
 		}
 		return m_instruction + " from " + m_nodeStacks.size() + " stacks\n" + stacks.toString();
+	}
+
+	public int compareTo(StackNode o) { 
+		return this.hashCode() - o.hashCode();
 	}
 }

@@ -6,12 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 
 public class SourceFile implements Comparable<SourceFile> {
@@ -110,7 +110,7 @@ public class SourceFile implements Comparable<SourceFile> {
 	}	
 	
 	private void initialisePcToLineMap() {
-		m_pcToLine = new HashMap<Long, SourceLine>();
+		m_pcToLine = new NonIteratableMap<Long, SourceLine>();
 		
     	for (SourceLine sourceLine : m_sourceLines) {
         	Collection<Long> statementPcs = m_debugEngine.getStatementPcsMatchingPath(

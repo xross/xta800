@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
@@ -29,7 +29,7 @@ public class RouteCoreContainer {
     	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
     	
     	m_from = from;
-		m_to = new TreeSet<Reference>();
+		m_to = new IteratableSet<Reference>();
     	m_to.add(to);    	
     }
     
@@ -40,7 +40,7 @@ public class RouteCoreContainer {
 
     	m_function = function;
     	m_from = function;
-		m_to = new TreeSet<Reference>();
+		m_to = new IteratableSet<Reference>();
         for (Reference to : m_to)
         	to.resolve(engine);		
     }

@@ -4,29 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 
 import com.xmos.libs.elfhandler.ElfHandler;
 import com.xmos.libs.elfhandler.Symbol;
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public class Labels extends Section  {
-	private TreeMap<String, Set<Long>> m_labels;
+	private Map<String, Set<Long>> m_labels;
 
 	Labels(int nodeNumber, int coreNumber, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
-		m_labels = new TreeMap<String, Set<Long>>();
+		m_labels = new IteratableMap<String, Set<Long>>();
 	}
 
 	boolean add(CommandSource src, String label, long pc) {
 		Set<Long> pcs = m_labels.get(label);
 		if (pcs == null) {
-			pcs = new TreeSet<Long>();
+			pcs = new IteratableSet<Long>();
 			m_labels.put(label, pcs);
 		}
 		pcs.add(pc);

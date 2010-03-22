@@ -3,9 +3,9 @@ package com.xmos.xta.core.engine.references;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import com.xmos.libs.util.Conversion;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
@@ -183,7 +183,7 @@ public class Reference implements Comparable<Reference>  {
 	}
 	
     private boolean match(Set<Long> set1, Set<Long> set2) {
-    	Set<Long> intersection = new TreeSet<Long>(set1);
+    	Set<Long> intersection = new IteratableSet<Long>(set1);
     	intersection.retainAll(set2);
     	if (intersection.isEmpty()) {
     		return false;

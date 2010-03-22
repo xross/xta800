@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public class SrcLabelTable extends Section {
 	private String m_sectionName;
-	private TreeMap<Long, SrcLabelTableInfo> m_locations;
+	private Map<Long, SrcLabelTableInfo> m_locations;
 
 	SrcLabelTable(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
-		m_locations = new TreeMap<Long, SrcLabelTableInfo>();
+		m_locations = new IteratableMap<Long, SrcLabelTableInfo>();
 	}
 
 	Map<Long, SrcLabelTableInfo> get() {

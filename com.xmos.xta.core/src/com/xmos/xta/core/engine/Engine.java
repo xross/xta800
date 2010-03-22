@@ -5,20 +5,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
@@ -90,7 +90,6 @@ public class Engine implements Notifier, Aborter {
 	private String m_srcPaths;
 	private Sections m_sections;
 	private Defines m_defines;
-	private Collection<String> m_functionsVisited;
 	private int m_timeOut;
 	private int m_numErrors;
 	private long m_loadStartTime;
@@ -113,7 +112,7 @@ public class Engine implements Notifier, Aborter {
 		m_instructionDecoders = new NodeCoreCollection<InstructionDecoder>();
 		m_callGraphs = new NodeCoreCollection<CallGraph>();
 		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
-		m_nodeHz = new TreeMap<Integer, Long>();
+		m_nodeHz = new IteratableMap<Integer, Long>();
 		m_coreThreads = new NodeCoreCollection<Integer>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
@@ -132,8 +131,8 @@ public class Engine implements Notifier, Aborter {
 		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
 		m_fromEndpointName = "";
 		m_toEndpointName = "";
-		m_fromEndPoints = new HashMap<NodeCorePair, Reference>();
-		m_toEndPoints = new HashMap<NodeCorePair, Reference>();
+		m_fromEndPoints = new IteratableMap<NodeCorePair, Reference>();
+		m_toEndPoints = new IteratableMap<NodeCorePair, Reference>();
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -476,9 +475,6 @@ public class Engine implements Notifier, Aborter {
 		return m_progressMonitor != null;
 	}
 
-	public Collection<String> getFunctionsVisited() {
-		return m_functionsVisited;
-	}
 
 	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
 		for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
@@ -519,7 +515,7 @@ public class Engine implements Notifier, Aborter {
 	}
 	
 	public Map<Integer, Double> getFrequencyMap() {
-		Map<Integer, Double> frequencies = new HashMap<Integer, Double>();
+		Map<Integer, Double> frequencies = new NonIteratableMap<Integer, Double>();
 		for (Integer nodeNumber : m_nodeHz.keySet()) {
 			double frequency = (double)m_nodeHz.get(nodeNumber) / 1000000;
 			frequencies.put(nodeNumber, frequency);
@@ -546,7 +542,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public Map<NodeCorePair, Integer> getNumThreadMap() {
-		Map<NodeCorePair, Integer> threads = new HashMap<NodeCorePair, Integer>();
+		Map<NodeCorePair, Integer> threads = new NonIteratableMap<NodeCorePair, Integer>();
 		for (Pair<Integer, Integer> nodeCore : m_coreThreads.getEntries()) {
 			threads.put(new NodeCorePair(nodeCore.first, nodeCore.second), 
 					m_coreThreads.get(nodeCore.first, nodeCore.second));
@@ -633,14 +629,14 @@ public class Engine implements Notifier, Aborter {
 	public Set<String> getFunctionNames(int nodeNumber, int coreNumber) {
 		Set<FunctionContainer> functionContainers = m_callGraphs.get(nodeNumber, coreNumber).getFunctionContainers();
 		if (functionContainers != null) {
-			Set<String> functionNames = new TreeSet<String>();
+			Set<String> functionNames = new IteratableSet<String>();
 			for(FunctionContainer fc : functionContainers){
 				functionNames.add(fc.getFunctionName());
 			}
 			
 		    return functionNames;
 	    }
-		return new TreeSet<String>();
+		return new NonIteratableSet<String>();
 	}
 
 	public Collection<String> getNonSystemFunctionNames() {
@@ -656,7 +652,7 @@ public class Engine implements Notifier, Aborter {
 			List<String> nodeCoreFunctions = new LinkedList<String>();
 			nodeCoreFunctions.addAll(getFunctionNames(nodeNumber, coreNumber));
 	
-			Set<String> systemFunctions = new TreeSet<String>();
+			Set<String> systemFunctions = new NonIteratableSet<String>();
 			Collection<String> systems = m_sections.getSystems(nodeNumber, coreNumber);
 			for (String functionName : nodeCoreFunctions) {
 				if (isSystemFunction(systems, functionName)) {
@@ -667,7 +663,7 @@ public class Engine implements Notifier, Aborter {
 			functionNames.addAll(nodeCoreFunctions);
 		}
 
-		Set<String> uniqueNames = new TreeSet<String>();
+		Set<String> uniqueNames = new IteratableSet<String>();
 		uniqueNames.addAll(functionNames);
 		functionNames.clear();
 		functionNames.addAll(uniqueNames);
@@ -1025,7 +1021,7 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 		try {
-			Map<Route, Reference> refMap = new HashMap<Route, Reference>();
+			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
@@ -1085,7 +1081,7 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 		try {
-			Map<Route, Reference> refMap = new HashMap<Route, Reference>();
+			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
@@ -1144,7 +1140,7 @@ public class Engine implements Notifier, Aborter {
 			return;
 		}
 		try {
-			Map<Route, Reference> refMap = new HashMap<Route, Reference>();
+			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
@@ -1202,7 +1198,7 @@ public class Engine implements Notifier, Aborter {
 			return false;
 		}
 	    try {
-	    	Map<Route, Reference> refMap = new HashMap<Route, Reference>();
+	    	Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ENDPOINT_REF,
@@ -1466,7 +1462,7 @@ public class Engine implements Notifier, Aborter {
 	}
 	
 	public Map<Reference, List<Reference>> getUserBranches() {
-		Map<Reference, List<Reference>> branches = new TreeMap<Reference, List<Reference>>();
+		Map<Reference, List<Reference>> branches = new IteratableMap<Reference, List<Reference>>();
 		
         for (int nodeNumber : m_xeLoader.getNodeNumbers()){
             for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)){
@@ -1666,7 +1662,7 @@ public class Engine implements Notifier, Aborter {
 	}
 	
 	private void linkFunctions(Set<FunctionContainer> functionContainers) {
-		Map<Long, FunctionContainer> pcToFunctionStartNode = new HashMap<Long, FunctionContainer>();
+		Map<Long, FunctionContainer> pcToFunctionStartNode = new NonIteratableMap<Long, FunctionContainer>();
 		for(FunctionContainer fc : functionContainers){
 			pcToFunctionStartNode.put(fc.getStartInstruction().getPC(), fc);
 		}
@@ -1799,13 +1795,13 @@ public class Engine implements Notifier, Aborter {
 	private void ensureAllFunctionsAreNamed( SymbolTable symbolTable, 
 			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labelToPc) {
 
-		Map<Long, String> pcToLabel = new TreeMap<Long, String>();
+		Map<Long, String> pcToLabel = new NonIteratableMap<Long, String>();
 		for (String label : labelToPc.keySet()) {
 			for (Long pc : labelToPc.get(label)) {
 				pcToLabel.put(pc, label);
 			}
 		}
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new NonIteratableSet<String>();
 		for(FunctionContainer fc : functionContainers){
 			InstructionNode inst = fc.getStartInstruction();
 			String functionName = symbolTable.functionName(inst.getStartPc());
@@ -1896,7 +1892,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	private void initialiseCoreStates(XeLoader xeLoader) {
-		m_nodeHz = new TreeMap<Integer, Long>();
+		m_nodeHz = new IteratableMap<Integer, Long>();
 		m_coreThreads = new NodeCoreCollection<Integer>();
 
 		XnLoader xnLoader = xeLoader.getXnLoader();

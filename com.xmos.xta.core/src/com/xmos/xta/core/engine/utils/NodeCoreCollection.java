@@ -2,22 +2,22 @@ package com.xmos.xta.core.engine.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
+import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.Pair;
 
 public class NodeCoreCollection<E> {
 	private Map<String, E> m_collectedObjects;
 
 	public NodeCoreCollection() {
-		m_collectedObjects = new HashMap<String, E>();
+		m_collectedObjects = new IteratableMap<String, E>();
 	}
 
 	public NodeCoreCollection(NodeCoreCollection<E> old) {
-		m_collectedObjects = new HashMap<String, E>(old.m_collectedObjects);
+		m_collectedObjects = new IteratableMap<String, E>(old.m_collectedObjects);
 	}
-
+ 
 	public void add(int nodeNumber, int coreNumber, E newObject) {
 		m_collectedObjects.put(nodeCoreToString(nodeNumber, coreNumber), newObject);
 	}

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import com.xmos.libs.dwarfhandler.DebugEngine;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -68,7 +68,7 @@ public class SourceLine implements Line {
     }
 
     private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
-		Set<Long> addresses = new TreeSet<Long>();
+		Set<Long> addresses = new IteratableSet<Long>();
 		for (Pair<Long, Long> range : addressRanges) {
 			long endPc = m_instructionDecoder.getEndPc();
 			for (long pc = range.first; (pc < range.second) && (pc <= endPc); pc += 2) {

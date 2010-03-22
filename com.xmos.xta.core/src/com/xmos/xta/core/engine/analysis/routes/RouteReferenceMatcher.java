@@ -3,8 +3,8 @@ package com.xmos.xta.core.engine.analysis.routes;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -20,7 +20,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 	
 	public Set<Node> matchReference(Node baseOfRouteNode, final Reference ref){
 		if (debug) System.out.println("####### begin reference match " + ref + " ###########");
-		final Set<Node> matchingNodes = new TreeSet<Node>();
+		final Set<Node> matchingNodes = new IteratableSet<Node>();
 		
 		//find all nodes in the route that match the ref base
 		
@@ -47,7 +47,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 	public Set<Node> getFunctionNodesMatchingReference(Node baseOfRouteNode,
 			Reference reference) {
 		Set<Node> matchingNodes = matchReference(baseOfRouteNode, reference);
-		Set<Node> functionNodes = new TreeSet<Node>();
+		Set<Node> functionNodes = new IteratableSet<Node>();
 		for(Node node : matchingNodes){
 			Node containingFunction = getFunction(node);
 			if(containingFunction != null && !functionNodes.contains(containingFunction))
@@ -71,7 +71,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 
 	private Set<Node> refineMatchingNodes(Reference ref, Set<Node> matchingNodes) {
 		// TODO Auto-generated method stub
-		Set<Node> refinedNodes = new TreeSet<Node>();
+		Set<Node> refinedNodes = new IteratableSet<Node>();
 		
 		for(long pc : ref.getPcs()){
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();

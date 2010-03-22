@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
@@ -43,7 +43,7 @@ public class FunctionReferenceNode extends Node {
 	}
 
 	public FunctionReferenceNode(InstructionNode source, InstructionNode target) {
-		m_appliesForReferences = new TreeSet<Reference>();
+		m_appliesForReferences = new NonIteratableSet<Reference>();
 		m_functionCallInstruction = source;
 		m_functionStartInstruction = target;
 		m_functionName = "(unlinked to known function)";
@@ -51,7 +51,7 @@ public class FunctionReferenceNode extends Node {
 	}
 	
 	public FunctionReferenceNode(InstructionNode source) {
-		m_appliesForReferences = new TreeSet<Reference>();
+		m_appliesForReferences = new NonIteratableSet<Reference>();
 		m_functionCallInstruction = source;
 		m_functionName = "(Call to unknown function)";
 		m_isKnownFunctionTarget = false;
@@ -61,7 +61,7 @@ public class FunctionReferenceNode extends Node {
 		m_functionStartInstruction = null;
 		m_functionCallInstruction = null;
 		m_isKnownFunctionTarget = true;
-		m_appliesForReferences = new TreeSet<Reference>();
+		m_appliesForReferences = new NonIteratableSet<Reference>();
 		m_functionName = "(Call graph root)";
 	}
 

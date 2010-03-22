@@ -3,8 +3,9 @@ package com.xmos.xta.core.engine.scripter;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
@@ -202,7 +203,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	}
 
 	private Set<String> getNames(Collection<? extends ScriptableInfo> infos) {
-		Set<String> names = new TreeSet<String>();
+		Set<String> names = new IteratableSet<String>();
 		for (ScriptableInfo info : infos) {
 			names.add(info.toReferenceString());
 		}
@@ -210,7 +211,7 @@ public class ScripterReference implements Comparable<ScripterReference> {
 	}
 
 	private Set<Long> getPcs(Collection<? extends ScriptableInfo> infos, String name) {
-		Set<Long> pcs = new TreeSet<Long>();
+		Set<Long> pcs = new NonIteratableSet<Long>();
 		for (ScriptableInfo info : infos) {
 			if (info.toString().equals(name)) {
 				pcs.add(info.getPc());

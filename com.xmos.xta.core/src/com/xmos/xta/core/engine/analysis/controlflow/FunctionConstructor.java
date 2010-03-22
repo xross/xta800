@@ -1,10 +1,10 @@
 package com.xmos.xta.core.engine.analysis.controlflow;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
@@ -35,8 +35,8 @@ public class FunctionConstructor {
 			int node, int core, CommandSource src, InstructionMnemonics mnenonics, SymbolTable symbolTable) {
 		m_instDecoder = instDecoder;
 		m_notifier = notifier;
-		m_functionStarts = new TreeSet<InstructionNode>();
-		m_functionEnds = new TreeSet<InstructionNode>();
+		m_functionStarts = new IteratableSet<InstructionNode>();
+		m_functionEnds = new NonIteratableSet<InstructionNode>();
 		m_sections = sections;
 		m_mnenonics = mnenonics;
 		m_nodeId = node;
@@ -123,7 +123,7 @@ public class FunctionConstructor {
 			XtaInstruction inst = instruction.getXtaInstruction();
 			
 			Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_nodeId, m_coreId);
-			Set<BranchInfo> targets = new HashSet<BranchInfo>();
+			Set<BranchInfo> targets = new IteratableSet<BranchInfo>();
 			
 			for (Reference ref : branchMap.keySet()) {
 				if (ref.matches(inst.getPc())) {

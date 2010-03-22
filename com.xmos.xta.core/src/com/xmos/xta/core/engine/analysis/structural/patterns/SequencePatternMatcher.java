@@ -3,8 +3,8 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -99,7 +99,7 @@ public class SequencePatternMatcher extends PatternMatcher {
 	}
 
 	private boolean pathSanityCheck(LinkedList<Node> pathList) {
-		Set<Node> seen = new TreeSet<Node>();
+		Set<Node> seen = new NonIteratableSet<Node>();
 
 		if (pathList.size() < 2) {
 			return false;

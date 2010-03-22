@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -37,7 +37,7 @@ public class NullNode extends Node {
 	}
 
 	public Set<Integer> getPCs() {
-		return new TreeSet<Integer>();
+		return new NonIteratableSet<Integer>();
 	}
 
 	public long getStartPc() {

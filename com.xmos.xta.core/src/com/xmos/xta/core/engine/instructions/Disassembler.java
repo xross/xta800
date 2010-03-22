@@ -1,9 +1,9 @@
 package com.xmos.xta.core.engine.instructions;
 
-import java.util.HashMap;
 import java.util.Vector;
 
 import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
@@ -35,10 +35,10 @@ public class Disassembler {
         return disassemblyVector;
 	}
 
-	public static HashMap<Long, String> createBranchTargetMap(
+	public static NonIteratableMap<Long, String> createBranchTargetMap(
 			SymbolTable symbolTable, Vector<Instruction> instructions) {
 
-		HashMap<Long, String> branchTargetMap = new HashMap<Long, String>();
+		NonIteratableMap<Long, String> branchTargetMap = new NonIteratableMap<Long, String>();
 		for (Instruction instruction : instructions) {
 		    if (instruction.getBranchPcRelative() && !symbolTable.functionExists(instruction.getPc())) {
 		    	long branchTargetPc = instruction.getBranchPcRelativeTargetPc();

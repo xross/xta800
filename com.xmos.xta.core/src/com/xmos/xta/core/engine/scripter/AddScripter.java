@@ -2,12 +2,13 @@ package com.xmos.xta.core.engine.scripter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.defines.ScriptUpdater;
@@ -105,7 +106,7 @@ public class AddScripter {
     		DefineInfo thisInfo, Collection<NodeCorePair> activeCores,
     		List<DefineInfo> processed) {
     	
-		Map<NodeCorePair, DefineInfo> matched = new HashMap<NodeCorePair, DefineInfo>();
+		Map<NodeCorePair, DefineInfo> matched = new IteratableMap<NodeCorePair, DefineInfo>();
 		for (NodeCorePair activeCore : activeCores)
 			matched.put(activeCore, null);
 
@@ -128,7 +129,7 @@ public class AddScripter {
     		Reference thisExclusion, Collection<NodeCorePair> activeCores, 
     		List<Reference> processed) {
 
-		Map<NodeCorePair, Reference> matched = new HashMap<NodeCorePair, Reference>();
+		Map<NodeCorePair, Reference> matched = new IteratableMap<NodeCorePair, Reference>();
 		for (NodeCorePair activeCore : activeCores)
 			matched.put(activeCore, null);
 
@@ -151,7 +152,7 @@ public class AddScripter {
     		Entry<Reference, List<Reference>> thisBranch, Collection<NodeCorePair> activeCores, 
     		List<Entry<Reference, List<Reference>>> processed) {
     	
-		Map<NodeCorePair, Entry<Reference, List<Reference>>> matched = new HashMap<NodeCorePair, Entry<Reference, List<Reference>>>();
+		Map<NodeCorePair, Entry<Reference, List<Reference>>> matched = new IteratableMap<NodeCorePair, Entry<Reference, List<Reference>>>();
 		for (NodeCorePair activeCore : activeCores)
 			matched.put(activeCore, null);
 

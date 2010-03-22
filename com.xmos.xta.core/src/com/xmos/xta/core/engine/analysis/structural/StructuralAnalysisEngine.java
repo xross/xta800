@@ -3,14 +3,15 @@ package com.xmos.xta.core.engine.analysis.structural;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
@@ -68,7 +69,7 @@ public class StructuralAnalysisEngine {
 		while (working) {
 			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
 			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new HashSet<Node>());
+			DFSPostOrder(postOrder, treeStart, new NonIteratableSet<Node>());
 			working = false;
 			for (PatternMatcher pm : m_patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
@@ -99,7 +100,7 @@ public class StructuralAnalysisEngine {
 	
 	private boolean sanityCheckGraph(Collection<Node> workingSet){
 		if(sanity_debug){
-			Set<Node> seen = new HashSet<Node>();
+			Set<Node> seen = new NonIteratableSet<Node>();
 			for(Node node : workingSet){
 				Set<Node> containedNodes = CommonMethods.getAllContainedNodes(node);
 				for(Node contained : containedNodes){
@@ -131,7 +132,7 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new HashSet<Node>();
+		Set<Node> intersection = new IteratableSet<Node>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {
@@ -268,7 +269,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	public Node makeFnContainerIntoStructure(FunctionContainer functionContainer, Engine engine) {
-		Set<Node> workingSet = new TreeSet<Node>();
+		Set<Node> workingSet = new IteratableSet<Node>();
 		workingSet.addAll(functionContainer.getFunctionContents());
 		assert(workingSet.contains(functionContainer.getStartInstruction()));
 		dumpTree("started_"+ functionContainer.getFunctionName(), workingSet, false);
@@ -291,14 +292,14 @@ public class StructuralAnalysisEngine {
 	public Node basicBlock(Set<Node> workingSet, Node originalStartNode, Engine engine, String string) {
 		
 		dumpTree("start_"+ string, workingSet, false);
-		Set<Node> toDo = new TreeSet<Node>();
+		Set<Node> toDo = new IteratableSet<Node>();
 		toDo.add(originalStartNode);
 		Node firstNode = null;
-		Set<Node> seenNodes = new TreeSet<Node>();
-		Set<Node> newWorkingSet = new TreeSet<Node>();
+		Set<Node> seenNodes = new NonIteratableSet<Node>();
+		Set<Node> newWorkingSet = new IteratableSet<Node>();
 		assert(!toDo.isEmpty());
-		Map<Node, Set<Node>> nexts = new TreeMap<Node, Set<Node>>();
-		Map<Node, Node> instToBlock = new TreeMap<Node, Node>();
+		Map<Node, Set<Node>> nexts = new IteratableMap<Node, Set<Node>>();
+		Map<Node, Node> instToBlock = new NonIteratableMap<Node, Node>();
 		while(!toDo.isEmpty()){
 
 			Node current = toDo.iterator().next();
@@ -335,7 +336,7 @@ public class StructuralAnalysisEngine {
 					newWorkingSet.add(fnNode);
 					seenNodes.add(fnNode);
 					instToBlock.put(next, fnNode);
-					nexts.put(fnNode, new HashSet<Node>(next.getNextNodes()));
+					nexts.put(fnNode, new IteratableSet<Node>(next.getNextNodes()));
 					for(Node nextNext : next.getNextNodes()){
 						if(!seenNodes.contains(nextNext)){
 							toDo.add(nextNext);
@@ -346,7 +347,7 @@ public class StructuralAnalysisEngine {
 					newWorkingSet.add(next);
 					seenNodes.add(next);
 					instToBlock.put(next, next);
-					nexts.put(next, new HashSet<Node>(next.getNextNodes()));
+					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
 					for(Node nextNext : next.getNextNodes()){
 						if(!seenNodes.contains(nextNext)){
 							toDo.add(nextNext);
@@ -364,8 +365,8 @@ public class StructuralAnalysisEngine {
 			}
 		}
 		
-		Set<Node> seen = new TreeSet<Node>();
-		Set<Node> terminals = new TreeSet<Node>();
+		Set<Node> seen = new NonIteratableSet<Node>();
+		Set<Node> terminals = new IteratableSet<Node>();
 		findEndPoints(firstNode, seen, terminals);
 		NullNode n = new NullNode();
 		for(Node node : terminals){
@@ -379,7 +380,7 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private void findEndPoints(Node inst, Set<Node> seen, Set<Node> terminals) {
-		Set<Node> following = new TreeSet<Node>();
+		Set<Node> following = new IteratableSet<Node>();
 		following.add(inst);
 		while(!following.isEmpty()){
 			Node current = following.iterator().next();
@@ -429,13 +430,13 @@ public class StructuralAnalysisEngine {
 	}
 	
 	private Set<Node> getNextNodes(Node node, Set<Node> workingSet){
-		Set<Node> next = new TreeSet<Node>(node.getNextNodes());
+		Set<Node> next = new IteratableSet<Node>(node.getNextNodes());
 		next.retainAll(workingSet);
 		return next;
 	}
 
 	private Set<Node> getPrevNodes(Node node, Set<Node> workingSet){
-		Set<Node> prev = new TreeSet<Node>(node.getPrevNodes());
+		Set<Node> prev = new IteratableSet<Node>(node.getPrevNodes());
 		prev.retainAll(workingSet);
 		return prev;
 	}

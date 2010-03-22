@@ -1,9 +1,10 @@
 package com.xmos.xta.core.console.commands.print;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.Set;
 
+import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -24,11 +25,11 @@ public class SrcDisplayer {
 	public void display(Node node, int nodeNumber, int coreNumber) {
   	    List<XtaInstruction> instructions = node.getInstructions();
 		SourceMapper sourceMapper = m_engine.getSourceMapper(nodeNumber, coreNumber);
-        HashMap<String, TreeSet<Long>> linesCovered =
+        NonIteratableMap<String, Set<Long>> linesCovered =
         	createSrcLinesCovered(instructions, sourceMapper);
 
 		for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
-	        TreeSet<Long> fileLines = linesCovered.get(sourceFile.getFullFileName());
+	        Set<Long> fileLines = linesCovered.get(sourceFile.getFullFileName());
 	        if (fileLines.size() > 0) {
 				m_console.display("----------------------------------\n");
 				m_console.display(sourceFile.getFullFileName() + "\n");
@@ -49,19 +50,19 @@ public class SrcDisplayer {
 		}
     }
 
-	private HashMap<String, TreeSet<Long>> createSrcLinesCovered(List<XtaInstruction> instructions,
+	private NonIteratableMap<String, Set<Long>> createSrcLinesCovered(List<XtaInstruction> instructions,
 			SourceMapper sourceMapper) {
 
-		HashMap<String, TreeSet<Long>> linesCovered = new HashMap<String, TreeSet<Long>>();
+		NonIteratableMap<String, Set<Long>> linesCovered = new NonIteratableMap<String, Set<Long>>();
 		for (XtaInstruction inst : instructions) {
 			for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
 
 				String compilationName = sourceFile.getFullFileName();
-				TreeSet<Long> sourceLines;
+				Set<Long> sourceLines;
 				if (linesCovered.containsKey(compilationName)) {
 					sourceLines = linesCovered.get(compilationName);
 				} else {
-					sourceLines = new TreeSet<Long>();
+					sourceLines = new NonIteratableSet<Long>();
 					linesCovered.put(compilationName, sourceLines);
 				}
 

@@ -1,8 +1,8 @@
 package com.xmos.xta.core.engine.references.types;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.Engine;
 
 public class ReferenceTypeFactory {
@@ -21,7 +21,7 @@ public class ReferenceTypeFactory {
 
 	private static Map<ReferenceClass, ReferenceClassType> m_referenceClasses;
 	static {
-		m_referenceClasses = new HashMap<ReferenceClass, ReferenceClassType>();
+		m_referenceClasses = new NonIteratableMap<ReferenceClass, ReferenceClassType>();
 		
 		m_referenceClasses.put(ReferenceClass.PC_REF,
 				new ReferenceClassType(true, new ReferenceType[] {

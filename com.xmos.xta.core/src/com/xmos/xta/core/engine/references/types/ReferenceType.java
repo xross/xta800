@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
@@ -38,8 +38,8 @@ public abstract class ReferenceType {
 
 	ReferenceType(String ref, Type type, int nodeNumber, int coreNumber) {
 		m_ref = ref;
-		m_pcs = new TreeSet<Long>();
-		m_pcBackTrails = new TreeMap<Long, List<String>>();
+		m_pcs = new IteratableSet<Long>();
+		m_pcBackTrails = new NonIteratableMap<Long, List<String>>();
 		m_resolved = false;
 		m_fileName = "";
 		m_lineNum = 0;

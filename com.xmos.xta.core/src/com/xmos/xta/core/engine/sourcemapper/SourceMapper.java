@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
@@ -44,8 +44,8 @@ public class SourceMapper {
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
         m_functionContainers = functionContainers;
-        m_pcToAsm = new TreeMap<Long, AssemblyLine>();
-        m_pcToFunction = new TreeMap<Long, Function>();
+        m_pcToAsm = new NonIteratableMap<Long, AssemblyLine>();
+        m_pcToFunction = new NonIteratableMap<Long, Function>();
 
         m_assemblyLines = createAssemblyLines();
         m_functions = createFunctions();
@@ -243,10 +243,10 @@ public class SourceMapper {
 
     private List<Function> createFunctions() {
     	List<InstructionNode> instList = m_instructionDecoder.getInstructions();
-    	Map<Long, Function> pcToFunction = new HashMap<Long, Function>();
+    	Map<Long, Function> pcToFunction = new IteratableMap<Long, Function>();
     	
 
-    	Set<InstructionNode> starts = new HashSet<InstructionNode>();
+    	Set<InstructionNode> starts = new NonIteratableSet<InstructionNode>();
     	for(FunctionContainer fc : m_functionContainers){
     		starts.add(m_functionInstuctionToOriginal.get(fc.getStartInstruction()));
     	}

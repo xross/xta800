@@ -1,13 +1,12 @@
 package com.xmos.xta.core.engine.sections;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
@@ -22,13 +21,13 @@ public class Branches extends Section {
 	Branches(int nodeNumber, int coreNumber, Notifier notifier) {
 		super(nodeNumber, coreNumber, notifier);
 
-		m_branches = new TreeMap<Reference, Set<BranchInfo>>();
+		m_branches = new IteratableMap<Reference, Set<BranchInfo>>();
 	}
 
 	boolean add(CommandSource src, Reference from, Collection<Reference> to, boolean isUser) {
 		Set<BranchInfo> pcs = null;
 		if (!m_branches.containsKey(from)) {
-			pcs = new TreeSet<BranchInfo>();
+			pcs = new IteratableSet<BranchInfo>();
 			m_branches.put(from, pcs);
 
 		} else {
@@ -71,7 +70,7 @@ public class Branches extends Section {
 
 	private boolean removeFrom(Set<BranchInfo> set, Collection<Reference> toRefs) {
 		boolean hit = false;
-		Set<BranchInfo> toRemove = new TreeSet<BranchInfo>();
+		Set<BranchInfo> toRemove = new IteratableSet<BranchInfo>();
 		for (BranchInfo info : set) {
 			if (info.isUser()) {
 				for (Reference toRef : toRefs) {
@@ -106,7 +105,7 @@ public class Branches extends Section {
 	        	long toPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
 
-	        	Collection<Reference> toRefs = new HashSet<Reference>();
+	        	Collection<Reference> toRefs = new IteratableSet<Reference>();
 	    		Reference toRef = ReferenceFactory.createReference(String.format("0x%x", toPc), 
 	    				ReferenceClass.PC_REF, getNodeNumber(), getCoreNumber());
 	        	toRefs.add(toRef);
