@@ -34,8 +34,8 @@ public class FunctionReferenceNodeAdder {
 	private Set<FunctionContainer> m_functionContainer;
 	private Map<InstructionNode, InstructionNode> m_functionInstuctionToOriginal;
 
-	private int m_executableBytes;
-	private int m_unreachableBytes;
+	//private int m_executableBytes;
+	//private int m_unreachableBytes;
 	
 	public FunctionReferenceNodeAdder(InstructionDecoder instDecoder, Notifier notifier, CommandSource src,
 			XeLoader xeLoader, int nodeId, int coreId, Sections sections){
@@ -55,7 +55,7 @@ public class FunctionReferenceNodeAdder {
 		
 		List<InstructionNode> remainingInsts = new LinkedList<InstructionNode>(m_instDecoder.getInstructions());
 		
-		m_executableBytes = countBytes(remainingInsts);
+		//m_executableBytes = countBytes(remainingInsts);
 		
 		for(InstructionNode startOfFunction : functionStartNodes){
 			Map<Node, Node> seen = new NonIteratableMap<Node, Node>();
@@ -148,7 +148,7 @@ public class FunctionReferenceNodeAdder {
 			m_functionInstuctionToOriginal.put(copyStart, startOfFunction);
 		}
 		
-		m_unreachableBytes = countBytes(remainingInsts);
+		//m_unreachableBytes = countBytes(remainingInsts);
 		
 	}
 
@@ -156,7 +156,7 @@ public class FunctionReferenceNodeAdder {
 		return m_functionInstuctionToOriginal;
 	}
 	
-	
+	/*
 	public int getExecuableBytes(){
 		return m_executableBytes;
 	}
@@ -165,6 +165,7 @@ public class FunctionReferenceNodeAdder {
 		return m_unreachableBytes;
 	}
 	
+	
 	private int countBytes(List<InstructionNode> insts) {
 		int totalBytes = 0;
 		for(InstructionNode inst : insts){
@@ -172,7 +173,7 @@ public class FunctionReferenceNodeAdder {
 		}
 		return totalBytes;
 	}
-
+	 */
 
 	private Node getInstruction(Node next, Map<Node, Node> seen, Set<InstructionNode> functionInstructions) {
 		assert(next instanceof InstructionNode);

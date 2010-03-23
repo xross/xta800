@@ -21,7 +21,7 @@ public class LoopPatternMatcher extends PatternMatcher {
 			Set <Node> workingIntersection = new IteratableSet<Node>();
 
 			for (Node loop : intersection) {
-				if (!(loop.getNextNodesSize() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodesSize() != 1)) {
+				if (!(loop.getNextNodesSize() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
 					workingIntersection.add(loop);
 				}
 			}

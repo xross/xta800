@@ -62,7 +62,7 @@ public class CommonMethods {
 
 	public static boolean wedgeDown(Node node, Collection<Node> workingSet, Aborter aborter) throws AbortedException{
 
-		if (node.getPrevNodesSize() < 2) {
+		if (node.getPrevNodes().size() < 2) {
 			return false;
 		}
 

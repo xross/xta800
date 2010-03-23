@@ -43,16 +43,16 @@ public class SequencePatternMatcher extends PatternMatcher {
 	private boolean isStart(Node node){
 		if(node == m_treeStart){
 			return true;
-		} else if (node.getPrevNodesSize() ==  0) {
+		} else if (node.getPrevNodes().size() ==  0) {
 			return true;
-		} else if (node.getPrevNodesSize() ==  1) {
+		} else if (node.getPrevNodes().size() ==  1) {
 			Node prev = node.getPrevNode();
 			if (prev.getNextNodesSize() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getPrevNodesSize() > 1) {
+		} else if (node.getPrevNodes().size() > 1) {
 			return true;
 		} else {
 			return false;
@@ -74,7 +74,7 @@ public class SequencePatternMatcher extends PatternMatcher {
 				return true;
 			}
 
-			if (next.getPrevNodesSize() > 1) {
+			if (next.getPrevNodes().size() > 1) {
 				return true;
 			} else {
 				return false;

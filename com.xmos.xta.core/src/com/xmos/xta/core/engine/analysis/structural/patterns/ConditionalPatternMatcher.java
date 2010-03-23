@@ -56,7 +56,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
 		if ((depth > 1) || (currentNode == startNode)) {
 			return null;
 
-		} else if (currentNode.getPrevNodesSize() > 1) {
+		} else if (currentNode.getPrevNodes().size() > 1) {
 			Set<Node> condNodes = endNodeMap.get(currentNode);
 			if (condNodes == null) {
 				condNodes = new IteratableSet<Node>();

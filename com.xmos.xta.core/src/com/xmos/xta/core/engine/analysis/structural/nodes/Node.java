@@ -130,17 +130,9 @@ public abstract class Node implements Comparable<Node> {
 	public Node getPrevNode(){
 		return m_edges.getPrevNode();
 	}
-
-	public void clearNextNodes(){
-		m_edges.clearNextNodes();
-	}
-
+	
 	public int getNextNodesSize(){
 		return m_edges.getNextNodesSize();
-	}
-
-	public int getPrevNodesSize(){
-		return m_edges.getPrevNodesSize();
 	}
 
 	public void addNextNode(Node node){

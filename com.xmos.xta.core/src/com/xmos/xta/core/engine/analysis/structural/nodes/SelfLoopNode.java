@@ -85,10 +85,6 @@ public class SelfLoopNode extends Node{
 		return true;
 	}
 
-	public Node getLoop() {
-		return m_loop;
-	}
-
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = m_loop.getTimeSpread();
 		tdb.repeat(getAttributes().getLoopIterations());

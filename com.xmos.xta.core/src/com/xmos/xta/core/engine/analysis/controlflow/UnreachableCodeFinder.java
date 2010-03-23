@@ -39,7 +39,7 @@ public class UnreachableCodeFinder {
 				next.removePrevNode(unreachable);
 			}
 
-			unreachable.clearNextNodes();
+			unreachable.getNextNodes().clear();
 		}
 	}
 

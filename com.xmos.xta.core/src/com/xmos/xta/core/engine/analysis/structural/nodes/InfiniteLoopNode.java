@@ -27,14 +27,6 @@ public class InfiniteLoopNode extends Node {
 		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
-	public InfiniteLoopNode(Node loop, Node base) {
-		super();
-		m_loopHeader = base;
-		m_loops = new ArrayList<Node>();
-		m_loops.add(loop);
-		m_attributes = new InfiniteLoopNodeAttributes(this);
-	}
-
 	public InfiniteLoopNode(Set<Node> loops, Node base) {
 		super();
 		m_loopHeader = base;

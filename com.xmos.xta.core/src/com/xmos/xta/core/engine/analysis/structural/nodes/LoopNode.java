@@ -20,26 +20,10 @@ public class LoopNode extends Node {
 	private Node m_loopHeader;
 	private List<Node> m_loops;
 
-	public LoopNode(LoopNode loop) {
-		super();
-		m_loopHeader = loop.m_loopHeader;
-		m_loops = new ArrayList<Node>(loop.m_loops);
-		m_attributes = new LoopNodeAttributes(this);
-	}
-
 	public LoopNode() {
 		super();
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
-		m_attributes = new LoopNodeAttributes(this);
-	}
-
-	public LoopNode(Node loop, Node base) {
-		super();
-		m_loopHeader = base;
-		m_loopHeader.getAttributes().setIsLoopHeader(true);
-		m_loops = new ArrayList<Node>();
-		m_loops.add(loop);
 		m_attributes = new LoopNodeAttributes(this);
 	}
 
