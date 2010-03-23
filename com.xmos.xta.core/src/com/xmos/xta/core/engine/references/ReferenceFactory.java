@@ -5,6 +5,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class ReferenceFactory {
+	
 	public static Reference createReference(String refString, 
 			ReferenceClass referenceClass, int nodeNumber, int coreNumber) {
 		

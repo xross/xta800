@@ -57,15 +57,6 @@ public class FunctionNode extends Node {
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public String toString(){
-		if(m_functionName!= null){
-			return "Function: " + m_functionName;
-		} else {
-			return getDescription();
-		}
-
-	}
-
 	public FunctionReferenceNode getCallingFunctionRef(){
 		return m_callingFnRef;
 	}

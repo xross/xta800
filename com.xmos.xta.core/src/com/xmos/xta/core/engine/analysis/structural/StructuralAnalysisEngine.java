@@ -240,7 +240,7 @@ public class StructuralAnalysisEngine {
 		if(sanity_debug){
 			int total = 0;
 			for (Node node : workingSet) {
-				total += node.getPrevNodesSize() - node.getNextNodesSize();
+				total += node.getPrevNodes().size() - node.getNextNodes().size();
 			}
 			return (total == 0);
 		}

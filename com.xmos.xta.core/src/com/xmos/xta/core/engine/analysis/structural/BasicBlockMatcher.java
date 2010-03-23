@@ -55,9 +55,9 @@ public class BasicBlockMatcher {
 		if(node == m_treeStart){
 			return true;
 		} else
-			if (node.getPrevNodesSize() == 0) {
+			if (node.getPrevNodes().size() == 0) {
 			return true;
-		} else if (node.getPrevNodesSize() == 1) {
+		} else if (node.getPrevNodes().size() == 1) {
 			Node prev = node.getPrevNode();
 			if (prev instanceof FunctionReferenceNode) {
 				return true;
@@ -67,7 +67,7 @@ public class BasicBlockMatcher {
 			} else {
 				return false;
 			}
-		} else if (node.getPrevNodesSize() > 1) {
+		} else if (node.getPrevNodes().size() > 1) {
 			return true;
 		} else {
 			return false;
@@ -76,9 +76,9 @@ public class BasicBlockMatcher {
 
 	private boolean isEnd(Node node) {
 
-		if (node.getNextNodesSize() == 0) {
+		if (node.getNextNodes().size() == 0) {
 			return true;
-		} else if (node.getNextNodesSize() == 1) {
+		} else if (node.getNextNodes().size() == 1) {
 			Node next = node.getNextNode();
 			if(next == m_treeStart){
 				return true;
@@ -90,12 +90,12 @@ public class BasicBlockMatcher {
 			if (next instanceof FunctionReferenceNode) {
 				return true;
 			}
-			if (next.getPrevNodesSize() > 1) {
+			if (next.getPrevNodes().size() > 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} else if (node.getNextNodesSize() > 1) {
+		} else if (node.getNextNodes().size() > 1) {
 			return true;
 		} else {
 			return false;

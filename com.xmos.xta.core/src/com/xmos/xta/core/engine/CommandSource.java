@@ -9,7 +9,6 @@ public class CommandSource {
 		COMPILER,         // Actions prompted via the compiler.
 		CONSOLE_VIA_GUI,  // Actions passed to the gui console via the gui.
 		SRC_LEVEL_COMMAND,// Embedded command in the executable
-		TEST			  // Console test program
 	}
 
 	private String m_fileName;
@@ -26,9 +25,6 @@ public class CommandSource {
 	public CommandSource(Type type) {
 		m_type = type;
 		switch (type) {
-		case TEST:
-			m_fileName = "test";
-			break;
 		case CONSOLE:
 			m_fileName = "console";
 			break;

@@ -21,7 +21,7 @@ public class PanicTransformer extends PatternMatcher {
 	private boolean explore(Node node, NonIteratableSet<Node> seen, Set<Node> dominators, Node start, Collection<Node> workingSet, Aborter aborter) throws AbortedException {
 		seen.add(node);
 		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
-			if(node.getNextNodesSize() >1 && node.getPrevNodesSize() > 1){
+			if(node.getNextNodesSize() >1 && node.getPrevNodes().size() > 1){
 				CommonMethods.wedgeDown(node, workingSet, aborter);
 				return true;
 			}

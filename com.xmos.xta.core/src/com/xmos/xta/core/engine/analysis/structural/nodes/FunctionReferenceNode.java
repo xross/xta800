@@ -77,16 +77,6 @@ public class FunctionReferenceNode extends Node {
 			return 0x0;
 		}
 	}
-
-	public String toString(){
-		String ret = "fnRef" + getId() + " ";
-		if(m_isKnownFunctionTarget){
-			ret += "(Call to " + m_functionName +")";
-		} else {
-			ret += "(Call to unknown function)";
-		}
-		return ret;
-	}
 	
 	public InstructionNode getFunctionStartInstruction(){
 		return m_functionStartInstruction;
