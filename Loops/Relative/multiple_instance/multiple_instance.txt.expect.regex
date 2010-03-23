@@ -1,17 +1,17 @@
-function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s main
-.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s test
-.    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    .    loop\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
-.    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 101\) / \d+\.\d [mun]s \(x 101\) 
-.    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 100\) / \d+\.\d [mun]s \(x 100\) 
-.    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s test
-.    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    .    loop\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
-.    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 201\) / \d+\.\d [mun]s \(x 201\) 
-.    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 200\) / \d+\.\d [mun]s \(x 200\) 
-.    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
-.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s test
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    loop\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 101\) / \d+\.\d+ [mun]s \(x 101\) 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 100\) / \d+\.\d+ [mun]s \(x 100\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s test
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    loop\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 201\) / \d+\.\d+ [mun]s \(x 201\) 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 200\) / \d+\.\d+ [mun]s \(x 200\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
 

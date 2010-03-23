@@ -11,7 +11,7 @@ echo "----------------------"
 echo "All Cores"
 echo "----------------------"
 analyze function f
-set required - 10 us
+set required - 20 us
 print summary
 
 echo "----------------------"
@@ -21,7 +21,7 @@ remove route *
 remove core *
 add core 0 0
 analyze function f
-set required - 10 us
+set required - 20 us
 print summary
 
 echo "----------------------"
@@ -32,7 +32,7 @@ remove core *
 add core 0 0
 add core 0 1
 analyze function f
-set required - 10 us
+set required - 20 us
 print summary
 
 echo "----------------------"
@@ -44,7 +44,7 @@ add core 0 0
 add core 0 1
 add core 0 2
 analyze function f
-set required - 10 us
+set required - 20 us
 print summary
 
 echo "----------------------"
@@ -57,7 +57,7 @@ add core 0 1
 add core 0 2
 add core 0 3
 analyze function f
-set required - 10 us
+set required - 20 us
 print summary
 
 exit

@@ -1,30 +1,30 @@
-function\(\d+\) +: \d+\.\d us / \d+\.\d us main
-.    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    function\(\d+\) +: \d+\.\d us / \d+\.\d us f
-.    .    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    .    loop\(\d+\) +: \d+\.\d us / \d+\.\d us 
-.    .    .    block\(\d+\) +: \d+\.\d us \(x 1001\) / \d+\.\d us \(x 1001\) 
-.    .    .    block\(\d+\) +: \d+\.\d us \(x 1000\) / \d+\.\d us \(x 1000\) 
-.    .    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
+function\(\d+\) +: \d+\.\d+ us / \d+\.\d+ us main
+.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    function\(\d+\) +: \d+\.\d+ us / \d+\.\d+ us f
+.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    .    loop\(\d+\) +: \d+\.\d+ us / \d+\.\d+ us 
+.    .    .    block\(\d+\) +: \d+\.\d+ us \(x 1001\) / \d+\.\d+ us \(x 1001\) 
+.    .    .    block\(\d+\) +: \d+\.\d+ us \(x 1000\) / \d+\.\d+ us \(x 1000\) 
+.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 
-function\(\d+\) +: \d+\.\d ns / \d+\.\d ns main
-.    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    function\(\d+\) +: \d+\.\d ns / \d+\.\d ns f
-.    .    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    .    loop\(\d+\) +: \d+\.\d ns / \d+\.\d ns 
-.    .    .    block\(\d+\) +: \d+\.\d ns \(x 1001\) / \d+\.\d ns \(x 1001\) 
-.    .    .    block\(\d+\) +: \d+\.\d ns \(x 1000\) / \d+\.\d ns \(x 1000\) 
-.    .    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
+function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns main
+.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns f
+.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    .    loop\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+.    .    .    block\(\d+\) +: \d+\.\d+ ns \(x 1001\) / \d+\.\d+ ns \(x 1001\) 
+.    .    .    block\(\d+\) +: \d+\.\d+ ns \(x 1000\) / \d+\.\d+ ns \(x 1000\) 
+.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 
-function\(\d+\) +: \d+\.\d us / \d+\.\d us main
-.    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    function\(\d+\) +: \d+\.\d us / \d+\.\d us f
-.    .    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    .    loop\(\d+\) +: \d+\.\d us / \d+\.\d us 
-.    .    .    block\(\d+\) +: \d+\.\d us \(x 1001\) / \d+\.\d us \(x 1001\) 
-.    .    .    block\(\d+\) +: \d+\.\d us \(x 1000\) / \d+\.\d us \(x 1000\) 
-.    .    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
-.    block\(\d+\) +: \d+\.\d ns \(x 1\) / \d+\.\d ns \(x 1\) 
+function\(\d+\) +: \d+\.\d+ us / \d+\.\d+ us main
+.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    function\(\d+\) +: \d+\.\d+ us / \d+\.\d+ us f
+.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    .    loop\(\d+\) +: \d+\.\d+ us / \d+\.\d+ us 
+.    .    .    block\(\d+\) +: \d+\.\d+ us \(x 1001\) / \d+\.\d+ us \(x 1001\) 
+.    .    .    block\(\d+\) +: \d+\.\d+ us \(x 1000\) / \d+\.\d+ us \(x 1000\) 
+.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 

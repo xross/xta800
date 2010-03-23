@@ -1,8 +1,8 @@
 function\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us main
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    function\(\d+\)\s+: 1.5 us / 1.5 us f
+.    function\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us f
 .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    .    loop\(\d+\)\s+: 1.4 us / 1.4 us 
+.    .    loop\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 11\) / \d+.\d+ ns \(x 11\) 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 10\) / \d+.\d+ ns \(x 10\) 
 .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
