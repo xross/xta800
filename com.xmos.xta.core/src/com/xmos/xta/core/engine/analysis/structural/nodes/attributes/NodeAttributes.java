@@ -130,8 +130,8 @@ public class NodeAttributes {
 	    Status status = new Status();
 	    double value = getTimeTaken(c, status, null);
 	    switch (status.getStatus()) {
-		    case COMPLETED:     return Conversion.getTimeString(value);
-		    case ZERO:          return Conversion.getTimeString(value);
+		    case COMPLETED:     return Conversion.getTimeString(true, value);
+		    case ZERO:          return Conversion.getTimeString(true, value);
 		    default:            return status.getString();
 	    }
 	}
@@ -179,7 +179,16 @@ public class NodeAttributes {
 	// ===================================================================== //
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
 		if (getFixedTime() != null) {
-			return getFixedTime().getNs();
+			long totalIterations = getTotalIterations(c, ignoreIterationsAboveCond);
+			if (totalIterations == INFINITE_ITERATIONS) {
+				status.mergeStatus(S.INFINITE);
+				return Double.MAX_VALUE;
+
+			} else if (totalIterations == 0) {
+				status.mergeStatus(S.ZERO);
+				return 0;
+			}
+			return getFixedTime().getNs() * totalIterations;
 		}
 
 		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {

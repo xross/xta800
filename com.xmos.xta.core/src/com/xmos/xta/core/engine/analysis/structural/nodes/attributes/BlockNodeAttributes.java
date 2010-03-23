@@ -10,10 +10,6 @@ public class BlockNodeAttributes extends NodeAttributes {
 	}
 
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getFixedTime() != null) {
-			return getFixedTime().getNs();
-		}
-
 		long totalIterations = getTotalIterations(c, ignoreIterationsAboveCond);
 		if (totalIterations == INFINITE_ITERATIONS) {
 			status.mergeStatus(S.INFINITE);
@@ -23,6 +19,10 @@ public class BlockNodeAttributes extends NodeAttributes {
 			status.mergeStatus(S.ZERO);
 			return 0;
 		}
+
+		if (getFixedTime() != null) {
+			return getFixedTime().getNs() * totalIterations;
+		}		
 	    return super.getTimeTaken(c, status, ignoreIterationsAboveCond) * totalIterations;
 	}
 
