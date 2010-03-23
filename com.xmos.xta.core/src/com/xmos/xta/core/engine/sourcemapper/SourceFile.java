@@ -32,16 +32,8 @@ public class SourceFile implements Comparable<SourceFile> {
 		m_sourceLines = new ArrayList<SourceLine>();
 	}
 
-	public String getBaseDir() {
-		return m_debugFile.getBaseDir();
-	}
-
 	public String getFileName() {
 		return m_debugFile.getFileName();
-	}
-
-	public String getShortFileName() {
-		return m_debugFile.getShortFileName();
 	}
 
 	public String getFullFileName() {

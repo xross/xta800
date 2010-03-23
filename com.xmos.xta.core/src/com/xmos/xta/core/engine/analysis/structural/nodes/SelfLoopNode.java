@@ -17,11 +17,6 @@ public class SelfLoopNode extends Node{
 	private SelfLoopNodeAttributes m_attributes;
 	private Node m_loop;
 
-	public SelfLoopNode(SelfLoopNode loop) {
-		super();
-		m_loop = loop.m_loop;
-		m_attributes = new SelfLoopNodeAttributes(this);
-	}
 
 	public SelfLoopNode() {
 		super();

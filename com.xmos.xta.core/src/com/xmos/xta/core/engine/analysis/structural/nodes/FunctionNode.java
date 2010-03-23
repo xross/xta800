@@ -57,13 +57,6 @@ public class FunctionNode extends Node {
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public FunctionNode(FunctionNode fn){
-		m_functionName = fn.m_functionName;
-		m_functionSequence = fn.m_functionSequence;
-		m_attributes = new NodeAttributes(this);
-		setUnresolved(fn.isUnresolved());
-	}
-
 	public String toString(){
 		if(m_functionName!= null){
 			return "Function: " + m_functionName;
@@ -108,15 +101,6 @@ public class FunctionNode extends Node {
     public NodeAttributes getAttributes() {
     	return m_attributes;
     }
-
-	public void setFunction(String functionName, List<Node> fn) {
-		m_functionSequence = fn;
-		m_functionName = functionName;
-	}
-
-	public List<Node> getFunction() {
-		return m_functionSequence;
-	}
 
 	public String getDescription() {
 		if (m_functionName == null) {
@@ -217,10 +201,6 @@ public class FunctionNode extends Node {
 		}
 		tdb.add(tsbSequence);
 		return tdb;
-	}
-
-	public void setFunctionName(String string) {
-		m_functionName = string;
 	}
 
 	public void replaceChild(Node oldNode, Node newNode) {

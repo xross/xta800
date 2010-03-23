@@ -27,10 +27,6 @@ public class NodeCoreCollection<E> {
 		return m_collectedObjects.get(s);
 	}
 
-	public void clear() {
-		m_collectedObjects.clear();
-	}
-
 	public Collection<Pair<Integer, Integer>> getEntries() {
 		Collection<Pair<Integer, Integer>> entries = new ArrayList<Pair<Integer, Integer>>();
 		for (String key : m_collectedObjects.keySet()) {

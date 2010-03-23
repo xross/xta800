@@ -18,11 +18,6 @@ public class BlockNode extends Node {
 	private BlockNodeAttributes m_attributes;
 	private List<InstructionNode> m_insts;
 
-	public BlockNode(BlockNode block) {
-		m_insts = block.m_insts;
-		m_attributes = new BlockNodeAttributes(this);
-	}
-
 	public BlockNode(List<InstructionNode> insts) {
 		super();
 		m_insts = insts;

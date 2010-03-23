@@ -44,12 +44,6 @@ public class ConditionalNode extends Node {
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
-	public ConditionalNode(ConditionalNode ms) {
-		super();
-		m_options = ms.m_options;
-		m_attributes = new ConditionalNodeAttributes(this);
-	}
-
 	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		ConditionalNode sn = new ConditionalNode();
 		for (Node option : m_options) {

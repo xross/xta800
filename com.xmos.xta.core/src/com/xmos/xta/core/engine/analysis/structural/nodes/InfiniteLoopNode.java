@@ -20,13 +20,6 @@ public class InfiniteLoopNode extends Node {
 	private Node m_loopHeader;
 	private List<Node> m_loops;
 
-	public InfiniteLoopNode(InfiniteLoopNode loop) {
-		super();
-		m_loopHeader = loop.m_loopHeader;
-		m_loops = new ArrayList<Node>(loop.m_loops);
-		m_attributes = new InfiniteLoopNodeAttributes(this);
-	}
-
 	public InfiniteLoopNode() {
 		super();
 		m_loopHeader = null;

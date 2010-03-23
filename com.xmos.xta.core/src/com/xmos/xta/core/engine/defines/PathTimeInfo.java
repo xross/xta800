@@ -40,7 +40,6 @@ public class PathTimeInfo implements DefineInfo {
     }
 
     public NodeCorePair getNodeCore() {
-    	assert(m_from.getNodeCore().equals(m_to.getNodeCore()));
     	return m_from.getNodeCore();
     }
 

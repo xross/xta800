@@ -17,12 +17,6 @@ public class InfiniteSelfLoopNode extends Node{
 	private NodeAttributes m_attributes;
 	private Node m_loop;
 
-	public InfiniteSelfLoopNode(InfiniteSelfLoopNode loop) {
-		super();
-		m_loop = loop.m_loop;
-		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
-	}
-
 	public InfiniteSelfLoopNode() {
 		super();
 		m_loop = null;

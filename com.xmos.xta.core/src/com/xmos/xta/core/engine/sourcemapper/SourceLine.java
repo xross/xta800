@@ -23,19 +23,12 @@ public class SourceLine implements Line {
 	public SourceLine(String line, long lineNumber, 
 			SourceMapper sourceMapper, SourceFile sourceFile, 
 			DebugEngine debugEngine, InstructionDecoder instructionDecoder) {
-		
-	    assert(line != null);
-	    assert(lineNumber > 0);
 		m_line = line;
 		m_lineNumber = lineNumber;
 		m_sourceMapper = sourceMapper;
 		m_sourceFile = sourceFile;
 		m_debugEngine = debugEngine;
 		m_instructionDecoder = instructionDecoder;
-	}
-
-	public void addPc(long pc) {
-		m_pcs.add(pc);
 	}
 
 	public Collection<Long> getPcs() {

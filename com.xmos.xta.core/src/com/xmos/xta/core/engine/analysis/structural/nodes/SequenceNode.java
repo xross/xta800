@@ -23,12 +23,6 @@ public class SequenceNode extends Node {
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public SequenceNode(SequenceNode path) {
-		super();
-		m_nodes = path.m_nodes;
-		m_attributes = new NodeAttributes(this);
-	}
-
 	public SequenceNode() {
 		super();
 		m_nodes = new LinkedList<Node>();

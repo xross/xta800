@@ -21,10 +21,6 @@ public class Load extends Command {
 		super(COMMAND_NAMES);
 		m_executableName = "";
 	}
-	
-	public String toString() {
-		return commandLine();
-	}
 
 	public Load(String executableName) {
 		super(COMMAND_NAMES);

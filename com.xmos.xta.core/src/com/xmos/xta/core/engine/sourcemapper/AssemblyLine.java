@@ -48,10 +48,6 @@ public class AssemblyLine implements Line {
 		return m_resourceName;
 	}
 
-	public List<AssemblyLine> getChildren() {
-		return new LinkedList<AssemblyLine>();
-	}
-
 	public long getLineNumber() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}
