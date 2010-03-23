@@ -194,7 +194,7 @@ public class Engine implements Notifier, Aborter {
 	public Collection<Route> getRoute(int routeId) {
 		Collection<Route> routes = new ArrayList<Route>();
 		assert(validateRouteCount());
-		if(m_routes.isEmpty()){
+		if (m_routes.isEmpty()){
 			return routes;
 		}
 		if (routeId == ROUTE_ID_LAST) {
@@ -430,13 +430,6 @@ public class Engine implements Notifier, Aborter {
 		notify(src, Notifier.NOTIFY_REMOVE_ROUTE, "");
 		assert(validateRouteCount());
 		return true;
-	}
-
-	public void removeAllRoutes(CommandSource src) {
-		m_routes.clear();
-		setSelectedRoute(src, null);
-		Route.resetRouteCount();
-		notify(src, Notifier.NOTIFY_REMOVE_ROUTE, "");
 	}
 
 	public File getExecutable() {
