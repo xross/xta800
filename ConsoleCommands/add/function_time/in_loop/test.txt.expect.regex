@@ -1,0 +1,11 @@
+function\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us f
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    loop\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 11\) / \d+.\d+ ns \(x 11\) 
+.    .    seq\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 10\) / \d+.\d+ ns \(x 10\) 
+.    .    .  F function\(\d+\)\s+: 10.0 us / 10.0 us g
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 10\) / \d+.\d+ ns \(x 10\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 10\) / \d+.\d+ ns \(x 10\) 
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+

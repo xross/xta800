@@ -1,0 +1,14 @@
+function\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us main
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.  \* loop\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 11\) / \d+.\d+ ns \(x 11\) 
+.    .  \* seq\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 10\) / \d+.\d+ ns \(x 10\) 
+.    .    .  \* function\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us g
+.    .    .    .  \* seq\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
+.    .    .    .    .  \* block\(\d+\)\s+: \d+.\d+ us \(x 10\) / \d+.\d+ us \(x 10\) 
+.    .    .    .    .  F block\(\d+\)\s+: 49.99 us \(x 10\) / 49.99 us \(x 10\) 
+.    .    .    .    .  \* block\(\d+\)\s+: \d+.\d+ us \(x 10\) / \d+.\d+ us \(x 10\) 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 10\) / \d+.\d+ ns \(x 10\) 
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+
