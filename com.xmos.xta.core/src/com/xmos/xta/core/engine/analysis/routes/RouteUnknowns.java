@@ -235,27 +235,17 @@ public class RouteUnknowns {
 	}
 
 	public boolean checkExclusionWillLeaveAPath(Node node) throws Exception {
-		boolean aPathRemains = node.getEnclosingCondNode() != null;
 		Node currentNode = node;
 		while(currentNode.getParent()!= null){
 			Node parent = currentNode.getParent();
-			
 			if(parent instanceof ConditionalNode){
-				
-				if(!aPathRemains && parent.iChildren().size() > 1){
+				if(parent.iChildren().size() > 1){
 					return true;
-				}
-				if(parent.iChildren().size() < 2){
-					aPathRemains = false;
-				}
+				} 
 			}
 			currentNode = parent;
 		}
-		if(!aPathRemains){
-			throw new Exception("Must be within a loop to be able to set loop scope");
-		}
-		
-		return aPathRemains;
+		throw new Exception("No paths will remain if exclusion is applied");
 	}
 
 	public void setExclusion(Node node, Type type, Source source) {
