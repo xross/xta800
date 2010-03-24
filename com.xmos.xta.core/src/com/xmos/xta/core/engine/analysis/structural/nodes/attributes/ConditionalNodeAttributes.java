@@ -5,6 +5,7 @@ import java.util.Map;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
 
 public class ConditionalNodeAttributes extends NodeAttributes {
 	private Map<Node, Long> m_setIterations;
@@ -22,8 +23,17 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 	// Statistics Methods
 	// --------------------------------------------------------------------- //
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getFixedTime() != null) {
-			return getFixedTime().getNs();
+		if (getFixedTime() != null) {			
+			long totalIterations = getTotalIterations(c, ignoreIterationsAboveCond);
+			if (totalIterations == INFINITE_ITERATIONS) {
+				status.mergeStatus(S.INFINITE);
+				return Double.MAX_VALUE;
+
+			} else if (totalIterations == 0) {
+				status.mergeStatus(S.ZERO);
+				return 0;
+			}
+			return getFixedTime().getNs() * totalIterations;
 		}
 
 		if (getCachedTimeTakenValid(c) && (ignoreIterationsAboveCond == null)) {
