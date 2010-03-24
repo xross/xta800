@@ -330,7 +330,10 @@ public class RouteConstructor {
 						
 					}
 				}
-			} else if(stackNodesContainNode(endStackNodes, currentStack, node) ){
+			} else if(currentNode.isUnresolved()){
+				addToWorkingSet(parent, currentNode, workingSet);
+				return;
+			} else if(stackNodesContainNode(endStackNodes, currentStack, node)){
 				switch (routeMode) {
 				case FUNCTION:
 					addToWorkingSet(parent, currentNode, workingSet);
