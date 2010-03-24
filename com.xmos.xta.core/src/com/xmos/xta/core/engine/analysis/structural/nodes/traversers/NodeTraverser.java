@@ -12,6 +12,5 @@ public interface NodeTraverser {
 	TraverseStatus foundSelfLoopNode(Node node);
 	TraverseStatus foundConditionalNode(Node node);
 	TraverseStatus foundInfiniteSelfLoopNode(Node node);
-	TraverseStatus foundEndNode(Node node);
 	TraverseStatus foundFunctionReferenceNode(Node node);
 }

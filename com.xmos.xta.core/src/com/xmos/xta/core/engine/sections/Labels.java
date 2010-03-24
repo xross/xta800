@@ -1,10 +1,7 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.PatternSyntaxException;
 
 import com.xmos.libs.elfhandler.ElfHandler;
 import com.xmos.libs.elfhandler.Symbol;
@@ -31,29 +28,6 @@ public class Labels extends Section  {
 		}
 		pcs.add(pc);
 		return true;
-	}
-
-	boolean remove(CommandSource src, String label) {
-		List<String> matches = new ArrayList<String>();
-		for (String mapEntry : m_labels.keySet()) {
-			try {
-				if (mapEntry.matches(label)) {
-					matches.add(mapEntry);
-				}
-			} catch (PatternSyntaxException e) {
-		    }
-		}
-
-		if (matches.size() > 0) {
-			for (String toRemove : matches) {
-				m_labels.remove(toRemove);
-			}
-			return true;
-		} else {
-			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"unable to remove label: %s", label));
-			return false;
-		}
 	}
 
 	Map<String, Set<Long>> get() {

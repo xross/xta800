@@ -44,7 +44,4 @@ public abstract class UntypedNodeTraverser implements NodeTraverser {
     	return foundNode(node);
     }
 
-    public TraverseStatus foundEndNode(Node node) {
-    	return foundNode(node);
-    }
 }
