@@ -35,9 +35,12 @@ public class Branches extends Command {
 	}
 
 	public Command clone(String[] args, int index) {
+		
+		/* impossible
 		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
+		*/
 
 		return new Branches();
 	}

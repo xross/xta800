@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural;
 
-public class InstructionBuffer implements Comparable<InstructionBuffer>{
+public class InstructionBuffer {
 
     static final int IBUFFER_NUM_BYTES = 8;
     static final int BYTES_PER_WORD = 4;
@@ -8,31 +8,13 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
     long m_pc;
     int m_numBytes;
 
-    public InstructionBuffer(long startPc) {
-    	m_pc = startPc;
-        m_numBytes = 0;
-	}
-
     public InstructionBuffer(long startPc, int numBytes) {
     	m_pc = startPc;
         m_numBytes = numBytes;
 	}
-
-    public InstructionBuffer(InstructionBuffer instructionBuffer) {
-        m_numBytes = instructionBuffer.m_numBytes;
-        m_pc = instructionBuffer.m_pc;
-    }
-
+    
     public void setPc(long pc) {
         m_pc = pc;
-    }
-
-    public long getPc() {
-        return m_pc;
-    }
-
-    public int getNumBytes() {
-        return m_numBytes;
     }
 
     public boolean canIssue(int numBytes) {
@@ -86,14 +68,5 @@ public class InstructionBuffer implements Comparable<InstructionBuffer>{
         else
             return false;
     }
-
-	public int compareTo(InstructionBuffer o) {
-		if(m_pc - o.m_pc != 0){
-			return Long.signum(m_pc - o.m_pc);
-		} else {
-			return Long.signum(m_numBytes - o.m_numBytes);
-		}
-
-	}
 
 }

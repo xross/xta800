@@ -80,7 +80,7 @@ public class Path extends Command {
     }
 
 	private boolean hasEndPoints() {
-    	if ((m_fromRef.length() > 0) || (m_toRef.length() > 0)) {
+    	if ((m_fromRef.length() > 0) && (m_toRef.length() > 0)) {
     		return true;
     	} else {
     		return false;

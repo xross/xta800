@@ -133,7 +133,7 @@ public abstract class Node implements Comparable<Node> {
 	}
 	
 	public int getNextNodesSize(){
-		return m_edges.getNextNodesSize();
+		return m_edges.getNextNodes().size();
 	}
 
 	public void addNextNode(Node node){
