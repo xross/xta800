@@ -479,18 +479,21 @@ public class RouteConstructor {
 		List<StackNode> endStacks = new LinkedList<StackNode>();
 		Set<Node> seen = new NonIteratableSet<Node>();
 		Set<InstructionNode> endNodes = new IteratableSet<InstructionNode>();
-		Set<InstructionNode> following = new IteratableSet<InstructionNode>();
+		Set<Node> following = new IteratableSet<Node>();
 		following.add(stack.peek().getFunctionStartInstruction());
 		while(!following.isEmpty()){
-			InstructionNode current = following.iterator().next();
+			Node current = following.iterator().next();
 			seen.add(current);
 			if(current.getNextNodesSize() == 0){
-				endNodes.add(current);
-
+				if(current instanceof InstructionNode){
+					endNodes.add((InstructionNode)current);
+				} else {
+					assert(false);
+				}
 			} else {
 				for(Node next : current.getNextNodes()){
 					if(!seen.contains(next)){
-						following.add((InstructionNode)next);
+						following.add(next);
 					}
 				}
 			}
@@ -546,26 +549,14 @@ public class RouteConstructor {
 	private Node containsNode(Node next, Stack<FunctionReferenceNode> currentStack, Map<NodeDescriptor, Node> nodeToWorkingSet){
 		NodeDescriptor nd = new NodeDescriptor(next, currentStack);
 		return nodeToWorkingSet.get(nd);
-		
-		/*
-		for(NodeDescriptor workingNd : nodeToWorkingSet.keySet()){
-			if(workingNd.equals(nd)){
-				assert(nodeToWorkingSet.containsKey(nd));
-				return nodeToWorkingSet.get(workingNd);
-			}
-		}
-		return null;
-		
-		*/
 	}
 
 	
 	static class NodeDescriptor implements Comparable<NodeDescriptor>{
-		
 		private Node m_node;
 		private Stack<FunctionReferenceNode> m_stack;
+
 		private int m_id;
-		
 		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
 			m_node = node;
 			m_stack = stack;
