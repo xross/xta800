@@ -2,6 +2,7 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
 import com.xmos.xta.test.consoletest.commands.units.Number;
 import com.xmos.xta.test.consoletest.commands.units.RelAbs;
 import com.xmos.xta.test.consoletest.commands.units.RouteId;
@@ -13,7 +14,14 @@ public class Set implements Command {
 		Random r = new Random();
 		StringBuffer sb = new StringBuffer();
 		sb.append("set ");
-		int i = r.nextInt(10);
+		
+		int options = 10;
+		if(!ConsoleTest.allowMess){
+			options--;
+		}
+		
+		
+		int i = r.nextInt(options);
 		switch(i){
 		case 0 :
 			addFunctionTime(sb);

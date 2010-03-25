@@ -2,6 +2,7 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
 import com.xmos.xta.test.consoletest.commands.units.RouteId;
 
 public class Remove implements Command {
@@ -10,7 +11,14 @@ public class Remove implements Command {
 		Random r = new Random();
 		StringBuffer sb = new StringBuffer();
 		sb.append("remove ");
-		switch(r.nextInt(12)){
+		
+		
+		int options = 12;
+		if(!ConsoleTest.allowMess){
+			options--;
+		}
+		
+		switch(r.nextInt(options)){
 		case 0 :
 			addBranch(sb);
 			break;

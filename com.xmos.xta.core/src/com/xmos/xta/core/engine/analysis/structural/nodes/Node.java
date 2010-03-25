@@ -92,7 +92,8 @@ public abstract class Node implements Comparable<Node> {
 	}
 
 	public int compareTo(Node node) {
-		return Integer.signum(m_id - node.m_id);
+		//return Integer.signum(m_id - node.m_id);
+		return m_id - node.m_id;
 	}
 
 	public Set<Node> getDominators() {

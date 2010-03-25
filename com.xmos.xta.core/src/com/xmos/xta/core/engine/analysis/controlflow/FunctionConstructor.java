@@ -118,28 +118,31 @@ public class FunctionConstructor {
 		}
 	}
 	
+	
+	//TODO optimise this
 	private void addUserBranchTargetsToFunctionStarts(){
 		for(InstructionNode instruction : m_instDecoder.getInstructions()){
 			XtaInstruction inst = instruction.getXtaInstruction();
-			
-			Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_nodeId, m_coreId);
-			Set<BranchInfo> targets = new IteratableSet<BranchInfo>();
-			
-			for (Reference ref : branchMap.keySet()) {
-				if (ref.matches(inst.getPc())) {
-					Set<BranchInfo> mapEntries = branchMap.get(ref);
-					targets.addAll(mapEntries);
-				}
-			}
-			
-			if(!targets.isEmpty() ){
-				for (BranchInfo target : targets) {
-					for (long pc : target.getRef().getPcs()) {
-						if(inst.isLink()){
-							m_functionStarts.add(m_instDecoder.getNode(pc));
-						} 
+			if(inst.isLink()){
+				Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_nodeId, m_coreId);
+				Set<BranchInfo> targets = new IteratableSet<BranchInfo>();
+				
+				for (Reference ref : branchMap.keySet()) {
+					if (ref.matches(inst.getPc())) {
+						Set<BranchInfo> mapEntries = branchMap.get(ref);
+						targets.addAll(mapEntries);
 					}
-				}	
+				}
+				
+				if(!targets.isEmpty() ){
+					for (BranchInfo target : targets) {
+						for (long pc : target.getRef().getPcs()) {
+							
+							m_functionStarts.add(m_instDecoder.getNode(pc));
+							 
+						}
+					}	
+				}
 			}
 		}
 	}

@@ -2,12 +2,19 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
+
 public class Help implements Command {
 
 	public String getCommand() {
 		Random r = new Random();
 		
-		switch (r.nextInt(19)){
+		int options = 19;
+		if(!ConsoleTest.allowMess){
+			options--;
+		}
+		
+		switch (r.nextInt(options)){
 		case 0:
 			return "help add ";
 		case 1:
