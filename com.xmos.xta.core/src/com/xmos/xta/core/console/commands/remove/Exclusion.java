@@ -44,10 +44,8 @@ public class Exclusion extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
+		if (isExecutableLoaded(engine, console)) {
+			engine.removeExclusion(getSrc(), m_reference);
 		}
-
-		engine.removeExclusion(getSrc(), m_reference);
     }
  }

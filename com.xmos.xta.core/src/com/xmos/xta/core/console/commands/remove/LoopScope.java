@@ -44,9 +44,9 @@ public class LoopScope extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
+		if (isExecutableLoaded(engine, console)) {
+			engine.removeLoopScope(getSrc(), m_refString);
 		}
-		engine.removeLoopScope(getSrc(), m_refString);
+		
     }
  }

@@ -44,10 +44,8 @@ public class InstructionTime extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
+		if (isExecutableLoaded(engine, console)) {
+			engine.removeInstructionTime(getSrc(), m_refString);
 		}
-
-		engine.removeInstructionTime(getSrc(), m_refString);
     }
 }

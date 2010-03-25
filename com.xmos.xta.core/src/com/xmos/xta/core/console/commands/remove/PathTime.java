@@ -46,10 +46,10 @@ public class PathTime extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
+		if (isExecutableLoaded(engine, console)) {
+			engine.removePathTime(getSrc(), m_fromRef, m_toRef);
 		}
 
-		engine.removePathTime(getSrc(), m_fromRef, m_toRef);
+		
     }
  }
