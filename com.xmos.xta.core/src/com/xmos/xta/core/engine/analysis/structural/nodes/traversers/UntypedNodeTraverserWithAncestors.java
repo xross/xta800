@@ -42,11 +42,8 @@ public abstract class UntypedNodeTraverserWithAncestors implements NodeTraverser
     public TraverseStatus foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
+    
     public TraverseStatus foundConditionalNode(Node node, Stack<Node> ancestors) {
-    	return foundNode(node, ancestors);
-    }
-
-    public TraverseStatus foundEndNode(Node node, Stack<Node> ancestors) {
     	return foundNode(node, ancestors);
     }
 }

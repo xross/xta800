@@ -44,9 +44,7 @@ public class FnopAdder {
 				} else if(node instanceof FunctionReferenceNode){
 					seen.add(node);
 					basicBlocks.add(node);
-				} else {
-					assert(false);
-				}
+				} 
 			}
 		}	
 	}

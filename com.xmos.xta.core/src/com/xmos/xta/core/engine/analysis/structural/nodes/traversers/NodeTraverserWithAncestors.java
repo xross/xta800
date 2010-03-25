@@ -15,6 +15,5 @@ public interface NodeTraverserWithAncestors {
 	TraverseStatus foundSelfLoopNode(Node node, Stack<Node> ancestors);
 	TraverseStatus foundConditionalNode(Node node, Stack<Node> ancestors);
 	TraverseStatus foundInfiniteSelfLoopNode(Node node, Stack<Node> ancestors);
-	TraverseStatus foundEndNode(Node node, Stack<Node> ancestors);
 	TraverseStatus foundFunctionReferenceNode(Node node, Stack<Node> ancestors);
 }

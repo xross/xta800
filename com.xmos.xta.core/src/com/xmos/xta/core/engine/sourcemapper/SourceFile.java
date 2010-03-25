@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -105,10 +104,7 @@ public class SourceFile implements Comparable<SourceFile> {
 		m_pcToLine = new NonIteratableMap<Long, SourceLine>();
 		
     	for (SourceLine sourceLine : m_sourceLines) {
-        	Collection<Long> statementPcs = m_debugEngine.getStatementPcsMatchingPath(
-        			getFullFileName(), sourceLine.getLineNumber());
-
-        	for (long statementPc : statementPcs) {
+        	for (long statementPc : sourceLine.getStatementPcs()) {
         		m_pcToLine.put(statementPc, sourceLine);
         	}
         }

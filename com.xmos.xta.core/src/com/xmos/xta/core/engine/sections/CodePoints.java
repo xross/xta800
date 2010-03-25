@@ -1,9 +1,7 @@
 package com.xmos.xta.core.engine.sections;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.xeloader.XeLoader;
@@ -18,33 +16,6 @@ public class CodePoints extends Section  {
 		super(nodeNumber, coreNumber, notifier);
 		m_sectionName = sectionName;
 		m_codePoints = new ArrayList<CodePointInfo>();
-	}
-
-	boolean add(CommandSource src, String label, int pc) {
-		m_codePoints.add(new CodePointInfo(this, pc, label, "", "", 0));
-		return true;
-	}
-
-	boolean remove(CommandSource src, String label) {
-		boolean found = false;
-		Iterator<CodePointInfo> iter = m_codePoints.iterator();
-		while (iter.hasNext()) {
-			CodePointInfo codePointInfo = iter.next();
-			try {
-				if (codePointInfo.getLabel().matches(label)) {
-					iter.remove();
-					found = true;
-				}
-			} catch (PatternSyntaxException e) {
-			}
-		}
-
-		if (!found) {
-			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"unable to remove label: %s", label));
-			return false;
-		}
-		return true;
 	}
 
 	List<CodePointInfo> get() {

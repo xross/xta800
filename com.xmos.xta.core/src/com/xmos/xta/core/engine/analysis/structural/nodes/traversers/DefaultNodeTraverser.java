@@ -43,7 +43,4 @@ public class DefaultNodeTraverser implements NodeTraverser {
 		return TraverseStatus.CONTINUE;
 	}
 
-	public TraverseStatus foundEndNode(Node node) {
-		return TraverseStatus.CONTINUE;
-	}
 }

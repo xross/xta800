@@ -1581,7 +1581,7 @@ public class Engine implements Notifier, Aborter {
 		return m_sections.getUnreachableFunctions(nodeNumber, coreNumber);
 	}
 			
-	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){		
+	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){
 		m_loadStartTime = System.currentTimeMillis();
 		
 		notify(src, Notifier.HOLD_MESSAGES, "");

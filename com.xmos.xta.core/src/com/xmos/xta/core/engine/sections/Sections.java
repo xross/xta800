@@ -89,33 +89,22 @@ public class Sections {
 			}
 		}
 
-		if (!loadSection(src, m_branches))
+		if (!loadSection(src, m_branches) ||
+			!loadSection(src, m_labels) ||
+			!loadSection(src, m_srcLabels) ||
+			!loadSection(src, m_endpoints) ||
+			!loadSection(src, m_calls) ||
+			!loadSection(src, m_srcLabelTables) ||
+			!loadSection(src, m_endpointTables) ||
+			!loadSection(src, m_callTables) ||
+			!loadSection(src, m_threadStartPoints) ||
+			!loadSection(src, m_threadStopPoints) ||
+			!loadSection(src, m_srcLevelCommands) ||
+			!loadSection(src, m_srcLevelLoops) ||
+			!loadSection(src, m_systems)){
 			return false;
-		if (!loadSection(src, m_labels))
-			return false;
-		if (!loadSection(src, m_srcLabels))
-			return false;
-		if (!loadSection(src, m_endpoints))
-			return false;
-		if (!loadSection(src, m_calls))
-			return false;
-		if (!loadSection(src, m_srcLabelTables))
-			return false;
-		if (!loadSection(src, m_endpointTables))
-		    return false;
-		if (!loadSection(src, m_callTables))
-		    return false;
-		if (!loadSection(src, m_threadStartPoints))
-			return false;
-		if (!loadSection(src, m_threadStopPoints))
-			return false;
-		if (!loadSection(src, m_srcLevelCommands))
-			return false;
-		if (!loadSection(src, m_srcLevelLoops))
-			return false;
-		if (!loadSection(src, m_systems))
-			return false;
-
+		}
+		
 		return true;
 	}
 
@@ -196,16 +185,6 @@ public class Sections {
 	public Collection<String> getSystems(int nodeNumber, int coreNumber) {
 		Systems systems = (Systems)getSection(m_systems, nodeNumber, coreNumber);
 		return systems.get();
-	}
-
-	public Collection<String> getRecursiveFunctions(int nodeNumber, int coreNumber) {
-		StringSection strings = (StringSection)getSection(m_recursiveFunctions, nodeNumber, coreNumber);
-		return strings.get();
-	}
-
-	public Collection<String> getUnreachableFunctions(int nodeNumber, int coreNumber) {
-		StringSection strings = (StringSection)getSection(m_unreachableFunctions, nodeNumber, coreNumber);
-		return strings.get();
 	}
 
 	private boolean loadSection(CommandSource src, Collection<Section> sections) {
