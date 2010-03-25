@@ -1573,14 +1573,6 @@ public class Engine implements Notifier, Aborter {
 		return m_sections.getSystems(nodeNumber, coreNumber);
 	}
 
-	public Collection<String> getRecursiveFunctions(int nodeNumber, int coreNumber) {
-		return m_sections.getRecursiveFunctions(nodeNumber, coreNumber);
-	}
-
-	public Collection<String> getUnreachableFunctions(int nodeNumber, int coreNumber) {
-		return m_sections.getUnreachableFunctions(nodeNumber, coreNumber);
-	}
-			
 	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){
 		m_loadStartTime = System.currentTimeMillis();
 		
