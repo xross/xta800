@@ -1,6 +1,6 @@
   \[-\]config <option> <arg0> <arg1>\.\.\.: Configures the given option
       option: case <BEST/WORST>: Sets the case \(currently: WORST\)
-      option: freq <node number> <core frequency>: Sets the core frequency in Mhz for the given node
+      option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
       option: srcpaths <paths>: Sets the \(semicolon separated\) source search path
       option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
@@ -15,17 +15,17 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,0\)
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
 Route\(0\) function: main
-    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Fail, 1/1, Max Violation: \d+\.\d [mun]s
 RETURN CODE OK
   \[-\]config <option> <arg0> <arg1>\.\.\.: Configures the given option
       option: case <BEST/WORST>: Sets the case \(currently: WORST\)
-      option: freq <node number> <core frequency>: Sets the core frequency in Mhz for the given node
+      option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
       option: srcpaths <paths>: Sets the \(semicolon separated\) source search path
       option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
@@ -40,11 +40,11 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,0\)
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
 Route\(0\) function: main
-    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10\.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Fail, 1/1, Max Violation: \d+\.\d [mun]s
 RETURN CODE OK

@@ -13,7 +13,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set: (0,0)
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 4 (No debug information found)
 No routes analyzed
 xta: error: Num threads '-1' invalid
@@ -24,7 +24,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set: (0,0)
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 4 (No debug information found)
 No routes analyzed
 xta: error: Num threads '10' invalid
@@ -35,6 +35,6 @@ Case: WORST
 Verbosity: 0
 Active Core Set: (0,0)
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 4 (No debug information found)
 No routes analyzed

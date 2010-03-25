@@ -11,36 +11,36 @@ node: 0, core: 0, pc: 0x1002e, compilation dir: .*xtaendpoint_backtrail2, filena
 node: 0, core: 0, pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
 node: 0, core: 0, pc: 0x1003e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 11
 Route\(0\) path: start to stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(1\) path: start to stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(2\) path: start to stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(3\) path: read1,start to read1,stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(4\) path: read2,start to read2,stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(5\) path: read3,start to read3,stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(6\) path: read1,start to read2,stop
-    Fail with 4 unknowns, Num Paths: 1, Violation: 10.0 ns, Required: 100.0 ns, Worst: 110.0 ns, Min Core Frequency: 440 mhz
+    Fail with 4 unknowns, Num Paths: 1, Violation: 10.0 ns, Required: 100.0 ns, Worst: 110.0 ns, Min Core Frequency: 440 MHz
 
 Route\(7\) path: func1,read1,start to func1,read1,stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(8\) path: func2,read2,start to func2,read2,stop
-    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 mhz
+    Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 
 Route\(9\) path: func1,read1,start to func2,read2,stop
-    Fail with 4 unknowns, Num Paths: 1, Violation: 10.0 ns, Required: 100.0 ns, Worst: 110.0 ns, Min Core Frequency: 440 mhz
+    Fail with 4 unknowns, Num Paths: 1, Violation: 10.0 ns, Required: 100.0 ns, Worst: 110.0 ns, Min Core Frequency: 440 MHz
 
 Route\(10\) path: func1,read1,start to read3,stop
-    Fail with 7 unknowns, Num Paths: 1, Violation: 110.0 ns, Required: 100.0 ns, Worst: 210.0 ns, Min Core Frequency: 840 mhz
+    Fail with 7 unknowns, Num Paths: 1, Violation: 110.0 ns, Required: 100.0 ns, Worst: 210.0 ns, Min Core Frequency: 840 MHz
 
 Fail, 3/11, Max Violation: 110.0 ns

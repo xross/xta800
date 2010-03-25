@@ -16,5 +16,5 @@ set instructiontime - inst 2.0 us
 # Route: main
 #
 analyze function main
-set instructiontime - inst 0.1 mhz
+set instructiontime - inst 0.1 MHz
 

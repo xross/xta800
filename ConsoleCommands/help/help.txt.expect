@@ -23,11 +23,11 @@
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
       option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines
           mode: ns:     nanoseconds
-          mode: mhz:    megahertz
+          mode: MHz:    megahertz
           mode: cycles: processor thread cycles
       option: instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines
           mode: ns:     nanoseconds
-          mode: mhz:    megahertz
+          mode: MHz:    megahertz
           mode: cycles: processor thread cycles
       option: loop <ANY_REF> <iterations>: Adds the given loop count define to the list of defines
       option: looppath <ANY_REF> <iterations>: Adds the given loop path count define to the list of defines
@@ -36,7 +36,7 @@
           scope: absolute/a: Absolute number of iterations
       option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of defines
           mode: ns:     nanoseconds
-          mode: mhz:    megahertz
+          mode: MHz:    megahertz
           mode: cycles: processor thread cycles
   [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
       option: function <FUNCTION_REF>: Analyze the given function
@@ -44,7 +44,7 @@
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <BEST/WORST>: Sets the case (currently: WORST)
-      option: freq <node number> <core frequency>: Sets the core frequency in Mhz for the given node
+      option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
       option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
       option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
@@ -119,11 +119,11 @@
       option: from <ENDPOINT_REF>: Sets the from endpoint
       option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
           mode: ns:     nanoseconds
-          mode: mhz:    megahertz
+          mode: MHz:    megahertz
           mode: cycles: processor thread cycles
       option: instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
           mode: ns:     nanoseconds
-          mode: mhz:    megahertz
+          mode: MHz:    megahertz
           mode: cycles: processor thread cycles
       option: loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified
       option: looppath <route id> <ANY_REF> <iterations>: Sets the number of iterations for the path identified
@@ -132,11 +132,11 @@
           scope: absolute/a: Absolute number of iterations
       option: pathtime <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route
           mode: ns:     nanoseconds
-          mode: mhz:    megahertz
+          mode: MHz:    megahertz
           mode: cycles: processor thread cycles
       option: required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route
           mode: ns:     nanoseconds
-          mode: mhz:    megahertz
+          mode: MHz:    megahertz
           mode: cycles: processor thread cycles
       option: to <ENDPOINT_REF>: Sets the to endpoint
   [-]source <file name>: Sources the given command file

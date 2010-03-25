@@ -1,61 +1,61 @@
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: producer to producer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: consumer to consumer
-    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Pass, Min Core Frequency: \d+ mhz
+Pass, Min Core Frequency: \d+ MHz

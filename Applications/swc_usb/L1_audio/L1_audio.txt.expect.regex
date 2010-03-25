@@ -1,7 +1,7 @@
 Route\(\d+\) path: left_output to right_output
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 5.2 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 5.2 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) path: right_output to left_output
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 5.2 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 5.2 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Pass, Min Core Frequency: \d+ mhz
+Pass, Min Core Frequency: \d+ MHz

@@ -1,5 +1,5 @@
 Route\(0\) function: test1
-    Fail, Num Paths: 1, Violation: 50.0 ns, Required: 50.0 ns, Worst: 100.0 ns, Min Core Frequency: 800 mhz
+    Fail, Num Paths: 1, Violation: 50.0 ns, Required: 50.0 ns, Worst: 100.0 ns, Min Core Frequency: 800 MHz
 
 Route\(1\) function: test2
     Fail, Num Paths: 1, Violation: Infinity, Required: 50.0 ns, Worst: Infinity, Min Core Frequency: Infinity

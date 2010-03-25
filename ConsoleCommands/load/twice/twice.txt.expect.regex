@@ -5,7 +5,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,0\)
 Loaded executable: test1.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
 TimingFailAsError: true
@@ -15,7 +15,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,0\)
 Loaded executable: test1.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 Loaded Route\(0\): function: main 
 TimingFailAsError: true
@@ -25,7 +25,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,0\)
 Loaded executable: test2.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
 TimingFailAsError: true
@@ -35,6 +35,6 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,0\)
 Loaded executable: test2.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 Loaded Route\(0\): function: main 

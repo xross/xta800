@@ -5,7 +5,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,0\) \(0,1\) \(0,2\) \(0,3\)
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 2 \(No debug information found\)
 Node: 0, Core: 1, Threads: 1 \(No debug information found\)
 Node: 0, Core: 2, Threads: 1 \(No debug information found\)
@@ -22,7 +22,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set:
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 2 \(No debug information found\)
 Node: 0, Core: 1, Threads: 1 \(No debug information found\)
 Node: 0, Core: 2, Threads: 1 \(No debug information found\)
@@ -35,7 +35,7 @@ Case: WORST
 Verbosity: 0
 Active Core Set: \(0,1\) \(0,2\)
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 Mhz
+Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 2 \(No debug information found\)
 Node: 0, Core: 1, Threads: 1 \(No debug information found\)
 Node: 0, Core: 2, Threads: 1 \(No debug information found\)

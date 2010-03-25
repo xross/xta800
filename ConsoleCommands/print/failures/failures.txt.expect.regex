@@ -1,6 +1,6 @@
 xta: warning: route\(\d+\)     No Timing Specified
-xta: warning: route\(\d+\)     Fail, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
-xta: warning: route\(\d+\)     Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+xta: warning: route\(\d+\)     Fail, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+xta: warning: route\(\d+\)     Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 xta: cmds.txt:1: warning: route\(\d+\)     No Timing Specified
-xta: cmds.txt:3: warning: route\(\d+\)     Fail, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
-xta: cmds.txt:7: warning: route\(\d+\)     Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ mhz
+xta: cmds.txt:3: warning: route\(\d+\)     Fail, Num Paths: 1, Violation: \d+\.\d [mun]s, Required: 10.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+xta: cmds.txt:7: warning: route\(\d+\)     Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
