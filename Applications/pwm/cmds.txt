@@ -7,7 +7,7 @@ set required - 0.048 mhz
 
 # =========================================================================== #
 # Interpolate S1 Stage
-# ===========[-]debug <option> <arg0> <arg1>...: Internal debug commands================================================================ #
+# =========================================================================== #
 
 analyse path interS1ThreadInput interS1ThreadInput
 # set loop - interS1ThreadOuterLoop 4 
