@@ -127,7 +127,7 @@ public class Summary extends Command {
 				    		numFails, total, maxViolationStatus.getString()));
 				}
 			} else {
-				console.display(String.format("Pass, Min Core Frequency: %d mhz\n",
+				console.display(String.format("Pass, Min Core Frequency: %d MHz\n",
 			    		minFrequency));
 			}
 		} else {

@@ -16,7 +16,7 @@ public class Mode implements Command {
 			sb.append("ns ");
 			break;
 		case 1:
-			sb.append("mhz ");
+			sb.append("MHz ");
 			break;
 		case 2:
 			sb.append("cycles ");

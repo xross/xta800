@@ -160,7 +160,7 @@ public class RouteTiming {
 		    		description += String.format("Min Core Frequency: %s\n", minFrequencyStatus.getString());
 
 		    	} else {
-				    description += String.format("Min Core Frequency: %d mhz\n", minFrequency);
+				    description += String.format("Min Core Frequency: %d MHz\n", minFrequency);
 				}
 
 			} else if (level == Level.COMPLETE) {
@@ -173,14 +173,14 @@ public class RouteTiming {
 		    		description += String.format("Worst Case:  %s\n", status.getString());
 
 		    	} else {
-		    		description += String.format("Worst Case Timing:  %8s,%8.2f mhz,%8d thread cycles\n",
+		    		description += String.format("Worst Case Timing:  %8s,%8.2f MHz,%8d thread cycles\n",
 		    				Conversion.getTimeString(worstTime),
 		    				getMhz(worstTime),
 		    				getWorstCycles(new Status()));
 		    	}
 
 				if (isTimingSpecified()) {
-					description += String.format("Required:    %8s,%8.2f mhz,%8d thread cycles\n",
+					description += String.format("Required:    %8s,%8.2f MHz,%8d thread cycles\n",
 							Conversion.getTimeString(m_maxTime.getNs()),
 							m_maxTime.getMhz(),
 							m_maxTime.getCycles());
@@ -188,7 +188,7 @@ public class RouteTiming {
 					if (passedTiming()) {
 						assert(status.isComplete());
 		                double slackTime = getSlackTime(new Status());
-		                description += String.format("Slack:      %8s,%8.2f mhz,%8d thread cycles\n",
+		                description += String.format("Slack:      %8s,%8.2f MHz,%8d thread cycles\n",
 		                		Conversion.getTimeString(slackTime),
 		                		getMhz(slackTime),
 		                		getSlackCycles(new Status()));
@@ -198,7 +198,7 @@ public class RouteTiming {
 
 				    	} else {
 			                double violationTime = getViolationTime(new Status());
-			                description += String.format("Failed, Violation:  %8s,%8.2f mhz,%8d thread cycles\n",
+			                description += String.format("Failed, Violation:  %8s,%8.2f MHz,%8d thread cycles\n",
 			                		Conversion.getTimeString(violationTime),
 			                		getMhz(violationTime),
 			                		getViolationCycles(new Status()));
@@ -206,7 +206,7 @@ public class RouteTiming {
 		    	    }
 
 					if (status.isComplete())
-					    description += String.format("Min Core Frequency: %8d mhz\n", getMinFrequency(new Status()));
+					    description += String.format("Min Core Frequency: %8d MHz\n", getMinFrequency(new Status()));
 
 				} else {
 					description += "No Timing Specified\n";

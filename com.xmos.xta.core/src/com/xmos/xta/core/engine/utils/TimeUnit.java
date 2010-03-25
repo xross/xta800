@@ -19,13 +19,13 @@ public class TimeUnit {
 	public static String getHelp() {
 		String helpStr = "";
    		helpStr += "          mode: ns:     nanoseconds\n";
-   		helpStr += "          mode: mhz:    megahertz\n";
+   		helpStr += "          mode: MHz:    megahertz\n";
    		helpStr += "          mode: cycles: processor thread cycles";
    		return helpStr;
 	}
 
 	public static String[] getUnits() {
-		return new String[] {"ns", "us", "ms", "mhz", "cycles"};
+		return new String[] {"ns", "us", "ms", "MHz", "cycles"};
 	}
 
 	public TimeUnit(String value, String units) {
@@ -42,7 +42,7 @@ public class TimeUnit {
 	   	   		m_ns = Double.parseDouble(value) * 1000000.0;
 		   		m_units = Units.NS;
 
-	   	   	} else if (units.equals("mhz")) {
+	   	   	} else if (units.equals("MHz")) {
 	   	   	    m_mhz = Double.parseDouble(value);
 		   		m_units = Units.MHZ;
 
@@ -103,8 +103,8 @@ public class TimeUnit {
        		return Conversion.getTimeString(precise, m_ns);
        	case MHZ:
            	return precise ?
-           			Conversion.stripTrailingZeros(String.format("%f", m_mhz)) + " mhz" :
-           		    String.format("%.1f mhz", m_mhz);
+           			Conversion.stripTrailingZeros(String.format("%f", m_mhz)) + " MHz" :
+           		    String.format("%.1f MHz", m_mhz);
        	case CYCLES:
            	return String.format("%d cycles", m_cycles);
        	}
@@ -125,7 +125,7 @@ public class TimeUnit {
 	public String getUnitsStr() {
        	switch (m_units) {
        	case NS:     return Conversion.getUnitsString(m_ns);
-       	case MHZ:    return "mhz";
+       	case MHZ:    return "MHzy";
        	case CYCLES: return "cycles";
        	}
        	assert(false);
