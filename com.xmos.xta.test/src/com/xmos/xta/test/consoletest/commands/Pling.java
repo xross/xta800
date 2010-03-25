@@ -2,6 +2,8 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
+
 public class Pling implements Command {
 
 
@@ -9,9 +11,13 @@ public class Pling implements Command {
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("!");
+		int options = 3;
+		if(!ConsoleTest.allowMess){
+			options--;
+		}
 		
 		Random r = new Random();
-		switch(r.nextInt(3)){
+		switch(r.nextInt(options)){
 		case 0:{
 			sb.append(r.nextInt(10) + " ");
 			break;

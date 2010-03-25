@@ -2,11 +2,13 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
+
 public class Version implements Command{
 
 	public String getCommand() {
 		Random r = new Random();
-		if(r.nextBoolean()){
+		if(r.nextBoolean() || ConsoleTest.allowMess){
 			return "version ";
 		} else {
 			Mess mess = new Mess();

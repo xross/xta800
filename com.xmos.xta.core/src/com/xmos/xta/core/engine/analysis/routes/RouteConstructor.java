@@ -106,8 +106,8 @@ public class RouteConstructor {
 			List<StackNode> startStackNodes = getFunctionStartStackNodes(m_callGraph, m_coreContainer.getFromReference());
 			for(StackNode startStackNode : startStackNodes){
 				for(Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()){
-					List<StackNode> endStackNodes = getFunctionEndStackNodes(stack);
-					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, endStackNodes, branchStackNodes, true, branchToNext);
+					
+					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, branchStackNodes, true, branchToNext);
 					if (newFunction != null){
 						setParent(newFunction);
 						if (!alreadyContainRoute(newFunction)) {
@@ -158,7 +158,19 @@ public class RouteConstructor {
 		applyDefines(src);
 		return RouteError.SUCCESS;
 	}
-
+/*
+	private List<StackNode> getUnresolvedStackNodes(CallGraph callGraph) {
+		List<StackNode> stackNodes = new LinkedList<StackNode>();
+		for(FunctionContainer fc :callGraph.getFunctionContainers()){
+			for(InstructionNode inst : fc.getFunctionInstructionNodes()){
+				if(inst.isUnresolved()){
+					stackNodes.addAll(c);
+				}
+			}
+		}
+		return stackNodes;
+	}
+*/
 	private void buildBranchStackNodes(List<StackNode> branchStackNodes,
 			Map<StackNode, Set<Node>> branchToNext) {
 		for(Reference ref : m_engine.getUserBranches().keySet()){
@@ -197,7 +209,9 @@ public class RouteConstructor {
 	}
 	
 	private FunctionNode makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
-			List<StackNode> endStackNodes, List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
+			List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
+		
+		List<StackNode> endStackNodes = getFunctionEndStackNodes(currentStack);
 		
 		FunctionReferenceNode fnRef = currentStack.peek();
 		
@@ -315,8 +329,7 @@ public class RouteConstructor {
 					} else {
 						FunctionNode fn = null;
 						if(frn.isKnownFunction()){
-							List<StackNode> newEndStackNodes = getFunctionEndStackNodes(newStack);
-							fn = makeFunction(newStack, exclusionStackNodes, newEndStackNodes, branchStackNodes, false, branchToNext);
+							fn = makeFunction(newStack, exclusionStackNodes, branchStackNodes, false, branchToNext);
 							
 						} else {
 							fn = new FunctionNode();
@@ -536,25 +549,30 @@ public class RouteConstructor {
 
 	private Node containsNode(Node next, Stack<FunctionReferenceNode> currentStack, Map<NodeDescriptor, Node> nodeToWorkingSet){
 		NodeDescriptor nd = new NodeDescriptor(next, currentStack);
+		return nodeToWorkingSet.get(nd);
+		
+		/*
 		for(NodeDescriptor workingNd : nodeToWorkingSet.keySet()){
 			if(workingNd.equals(nd)){
+				assert(nodeToWorkingSet.containsKey(nd));
 				return nodeToWorkingSet.get(workingNd);
 			}
 		}
 		return null;
+		
+		*/
 	}
 
 	
 	static class NodeDescriptor implements Comparable<NodeDescriptor>{
-		private static int id;
-		private int m_id;
 		private Node m_node;
 		private Stack<FunctionReferenceNode> m_stack;
 
+		private int m_id;
 		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
 			m_node = node;
 			m_stack = stack;
-			m_id = id++;
+			m_id = node.getId();
 		}
 
 		public Node getNode(){
@@ -577,8 +595,7 @@ public class RouteConstructor {
 		}
 
 		public int compareTo(NodeDescriptor o) {
-			
-			return this.m_id - o.m_id;
+			return m_id - o.m_id;
 		}
 	}
 

@@ -2,6 +2,8 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
+
 
 public class Analyse implements Command {
 
@@ -12,7 +14,12 @@ public class Analyse implements Command {
 		sb.append("analyse ");
 		
 		Random r = new Random();
-		switch(r.nextInt(3)){
+		
+		int options = 3;
+		if(!ConsoleTest.allowMess){
+			options--;
+		}
+		switch( r.nextInt(options)){
 		case 0:{
 			sb.append("function ");
 			Reference ref = new Reference();

@@ -54,9 +54,10 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 					fnContainers.add(fc);
 				}
 			} else {
-				for(InstructionNode inst : fc.getFunctionInstructionNodes()){
-					if(ref.getPcs().contains(inst.getPC())){
+				for(long pc : ref.getPcs()){
+					if(fc.containsPc(pc)){
 						fnContainers.add(fc);
+						break;
 					}
 				}
 			}

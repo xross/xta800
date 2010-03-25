@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Random;
@@ -19,7 +21,6 @@ import com.xmos.xta.test.consoletest.commands.Help;
 import com.xmos.xta.test.consoletest.commands.History;
 import com.xmos.xta.test.consoletest.commands.List;
 import com.xmos.xta.test.consoletest.commands.Load;
-import com.xmos.xta.test.consoletest.commands.Mess;
 import com.xmos.xta.test.consoletest.commands.Pling;
 import com.xmos.xta.test.consoletest.commands.Print;
 import com.xmos.xta.test.consoletest.commands.Pwd;
@@ -32,11 +33,13 @@ import com.xmos.xta.test.consoletest.commands.Version;
 
 public class ConsoleTest {
 
+	public static boolean allowMess = false;
+	
 	private static Command[] realCommands = { new Add(), new Analyse(),
 			new Config(), new Clear(), new Echo(), new Help(), new History(),
 			new List(), 
 			//new Load("test.xe"), 
-			new Mess(), new Print(),
+			new Print(),
 			new Pwd(), new Remove(), new Scripter(), new Set(), new Source(),
 			new Status(), new Version() , new Pling()};			
 
@@ -45,7 +48,26 @@ public class ConsoleTest {
 	
 	public static void main(String[] args) {
 		ConsoleTest ct = new ConsoleTest();
-		ct.test();
+		System.out.println(args + " "+ args.length);
+		if(args.length < 1){
+			System.out.println("read the source");
+			
+		} else {
+			if(args[0].equals("auto")){
+				ct.test();
+			} else if(args[0].equals("generate")){
+				ct.generate();
+			} else{
+				
+			}
+		}
+	}
+
+	private void generate() {
+		StringBuffer sb = new StringBuffer();
+		Random r = new Random();
+		makeCmdList(r, sb);
+        writeOutCmdFile(sb); 
 	}
 
 	public void test(){
@@ -140,9 +162,11 @@ public class ConsoleTest {
 	}
 
 	private boolean run() {
+		
+		String command = "xta -source cmds.txt > output.txt 2>&1";
+
 		try {
-			Process p = Runtime.getRuntime().exec(
-					"xta -source cmds.txt > output.txt 2>&1");
+			Process p = Runtime.getRuntime().exec(command);
 			p.waitFor();
 		} catch (Exception err) {
 			err.printStackTrace();

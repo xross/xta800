@@ -12,7 +12,6 @@ import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 
 public class CallGraph {
 	
@@ -99,11 +98,8 @@ public class CallGraph {
 	public List<FunctionContainer> getFunctionContaining(long pc) {
 		List<FunctionContainer> found = new LinkedList<FunctionContainer>();
 		for(FunctionContainer fc : m_functionContainers){
-			for(InstructionNode inst : fc.getFunctionInstructionNodes()){
-				if(inst.getPC() == pc){
-					found.add(fc);
-					break;
-				}
+			if(fc.containsPc(pc)){
+				found.add(fc);
 			}
 		}
 		return found;

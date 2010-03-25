@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
@@ -18,6 +19,8 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 	private Set<FunctionReferenceNode> m_functionRefNodes;
 	private Node m_cachedFunction;
 	
+	private Set<Long> m_containedPcs;
+	
 	public FunctionContainer(InstructionNode startOfFunction, 
 			Set<InstructionNode> functionInstructions,
 			Set<FunctionReferenceNode> functionRefNodes) {
@@ -26,6 +29,12 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		m_functionInstructions = functionInstructions;
 		m_cachedFunction = null;
 		m_functionName = "unnamed_function";
+		m_containedPcs = new NonIteratableSet<Long>();
+		
+		for(InstructionNode inst: m_functionInstructions){
+			m_containedPcs.add(inst.getPC());
+		}
+		
 	}
 
 	public InstructionNode getStartInstruction() {
@@ -75,5 +84,9 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 
 	public int compareTo(FunctionContainer o) {
 		return (int)Math.signum(this.getStartInstruction().getPC() - o.getStartInstruction().getPC());
+	}
+
+	public boolean containsPc(long pc) {
+		return m_containedPcs.contains(pc);
 	}
 }

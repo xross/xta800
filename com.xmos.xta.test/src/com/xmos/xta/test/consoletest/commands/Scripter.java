@@ -2,6 +2,8 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
+
 public class Scripter implements Command{
 
 
@@ -9,9 +11,12 @@ public class Scripter implements Command{
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("scripter ");
-		
+		int options = 3;
+		if(!ConsoleTest.allowMess){
+			options--;
+		}
 		Random r = new Random();
-		switch(r.nextInt(3)){
+		switch(r.nextInt(options)){
 		case 0:{
 			sb.append("disable ");
 			break;

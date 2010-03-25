@@ -2,6 +2,7 @@ package com.xmos.xta.test.consoletest.commands;
 
 import java.util.Random;
 
+import com.xmos.xta.test.consoletest.ConsoleTest;
 import com.xmos.xta.test.consoletest.commands.units.BestWorst;
 import com.xmos.xta.test.consoletest.commands.units.Number;
 import com.xmos.xta.test.consoletest.commands.units.OnOff;
@@ -13,8 +14,13 @@ public class Config implements Command {
 		Random r = new Random();
 		StringBuffer sb = new StringBuffer();
 		sb.append("config ");
-		int i = r.nextInt(3);
-		switch(i){
+		
+		int options = 11;
+		if(!ConsoleTest.allowMess){
+			options--;
+		}
+		
+		switch(r.nextInt(options)){
 		case 0:
 			sb.append("case ");
 			BestWorst bw = new BestWorst();

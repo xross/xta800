@@ -8,7 +8,7 @@ public class Source implements Command {
 	
 	public String getCommand() {
 		Random r = new Random();
-		if(formLoops && r.nextBoolean()){
+		if(formLoops && r.nextBoolean() ){
 			return "source cmds.txt ";
 		} else {
 			Mess mess = new Mess();
