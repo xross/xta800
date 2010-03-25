@@ -7,13 +7,13 @@ _start:
 main:
   entsp 1
 
-  ADD_2rus r0 , r11, 11
-  ADD_3r r0, r11, r11
+  add r0 , r11, 11
+  add r0, r11, r11
 
 label2:
 
-  BRBT_lru6 r1, label2
-  BRBF_lru6 r0, label2
+  bt r1, label2
+  bf r0, label2
 
 label1:
 

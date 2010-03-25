@@ -2,7 +2,8 @@
   [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
   [-]config <option> <arg0> <arg1>...: Configures the given option
   [-]clear: Clears the screen (Gui mode only)
-  [-]echo "text": prints the text to the console
+  [-]debug <option> <arg0> <arg1>...: Internal debug commands
+  [-]echo "text": Prints the text to the console
   [-]exit: Quits the application
   [-]help [command/option]: Displays help message for the given command/option
   [-]history: Displays the command history
@@ -51,7 +52,7 @@
       option: Terror <on/off>: treat timing failures as errors or not (currently: on)
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: Werror <on/off>: treat warnings as errors or not (currently: off)
-  [-]echo "text": prints the text to the console
+  [-]echo "text": Prints the text to the console
   [-]exit: Quits the application
   [-]help [command/option]: Displays help message for the given command/option
       options: PC_REF, FUNCTION_REF, LABEL_REF, ENDPOINT_REF, ANY_REF
