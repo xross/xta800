@@ -1134,6 +1134,7 @@ public class Engine implements Notifier, Aborter {
 		}
 	}
 
+	//GUI only
 	public long getSetLoop(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getSetLoopIterations(node);
 	}

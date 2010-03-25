@@ -479,22 +479,18 @@ public class RouteConstructor {
 		List<StackNode> endStacks = new LinkedList<StackNode>();
 		Set<Node> seen = new NonIteratableSet<Node>();
 		Set<InstructionNode> endNodes = new IteratableSet<InstructionNode>();
-		Set<Node> following = new IteratableSet<Node>();
+		Set<InstructionNode> following = new IteratableSet<InstructionNode>();
 		following.add(stack.peek().getFunctionStartInstruction());
 		while(!following.isEmpty()){
-			Node current = following.iterator().next();
+			InstructionNode current = following.iterator().next();
 			seen.add(current);
 			if(current.getNextNodesSize() == 0){
-				if(current instanceof InstructionNode){
-					endNodes.add((InstructionNode)current);
-				} else {
-					System.out.println("broken on node " + current);
-					assert(false);
-				}
+				endNodes.add(current);
+
 			} else {
 				for(Node next : current.getNextNodes()){
 					if(!seen.contains(next)){
-						following.add(next);
+						following.add((InstructionNode)next);
 					}
 				}
 			}
@@ -565,22 +561,15 @@ public class RouteConstructor {
 
 	
 	static class NodeDescriptor implements Comparable<NodeDescriptor>{
+		
 		private Node m_node;
 		private Stack<FunctionReferenceNode> m_stack;
-
 		private int m_id;
+		
 		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
 			m_node = node;
 			m_stack = stack;
 			m_id = node.getId();
-		}
-
-		public Node getNode(){
-			return m_node;
-		}
-
-		public Stack<FunctionReferenceNode> getStack(){
-			return m_stack;
 		}
 
 		public boolean equals(Object obj) {

@@ -37,14 +37,6 @@ public class RouteTiming {
 		m_maxTimeSet = false;
 	}
 
-	public int getNodeNumber() {
-		return m_nodeNumber;
-	}
-
-	public int getCoreNumber() {
-		return m_coreNumber;
-	}
-
 	public boolean isTimingSpecified() {
 		return m_maxTimeSet;
 	}

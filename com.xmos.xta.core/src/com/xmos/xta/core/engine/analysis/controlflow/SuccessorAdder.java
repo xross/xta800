@@ -3,7 +3,6 @@ package com.xmos.xta.core.engine.analysis.controlflow;
 import java.util.Map;
 import java.util.Set;
 
-import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
@@ -46,9 +45,7 @@ public class SuccessorAdder {
 	}
 
 	
-	//TODO optimise this
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
-		
 		for (Reference ref : m_branchMap.keySet()) {
 			if (ref.matches(inst.getPc())) {
 				for (BranchInfo target :  m_branchMap.get(ref)) {

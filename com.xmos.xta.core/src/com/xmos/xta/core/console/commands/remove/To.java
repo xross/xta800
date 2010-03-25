@@ -29,9 +29,8 @@ public class To extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
-
-        engine.removeToEndPoint(getSrc());
+		if (isExecutableLoaded(engine, console)){
+			 engine.removeToEndPoint(getSrc());
+		}
     }
 }

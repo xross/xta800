@@ -119,29 +119,19 @@ public class FunctionConstructor {
 	}
 	
 	
-	//TODO optimise this
 	private void addUserBranchTargetsToFunctionStarts(){
+		Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_nodeId, m_coreId);	
 		for(InstructionNode instruction : m_instDecoder.getInstructions()){
 			XtaInstruction inst = instruction.getXtaInstruction();
 			if(inst.isLink()){
-				Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_nodeId, m_coreId);
-				Set<BranchInfo> targets = new IteratableSet<BranchInfo>();
-				
 				for (Reference ref : branchMap.keySet()) {
 					if (ref.matches(inst.getPc())) {
-						Set<BranchInfo> mapEntries = branchMap.get(ref);
-						targets.addAll(mapEntries);
+						for (BranchInfo target : branchMap.get(ref)) {
+							for (long pc : target.getRef().getPcs()) {
+								m_functionStarts.add(m_instDecoder.getNode(pc)); 
+							}
+						}	
 					}
-				}
-				
-				if(!targets.isEmpty() ){
-					for (BranchInfo target : targets) {
-						for (long pc : target.getRef().getPcs()) {
-							
-							m_functionStarts.add(m_instDecoder.getNode(pc));
-							 
-						}
-					}	
 				}
 			}
 		}
@@ -155,7 +145,6 @@ public class FunctionConstructor {
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
 			} else {
-				System.out.println("could not find 0x" + Long.toHexString(pc));
 				m_notifier.notify(m_src, Notifier.NOTIFY_WARNING,
 						"failed to find thread start at PC 0x" + Long.toHexString(pc));
 			}

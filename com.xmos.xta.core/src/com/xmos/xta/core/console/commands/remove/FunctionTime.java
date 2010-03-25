@@ -44,10 +44,10 @@ public class FunctionTime extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
+		if (isExecutableLoaded(engine, console)) {
+			engine.removeFunctionTime(getSrc(), m_functionName);
 		}
 
-		engine.removeFunctionTime(getSrc(), m_functionName);
+		
     }
 }

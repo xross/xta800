@@ -44,10 +44,8 @@ public class Loop extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
+		if (isExecutableLoaded(engine, console)) {
+			engine.removeLoop(getSrc(), m_refString);
 		}
-
-		engine.removeLoop(getSrc(), m_refString);
     }
  }

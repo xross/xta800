@@ -1,10 +1,7 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-import com.xmos.xta.core.console.BasicConsole;
-import com.xmos.xta.core.console.commands.print.StructureDisplayer;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -21,8 +18,7 @@ import com.xmos.xta.core.engine.utils.CoreConfig;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class RouteDefines {
-	private static final boolean DEBUG_ROUTE_DEFINES = false;
-
+	
 	private static RouteDefinePatterns[] m_patterns = new RouteDefinePatterns[] {
 			new SameBlockPattern(),
 			new DifferentBlockPattern()
@@ -36,6 +32,7 @@ public class RouteDefines {
 		}
 	}
 
+	//GUI only
 	public static boolean matchPathDefine(Node from, Node to) {
 		assert(from instanceof InstructionNode);
 		Node fromBlock = from.getParent();
@@ -79,11 +76,9 @@ public class RouteDefines {
 				for (RouteDefinePatterns pattern : m_patterns) {
 					if (pattern.match(fromBlock, from, toBlock, to)) {
 
-						if (DEBUG_ROUTE_DEFINES) display("BEFORE", route);
 						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, timeUnit, source);
 						RouteConstructor.setParent(route.getNode());
-						if (DEBUG_ROUTE_DEFINES) display("AFTER", route);
-
+					
 						success = true;
 						break;
 					}
@@ -99,13 +94,5 @@ public class RouteDefines {
 		route.getRouteUnknowns().invalidateCachedStats();
 		route.getRouteUnknowns().refreshDisplayedUnknowns();
 
-	}
-
-	private void display(String str, Route route) {
-		System.out.printf("------------ %s -------------\n", str);
-		StructureDisplayer sd = new StructureDisplayer(new BasicConsole(), 100);
-		Collection<Node> nodes = new ArrayList<Node>();
-		nodes.add(route.getNode());
-		sd.display(nodes);
 	}
 }

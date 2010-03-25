@@ -29,9 +29,8 @@ public class From extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
-
-        engine.removeFromEndPoint(getSrc());
+		if (isExecutableLoaded(engine, console)){
+			engine.removeFromEndPoint(getSrc());
+		}
     }
 }
