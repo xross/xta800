@@ -24,6 +24,7 @@ import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
+import com.xmos.xta.core.engine.analysis.Analyzer;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FnopAdder;
@@ -33,11 +34,8 @@ import com.xmos.xta.core.engine.analysis.controlflow.FunctionReferenceNodeAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.UnresolvedSetter;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
-import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
-import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -185,6 +183,14 @@ public class Engine implements Notifier, Aborter {
 		return m_callGraphs.get(core.getNode(), core.getCore());
 	}
 
+	public Reference getFromEndPoint(NodeCorePair core) {
+		return m_fromEndPoints.get(core);				
+	}
+
+	public Reference getToEndPoint(NodeCorePair core) {
+		return m_toEndPoints.get(core);				
+	}
+
 	public Debugger getDebugger() {
 		return m_debugger;
 	}
@@ -286,63 +292,13 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public boolean analyzeFunction(CommandSource src, String functionName) {
-        RouteContainer routeContainer = new RouteContainer(functionName, this, src);		
-		
-		boolean routeFound = false;
-		for (NodeCorePair activeCore : m_activeCores) {			
-			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION_REF, activeCore.getNode(), activeCore.getCore());
-
-			if (resolveReference(functionRef)) {
-				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 
-						routeContainer, this, activeCore.getNode(), activeCore.getCore());
-				
-				analyzeRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
-				routeFound = true;
-			}		
-		}		
-		if (routeContainer.getNumExistingRoutes() > 0)   			
-			m_routeContainers.add(routeContainer);
-		
-	    if (!routeFound) {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", functionName));
-		    return false;
-	    }
-	    return true;
+		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
+		return analyzer.analyzeFunction(src, functionName);
 	}
 
-	public void analyzePath(CommandSource src) {
-        RouteContainer routeContainer = new RouteContainer(m_fromEndpointName, m_toEndpointName, this, src);
-		
-		boolean routeFound = false;
-		for (NodeCorePair activeCore : m_activeCores) {
-
-			boolean fromFound = true;
-			Reference fromEndpoint = m_fromEndPoints.get(activeCore);
-		    if ((fromEndpoint == null) || fromEndpoint.getRef().equals("")) {
-		    	fromFound = false;
-		    }
-
-			boolean toFound = true;
-			Reference toEndpoint = m_toEndPoints.get(activeCore);
-		    if ((toEndpoint == null) || toEndpoint.getRef().equals("")) {
-		    	toFound = false;
-		    }
-
-		    if (fromFound && toFound) {
-				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(fromEndpoint, toEndpoint,
-						routeContainer, this, activeCore.getNode(), activeCore.getCore());
-				
-				analyzeRouteSafely(src, routeContainer, routeCoreContainer, activeCore.getNode(), activeCore.getCore());
-				routeFound = true;
-    		}			
-		}
-		if (routeContainer.getNumExistingRoutes() > 0)   			
-			m_routeContainers.add(routeContainer);
-
-	    if (!routeFound) {
-		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
-	    }
+	public boolean analyzePath(CommandSource src) {
+		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
+		return analyzer.analyzePath(src, m_fromEndpointName, m_toEndpointName);
 	}
 
 	public Notifier getNotifier() {
@@ -1576,6 +1532,27 @@ public class Engine implements Notifier, Aborter {
 		return m_sections.getSystems(nodeNumber, coreNumber);
 	}
 
+	public boolean updateControlFlowGraphs(CommandSource src, NodeCorePair core) {
+		int nodeNumber = core.getNode();
+		int coreNumber = core.getCore();
+
+		assert(m_xeLoader.isLoaded(nodeNumber, coreNumber));	    
+	    if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
+			NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>(m_callGraphs);
+			NodeCoreCollection<SourceMapper> sourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMappers);
+			NodeCoreCollection<InstructionDecoder> instructionDecoders = new NodeCoreCollection<InstructionDecoder>(m_instructionDecoders);
+			
+			if (buildNodeCore(callGraphs, instructionDecoders, sourceMappers, m_xeLoader, m_sections, src, nodeNumber, coreNumber)) {
+				m_callGraphs = callGraphs;
+				m_sourceMappers = sourceMappers;
+				m_instructionDecoders = instructionDecoders;
+			} else {
+				return false;
+			}
+		}
+	    return true;
+	}
+	
 	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){
 		m_loadStartTime = System.currentTimeMillis();
 		
@@ -1696,96 +1673,8 @@ public class Engine implements Notifier, Aborter {
 				if(g.isKnownFunction()){
 					FunctionContainer link = pcToFunctionStartNode.get(g.getFunctionStartPc());
 					g.setFunction(link);
-					
 				}
 			}
-		}
-	}
-
-	private boolean analyzeRouteSafely(CommandSource src, RouteContainer routeContainer,
-			RouteCoreContainer routeCoreContainer, int nodeNumber, int coreNumber) {
-		
-		boolean success = false;
-		try {
-			success = doRouteAnalysis(src, routeContainer, routeCoreContainer, nodeNumber, coreNumber);
-		} catch (final java.lang.OutOfMemoryError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
-			return false;
-		} catch (final java.lang.StackOverflowError e) {
-			notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
-			return false;
-		} catch (AbortedException e) {
-			return false;
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
-			e.printStackTrace();
-			return false;
-		}
-		return success;
-	}
-
-	private boolean doRouteAnalysis(CommandSource src, RouteContainer routeContainer,
-			RouteCoreContainer routeCoreContainer, int nodeNumber, int coreNumber) throws Exception {
-
-		assert(m_xeLoader.isLoaded(nodeNumber, coreNumber));	    
-	    if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
-			NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>(m_callGraphs);
-			NodeCoreCollection<SourceMapper> sourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMappers);
-			NodeCoreCollection<InstructionDecoder> instructionDecoders = new NodeCoreCollection<InstructionDecoder>(m_instructionDecoders);
-			
-			if (buildNodeCore(callGraphs, instructionDecoders, sourceMappers, m_xeLoader, m_sections, src, nodeNumber, coreNumber)) {
-				m_callGraphs = callGraphs;
-				m_sourceMappers = sourceMappers;
-				m_instructionDecoders = instructionDecoders;
-			} else {
-				return false;
-			}
-		}
-		
-		CallGraph cg = m_callGraphs.get(nodeNumber, coreNumber);
-		
-		RouteConstructor routeConstructor = new RouteConstructor(this, cg, routeCoreContainer);
-		RouteError error = routeConstructor.analyze(src);
-
-		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
-			notify(src, Notifier.NOTIFY_ERROR, "no paths of execution could reach the endpoint(s)");
-			return false;
-
-		} else if (error == RouteError.COULD_NOT_FIND_ENDPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could not find any end points");
-			return false;
-
-		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
-			notify(src, Notifier.NOTIFY_ERROR,"could not find any start points");
-			return false;
-
-		} else if (error == RouteError.ENDPOINTS_MISSING ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could not determine the endpoint(s)");
-			return false;
-
-		} else if (error == RouteError.STARTPOINT_MISSING ) {
-			notify(src, Notifier.NOTIFY_ERROR, "could not determine the startpoint");
-			return false;
-
-		} else if (error == RouteError.ABORTED ) {
-			return false;
-
-		} else {
-			int currentSize = m_routes.size();
-			for (Route route : routeConstructor.getRoutes()) {
-				m_routes.add(route);
-			}
-			if (!m_routes.isEmpty() && !routeConstructor.getRoutes().isEmpty()) {				
-				routeCoreContainer.add(routeConstructor.getRoutes());
-				routeContainer.addRouteCoreContainer(routeCoreContainer);				
-
-				setSelectedRoute(src, m_routes.get(currentSize));
-			    notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, Integer.toString(m_routes.get(currentSize).getRouteId()));
-
-			} else {
-				notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
-			}
-			return true;
 		}
 	}
 
