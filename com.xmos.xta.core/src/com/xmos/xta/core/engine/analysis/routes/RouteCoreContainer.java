@@ -1,14 +1,11 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.CoreConfig;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
@@ -117,14 +114,4 @@ public class RouteCoreContainer {
 				engine.getNumThreads(nodeNumber, coreNumber), 
 				engine.getFrequency(nodeNumber));    			
 	}
-
-	public List<FunctionContainer> getFunction(String functionName, CallGraph sg){
-		List<FunctionContainer> functions = new LinkedList<FunctionContainer>();
-		for (FunctionContainer fn : sg.getFunctionContainers()) {
-		    if (fn.getFunctionName().equals(m_routeContainer.getFunctionName())) {
-		        functions.add(fn);
-		    }
-		}
-		return functions;
-    }
 }

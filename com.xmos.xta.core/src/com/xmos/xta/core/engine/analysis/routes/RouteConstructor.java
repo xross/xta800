@@ -561,22 +561,15 @@ public class RouteConstructor {
 
 	
 	static class NodeDescriptor implements Comparable<NodeDescriptor>{
+		
 		private Node m_node;
 		private Stack<FunctionReferenceNode> m_stack;
-
 		private int m_id;
+		
 		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
 			m_node = node;
 			m_stack = stack;
 			m_id = node.getId();
-		}
-
-		public Node getNode(){
-			return m_node;
-		}
-
-		public Stack<FunctionReferenceNode> getStack(){
-			return m_stack;
 		}
 
 		public boolean equals(Object obj) {
