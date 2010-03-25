@@ -19,8 +19,6 @@ public class RouteContainer {
 	};
 
 	private RouteMode m_mode;
-	private String m_fromName;
-	private String m_toName;
 	private String m_functionName;
 	private String m_description;
 	private CommandSource m_src;
@@ -34,8 +32,6 @@ public class RouteContainer {
 	
     public RouteContainer(String fromName, String toName, Engine engine, CommandSource src) {    	
 		m_mode = RouteMode.PATH;
-		m_fromName = fromName;
-		m_toName = toName;
 		m_description = String.format("path: %s to %s", fromName, toName);
 		initialise(engine, src);
     }
@@ -49,14 +45,6 @@ public class RouteContainer {
 
 	public RouteMode getMode() {
 		return m_mode;
-	}
-    
-	public String getFromName() {
-		return m_fromName;
-	}
-
-	public String getToName() {
-		return m_toName;
 	}
 
 	public String getFunctionName() {

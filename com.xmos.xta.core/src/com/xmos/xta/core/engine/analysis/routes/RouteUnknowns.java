@@ -85,6 +85,7 @@ public class RouteUnknowns {
 			throw new Exception("Must be within a loop to be able to set loop iterations");
 	}
 
+	//GUI only
 	public long getSetLoopIterations(Node node) {
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
 		if (enclosingLoopNode == null) {
@@ -158,6 +159,7 @@ public class RouteUnknowns {
 			throw new Exception("Must be within a condition to be able to set loop path iterations");
 	}
 
+	//GUI only
 	public long getSetLoopPathIterations(Node node) {
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
@@ -210,6 +212,7 @@ public class RouteUnknowns {
 			throw new Exception("Must be within a loop to be able to set loop scope");
 	}
 
+	//GUI only
 	public boolean getSetLoopScope(Node node) {
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
 		return enclosingLoopNode.getAttributes().getIsAbsolute();
@@ -291,6 +294,7 @@ public class RouteUnknowns {
 		refreshDisplayedUnknowns();
 	}
 
+	//GUI only
 	public TimeUnit getFixedTime(Node node) {
 		return node.getAttributes().getFixedTime();
 	}

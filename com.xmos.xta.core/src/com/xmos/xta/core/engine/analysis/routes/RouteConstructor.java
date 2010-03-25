@@ -479,22 +479,18 @@ public class RouteConstructor {
 		List<StackNode> endStacks = new LinkedList<StackNode>();
 		Set<Node> seen = new NonIteratableSet<Node>();
 		Set<InstructionNode> endNodes = new IteratableSet<InstructionNode>();
-		Set<Node> following = new IteratableSet<Node>();
+		Set<InstructionNode> following = new IteratableSet<InstructionNode>();
 		following.add(stack.peek().getFunctionStartInstruction());
 		while(!following.isEmpty()){
-			Node current = following.iterator().next();
+			InstructionNode current = following.iterator().next();
 			seen.add(current);
 			if(current.getNextNodesSize() == 0){
-				if(current instanceof InstructionNode){
-					endNodes.add((InstructionNode)current);
-				} else {
-					System.out.println("broken on node " + current);
-					assert(false);
-				}
+				endNodes.add(current);
+
 			} else {
 				for(Node next : current.getNextNodes()){
 					if(!seen.contains(next)){
-						following.add(next);
+						following.add((InstructionNode)next);
 					}
 				}
 			}
