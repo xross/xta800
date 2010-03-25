@@ -42,7 +42,7 @@ public class TimeUnit {
 	   	   		m_ns = Double.parseDouble(value) * 1000000.0;
 		   		m_units = Units.NS;
 
-	   	   	} else if (units.equals("MHz")) {
+	   	   	} else if (units.equals("MHz") || units.equals("mhz")) {
 	   	   	    m_mhz = Double.parseDouble(value);
 		   		m_units = Units.MHZ;
 
