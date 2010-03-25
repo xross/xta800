@@ -44,6 +44,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
+import com.xmos.xta.core.engine.debugger.Debugger;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
 import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
@@ -106,6 +107,7 @@ public class Engine implements Notifier, Aborter {
 	private Map<NodeCorePair, Reference> m_fromEndPoints;
 	private Map<NodeCorePair, Reference> m_toEndPoints;
 	private Collection<NodeCorePair> m_activeCores;
+	private Debugger m_debugger;
 
 	public Engine(Config config) {
 		m_sourceMappers = new NodeCoreCollection<SourceMapper>();
@@ -133,6 +135,7 @@ public class Engine implements Notifier, Aborter {
 		m_toEndpointName = "";
 		m_fromEndPoints = new IteratableMap<NodeCorePair, Reference>();
 		m_toEndPoints = new IteratableMap<NodeCorePair, Reference>();
+		m_debugger = new Debugger(this);
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -178,6 +181,14 @@ public class Engine implements Notifier, Aborter {
 		return m_sourceMappers.get(nodeNumber, coreNumber);
 	}
 
+	public CallGraph getCallGraph(NodeCorePair core) {
+		return m_callGraphs.get(core.getNode(), core.getCore());
+	}
+
+	public Debugger getDebugger() {
+		return m_debugger;
+	}
+
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -219,8 +230,7 @@ public class Engine implements Notifier, Aborter {
 		return routes;
 	}
 
-	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {
-		
+	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {		
 		notify(src, Notifier.CLEAR_LOG, "");
 
 		try {
@@ -331,7 +341,7 @@ public class Engine implements Notifier, Aborter {
 			m_routeContainers.add(routeContainer);
 
 	    if (!routeFound) {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 	    }
 	}
 
@@ -801,7 +811,7 @@ public class Engine implements Notifier, Aborter {
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}		    
 	}
 
@@ -873,7 +883,7 @@ public class Engine implements Notifier, Aborter {
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}		    		
 	}
 
@@ -1002,7 +1012,7 @@ public class Engine implements Notifier, Aborter {
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));			
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}
 	}
 
@@ -1423,7 +1433,7 @@ public class Engine implements Notifier, Aborter {
 		}
 		
 		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));			
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}
 		return hit;
 	}
@@ -1461,7 +1471,7 @@ public class Engine implements Notifier, Aborter {
 		}
 
 		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));			
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}
 		return hit;
 	}
@@ -1570,9 +1580,8 @@ public class Engine implements Notifier, Aborter {
 	public Collection<String> getUnreachableFunctions(int nodeNumber, int coreNumber) {
 		return m_sections.getUnreachableFunctions(nodeNumber, coreNumber);
 	}
-	
-	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){
-		
+			
+	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){		
 		m_loadStartTime = System.currentTimeMillis();
 		
 		notify(src, Notifier.HOLD_MESSAGES, "");
@@ -1870,7 +1879,7 @@ public class Engine implements Notifier, Aborter {
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("References not resolved on any active core"));
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}
 	}
 
