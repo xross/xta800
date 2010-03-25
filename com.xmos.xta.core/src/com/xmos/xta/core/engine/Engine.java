@@ -579,6 +579,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void removeFromEndPoint(CommandSource src) {
+		m_fromEndpointName = "";
 		m_fromEndPoints.clear();
 		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
 	}
@@ -606,6 +607,7 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void removeToEndPoint(CommandSource src) {
+		m_toEndpointName = "";
 		m_toEndPoints.clear();
 		notify(src, Notifier.NOTIFY_TO_END_POINT_SET, "");
 	}
