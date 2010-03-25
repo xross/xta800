@@ -65,7 +65,7 @@ public class Status extends Command {
     	console.display(String.format("Frequency:"));
     	for (int nodeNumber : engine.getXeLoader().getNodeNumbers()) {
     		double mhz = (double)engine.getFrequency(nodeNumber);
-    		console.display(String.format(" Node %d, %.1f Mhz\n", nodeNumber, mhz));
+    		console.display(String.format(" Node %d, %.1f MHz\n", nodeNumber, mhz));
     	}
 
     	for (MemoryImage memoryImage : engine.getMemoryImages()) {
