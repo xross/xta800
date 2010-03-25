@@ -44,19 +44,6 @@ public class Edges {
 		return m_prevNodes;
 	}
 
-	public int getNextNodesSize() {
-		if(m_nextNodes == null) return 0;
-		return m_nextNodes.size();
-	}
-
-	public int getPrevNodesSize() {
-		if(m_prevNodes == null) return 0;
-		return m_prevNodes.size();
-	}
-
-	public void clearNextNodes() {
-		m_nextNodes = null;
-	}
 
 	public void addNextNode(Node node) {
 		getNextNodes().add(node);

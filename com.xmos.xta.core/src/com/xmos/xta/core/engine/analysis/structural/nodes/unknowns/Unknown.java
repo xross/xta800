@@ -5,7 +5,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.references.Reference;
 
-public abstract class Unknown implements Comparable<Unknown> {
+public abstract class Unknown  {
 
 	public enum State {
 		UNKNOWN,
@@ -78,10 +78,6 @@ public abstract class Unknown implements Comparable<Unknown> {
 		return m_references;
 	}
 
-	public void setState(State state) {
-		m_state = state;
-	}
-
 	private void initialise(Route route, Node node, Type type, State state, Source source, Reference[] references) {
 		m_route = route;
 		m_node = node;
@@ -90,7 +86,7 @@ public abstract class Unknown implements Comparable<Unknown> {
 		m_source = source;
 		m_references = references;
 	}
-
+/*
 	public int compareTo(Unknown o) {
 		int value = m_node.compareTo(o.m_node);
 		if (value != 0)
@@ -117,4 +113,5 @@ public abstract class Unknown implements Comparable<Unknown> {
 
 		return 0;
 	}
+*/	
 }
