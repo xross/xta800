@@ -28,7 +28,7 @@ public class Echo extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " \"text\": prints the text to the console";
+        return name() + " \"text\": Prints the text to the console";
     }
 
     public Command clone(String[] args, int index) {

@@ -14,6 +14,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 public class SourceLine implements Line {
 	private String             m_line;
 	private long               m_lineNumber;
+	private List<Long>         m_statementPcs;
 	private List<Long>         m_pcs;
 	private SourceMapper       m_sourceMapper;
 	private SourceFile         m_sourceFile;
@@ -38,6 +39,13 @@ public class SourceLine implements Line {
 		return m_pcs;
 	}
 	
+	public Collection<Long> getStatementPcs() {
+		if (m_statementPcs == null) {
+			initialiseStatementPcsMap();
+		}		
+		return m_statementPcs;
+	}
+
 	public long getLineNumber() {
 		return m_lineNumber;
 	}
@@ -58,6 +66,17 @@ public class SourceLine implements Line {
               	m_pcs.add(pc);
             }
         }
+    }
+
+    private void initialiseStatementPcsMap() {
+    	m_statementPcs = new ArrayList<Long>();
+    	
+    	Collection<Long> statementPcs = m_debugEngine.getStatementPcsMatchingPath(
+    			m_sourceFile.getFullFileName(), m_lineNumber);
+
+    	for (long statementPc : statementPcs) {
+        	m_statementPcs.add(statementPc);
+    	}
     }
 
     private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
