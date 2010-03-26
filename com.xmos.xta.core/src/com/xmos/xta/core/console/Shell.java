@@ -68,10 +68,6 @@ public class Shell {
     	return m_commandHistory;
     }
 
-    public void addToCommandHistory(Command command) {
-    	m_commandHistory.add(command);
-    }
-
     public void addCommand(Command command) {
     	m_commands.add(command);
     }
@@ -93,7 +89,7 @@ public class Shell {
 			m_commands.addAll(commands);
     	}
     }
-
+/*
     public Vector<String> getHistoryStrings() {
     	Vector<String> historyStrings = new Vector<String>();
     	for (Command command : m_commandHistory) {
@@ -107,7 +103,7 @@ public class Shell {
     		m_commandHistory.add(new Invalid(historyString, "", null));
     	}
     }
-
+*/
 	public String getPrompt() {
 		return m_prompt;
 	}

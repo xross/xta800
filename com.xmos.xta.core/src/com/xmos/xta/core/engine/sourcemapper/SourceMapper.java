@@ -55,6 +55,7 @@ public class SourceMapper {
         m_sourceFiles = createSourceFiles(src, engine, xeLoader, nodeNumber, coreNumber);
 	}
 
+	//GUI only
     public File findFileForSourceFile(SourceFile sourceFile, FileFinder fileFinder) {
     	if (fileFinder == null) {
     		return null;
@@ -102,6 +103,7 @@ public class SourceMapper {
     	return (sourceLastModified > m_xeLastModified);
 	}
 
+	//GUI only
     public String getDebugFileName(String diskFileName) {
         for (SourceFile sourceFile : m_sourceFiles) {
         	try {
@@ -128,6 +130,7 @@ public class SourceMapper {
         return null;
     }
 
+	//GUI only
 	public List<Function> getFunctions() {
         return m_functions;
     }

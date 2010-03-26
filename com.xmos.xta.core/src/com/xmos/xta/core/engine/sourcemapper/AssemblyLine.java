@@ -11,6 +11,7 @@ public class AssemblyLine implements Line {
 	private Map<String, Set<Long>> m_labels;
 	private static final int WIDTH = 20;
 
+	//GUI only
 	public static String getLeadingWhiteSpace() {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < WIDTH; i++) {
@@ -41,7 +42,8 @@ public class AssemblyLine implements Line {
 		m_instructionNode = instructionNode;
 		m_labels = labels;
 	}
-
+	
+	//GUI only
 	public static String [] getResourceNames(){
 		return m_resourceName;
 	}
@@ -50,6 +52,7 @@ public class AssemblyLine implements Line {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}
 
+	//GUI only
 	public String getPreText() {
 		StringBuffer preText = new StringBuffer();
 		for (String key : m_labels.keySet()) {
@@ -71,6 +74,8 @@ public class AssemblyLine implements Line {
 
 		return preText.toString();
 	}
+
+	//GUI only
 	public String getEmptyText() {
 		StringBuffer preText = new StringBuffer();
 		for (int i = preText.length(); i < WIDTH; i++) {
@@ -79,6 +84,7 @@ public class AssemblyLine implements Line {
 		return preText.toString();
 	}
 
+	//GUI only
 	public String getText() {
 		XtaInstruction inst  = m_instructionNode.getXtaInstruction();
 		String operandString = inst.getOperandString();
@@ -136,10 +142,12 @@ public class AssemblyLine implements Line {
 	    }
 	}
 
+	//GUI only
 	private long scale(long x) {
 		return x << 1;
 	}
 
+	//GUI only
 	public long getPc() {
 		return m_instructionNode.getXtaInstruction().getPc();
 	}

@@ -205,6 +205,7 @@ public class Scripter {
 		return m_uniqueReferences;
 	}
 
+	//GUI only
 	public boolean promptUser() {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
 			if (scripterReference.isModifiable()) {
@@ -296,10 +297,6 @@ public class Scripter {
 
 	public void setEmbedFileName(String embedFileName) {
 		m_embedFileName = embedFileName;
-	}
-
-	public String getEmbedFileName() {
-		return m_embedFileName;
 	}
 
 	Reference createReferenceForUnknown(Unknown unknown) {

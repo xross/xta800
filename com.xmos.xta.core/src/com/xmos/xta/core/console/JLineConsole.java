@@ -59,13 +59,6 @@ public class JLineConsole extends Console {
 		return m_hasEscaped;
 	}
 
-	public void setHasEscaped() {
-		m_hasEscaped = true;
-	}
-
-	public void setFileRedirect(String fileName) {
-	}
-
 	private void reportError() {
 		System.out.printf("internal error: Problem reading console input (aborting)..\n");
 	    System.out.printf("try using -DConsole=Basic\n");

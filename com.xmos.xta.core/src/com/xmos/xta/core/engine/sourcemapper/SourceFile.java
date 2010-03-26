@@ -53,6 +53,8 @@ public class SourceFile implements Comparable<SourceFile> {
 		return m_debugFile.getFile();
 	}
 
+
+	//GUI only
 	public SourceLine getLineForPc(long pc) {
 		if (m_pcToLine == null) {
 			initialisePcToLineMap();
@@ -99,7 +101,8 @@ public class SourceFile implements Comparable<SourceFile> {
 		}
 		inputFp.close();
 	}	
-	
+
+	//GUI only
 	private void initialisePcToLineMap() {
 		m_pcToLine = new NonIteratableMap<Long, SourceLine>();
 		
