@@ -1,0 +1,56 @@
+[EMMA v2.1.5124 (stable) report, generated Fri Mar 26 11:19:29 GMT 2010]
+-------------------------------------------------------------------------------
+OVERALL COVERAGE SUMMARY:
+
+[class, %]	[method, %]	[block, %]	[line, %]	[name]
+95%  (171/180)!	39%  (680/1734)!	27%  (9255/33984)!	26%  (1712/6685)!	all classes
+
+OVERALL STATS SUMMARY:
+
+total packages:	37
+total classes:	180
+total methods:	1734
+total executable files:	164
+total executable lines:	6685
+
+COVERAGE BREAKDOWN BY PACKAGE:
+
+[class, %]	[method, %]	[block, %]	[line, %]	[name]
+0%   (0/1)!	0%   (0/41)!	0%   (0/484)!	0%   (0/106)!	com.xmos.libs.isa
+0%   (0/1)!	0%   (0/10)!	0%   (0/114)!	0%   (0/25)!	com.xmos.xta.core.engine.instructions
+0%   (0/1)!	0%   (0/13)!	0%   (0/173)!	0%   (0/42)!	com.xmos.xta.core.engine.sourcemapper
+100% (1/1)	4%   (2/57)!	3%   (70/2188)!	4%   (16.9/426)!	com.xmos.xta.core.engine.scripter
+100% (1/1)	4%   (1/23)!	7%   (33/464)!	7%   (8/116)!	com.xmos.xta.core.engine.defines
+83%  (5/6)!	16%  (26/165)!	9%   (426/4665)!	9%   (87.3/950)!	com.xmos.xta.core.engine
+100% (1/1)	10%  (2/20)!	14%  (91/649)!	21%  (19.9/96)!	com.xmos.xta.core.engine.sections
+100% (2/2)	24%  (8/33)!	16%  (126/772)!	15%  (24.8/166)!	com.xmos.libs.xeloader
+100% (1/1)	67%  (2/3)!	16%  (13/79)!	24%  (3.9/16)!	com.xmos.xta.core.engine.debugger
+100% (1/1)	20%  (1/5)!	17%  (28/162)!	10%  (4/42)!	com.xmos.libs.proginfoloader
+100% (4/4)	22%  (7/32)!	18%  (137/763)!	21%  (28.6/138)!	com.xmos.xta.core.engine.utils
+88%  (14/16)!	17%  (40/232)!	19%  (965/5030)!	16%  (197.4/1208)!	jline
+100% (7/7)	31%  (16/52)!	22%  (127/567)!	20%  (23/114)!	com.xmos.xta.core.console.commands.scripter
+100% (25/25)	56%  (108/194)!	27%  (746/2808)!	34%  (154.9/461)!	com.xmos.xta.core.console.commands.list
+100% (1/1)	100% (7/7)	30%  (120/400)!	37%  (18.6/50)!	com.xmos.xta.core.console.commands.status
+100% (1/1)	100% (9/9)	31%  (88/288)!	28%  (17/60)!	com.xmos.xta.core.console.commands.source
+88%  (7/8)!	44%  (24/54)!	32%  (344/1065)!	36%  (82.1/226)!	com.xmos.xta.core.console
+94%  (16/17)!	16%  (21/135)!	33%  (858/2575)!	18%  (76.9/419)!	com.xmos.xta.core.engine.references.types
+100% (13/13)	40%  (43/108)!	35%  (418/1182)!	35%  (77/221)!	com.xmos.xta.core.console.commands.remove
+100% (10/10)	71%  (58/82)	36%  (655/1829)!	40%  (144/362)!	com.xmos.xta.core.console.commands.print
+100% (4/4)	46%  (6/13)!	37%  (26/71)!	41%  (9.8/24)!	com.xmos.libs.util
+100% (2/2)	47%  (7/15)!	38%  (47/123)!	38%  (10/26)!	com.xmos.xta.core.console.commands.debug
+100% (5/5)	62%  (13/21)!	43%  (353/826)!	48%  (66.6/138)!	com.xmos.xta.core.console.completors
+80%  (4/5)!	61%  (31/51)!	48%  (572/1183)!	40%  (87.9/220)!	com.xmos.xta.core.console.commands
+100% (11/11)	63%  (59/94)!	49%  (865/1776)!	47%  (153.7/325)!	com.xmos.xta.core.console.commands.set
+100% (10/10)	60%  (52/86)!	49%  (693/1417)!	46%  (109.8/240)!	com.xmos.xta.core.console.commands.add
+100% (11/11)	57%  (45/79)!	50%  (530/1066)!	48%  (98.9/205)!	com.xmos.xta.core.console.commands.config
+100% (1/1)	86%  (6/7)	53%  (48/91)!	46%  (13/28)!	com.xmos.xta.core.console.commands.exit
+100% (1/1)	90%  (9/10)	57%  (181/317)!	64%  (36/56)!	com.xmos.xta.core.console.commands.help
+100% (2/2)	77%  (10/13)	64%  (105/163)!	62%  (16/26)!	com.xmos.xta.core.console.commands.load
+100% (3/3)	92%  (23/25)	76%  (225/297)!	70%  (45/64)!	com.xmos.xta.core.console.commands.analyze
+100% (2/2)	100% (12/12)	83%  (125/150)	82%  (33/40)	com.xmos.xta.core.console.commands.version
+100% (1/1)	75%  (3/4)	87%  (33/38)	96%  (2.9/3)	com.xmos.xta.core.engine.analysis.structural.nodes
+100% (1/1)	100% (8/8)	97%  (62/64)	93%  (13/14)	com.xmos.xta.core.console.commands.echo
+100% (1/1)	100% (7/7)	100% (34/34)	100% (9/9)	com.xmos.xta.core.console.commands.clear
+100% (1/1)	100% (7/7)	100% (66/66)	100% (13/13)	com.xmos.xta.core.console.commands.history
+100% (1/1)	100% (7/7)	100% (45/45)	100% (10/10)	com.xmos.xta.core.console.commands.pwd
+-------------------------------------------------------------------------------
