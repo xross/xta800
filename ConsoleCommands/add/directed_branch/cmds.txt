@@ -1,0 +1,5 @@
+add branch call1,0x1000e 0x10012
+add branch call2,0x1000e 0x10014
+analyse function main
+print structure -
+exit
