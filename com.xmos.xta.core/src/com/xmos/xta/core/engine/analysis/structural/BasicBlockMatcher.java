@@ -10,10 +10,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 
 public class BasicBlockMatcher {
-
 	private BlockNode m_block;
 	private Node m_treeStart;
-	private Node m_lastInstruction;
 
 	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
 		m_treeStart = treeStart;
@@ -26,7 +24,6 @@ public class BasicBlockMatcher {
 				nodes.add(node);
 			}
 		}
-		m_lastInstruction = nodes.getLast();
 		if (isStart) {
 			LinkedList<InstructionNode> insts = new LinkedList<InstructionNode>();
 			for(Node n : nodes){

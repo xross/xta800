@@ -112,7 +112,7 @@ public class Scripter {
 		}
 	}
 	
-	public String getUniqueLabel() {
+	String getUniqueLabel() {
 		int i = 0;
 		String label = "label_" + Integer.toString(i);
 		while (labelExists(label)) {
