@@ -38,7 +38,8 @@ public class SourceLine implements Line {
 		}		
 		return m_pcs;
 	}
-	
+
+	//GUI only
 	public Collection<Long> getStatementPcs() {
 		if (m_statementPcs == null) {
 			initialiseStatementPcsMap();

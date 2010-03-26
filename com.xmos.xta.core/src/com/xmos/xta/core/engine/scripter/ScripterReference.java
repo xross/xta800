@@ -16,7 +16,7 @@ import com.xmos.xta.core.engine.sections.ScriptableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 
-public class ScripterReference implements Comparable<ScripterReference> {
+public class ScripterReference {
 	private Engine m_engine;
 	private boolean m_isEnabled;
 	private boolean m_isModifiable;
@@ -37,14 +37,6 @@ public class ScripterReference implements Comparable<ScripterReference> {
 		if (!baseRef.isPortable()) {
 			tryHighestLevelReference(scripter, baseRef);
 		}
-	}
-
-	public int compareTo(ScripterReference o) {
-		return m_baseRef.toString().compareTo(o.m_baseRef.toString());
-	}
-
-	public boolean equals(ScripterReference o) {
-		return m_baseRef.equals(o.m_baseRef);
 	}
 
 	public void setModifiable(boolean isModifiable) {

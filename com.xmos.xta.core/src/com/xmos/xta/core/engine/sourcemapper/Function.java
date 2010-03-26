@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.sourcemapper;
 
 import java.util.List;
 
-public class Function implements Line, Comparable<Object> {
+public class Function implements Line {
 
 	private String m_functionName;
 	private List<AssemblyLine> m_assembly;
@@ -12,6 +12,7 @@ public class Function implements Line, Comparable<Object> {
 		m_functionName = name;
 	}
 
+	//GUI only
 	public List<AssemblyLine> getChildren() {
 		return m_assembly;
 	}
@@ -22,21 +23,6 @@ public class Function implements Line, Comparable<Object> {
 
 	public long getLineNumber() {
 		return 0;
-	}
-
-	public int compareTo(Object o) throws ClassCastException {
-		Function f = (Function) o;
-		if (m_functionName.charAt(0) == '_') {
-			if (f.m_functionName.charAt(0) == '_')
-				return m_functionName.compareTo(f.m_functionName);
-			else
-				return 1;
-		} else {
-			if (f.m_functionName.charAt(0) == '_')
-				return -1;
-			else
-				return m_functionName.compareTo(f.m_functionName);
-		}
 	}
 
 	public boolean containsPc(long pc) {
