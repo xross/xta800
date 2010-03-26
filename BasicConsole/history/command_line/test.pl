@@ -10,7 +10,7 @@ my $noBuild = shift(@ARGV);
 if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/command_line.log 2>&1");
 }
-system("java -DConsole=Basic -jar \$INSTALLS_DIR/xta.jar " .
+system("java -cp \$XMOS_ROOT/infr_libs_java/com.xmos.libs/jars/emma.jar emma run -ix -org.* -quiet -raw -outfile ./coveragedata -DConsole=Basic -jar \$INSTALLS_DIR/xta.jar " .
 
        "-add branch 0x10000 0x10000 " .
 
