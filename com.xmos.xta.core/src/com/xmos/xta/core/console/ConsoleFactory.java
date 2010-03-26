@@ -11,9 +11,10 @@ public class ConsoleFactory {
 		
 	    String consoleProperty = System.getProperty("Console");
 	    
-	    System.out.println("consoleProperty : " + consoleProperty );
+	    //System.out.println("consoleProperty : " + consoleProperty );
 	    
 	    if ((consoleProperty != null) && (consoleProperty.equals("Basic"))) {
+	    	//System.out.println("basic console" );
 	    	return new BasicConsole();
 	    }
 
