@@ -9,6 +9,10 @@ import com.xmos.xta.core.engine.CommandSource.Type;
 
 public class BasicConsole extends Console {
 
+	public BasicConsole(){
+    	System.out.println("do it basic console" );
+	}
+	
 	public void display(String str) {
 		if (!redirectToFile(str)) {
 			System.out.printf("%s", str);
