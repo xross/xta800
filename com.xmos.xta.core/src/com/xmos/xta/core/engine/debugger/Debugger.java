@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.debugger;
 
+import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -14,7 +15,7 @@ public class Debugger {
 		m_engine = engine;
 	}
 
-	public void dumpControlFlow(CommandSource src, String functionName) {
+	public void dumpControlFlow(CommandSource src, String functionName, Console console) {
 		boolean hit = false;		
 		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
 			
@@ -23,7 +24,7 @@ public class Debugger {
 		
 		    for (FunctionContainer functionContainer : callGraph.getFunctionContainers()) {
 			    if (functionContainer.getFunctionName().equals(functionName)) {
-				    functionContainer.dumpGraph();
+				    functionContainer.dumpGraph(console);
 				    hit = true;
 			    }
 		    }
