@@ -6,7 +6,13 @@ import com.xmos.xta.core.engine.Engine;
 
 public class ConsoleFactory {
 	public static Console buildConsole(Engine engine) {
+		
+		
+		
 	    String consoleProperty = System.getProperty("Console");
+	    
+	    System.out.println("consoleProperty : " + consoleProperty );
+	    
 	    if ((consoleProperty != null) && (consoleProperty.equals("Basic"))) {
 	    	return new BasicConsole();
 	    }

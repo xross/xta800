@@ -69,6 +69,7 @@ public class SourceLine implements Line {
         }
     }
 
+	//GUI only
     private void initialiseStatementPcsMap() {
     	m_statementPcs = new ArrayList<Long>();
     	
