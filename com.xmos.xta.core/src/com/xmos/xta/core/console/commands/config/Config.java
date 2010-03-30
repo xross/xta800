@@ -9,11 +9,13 @@ public class Config extends CommandContainer {
 	static private Command[] m_options = {
 		new Case(),
 		new Freq(),
+		new From(),		
 		new Scale(),
 		new SrcPaths(),
 		new Threads(),
 		new TimeOut(),
 		new TimingErrors(),
+		new To(),		
 		new Verbosity(),
 		new WarnAsErrors(),
 	};

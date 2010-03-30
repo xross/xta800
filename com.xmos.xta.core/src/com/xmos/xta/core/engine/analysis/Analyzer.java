@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.PathPoints;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.routes.Route;
@@ -53,20 +54,20 @@ public class Analyzer {
 	    return true;
 	}
 
-	public boolean analyzePath(CommandSource src, String fromEndpointName, String toEndpointName) {
-        RouteContainer routeContainer = new RouteContainer(fromEndpointName, toEndpointName, m_engine, src);
+	public boolean analyzePath(CommandSource src, PathPoints pathPoints) {
+        RouteContainer routeContainer = new RouteContainer(pathPoints.getFromName(), pathPoints.getToName(), m_engine, src);
 
 		boolean routeFound = false;
 		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
 
 			boolean fromFound = true;
-			Reference fromEndpoint = m_engine.getFromEndPoint(activeCore);
+			Reference fromEndpoint = pathPoints.getFrom(activeCore);
 		    if ((fromEndpoint == null) || fromEndpoint.getRef().equals("")) {
 		    	fromFound = false;
 		    }
 
 			boolean toFound = true;
-			Reference toEndpoint = m_engine.getToEndPoint(activeCore);
+			Reference toEndpoint = pathPoints.getTo(activeCore);
 		    if ((toEndpoint == null) || toEndpoint.getRef().equals("")) {
 		    	toFound = false;
 		    }

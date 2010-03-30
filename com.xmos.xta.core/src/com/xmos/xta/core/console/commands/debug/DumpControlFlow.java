@@ -48,6 +48,6 @@ public class DumpControlFlow extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        engine.getDebugger().dumpControlFlow(getSrc(), m_functionName);
+        engine.getDebugger().dumpControlFlow(getSrc(), m_functionName, console);
     }
 }

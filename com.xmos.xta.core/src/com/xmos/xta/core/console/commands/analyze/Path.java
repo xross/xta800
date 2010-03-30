@@ -66,15 +66,11 @@ public class Path extends Command {
 			return;
 
 		if (hasEndPoints()) {
-			boolean ok = engine.setFromEndPoint(getSrc(), m_fromRef);
-			if (!ok) {
+			boolean fromOk = engine.getPathPoints().setFrom(getSrc(), m_fromRef);
+			boolean toOk = engine.getPathPoints().setTo(getSrc(), m_toRef);
+					
+			if (!fromOk || !toOk)
 				return;
-			}
-
-			ok = engine.setToEndPoint(getSrc(), m_toRef);
-			if (!ok) {
-				return;
-			}
 		}
 		engine.analyzePath(getSrc());
     }

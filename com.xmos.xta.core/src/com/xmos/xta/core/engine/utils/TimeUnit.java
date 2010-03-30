@@ -125,7 +125,7 @@ public class TimeUnit {
 	public String getUnitsStr() {
        	switch (m_units) {
        	case NS:     return Conversion.getUnitsString(m_ns);
-       	case MHZ:    return "MHzy";
+       	case MHZ:    return "MHz";
        	case CYCLES: return "cycles";
        	}
        	assert(false);

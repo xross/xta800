@@ -100,11 +100,8 @@ public class Engine implements Notifier, Aborter {
 	private NodeCoreCollection<CallGraph> m_callGraphs;
 	private Collection<FileLocation> m_userSpecifedFileLocations;
 	private Scripter m_scripter;
-	private String m_fromEndpointName;
-	private String m_toEndpointName;	
-	private Map<NodeCorePair, Reference> m_fromEndPoints;
-	private Map<NodeCorePair, Reference> m_toEndPoints;
 	private Collection<NodeCorePair> m_activeCores;
+	private PathPoints m_pathPoints;
 	private Debugger m_debugger;
 
 	public Engine(Config config) {
@@ -129,10 +126,7 @@ public class Engine implements Notifier, Aborter {
 		m_numErrors = 0;
 		m_scripter = new Scripter(this);
 		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
-		m_fromEndpointName = "";
-		m_toEndpointName = "";
-		m_fromEndPoints = new IteratableMap<NodeCorePair, Reference>();
-		m_toEndPoints = new IteratableMap<NodeCorePair, Reference>();
+		m_pathPoints = new PathPoints(this);
 		m_debugger = new Debugger(this);
 		ReferenceTypeFactory.setEngine(this);
 	}
@@ -183,14 +177,10 @@ public class Engine implements Notifier, Aborter {
 		return m_callGraphs.get(core.getNode(), core.getCore());
 	}
 
-	public Reference getFromEndPoint(NodeCorePair core) {
-		return m_fromEndPoints.get(core);				
+	public PathPoints getPathPoints() {
+		return m_pathPoints;
 	}
-
-	public Reference getToEndPoint(NodeCorePair core) {
-		return m_toEndPoints.get(core);				
-	}
-
+	
 	public Debugger getDebugger() {
 		return m_debugger;
 	}
@@ -276,11 +266,8 @@ public class Engine implements Notifier, Aborter {
 			m_routeContainers.clear();
 			m_selectedRoute = null;
 			m_defines.clear();
+			m_pathPoints.clear();
 			Route.resetRouteCount();
-			m_fromEndpointName = "";
-			m_toEndpointName = "";
-			m_fromEndPoints.clear();
-			m_toEndPoints.clear();
 	
 			runSrcLevelCommands(src, commandRunner);
 
@@ -298,7 +285,7 @@ public class Engine implements Notifier, Aborter {
 
 	public boolean analyzePath(CommandSource src) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		return analyzer.analyzePath(src, m_fromEndpointName, m_toEndpointName);
+		return analyzer.analyzePath(src, m_pathPoints);
 	}
 
 	public Notifier getNotifier() {
@@ -510,81 +497,6 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	// ===================================================================== //
-	// From/To Endpoints.
-	// ===================================================================== //	
-	public boolean setFromEndPoint(CommandSource src, String ref) {
-		m_fromEndpointName = ref;
-		m_fromEndPoints.clear();
-		
-		boolean hit = false;		
-		for (NodeCorePair activeCore : m_activeCores) {
-			Reference fromEndPoint = ReferenceFactory.createReference(ref, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
-			
-			if (resolveReference(fromEndPoint)) {
-				m_fromEndPoints.put(activeCore, fromEndPoint);
-				hit = true;
-			}
-		}
-		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
-			return false;
-		}
-		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
-		return true;
-	}
-
-	public void removeFromEndPoint(CommandSource src) {
-		m_fromEndpointName = "";
-		m_fromEndPoints.clear();
-		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
-	}
-
-	public boolean setToEndPoint(CommandSource src, String ref) {
-		m_toEndpointName = ref;
-		m_toEndPoints.clear();
-		
-		boolean hit = false;		
-		for (NodeCorePair activeCore : m_activeCores) {
-			Reference toEndPoint = ReferenceFactory.createReference(ref, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
-			
-			if (resolveReference(toEndPoint)) {
-				m_toEndPoints.put(activeCore, toEndPoint);
-				hit = true;
-			}
-		}
-		if (!hit) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
-			return false;
-		}
-		notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
-		return true;		
-	}
-
-	public void removeToEndPoint(CommandSource src) {
-		m_toEndpointName = "";
-		m_toEndPoints.clear();
-		notify(src, Notifier.NOTIFY_TO_END_POINT_SET, "");
-	}
-
-	public Map<NodeCorePair, Reference> getFromEndPoints() {
-		return m_fromEndPoints;
-	}
-
-	public Map<NodeCorePair, Reference> getToEndPoints() {
-		return m_toEndPoints;
-	}
-
-	public String getFromEndPointName() {
-		return m_fromEndpointName;
-	}
-
-	public String getToEndPointName() {
-		return m_toEndpointName;
-	}
-
-	// ===================================================================== //
 	// Function Names/Pcs
 	// ===================================================================== //
 	public Set<String> getFunctionNames(int nodeNumber, int coreNumber) {
@@ -645,7 +557,8 @@ public class Engine implements Notifier, Aborter {
 	// ===================================================================== //
 	// Active Core Methods
 	// ===================================================================== //
-	public void addActiveCores() {
+	public void addActiveCores(CommandSource src) {
+		m_activeCores.clear();
 		if (m_xeLoader.isLoaded()) {
 			for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
 				for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
@@ -653,6 +566,8 @@ public class Engine implements Notifier, Aborter {
 				}
 			}
 		}
+		m_pathPoints.refresh();
+		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}	
 
 	public void addActiveCore(CommandSource src, NodeCorePair activeCore) {		
@@ -660,6 +575,9 @@ public class Engine implements Notifier, Aborter {
 			if (!m_activeCores.contains(activeCore)) {
 				m_activeCores.add(activeCore);
 			}						
+			m_pathPoints.refresh();
+			notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
+			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"node: %d, Core: %d not currently loaded", 
@@ -667,11 +585,13 @@ public class Engine implements Notifier, Aborter {
 		}		
 	}
 
-	public void removeActiveCores() {
+	public void removeActiveCores(CommandSource src) {
 		m_activeCores.clear();
+		m_pathPoints.refresh();
+		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}
 
-	public void removeActiveCores(int nodeNumber) {
+	public void removeActiveCores(CommandSource src, int nodeNumber) {
 		Iterator<NodeCorePair> iter = m_activeCores.iterator();
 		while (iter.hasNext()) {
 			NodeCorePair activeCore = iter.next();
@@ -679,10 +599,14 @@ public class Engine implements Notifier, Aborter {
 				iter.remove();
 			}
 		}
+		m_pathPoints.refresh();
+		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}
-	
-	public void removeActiveCore(NodeCorePair activeCore) {
+
+	public void removeActiveCore(CommandSource src, NodeCorePair activeCore) {
 		m_activeCores.remove(activeCore);
+		m_pathPoints.refresh();
+		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}
 
 	public Collection<NodeCorePair> getActiveCores() {

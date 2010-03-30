@@ -61,17 +61,17 @@ public class Core extends Command {
 		
 		if (m_coreId.equals("*")) {
 			if (m_nodeId.equals("")) {
-				engine.removeActiveCores();
+				engine.removeActiveCores(getSrc());
 				
 			} else {
 		        try { 
-					engine.removeActiveCores(Integer.parseInt(m_nodeId));
+					engine.removeActiveCores(getSrc(), Integer.parseInt(m_nodeId));
 		        } catch (NumberFormatException e) { }				
 			}
 		} else {
 			NodeCorePair ncPair = getNodeCore(engine, m_nodeId, m_coreId);
 			if (ncPair != null) {
-		        engine.removeActiveCore(ncPair);
+		        engine.removeActiveCore(getSrc(), ncPair);
 			}
 		}
     }
