@@ -26,7 +26,6 @@ public class CallGraph {
 		m_uncalledFunctions = new NonIteratableSet<FunctionReferenceNode>();
 		m_containingFunction = new NonIteratableMap<FunctionReferenceNode, FunctionContainer>();
 		makeCalleeGraph(functionContainers);
-		dumpCallGraph();
 	}
 
 	private void dumpCallGraph(){
