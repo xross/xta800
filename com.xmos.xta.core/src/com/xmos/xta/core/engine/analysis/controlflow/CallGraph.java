@@ -26,8 +26,23 @@ public class CallGraph {
 		m_uncalledFunctions = new NonIteratableSet<FunctionReferenceNode>();
 		m_containingFunction = new NonIteratableMap<FunctionReferenceNode, FunctionContainer>();
 		makeCalleeGraph(functionContainers);
+		dumpCallGraph();
 	}
 
+	private void dumpCallGraph(){
+		System.out.println("digraph {");
+		for(FunctionContainer fc : m_functionContainers){
+			
+			for(FunctionReferenceNode frn : fc.getFunctionReferenceNodes()){
+				if(frn.isKnownFunction()){
+					System.out.println(fc.getFunctionName() + " -> " + frn.getFunctionName() + ";");
+				}
+			}
+		}
+		System.out.println("}");
+	}
+	
+	
 	private void makeCalleeGraph(Set<FunctionContainer> functionContainers) {
 
 		for(FunctionContainer fc: functionContainers){
