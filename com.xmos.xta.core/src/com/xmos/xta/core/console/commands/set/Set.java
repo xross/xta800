@@ -8,7 +8,6 @@ public class Set extends CommandContainer {
 
 	static private Command[] m_options = {
 		new Exclusion(),
-		new From(),
 		new FunctionTime(),
 		new InstructionTime(),
 		new Loop(),
@@ -16,7 +15,6 @@ public class Set extends CommandContainer {
 		new LoopScope(),
 		new PathTime(),
 		new Required(),
-		new To(),
 	};
 
 	public Set() { super(COMMAND_NAMES); }

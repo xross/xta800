@@ -10,7 +10,6 @@ public class Remove extends CommandContainer {
 		new Branch(),
 		new Core(),
 		new Exclusion(),
-		new From(),
 		new FunctionTime(),
 		new InstructionTime(),
 		new Loop(),
@@ -18,7 +17,6 @@ public class Remove extends CommandContainer {
 		new LoopScope(),
 		new PathTime(),
 		new Route(),
-		new To(),
 	};
 
 	public Remove() { super(COMMAND_NAMES); }

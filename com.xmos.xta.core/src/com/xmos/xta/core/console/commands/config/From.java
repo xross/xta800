@@ -1,4 +1,4 @@
-package com.xmos.xta.core.console.commands.set;
+package com.xmos.xta.core.console.commands.config;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -43,6 +43,6 @@ public class From extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        engine.setFromEndPoint(getSrc(), m_fromRef);
+        engine.getPathPoints().setFrom(getSrc(), m_fromRef);
     }
 }

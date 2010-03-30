@@ -60,7 +60,7 @@ public class Core extends Command {
 			return;
 
     	if ((m_nodeId.length() == 0) && m_coreId.equals("*")) {
-    		engine.addActiveCores();
+    		engine.addActiveCores(getSrc());
     		return;
     	}
 		

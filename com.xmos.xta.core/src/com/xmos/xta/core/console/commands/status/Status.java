@@ -2,7 +2,6 @@ package com.xmos.xta.core.console.commands.status;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.MemoryImage;
@@ -11,7 +10,6 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Status extends Command {
@@ -100,16 +98,14 @@ public class Status extends Command {
 	    	}
     	}
 
-    	Map<NodeCorePair, Reference> fromEndPoints = engine.getFromEndPoints();
-    	for (NodeCorePair activeCore : fromEndPoints.keySet()) {
-    		console.display(String.format("From endpoint '%s', node: %d, core: %d\n", 
-    				fromEndPoints.get(activeCore), activeCore.getNode(), activeCore.getCore()));
+    	String fromEndPointName = engine.getPathPoints().getFromName();
+    	if (!fromEndPointName.equals("")) {
+   		    console.display(String.format("From endpoint '%s'\n", fromEndPointName));  
     	}
-
-    	Map<NodeCorePair, Reference> toEndPoints = engine.getToEndPoints();
-    	for (NodeCorePair activeCore : toEndPoints.keySet()) {
-    		console.display(String.format("To endpoint '%s', node: %d, core: %d\n", 
-    				toEndPoints.get(activeCore), activeCore.getNode(), activeCore.getCore()));
+    	
+    	String toEndPointName = engine.getPathPoints().getToName();
+    	if (!toEndPointName.equals("")) {
+    		console.display(String.format("To endpoint '%s'\n", toEndPointName));
     	}
     }
 }
