@@ -1,0 +1,36 @@
+echo "============= list cores"
+list cores
+
+echo "============= set invalid endopints"
+config from crap.xc:25
+config to crap.xc:26
+
+echo "============= set valid endopints"
+config from test.xc:25
+config to test.xc:26
+
+echo "============= display endopints"
+debug frompoints
+debug topoints
+
+echo "============= change active cores"
+remove core *
+
+echo "============= display endopints"
+debug frompoints
+debug topoints
+
+echo "============= analyze path"
+analyze path
+
+echo "============= change active cores"
+add core 0 0
+
+echo "============= display endopints"
+debug frompoints
+debug topoints
+
+echo "============= analyze path"
+analyze path
+
+print summary

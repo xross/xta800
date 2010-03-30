@@ -1,0 +1,22 @@
+echo "------------- point 1"
+status
+
+config from start
+config to stop
+echo "------------- point 2"
+status
+
+analyze path
+echo "------------- point 3"
+status
+
+config from test.xc:16
+config to test.xc:19
+analyze path
+echo "------------- point 4"
+status
+
+config from ""
+config to ""
+echo "------------- point 5"
+status
