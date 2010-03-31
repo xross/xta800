@@ -124,6 +124,7 @@ public class TraceDisplayer {
 	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException {
 		String isUnknown = instruction.getAttributes().getDisplayAsUnknown() ? "*" : " ";
 		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
+		String formsRecursion = instruction.getFormsRecursion() ? " [RECURSION]" : "";
 
      	XtaInstruction xtaInstruction = instruction.getXtaInstruction();
 		String functionName = xtaInstruction.getFunctionName();
@@ -133,7 +134,7 @@ public class TraceDisplayer {
 			functionOffsetString = functionName + " + " + xtaInstruction.getFunctionOffset();
 		}
 
-     	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s",
+     	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s%s",
      			isUnknown,
          		m_currentTime,
          		instruction.getAttributes().getFixedTime().getNs(),
@@ -141,7 +142,8 @@ public class TraceDisplayer {
            		functionOffsetString,
            		xtaInstruction.getNmenonic(),
            		xtaInstruction.getOperandString(),
-           		isUnresolved));
+           		isUnresolved, 
+           		formsRecursion));
 
      	if (xtaInstruction.canPause())
      		m_console.display(" (P)");

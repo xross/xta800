@@ -189,7 +189,6 @@ public class FunctionReferenceNodeAdder {
 		}
 	}
 
-
 	public Set<FunctionContainer> getFunctionContainers(){
 		return m_functionContainer;
 	}

@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
 public class Status {
 	public enum S {
-		COMPLETED, INFINITE, UNRESOLVED, ZERO, NOT_AVALIABLE
+		COMPLETED, INFINITE, UNRESOLVED, RECURSION, ZERO,
 	}
 	private S m_status;
 
@@ -39,6 +39,9 @@ public class Status {
 		if (s == S.COMPLETED &&  m_status == S.ZERO) {
 			m_status = S.COMPLETED;
 
+		} else if (m_status == S.RECURSION || s == S.RECURSION) {
+			m_status = S.RECURSION;
+
 		} else if (m_status == S.UNRESOLVED || s == S.UNRESOLVED) {
 			m_status = S.UNRESOLVED;
 
@@ -47,9 +50,6 @@ public class Status {
 
 		} else if (m_status == S.ZERO || s == S.ZERO) {
 			m_status = S.ZERO;
-
-		} else if (m_status == S.NOT_AVALIABLE || s == S.NOT_AVALIABLE) {
-			m_status = S.NOT_AVALIABLE;
 		}
 	}
 
@@ -57,10 +57,13 @@ public class Status {
 	    switch (m_status) {
 	    case INFINITE:
 	    	return "Infinity";
+	    	
+	    case RECURSION:
+	    	return "Recursion";
+	    	
 	    case UNRESOLVED:
 	    	return "Unresolved";
-	    case NOT_AVALIABLE:
-	    	return "n/a";
+	    	
 	    case COMPLETED:
 	    case ZERO:
 	    default:
