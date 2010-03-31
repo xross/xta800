@@ -18,7 +18,7 @@
   [-]status: Display current status
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
-      option: branch <from LABEL_REF> <to LABEL_REF> <to LABEL_REF> ... etc: Adds the given from/to references to the branches list
+      option: branch <from LABEL_REF> [<to LABEL_REF>]+: Adds the given from/to references to the branches list
       option: core [node id] <core id>: Add core to active set
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
       option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines
