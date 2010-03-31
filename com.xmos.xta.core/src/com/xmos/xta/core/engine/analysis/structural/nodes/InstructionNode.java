@@ -29,6 +29,10 @@ public class InstructionNode extends Node {
 		m_attributes = new InstructionNodeAttributes(this);
 	}
 
+	public String toString(){
+		return this.getXtaInstruction().toString();
+	}
+	
 	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
 		InstructionNode in = new InstructionNode(this);
 		in.m_attributes = new InstructionNodeAttributes(in);

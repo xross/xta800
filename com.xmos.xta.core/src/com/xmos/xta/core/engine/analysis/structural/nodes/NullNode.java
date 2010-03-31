@@ -2,10 +2,8 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -30,14 +28,6 @@ public class NullNode extends Node {
 
 	public LinkedList<XtaInstruction> getInstructions() {
 		return new LinkedList<XtaInstruction>();
-	}
-
-	public XtaInstruction getStartInstruction() {
-		return null;
-	}
-
-	public Set<Integer> getPCs() {
-		return new NonIteratableSet<Integer>();
 	}
 
 	public long getStartPc() {

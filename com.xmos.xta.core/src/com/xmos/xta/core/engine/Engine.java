@@ -1287,7 +1287,7 @@ public class Engine implements Notifier, Aborter {
 		for (NodeCorePair activeCore : m_activeCores) {
 
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
-					ReferenceClass.LABEL_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
 			boolean fromResolved = resolveReference(fromRef);
 			
 			if (fromResolved)			
@@ -1296,7 +1296,7 @@ public class Engine implements Notifier, Aborter {
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
 				Reference ref = ReferenceFactory.createReference(toRefString, 
-						ReferenceClass.LABEL_REF, activeCore.getNode(), activeCore.getCore());				
+						ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());				
 				toRefs.add(ref);
 			}		
 			boolean toResolved = true;
@@ -1325,7 +1325,7 @@ public class Engine implements Notifier, Aborter {
 		for (NodeCorePair activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
-					ReferenceClass.LABEL_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
 			boolean fromResolved = resolveReference(fromRef);
 			
 			if (fromResolved)
@@ -1334,7 +1334,7 @@ public class Engine implements Notifier, Aborter {
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
 				Reference ref = ReferenceFactory.createReference(toRefString, 
-						ReferenceClass.LABEL_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());				
+						ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());				
 				toRefs.add(ref);
 			}		
 			boolean toResolved = true;
@@ -1796,6 +1796,19 @@ public class Engine implements Notifier, Aborter {
 
 	private boolean validateRouteCount(){
 		return m_routes.size() >= getNumLastRoutesAnalyzed();
+	}
+
+	public boolean validateReference(String refString) {
+		boolean hit = false;
+		for (NodeCorePair activeCore : m_activeCores) {
+			Reference fromEndPoint = ReferenceFactory.createReference(refString, 
+					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+			
+			if (resolveReference(fromEndPoint)) {
+				hit = true;
+			}
+		}
+		return hit;
 	}
 }
 

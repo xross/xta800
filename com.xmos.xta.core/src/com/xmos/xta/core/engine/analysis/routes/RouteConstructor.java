@@ -424,6 +424,7 @@ public class RouteConstructor {
 				validNextNodes.removeAll(branchToNext.get(sn));
 			}
 		}
+		
 		return validNextNodes;
 	}
 
