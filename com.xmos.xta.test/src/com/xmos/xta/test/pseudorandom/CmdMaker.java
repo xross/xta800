@@ -36,7 +36,7 @@ public class CmdMaker {
 						StringBuffer refString = new StringBuffer();
 						
 						for (XtaPragma s : strings) {
-							Random r = new Random();
+							//Random r = new Random();
 							if(s.getType() == PragmaType.Function || strings.indexOf(s) == strings.size()-1){
 								refString.append(s.getLabel() + ",");
 							} else {
