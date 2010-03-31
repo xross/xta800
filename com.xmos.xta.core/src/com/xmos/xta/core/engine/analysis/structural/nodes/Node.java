@@ -23,6 +23,7 @@ public abstract class Node implements Comparable<Node> {
 	private boolean m_dominatorSetIsCompleteSet;
 	private Edges m_edges;
 	private boolean m_unresolved;
+	private boolean m_formsRecursion;
 	private boolean m_isFolded;
 	
 	public enum Case {
@@ -55,6 +56,8 @@ public abstract class Node implements Comparable<Node> {
 		m_id = s_numNodes++;
 		m_edges = new Edges();
 		m_isFolded = false;
+		m_unresolved = false;
+		m_formsRecursion = false;
 	}
 
 	public Node(Node node) {
@@ -62,6 +65,7 @@ public abstract class Node implements Comparable<Node> {
 		m_id = s_numNodes++;
 		m_isFolded = false;
 		m_unresolved = node.m_unresolved;
+		m_formsRecursion = node.m_formsRecursion;
 	}
 
 	public boolean isCondNode()             { return false; }
@@ -87,6 +91,14 @@ public abstract class Node implements Comparable<Node> {
 		return m_unresolved;
 	}
 
+	public void setFormsRecursion(boolean formsRecursion) {
+		m_formsRecursion = formsRecursion;
+	}
+
+	public boolean getFormsRecursion() {
+		return m_formsRecursion;
+	}	
+	
 	public int getId() {
 		return m_id;
 	}

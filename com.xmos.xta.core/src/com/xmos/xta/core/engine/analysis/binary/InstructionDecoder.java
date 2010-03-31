@@ -8,7 +8,6 @@ import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
-import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
@@ -22,7 +21,7 @@ public class InstructionDecoder {
 	private List<InstructionNode> m_orderedInstructions;
 	private XeLoader m_xeLoader;
 
-	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader, Config config) {
+	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader) {
 		m_nodeId = nodeId;
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;

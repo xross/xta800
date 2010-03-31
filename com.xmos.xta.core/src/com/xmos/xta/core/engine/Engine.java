@@ -198,34 +198,6 @@ public class Engine implements Notifier, Aborter {
 		m_srcPaths += ";.";
 	}
 
-	public Collection<Route> getRoute(int routeId) {
-		Collection<Route> routes = new ArrayList<Route>();
-		assert(validateRouteCount());
-		if (m_routes.isEmpty()){
-			return routes;
-		}
-		if (routeId == ROUTE_ID_LAST) {
-			assert(validateRouteCount());
-			int toIndex = m_routes.size();
-			int fromIndex = toIndex - getNumLastRoutesAnalyzed();
-			routes.addAll(m_routes.subList(fromIndex, toIndex));
-
-		} else if (routeId == ROUTE_ID_ALL) {
-		    for (Route route : m_routes) {
-				routes.add(route);
-		    }
-
-		} else {
-		    for (Route route : m_routes) {
-				if (route.getRouteId() == routeId) {
-					routes.add(route);
-					break;
-				}
-		    }
-		}
-		return routes;
-	}
-
 	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {		
 		notify(src, Notifier.CLEAR_LOG, "");
 
@@ -353,6 +325,34 @@ public class Engine implements Notifier, Aborter {
 		return false;
 	}
 
+	public Collection<Route> getRoute(int routeId) {
+		Collection<Route> routes = new ArrayList<Route>();
+		assert(validateRouteCount());
+		if (m_routes.isEmpty()){
+			return routes;
+		}
+		if (routeId == ROUTE_ID_LAST) {
+			assert(validateRouteCount());
+			int toIndex = m_routes.size();
+			int fromIndex = toIndex - getNumLastRoutesAnalyzed();
+			routes.addAll(m_routes.subList(fromIndex, toIndex));
+
+		} else if (routeId == ROUTE_ID_ALL) {
+		    for (Route route : m_routes) {
+				routes.add(route);
+		    }
+
+		} else {
+		    for (Route route : m_routes) {
+				if (route.getRouteId() == routeId) {
+					routes.add(route);
+					break;
+				}
+		    }
+		}
+		return routes;
+	}
+	
 	public boolean removeRoute(CommandSource src, int routeId) {
 		Collection<Route> routes = getRoute(routeId);
 		assert(validateRouteCount());
@@ -420,7 +420,6 @@ public class Engine implements Notifier, Aborter {
 	public boolean isBusy() {
 		return m_progressMonitor != null;
 	}
-
 
 	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
 		for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
@@ -1517,7 +1516,7 @@ public class Engine implements Notifier, Aborter {
 		InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 		
 		//Binary Stage
-		InstructionDecoder instructionDecoder = new InstructionDecoder(nodeNumber, coreNumber, xeLoader, m_config);
+		InstructionDecoder instructionDecoder = new InstructionDecoder(nodeNumber, coreNumber, xeLoader);
 		try {
 			instructionDecoder.decode();
 		} catch (Exception e) {
