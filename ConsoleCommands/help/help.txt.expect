@@ -103,7 +103,7 @@
       option: distribution <route id> [node id]: Display time distribution for the given route/node
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
-      option: branch <from LABEL_REF|*> <to LABEL_REF|*> <to LABEL_REF|*>: Removes the given from/to references from the branches list
+      option: branch <from LABEL_REF|*> [<to LABEL_REF|*>]+: Removes the given from/to references from the branches list
       option: core [node id] <core id|*>: Remove core from active set
       option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
       option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
