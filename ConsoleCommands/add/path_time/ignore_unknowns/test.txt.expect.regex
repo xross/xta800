@@ -1,0 +1,4 @@
+Route\(0\) function: main
+    Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 2.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz

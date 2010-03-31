@@ -1,0 +1,42 @@
+function\(\d+\)\s+: Recursion / \d+.\d+ ns main
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    function\(\d+\)\s+: Recursion / \d+.\d+ ns f
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    .    seq\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    function\(\d+\)\s+: Recursion / \d+.\d+ ns g
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    seq\(\d+\)\s+: Recursion / Recursion 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+
+function\(\d+\)\s+: Recursion / \d+.\d+ ns f
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    seq\(\d+\)\s+: Recursion / Recursion 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+
+function\(\d+\)\s+: Recursion / \d+.\d+ ns f
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    seq\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    function\(\d+\)\s+: Recursion / \d+.\d+ ns g
+.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    seq\(\d+\)\s+: Recursion / Recursion 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+
+function\(\d+\)\s+: Recursion / \d+.\d+ ns g
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    seq\(\d+\)\s+: Recursion / Recursion 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
+

@@ -1,4 +1,5 @@
 xta: error: 'test.xc:3' is not a valid endpoint on any active core
+xta: error: 'test.xc:4' is not a valid endpoint on any active core
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
@@ -9,3 +10,5 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(Debug information avaliable\)
 No routes analyzed
+From endpoint 'test.xc:3'
+To endpoint 'test.xc:4'
