@@ -266,7 +266,7 @@ public class RouteConstructor {
 	}
 
 	private void findReachableGraph(
-			Node parent,
+			Node previous,
 			Stack<FunctionReferenceNode> currentStack, 
 			Node node,
 			Set<Node> workingSet,
@@ -288,7 +288,7 @@ public class RouteConstructor {
 
 			if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 				currentExclusionsFound.add(currentNode);
-				addToWorkingSet(parent, currentNode, workingSet);
+				addToWorkingSet(previous, currentNode, workingSet);
 				return;
 			}
 			
@@ -305,6 +305,8 @@ public class RouteConstructor {
 					//recursion detected
 					FunctionNode fn = new FunctionNode(frn.getFunctionName());
 					currentNode = fn;
+					previous.setFormsRecursion(true);
+
 				} else {
 					boolean endPointsWithin = false; 
 					for(StackNode endStackNode : endStackNodes){
@@ -322,7 +324,7 @@ public class RouteConstructor {
 					if(endPointsWithin){
 						InstructionNode inst = frn.getFunctionStartInstruction();
 						
-						findReachableGraph(parent, newStack, inst, workingSet,
+						findReachableGraph(previous, newStack, inst, workingSet,
 								exclusionStackNodes, currentExclusionsFound, routeMode,
 								endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
 						return;
@@ -339,29 +341,29 @@ public class RouteConstructor {
 						if(fn != null && continueAnalysis){
 							currentNode = fn;
 						} else {
-							currentExclusionsFound.add(parent);
+							currentExclusionsFound.add(previous);
 							return;
 						}
 					}
 				}
 			} else if(currentNode.isUnresolved()){
-				addToWorkingSet(parent, currentNode, workingSet);
+				addToWorkingSet(previous, currentNode, workingSet);
 				return;
 			} else if(stackNodesContainNode(endStackNodes, currentStack, node)){
 				switch (routeMode) {
 				case FUNCTION:
-					addToWorkingSet(parent, currentNode, workingSet);
+					addToWorkingSet(previous, currentNode, workingSet);
 					return;
 				case PATH:
 					if(!workingSet.isEmpty()){
-						loopFormingEndNodes.add(parent);
+						loopFormingEndNodes.add(previous);
 						return;
 					}
 				}
 	
 			} 
 				
-			addToWorkingSet(parent, currentNode, workingSet);
+			addToWorkingSet(previous, currentNode, workingSet);
 			
 			Set<Node> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
 			
@@ -380,7 +382,7 @@ public class RouteConstructor {
 				Node next = nextNodes.iterator().next();
 				Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
 				if(nextWorkingSetNode == null){
-					parent = currentNode;
+					previous = currentNode;
 					node = next;
 					firstInstruction = false;
 					repeat = true;
