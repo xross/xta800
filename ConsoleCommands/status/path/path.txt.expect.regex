@@ -8,5 +8,5 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(Debug information avaliable\)
 Loaded Route\(0\): path: test.xc:8 to test.xc:10 
-From endpoint 'n0c0:test.xc:8', node: 0, core: 0
-To endpoint 'n0c0:test.xc:10', node: 0, core: 0
+From endpoint 'test.xc:8'
+To endpoint 'test.xc:10'

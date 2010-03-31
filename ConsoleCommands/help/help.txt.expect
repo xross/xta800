@@ -45,11 +45,13 @@
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <BEST/WORST>: Sets the case (currently: WORST)
       option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
+      option: from <ENDPOINT_REF>: Sets the from endpoint
       option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
       option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not (currently: on)
+      option: to <ENDPOINT_REF>: Sets the to endpoint
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: Werror <on/off>: treat warnings as errors or not (currently: off)
   [-]echo "text": Prints the text to the console
@@ -98,7 +100,6 @@
       option: branch <from LABEL_REF|*> <to LABEL_REF|*> <to LABEL_REF|*>: Removes the given from/to references from the branches list
       option: core [node id] <core id|*>: Remove core from active set
       option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
-      option: from: Removes the from endpoint
       option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
       option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines
       option: loop <ANY_REF|*>: Removes the given loop count define to the list of defines
@@ -106,7 +107,6 @@
       option: loopscope <ANY_REF|*>: Removes the given loop scope define to the list of defines
       option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines
       option: route <route id>: Removes the route with the given id from the current analysis
-      option: to: Removes the to endpoint
   [-]scripter <option> <arg0> <arg1>...: Work with the script generator
       option: disable <ANY_REF>: Disable a mapping
       option: dump: Dump script which represents the current state - also embeds active pragmas into source
@@ -116,7 +116,6 @@
       option: rename <ANY_REF> <TO_NAME>: Rename a mapping
   [-]set <option> <arg0> <arg1>...: Set path information
       option: exclusion <route id> <ANY_REF>: Sets an exclusion on the given reference
-      option: from <ENDPOINT_REF>: Sets the from endpoint
       option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
           mode: ns:     nanoseconds
           mode: MHz:    megahertz
@@ -138,7 +137,6 @@
           mode: ns:     nanoseconds
           mode: MHz:    megahertz
           mode: cycles: processor thread cycles
-      option: to <ENDPOINT_REF>: Sets the to endpoint
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   Any of the following are permitted:

@@ -1,4 +1,4 @@
-point 1
+------------- point 1
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
@@ -9,7 +9,7 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
 No routes analyzed
-point 2
+------------- point 2
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
@@ -20,9 +20,9 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
 No routes analyzed
-From endpoint 'n0c0:start', node: 0, core: 0
-To endpoint 'n0c0:stop', node: 0, core: 0
-point 3
+From endpoint 'start'
+To endpoint 'stop'
+------------- point 3
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
@@ -33,9 +33,9 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
 Loaded Route(0): path: start to stop 
-From endpoint 'n0c0:start', node: 0, core: 0
-To endpoint 'n0c0:stop', node: 0, core: 0
-point 4
+From endpoint 'start'
+To endpoint 'stop'
+------------- point 4
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
@@ -47,9 +47,9 @@ Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
 Loaded Route(0): path: start to stop 
 Loaded Route(1): path: test.xc:16 to test.xc:19 
-From endpoint 'n0c0:test.xc:16', node: 0, core: 0
-To endpoint 'n0c0:test.xc:19', node: 0, core: 0
-point 5
+From endpoint 'test.xc:16'
+To endpoint 'test.xc:19'
+------------- point 5
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
