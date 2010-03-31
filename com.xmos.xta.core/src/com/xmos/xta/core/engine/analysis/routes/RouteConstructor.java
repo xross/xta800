@@ -11,6 +11,7 @@ import java.util.Stack;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
+import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -107,7 +108,7 @@ public class RouteConstructor {
 			for(StackNode startStackNode : startStackNodes){
 				for(Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()){
 					
-					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, branchStackNodes, true, branchToNext);
+					FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, branchStackNodes, true, branchToNext).first;
 					if (newFunction != null){
 						setParent(newFunction);
 						if (!alreadyContainRoute(newFunction)) {
@@ -208,7 +209,7 @@ public class RouteConstructor {
 		return prm.matchReference(callGraph, reference, m_engine);
 	}
 	
-	private FunctionNode makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
+	private Pair<FunctionNode, Boolean> makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
 			List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
 		
 		List<StackNode> endStackNodes = getFunctionEndStackNodes(currentStack);
@@ -216,7 +217,7 @@ public class RouteConstructor {
 		FunctionReferenceNode fnRef = currentStack.peek();
 		
 		if(!fnRef.isKnownFunction()){
-			return new FunctionNode();
+			return new Pair<FunctionNode, Boolean>(new FunctionNode(), false);
 		}
 		InstructionNode startInst = fnRef.getStartInstruction();
 
@@ -239,7 +240,7 @@ public class RouteConstructor {
 		
 		Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
 
-		return new FunctionNode(node, fnRef);
+		return new Pair<FunctionNode, Boolean>(new FunctionNode(node, fnRef), true);
 	}
 	
 	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
@@ -284,7 +285,6 @@ public class RouteConstructor {
 			repeat = false;
 			
 			Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
-			
 
 			if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 				currentExclusionsFound.add(currentNode);
@@ -328,19 +328,20 @@ public class RouteConstructor {
 						return;
 					} else {
 						FunctionNode fn = null;
+						boolean continueAnalysis = false;
 						if(frn.isKnownFunction()){
-							fn = makeFunction(newStack, exclusionStackNodes, branchStackNodes, false, branchToNext);
-							
+							Pair<FunctionNode, Boolean> fnReturn = makeFunction(newStack, exclusionStackNodes, branchStackNodes, false, branchToNext);
+							continueAnalysis = fnReturn.second;
+							fn = fnReturn.first;
 						} else {
 							fn = new FunctionNode();
 						}
-						if(fn != null){
+						if(fn != null && continueAnalysis){
 							currentNode = fn;
 						} else {
 							currentExclusionsFound.add(parent);
 							return;
 						}
-						
 					}
 				}
 			} else if(currentNode.isUnresolved()){
