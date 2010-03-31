@@ -46,16 +46,17 @@ public class SuccessorAdder {
 
 	
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
-		for (Reference ref : m_branchMap.keySet()) {
-			if (ref.matches(inst.getPc())) {
-				for (BranchInfo target :  m_branchMap.get(ref)) {
-					for (long pc : target.getRef().getPcs()) {
-						connect(instruction, pc, true);
+		if(!inst.isLink()){
+			for (Reference ref : m_branchMap.keySet()) {
+				if (ref.matches(inst.getPc())) {
+					for (BranchInfo target :  m_branchMap.get(ref)) {
+						for (long pc : target.getRef().getPcs()) {
+							connect(instruction, pc, true);
+						}
 					}
 				}
 			}
 		}
-	
 	}
 
 	private void addTargetsToAllNonBranchingInstructions(Node instruction, XtaInstruction inst) {

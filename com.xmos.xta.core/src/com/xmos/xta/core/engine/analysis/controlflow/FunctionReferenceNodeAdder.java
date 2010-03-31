@@ -85,6 +85,7 @@ public class FunctionReferenceNodeAdder {
 				XtaInstruction xtaInst = inst.getXtaInstruction();
 				
 				if(xtaInst.isLink()){
+					boolean foundATarget = false;
 					long returnPc = xtaInst.getPc() + xtaInst.getNumBytes();
 					InstructionNode originalBLReturn = m_instDecoder.getNode(returnPc);
 					boolean found = seen.containsKey(originalBLReturn);
@@ -94,6 +95,7 @@ public class FunctionReferenceNodeAdder {
 						long targetPc = getBranchAndLinkTargetPC(inst);
 						InstructionNode target = m_instDecoder.getNode(targetPc);
 						FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionRefNodes);
+						foundATarget = true;
 						CommonMethods.connect(fr, parent);
 						if (branchLinkReturn != null) {	
 							CommonMethods.connect(branchLinkReturn, fr);
@@ -101,9 +103,9 @@ public class FunctionReferenceNodeAdder {
 								toDo.add(originalBLReturn);		
 							}
 						} 
-					} else {
+					} 
+					{
 						//see if the user has told us where the branch goes 
-						boolean foundATarget = false;
 						for (Reference ref : m_branchMap.keySet()) {
 							if (ref.matches(inst.getPC())) {
 								for (BranchInfo refTarget : m_branchMap.get(ref)) {

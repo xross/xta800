@@ -9,13 +9,14 @@ import com.xmos.xta.test.pseudorandom.generators.GenerateEndpoint;
 import com.xmos.xta.test.pseudorandom.generators.GenerateFor;
 import com.xmos.xta.test.pseudorandom.generators.GenerateFunctionCall;
 import com.xmos.xta.test.pseudorandom.generators.GenerateIf;
+import com.xmos.xta.test.pseudorandom.generators.GeneratePar;
 import com.xmos.xta.test.pseudorandom.generators.GenerateWhile;
 
 public abstract class Generator {
 	private static int m_callId;
 	
 	public abstract void generate(StringBuffer file, PseudoRandom pseudoRandom, int indent, 
-			Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references);
+			Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> currentReference, int activeThreads);
 	
 	public void addIndent(StringBuffer file, int indent){
 		for(int i=0;i<indent;i++){
@@ -23,39 +24,50 @@ public abstract class Generator {
 		}
 	}
 	
-	public void makeNext(StringBuffer file, PseudoRandom pseudoRandom, Set<Stack<String>> functionStacks, String functionName, int indent, ReferenceTree<XtaPragma> references) {
+	public void makeFunction(StringBuffer file, PseudoRandom pseudoRandom, Set<Stack<String>> functionStacks, 
+			String functionName, int indent, ReferenceTree<XtaPragma> references, int activeThreads) {
+		GenerateFunctionCall gfc = new GenerateFunctionCall();
+		gfc.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
+	}
+	
+	public void makeNext(StringBuffer file, PseudoRandom pseudoRandom, Set<Stack<String>> functionStacks, 
+			String functionName, int indent, ReferenceTree<XtaPragma> references, int activeThreads) {
 		Random r = new Random();
 		if(indent == 10){
 			GenerateArith ga = new GenerateArith();
-			ga.generate(file, pseudoRandom, indent, functionStacks, functionName, references);
+			ga.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
 			return;
 		}
 		int count = r.nextInt(4) +1;
 		for(int i=0;i<count; i++){
-			switch(r.nextInt(6)){
+			switch(r.nextInt(7)){
 			case 0:
 				GenerateIf gi = new GenerateIf();
-				gi.generate(file, pseudoRandom, indent, functionStacks, functionName, references);
+				gi.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
 				break;
 			case 1:
 				GenerateFor gf = new GenerateFor();
-				gf.generate(file, pseudoRandom, indent, functionStacks, functionName, references);
+				gf.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
 				break;
 			case 2:
 				GenerateWhile gw = new GenerateWhile();
-				gw.generate(file, pseudoRandom, indent, functionStacks, functionName, references);
+				gw.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
 				break;
 			case 3:
 				GenerateArith ga = new GenerateArith();
-				ga.generate(file, pseudoRandom, indent, functionStacks, functionName, references);
+				ga.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
 				break;
 			case 4:
 				GenerateFunctionCall gfc = new GenerateFunctionCall();
-				gfc.generate(file, pseudoRandom, indent, functionStacks, functionName, references);
+				gfc.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
 				break;
 			case 5:
 				GenerateEndpoint gep = new GenerateEndpoint();
-				gep.generate(file, pseudoRandom, indent, functionStacks, functionName, references);
+				gep.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
+				break;
+			case 6:
+				GeneratePar gp = new GeneratePar();
+				gp.generate(file, pseudoRandom, indent, functionStacks, functionName, references, activeThreads);
 				break;
 			}
 		}

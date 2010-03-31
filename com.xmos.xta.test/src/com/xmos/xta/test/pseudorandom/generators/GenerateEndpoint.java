@@ -12,7 +12,7 @@ public class GenerateEndpoint extends Generator {
 
 	public void generate(StringBuffer file, PseudoRandom pseudoRandom,
 			int indent, Set<Stack<String>> functionStacks, String functionName,
-			ReferenceTree<XtaPragma> references) {
+			ReferenceTree<XtaPragma> references, int activeThreads) {
 		
 		ReferenceTree<XtaPragma> ref = addLabelPragma(file, pseudoRandom, indent, PragmaType.Endpoint, references, "endpoint");
 		pseudoRandom.addEndRef( ref);

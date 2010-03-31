@@ -12,7 +12,7 @@ import com.xmos.xta.test.pseudorandom.XtaPragma;
 public class GenerateArith extends Generator {
 
 	public void generate(StringBuffer file, PseudoRandom pseudoRandom,
-			int indent, Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references) {
+			int indent, Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
 		ReferenceTree<XtaPragma> ref = addLabelPragma(file, pseudoRandom, indent, PragmaType.Label, references, "arith");
 		addIndent(file, indent);
 		pseudoRandom.addEndRef( ref);

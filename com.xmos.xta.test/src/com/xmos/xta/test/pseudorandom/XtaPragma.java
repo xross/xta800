@@ -39,5 +39,19 @@ public class XtaPragma {
 	public String getFileLine(){
 		return m_file + ":" + m_line;
 	}
+
+	public String getTypeString() {
+		switch(m_type){
+		case Endpoint:
+			return "ENDPOINT:";
+		case Call:
+			return "CALL:";
+		case Label:
+			return "SRCLABEL:";
+		case Function:
+			return "";
+		}
+		return "";
+	}
 	
 }

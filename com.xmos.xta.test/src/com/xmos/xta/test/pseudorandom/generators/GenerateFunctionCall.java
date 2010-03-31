@@ -11,7 +11,7 @@ import com.xmos.xta.test.pseudorandom.XtaPragma;
 public class GenerateFunctionCall extends Generator {
 
 	public void generate(StringBuffer file, PseudoRandom pseudoRandom, int indent, 
-			Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references) {
+			Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
 		
 		if(longestStack(functionStacks) < pseudoRandom.getMaxFunctionDepth()){
 			for(Stack<String> stack : functionStacks){

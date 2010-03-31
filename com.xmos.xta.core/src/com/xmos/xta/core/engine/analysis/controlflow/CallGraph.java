@@ -15,6 +15,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 
 public class CallGraph {
 	
+	private static final boolean debug_call_graph = false;
+	
 	private Set<FunctionContainer> m_functionContainers;
 	private Map<FunctionContainer, Set<FunctionReferenceNode>> m_fnRefToCallees;
 	private Set<FunctionReferenceNode> m_uncalledFunctions;
@@ -26,6 +28,9 @@ public class CallGraph {
 		m_uncalledFunctions = new NonIteratableSet<FunctionReferenceNode>();
 		m_containingFunction = new NonIteratableMap<FunctionReferenceNode, FunctionContainer>();
 		makeCalleeGraph(functionContainers);
+		if(debug_call_graph){
+			dumpCallGraph();
+		}
 	}
 
 	private void dumpCallGraph(){
