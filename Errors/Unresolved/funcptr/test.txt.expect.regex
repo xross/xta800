@@ -1,0 +1,9 @@
+function\(\d+\) +: Unresolved / Unresolved main
+.    block\(\d+\) +: Unresolved \(x 1\) / Unresolved \(x 1\) 
+.    function\(\d+\) +: Unresolved / Unresolved f
+.    .    block\(\d+\) +: Unresolved \(x 1\) / Unresolved \(x 1\) 
+
+  \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ .*
+[^^^]
+  \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ main \+ \d+ +bla \(1r\) +\[UNRESOLVED\]
+
