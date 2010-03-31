@@ -235,7 +235,7 @@ public class RouteConstructor {
 		removeExclusionBranches(workingSet, currentExclusionsFound, loopFormingEndNodes);
 
 		if(workingSet.isEmpty()){
-			return null;
+			return new Pair<FunctionNode, Boolean>(null, false);
 		}
 		
 		Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
