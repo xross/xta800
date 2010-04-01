@@ -102,6 +102,7 @@ public class Analyzer {
 			return false;
 			
 		} catch (final java.lang.StackOverflowError e) {
+			//e.printStackTrace();
 			m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
 			return false;
 			

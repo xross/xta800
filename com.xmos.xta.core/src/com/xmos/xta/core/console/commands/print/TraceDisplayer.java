@@ -10,7 +10,8 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 @SuppressWarnings("serial")
 class EscapedDetctedException extends Exception {}
-
+class UnresolvedDetctedException extends Exception {}
+class RecursionDetctedException extends Exception {}
 public class TraceDisplayer {
 	private Console m_console;
 	private double m_currentTime;
@@ -28,6 +29,10 @@ public class TraceDisplayer {
 				displayInstructions(node, c, 1, 0);
 			} catch (EscapedDetctedException e) {
 				m_console.display("Trace aborted...\n");
+			} catch (UnresolvedDetctedException e) {
+
+			} catch (RecursionDetctedException e) {
+
 			}
     		m_console.display("\n");
     	}
@@ -46,7 +51,7 @@ public class TraceDisplayer {
 		return false;
 	}
 
-	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
+	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, RecursionDetctedException, UnresolvedDetctedException {
 		if (node == null || node.isNullNode())
 			return;
 
@@ -91,13 +96,13 @@ public class TraceDisplayer {
 		return null;
 	}
 
-	private void displayChildren(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
+	private void displayChildren(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, RecursionDetctedException, UnresolvedDetctedException {
     	for (Node child : node.iChildren()) {
     		displayInstructions(child, c, totalIterations, iteration);
     	}
 	}
 
-    private void displayLoop(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
+    private void displayLoop(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, RecursionDetctedException, UnresolvedDetctedException {
 		long loopIterations = node.getAttributes().getLoopIterations();
 		if (node.getAttributes().getIsAbsolute()) {
 			if (iteration == 0) {
@@ -121,7 +126,7 @@ public class TraceDisplayer {
 		}
 	}
 
-	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException {
+	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException, RecursionDetctedException, UnresolvedDetctedException {
 		String isUnknown = instruction.getAttributes().getDisplayAsUnknown() ? "*" : " ";
 		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
 		String formsRecursion = instruction.getFormsRecursion() ? " [RECURSION]" : "";
@@ -151,6 +156,12 @@ public class TraceDisplayer {
      	m_currentTime += instruction.getAttributes().getFixedTime().getNs();
       	m_console.display("\n");
 
+      	if(instruction.getFormsRecursion()){
+      		throw new RecursionDetctedException();
+      	}
+      	if(instruction.isUnresolved()){
+      		throw new UnresolvedDetctedException();
+      	}
       	if (m_console.hasEscaped()) {
       		throw new EscapedDetctedException();
       	}

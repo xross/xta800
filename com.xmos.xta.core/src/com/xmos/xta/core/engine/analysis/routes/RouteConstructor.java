@@ -214,6 +214,9 @@ public class RouteConstructor {
 		
 		List<StackNode> endStackNodes = getFunctionEndStackNodes(currentStack);
 		
+		//find unresolved instructions
+		
+		
 		FunctionReferenceNode fnRef = currentStack.peek();
 		
 		if(!fnRef.isKnownFunction()){
@@ -238,9 +241,23 @@ public class RouteConstructor {
 			return new Pair<FunctionNode, Boolean>(null, false);
 		}
 		
+		//if working set contains an end node then we will continue else we wont
+		boolean continueAfterFunction = true;
+		
+		for(StackNode sn : endStackNodes){
+			for(Node node : workingSet){
+				if(node instanceof InstructionNode){
+					if(((InstructionNode)node).getXtaInstruction() == sn.getInstruction().getXtaInstruction()){
+						continueAfterFunction = true;
+						break;
+					}
+				}
+			}
+		}
+		
 		Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
 
-		return new Pair<FunctionNode, Boolean>(new FunctionNode(node, fnRef), true);
+		return new Pair<FunctionNode, Boolean>(new FunctionNode(node, fnRef), continueAfterFunction);
 	}
 	
 	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
@@ -306,6 +323,8 @@ public class RouteConstructor {
 					FunctionNode fn = new FunctionNode(frn.getFunctionName());
 					currentNode = fn;
 					previous.setFormsRecursion(true);
+					loopFormingEndNodes.add(previous);
+					return;
 
 				} else {
 					boolean endPointsWithin = false; 
@@ -338,11 +357,22 @@ public class RouteConstructor {
 						} else {
 							fn = new FunctionNode();
 						}
-						if(fn != null && continueAnalysis){
-							currentNode = fn;
+						
+						if(fn != null ){
+							if(continueAnalysis){
+								currentNode = fn;
+							
 						} else {
+								currentNode = fn;
+								addToWorkingSet(previous, currentNode, workingSet);
+								loopFormingEndNodes.add(currentNode);
+								return;
+							}
+							
+						} else {
+							
 							currentExclusionsFound.add(previous);
-							return;
+								return;
 						}
 					}
 				}
