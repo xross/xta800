@@ -27,7 +27,6 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 			
 			stackNodes.add(new StackNode(getInstructionFromContainer(matchingContainer,ref), callGraph.getStacks(matchingContainer)));
 		}
-		//return stackNodes;
 		
 		List<StackNode> s = refineStackNodes(stackNodes, ref, callGraph, engine);
 		if (debug) System.out.println("####### end reference match " + ref + " ###########");
@@ -122,7 +121,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 					FunctionReferenceNode frn = copy.pop();
 					while(!copy.isEmpty() && !matchingList.isEmpty()){
 						if (debug) System.out.println("checking function " + frn.getFunctionName() + " from pc 0x" + Long.toHexString(currentPc));
-						Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, engine);
+						Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, engine, stack);
 						while(res.first){
 							ReferenceType r = matchingList.get(matchingList.size() -1);
 							
@@ -137,7 +136,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 							currentPc = res.second;
 							matchingList.remove(r);
 							
-							res = fnRefContainsReference(frn, currentPc, matchingList, engine);
+							res = fnRefContainsReference(frn, currentPc, matchingList, engine, stack);
 						} 
 						currentPc = frn.getFunctionCallPc();
 						frn = copy.pop();
@@ -160,7 +159,8 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return refinedStackNodes;
 	}
 	
-	private Pair<Boolean, Long> fnRefContainsReference(FunctionReferenceNode frn, Long currentPc, List<ReferenceType> refList, Engine engine ) {
+	private Pair<Boolean, Long> fnRefContainsReference(FunctionReferenceNode frn, Long currentPc, 
+			List<ReferenceType> refList, Engine engine, Stack<FunctionReferenceNode> stack ) {
 		
 		if(refList.isEmpty()) return new Pair<Boolean, Long>(false, (long)0);
 		
@@ -171,7 +171,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 				return new Pair<Boolean, Long>(true, (long)0);
 			}
 		} else if(r.getType() == ReferenceType.Type.ENDPOINT){
-			return matchRefPc(frn, engine, currentPc, r);
+			return matchRefPc(frn, engine, currentPc, r, stack);
 		} else if(r.getType() == ReferenceType.Type.ERROR){
 			return new Pair<Boolean, Long>(false, (long)0);
 		} else if(r.getType() == ReferenceType.Type.EVERYTHING){
@@ -181,11 +181,11 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 				return new Pair<Boolean, Long>(true, frn.getFunctionStartPc());
 			}
 		} else if(r.getType() == ReferenceType.Type.LABEL){
-			return matchRefPc(frn, engine, currentPc, r);
+			return matchRefPc(frn, engine, currentPc, r, stack);
 		} else if(r.getType() == ReferenceType.Type.PC){
-			return matchRefPc(frn, engine, currentPc, r);
+			return matchRefPc(frn, engine, currentPc, r, stack);
 		} else if(r.getType() == ReferenceType.Type.SRCLABEL){
-			return matchRefPc(frn, engine, currentPc, r);
+			return matchRefPc(frn, engine, currentPc, r, stack);
 		} else assert(false); 
 		
 		
@@ -193,7 +193,8 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 	}
 
 	//this matches references that resolve to a set of pcs
-	private Pair<Boolean, Long> matchRefPc(FunctionReferenceNode frn, Engine engine, Long latestPc, ReferenceType r) {
+	private Pair<Boolean, Long> matchRefPc(FunctionReferenceNode frn, Engine engine, Long latestPc, 
+			ReferenceType r, Stack<FunctionReferenceNode> stack) {
 		FunctionContainer fc = frn.getFunctionContainer();
 		Node node = fc.getCachedFunction(engine);
 		setParent(node);

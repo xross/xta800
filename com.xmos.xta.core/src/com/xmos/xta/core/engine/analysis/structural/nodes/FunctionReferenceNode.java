@@ -65,6 +65,10 @@ public class FunctionReferenceNode extends Node {
 		m_functionName = "(Call graph root)";
 	}
 
+	public String toString(){
+		return "ref:"+m_functionName;
+	}
+	
 	public void getBackTrail(StringBuffer refStr) {
 		super.getBackTrail(refStr);
 		refStr.append(String.format("CALL:0x%x,", m_functionCallInstruction.getPC()));

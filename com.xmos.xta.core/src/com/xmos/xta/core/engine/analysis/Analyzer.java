@@ -22,6 +22,9 @@ public class Analyzer {
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
 	
+	public static final boolean development_mode = false;
+	
+	
 	public Analyzer(Engine engine, List<Route> routes, List<RouteContainer> routeContainers) {
 		m_engine = engine;
 		m_routes = routes;
@@ -98,11 +101,12 @@ public class Analyzer {
 			return true;
 			
 		} catch (final java.lang.OutOfMemoryError e) {
+			if (development_mode) e.printStackTrace();
 			m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
 			return false;
 			
 		} catch (final java.lang.StackOverflowError e) {
-			//e.printStackTrace();
+			if (development_mode) e.printStackTrace();
 			m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
 			return false;
 			
@@ -110,8 +114,8 @@ public class Analyzer {
 			return false;
 			
 		} catch (Exception e) {
+			if (development_mode) e.printStackTrace();
 			m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
-			e.printStackTrace();
 			return false;
 		}
 	}

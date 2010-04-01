@@ -64,6 +64,7 @@ public class CommandFactory {
 		    			"invalid command: " + arg + "'..)\n");
 		    	return null;
 			} else {
+
 				command.setSrc(src);
 				return command;
 			}
@@ -78,6 +79,7 @@ public class CommandFactory {
     		    			"invalid argument(s) to '" + command.name() +
     		    			"' command (Try 'help " + command.name() + "'..)\n");
     			} else {
+    				//System.out.println("-------- " + cloned.commandLine());
         			cloned.setSrc(src);
         			if (!processFileRedirect(cloned, args, index)) {
         				return null;

@@ -329,9 +329,9 @@ public class StructuralAnalysisEngine {
 
 			for(Node next : current.getNextNodes()){
 				if(next instanceof FunctionReferenceNode){
-					FunctionReferenceNode fnRef = (FunctionReferenceNode) next;
-					FunctionNode fnNode= new FunctionNode(fnRef.getFunctionContainer().getCachedFunction(engine), fnRef);
-					
+					//FunctionReferenceNode fnRef = (FunctionReferenceNode) next;
+					//FunctionNode fnNode= new FunctionNode(fnRef.getFunctionContainer().getCachedFunction(engine), fnRef);
+					FunctionNode fnNode= new FunctionNode();
 					
 					newWorkingSet.add(fnNode);
 					seenNodes.add(fnNode);

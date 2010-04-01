@@ -32,6 +32,6 @@ public class ConsoleNotifier implements Notifier {
 			}
 			m_console.display("info: " + argument + "\n");
 
-		}
+		} 	
 	}
 }
