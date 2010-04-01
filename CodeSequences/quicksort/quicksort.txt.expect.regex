@@ -3,7 +3,8 @@ function\(\d+\)\s+: Recursion / \d+.\d+ ns main
 .  \* function\(\d+\)\s+: Recursion / \d+.\d+ ns sort
 .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .    .  \* cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
-.    .    .  \* seq\(\d+\)\s+: Recursion / Recursion 
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .    .  \* seq\(\d+\)\s+: Recursion / \d+.\d+ ns 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns __misaligned_load
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
@@ -34,12 +35,7 @@ function\(\d+\)\s+: Recursion / \d+.\d+ ns main
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    function\(\d+\)\s+: Recursion / Recursion sort\(Recursive\)
-.    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    .    function\(\d+\)\s+: Recursion / Recursion sort\(Recursive\)
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
-.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    .    .    block\(\d+\)\s+: Recursion \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .  \* loop\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
 .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
@@ -56,7 +52,8 @@ function\(\d+\)\s+: Recursion / \d+.\d+ ns main
 function\(\d+\)\s+: Recursion / \d+.\d+ ns sort
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .  \* cond\(\d+\)\s+: Recursion / \d+.\d+ ns 
-.    .  \* seq\(\d+\)\s+: Recursion / Recursion 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
+.    .  \* seq\(\d+\)\s+: Recursion / \d+.\d+ ns 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns __misaligned_load
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
@@ -87,10 +84,5 @@ function\(\d+\)\s+: Recursion / \d+.\d+ ns sort
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    function\(\d+\)\s+: Recursion / Recursion sort\(Recursive\)
-.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
-.    .    .    function\(\d+\)\s+: Recursion / Recursion sort\(Recursive\)
-.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 1\) 
-.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    .    block\(\d+\)\s+: Recursion \(x 1\) / \d+.\d+ ns \(x 0\) 
 
