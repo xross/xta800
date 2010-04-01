@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
 public class Status {
 	public enum S {
-		COMPLETED, INFINITE, UNRESOLVED, RECURSION, ZERO,
+		COMPLETED, INFINITE, UNRESOLVED, RECURSION, ILLEGAL, ZERO,
 	}
 	private S m_status;
 
@@ -34,11 +34,21 @@ public class Status {
 		return m_status == S.UNRESOLVED;
 	}
 
-	// Keep the worst-case (UNRESOLVED, INFINITE, COMPLETE)
+	public boolean isRecursion() {
+		return m_status == S.RECURSION;
+	}
+
+	public boolean isIllegal() {
+		return m_status == S.ILLEGAL;
+	}
+	
 	public void mergeStatus(S s) {
 		if (s == S.COMPLETED &&  m_status == S.ZERO) {
 			m_status = S.COMPLETED;
 
+		} else if (m_status == S.ILLEGAL || s == S.ILLEGAL) {
+			m_status = S.ILLEGAL;
+			
 		} else if (m_status == S.RECURSION || s == S.RECURSION) {
 			m_status = S.RECURSION;
 
@@ -57,6 +67,9 @@ public class Status {
 	    switch (m_status) {
 	    case INFINITE:
 	    	return "Infinity";
+
+	    case ILLEGAL:
+	    	return "Illegal";
 	    	
 	    case RECURSION:
 	    	return "Recursion";
@@ -70,5 +83,9 @@ public class Status {
 	    	assert(false);
 	    	return "";
 	    }
+	}
+	
+	public boolean isExceptionalCase() {
+		return isInfinite() || isUnresolved() || isIllegal() || isRecursion();		
 	}
 }

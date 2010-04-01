@@ -19,6 +19,8 @@ public class TimeUnit {
 	public static String getHelp() {
 		String helpStr = "";
    		helpStr += "          mode: ns:     nanoseconds\n";
+   		helpStr += "          mode: us:     microseconds\n";
+   		helpStr += "          mode: ms:     milliseconds\n";
    		helpStr += "          mode: MHz:    megahertz\n";
    		helpStr += "          mode: cycles: processor thread cycles";
    		return helpStr;

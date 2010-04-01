@@ -86,6 +86,13 @@ public class Scripter {
 		m_currentNumThreads = new NonIteratableMap<NodeCorePair, Integer>(m_engine.getNumThreadMap());		
 		m_uniqueReferences = null;
 		m_allReferences = null;
+
+		m_disables.clear();
+		m_autoLabels.clear();
+		m_renames.clear();
+		
+		m_embedIntoSource = false;
+		m_embedFileName = null;
 	}
 
 	public String dump() {
@@ -577,7 +584,7 @@ public class Scripter {
 	private void disableRefsForInvalidFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
 		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
 			if (!sourceFile.okToWrite(getSourceMapper())) {
-				disableRefsForFile(sourceFile.getFileName());
+				disableRefsForFile(sourceFile.getFullFileName());
 			}
 		}
 	}
