@@ -1,0 +1,6 @@
+analyse function main
+set required - 100.0 ms
+print structure -
+print trace -
+print summary
+

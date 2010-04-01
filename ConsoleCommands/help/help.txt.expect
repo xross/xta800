@@ -105,7 +105,7 @@
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF|*> [<to LABEL_REF|*>]+: Removes the given from/to references from the branches list
       option: core [node id] <core id|*>: Remove core from active set
-      option: exclusion: <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
+      option: exclusion <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
       option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
       option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines
       option: loop <ANY_REF|*>: Removes the given loop count define to the list of defines
