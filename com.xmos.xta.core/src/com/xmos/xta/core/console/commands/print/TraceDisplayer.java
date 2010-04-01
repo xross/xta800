@@ -10,8 +10,11 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 @SuppressWarnings("serial")
 class EscapedDetctedException extends Exception {}
+@SuppressWarnings("serial")
 class UnresolvedDetctedException extends Exception {}
+@SuppressWarnings("serial")
 class RecursionDetctedException extends Exception {}
+@SuppressWarnings("serial")
 class IllegalException extends Exception {}
 
 public class TraceDisplayer {
