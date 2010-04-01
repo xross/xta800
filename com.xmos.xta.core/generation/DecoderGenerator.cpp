@@ -47,7 +47,7 @@ DecoderGenerator::DecoderGenerator(const char *fileName, DbInterface &dbInterfac
 
   generateTree(outFp, root, true);
 
-  fprintf(outFp, "        return new NullInstruction(\"...\", opcode, pc, 2);\n");
+  fprintf(outFp, "        return new NullInstruction(\"...\", opcode, pc, 2, false);\n");
   fprintf(outFp, "    }\n");
   fprintf(outFp, "}\n");
 

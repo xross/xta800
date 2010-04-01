@@ -10,6 +10,8 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 @SuppressWarnings("serial")
 class EscapedDetctedException extends Exception {}
+@SuppressWarnings("serial")
+class IllegalException extends Exception {}
 
 public class TraceDisplayer {
 	private Console m_console;
@@ -26,9 +28,11 @@ public class TraceDisplayer {
         	m_currentTime = 0;
     		try {
 				displayInstructions(node, c, 1, 0);
+				
 			} catch (EscapedDetctedException e) {
 				m_console.display("Trace aborted...\n");
-			}
+
+			} catch (IllegalException e) {}			
     		m_console.display("\n");
     	}
     }
@@ -46,7 +50,7 @@ public class TraceDisplayer {
 		return false;
 	}
 
-	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
+	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, IllegalException {
 		if (node == null || node.isNullNode())
 			return;
 
@@ -91,13 +95,13 @@ public class TraceDisplayer {
 		return null;
 	}
 
-	private void displayChildren(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
+	private void displayChildren(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, IllegalException {
     	for (Node child : node.iChildren()) {
     		displayInstructions(child, c, totalIterations, iteration);
     	}
 	}
 
-    private void displayLoop(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException {
+    private void displayLoop(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, IllegalException {
 		long loopIterations = node.getAttributes().getLoopIterations();
 		if (node.getAttributes().getIsAbsolute()) {
 			if (iteration == 0) {
@@ -121,20 +125,21 @@ public class TraceDisplayer {
 		}
 	}
 
-	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException {
+	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException, IllegalException {
 		String isUnknown = instruction.getAttributes().getDisplayAsUnknown() ? "*" : " ";
 		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
 		String formsRecursion = instruction.getFormsRecursion() ? " [RECURSION]" : "";
 
      	XtaInstruction xtaInstruction = instruction.getXtaInstruction();
-		String functionName = xtaInstruction.getFunctionName();
+		String functionName = xtaInstruction.getFunctionName();		
+		String isIllegal = xtaInstruction.getIsIllegal() ? " [ILLEGAL]" : "";
 
 		String functionOffsetString = "";
 		if (functionName != null) {
 			functionOffsetString = functionName + " + " + xtaInstruction.getFunctionOffset();
 		}
 
-     	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s%s",
+     	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s%s%s",
      			isUnknown,
          		m_currentTime,
          		instruction.getAttributes().getFixedTime().getNs(),
@@ -143,7 +148,8 @@ public class TraceDisplayer {
            		xtaInstruction.getNmenonic(),
            		xtaInstruction.getOperandString(),
            		isUnresolved, 
-           		formsRecursion));
+           		formsRecursion,
+           		isIllegal));
 
      	if (xtaInstruction.canPause())
      		m_console.display(" (P)");
@@ -154,6 +160,9 @@ public class TraceDisplayer {
       	if (m_console.hasEscaped()) {
       		throw new EscapedDetctedException();
       	}
+      	if (xtaInstruction.getIsIllegal()) {
+      	    throw new IllegalException();	
+      	}      		
     }
 }
 
