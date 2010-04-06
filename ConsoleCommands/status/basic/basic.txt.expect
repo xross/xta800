@@ -3,5 +3,4 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set:
 No executable loaded

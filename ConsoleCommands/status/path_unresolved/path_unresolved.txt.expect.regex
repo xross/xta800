@@ -5,7 +5,6 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set: \(0,0\)
 Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(Debug information avaliable\)

@@ -4,14 +4,12 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set:
 No executable loaded
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set: (0,0)
 Loaded executable: test.xe
 Frequency: Node 0, 100.0 MHz
 Node: 0, Core: 0, Threads: 1 (No debug information found)
@@ -22,7 +20,6 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set: (0,0)
 Loaded executable: test.xe
 Frequency: Node 0, 100.0 MHz
 Node: 0, Core: 0, Threads: 1 (No debug information found)
@@ -32,7 +29,6 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set: (0,0)
 Loaded executable: test.xe
 Frequency: Node 0, 1000.0 MHz
 Node: 0, Core: 0, Threads: 1 (No debug information found)

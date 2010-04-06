@@ -3,14 +3,12 @@ WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set:
 No executable loaded
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
-Active Core Set:
 No executable loaded
 1: status
 2: source cmds.txt
