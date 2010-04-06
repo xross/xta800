@@ -183,13 +183,17 @@ sub DoBuild
 
   chdir("com.xmos.xta.core") 
     or die("Failed to find com.xmos.xta.core\n");
-  system("ant -Ddebug=\"true\""); 
+
+  if ($MAKE_FLAGS =~ m/CONFIG=Debug/) {
+    system("ant -Ddebug=\"true\""); 
     die() if ($? != 0);
-  
+  } else {
+    system("ant -Ddebug=\"false\""); 
+    die() if ($? != 0);
+  }
+
   SignOffTests();
   chdir("../");
-
-  
 
   chdir("$BUILDPATH") or die("oops");
 }
