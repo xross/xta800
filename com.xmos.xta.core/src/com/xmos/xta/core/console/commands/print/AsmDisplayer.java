@@ -71,7 +71,7 @@ public class AsmDisplayer {
 	            	String disassembly = String.format("%-7s 0x%05x %s %s %s",
 	            		getBranchDest(branchTargetMap, instruction),
 	            		instruction.getPc(),
-                        instruction.getNmenonic(),
+                        instruction.getMnemonic(),
                         instruction.getOperandString(),
                 		getBranchTarget(branchTargetMap, instruction, symbolTable));
 

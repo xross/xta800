@@ -88,30 +88,30 @@ public class AssemblyLine implements Line {
 	public String getText() {
 		XtaInstruction inst  = m_instructionNode.getXtaInstruction();
 		String operandString = inst.getOperandString();
-		if (inst.getNmenonic().toLowerCase().equals("getr (rus)")) {
+		if (inst.getMnemonic().toLowerCase().equals("getr (rus)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x") + 2));
 			int resNum = Integer.parseInt(offset, 16);
-			operandString = operandString.substring(0, operandString.indexOf("i 0x")) + m_resourceName[resNum];
+			operandString = operandString.substring(0, operandString.indexOf(", 0x")) + " " + m_resourceName[resNum];
 
-		} else if (inst.getNmenonic().toLowerCase().equals("ldapf (u10)")) {
+		} else if (inst.getMnemonic().toLowerCase().equals("ldap (u10)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x") + 2));
-			long loadLocation = inst.getPc() + inst.getNumBytes() + scale(Long.parseLong(offset, 16));
+			long loadLocation = inst.getPc() + inst.getNumBytes();
+			if (operandString.charAt(operandString.indexOf("0x") - 1) == '-') {
+				loadLocation = loadLocation - scale(Long.parseLong(offset, 16));
+			} else {
+				loadLocation = loadLocation + scale(Long.parseLong(offset, 16));
+			}
 			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Long.toHexString(loadLocation) + ">";
 
-		} else if (inst.getNmenonic().toLowerCase().equals("ldapb (u10)")) {
-			String offset = (operandString.substring(operandString.indexOf("0x") + 2));
-			long loadLocation = inst.getPc() + inst.getNumBytes() - scale(Long.parseLong(offset, 16));
-			operandString = operandString.substring(0, operandString.indexOf(",")) + ", <0x" + Long.toHexString(loadLocation) + ">";
-
-		} else if (inst.getNmenonic().toLowerCase().equals("chkct (rus)")) {
+		} else if (inst.getMnemonic().toLowerCase().equals("chkct (rus)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x") + 2));
 			int ctNum = Integer.parseInt(offset, 16);
-			operandString = operandString.substring(0, operandString.indexOf("i 0x")) + m_controlTokenName[ctNum] ;
+			operandString = operandString.substring(0, operandString.indexOf(", 0x")) + ", " + m_controlTokenName[ctNum] ;
 
-		} else if (inst.getNmenonic().toLowerCase().equals("outct (rus)")) {
+		} else if (inst.getMnemonic().toLowerCase().equals("outct (rus)")) {
 			String offset = (operandString.substring(operandString.indexOf("0x") + 2));
 			int ctNum = Integer.parseInt(offset, 16);
-			operandString = operandString.substring(0, operandString.indexOf("i 0x")) + m_controlTokenName[ctNum] ;
+			operandString = operandString.substring(0, operandString.indexOf(", 0x")) + ", " + m_controlTokenName[ctNum] ;
 
 		}
 
@@ -131,14 +131,11 @@ public class AssemblyLine implements Line {
 	        	target = functionName;
 	        }
 
-	        if (operandString.contains("i ")) {
-	        	operandString = operandString.substring(0, operandString.indexOf("i "));
-	        }
 	        operandString = operandString.trim();
-	        return "\t" + inst.getNmenonic() + " " + operandString + " <" + target + ">";
+	        return "\t" + inst.getMnemonic() + " " + operandString + " <" + target + ">";
 
 	    } else {
-	        return "\t" + inst.getNmenonic() +" " + operandString;
+	        return "\t" + inst.getMnemonic() +" " + operandString;
 	    }
 	}
 

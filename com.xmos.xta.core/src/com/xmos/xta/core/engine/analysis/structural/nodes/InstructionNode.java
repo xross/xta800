@@ -79,7 +79,7 @@ public class InstructionNode extends Node {
 	public String getDescription() {
 		return String.format("0x%x: %s %s",
 				m_inst.getPc(),
-				m_inst.getNmenonic(),
+				m_inst.getMnemonic(),
 				m_inst.getOperandString());
 	}
 
