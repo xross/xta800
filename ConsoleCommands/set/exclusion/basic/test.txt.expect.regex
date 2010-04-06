@@ -1,3 +1,4 @@
+Exclusion on node \(node id: \d+\), pc: 0x[0-9a-z]+, backtrace: main:
 function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns main
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
@@ -8,6 +9,7 @@ function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns main
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 
+Exclusion on node \(node id: \d+\), pc: 0x[0-9a-z]+, backtrace: main:
 function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns main
 .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
 .    cond\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns 
