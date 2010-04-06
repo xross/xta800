@@ -24,7 +24,7 @@ public class Echo extends Command {
     }
 
     public String commandLine() {
-    	return name();
+    	return name() + " \"" + m_string + "\"";
     }
 
     public String description(Engine engine, boolean detailed) {
