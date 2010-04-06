@@ -72,7 +72,17 @@ public class ConditionalNode extends Node {
     	}
     	return aliveOptions;
     }
-    
+
+    public Collection<Node> getExcludedOptions() {
+    	Collection<Node> excludedOptions = new IteratableSet<Node>();
+    	for (Node option : m_options){
+    		if (!m_alive.get(option)){
+    			excludedOptions.add(option);
+    		}
+    	}
+    	return excludedOptions;
+    }
+
 	public LinkedList<XtaInstruction> getInstructions() {
 		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
 		for (Node node : getAliveOptions()){

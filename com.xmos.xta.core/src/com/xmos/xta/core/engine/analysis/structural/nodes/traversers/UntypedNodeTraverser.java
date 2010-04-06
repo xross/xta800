@@ -40,8 +40,8 @@ public abstract class UntypedNodeTraverser implements NodeTraverser {
     public TraverseStatus foundInfiniteSelfLoopNode(Node node) {
     	return foundNode(node);
     }
+    
     public TraverseStatus foundConditionalNode(Node node) {
     	return foundNode(node);
     }
-
 }

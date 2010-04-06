@@ -31,13 +31,25 @@ public class RouteUnknowns {
 	    final Collection<Unknown> unknowns = new ArrayList<Unknown>();
 	    m_route.getNode().traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
+	    		addToList(node);
+	        	return TraverseStatus.CONTINUE;
+	    	}
+
+	        public TraverseStatus foundConditionalNode(Node node) {
+	        	ConditionalNode conditionalNode = (ConditionalNode)node;
+	        	for (Node excludedNode : conditionalNode.getExcludedOptions()) {
+	        		addToList(excludedNode);
+	        	}	        	
+	        	return foundNode(node);
+	        }
+	        
+	        private void addToList(Node node) {
 	    		for (Unknown unknown : node.getAttributes().getUnknowns()) {
 	    			if (unknown.getState() == unknownState) {
 		    			unknowns.add(unknown);
 	    			}
-	    		}
-	        	return TraverseStatus.CONTINUE;
-	    	}
+	    		}	        	
+	        }
 	    });
 		return unknowns;
 	}
@@ -228,11 +240,10 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Exclusions
 	// ===================================================================== //
-	
 	public boolean setExclusion(Reference reference, Type type, Source source) throws AbortedException {
 		Set<Node> nodes = m_route.getReferencedNodes(reference);
 		for (Node node : nodes) {
-	    	setExclusion(node, type, source);
+	    	setExclusion(node, reference, type, source);
 		}
 		return true;
 	}
@@ -252,23 +263,25 @@ public class RouteUnknowns {
 	}
 
 	public void setExclusion(Node node, Type type, Source source) {
+		setExclusion(node, null, type, source);
+	}
+	
+	private void setExclusion(Node node, Reference reference, Type type, Source source) {
 		invalidateCachedStats();
 		Node currentNode = node;
-		while(currentNode.getParent()!= null){
-			if(currentNode.getParent() instanceof ConditionalNode){
-				ConditionalNode cn = (ConditionalNode)currentNode.getParent();
-				cn.setAlive(currentNode, false);
-				if(!cn.iChildren().isEmpty()){
+		while (currentNode.getParent()!= null) {
+			if (currentNode.getParent() instanceof ConditionalNode) {
+				ConditionalNode condNode = (ConditionalNode)currentNode.getParent();
+				condNode.setAlive(currentNode, false);
+				if (!condNode.iChildren().isEmpty()) {
+					currentNode.getAttributes().addKnown(m_route, Type.EXCLUSION, source, new Reference[] {reference});
 					break;
 				}
 			}
 			currentNode = currentNode.getParent();
 		}
 		refreshDisplayedUnknowns();
-	}
-	
-	
-	
+	}	
 	
 	// ===================================================================== //
 	// Fixed Time Methods
