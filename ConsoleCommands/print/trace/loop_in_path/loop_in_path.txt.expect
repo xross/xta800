@@ -1,20 +1,20 @@
-  0.0: (10.0ns) 0x10004 main + 0               ldc (ru6)    r0, i 0x5
-  10.0: (10.0ns) 0x10006 main + 2               brft (ru6)   r0, i 0x3
+  0.0: (10.0ns) 0x10004 main + 0               ldc (ru6)    r0, 0x5
+  10.0: (10.0ns) 0x10006 main + 2               bt (ru6)     r0, 0x3
   20.0: (80.0ns) 0x10008 main + 4               divu (l3r)   r0, r1, r2
-  100.0: (10.0ns) 0x1000c main + 8               brfu (u6)    i 0x2
-  110.0: (10.0ns) 0x10012 main + 14              retsp (u6)   i 0x0
+  100.0: (10.0ns) 0x1000c main + 8               bu (u6)      0x2
+  110.0: (10.0ns) 0x10012 main + 14              retsp (u6)   0x0
 
-  0.0: (10.0ns) 0x10004 main + 0               ldc (ru6)    r0, i 0x5
-  10.0: (10.0ns) 0x10006 main + 2               brft (ru6)   r0, i 0x3
-  20.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, i 0x1
-  30.0: (10.0ns) 0x10010 main + 12              brbt (ru6)   r0, i 0x2
-  40.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, i 0x1
-  50.0: (10.0ns) 0x10010 main + 12              brbt (ru6)   r0, i 0x2
-  60.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, i 0x1
-  70.0: (10.0ns) 0x10010 main + 12              brbt (ru6)   r0, i 0x2
-  80.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, i 0x1
-  90.0: (10.0ns) 0x10010 main + 12              brbt (ru6)   r0, i 0x2
-  100.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, i 0x1
-  110.0: (10.0ns) 0x10010 main + 12              brbt (ru6)   r0, i 0x2
-  120.0: (10.0ns) 0x10012 main + 14              retsp (u6)   i 0x0
+  0.0: (10.0ns) 0x10004 main + 0               ldc (ru6)    r0, 0x5
+  10.0: (10.0ns) 0x10006 main + 2               bt (ru6)     r0, 0x3
+  20.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, 0x1
+  30.0: (10.0ns) 0x10010 main + 12              bt (ru6)     r0, -0x2
+  40.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, 0x1
+  50.0: (10.0ns) 0x10010 main + 12              bt (ru6)     r0, -0x2
+  60.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, 0x1
+  70.0: (10.0ns) 0x10010 main + 12              bt (ru6)     r0, -0x2
+  80.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, 0x1
+  90.0: (10.0ns) 0x10010 main + 12              bt (ru6)     r0, -0x2
+  100.0: (10.0ns) 0x1000e main + 10              sub (2rus)   r0, r0, 0x1
+  110.0: (10.0ns) 0x10010 main + 12              bt (ru6)     r0, -0x2
+  120.0: (10.0ns) 0x10012 main + 14              retsp (u6)   0x0
 
