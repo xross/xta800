@@ -1,23 +1,23 @@
-  0.0: \(20.0[mun]s\) 0x10004 main \+ 0               ldc \(ru6\)    r0, i 0xa
-  20.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  40.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  60.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  80.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  100.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  120.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  140.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  160.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  180.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  200.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  220.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  240.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  260.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  280.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  300.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  320.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  340.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  360.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  380.0: \(20.0[mun]s\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, i 0x1
-  400.0: \(20.0[mun]s\) 0x10008 main \+ 4               brbt \(ru6\)   r0, i 0x2
-  420.0: \(20.0[mun]s\) 0x1000a main \+ 6               retsp \(u6\)   i 0x0
+  0.0: \(20.0ns\) 0x10004 main \+ 0               ldc \(ru6\)    r0, 0xa
+  20.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  40.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  60.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  80.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  100.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  120.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  140.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  160.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  180.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  200.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  220.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  240.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  260.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  280.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  300.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  320.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  340.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  360.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  380.0: \(20.0ns\) 0x10006 main \+ 2               sub \(2rus\)   r0, r0, 0x1
+  400.0: \(20.0ns\) 0x10008 main \+ 4               bt \(ru6\)     r0, -0x2
+  420.0: \(20.0ns\) 0x1000a main \+ 6               retsp \(u6\)   0x0
 
