@@ -52,9 +52,10 @@ public class Shell {
     public int execute() {
     	while (!isComplete()) {
     		Command command = getNextCommand();
-           	preCommandExecute(command);
-           	command.execute(this, m_engine, m_console);
-           	postCommandExecute(command);
+           	if (preCommandExecute(command)) {
+              	command.execute(this, m_engine, m_console);
+              	postCommandExecute(command);
+           	}
     	}
     	return m_numTimingViolations;
     }
@@ -210,7 +211,7 @@ public class Shell {
         System.exit(1);
 	}
 
-	private void preCommandExecute(Command command) {
+	private boolean preCommandExecute(Command command) {
 		m_savedNotifier = m_engine.getNotifier();
     	m_engine.setNotifier(m_notifier);
 
@@ -218,8 +219,11 @@ public class Shell {
     		m_engine.setMonitor(new ConsoleProgessMonitor(m_console));
 
     	if (command.getFileRedirect() != null) {
-    		m_console.openRedirectFile(command.getFileRedirect(), command.getFileRedirectMode());
-    	}
+    		if (!m_console.openRedirectFile(command.getFileRedirect(), command.getFileRedirectMode(), command.getSrc(), m_notifier)) {
+    			return false;
+    		}
+    	}    	
+    	return true;
 	}
 
 	private void postCommandExecute(Command command) {
