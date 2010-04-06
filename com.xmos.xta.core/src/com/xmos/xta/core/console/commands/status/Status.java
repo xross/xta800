@@ -46,12 +46,6 @@ public class Status extends Command {
     	console.display(String.format("Case: %s\n", engine.getCase().toString()));
     	console.display(String.format("Verbosity: %d\n", engine.getVerbosity()));
     	
-    	console.display("Active Core Set:");
-    	for (NodeCorePair activeCore : engine.getActiveCores()) {
-    		console.display(String.format(" (%d,%d)", activeCore.getNode(), activeCore.getCore()));
-    	}
-    	console.display("\n");
-    	
     	File executable = engine.getExecutable();
     	if (executable != null) {
     		console.display(String.format("Loaded executable: %s\n", executable.getName()));
