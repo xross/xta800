@@ -183,7 +183,7 @@ sub DoBuild
 
   chdir("com.xmos.xta.core") 
     or die("Failed to find com.xmos.xta.core\n");
-  system("ant"); 
+  system("ant -Ddebug=\"true\""); 
     die() if ($? != 0);
   
   SignOffTests();
