@@ -10,7 +10,6 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
 
 public class Status extends Command {
 	private static final String[] COMMAND_NAMES = { "status" };
