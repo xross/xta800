@@ -48,6 +48,9 @@ public class UnknownFactory {
 
     	case FUNCTION_TIME:
     		return new FunctionTimeUnknown(route, node, type, state, source, references);
+
+    	case EXCLUSION:
+    		return new ExclusionUnknown(route, node, type, state, source, references);
     	}
     	assert(false);
     	return null;

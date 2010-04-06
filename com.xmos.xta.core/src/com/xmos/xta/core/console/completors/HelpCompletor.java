@@ -6,6 +6,8 @@ import jline.Completor;
 
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceClassType;
+import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class HelpCompletor implements Completor {
@@ -21,9 +23,12 @@ public class HelpCompletor implements Completor {
         }
 
  	    // Checks for matching reference options..
-        for (ReferenceClass referenceClass : ReferenceClass.values()) {
-            if (referenceClass.name().startsWith(start)) {
-        	   	candidates.add(referenceClass.name());
+        for (ReferenceClass referenceClass : ReferenceClass.values()) {        	        	
+    		ReferenceClassType classType = ReferenceTypeFactory.getReferenceClass(referenceClass);
+        	if (classType.isVisible()) {
+                if (referenceClass.name().startsWith(start)) {
+            	   	candidates.add(referenceClass.name());
+            	}        		
         	}
         }
 		return 0;

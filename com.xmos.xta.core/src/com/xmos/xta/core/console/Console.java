@@ -8,6 +8,8 @@ import java.util.Vector;
 
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.Command.RedirectMode;
+import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.Notifier;
 
 public abstract class Console {
 	private PrintWriter m_fileWriter;
@@ -26,31 +28,34 @@ public abstract class Console {
 		return false;
 	}
 
-	protected void openRedirectFile(String fileName, RedirectMode redirectMode) {
+	protected boolean openRedirectFile(String fileName, RedirectMode redirectMode, CommandSource src, Notifier notifier) {
 		assert(m_fileWriter == null);
 		try {
 			switch (redirectMode) {
 			case OVERWRITE:
 				m_fileWriter = new PrintWriter(new BufferedWriter(new FileWriter(fileName, false)));
-				break;
+				return true;
 
 			case APPEND:
 				m_fileWriter = new PrintWriter(new BufferedWriter(new FileWriter(fileName, true)));
-				break;
+				return true;
 
 			default:
 				assert(false);
-			    break;
+				return false;
 			}
+			
 		} catch (IOException e) {
-			System.out.printf("Unable to open file for writing: %s", fileName);
+			notifier.notify(src, Notifier.NOTIFY_ERROR, String.format("Unable to open file for writing: %s", fileName));
 			m_fileWriter = null;
+			return false;
 		}
 	}
 
 	protected void closeRedirectFile() {
-		assert(m_fileWriter != null);
-		m_fileWriter.close();
-		m_fileWriter = null;
+		if (m_fileWriter != null) {
+			m_fileWriter.close();
+			m_fileWriter = null;			
+		}
 	}
 }

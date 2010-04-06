@@ -4,6 +4,8 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
@@ -32,6 +34,11 @@ public class Exit extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
+    	if (getSrc().getType() == Type.SRC_LEVEL_COMMAND) {
+    		engine.notify(getSrc(), Notifier.NOTIFY_WARNING, "exit ignored in source level commands");
+    		return;
+    	}
+    	
 		boolean warnAsErrors = engine.getConfig().m_warnAsErrors;
 		boolean timingErrors = engine.getConfig().m_timingFailuresAsErrors;
 		int errors = 0;
