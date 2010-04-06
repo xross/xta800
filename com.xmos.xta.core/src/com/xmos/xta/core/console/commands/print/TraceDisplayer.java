@@ -154,7 +154,7 @@ public class TraceDisplayer {
          		instruction.getAttributes().getFixedTime().getNs(),
            		xtaInstruction.getPc(),
            		functionOffsetString,
-           		xtaInstruction.getNmenonic(),
+           		xtaInstruction.getMnemonic(),
            		xtaInstruction.getOperandString(),
            		isUnresolved, 
            		formsRecursion,

@@ -85,7 +85,7 @@ void InstructionClassGenerator::generateClassDefStart(const DbInstruction *inst,
   const string *instName = inst->getLowerName();
   const string *fmtName = fmt->getName();
 
-  string fullName = *instName;
+  string fullName = *(inst->getCodeName());
   string className = *instName + "_" + *fmtName;
 
   string fmtExt = "_" + *fmtName;
@@ -173,7 +173,10 @@ void InstructionClassGenerator::generateGetOperandStringMethod(const DbInstructi
     }
     else if ((oper != NULL) && oper->isImm())
     {
-      fmtLine += "i 0x%x";
+      bool inverted = oper->isInverted();
+      if (inverted)
+        fmtLine = fmtLine + "-";
+      fmtLine += "0x%x";
 
       string arg = "";
 

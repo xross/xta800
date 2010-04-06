@@ -47,7 +47,7 @@ public abstract class XtaInstruction extends Instruction {
 
 	public String toString() {
 		return "(" + m_functionName + "+" + m_functionOffset + ")" +
-			" 0x" + Long.toHexString(getPc()) + " " + getNmenonic() + " " + getOperandString();
+			" 0x" + Long.toHexString(getPc()) + " " + getMnemonic() + " " + getOperandString();
 	}
 
 	public void setFunctionName(String functionName) {
