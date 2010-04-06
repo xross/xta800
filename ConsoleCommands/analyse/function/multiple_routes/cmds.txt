@@ -1,0 +1,4 @@
+add exclusion f1,if
+add exclusion f2,else
+analyze function f
+print summary
