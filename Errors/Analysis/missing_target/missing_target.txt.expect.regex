@@ -1,4 +1,4 @@
-xta: warning: target \(0x10010\) of: \(main\+\d+\) 0x10008 blrf \(lu10\) i 0x2 not found in executable sections
+xta: warning: target \(0x10010\) of: \(main\+\d+\) 0x10008 bl \(lu10\) 0x2 not found in executable sections
 TimingFailAsError: true
 WarnAsError: false
 SrcPaths: .
