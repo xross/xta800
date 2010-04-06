@@ -1,0 +1,2 @@
+analyze function main
+print trace - > missing_directory/output.txt

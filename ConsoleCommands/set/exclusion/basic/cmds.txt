@@ -1,9 +1,11 @@
 analyse function main
 set exclusion - if
+list knowns -
 print structure -
 
 analyse function main
 set exclusion - ~1~1~
+list knowns -
 print structure -
 
 exit
