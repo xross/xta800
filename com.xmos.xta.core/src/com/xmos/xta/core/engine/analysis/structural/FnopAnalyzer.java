@@ -73,7 +73,7 @@ public class FnopAnalyzer {
 		while (!ib.canIssue(inst.getNumBytes())) {
 			ib.fetch();
 			int index = blockInstructions.indexOf(instNode);
-			XtaInstruction fnop = new NullInstruction("--FNOP--", 0, inst.getPc(), 0);
+			XtaInstruction fnop = new NullInstruction("--FNOP--", 0, inst.getPc(), 0, true);
 			InstructionNode fnopNode = new InstructionNode(fnop);
 
 			for(Node prev : instNode.getPrevNodes()){

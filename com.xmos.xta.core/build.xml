@@ -15,7 +15,7 @@
            closure="true" />
     <javac srcdir="${src}" destdir="${build}"
            deprecation="true"
-           debug="true" 
+           debug="${debug}"
            debuglevel="lines,vars,source"
     	   target="1.5">
            <classpath>

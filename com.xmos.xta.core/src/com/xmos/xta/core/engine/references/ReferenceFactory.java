@@ -16,8 +16,10 @@ public class ReferenceFactory {
 
         Reference reference = new Reference(baseType);
 		for (int index = 0; index < (subRefs.length - 1); ++index) {
-			reference.addToBackTrail(ReferenceTypeFactory.createReferenceType(
-					subRefs[index], ReferenceClass.ANY_REF, nodeNumber, coreNumber));
+			
+			ReferenceType bt = ReferenceTypeFactory.createReferenceType( subRefs[index], ReferenceClass.ANY_REF, nodeNumber, coreNumber);
+			
+			reference.addToBackTrail(bt);
 		}
 		return reference;
 	}

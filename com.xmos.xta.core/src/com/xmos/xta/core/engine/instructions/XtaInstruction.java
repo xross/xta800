@@ -8,6 +8,7 @@ public abstract class XtaInstruction extends Instruction {
     private long m_numCycles;
     private boolean m_isLink;
     private boolean m_isBranch;
+    private boolean m_isIllegal;
 
 	XtaInstruction(String nmenonic, int opcode, long pc, int numBytes,
 			boolean isLoadStore, boolean canPause, int numCycles, boolean isBranch, boolean isLink) {
@@ -17,6 +18,7 @@ public abstract class XtaInstruction extends Instruction {
 		m_numCycles = numCycles;
 		m_isLink = isLink;
 		m_isBranch= isBranch;
+		m_isIllegal = false;
 		adjustSetcPause(nmenonic);
 	}
 
@@ -66,6 +68,14 @@ public abstract class XtaInstruction extends Instruction {
 
 	public long getNumCycles() {
 		return m_numCycles;
+	}
+	
+	public void setIsIllegal(boolean isIllegal) {
+		m_isIllegal = isIllegal;
+	}
+	
+	public boolean getIsIllegal() {
+		return m_isIllegal;
 	}
 }
 

@@ -124,7 +124,7 @@ public class RouteTiming {
 				} else {
 					Status status = new Status();
 					double violationTime = getViolationTime(status);
-			    	if (status.isInfinite() || status.isUnresolved()) {
+			    	if (status.isExceptionalCase()) {
 			    		description += String.format("Violation: %s, ", status.getString());
 
 			    	} else {
@@ -138,7 +138,7 @@ public class RouteTiming {
 
 				Status worstTimeStatus = new Status();
 				double worstTime = getWorstTime(worstTimeStatus);
-		    	if (worstTimeStatus.isInfinite() || worstTimeStatus.isUnresolved()) {
+		    	if (worstTimeStatus.isExceptionalCase()) {
 		    		description += String.format("Worst: %s, ", worstTimeStatus.getString());
 
 		    	} else {
@@ -148,7 +148,7 @@ public class RouteTiming {
 
 				Status minFrequencyStatus = new Status();
 				int minFrequency = getMinFrequency(minFrequencyStatus);
-		    	if (minFrequencyStatus.isInfinite() || minFrequencyStatus.isUnresolved()) {
+		    	if (minFrequencyStatus.isExceptionalCase()) {
 		    		description += String.format("Min Core Frequency: %s\n", minFrequencyStatus.getString());
 
 		    	} else {
@@ -161,7 +161,7 @@ public class RouteTiming {
 		    	Status status = new Status();
 		    	double worstTime = getWorstTime(status);
 
-		    	if (status.isInfinite() || status.isUnresolved()) {
+		    	if (status.isExceptionalCase()) {
 		    		description += String.format("Worst Case:  %s\n", status.getString());
 
 		    	} else {

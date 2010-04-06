@@ -39,6 +39,9 @@ public class InstructionNodeAttributes extends NodeAttributes {
 		if (getNode().getFormsRecursion()) {
 			status.mergeStatus(S.RECURSION);			
 		}
+		if (m_instruction.getIsIllegal()) {
+			status.mergeStatus(S.ILLEGAL);
+		}
 		return new TimeUnit(m_coreConfig, m_numCycles, Units.CYCLES).getNs();
 	}
 

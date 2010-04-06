@@ -113,7 +113,6 @@ public class InstructionNode extends Node {
 		nodeList.add(this);
 	}
 
-
 	public void buildListUp(List<Node> nodeList, Node start) {
 		assert(start == null);
 		if(m_parent!= null){

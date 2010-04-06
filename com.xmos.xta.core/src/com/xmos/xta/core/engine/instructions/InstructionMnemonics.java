@@ -9,8 +9,7 @@ public class InstructionMnemonics {
 	public InstructionMnemonics(Architecture arch) {
 		m_arch = arch;
 	}
-	
-	
+		
 	public boolean isImplicitBranchAndLinkLocation(Instruction inst) {
 		if(isBlacpShort(inst) || isBlacpLong(inst) || inst.getBranchPcRelative()){
 			return true;
@@ -18,7 +17,6 @@ public class InstructionMnemonics {
 			return false;
 		}
 	}
-
 
 	public boolean isFreet(Instruction inst) {
 		switch (m_arch) {

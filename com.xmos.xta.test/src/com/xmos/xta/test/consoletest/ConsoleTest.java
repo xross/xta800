@@ -46,7 +46,6 @@ public class ConsoleTest {
 	
 	public static void main(String[] args) {
 		ConsoleTest ct = new ConsoleTest();
-		System.out.println(args + " "+ args.length);
 		if(args.length < 1){
 			System.out.println("read the source");
 			

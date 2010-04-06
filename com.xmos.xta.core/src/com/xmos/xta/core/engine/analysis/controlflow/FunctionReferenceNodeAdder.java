@@ -130,6 +130,9 @@ public class FunctionReferenceNodeAdder {
 							}
 						}
 						if(!foundATarget){
+							inst.setUnresolved(true);
+							parent.setUnresolved(true);
+							//TODO remove this as the following code should be unreachable
 							FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, null, functionRefNodes);
 							fr.setUnresolved(true);
 							if (branchLinkReturn != null) {	
