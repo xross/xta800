@@ -19,10 +19,8 @@ public class ExclusionUnknown extends Unknown {
 		return "";
 	}
 
-	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() != Source.SET) {
-    		throw new Exception("No script command avaliable (Not explicitly set by user)");
-    	}
+	public String getScriptStr(String routeIdStr, String[] refStrs) {
+    	assert(getSource() == Source.SET);
     	return String.format("set exclusion %s %s", routeIdStr, refStrs[0]);
 	}
 

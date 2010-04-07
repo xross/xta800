@@ -13,10 +13,6 @@ public class FunctionTimeUnknown extends Unknown {
 
 	public String getDescription() {
 		switch(getState()) {
-		case UNKNOWN:
-			return String.format("Time taken for function (node id: %d) is unknown",
-					getNode().getId());
-
 		case KNOWN:
 			return String.format("Time taken for function (node id: %d) is set to %s",
 					getNode().getId(),
@@ -26,10 +22,8 @@ public class FunctionTimeUnknown extends Unknown {
 		return "";
 	}
 
-	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() != Source.SET) {
-    		throw new Exception("No script command avaliable (Not explicitly set by user)");
-    	}
+	public String getScriptStr(String routeIdStr, String[] refStrs) {
+    	assert(getSource() == Source.SET);
     	return String.format("set functiontime %s %s %s",
     			routeIdStr, refStrs[0],
     			getNode().getAttributes().getFixedTimeString());

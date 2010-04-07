@@ -32,7 +32,7 @@ public abstract class Unknown  {
     private Reference[] m_references;
 
     public abstract String getDescription();
-    public abstract String getScriptStr(String routeIdStr, String[] refStrs) throws Exception;
+    public abstract String getScriptStr(String routeIdStr, String[] refStrs);
     public abstract String getValueStr();
 
 	public Unknown(Route route, Node node, Type type, State state, Source source, Reference[] references) {

@@ -14,10 +14,6 @@ public class LoopPathUnknown extends Unknown {
 		Node condNode = getNode().getEnclosingCondNode();
 		
 		switch(getState()) {
-		case UNKNOWN:
-			return String.format("Loop path iterations (node id: " +
-					getNode().getId() + ") are unknown");
-
 		case KNOWN:
 			return String.format("Loop path iterations (node id: " +
 					getNode().getId() + ") are set to " + 
@@ -27,10 +23,8 @@ public class LoopPathUnknown extends Unknown {
 		return "";
 	}
 
-	public String getScriptStr(String routeIdStr, String[] refStrs) throws Exception {
-    	if (getSource() != Source.SET) {
-    		throw new Exception("No script command avaliable (Not explicitly set by user)");
-    	}
+	public String getScriptStr(String routeIdStr, String[] refStrs) {
+    	assert(getSource() == Source.SET);
 		Node condNode = getNode().getEnclosingCondNode();
 		return String.format("set looppath %s %s %d",
     			routeIdStr, refStrs[0],
