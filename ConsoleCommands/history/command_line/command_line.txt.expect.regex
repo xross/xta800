@@ -15,7 +15,7 @@
 13: config case WORST
 14: config srcpaths /test/path/srcpath/
 15: clear
-16: echo
+16: echo "hello"
 17: pwd
 18: help
 19: help history
