@@ -11,16 +11,11 @@ public class LoopPathUnknown extends Unknown {
 	}
 
 	public String getDescription() {
+		assert(getState() == State.KNOWN);
 		Node condNode = getNode().getEnclosingCondNode();
-		
-		switch(getState()) {
-		case KNOWN:
-			return String.format("Loop path iterations (node id: " +
-					getNode().getId() + ") are set to " + 
-					condNode.getAttributes().getSetLoopPathIterations(getNode()));
-		}
-		assert(false);
-		return "";
+		return String.format("Loop path iterations (node id: " +
+				getNode().getId() + ") are set to " + 
+				condNode.getAttributes().getSetLoopPathIterations(getNode()));
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) {

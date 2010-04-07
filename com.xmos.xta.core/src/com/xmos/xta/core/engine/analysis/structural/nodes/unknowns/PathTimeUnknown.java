@@ -12,14 +12,10 @@ public class PathTimeUnknown extends Unknown {
 	}
 
 	public String getDescription() {
-		switch(getState()) {
-		case KNOWN:
-			return String.format("Time taken for path (node id: %d) is set to %s",
-					getNode().getId(),
-					Conversion.getTimeString(getNode().getAttributes().getFixedTime().getNs()));
-		}
-		assert(false);
-		return "";
+		assert(getState() == State.KNOWN);
+		return String.format("Time taken for path (node id: %d) is set to %s",
+				getNode().getId(),
+				Conversion.getTimeString(getNode().getAttributes().getFixedTime().getNs()));
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) {

@@ -11,12 +11,8 @@ public class ExclusionUnknown extends Unknown {
 	}
 
 	public String getDescription() {
-		switch(getState()) {
-		case KNOWN:
-			return String.format("Exclusion on node (node id: %d)", getNode().getId());
-		}
-		assert(false);
-		return "";
+		assert(getState() == State.KNOWN);
+		return String.format("Exclusion on node (node id: %d)", getNode().getId());
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) {

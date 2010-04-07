@@ -11,14 +11,10 @@ public class LoopScopeUnknown extends Unknown {
 	}
 
 	public String getDescription() {
-		switch(getState()) {
-		case KNOWN:
-			return String.format("Loop scope (node id: " +
-					getNode().getId() + ") has been set to '" + 
-					(getNode().getAttributes().getIsAbsolute() ? "a" : "r") + "'");
-		}
-		assert(false);
-		return "";
+		assert(getState() == State.KNOWN);
+		return String.format("Loop scope (node id: " +
+				getNode().getId() + ") has been set to '" + 
+				(getNode().getAttributes().getIsAbsolute() ? "a" : "r") + "'");
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) {
