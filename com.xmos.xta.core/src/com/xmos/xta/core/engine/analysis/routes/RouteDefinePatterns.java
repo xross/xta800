@@ -40,6 +40,12 @@ class SameBlockPattern extends RouteDefinePatterns {
 		if (fromBlock.iChildren().indexOf(from) >= fromBlock.iChildren().indexOf(to))
 			return false;
 
+		// Checks that the parent can handle this..
+		if (fromBlock.getParent() != null) {
+			if (!fromBlock.getParent().canReplaceChildren()) {
+				return false;
+			}
+		}
 		return true;
 	}
 
@@ -66,7 +72,6 @@ class SameBlockPattern extends RouteDefinePatterns {
 		} else {
 			route.setNode(sequence);
 		}
-
 	}
 }
 
@@ -81,6 +86,10 @@ class DifferentBlockPattern extends RouteDefinePatterns {
 		if (children.indexOf(fromBlock) >= children.indexOf(toBlock))
 			return false;
 
+		// Checks that the parent can handle this..
+		if (!fromBlock.getParent().canReplaceChildren()) {
+			return false;
+		}
 		return true;
 	}
 
@@ -117,7 +126,6 @@ class DifferentBlockPattern extends RouteDefinePatterns {
 		newChildren.addAll(children.subList(children.indexOf(toBlock) + 1, children.size()));
 
 		parent.replaceChildren(newChildren);
-
 	}
 }
 

@@ -118,22 +118,6 @@ public class BlockNode extends Node {
     	return new TimeDistributionBuckets(time);
     }
 
-	public void replaceChild(Node oldNode, Node newNode) {
-		assert(oldNode instanceof InstructionNode);
-		assert(newNode instanceof InstructionNode);
-		int index = m_insts.indexOf(oldNode);
-		m_insts.remove(index);
-		m_insts.add(index, (InstructionNode)newNode);
-	}
-
-	public void replaceChildren(List<Node> children) {
-		m_insts.clear();
-		for (Node child : children) {
-			assert(child instanceof InstructionNode);
-			m_insts.add((InstructionNode)child);
-		}
-	}
-
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {

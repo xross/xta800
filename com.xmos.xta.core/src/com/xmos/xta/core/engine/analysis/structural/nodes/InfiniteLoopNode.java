@@ -118,6 +118,10 @@ public class InfiniteLoopNode extends Node {
 		return tdb;
 	}
 
+	public boolean canReplaceChildren() {
+		return true;
+	}
+	
 	public void replaceChild(Node oldNode, Node newNode) {
 		if (oldNode == m_loopHeader) {
 			m_loopHeader = newNode;

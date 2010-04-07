@@ -111,6 +111,10 @@ public class SequenceNode extends Node {
 		return m_nodes;
 	}
 
+	public boolean canReplaceChildren() {
+		return true;
+	}
+	
 	public void replaceChild(Node oldNode, Node newNode) {
 		int index = m_nodes.indexOf(oldNode);
 		m_nodes.remove(index);

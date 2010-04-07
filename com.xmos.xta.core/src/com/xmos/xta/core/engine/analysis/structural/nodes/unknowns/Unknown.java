@@ -55,6 +55,7 @@ public abstract class Unknown  {
 		switch (m_type) {
 		case LOOP_ITERATIONS:
     		return Level.ERROR;
+    		
 		case LOOP_PATH_ITERATIONS:
 		case LOOP_SCOPE:
 		case INSTRUCTION_TIME:
@@ -86,32 +87,4 @@ public abstract class Unknown  {
 		m_source = source;
 		m_references = references;
 	}
-/*
-	public int compareTo(Unknown o) {
-		int value = m_node.compareTo(o.m_node);
-		if (value != 0)
-			return value;
-
-		value = m_type.compareTo(o.m_type);
-		if (value != 0)
-			return value;
-
-		value = m_state.compareTo(o.m_state);
-		if (value != 0)
-			return value;
-
-		value = Integer.signum(m_references.length - o.m_references.length);
-		if (value != 0)
-			return value;
-
-		for (int i = 0; i < m_references.length; i++) {
-			value = m_references[i].compareTo(o.m_references[i]);
-			if (value != 0) {
-				return value;
-			}
-		}
-
-		return 0;
-	}
-*/	
 }

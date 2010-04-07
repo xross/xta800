@@ -194,6 +194,10 @@ public class FunctionNode extends Node {
 		return tdb;
 	}
 
+	public boolean canReplaceChildren() {
+		return true;
+	}
+	
 	public void replaceChild(Node oldNode, Node newNode) {
 		int index = m_functionSequence.indexOf(oldNode);
 		m_functionSequence.remove(index);

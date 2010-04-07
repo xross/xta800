@@ -210,18 +210,8 @@ public class ConditionalNode extends Node {
 		}
 		tdb.merge(tdbs);
 		return tdb;
-	}
-
-	public void replaceChild(Node oldNode, Node newNode) {
-		getAliveOptions().remove(oldNode);
-		getAliveOptions().add(newNode);
-	}
-
-	public void replaceChildren(List<Node> children) {
-		getAliveOptions().clear();
-		getAliveOptions().addAll(children);
-	}
-
+	}	
+	
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {

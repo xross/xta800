@@ -91,12 +91,6 @@ public class InstructionNode extends Node {
 		return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
 	}
 
-	public void replaceChild(Node oldNode, Node newNode) {
-	}
-
-	public void replaceChildren(List<Node> children) {
-	}
-
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {

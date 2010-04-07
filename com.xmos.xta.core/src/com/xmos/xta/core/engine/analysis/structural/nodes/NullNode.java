@@ -50,12 +50,6 @@ public class NullNode extends Node {
 		return new TimeDistributionBuckets(0);
 	}
 
-	public void replaceChild(Node oldNode, Node newNode) {
-	}
-
-	public void replaceChildren(List<Node> children) {
-	}
-
 	//below here the methods have been verified useful
 
 	public List<Node> iChildren() {

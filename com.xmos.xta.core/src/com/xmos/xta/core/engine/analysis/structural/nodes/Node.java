@@ -44,10 +44,6 @@ public abstract class Node implements Comparable<Node> {
 	//need to take a look at this one
 	public abstract long getStartPc();
 
-	//these are for timing defines
-	public abstract void replaceChild(Node oldNode, Node newNode);
-	public abstract void replaceChildren(List<Node> newChildren);
-
 	public abstract List<Node> iChildren();
 	public abstract void buildListUp(List<Node> nodeList, Node start);
 	public abstract void buildListDown(List<Node> nodeList);
@@ -273,5 +269,16 @@ public abstract class Node implements Comparable<Node> {
 		}
 	}
 
+	public boolean canReplaceChildren() {
+		return false;
+	}
+	
+	public void replaceChild(Node oldNode, Node newNode) {
+		assert(false);
+	}
+
+	public void replaceChildren(List<Node> children) {
+		assert(false);
+	}	
 }
 

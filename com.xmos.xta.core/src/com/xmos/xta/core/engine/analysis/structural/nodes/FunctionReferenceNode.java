@@ -146,14 +146,6 @@ public class FunctionReferenceNode extends Node {
 		return "Function_Ref";
 	}
 
-	public void replaceChild(Node oldNode, Node newNode) {
-		assert(false);
-	}
-
-	public void replaceChildren(List<Node> newChildren) {
-		assert(false);
-	}
-
 	public TraverseStatus traverse(Stack<Node> ancestors,
 			NodeTraverserWithAncestors nodeTraverser) {
 		assert(false);
