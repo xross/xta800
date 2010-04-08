@@ -26,23 +26,17 @@ class SetScripter {
     void setKnowns(RouteContainer routeContainer, StringBuffer script) {
    	    List<Unknown> processed = new ArrayList<Unknown>();
 
-        List<Unknown> setKnowns = getSetKnownsList(routeContainer);
-        
-   	    for (Unknown known : setKnowns) {
+   	    for (Unknown known : getSetKnownsList(routeContainer)) {
        	    if (!processed.contains(known)) {
                 String routeIdStr = String.format("%d", known.getRoute().getRouteId());       				    
        		    if (isKnownOnAllOtherRoutes(routeContainer, known, processed)) {
        				routeIdStr = "-";
        			}
 
-        	    try {
-              	    String[] refStrs = getReferenceStrings(known);
-                	String scriptStr = known.getScriptStr(routeIdStr, refStrs);
-                	outputPortableWarnings(script, known);
-                	m_scripter.addScriptCommand(script, scriptStr);
-           		   	
-           		   	//System.out.println("know: " +scriptStr);
-           		} catch (Exception e) {}
+           	    String[] refStrs = getReferenceStrings(known);
+              	String scriptStr = known.getScriptStr(routeIdStr, refStrs);
+               	outputPortableWarnings(script, known);
+               	m_scripter.addScriptCommand(script, scriptStr);
            		
            		processed.add(known);       	    	
        	    }   	    	
