@@ -38,8 +38,7 @@ public class Route extends Command {
 
     	try {
     		return new Route(getRouteId(args[index + 1]));
-    	}
-    	catch (NumberFormatException e) {
+    	} catch (NumberFormatException e) {
     	    return null;
     	}
     }

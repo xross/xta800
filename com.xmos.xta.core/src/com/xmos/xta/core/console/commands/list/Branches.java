@@ -60,8 +60,11 @@ public class Branches extends Command {
 		}
 
 		if (!areArgsDone(args, index + 1)) {
-    		int routeId = getRouteId(args[index + 1]);
-    		return new Branches(routeId);
+	    	try {
+	    		return new Branches(getRouteId(args[index + 1]));
+		    } catch (NumberFormatException e) {
+		    	return null;
+		    }
 		}
 
 		return new Branches();

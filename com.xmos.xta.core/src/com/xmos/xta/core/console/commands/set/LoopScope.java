@@ -57,7 +57,8 @@ public class LoopScope extends Command {
 			return null;
 
 		int routeId;
-    	try { routeId = getRouteId(args[index + 1]);
+    	try {
+    		routeId = getRouteId(args[index + 1]);
 	    } catch (NumberFormatException e) {
 	        return null;
 	    }

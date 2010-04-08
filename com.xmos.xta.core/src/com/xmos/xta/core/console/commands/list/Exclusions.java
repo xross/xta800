@@ -61,8 +61,11 @@ public class Exclusions extends Command {
 		}
 
 		if (!areArgsDone(args, index + 1)) {
-    		int routeId = getRouteId(args[index + 1]);
-    		return new Exclusions(routeId);
+	    	try {
+	    		return new Exclusions(getRouteId(args[index + 1]));
+	    	} catch (NumberFormatException e) {
+		    	return null;
+		    }
 		}
 
     	return new Exclusions();
