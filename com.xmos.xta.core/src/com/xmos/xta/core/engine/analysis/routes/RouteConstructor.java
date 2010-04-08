@@ -104,7 +104,7 @@ public class RouteConstructor {
 		}
 		
 		if (routeContainer.getMode() == RouteMode.FUNCTION){
-			List<StackNode> startStackNodes = getFunctionStartStackNodes(m_callGraph, m_coreContainer.getFromReference());
+			List<StackNode> startStackNodes = getPathStackNodes(m_callGraph, m_coreContainer.getFromReference());
 			for(StackNode startStackNode : startStackNodes){
 				for(Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()){
 					
@@ -199,12 +199,7 @@ public class RouteConstructor {
 		}
 	}
 
-	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference ref) {
-		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(callGraph, ref, m_engine);
-	}
-
-	private List<StackNode> getFunctionStartStackNodes(CallGraph callGraph, Reference reference) {
+	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) {
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 		return prm.matchReference(callGraph, reference, m_engine);
 	}

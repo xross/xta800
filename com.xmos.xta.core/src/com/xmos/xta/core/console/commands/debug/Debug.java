@@ -15,6 +15,8 @@ public class Debug extends CommandContainer {
 		new Loop(),
 		new LoopPath(),
 		new LoopScope(),
+		new ListGlobalReferences(),
+		new ListRouteReferences(),
 	};
 
 	public Debug() { super(COMMAND_NAMES); }

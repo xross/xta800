@@ -215,7 +215,6 @@ public abstract class Node implements Comparable<Node> {
 		return backTrace;
 	}
 
-
 	public String getDescription() {
 		return "";
 	}
