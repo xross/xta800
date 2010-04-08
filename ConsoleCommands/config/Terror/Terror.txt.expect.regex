@@ -1,5 +1,6 @@
   \[-\]config <option> <arg0> <arg1>\.\.\.: Configures the given option
       option: case <BEST/WORST>: Sets the case \(currently: WORST\)
+      option: Ewarning <on/off>: treat errors as warnings or not \(currently: off\)
       option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
       option: from <ENDPOINT_REF>: Sets the from endpoint
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
@@ -12,6 +13,7 @@
       option: Werror <on/off>: treat warnings as errors or not \(currently: off\)
 TimingFailAsError: false
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -26,6 +28,7 @@ Fail, 1/1, Max Violation: \d+\.\d [mun]s
 RETURN CODE OK
   \[-\]config <option> <arg0> <arg1>\.\.\.: Configures the given option
       option: case <BEST/WORST>: Sets the case \(currently: WORST\)
+      option: Ewarning <on/off>: treat errors as warnings or not \(currently: off\)
       option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
       option: from <ENDPOINT_REF>: Sets the from endpoint
       option: scale <true/false>: Configures whether results are scales \(currently: true\)
@@ -38,6 +41,7 @@ RETURN CODE OK
       option: Werror <on/off>: treat warnings as errors or not \(currently: off\)
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0

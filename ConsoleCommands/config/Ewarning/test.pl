@@ -17,6 +17,7 @@ my $message = "RETURN CODE WRONG";
 my $retval = system("@ARGV load $genDir/test.xe " .
        "config Terror off " .
        "config Ewarning on " .
+       "help config " .
        "status " .
        "config Ewarning off " .
        "status " .

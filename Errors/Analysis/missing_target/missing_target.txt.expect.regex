@@ -1,6 +1,7 @@
 xta: warning: target \(0x10010\) of: \(main\+\d+\) 0x10008 bl \(lu10\) 0x2 not found in executable sections
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0

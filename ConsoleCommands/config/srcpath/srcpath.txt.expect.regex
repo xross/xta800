@@ -1,6 +1,7 @@
 compilation dir: .*srcpath, filename: test.xc \(File not found\)
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .*/up;.
 Case: WORST
 Verbosity: 0

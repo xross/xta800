@@ -1,5 +1,6 @@
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -9,6 +10,7 @@ Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -18,6 +20,7 @@ Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 Loaded Route\(0\): function: main 
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -27,6 +30,7 @@ Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0

@@ -1,3 +1,16 @@
+  \[-\]config <option> <arg0> <arg1>\.\.\.: Configures the given option
+      option: case <BEST/WORST>: Sets the case \(currently: WORST\)
+      option: Ewarning <on/off>: treat errors as warnings or not \(currently: on\)
+      option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
+      option: from <ENDPOINT_REF>: Sets the from endpoint
+      option: scale <true/false>: Configures whether results are scales \(currently: true\)
+      option: srcpaths <paths>: Sets the \(semicolon separated\) source search path
+      option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
+      option: timeout <seconds>: Sets the tools timeout on load
+      option: Terror <on/off>: treat timing failures as errors or not \(currently: off\)
+      option: to <ENDPOINT_REF>: Sets the to endpoint
+      option: verbosity <level>: Sets the tool verbosity level \(range: -10 -> \+10, default: 0\)
+      option: Werror <on/off>: treat warnings as errors or not \(currently: off\)
 TimingFailAsError: false
 WarnAsError: false
 ErrorAsWarn: true

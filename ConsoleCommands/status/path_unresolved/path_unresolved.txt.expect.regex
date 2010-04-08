@@ -2,6 +2,7 @@ xta: error: 'test.xc:3' is not a valid endpoint on any active core
 xta: error: 'test.xc:4' is not a valid endpoint on any active core
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
