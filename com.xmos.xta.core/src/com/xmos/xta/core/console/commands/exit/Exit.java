@@ -8,7 +8,6 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
-import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class Exit extends Command {
 	private static final String[] COMMAND_NAMES = { "exit" };
@@ -39,32 +38,23 @@ public class Exit extends Command {
     		return;
     	}
     	
-		boolean warnAsErrors = engine.getConfig().m_warnAsErrors;
-		boolean timingErrors = engine.getConfig().m_timingFailuresAsErrors;
 		int errors = 0;
 
 		if (engine.getNumErrors() > 0) {
 			errors = 1;
 
-    	} else if (timingErrors) {
+    	} else if (engine.getConfig().m_timingFailuresAsErrors) {
 			for (Route route : engine.getRoutes()) {
 				RouteTiming routeTiming = route.getRouteTiming();
-
 				if (routeTiming.isTimingSpecified()) {
 					if (!routeTiming.passed()) {
 						errors = 1;
 				    	break;
 					}
+					
 				} else {
 			    	errors = 1;
 			    	break;
-				}
-
-				if (warnAsErrors) {
-					if (route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0) {
-						errors = 1;
-						break;
-					}
 				}
 			}
     	}

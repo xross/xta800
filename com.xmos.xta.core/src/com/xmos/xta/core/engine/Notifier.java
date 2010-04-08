@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine;
 
-public interface Notifier {
+public abstract class Notifier {
 	public static final String NOTIFY_ERROR   = "Error";
 	public static final String NOTIFY_WARNING = "Warning";
 	public static final String NOTIFY_INFO    = "Info";
@@ -24,5 +24,33 @@ public interface Notifier {
 	public static final String HOLD_MESSAGES     = "HoldMessages";
 	public static final String RELEASE_MESSAGES  = "ReleaseMessages";
 
-	void notify(CommandSource src, String message, String argument);
+	private Config m_config;
+	
+	abstract public void notify(CommandSource src, String message, String argument);
+
+	public Notifier(Config config) {
+		m_config = config;
+	}
+	
+	protected String getLevel(String message) {
+		if (m_config.getWarningsAsErrors()) {
+			if (message.equals(NOTIFY_ERROR) || 
+				message.equals(NOTIFY_WARNING)) {
+				return NOTIFY_ERROR;
+			} else {
+				return message;
+			}
+			
+		} else if (m_config.getErrorsAsWarnings()) {
+			if (message.equals(NOTIFY_ERROR) || 
+				message.equals(NOTIFY_WARNING)) {
+				return NOTIFY_WARNING;
+			} else {
+				return message;
+			}
+			
+		} else {
+			return message;
+		}
+	}
 }

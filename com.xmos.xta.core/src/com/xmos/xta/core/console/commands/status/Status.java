@@ -39,7 +39,9 @@ public class Status extends Command {
     	console.display(String.format("TimingFailAsError: %s\n",
     			engine.getConfig().m_timingFailuresAsErrors ? "true" : "false"));
     	console.display(String.format("WarnAsError: %s\n",
-    			engine.getConfig().m_warnAsErrors ? "true" : "false"));
+    			engine.getConfig().getWarningsAsErrors() ? "true" : "false"));
+    	console.display(String.format("ErrorAsWarn: %s\n",
+    			engine.getConfig().getErrorsAsWarnings() ? "true" : "false"));
 
     	console.display(String.format("SrcPaths: %s\n", engine.getSrcPaths()));
     	console.display(String.format("Case: %s\n", engine.getCase().toString()));

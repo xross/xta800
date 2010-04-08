@@ -8,6 +8,7 @@ public class Config extends CommandContainer {
 
 	static private Command[] m_options = {
 		new Case(),
+		new ErrorAsWarn(),
 		new Freq(),
 		new From(),		
 		new Scale(),

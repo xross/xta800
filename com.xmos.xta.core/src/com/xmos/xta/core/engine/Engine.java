@@ -71,7 +71,7 @@ import com.xmos.xta.core.engine.utils.NodeCoreCollection;
 import com.xmos.xta.core.engine.utils.NodeCorePair;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
-public class Engine implements Notifier, Aborter {
+public class Engine extends Notifier implements Aborter {
 	public static final int ROUTE_ID_LAST     = -1;
 	public static final int ROUTE_ID_INVALID  = -2;
 	public static final int ROUTE_ID_ALL      = -3;
@@ -105,6 +105,7 @@ public class Engine implements Notifier, Aborter {
 	private Debugger m_debugger;
 
 	public Engine(Config config) {
+		super(config);
 		m_sourceMappers = new NodeCoreCollection<SourceMapper>();
 		m_instructionDecoders = new NodeCoreCollection<InstructionDecoder>();
 		m_callGraphs = new NodeCoreCollection<CallGraph>();
@@ -136,7 +137,8 @@ public class Engine implements Notifier, Aborter {
 			m_notifier.notify(src, message, argument);
 		}
 
-		if (message.equals(NOTIFY_ERROR)) {
+		String level = getLevel(message);
+		if (level.equals(NOTIFY_ERROR)) {
 			m_numErrors++;
 		}
 	}
@@ -301,7 +303,11 @@ public class Engine implements Notifier, Aborter {
 	}
 
 	public void setWarnAsErrors(boolean errorOn) {
-		m_config.m_warnAsErrors = errorOn;
+		m_config.setWarningsAsErrors(errorOn);
+	}
+
+	public void setErrorsAsWarnings(boolean warningsOn) {
+		m_config.setErrorsAsWarnings(warningsOn);
 	}
 
 	public void setTimingFailuresAsErrors(boolean errorsOn) {
