@@ -1,6 +1,7 @@
 xta: error: the file '.*test_2.xe' could not be loaded.
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0

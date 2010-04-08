@@ -1,6 +1,7 @@
 ------------- point 1
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -11,6 +12,7 @@ No routes analyzed
 ------------- point 2
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -23,6 +25,7 @@ To endpoint 'stop'
 ------------- point 3
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -35,6 +38,7 @@ To endpoint 'stop'
 ------------- point 4
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -48,6 +52,7 @@ To endpoint 'test.xc:19'
 ------------- point 5
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0

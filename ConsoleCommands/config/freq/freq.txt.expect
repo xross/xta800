@@ -1,12 +1,14 @@
 xta: error: no executable loaded
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
 No executable loaded
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -17,6 +19,7 @@ No routes analyzed
 xta: error: Frequency '-1.0' invalid
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -26,6 +29,7 @@ Node: 0, Core: 0, Threads: 1 (No debug information found)
 No routes analyzed
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0

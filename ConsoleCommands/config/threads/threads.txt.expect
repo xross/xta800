@@ -1,12 +1,14 @@
 xta: error: no executable loaded
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
 No executable loaded
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -17,6 +19,7 @@ No routes analyzed
 xta: error: Num threads '-1' invalid
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0
@@ -27,6 +30,7 @@ No routes analyzed
 xta: error: Num threads '10' invalid
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: .
 Case: WORST
 Verbosity: 0

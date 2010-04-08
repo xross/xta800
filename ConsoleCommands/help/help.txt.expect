@@ -50,6 +50,7 @@
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <BEST/WORST>: Sets the case (currently: WORST)
+      option: Ewarning <on/off>: treat errors as warnings or not (currently: off)
       option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
       option: from <ENDPOINT_REF>: Sets the from endpoint
       option: scale <true/false>: Configures whether results are scales (currently: true)

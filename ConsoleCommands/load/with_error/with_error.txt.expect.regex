@@ -1,5 +1,6 @@
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -10,6 +11,7 @@ No routes analyzed
 xta: error: the file '.*not_found\.xe' could not be loaded\.
 TimingFailAsError: true
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
