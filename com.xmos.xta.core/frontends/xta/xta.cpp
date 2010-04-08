@@ -109,11 +109,12 @@ bool xeContainsXtaCommands(char *xeName)
   
   XBHandler *xbHandler = loadXBFromFile(xeName);
   if (xbHandler == NULL) {
-    xmosUtils->errorHandler->XMOS_ERROR(true, "xta: error loading file: %s\n", xeName);
+    // Let the XTA be called so that the error message is consistent
+    return true;
   }
   if (xbHandler->error_number != XB_NOERROR) {
-    xmosUtils->errorHandler->XMOS_ERROR(true, "xta: error loading file %s: %s\n", 
-      xeName, xbHandler->errorString);
+    // Let the XTA be called so that the error message is consistent
+    return true;
   }
 
   XBSectorHolder *thisSec = getFirstSector(xbHandler);
