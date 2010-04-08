@@ -21,18 +21,8 @@ public class RouteDefines {
 	
 	private static RouteDefinePatterns[] m_patterns = new RouteDefinePatterns[] {
 			new SameBlockPattern(),
-			new DifferentBlockPattern()
-	};
+			new DifferentBlockPattern()};
 
-	public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
-		Reference reference = info.getFunction();
-		for (Node node : route.getReferencedFunctionNodes(reference)) {
-			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(),
-					reference, Type.FUNCTION_TIME, source);
-		}
-	}
-
-	//GUI only
 	public static boolean matchPathDefine(Node from, Node to) {
 		assert(from instanceof InstructionNode);
 		Node fromBlock = from.getParent();
@@ -48,6 +38,14 @@ public class RouteDefines {
 			}
 		}
 		return false;
+	}
+
+	public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
+		Reference reference = info.getFunction();
+		for (Node node : route.getReferencedFunctionNodes(reference)) {
+			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(),
+					reference, Type.FUNCTION_TIME, source);
+		}
 	}
 
 	public void applyPathDefine(Engine engine, CommandSource src,
@@ -93,6 +91,5 @@ public class RouteDefines {
 
 		route.getRouteUnknowns().invalidateCachedStats();
 		route.getRouteUnknowns().refreshDisplayedUnknowns();
-
 	}
 }
