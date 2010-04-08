@@ -12,7 +12,7 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "list branches " .
-       "analyse function main " .
+       "-analyse function main " .
        "print summary " .
        "-exit > $genDir/xtabranch_select.txt 2>&1");
 

@@ -1,0 +1,17 @@
+1
+- n0c0:0x10008 => n0c0:0x1000c (binary)
+- n0c0:0x1000a => n0c0:0x10012 (binary)
+2
+- n0c0:0x10008 => n0c0:0x1000c (binary)
+- n0c0:0x1000a => n0c0:0x10012 (binary)
+- n0c0:source1 => n0c0:target2 n0c0:target3 n0c0:target4 (user)
+- n0c0:source2 => n0c0:target1 n0c0:target2 n0c0:target3 (user)
+3
+- n0c0:source1 => n0c0:target2 n0c0:target3 n0c0:target4
+- n0c0:source2 => n0c0:target1 n0c0:target2 n0c0:target3
+4
+- n0c0:source1 => n0c0:target2 n0c0:target3 n0c0:target4
+- n0c0:source2 => n0c0:target1 n0c0:target2 n0c0:target3
+5
+- n0c0:0x10008 => n0c0:0x1000c (binary)
+- n0c0:0x1000a => n0c0:0x10012 (binary)

@@ -12,5 +12,4 @@ system("xcc -target=$target -march=$arch -nostartfiles -g test.s -o $genDir/test
 }
 system("@ARGV load $genDir/test.xe " .
        "list branches " .
-       "exit > $genDir/xtabranch_directive.txt 2>&1");
-
+       "-exit > $genDir/xtabranch_directive.txt 2>&1");
