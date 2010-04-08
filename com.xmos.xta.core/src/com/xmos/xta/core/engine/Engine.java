@@ -1021,7 +1021,6 @@ public class Engine extends Notifier implements Aborter {
 		}
 	}
 
-	//GUI only
 	public long getSetLoop(Node node) {
 		return m_selectedRoute.getRouteUnknowns().getSetLoopIterations(node);
 	}
@@ -1534,7 +1533,6 @@ public class Engine extends Notifier implements Aborter {
 		//Control Flow Stage
 		FunctionConstructor fc = new FunctionConstructor(instructionDecoder, this, sections, nodeNumber, coreNumber, src, 
 				mnenonics, xeLoader.getSymbolTable(nodeNumber, coreNumber));
-
 
 		try {
 			fc.process();

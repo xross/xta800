@@ -50,10 +50,10 @@ public class Scripter {
 
 	// Can't use a Set because the compareTo won't do what we 
 	// need for matching references
-	List<ScripterReference> m_uniqueReferences;
+	private List<ScripterReference> m_uniqueReferences;
 	
 	// Need to keep track of all references in order to do the line numbering
-	List<ScripterReference> m_allReferences;
+	private List<ScripterReference> m_allReferences;
 	private Set<String> m_autoLabels;
 	private Set<String> m_disables;
 	private Map<String, String> m_renames;
@@ -212,7 +212,6 @@ public class Scripter {
 		return m_uniqueReferences;
 	}
 
-	//GUI only
 	public boolean promptUser() {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
 			if (scripterReference.isModifiable()) {

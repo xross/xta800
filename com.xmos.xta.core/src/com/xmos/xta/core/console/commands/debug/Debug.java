@@ -11,7 +11,10 @@ public class Debug extends CommandContainer {
 		new VerifyReference(),
 		new FromPoints(),
 		new ToPoints(),
-
+		new InstructionTime(),
+		new Loop(),
+		new LoopPath(),
+		new LoopScope(),
 	};
 
 	public Debug() { super(COMMAND_NAMES); }
