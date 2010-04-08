@@ -36,7 +36,7 @@ public class WarnAsErrors extends Command {
     public String description(Engine engine, boolean detailed) {
     	Config config = engine.getConfig();
         return name() + String.format(" <on/off>: treat warnings as errors or not (currently: %s)",
-            	config.m_warnAsErrors ? "on" : "off");
+            	config.getWarningsAsErrors() ? "on" : "off");
     }
 
     public Command clone(String[] args, int index) {
