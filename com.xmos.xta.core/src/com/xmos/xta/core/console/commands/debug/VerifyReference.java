@@ -7,8 +7,6 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class VerifyReference extends Command {
-	
-
 	private static final String[] COMMAND_NAMES = { "verifyreference" };
 
 	private String m_refString;
@@ -50,7 +48,7 @@ public class VerifyReference extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        if(engine.validateReference(m_refString)){
+        if (engine.validateReference(m_refString)){
         	console.display("true\n");
         } else {
         	console.display("false\n");
