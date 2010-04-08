@@ -1,0 +1,6 @@
+analyse function main
+set loop - outer 3
+set loop - inner 5
+set loopscope - inner a
+debug loopscope - ~1~1~1~0~
+

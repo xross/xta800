@@ -1,0 +1,5 @@
+analyse function main
+set loop - loop 10
+set looppath - if 8
+debug looppath - ~1~1~1~1~
+
