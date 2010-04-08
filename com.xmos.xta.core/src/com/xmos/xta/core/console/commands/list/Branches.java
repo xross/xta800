@@ -51,7 +51,7 @@ public class Branches extends Command {
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return name() + ": Lists the branches";
+        return name() + " [route id]: Lists the branches - optionally for the specified route";
 	}
 
 	public Command clone(String[] args, int index) {
