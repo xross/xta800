@@ -15,6 +15,7 @@ my $message = "RETURN CODE WRONG";
 
 # Expect to get 1 since warnings should be treated as errors
 my $retval = system("@ARGV load $genDir/test.xe " .
+       "config Terror off " .
        "config Werror on " .
        "status " .
        "config Werror off " .
@@ -22,8 +23,10 @@ my $retval = system("@ARGV load $genDir/test.xe " .
        "config Werror on " .
        "status " .
        "analyze function main " .
-       "-set required - 10000 ns " .
-       "print summary " .
+       "-set required - 100 ns " .
+       "print warnings " .
+       "config Werror off " .
+       "print warnings " .
        "-exit > $genDir/Werror.txt 2>&1");
 
 if (($retval >> 8) == 1) {

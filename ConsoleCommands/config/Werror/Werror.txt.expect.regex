@@ -1,5 +1,6 @@
-TimingFailAsError: true
+TimingFailAsError: false
 WarnAsError: true
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -7,8 +8,9 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
-TimingFailAsError: true
+TimingFailAsError: false
 WarnAsError: false
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -16,8 +18,9 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
-TimingFailAsError: true
+TimingFailAsError: false
 WarnAsError: true
+ErrorAsWarn: false
 SrcPaths: \.
 Case: WORST
 Verbosity: 0
@@ -25,8 +28,6 @@ Loaded executable: test.xe
 Frequency: Node 0, 400.0 MHz
 Node: 0, Core: 0, Threads: 1 \(No debug information found\)
 No routes analyzed
-Route\(0\) function: main
-    Pass with 2 unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
-
-Pass, Min Core Frequency: \d+ MHz
+xta: error: route\(0\) +Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: 100.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
+xta: warning: route\(0\) +Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: 100.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
 RETURN CODE OK

@@ -1,0 +1,22 @@
+TimingFailAsError: false
+WarnAsError: false
+ErrorAsWarn: true
+SrcPaths: \.
+Case: WORST
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: Node 0, 400.0 MHz
+Node: 0, Core: 0, Threads: 1 \(No debug information found\)
+No routes analyzed
+TimingFailAsError: false
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: \.
+Case: WORST
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: Node 0, 400.0 MHz
+Node: 0, Core: 0, Threads: 1 \(No debug information found\)
+No routes analyzed
+xta: warning: Reference: nonexistant not resolved on any active core
+RETURN CODE OK
