@@ -69,11 +69,11 @@
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
       option: allcalls: Lists all the possible locations for calls
       option: allendpoints: Lists all the possible locations for endpoints
-      option: branches: Lists the branches
+      option: branches [route id]: Lists the branches - optionally for the specified route
       option: calls: Lists the calls
       option: cores: Lists the active cores
       option: endpoints: Lists the endpoints
-      option: exclusions: Displays the exclusions
+      option: exclusions [route id]: Displays the exclusions - optionally for the specified route
       option: functions: Lists the functions in the loaded application
       option: functiontimes: Displays the function time defines
       option: instructiontimes: Displays the instruction time defines
