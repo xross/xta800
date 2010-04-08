@@ -11,5 +11,5 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch -g test.xc -O1 -o $genDir/test.xe -Werror > $genDir/test.log 2>&1");
 }
 
-my $retval = system("@ARGV load $genDir/test.xe " .
+system("@ARGV load $genDir/test.xe " .
        "-exit > $genDir/test.txt 2>&1");
