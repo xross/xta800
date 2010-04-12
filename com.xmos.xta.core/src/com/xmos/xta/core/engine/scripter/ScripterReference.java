@@ -15,6 +15,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 import com.xmos.xta.core.engine.sections.ScriptableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ScripterReference {
 	private Engine m_engine;
@@ -127,24 +128,23 @@ public class ScripterReference {
 	private void tryHighestLevelReference(Scripter scripter, ReferenceType baseRef) {
 
 		ReferenceType.Type type = baseRef.getType();
-		int nodeNumber = m_baseRef.getNodeNumber();
-		int coreNumber = m_baseRef.getCoreNumber();
+		CoreId coreId = m_baseRef.getCoreId();
 		if (type == ReferenceType.Type.ENDPOINT) {
 			tryMatching(scripter, baseRef,
-					m_engine.getEndpoints(nodeNumber, coreNumber),
-					m_engine.getEndpointTable(nodeNumber, coreNumber).values(),
+					m_engine.getEndpoints(coreId),
+					m_engine.getEndpointTable(coreId).values(),
 					ReferenceClass.ENDPOINT_REF);
 
 		} else if (type == ReferenceType.Type.CALL) {
 			tryMatching(scripter, baseRef,
-					m_engine.getCalls(nodeNumber, coreNumber),
-					m_engine.getCallTable(nodeNumber, coreNumber).values(),
+					m_engine.getCalls(coreId),
+					m_engine.getCallTable(coreId).values(),
 					ReferenceClass.ANY_REF);
 
 		} else {
 			boolean matched = tryMatching(scripter, baseRef,
-					m_engine.getSrcLabels(nodeNumber, coreNumber),
-					m_engine.getSrcLabelTable(nodeNumber, coreNumber).values(),
+					m_engine.getSrcLabels(coreId),
+					m_engine.getSrcLabelTable(coreId).values(),
 					ReferenceClass.ANY_REF);
 
 			if (!matched) {
@@ -185,7 +185,7 @@ public class ScripterReference {
 	}
 
 	private void tryLabels(Scripter scripter, ReferenceType baseRef) {
-		Map<String, Set<Long>> labels = m_engine.getLabels(m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber());
+		Map<String, Set<Long>> labels = m_engine.getLabels(m_baseRef.getCoreId());
 		for (String label : labels.keySet()) {
 			if (labels.get(label).equals(baseRef.getPcs())) {
 				initialise(label, ReferenceClass.LABEL_REF, label, false);
@@ -213,8 +213,7 @@ public class ScripterReference {
 	}
 
 	private void initialise(String mapsToLabel, ReferenceClass mapsToClass, String label, boolean isModifiable) {
-		m_mapsTo = ReferenceFactory.createReference(mapsToLabel, mapsToClass,
-				m_baseRef.getNodeNumber(), m_baseRef.getCoreNumber());
+		m_mapsTo = ReferenceFactory.createReference(mapsToLabel, mapsToClass, m_baseRef.getCoreId());
 		m_mapsTo.resolve(m_engine);
 
 		m_mapsToLabel = label;

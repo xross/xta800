@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class InstructionTimeInfo implements DefineInfo {
@@ -33,8 +33,8 @@ public class InstructionTimeInfo implements DefineInfo {
     	return m_timeUnit.getDescription(true);
     }
 
-    public NodeCorePair getNodeCore() {
-    	return m_reference.getNodeCore();
+    public CoreId getCoreId() {
+    	return m_reference.getCoreId();
     }
 
     public Reference[] getReferences() {
@@ -46,8 +46,7 @@ public class InstructionTimeInfo implements DefineInfo {
 		if (o!=null) {
 			if (o instanceof InstructionTimeInfo) {
 				ret = ((InstructionTimeInfo)o).m_reference.equals(m_reference) &&
-			          (((InstructionTimeInfo)o).m_reference.getNodeNumber() == m_reference.getNodeNumber()) &&
-			          (((InstructionTimeInfo)o).m_reference.getCoreNumber() == m_reference.getCoreNumber());
+			          (((InstructionTimeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
 			}
 		}
 		return ret;

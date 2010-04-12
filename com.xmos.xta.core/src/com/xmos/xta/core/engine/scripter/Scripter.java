@@ -18,6 +18,7 @@ import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.util.NonIteratableSet;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -37,16 +38,16 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Scripter {
 	private Engine m_engine;
-	private Collection<NodeCorePair> m_currentActiveCores;
+	private Collection<CoreId> m_currentActiveCores;
 	private Collection<Reference> m_currentExclusions;
 	private Map<Reference, List<Reference>> m_currentBranches;
 	private Defines m_currentDefines;
-	private Map<Integer, Double> m_currentFrequencies;
-	private Map<NodeCorePair, Integer> m_currentNumThreads;
+	private Map<String, Double> m_currentFrequencies;
+	private Map<CoreId, Integer> m_currentNumThreads;
 
 	// Can't use a Set because the compareTo won't do what we 
 	// need for matching references
@@ -62,15 +63,15 @@ public class Scripter {
 
 	public Scripter(Engine engine) {
 		m_engine = engine;
-		m_currentActiveCores = new ArrayList<NodeCorePair>();
+		m_currentActiveCores = new ArrayList<CoreId>();
 		m_currentExclusions = new ArrayList<Reference>();
 		m_currentDefines = new Defines();
 		m_currentBranches = new NonIteratableMap<Reference, List<Reference>>();
 		m_autoLabels = new NonIteratableSet<String>();
 		m_disables = new IteratableSet<String>();
 		m_renames = new IteratableMap<String, String>();
-		m_currentFrequencies = new NonIteratableMap<Integer, Double>();
-		m_currentNumThreads = new NonIteratableMap<NodeCorePair, Integer>();
+		m_currentFrequencies = new NonIteratableMap<String, Double>();
+		m_currentNumThreads = new NonIteratableMap<CoreId, Integer>();
 		m_uniqueReferences = null;
 		m_allReferences = null;
 		
@@ -79,11 +80,11 @@ public class Scripter {
 	}
 
 	public void setEngineLoadAndRunDone() {
-		m_currentActiveCores = new ArrayList<NodeCorePair>(m_engine.getActiveCores());
+		m_currentActiveCores = new ArrayList<CoreId>(m_engine.getActiveCores());
 		m_currentExclusions = new ArrayList<Reference>(m_engine.getExclusions());
 		m_currentDefines = new Defines(m_engine.getDefines());
-		m_currentFrequencies = new NonIteratableMap<Integer, Double>(m_engine.getFrequencyMap());
-		m_currentNumThreads = new NonIteratableMap<NodeCorePair, Integer>(m_engine.getNumThreadMap());		
+		m_currentFrequencies = new NonIteratableMap<String, Double>(m_engine.getFrequencyMap());
+		m_currentNumThreads = new NonIteratableMap<CoreId, Integer>(m_engine.getNumThreadMap());		
 		m_uniqueReferences = null;
 		m_allReferences = null;
 
@@ -135,9 +136,11 @@ public class Scripter {
 			return true;
 		}
 		
-		for (int nodeNumber : m_engine.getXeLoader().getNodeNumbers()) {
-			for (int coreNumber : m_engine.getXeLoader().getCoreNumbers(nodeNumber)) {
-				Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY_REF, nodeNumber, coreNumber);
+		XeLoader xeLoader = m_engine.getXeLoader();
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY_REF, coreId);
 				if (ref.resolve(m_engine)) {
 					return true;
 				}
@@ -307,9 +310,8 @@ public class Scripter {
 
 	Reference createReferenceForUnknown(Unknown unknown) {
 		String refString = unknown.getNode().getReferenceStr();
-		NodeCorePair nodeCore = unknown.getRoute().getRouteCoreContainer().getNodeCore();
-		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF,
-				nodeCore.getNode(), nodeCore.getCore());
+		CoreId coreId = unknown.getRoute().getRouteCoreContainer().getCoreId();
+		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF, coreId);
 		return ref;
 	}
     
@@ -370,12 +372,12 @@ public class Scripter {
 	}
 	
 	private void updateActiveCores(RouteContainer routeContainer, StringBuffer script) {
-    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
+    	Collection<CoreId> activeCores = routeContainer.getActiveCores();
 
     	if (!m_currentActiveCores.equals(activeCores)) {
     		addScriptCommand(script, "remove core *");
-    		for (NodeCorePair activeCore : activeCores) {
-    			addScriptCommand(script, String.format("add core %d %d", activeCore.getNode(), activeCore.getCore()));
+    		for (CoreId activeCore : activeCores) {
+    			addScriptCommand(script, String.format("add core %s", activeCore.getCoreReference()));
     		}
     		m_currentActiveCores.clear();
     		m_currentActiveCores.addAll(activeCores);
@@ -383,35 +385,32 @@ public class Scripter {
     }
 
     private void updateFrequencies(RouteContainer routeContainer, StringBuffer script) {
-    	Map<Integer, Double> frequencies = routeContainer.getFrequencies();
+    	Map<String, Double> frequencies = routeContainer.getFrequencies();
     	
-    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();
-    	for (NodeCorePair activeCore : activeCores) {
-    		int nodeNumber = activeCore.getNode();
+    	Collection<CoreId> activeCores = routeContainer.getActiveCores();
+    	for (CoreId activeCore : activeCores) {
+    		String nodeId = activeCore.getNodeId();
     		
-    		Double frequency = frequencies.get(nodeNumber);
-    		Double currentFrequency = m_currentFrequencies.get(nodeNumber);
+    		Double frequency = frequencies.get(nodeId);
+    		Double currentFrequency = m_currentFrequencies.get(nodeId);
 
     		if (!currentFrequency.equals(frequency)) {
-    			addScriptCommand(script, String.format("config freq %d %f", nodeNumber, frequency));    			
-    			m_currentFrequencies.put(nodeNumber, frequency);
+    			addScriptCommand(script, String.format("config freq %s %f", nodeId, frequency));    			
+    			m_currentFrequencies.put(nodeId, frequency);
     		}
     	}
     }
         
 	private void updateNumThreads(RouteContainer routeContainer, StringBuffer script) {
-    	Map<NodeCorePair, Integer> numThreadsMap = routeContainer.getNumThreads();
+    	Map<CoreId, Integer> numThreadsMap = routeContainer.getNumThreads();
 
-    	Collection<NodeCorePair> activeCores = routeContainer.getActiveCores();    	
-    	for (NodeCorePair activeCore : activeCores) {
-    		int nodeNumber = activeCore.getNode();    		
-    		int coreNumber = activeCore.getCore();    		
-    		
+    	Collection<CoreId> activeCores = routeContainer.getActiveCores();    	
+    	for (CoreId activeCore : activeCores) {
             int numThreads = numThreadsMap.get(activeCore);
             int currentNumThreads = m_currentNumThreads.get(activeCore);
     		
     		if (currentNumThreads != numThreads) {
-    			addScriptCommand(script, String.format("config threads %d %d %d", nodeNumber, coreNumber, numThreads));    			
+    			addScriptCommand(script, String.format("config threads %s %d", activeCore.getCoreReference(), numThreads));    			
     			m_currentNumThreads.put(activeCore, numThreads);
     		}
     	}		
@@ -752,10 +751,11 @@ public class Scripter {
 	private Map<SourceFile, List<Long>> getFileLineNumbers() {
 		Map<SourceFile, List<Long>> fileLineNumbers = new IteratableMap<SourceFile, List<Long>>();
 
-		for (int nodeNumber : m_engine.getXeLoader().getNodeNumbers()) {
-			for (int coreNumber : m_engine.getXeLoader().getCoreNumbers(nodeNumber)) {
-				
-				SourceMapper sourceMapper = m_engine.getSourceMapper(nodeNumber, coreNumber);				
+		XeLoader xeLoader = m_engine.getXeLoader();
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				SourceMapper sourceMapper = m_engine.getSourceMapper(coreId);				
 				for (ScripterReference scripterReference : m_uniqueReferences) {
 					String fileName = scripterReference.getFileName();
 					if (!fileName.equals("")) {
@@ -776,9 +776,10 @@ public class Scripter {
 	}
 	
 	private SourceMapper getSourceMapper() {
-		int nodeNumber = m_engine.getXeLoader().getNodeNumbers().get(0);
-		int coreNumber = m_engine.getXeLoader().getCoreNumbers(0).get(0);
-		return m_engine.getSourceMapper(nodeNumber, coreNumber);
+		XeLoader xeLoader = m_engine.getXeLoader();
+		int nodeChainIndex = xeLoader.getNodeChainIndexes().get(0);
+		int coreNumber = xeLoader.getCoreNumbers(0).get(0);
+		return m_engine.getSourceMapper(new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
 	}
 
     public void addScriptCommand(StringBuffer script, String command) {

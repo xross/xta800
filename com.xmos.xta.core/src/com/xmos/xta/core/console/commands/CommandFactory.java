@@ -24,6 +24,8 @@ import com.xmos.xta.core.console.commands.source.Source;
 import com.xmos.xta.core.console.commands.status.Status;
 import com.xmos.xta.core.console.commands.version.Version;
 import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 
 public class CommandFactory {
 	static private Command[] m_commands = {
@@ -52,7 +54,7 @@ public class CommandFactory {
 		return m_commands;
 	}
 
-    public static Command buildCommand(CommandSource src, String[] args, int index,
+    public static Command buildCommand(Engine engine, CommandSource src, String[] args, int index,
     		Vector<Command> commandHistory, Console console) {
     	String arg = args[index];
     	
@@ -60,8 +62,7 @@ public class CommandFactory {
         if (isPlingCommand(arg)) {
         	Command command = getPingCommand(arg, commandHistory);
         	if (command == null) {
-		    	console.display("xta: " + src.getFileName() + ":" + src.getLineNum() + ": error: " +
-		    			"invalid command: " + arg + "'..)\n");
+        		engine.notify(src, Notifier.NOTIFY_ERROR, "invalid command: '" + arg + "'");		
 		    	return null;
 			} else {
 
@@ -75,9 +76,10 @@ public class CommandFactory {
     		if (command.matches(arg)) {
     			Command cloned = command.clone(args, index);
     			if (cloned == null) {
-    		    	console.display("xta: " + src.getFileName() + ":" + src.getLineNum() + ": error: " +
-    		    			"invalid argument(s) to '" + command.name() +
-    		    			"' command (Try 'help " + command.name() + "'..)\n");
+            		engine.notify(src, Notifier.NOTIFY_ERROR,
+            				"invalid argument(s) to '" + command.name() +
+            				"' command (Try 'help " + command.name() + "'..)");		
+
     			} else {
     				//System.out.println("-------- " + cloned.commandLine());
         			cloned.setSrc(src);

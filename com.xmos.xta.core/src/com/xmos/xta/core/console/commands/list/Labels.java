@@ -9,7 +9,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Labels extends Command {
 	private static final String[] COMMAND_NAMES = { "labels" };
@@ -45,12 +45,12 @@ public class Labels extends Command {
 	}
 
 	private void listLabels(final Engine engine, final Console console) {
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-	    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels(activeCore.getNode(), activeCore.getCore()).entrySet().iterator();
+		for (CoreId activeCore : engine.getActiveCores()) {			
+	    	Iterator<Map.Entry<String, Set<Long>>> iter = engine.getLabels(activeCore).entrySet().iterator();
 	    	while (iter.hasNext()) {
 	    	    Map.Entry<String, Set<Long>> pair = iter.next();
-	    	    console.display(String.format("node: %d, core: %d, label: %s, pcs: %s\n",
-	    	    		activeCore.getNode(), activeCore.getCore(), 
+	    	    console.display(String.format("%s, label: %s, pcs: %s\n",
+	    	    		activeCore.toString(), 
 	    	    		pair.getKey(), Conversion.pcSetToString(pair.getValue())));
 	    	}				
 		}

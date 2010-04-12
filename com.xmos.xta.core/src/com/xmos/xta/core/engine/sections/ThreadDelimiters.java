@@ -8,13 +8,14 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ThreadDelimiters extends Section {
 	private String m_sectionName;
 	private Collection<Long> m_pcs;
 
-	ThreadDelimiters(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
-		super(nodeNumber, coreNumber, notifier);
+	ThreadDelimiters(CoreId coreId, String sectionName, Notifier notifier) {
+		super(coreId, notifier);
 		m_sectionName = sectionName;
 		m_pcs = new IteratableSet<Long>();
 	}
@@ -45,7 +46,7 @@ public class ThreadDelimiters extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeNumber(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeChainIndex(), getCoreNumber());
 
 		if ((data.length % 4) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(

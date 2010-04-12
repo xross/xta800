@@ -22,6 +22,7 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class FunctionReferenceNodeAdder {
 	private InstructionDecoder m_instDecoder;
@@ -38,13 +39,13 @@ public class FunctionReferenceNodeAdder {
 	//private int m_unreachableBytes;
 	
 	public FunctionReferenceNodeAdder(InstructionDecoder instDecoder, Notifier notifier, CommandSource src,
-			XeLoader xeLoader, int nodeId, int coreId, Sections sections){
+			XeLoader xeLoader, CoreId coreId, Sections sections){
 		m_instDecoder = instDecoder;
 		m_notifier = notifier;
 		m_src = src;
-		m_mi = xeLoader.getMemoryImage(nodeId, coreId);
-		m_branchMap = sections.getBranches(nodeId, coreId);
-		m_cpPointer = xeLoader.getSymbolTable(nodeId, coreId).symbolAddress("_cp");
+		m_mi = xeLoader.getMemoryImage(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+		m_branchMap = sections.getBranches(coreId);
+		m_cpPointer = xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber()).symbolAddress("_cp");
 		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());
 		m_functionContainer = new IteratableSet<FunctionContainer>();
 		m_functionInstuctionToOriginal = new NonIteratableMap<InstructionNode, InstructionNode>();

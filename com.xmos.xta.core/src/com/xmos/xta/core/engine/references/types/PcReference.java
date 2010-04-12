@@ -2,25 +2,26 @@ package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class PcReference extends ReferenceType {
-	PcReference(String ref, int nodeNumber, int coreNumber) {
-		super(ref, Type.PC, nodeNumber, coreNumber);
+	PcReference(String ref, CoreId coreId) {
+		super(ref, Type.PC, coreId);
 		if (ref != null) {
 		    addPc(getPcString(ref));
 		}
 	}
 
-	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
+	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (checkTypeString(reference, Type.PC, 1) &&
 		    isPcString(reference)) {
-			return new PcReference(reference, nodeNumber, coreNumber);
+			return new PcReference(reference, coreId);
 		}
 		return null;
 	}
 
 	public boolean resolve(Engine engine) {
-		SourceMapper sourceMapper = engine.getSourceMapper(getNodeNumber(), getCoreNumber());
+		SourceMapper sourceMapper = engine.getSourceMapper(getCoreId());
 		if (sourceMapper == null)
 			return false;
 

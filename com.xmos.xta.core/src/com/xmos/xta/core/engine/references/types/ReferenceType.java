@@ -13,7 +13,7 @@ import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public abstract class ReferenceType {
 	private String m_ref;
@@ -23,7 +23,7 @@ public abstract class ReferenceType {
 	private String m_fileName;
 	private long m_lineNum;
 	private Type m_type;
-	private NodeCorePair m_nodeCore;
+	private CoreId m_coreId;
 
 	public enum Type {
 		PC,
@@ -36,7 +36,7 @@ public abstract class ReferenceType {
 		ERROR
 	}
 
-	ReferenceType(String ref, Type type, int nodeNumber, int coreNumber) {
+	ReferenceType(String ref, Type type, CoreId coreId) {
 		m_ref = ref;
 		m_pcs = new IteratableSet<Long>();
 		m_pcBackTrails = new NonIteratableMap<Long, List<String>>();
@@ -44,10 +44,10 @@ public abstract class ReferenceType {
 		m_fileName = "";
 		m_lineNum = 0;
 		m_type = type;
-		m_nodeCore = new NodeCorePair(nodeNumber, coreNumber);
+		m_coreId = coreId;
 	}
 
-	public abstract ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber);
+	public abstract ReferenceType create(Engine engine, String reference, CoreId coreId);
 	public abstract String name();
 	public abstract String description();
 	public abstract boolean resolve(Engine engine);
@@ -301,7 +301,7 @@ public abstract class ReferenceType {
         }
 
         if (FileNameMatcher.isMatch(fileName, getFileName(),
-        		engine.getSourceMapper(m_nodeCore.getNode(), m_nodeCore.getCore()))) {
+        		engine.getSourceMapper(m_coreId))) {
         	return true;
         }
 
@@ -313,16 +313,8 @@ public abstract class ReferenceType {
 		return m_pcBackTrails.get(pc);
 	}
 	
-	public NodeCorePair getNodeCore() {
-		return m_nodeCore;
-	}
-
-	public int getNodeNumber() {
-		return m_nodeCore.getNode();
-	}
-
-	public int getCoreNumber() {
-		return m_nodeCore.getCore();
+	public CoreId getCoreId() {
+		return m_coreId;
 	}
 
 	public void sourceLineInserted(String sourceFileName, long lineNumber, SourceMapper sourceMapper) {

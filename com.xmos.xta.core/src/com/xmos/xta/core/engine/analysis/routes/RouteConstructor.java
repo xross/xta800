@@ -43,6 +43,7 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class RouteConstructor {
 
@@ -709,15 +710,14 @@ public class RouteConstructor {
 	}
 
 	private void setSrcLoopCounts() {
-		int nodeNumber = m_coreContainer.getNodeNumber();
-		int coreNumber = m_coreContainer.getCoreNumber();
+		CoreId coreId = m_coreContainer.getCoreId();
 		
 		// Sets the loop iteration counts specified at compile time.
-		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops(nodeNumber, coreNumber)) {
+		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops(coreId)) {
 
 			Reference reference = ReferenceFactory.createReference(
 					String.format("0x%x", srcLevelLoopInfo.getPc()),
-					ReferenceClass.PC_REF, nodeNumber, coreNumber);
+					ReferenceClass.PC_REF, coreId);
 
 			CommandSource src = new CommandSource(Type.COMPILER);
 			for (Route route : m_routes) {
@@ -852,10 +852,7 @@ public class RouteConstructor {
 	}
 
 	private boolean coreMatch(Route route, Reference reference) {
-		int nodeNumber = route.getRouteCoreContainer().getNodeNumber();
-		int coreNumber = route.getRouteCoreContainer().getCoreNumber();
-		return ((reference.getNodeNumber() == nodeNumber) &&
-		        (reference.getCoreNumber() == coreNumber));
+		return reference.getCoreId().equals(route.getRouteCoreContainer().getCoreId());
 	}
 	
 	private void refreshDisplayedUnknowns(Node node) {

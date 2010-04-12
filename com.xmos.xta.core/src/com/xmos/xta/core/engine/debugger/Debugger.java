@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.debugger;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -18,7 +19,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Debugger {
 	private Engine m_engine; 
@@ -29,7 +30,7 @@ public class Debugger {
 
 	public void dumpControlFlow(CommandSource src, String functionName, Console console) {
 		boolean hit = false;		
-		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
+		for (CoreId activeCore : m_engine.getActiveCores()) {
 			
 			CallGraph callGraph = m_engine.getCallGraph(activeCore);
 			assert(callGraph != null);
@@ -49,9 +50,9 @@ public class Debugger {
 	
 	public boolean validateReference(String refString) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
+		for (CoreId activeCore : m_engine.getActiveCores()) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF, activeCore);
 			
 			if (reference.resolve(m_engine)) {
 				hit = true;
@@ -63,9 +64,9 @@ public class Debugger {
 	public Collection<String> getGlobalReferences(CommandSource src, String refString) {
 		Collection<String> matchingReferences = new ArrayList<String>();
 		
-		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
+		for (CoreId activeCore : m_engine.getActiveCores()) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF, activeCore);
 
 			if (reference.resolve(m_engine)) {
 			    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
@@ -88,8 +89,7 @@ public class Debugger {
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
-				        route.getRouteCoreContainer().getNodeNumber(),
-				        route.getRouteCoreContainer().getCoreNumber());
+				        route.getRouteCoreContainer().getCoreId());
 
 				if (reference.resolve(m_engine)) {
 					Set<Node> nodes = route.getReferencedNodes(reference);

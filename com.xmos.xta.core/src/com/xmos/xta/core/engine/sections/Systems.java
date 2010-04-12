@@ -7,12 +7,13 @@ import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Systems extends Section {
 	private Collection<String> m_functions;
 
-	Systems(int nodeNumber, int coreNumber, Notifier notifier) {
-		super(nodeNumber, coreNumber, notifier);
+	Systems(CoreId coreId, Notifier notifier) {
+		super(coreId, notifier);
 		m_functions = new ArrayList<String>();
 	}
 
@@ -21,7 +22,7 @@ public class Systems extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtasystem", getNodeNumber(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(".xtasystem", getNodeChainIndex(), getCoreNumber());
 
 		try {
 			int byteIndex = 0;

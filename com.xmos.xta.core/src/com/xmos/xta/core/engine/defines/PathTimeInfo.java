@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class PathTimeInfo implements DefineInfo {
@@ -39,8 +39,8 @@ public class PathTimeInfo implements DefineInfo {
     	return m_timeUnit.getDescription(true);
     }
 
-    public NodeCorePair getNodeCore() {
-    	return m_from.getNodeCore();
+    public CoreId getCoreId() {
+    	return m_from.getCoreId();
     }
 
     public Reference[] getReferences() {
@@ -52,10 +52,8 @@ public class PathTimeInfo implements DefineInfo {
 			if (o instanceof PathTimeInfo){
 				PathTimeInfo pti = (PathTimeInfo)o;
 				if ((pti.m_from.equals(m_from) && pti.m_to.equals(m_to)) &&				
-				    (pti.m_from.getNodeNumber() == m_from.getNodeNumber()) &&
-				    (pti.m_from.getCoreNumber() == m_from.getCoreNumber()) &&
-				    (pti.m_to.getNodeNumber() == m_to.getNodeNumber()) &&
-				    (pti.m_to.getCoreNumber() == m_to.getCoreNumber())) {					
+				    (pti.m_from.getCoreId().equals(m_from.getCoreId())) &&
+				    (pti.m_to.getCoreId().equals(m_to.getCoreId()))) {					
 					return true;
 				}
 			}

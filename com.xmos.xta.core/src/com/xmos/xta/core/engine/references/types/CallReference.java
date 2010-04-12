@@ -5,16 +5,17 @@ import java.util.Map;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class CallReference extends ReferenceType {
-	CallReference(String ref, int nodeNumber, int coreNumber) {
-		super(ref, Type.CALL, nodeNumber, coreNumber);
+	CallReference(String ref, CoreId coreId) {
+		super(ref, Type.CALL, coreId);
 	}
 
-	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
+	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (checkTypeString(reference, Type.CALL, 1) &&
-			isValid(engine.getCalls(nodeNumber, coreNumber), getLabel(reference))) {
-			return new CallReference(reference, nodeNumber, coreNumber);
+			isValid(engine.getCalls(coreId), getLabel(reference))) {
+			return new CallReference(reference, coreId);
 		}
 		return null;
 	}
@@ -24,11 +25,11 @@ public class CallReference extends ReferenceType {
 		String label = getLabel(ref);
 
 		boolean found = false;
-		for (CodePointInfo info : engine.getCalls(getNodeNumber(), getCoreNumber())) {
+		for (CodePointInfo info : engine.getCalls(getCoreId())) {
 			if (labelsMatch(info.getLabel(), label)) {
 				addPc(info.getPc(), info.getLabel());
 
-				Map<Long, CodePointTableInfo> callTable = engine.getCallTable(getNodeNumber(), getCoreNumber());
+				Map<Long, CodePointTableInfo> callTable = engine.getCallTable(getCoreId());
 				if (!callTable.containsKey(info.getPc()))
 					return false;
 

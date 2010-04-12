@@ -5,11 +5,14 @@ import java.util.List;
 
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.MemoryImage;
+import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Status extends Command {
 	private static final String[] COMMAND_NAMES = { "status" };
@@ -56,19 +59,24 @@ public class Status extends Command {
     	}
 
     	console.display(String.format("Frequency:"));
-    	for (int nodeNumber : engine.getXeLoader().getNodeNumbers()) {
-    		double mhz = (double)engine.getFrequency(nodeNumber);
-    		console.display(String.format(" Node %d, %.1f MHz\n", nodeNumber, mhz));
+    	XeLoader xeLoader = engine.getXeLoader();
+		XnLoader xnLoader = xeLoader.getXnLoader();
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			String nodeId = xnLoader.getNodeId(nodeChainIndex);
+			int routingId = xnLoader.getNodeRoutingId(nodeChainIndex);
+    		double mhz = (double)engine.getFrequency(nodeId);
+    		console.display(String.format(" NodeId %s (JTAG chain index %d, routing id %d), %.1f MHz\n",
+    				nodeId, nodeChainIndex, routingId, mhz));
     	}
 
     	for (MemoryImage memoryImage : engine.getMemoryImages()) {
-    		int nodeNumber = memoryImage.getNodeNumber();
+    		int nodeChainIndex = memoryImage.getNodeChainIndex();
     		int coreNumber = memoryImage.getCoreNumber();
-    		int threads = engine.getNumThreads(nodeNumber, coreNumber);
-    		console.display(String.format("Node: %d, Core: %d, Threads: %d ",
-    				nodeNumber, coreNumber, threads));
+    		CoreId coreId = new CoreId(xnLoader, nodeChainIndex, coreNumber);
+    		int threads = engine.getNumThreads(coreId);
+    		console.display(String.format("%s, Threads: %d ", coreId.getCoreReference(), threads));
 
-    		DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(nodeNumber, coreNumber);
+    		DebugInfo debugInfo = xeLoader.getDebugInfo(nodeChainIndex, coreNumber);
     		if (debugInfo.getDebugEngine().hasDebugInfo())
     			console.display(String.format("(Debug information avaliable)\n"));
         	else

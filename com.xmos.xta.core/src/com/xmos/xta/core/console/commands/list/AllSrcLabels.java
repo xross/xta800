@@ -5,7 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class AllSrcLabels extends Command {
 	private static final String[] COMMAND_NAMES = { "allsrclabels" };
@@ -34,10 +34,10 @@ public class AllSrcLabels extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			for (SrcLabelTableInfo info : engine.getSrcLabelTable(activeCore.getNode(), activeCore.getCore()).values()) {
-	    	    console.display(String.format("node: %d, core: %d, pc: 0x%x, compilation dir: %s, filename: %s, line numbers: %d - %d\n",
-	    	    		activeCore.getNode(), activeCore.getCore(), 
+		for (CoreId activeCore : engine.getActiveCores()) {			
+			for (SrcLabelTableInfo info : engine.getSrcLabelTable(activeCore).values()) {
+	    	    console.display(String.format("%s, pc: 0x%x, compilation dir: %s, filename: %s, line numbers: %d - %d\n",
+	    	    		activeCore.toString(), 
 	    	    		info.getPc(), info.getCompilationDir(), info.getFileName(),
 	    	    		info.getLineNumberStart(), info.getLineNumberEnd()));
 	    	}			

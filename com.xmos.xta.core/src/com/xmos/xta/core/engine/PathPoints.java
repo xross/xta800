@@ -6,21 +6,21 @@ import com.xmos.libs.util.IteratableMap;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class PathPoints {
 	private Engine m_engine;
 	private String m_fromName;
 	private String m_toName;	
-	private Map<NodeCorePair, Reference> m_froms;
-	private Map<NodeCorePair, Reference> m_tos;
+	private Map<CoreId, Reference> m_froms;
+	private Map<CoreId, Reference> m_tos;
 
 	PathPoints(Engine engine) {
 		m_engine = engine;
 		m_fromName = "";
 		m_toName = "";
-		m_froms = new IteratableMap<NodeCorePair, Reference>();
-		m_tos = new IteratableMap<NodeCorePair, Reference>();		
+		m_froms = new IteratableMap<CoreId, Reference>();
+		m_tos = new IteratableMap<CoreId, Reference>();		
 	}
 
 	public boolean setFrom(CommandSource src, String ref) {
@@ -43,19 +43,19 @@ public class PathPoints {
 		return true;		
 	}
 
-	public Map<NodeCorePair, Reference> getFroms() {
+	public Map<CoreId, Reference> getFroms() {
 		return m_froms;
 	}
 
-	public Reference getFrom(NodeCorePair core) {
+	public Reference getFrom(CoreId core) {
 		return m_froms.get(core);				
 	}
 	
-	public Map<NodeCorePair, Reference> getTos() {
+	public Map<CoreId, Reference> getTos() {
 		return m_tos;
 	}
 
-	public Reference getTo(NodeCorePair core) {
+	public Reference getTo(CoreId core) {
 		return m_tos.get(core);				
 	}
 	
@@ -79,13 +79,12 @@ public class PathPoints {
 		update(m_toName, m_tos);		
 	}
 
-	private boolean update(String refStr, Map<NodeCorePair, Reference> endpoints) {
+	private boolean update(String refStr, Map<CoreId, Reference> endpoints) {
 		endpoints.clear();
 
 		boolean hit = false;		
-		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
-			Reference reference = ReferenceFactory.createReference(refStr, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
+		for (CoreId activeCore : m_engine.getActiveCores()) {
+			Reference reference = ReferenceFactory.createReference(refStr, ReferenceClass.ENDPOINT_REF, activeCore);
 
 			if (reference.resolve(m_engine)) {
 				endpoints.put(activeCore, reference);
