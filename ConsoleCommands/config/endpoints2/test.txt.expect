@@ -6,8 +6,8 @@ SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
 No routes analyzed
 ------------- point 2
 TimingFailAsError: true
@@ -17,8 +17,8 @@ SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
 No routes analyzed
 From endpoint 'start'
 To endpoint 'stop'
@@ -30,8 +30,8 @@ SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
 Loaded Route(0): path: start to stop 
 From endpoint 'start'
 To endpoint 'stop'
@@ -43,8 +43,8 @@ SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
 Loaded Route(0): path: start to stop 
 Loaded Route(1): path: test.xc:16 to test.xc:19 
 From endpoint 'test.xc:16'
@@ -57,7 +57,7 @@ SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 1 (Debug information avaliable)
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
 Loaded Route(0): path: start to stop 
 Loaded Route(1): path: test.xc:16 to test.xc:19 

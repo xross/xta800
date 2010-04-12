@@ -13,10 +13,10 @@ system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/co
 system("@ARGV load $genDir/test.xe " .
        "-status " .
        "list cores " .
-       "-remove core 0 0 " .
-       "-remove core 0 1 " .
-       "-remove core 0 2 " .
-       "-remove core 0 3 " .
+       "-remove core stdcore[0] " .
+       "-remove core stdcore[1] " .
+       "-remove core stdcore[2] " .
+       "-remove core stdcore[3] " .
        "-status " .
        "list cores " .
        "-add core stdcore[0] " .

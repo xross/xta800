@@ -1,11 +1,11 @@
 remove core *
-add core 0 0
+add core stdcore[0]
 list calls
 analyze path call_function_a0 call_function_b0
 analyze path call_function_a1 call_function_b1
 
 remove core *
-add core 0 1
+add core stdcore[1]
 list calls
 analyze path call_function_a1 call_function_b1
 analyze path call_function_a0 call_function_b0

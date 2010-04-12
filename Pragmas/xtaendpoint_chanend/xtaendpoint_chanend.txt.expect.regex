@@ -1,6 +1,6 @@
-node: 0, core: 0, label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 11
-node: 0, core: 0, label: input2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 15
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 20
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 21
+stdcore\[0\], label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 11
+stdcore\[0\], label: input2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 15
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 20
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 21

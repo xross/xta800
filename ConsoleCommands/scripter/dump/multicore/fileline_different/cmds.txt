@@ -1,6 +1,6 @@
 
 remove core *
-add core 0 0
+add core stdcore[0]
 add exclusion test.xc:25
 add loop test.xc:46 10
 add loop test.xc:43 5
@@ -9,7 +9,7 @@ add looppath test.xc:47 8
 add instructiontime test.xc:37 20 us 
 
 remove core *
-add core 0 1
+add core stdcore[1]
 add exclusion test.xc:27
 add loop test.xc:46 20
 add loop test.xc:43 15
@@ -18,7 +18,7 @@ add looppath test.xc:47 18
 add instructiontime test.xc:37 30 us 
 
 remove core *
-add core 0 2
+add core stdcore[2]
 add exclusion test.xc:29
 add loop test.xc:46 30
 add loop test.xc:43 25
@@ -27,7 +27,7 @@ add looppath test.xc:47 28
 add instructiontime test.xc:37 40 us 
 
 remove core *
-add core 0 3
+add core stdcore[3]
 add exclusion test.xc:31
 add loop test.xc:46 40
 add loop test.xc:43 35
@@ -36,10 +36,10 @@ add looppath test.xc:47 38
 add instructiontime test.xc:37 50 us 
 
 remove core *
-add core 0 0
-add core 0 1
-add core 0 2
-add core 0 3
+add core stdcore[0]
+add core stdcore[1]
+add core stdcore[2]
+add core stdcore[3]
 analyze function f
 
 set loop 0 test.xc:64 10

@@ -1,6 +1,6 @@
-node: 0, core: 0, label: call_function_a, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 18
-node: 0, core: 0, label: call_function_c, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 22
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 19
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 20
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 23
-node: 0, core: 0, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 24
+stdcore\[0\], label: call_function_a, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 18
+stdcore\[0\], label: call_function_c, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 22
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 19
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 20
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 23
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 24
