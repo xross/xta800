@@ -11,7 +11,7 @@ if (!$noBuild) {
 system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test.xe > $genDir/loop_in_path.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "config threads 0 0 1 " .
+       "config threads stdcore[0] 1 " .
        "analyze function main " .
        "-print trace - " .
        "-set loop - loop 5 " .

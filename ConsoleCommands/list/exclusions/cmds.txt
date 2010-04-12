@@ -1,0 +1,13 @@
+echo 1
+list exclusions
+analyze function main
+print nodeinfo - -
+add exclusion target3
+analyze function main
+print nodeinfo - -
+echo "before"
+list exclusions -
+set exclusion - target2
+echo "after"
+list exclusions -
+print nodeinfo - -

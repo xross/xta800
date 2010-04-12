@@ -1,0 +1,28 @@
+1
+none
+function main
+Time taken:       140.0 ns / 140.0 ns
+Thread cycles:    7 / 7
+Num Instructions: 5 / 5
+Num Fnops:        2 / 2
+Num Paths:        4
+Node Id:          61
+function main
+Time taken:       140.0 ns / 140.0 ns
+Thread cycles:    7 / 7
+Num Instructions: 5 / 5
+Num Fnops:        2 / 2
+Num Paths:        3
+Node Id:          85
+before
+stdcore[0]::target3: 0x10012
+after
+stdcore[0]::target2: 0x10010
+stdcore[0]::target3: 0x10012
+function main
+Time taken:       140.0 ns / 140.0 ns
+Thread cycles:    7 / 7
+Num Instructions: 5 / 5
+Num Fnops:        2 / 2
+Num Paths:        2
+Node Id:          85

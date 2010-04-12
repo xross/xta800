@@ -1,4 +1,4 @@
-node: 0, core: 0, label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 9
-node: 0, core: 0, label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 8
-node: 0, core: 0, label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 12
-node: 0, core: 0, label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 15
+stdcore\[0\], label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 9
+stdcore\[0\], label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 8
+stdcore\[0\], label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 12
+stdcore\[0\], label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 15

@@ -1,5 +1,5 @@
-node: 0, core: 0, label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 5
-node: 0, core: 0, label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/test.xc, line number: 3
+stdcore\[0\], label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 5
+stdcore\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/test.xc, line number: 3
 ----------------------------------
 .*test.xc
 ----------------------------------

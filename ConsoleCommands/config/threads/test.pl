@@ -10,14 +10,14 @@ my $noBuild = shift(@ARGV);
 if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/threads.log 2>&1");
 }
-system("@ARGV config threads 0 0 4 " .
+system("@ARGV config threads stdcore[0] 4 " .
        "status " .
        "load $genDir/test.xe " .
-       "config threads 0 0 4 " .
+       "config threads stdcore[0] 4 " .
        "status " .
-       "config threads 0 0 -1 " .
+       "config threads stdcore[0] -1 " .
        "status " .
-       "config threads 0 0 10 " .
+       "config threads stdcore[0] 10 " .
        "status " .
        "exit > $genDir/threads.txt 2>&1");
 

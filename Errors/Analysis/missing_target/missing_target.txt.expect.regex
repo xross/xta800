@@ -1,4 +1,4 @@
-xta: warning: target \(0x10010\) of: \(main\+\d+\) 0x10008 bl \(lu10\) 0x2 not found in executable sections
+xta: warning: target \(0x10010\) of: \(main\+2\) 0x10008 bl \(lu10\) 0x2 not found in executable sections
 TimingFailAsError: true
 WarnAsError: false
 ErrorAsWarn: false
@@ -6,6 +6,6 @@ SrcPaths: .
 Case: WORST
 Verbosity: 0
 Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 8 \(Debug information avaliable\)
+Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
+stdcore\[0\], Threads: 8 \(Debug information avaliable\)
 No routes analyzed

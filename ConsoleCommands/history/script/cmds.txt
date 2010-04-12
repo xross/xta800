@@ -7,8 +7,8 @@ analyze path 0x10000 0x10002
 
 invalid command with arguments
 
-config core 9 9
-config core 0 0
+config core stdcore[9]
+config core stdcore[0]
 config freq 999
 config threads 99
 config srcpaths /test/path/srcpath/
