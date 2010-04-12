@@ -1,4 +1,4 @@
-xta: cmds.txt:2: warning: failed to apply path defines: n0c0:start to n0c0:stop: 999.0 ns, to route: function: main
+xta: cmds.txt:2: warning: failed to apply path defines: stdcore\[0\]::start to stdcore\[0\]::stop: 999.0 ns, to route: function: main
 function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s main
 .  \* block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
 .  \* function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s f

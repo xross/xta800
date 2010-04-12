@@ -1,5 +1,5 @@
 # Only designed to work with 4 threads
-config threads 0 0 4
+config threads stdcore[0] 4
 
 # =========================================================================== #
 # Phy loop must complete in 25 bit times of 10ns

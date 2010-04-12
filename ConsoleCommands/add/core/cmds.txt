@@ -3,8 +3,8 @@ list cores
 remove core *
 status
 list cores
-add core 0 1
-add core 0 2
+add core stdcore[1]
+add core stdcore[2]
 status
 list cores
 remove core *

@@ -1,6 +1,6 @@
-n0c0:f: 2.0 us
-n0c0:start to n0c0:stop: 2.0 us
-n0c0:inst: 2.0 us
-n0c0:l: 20
-n0c0:lp: 23
-n0c0:l: true
+stdcore[0]::f: 2.0 us
+stdcore[0]::start to stdcore[0]::stop: 2.0 us
+stdcore[0]::inst: 2.0 us
+stdcore[0]::l: 20
+stdcore[0]::lp: 23
+stdcore[0]::l: true

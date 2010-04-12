@@ -19,7 +19,7 @@
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from LABEL_REF> [<to LABEL_REF>]+: Adds the given from/to references to the branches list
-      option: core [node id] <core id>: Add core to active set
+      option: core <core id|*>: Add core to active set
       option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
       option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines
           mode: ns:     nanoseconds
@@ -51,11 +51,11 @@
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <BEST/WORST>: Sets the case (currently: WORST)
       option: Ewarning <on/off>: treat errors as warnings or not (currently: off)
-      option: freq <node number> <core frequency>: Sets the core frequency in MHz for the given node
+      option: freq <node id> <core frequency>: Sets the operating frequency in MHz for the given node
       option: from <ENDPOINT_REF>: Sets the from endpoint
       option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
-      option: threads <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core
+      option: threads <core id> <num threads>: Sets number of threads currently executing for the given core
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not (currently: on)
       option: to <ENDPOINT_REF>: Sets the to endpoint
@@ -105,7 +105,7 @@
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from LABEL_REF|*> [<to LABEL_REF|*>]+: Removes the given from/to references from the branches list
-      option: core [node id] <core id|*>: Remove core from active set
+      option: core <core id|*>: Remove core from active set
       option: exclusion <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
       option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
       option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines

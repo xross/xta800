@@ -90,7 +90,7 @@ close(OUTFILE);
 
 
 system("@ARGV load $genDir/test.xe " .
-        "-config threads 0 0 4 " .
+        "-config threads stdcore[0] 4 " .
         "-analyse function test " .
         "-print nodeinfo - - " .
         "-exit > $genDir/$suite.in 2>&1");

@@ -1,51 +1,51 @@
 TimingFailAsError: true
 WarnAsError: false
 ErrorAsWarn: false
-SrcPaths: .
+SrcPaths: \.
 Case: WORST
 Verbosity: 0
-Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 2 \(No debug information found\)
-Node: 0, Core: 1, Threads: 1 \(No debug information found\)
-Node: 0, Core: 2, Threads: 1 \(No debug information found\)
-Node: 0, Core: 3, Threads: 1 \(No debug information found\)
+Loaded executable: test\.xe
+Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400\.0 MHz
+stdcore\[0\], Threads: 2 \(No debug information found\)
+stdcore\[1\], Threads: 1 \(No debug information found\)
+stdcore\[2\], Threads: 1 \(No debug information found\)
+stdcore\[3\], Threads: 1 \(No debug information found\)
 No routes analyzed
-node: 0, core: 0
-node: 0, core: 1
-node: 0, core: 2
-node: 0, core: 3
+stdcore\[0\] \(NodeId 0\)
+stdcore\[1\] \(NodeId 0\)
+stdcore\[2\] \(NodeId 0\)
+stdcore\[3\] \(NodeId 0\)
 TimingFailAsError: true
 WarnAsError: false
 ErrorAsWarn: false
-SrcPaths: .
+SrcPaths: \.
 Case: WORST
 Verbosity: 0
-Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 2 \(No debug information found\)
-Node: 0, Core: 1, Threads: 1 \(No debug information found\)
-Node: 0, Core: 2, Threads: 1 \(No debug information found\)
-Node: 0, Core: 3, Threads: 1 \(No debug information found\)
+Loaded executable: test\.xe
+Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400\.0 MHz
+stdcore\[0\], Threads: 2 \(No debug information found\)
+stdcore\[1\], Threads: 1 \(No debug information found\)
+stdcore\[2\], Threads: 1 \(No debug information found\)
+stdcore\[3\], Threads: 1 \(No debug information found\)
 No routes analyzed
 TimingFailAsError: true
 WarnAsError: false
 ErrorAsWarn: false
-SrcPaths: .
+SrcPaths: \.
 Case: WORST
 Verbosity: 0
-Loaded executable: test.xe
-Frequency: Node 0, 400.0 MHz
-Node: 0, Core: 0, Threads: 2 \(No debug information found\)
-Node: 0, Core: 1, Threads: 1 \(No debug information found\)
-Node: 0, Core: 2, Threads: 1 \(No debug information found\)
-Node: 0, Core: 3, Threads: 1 \(No debug information found\)
+Loaded executable: test\.xe
+Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400\.0 MHz
+stdcore\[0\], Threads: 2 \(No debug information found\)
+stdcore\[1\], Threads: 1 \(No debug information found\)
+stdcore\[2\], Threads: 1 \(No debug information found\)
+stdcore\[3\], Threads: 1 \(No debug information found\)
 No routes analyzed
-node: 0, core: 1
-node: 0, core: 2
+stdcore\[1\] \(NodeId 0\)
+stdcore\[2\] \(NodeId 0\)
 removed
 added
-node: 0, core: 0
-node: 0, core: 1
-node: 0, core: 2
-node: 0, core: 3
+stdcore\[0\] \(NodeId 0\)
+stdcore\[1\] \(NodeId 0\)
+stdcore\[2\] \(NodeId 0\)
+stdcore\[3\] \(NodeId 0\)
