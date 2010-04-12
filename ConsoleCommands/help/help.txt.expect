@@ -45,8 +45,8 @@
           mode: MHz:    megahertz
           mode: cycles: processor thread cycles
   [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
+      option: endpoints <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyze between the specified endpoints
       option: function <FUNCTION_REF>: Analyze the given function
-      option: path <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyze the given path
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <BEST/WORST>: Sets the case (currently: WORST)

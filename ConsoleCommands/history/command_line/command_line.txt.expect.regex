@@ -3,8 +3,8 @@
 1: add branch 0x10000 0x10000
 2: analyze function main
 3: set functiontime - main 8801 ns
-4: analyze path label1 label2
-5: analyze path 0x10000 0x10002
+4: analyze endpoints label1 label2
+5: analyze endpoints 0x10000 0x10002
 6: set required - 10000 ns
 7: set pathtime - 0x10000 0x10002 5003 us
 8: add functiontime main 10001 ns
