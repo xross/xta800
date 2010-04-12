@@ -1,0 +1,8 @@
+analyse function test
+
+echo "--- Route ---"
+debug listroutereferences - loop
+
+echo "--- Global ---"
+debug listglobalreferences loop
+
