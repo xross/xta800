@@ -90,22 +90,8 @@ public class Shell {
 			m_commands.addAll(commands);
     	}
     }
-/*
-    public Vector<String> getHistoryStrings() {
-    	Vector<String> historyStrings = new Vector<String>();
-    	for (Command command : m_commandHistory) {
-    		historyStrings.add(command.commandLine());
-    	}
-    	return historyStrings;
-    }
 
-    public void setHistoryStrings(Vector<String> historyStrings) {
-    	for (String historyString : historyStrings) {
-    		m_commandHistory.add(new Invalid(historyString, "", null));
-    	}
-    }
-*/
-	public String getPrompt() {
+    public String getPrompt() {
 		return m_prompt;
 	}
 
@@ -121,7 +107,7 @@ public class Shell {
 
     private void processCommands(String[] args, CommandSource src) {
 	    for (int i = 0; i < args.length; ++i) {
-	    	Command command = CommandFactory.buildCommand(src, args, i, m_commandHistory, m_console);
+	    	Command command = CommandFactory.buildCommand(m_engine, src, args, i, m_commandHistory, m_console);
 	    	if (command == null) {
 	    		if (!m_executeArgsOnly) {
 	    			usage();
@@ -172,10 +158,11 @@ public class Shell {
                 ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
                 if (tokenGroups.size() > 0) {
                     tokens = tokenGroups.toArray(new String[0]);
-                    Command command = CommandFactory.buildCommand(consoleCommand.getSrc(), tokens, 0, m_commandHistory, m_console);
+                    Command command = CommandFactory.buildCommand(m_engine,
+                    		consoleCommand.getSrc(), tokens, 0, m_commandHistory, m_console);
 
                     if (!commandIsValid(command, tokens)) {
-                    	command = new Invalid(line, "Invalid command (Try 'help'..)\n", consoleCommand.getSrc());
+                    	command = new Invalid(line, "Invalid command (Try 'help'..)", consoleCommand.getSrc());
                     }
                     m_commands.offer(command);
                 }
