@@ -10,6 +10,7 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Sections {
 	private XeLoader m_xeLoader;
@@ -69,23 +70,25 @@ public class Sections {
 		m_recursiveFunctions.clear();
 		m_unreachableFunctions.clear();
 
-		for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
-			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
-				m_branches.add(new Branches(nodeNumber, coreNumber, m_notifier));
-				m_labels.add(new Labels(nodeNumber, coreNumber, m_notifier));
-				m_srcLabels.add(new CodePoints(nodeNumber, coreNumber, ".xtalabel", m_notifier));
-				m_endpoints.add(new CodePoints(nodeNumber, coreNumber, ".xtaendpoint", m_notifier));
-				m_calls.add(new CodePoints(nodeNumber, coreNumber, ".xtacall", m_notifier));
-				m_srcLabelTables.add(new SrcLabelTable(nodeNumber, coreNumber, ".xtalabeltable", m_notifier));
-				m_endpointTables.add(new CodePointTable(nodeNumber, coreNumber, ".xtaendpointtable", m_notifier));
-				m_callTables.add(new CodePointTable(nodeNumber, coreNumber, ".xtacalltable", m_notifier));
-				m_threadStartPoints.add(new ThreadDelimiters(nodeNumber, coreNumber, ".xtathreadstart", m_notifier));
-				m_threadStopPoints.add(new ThreadDelimiters(nodeNumber, coreNumber, ".xtathreadstop", m_notifier));
-				m_srcLevelCommands.add(new SrcLevelCommands(nodeNumber, coreNumber, m_notifier));
-				m_srcLevelLoops.add(new SrcLevelLoops(nodeNumber, coreNumber, m_notifier));
-				m_systems.add(new Systems(nodeNumber, coreNumber, m_notifier));
-				m_recursiveFunctions.add(new StringSection(nodeNumber, coreNumber, m_notifier));
-				m_unreachableFunctions.add(new StringSection(nodeNumber, coreNumber, m_notifier));
+		for (int nodeChainIndex : m_xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(m_xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+			
+				m_branches.add(new Branches(coreId, m_notifier));
+				m_labels.add(new Labels(coreId, m_notifier));
+				m_srcLabels.add(new CodePoints(coreId, ".xtalabel", m_notifier));
+				m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier));
+				m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier));
+				m_srcLabelTables.add(new SrcLabelTable(coreId, ".xtalabeltable", m_notifier));
+				m_endpointTables.add(new CodePointTable(coreId, ".xtaendpointtable", m_notifier));
+				m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier));
+				m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtathreadstart", m_notifier));
+				m_threadStopPoints.add(new ThreadDelimiters(coreId, ".xtathreadstop", m_notifier));
+				m_srcLevelCommands.add(new SrcLevelCommands(coreId, m_notifier));
+				m_srcLevelLoops.add(new SrcLevelLoops(coreId, m_notifier));
+				m_systems.add(new Systems(coreId, m_notifier));
+				m_recursiveFunctions.add(new StringSection(coreId, m_notifier));
+				m_unreachableFunctions.add(new StringSection(coreId, m_notifier));
 			}
 		}
 
@@ -108,82 +111,80 @@ public class Sections {
 		return true;
 	}
 
-	public boolean addToBranches(CommandSource src, int nodeNumber, int coreNumber,
-			Reference from, Collection<Reference> to) {
+	public boolean addToBranches(CommandSource src, CoreId coreId, Reference from, Collection<Reference> to) {
 		//TODO the user should not be able to override hard coded branches
-		Branches branches = (Branches)getSection(m_branches, nodeNumber, coreNumber);
+		Branches branches = (Branches)getSection(m_branches, coreId);
 		return branches.add(src, from, to, true);
 	}
 
-	public boolean removeFromBranches(CommandSource src, int nodeNumber, int coreNumber,
-			Reference fromRef, Collection<Reference> toRefs) {
+	public boolean removeFromBranches(CommandSource src, CoreId coreId, Reference fromRef, Collection<Reference> toRefs) {
 
-		Branches branches = (Branches)getSection(m_branches, nodeNumber, coreNumber);
+		Branches branches = (Branches)getSection(m_branches, coreId);
 		return branches.remove(src, fromRef, toRefs);
 	}
 
-	public Map<Reference, Set<BranchInfo>> getBranches(int nodeNumber, int coreNumber) {
-		Branches branches = (Branches)getSection(m_branches, nodeNumber, coreNumber);
+	public Map<Reference, Set<BranchInfo>> getBranches(CoreId coreId) {
+		Branches branches = (Branches)getSection(m_branches, coreId);
 		return branches.get();
 	}
 
-	public Map<String, Set<Long>> getLabels(int nodeNumber, int coreNumber) {
-	    Labels labels = (Labels)getSection(m_labels, nodeNumber, coreNumber);
+	public Map<String, Set<Long>> getLabels(CoreId coreId) {
+	    Labels labels = (Labels)getSection(m_labels, coreId);
 	    return labels.get();
 	}
 
-	public List<CodePointInfo> getSrcLabels(int nodeNumber, int coreNumber) {
-		CodePoints codePoints = (CodePoints)getSection(m_srcLabels, nodeNumber, coreNumber);
+	public List<CodePointInfo> getSrcLabels(CoreId coreId) {
+		CodePoints codePoints = (CodePoints)getSection(m_srcLabels, coreId);
 	    return codePoints.get();
 	}
 
-	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(int nodeNumber, int coreNumber) {
-		SrcLabelTable srcLabelTable = (SrcLabelTable)getSection(m_srcLabelTables, nodeNumber, coreNumber);
+	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(CoreId coreId) {
+		SrcLabelTable srcLabelTable = (SrcLabelTable)getSection(m_srcLabelTables, coreId);
 		return srcLabelTable.get();
 	}
 
-	public List<CodePointInfo> getEndpoints(int nodeNumber, int coreNumber) {
-		CodePoints codePoints = (CodePoints)getSection(m_endpoints, nodeNumber, coreNumber);
+	public List<CodePointInfo> getEndpoints(CoreId coreId) {
+		CodePoints codePoints = (CodePoints)getSection(m_endpoints, coreId);
 	    return codePoints.get();
 	}
 
-	public Map<Long, CodePointTableInfo> getEndpointTable(int nodeNumber, int coreNumber) {
-		CodePointTable endpointTable = (CodePointTable)getSection(m_endpointTables, nodeNumber, coreNumber);
+	public Map<Long, CodePointTableInfo> getEndpointTable(CoreId coreId) {
+		CodePointTable endpointTable = (CodePointTable)getSection(m_endpointTables, coreId);
 		return endpointTable.get();
 	}
 
-	public List<CodePointInfo> getCalls(int nodeNumber, int coreNumber) {
-		CodePoints codePoints = (CodePoints)getSection(m_calls, nodeNumber, coreNumber);
+	public List<CodePointInfo> getCalls(CoreId coreId) {
+		CodePoints codePoints = (CodePoints)getSection(m_calls, coreId);
 	    return codePoints.get();
 	}
 
-	public Map<Long, CodePointTableInfo> getCallTable(int nodeNumber, int coreNumber) {
-		CodePointTable endpointTable = (CodePointTable)getSection(m_callTables, nodeNumber, coreNumber);
+	public Map<Long, CodePointTableInfo> getCallTable(CoreId coreId) {
+		CodePointTable endpointTable = (CodePointTable)getSection(m_callTables, coreId);
 		return endpointTable.get();
 	}
 
-	public Collection<Long> getThreadStartPoints(int nodeNumber, int coreNumber) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, nodeNumber, coreNumber);
+	public Collection<Long> getThreadStartPoints(CoreId coreId) {
+		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, coreId);
 		return threadDelimiter.get();
 	}
 
-	public Collection<Long> getThreadStopPoints(int nodeNumber, int coreNumber) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, nodeNumber, coreNumber);
+	public Collection<Long> getThreadStopPoints(CoreId coreId) {
+		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, coreId);
 		return threadDelimiter.get();
 	}
 
-	public Collection<SrcStringInfo> getSrcLevelCommands(int nodeNumber, int coreNumber) {
-		SrcLevelCommands srcLevelCommands = (SrcLevelCommands)getSection(m_srcLevelCommands, nodeNumber, coreNumber);
+	public Collection<SrcStringInfo> getSrcLevelCommands(CoreId coreId) {
+		SrcLevelCommands srcLevelCommands = (SrcLevelCommands)getSection(m_srcLevelCommands, coreId);
 		return srcLevelCommands.get();
 	}
 
-	public Collection<SrcLevelLoopInfo> getSrcLevelLoops(int nodeNumber, int coreNumber) {
-		SrcLevelLoops loops = (SrcLevelLoops)getSection(m_srcLevelLoops, nodeNumber, coreNumber);
+	public Collection<SrcLevelLoopInfo> getSrcLevelLoops(CoreId coreId) {
+		SrcLevelLoops loops = (SrcLevelLoops)getSection(m_srcLevelLoops, coreId);
 		return loops.get();
 	}
 
-	public Collection<String> getSystems(int nodeNumber, int coreNumber) {
-		Systems systems = (Systems)getSection(m_systems, nodeNumber, coreNumber);
+	public Collection<String> getSystems(CoreId coreId) {
+		Systems systems = (Systems)getSection(m_systems, coreId);
 		return systems.get();
 	}
 
@@ -196,10 +197,9 @@ public class Sections {
 		return true;
 	}
 
-	private Section getSection(Collection<Section> sections, int nodeNumber, int coreNumber) {
+	private Section getSection(Collection<Section> sections, CoreId coreId) {
 		for (Section section : sections) {
-			if ((section.getNodeNumber() == nodeNumber) &&
-				(section.getCoreNumber() == coreNumber)) {
+			if (section.getCoreId().equals(coreId)) {
 				return section;
 			}
 		}

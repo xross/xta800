@@ -6,7 +6,7 @@ import java.util.Set;
 import jline.Completor;
 
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class FunctionCompletor implements Completor {
 	private Engine m_engine;
@@ -20,8 +20,8 @@ public class FunctionCompletor implements Completor {
         if (m_engine.getExecutable() != null) {
             final String start = (buffer == null) ? "" : buffer;
 
-    		for (NodeCorePair activeCore : m_engine.getActiveCores()) {			
-	            Set<String> functions = m_engine.getFunctionNames(activeCore.getNode(), activeCore.getCore());
+    		for (CoreId activeCore : m_engine.getActiveCores()) {			
+	            Set<String> functions = m_engine.getFunctionNames(activeCore);
 	            for (String function : functions) {
 	            	if (function.startsWith(start)) {
 	        	        candidates.add(function);

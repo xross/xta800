@@ -18,6 +18,7 @@ import com.xmos.xta.core.engine.instructions.Disassembler;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sourcemapper.Function;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class AsmDisplayer {
 	private Engine m_engine;
@@ -28,15 +29,15 @@ public class AsmDisplayer {
 		m_console = console;
 	}
 
-    public void display(Node node, int nodeNumber, int coreNumber) {
+    public void display(Node node, CoreId coreId) {
   	    List<XtaInstruction> instructions = node.getInstructions();
 
-    	MemoryImage memoryImage = m_engine.getMemoryImage(nodeNumber, coreNumber);
-    	SymbolTable symbolTable = m_engine.getSymbolTable(nodeNumber, coreNumber);
+    	MemoryImage memoryImage = m_engine.getMemoryImage(coreId);
+    	SymbolTable symbolTable = m_engine.getSymbolTable(coreId);
 
         if (instructions.size() > 0) {
 	    	Map<String, Set<Long>> asmLinesCovered =
-	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper(nodeNumber, coreNumber));
+	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper(coreId));
 
 	        for (Iterator<Map.Entry<String, Set<Long>>> iter =
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {

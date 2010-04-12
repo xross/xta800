@@ -8,18 +8,18 @@ import com.xmos.xta.core.engine.Engine;
 public class Freq extends Command {
 	private static final String[] COMMAND_NAMES = { "freq" };
 
-	private int m_nodeNumber;
+	private String m_nodeId;
 	private double m_frequency;
 
 	public Freq() {
 		super(COMMAND_NAMES);
-		m_nodeNumber = 0;
+		m_nodeId = "";
 		m_frequency = 0.0;
 	}
 
-	public Freq(int nodeNumber, double frequency) {
+	public Freq(String nodeId, double frequency) {
 		super(COMMAND_NAMES);
-		m_nodeNumber = nodeNumber;
+		m_nodeId = nodeId;
 		m_frequency = frequency;
 	}
 
@@ -28,33 +28,29 @@ public class Freq extends Command {
     }
 
     public String commandLine() {
-    	return name() + String.format(" %d %f", m_nodeNumber, m_frequency);
+    	return name() + String.format(" %s %f", m_nodeId, m_frequency);
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <node number> <core frequency>: Sets the core frequency in MHz for the given node";
+        return name() + " <node id> <core frequency>: Sets the operating frequency in MHz for the given node";
     }
 
     public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
 
-		int nodeNumber;
-		double frequency;		
         try { 
-        	nodeNumber = Integer.parseInt(args[index + 1]);
-        	frequency = Double.parseDouble(args[index + 2]);
+        	double frequency = Double.parseDouble(args[index + 2]);
+            return new Freq(args[index + 1], frequency);
+        } catch (NumberFormatException e) { }
 
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return new Freq(nodeNumber, frequency);
+        return null;
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		engine.setFrequency(getSrc(), m_nodeNumber, m_frequency);
+		engine.setFrequency(getSrc(), m_nodeId, m_frequency);
     }
 }

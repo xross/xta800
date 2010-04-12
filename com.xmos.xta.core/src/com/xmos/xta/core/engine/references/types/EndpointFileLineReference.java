@@ -2,18 +2,19 @@ package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
+import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
 
 public class EndpointFileLineReference extends ReferenceType {
-    EndpointFileLineReference(String ref, int nodeNumber, int coreNumber) {
-		super(ref, Type.ENDPOINT, nodeNumber, coreNumber);
+    EndpointFileLineReference(String ref, CoreId coreId) {
+		super(ref, Type.ENDPOINT, coreId);
 	}
 
-	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
+	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (checkTypeString(reference, Type.ENDPOINT, 2) &&
 		    isSourceReference(reference) &&
-			inCodePointTable(reference, engine.getEndpointTable(nodeNumber, coreNumber), engine.getSourceMapper(nodeNumber, coreNumber))) {
-	    	return new EndpointFileLineReference(reference, nodeNumber, coreNumber);
+			inCodePointTable(reference, engine.getEndpointTable(coreId), engine.getSourceMapper(coreId))) {
+	    	return new EndpointFileLineReference(reference, coreId);
 		}
 		return null;
 	}
@@ -24,8 +25,8 @@ public class EndpointFileLineReference extends ReferenceType {
         long lineNumber = getLineNumber(ref);
 
         boolean found = false;
-		for (CodePointTableInfo info : engine.getEndpointTable(getNodeNumber(), getCoreNumber()).values()) {
-            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper(getNodeNumber(), getCoreNumber())) &&            		
+		for (CodePointTableInfo info : engine.getEndpointTable(getCoreId()).values()) {
+            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper(getCoreId())) &&            		
             	(info.getLineNumber() == lineNumber)) {
             	
             	addPc(info.getPc());

@@ -1,13 +1,14 @@
 package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ErrorReference extends ReferenceType {
-	ErrorReference(String ref, int nodeNumber, int coreNumber) {
-		super(ref, Type.ERROR, nodeNumber, coreNumber);
+	ErrorReference(String ref, CoreId coreId) {
+		super(ref, Type.ERROR, coreId);
 	}
 
-	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
+	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		assert(false);
 		return null;
 	}

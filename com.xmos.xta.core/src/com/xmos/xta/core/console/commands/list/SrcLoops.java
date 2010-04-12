@@ -5,7 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLoops extends Command {
 	private static final String[] COMMAND_NAMES = { "srcloops" };
@@ -34,10 +34,10 @@ public class SrcLoops extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			for (SrcLevelLoopInfo srcLevelLoopInfo : engine.getSrcLevelLoops(activeCore.getNode(), activeCore.getCore())) {
-	    	    console.display(String.format("node: %d, core: %d, 0x%x: %d\n",
-	    	    		activeCore.getNode(), activeCore.getCore(), 
+		for (CoreId activeCore : engine.getActiveCores()) {			
+			for (SrcLevelLoopInfo srcLevelLoopInfo : engine.getSrcLevelLoops(activeCore)) {
+	    	    console.display(String.format("%s, 0x%x: %d\n",
+	    	    		activeCore.toString(), 
 	                    srcLevelLoopInfo.getPc(),
 	                    srcLevelLoopInfo.getNumIterations()));
 	    	}				

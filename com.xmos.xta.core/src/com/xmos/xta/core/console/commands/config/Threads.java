@@ -4,62 +4,59 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Threads extends Command {
 	private static final String[] COMMAND_NAMES = { "threads" };
 
-	private int m_nodeNumber;
-	private int m_coreNumber;
+	private String m_coreReference;
 	private int m_numThreads;
 
 	public Threads() {
 		super(COMMAND_NAMES);
-		m_nodeNumber = 0;
-		m_coreNumber = 0;
+		m_coreReference = "";
 		m_numThreads = 0;
 	}
 
-	public Threads(int nodeNumber, int coreNumber, int threads) {
+	public Threads(String coreReference, int threads) {
 		super(COMMAND_NAMES);
-		m_nodeNumber = nodeNumber;
-		m_coreNumber = coreNumber;
+		m_coreReference = coreReference;
 		m_numThreads = threads;
 	}
 
     public int numArgs() {
-    	return 3;
+    	return 2;
     }
 
     public String commandLine() {
-    	return name() + String.format(" %d %d %d", m_nodeNumber, m_coreNumber, m_numThreads);
+    	return name() + String.format(" %s %d", m_coreReference, m_numThreads);
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <node number> <core number> <num threads>: Sets number of threads currently executing for the given node/core";
+        return name() + " <core id> <num threads>: Sets number of threads currently executing for the given core";
     }
 
     public Command clone(String[] args, int index) {
 		if ((index + numArgs()) >= args.length)
 			return null;
 
-    	int nodeNumber;
-    	int coreNumber;
     	int numThreads;
         try { 
-        	nodeNumber = Integer.parseInt(args[index + 1]);
-        	coreNumber = Integer.parseInt(args[index + 2]);
-        	numThreads = Integer.parseInt(args[index + 3]);
+        	numThreads = Integer.parseInt(args[index + 2]);
         	
         } catch (NumberFormatException e) {
             return null;
         }
-        return new Threads(nodeNumber, coreNumber, numThreads);
+        return new Threads(args[index + 1], numThreads);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		engine.setNumThreads(getSrc(), m_nodeNumber, m_coreNumber, m_numThreads);
+		CoreId coreId = getCoreId(engine, m_coreReference);
+		if (coreId != null) {
+			engine.setNumThreads(getSrc(), coreId, m_numThreads);
+		}
     }
 }

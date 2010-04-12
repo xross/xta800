@@ -12,6 +12,7 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceLine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcDisplayer {
 	private Engine m_engine;
@@ -22,9 +23,9 @@ public class SrcDisplayer {
 		m_console = console;
 	}
 
-	public void display(Node node, int nodeNumber, int coreNumber) {
+	public void display(Node node, CoreId coreId) {
   	    List<XtaInstruction> instructions = node.getInstructions();
-		SourceMapper sourceMapper = m_engine.getSourceMapper(nodeNumber, coreNumber);
+		SourceMapper sourceMapper = m_engine.getSourceMapper(coreId);
         NonIteratableMap<String, Set<Long>> linesCovered =
         	createSrcLinesCovered(instructions, sourceMapper);
 

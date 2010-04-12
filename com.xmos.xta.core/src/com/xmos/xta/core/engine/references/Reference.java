@@ -8,7 +8,7 @@ import com.xmos.libs.util.Conversion;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Reference implements Comparable<Reference>  {
 	private ReferenceType m_base;
@@ -139,7 +139,7 @@ public class Reference implements Comparable<Reference>  {
     }
 
     public String toString() {
-    	return  String.format("n%dc%d:", getNodeNumber(), getCoreNumber()) + getRef();
+    	return getCoreId().toString() + "::" + getRef();
     }
 
 	public boolean matches(long pc) {
@@ -162,18 +162,10 @@ public class Reference implements Comparable<Reference>  {
 		return m_base.getPcBackTrail(pc);
 	}
 	
-	public NodeCorePair getNodeCore() {
-		return m_base.getNodeCore();
+	public CoreId getCoreId() {
+		return m_base.getCoreId();
 	}
 
-	public int getNodeNumber() {
-		return m_base.getNodeCore().getNode();
-	}
-
-	public int getCoreNumber() {
-		return m_base.getNodeCore().getCore();
-	}
-	
     private boolean match(Set<Long> set1, Set<Long> set2) {
     	Set<Long> intersection = new IteratableSet<Long>(set1);
     	intersection.retainAll(set2);

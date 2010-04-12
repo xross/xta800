@@ -3,16 +3,17 @@ package com.xmos.xta.core.engine.references.types;
 import java.util.Collection;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class FunctionReference extends ReferenceType {
-	FunctionReference(String ref, int nodeNumber, int coreNumber) {
-		super(ref, Type.FUNCTION, nodeNumber, coreNumber);
+	FunctionReference(String ref, CoreId coreId) {
+		super(ref, Type.FUNCTION, coreId);
 	}
 
-	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
+	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (checkTypeString(reference, Type.FUNCTION, 1) &&
-		    engine.getLabels(nodeNumber, coreNumber).containsKey(getLabel(reference))) {
-			return new FunctionReference(reference, nodeNumber, coreNumber);
+		    engine.getLabels(coreId).containsKey(getLabel(reference))) {
+			return new FunctionReference(reference, coreId);
 		}
 		return null;
 	}
@@ -21,9 +22,9 @@ public class FunctionReference extends ReferenceType {
 		String ref = getRef();
 		String functionName = getLabel(ref);
 
-        Collection<String> functionNames = engine.getFunctionNames(getNodeNumber(), getCoreNumber());
+        Collection<String> functionNames = engine.getFunctionNames(getCoreId());
         if (functionNames.contains(functionName)) {
-        	for(long pc : engine.getFunctionStartPcs(functionName, getNodeNumber(), getCoreNumber())){
+        	for(long pc : engine.getFunctionStartPcs(functionName, getCoreId())){
         		addPc(pc);
         	}
 	        setResolved(true);

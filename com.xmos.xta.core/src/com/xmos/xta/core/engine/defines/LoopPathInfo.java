@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class LoopPathInfo implements DefineInfo {
 	private Reference m_reference;
@@ -32,8 +32,8 @@ public class LoopPathInfo implements DefineInfo {
 		return String.format("%d", m_iterations);
 	}
 
-    public NodeCorePair getNodeCore() {
-    	return m_reference.getNodeCore();
+    public CoreId getCoreId() {
+    	return m_reference.getCoreId();
     }
     	
     public Reference[] getReferences() {
@@ -45,8 +45,7 @@ public class LoopPathInfo implements DefineInfo {
 		if (o != null) {
 			if (o instanceof LoopPathInfo) {
 				ret = ((LoopPathInfo) o).m_reference.equals(m_reference) &&
-    	              (((LoopPathInfo)o).m_reference.getNodeNumber() == m_reference.getNodeNumber()) &&
-	                  (((LoopPathInfo)o).m_reference.getCoreNumber() == m_reference.getCoreNumber());
+    	              (((LoopPathInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
 			}
 		}
 		return ret;

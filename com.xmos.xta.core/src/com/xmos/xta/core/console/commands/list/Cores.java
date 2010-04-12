@@ -4,7 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Cores extends Command {
 	private static final String[] COMMAND_NAMES = { "cores" };
@@ -26,15 +26,16 @@ public class Cores extends Command {
 	}
 
 	public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+		// Not possible
+/*		if ((index + numArgs()) >= args.length)
+			return null;*/
 
    		return new Cores();
 	}
 
 	public void execute(Shell shell, final Engine engine, final Console console) {
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			console.display(String.format("node: %d, core: %d\n", activeCore.getNode(), activeCore.getCore()));
+		for (CoreId activeCore : engine.getActiveCores()) {			
+			console.display(activeCore.getDescription() + "\n");
 		}
 	}
 }

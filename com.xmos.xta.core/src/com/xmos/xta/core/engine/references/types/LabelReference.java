@@ -4,16 +4,17 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class LabelReference extends ReferenceType {
-	LabelReference(String ref, int nodeNumber, int coreNumber) {
-		super(ref, Type.LABEL, nodeNumber, coreNumber);
+	LabelReference(String ref, CoreId coreId) {
+		super(ref, Type.LABEL, coreId);
 	}
 
-	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
+	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (checkTypeString(reference, Type.LABEL, 1) &&
-		    engine.getLabels(nodeNumber, coreNumber).containsKey(getLabel(reference))) {
-			return new LabelReference(reference, nodeNumber, coreNumber);
+		    engine.getLabels(coreId).containsKey(getLabel(reference))) {
+			return new LabelReference(reference, coreId);
 		}
 		return null;
 	}
@@ -22,7 +23,7 @@ public class LabelReference extends ReferenceType {
 		String ref = getRef();
 		String label = getLabel(ref);
 
-	    Map<String, Set<Long>> labels = engine.getLabels(getNodeNumber(), getCoreNumber());
+	    Map<String, Set<Long>> labels = engine.getLabels(getCoreId());
 		if (labels.containsKey(label)) {
 	    	for (Long pc : labels.get(label)) {
 	    		addPc(pc);

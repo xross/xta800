@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.sections;
 
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SectionInfo {
 	private Section m_section;
@@ -9,7 +9,7 @@ public class SectionInfo {
 		m_section = section;
 	}
 
-	public NodeCorePair getNodeCorePair() {
-		return new NodeCorePair(m_section.getNodeNumber(), m_section.getCoreNumber());
+	public CoreId getCoreId() {
+		return m_section.getCoreId();
 	}
 }

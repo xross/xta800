@@ -15,7 +15,7 @@ import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Analyzer {
 	private Engine m_engine;
@@ -35,13 +35,13 @@ public class Analyzer {
         RouteContainer routeContainer = new RouteContainer(functionName, m_engine, src);		
 
 		boolean routeFound = false;
-		for (NodeCorePair activeCore : m_engine.getActiveCores()) {			
+		for (CoreId activeCore : m_engine.getActiveCores()) {			
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.FUNCTION_REF, activeCore);
 
 			if (functionRef.resolve(m_engine)) {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 
-						routeContainer, m_engine, activeCore.getNode(), activeCore.getCore());
+						routeContainer, m_engine, activeCore);
 
 				analyzeRoute(src, routeContainer, routeCoreContainer, activeCore);
 				routeFound = true;
@@ -61,7 +61,7 @@ public class Analyzer {
         RouteContainer routeContainer = new RouteContainer(pathPoints.getFromName(), pathPoints.getToName(), m_engine, src);
 
 		boolean routeFound = false;
-		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
+		for (CoreId activeCore : m_engine.getActiveCores()) {
 
 			boolean fromFound = true;
 			Reference fromEndpoint = pathPoints.getFrom(activeCore);
@@ -77,7 +77,7 @@ public class Analyzer {
 
 		    if (fromFound && toFound) {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(fromEndpoint, toEndpoint,
-						routeContainer, m_engine, activeCore.getNode(), activeCore.getCore());
+						routeContainer, m_engine, activeCore);
 				
 				analyzeRoute(src, routeContainer, routeCoreContainer, activeCore);
 				routeFound = true;
@@ -94,7 +94,7 @@ public class Analyzer {
 	}
 
 	private boolean analyzeRoute(CommandSource src, RouteContainer routeContainer,
-			RouteCoreContainer routeCoreContainer, NodeCorePair core) {
+			RouteCoreContainer routeCoreContainer, CoreId core) {
 		
 		try {
 			doRouteAnalysis(src, routeContainer, routeCoreContainer, core);
@@ -121,7 +121,7 @@ public class Analyzer {
 	}
 
 	private boolean doRouteAnalysis(CommandSource src, RouteContainer routeContainer,
-			RouteCoreContainer routeCoreContainer, NodeCorePair core) throws Exception {
+			RouteCoreContainer routeCoreContainer, CoreId core) throws Exception {
 
 		if (!m_engine.updateControlFlowGraphs(src, core))
 			return false;

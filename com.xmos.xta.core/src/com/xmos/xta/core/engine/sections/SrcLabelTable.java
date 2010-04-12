@@ -10,13 +10,14 @@ import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLabelTable extends Section {
 	private String m_sectionName;
 	private Map<Long, SrcLabelTableInfo> m_locations;
 
-	SrcLabelTable(int nodeNumber, int coreNumber, String sectionName, Notifier notifier) {
-		super(nodeNumber, coreNumber, notifier);
+	SrcLabelTable(CoreId coreId, String sectionName, Notifier notifier) {
+		super(coreId, notifier);
 		m_sectionName = sectionName;
 		m_locations = new IteratableMap<Long, SrcLabelTableInfo>();
 	}
@@ -26,7 +27,7 @@ public class SrcLabelTable extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeNumber(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeChainIndex(), getCoreNumber());
 
 		try {
 			int byteIndex = 0;

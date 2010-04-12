@@ -8,6 +8,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.utils.CoreConfig;
+import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 import com.xmos.xta.core.engine.utils.TimeUnit.Units;
 
@@ -21,18 +22,16 @@ public class RouteTiming {
 
 	private Route m_route;
 	private CoreConfig m_coreConfig;
-	private int m_nodeNumber;
-	private int m_coreNumber;
+	private CoreId m_coreId;
 	private TimeUnit m_maxTime;
 	private boolean m_maxTimeSet;
 	private CommandSource m_requirementsSrc;
 
-	RouteTiming(CommandSource src, Route route, CoreConfig coreConfig, int nodeNumber, int coreNumber) {
+	RouteTiming(CommandSource src, Route route, CoreConfig coreConfig, CoreId coreId) {
 		m_requirementsSrc = src;
 		m_route = route;
 		m_coreConfig = coreConfig;
-		m_nodeNumber = nodeNumber;
-		m_coreNumber = coreNumber;
+		m_coreId = coreId;
 		m_maxTime = new TimeUnit(m_coreConfig, 0.0, Units.NS);
 		m_maxTimeSet = false;
 	}
@@ -92,7 +91,8 @@ public class RouteTiming {
 			}
 
 			if (level == Level.COMPLETE) {
-				description += String.format("Node: %d, Core: %d\n", m_nodeNumber, m_coreNumber);
+				description += String.format("Node: %d, Core: %d\n",
+						m_coreId.getNodeChainIndex(), m_coreId.getCoreNumber());
 			} else {
 				description += "    ";
 			}
@@ -206,7 +206,8 @@ public class RouteTiming {
 			}
 		} else {
 			if (level == Level.COMPLETE) {
-				description += String.format("Node: %d, Core: %d\n", m_nodeNumber, m_coreNumber);
+				description += String.format("Node: %d, Core: %d\n",
+						m_coreId.getNodeChainIndex(), m_coreId.getCoreNumber());
 			} else {
 				description += "    ";
 			}

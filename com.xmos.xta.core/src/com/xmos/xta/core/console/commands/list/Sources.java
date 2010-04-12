@@ -9,7 +9,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Sources extends Command {
 	private static final String[] COMMAND_NAMES = { "sources" };
@@ -53,8 +53,8 @@ public class Sources extends Command {
     private Collection<SourceFile> getSourceFiles(Engine engine) {
     	Collection<SourceFile> sourceFiles = new ArrayList<SourceFile>();
 
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-		    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(activeCore.getNode(), activeCore.getCore());
+		for (CoreId activeCore : engine.getActiveCores()) {			
+		    DebugInfo debugInfo = engine.getXeLoader().getDebugInfo(activeCore.getNodeChainIndex(), activeCore.getCoreNumber());
 		    assert(debugInfo != null);
 
 		    for (DebugFile debugFile : debugInfo.getDebugEngine().getDebugFiles()) {

@@ -11,12 +11,13 @@ import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Labels extends Section  {
 	private Map<String, Set<Long>> m_labels;
 
-	Labels(int nodeNumber, int coreNumber, Notifier notifier) {
-		super(nodeNumber, coreNumber, notifier);
+	Labels(CoreId coreId, Notifier notifier) {
+		super(coreId, notifier);
 		m_labels = new IteratableMap<String, Set<Long>>();
 	}
 
@@ -35,7 +36,7 @@ public class Labels extends Section  {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-        SymbolTable symbolTable = xeLoader.getSymbolTable(getNodeNumber(), getCoreNumber());
+        SymbolTable symbolTable = xeLoader.getSymbolTable(getNodeChainIndex(), getCoreNumber());
         ElfHandler elfHandler = symbolTable.getElfHandler();
 
         for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {

@@ -10,7 +10,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class RouteContainer {
 
@@ -23,9 +23,9 @@ public class RouteContainer {
 	private String m_description;
 	private CommandSource m_src;
     private Collection<RouteCoreContainer> m_routeCoreContainers;
-    private Collection<NodeCorePair> m_activeCores;
-	private Map<Integer, Double> m_frequencies;
-	private Map<NodeCorePair, Integer> m_numThreads;    
+    private Collection<CoreId> m_activeCores;
+	private Map<String, Double> m_frequencies;
+	private Map<CoreId, Integer> m_numThreads;    
 	private Collection<Reference> m_exclusions;
 	private Map<Reference, List<Reference>> m_branches;
 	private Defines m_defines;
@@ -59,15 +59,15 @@ public class RouteContainer {
     	return m_src;
     }
 
-    public Collection<NodeCorePair> getActiveCores() {
+    public Collection<CoreId> getActiveCores() {
     	return m_activeCores;
     }
 
-    public Map<Integer, Double> getFrequencies() {
+    public Map<String, Double> getFrequencies() {
     	return m_frequencies;
     }
 
-    public Map<NodeCorePair, Integer> getNumThreads() {
+    public Map<CoreId, Integer> getNumThreads() {
     	return m_numThreads;
     }
     
@@ -101,9 +101,9 @@ public class RouteContainer {
     
     private void initialise(Engine engine, CommandSource src) {
     	m_src = src;
-    	m_activeCores = new ArrayList<NodeCorePair>(engine.getActiveCores());
-		m_frequencies = new NonIteratableMap<Integer, Double>(engine.getFrequencyMap());
-		m_numThreads = new NonIteratableMap<NodeCorePair, Integer>(engine.getNumThreadMap());		    	
+    	m_activeCores = new ArrayList<CoreId>(engine.getActiveCores());
+		m_frequencies = new NonIteratableMap<String, Double>(engine.getFrequencyMap());
+		m_numThreads = new NonIteratableMap<CoreId, Integer>(engine.getNumThreadMap());		    	
     	m_routeCoreContainers = new ArrayList<RouteCoreContainer>();
 		m_exclusions = new ArrayList<Reference>();
 		m_exclusions.addAll(engine.getExclusions());
