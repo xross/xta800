@@ -14,12 +14,13 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Branches extends Section {
 	private Map<Reference, Set<BranchInfo>> m_branches;
 
-	Branches(int nodeNumber, int coreNumber, Notifier notifier) {
-		super(nodeNumber, coreNumber, notifier);
+	Branches(CoreId coreId, Notifier notifier) {
+		super(coreId, notifier);
 
 		m_branches = new IteratableMap<Reference, Set<BranchInfo>>();
 	}
@@ -90,7 +91,7 @@ public class Branches extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeNumber(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeChainIndex(), getCoreNumber());
 
 		if ((data.length % 8) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, "invalid size for .xtabranch section");
@@ -107,11 +108,11 @@ public class Branches extends Section {
 
 	        	Collection<Reference> toRefs = new IteratableSet<Reference>();
 	    		Reference toRef = ReferenceFactory.createReference(String.format("0x%x", toPc), 
-	    				ReferenceClass.PC_REF, getNodeNumber(), getCoreNumber());
+	    				ReferenceClass.PC_REF, getCoreId());
 	        	toRefs.add(toRef);
 	        	
 	    		Reference fromRef = ReferenceFactory.createReference(String.format("0x%x", fromPc), 
-	    				ReferenceClass.PC_REF, getNodeNumber(), getCoreNumber());
+	    				ReferenceClass.PC_REF, getCoreId());
 	    		
 	    		add(src, fromRef, toRefs, false);
 	        }

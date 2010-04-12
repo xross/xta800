@@ -8,12 +8,13 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLevelLoops extends Section {
 	private Collection<SrcLevelLoopInfo> m_loops;
 
-	SrcLevelLoops(int nodeNumber, int coreNumber, Notifier notifier) {
-		super(nodeNumber, coreNumber, notifier);
+	SrcLevelLoops(CoreId coreId, Notifier notifier) {
+		super(coreId, notifier);
 		m_loops = new ArrayList<SrcLevelLoopInfo>();
 	}
 
@@ -22,7 +23,7 @@ public class SrcLevelLoops extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtaloop", getNodeNumber(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(".xtaloop", getNodeChainIndex(), getCoreNumber());
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {

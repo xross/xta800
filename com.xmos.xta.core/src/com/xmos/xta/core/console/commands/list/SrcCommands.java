@@ -5,7 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcCommands extends Command {
 	private static final String[] COMMAND_NAMES = { "srccommands" };
@@ -34,10 +34,10 @@ public class SrcCommands extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands(activeCore.getNode(), activeCore.getCore())) {
-	    	    console.display(String.format("node: %d, core: %d, %s\n", 
-	    	    		activeCore.getNode(), activeCore.getCore(), cmdInfo.getString()));
+		for (CoreId activeCore : engine.getActiveCores()) {			
+			for (SrcStringInfo cmdInfo : engine.getSrcLevelCommands(activeCore)) {
+	    	    console.display(String.format("%s, %s\n", 
+	    	    		activeCore.toString(), cmdInfo.getString()));
 	    	}			
 		}
 	}

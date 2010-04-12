@@ -14,6 +14,7 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SuccessorAdder {
 
@@ -24,10 +25,10 @@ public class SuccessorAdder {
 	private Notifier m_notifier;
 	private CommandSource m_src;
 
-	public SuccessorAdder(int nodeId, int coreId, InstructionDecoder instDecoder, Sections sections,
+	public SuccessorAdder(CoreId coreId, InstructionDecoder instDecoder, Sections sections,
 			Set<InstructionNode> threadEnds, Notifier notifier, CommandSource src, InstructionMnemonics mnenonics) {
 		m_functionEnds = threadEnds;
-		m_branchMap = sections.getBranches(nodeId, coreId);
+		m_branchMap = sections.getBranches(coreId);
 		m_instDecoder = instDecoder;
 		m_notifier = notifier;
 		m_src = src;

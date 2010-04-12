@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class LoopScopeInfo implements DefineInfo {
 	private Reference m_reference;
@@ -32,8 +32,8 @@ public class LoopScopeInfo implements DefineInfo {
     	return m_absolute ? "true" : "false";
     }
     
-    public NodeCorePair getNodeCore() {
-    	return m_reference.getNodeCore();
+    public CoreId getCoreId() {
+    	return m_reference.getCoreId();
     }
 
     public Reference[] getReferences() {
@@ -45,8 +45,7 @@ public class LoopScopeInfo implements DefineInfo {
 		if(o != null) {
 			if(o instanceof LoopScopeInfo){
 				ret = ((LoopScopeInfo)o).m_reference.equals(m_reference) &&
-	                  (((LoopScopeInfo)o).m_reference.getNodeNumber() == m_reference.getNodeNumber()) &&
-                      (((LoopScopeInfo)o).m_reference.getCoreNumber() == m_reference.getCoreNumber());
+	                  (((LoopScopeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
 			}
 		}
 		return ret;

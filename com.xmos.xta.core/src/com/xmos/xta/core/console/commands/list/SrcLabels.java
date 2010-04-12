@@ -5,7 +5,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLabels extends Command {
 	private static final String[] COMMAND_NAMES = { "srclabels" };
@@ -41,10 +41,10 @@ public class SrcLabels extends Command {
 	}
 
 	private void listSrcLabels(final Engine engine, final Console console) {
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			for (CodePointInfo info : engine.getSrcLabels(activeCore.getNode(), activeCore.getCore())) {
-	    	    console.display(String.format("node: %d, core: %d, label: %s, pc: 0x%x", 
-	    	    		activeCore.getNode(), activeCore.getCore(), info.getLabel(), info.getPc()));
+		for (CoreId activeCore : engine.getActiveCores()) {			
+			for (CodePointInfo info : engine.getSrcLabels(activeCore)) {
+	    	    console.display(String.format("%s, label: %s, pc: 0x%x", 
+	    	    		activeCore.toString(), info.getLabel(), info.getPc()));
 
     	    	console.display(", compilation dir: " + info.getCompilationDir());
     	    	console.display(", filename: " + info.getFileName());

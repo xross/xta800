@@ -7,7 +7,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ToPoints extends Command {
 	private static final String[] COMMAND_NAMES = { "topoints" };
@@ -33,8 +33,8 @@ public class ToPoints extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	Map<NodeCorePair, Reference> tos = engine.getPathPoints().getTos();    	
-    	for (NodeCorePair core : tos.keySet()) {
+    	Map<CoreId, Reference> tos = engine.getPathPoints().getTos();    	
+    	for (CoreId core : tos.keySet()) {
     		console.display(tos.get(core).toString() + "\n");    		
     	}
     }

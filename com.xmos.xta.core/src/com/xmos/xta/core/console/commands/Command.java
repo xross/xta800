@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.xmos.libs.util.Pair;
-import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.engine.CommandSource;
@@ -13,7 +11,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public abstract class Command {
 	public static final String REDIRECT_OVERWITE = ">";
@@ -236,39 +234,13 @@ public abstract class Command {
 		return commandLine();
     }
     
-    public NodeCorePair getNodeCore(Engine engine, String nodeId, String coreId) {
-    	XnLoader xnLoader = engine.getXeLoader().getXnLoader();
-    	
-		int nodeNumber = 0;
-		int coreNumber = 0;
-		if (nodeId.length() == 0) {
-			Pair<Integer,Integer> nodeCore = xnLoader.getNodeCore(coreId);
-			if (nodeCore == null) {
-	    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreId));
-	    		return null;
-			}
-			nodeNumber = nodeCore.first;
-			coreNumber = nodeCore.second;
-
-		} else {
-			nodeNumber = xnLoader.getNodeNumber(nodeId);
-			if (nodeNumber == -1) {
-		        try { nodeNumber = Integer.parseInt(nodeId); }
-		        catch (NumberFormatException e) { }
-			}
-			coreNumber = xnLoader.getCoreNumber(nodeNumber, coreId);
-			if (coreNumber == -1) {
-				try { coreNumber = Integer.parseInt(coreId); }
-				catch (NumberFormatException e) { }
-			}
-		}
-		
-    	if (engine.getXeLoader().getMemoryImage(nodeNumber, coreNumber) == null) {
-    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR,
-    				String.format("no code loaded on node: %s, core: %s", nodeId, coreId));
+    public CoreId getCoreId(Engine engine, String coreReference) {
+    	CoreId coreId = engine.getCoreId(coreReference);
+		if (coreId == null) {
+    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
     		return null;
-    	}		
-    	return new NodeCorePair(nodeNumber, coreNumber);
+		}
+		return coreId;
     }
 }
 

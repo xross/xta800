@@ -6,12 +6,13 @@ import java.util.Collection;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class StringSection extends Section {
 	private Collection<String> m_strings;
 
-	StringSection(int nodeNumber, int coreNumber, Notifier notifier) {
-		super(nodeNumber, coreNumber, notifier);
+	StringSection(CoreId coreId, Notifier notifier) {
+		super(coreId, notifier);
 		m_strings = new ArrayList<String>();
 	}
 

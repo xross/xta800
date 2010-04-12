@@ -8,32 +8,30 @@ import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.CoreConfig;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class RouteCoreContainer {
 	private Reference m_function;
 	private Reference m_from;
 	private Set<Reference> m_to;
 	private RouteContainer m_routeContainer;
-	private NodeCorePair m_nodeCore;
+	private CoreId m_coreId;
 	private CoreConfig m_coreConfig;
     private List<Route> m_routes;
     private List<Boolean> m_exists;
 
     public RouteCoreContainer(Reference from, Reference to, RouteContainer routeContainer, 
-    		Engine engine, int nodeNumber, int coreNumber) {
+    		Engine engine, CoreId coreId) {
 
-    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
+    	initialise(routeContainer, engine, coreId);    	
     	
     	m_from = from;
 		m_to = new IteratableSet<Reference>();
     	m_to.add(to);    	
     }
     
-    public RouteCoreContainer(Reference function, RouteContainer routeContainer, 
-    		Engine engine, int nodeNumber, int coreNumber) {
-
-    	initialise(routeContainer, engine, nodeNumber, coreNumber);    	
+    public RouteCoreContainer(Reference function, RouteContainer routeContainer,  Engine engine, CoreId coreId) {
+    	initialise(routeContainer, engine, coreId);    	
 
     	m_function = function;
     	m_from = function;
@@ -89,29 +87,19 @@ public class RouteCoreContainer {
         return num;
     }
 
-	public NodeCorePair getNodeCore() {
-		return m_nodeCore;
-	}
-
-	public int getNodeNumber() {
-		return m_nodeCore.getNode();
-	}
-
-	public int getCoreNumber() {
-		return m_nodeCore.getCore();
+	public CoreId getCoreId() {
+		return m_coreId;
 	}
 
 	public CoreConfig getCoreConfig() {
 		return m_coreConfig;
 	}    
 	
-	private void initialise(RouteContainer routeContainer, Engine engine, int nodeNumber, int coreNumber) {
+	private void initialise(RouteContainer routeContainer, Engine engine, CoreId coreId) {
 		m_routeContainer = routeContainer;
     	m_routes = new ArrayList<Route>();
     	m_exists = new ArrayList<Boolean>(); 
-		m_nodeCore = new NodeCorePair(nodeNumber, coreNumber);
-		m_coreConfig = new CoreConfig( 
-				engine.getNumThreads(nodeNumber, coreNumber), 
-				engine.getFrequency(nodeNumber));    			
+    	m_coreId = coreId;
+		m_coreConfig = new CoreConfig(engine.getNumThreads(m_coreId), engine.getFrequency(coreId.getNodeId()));    			
 	}
 }

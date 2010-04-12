@@ -24,6 +24,7 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SourceMapper {
 	private long m_xeLastModified;
@@ -37,7 +38,7 @@ public class SourceMapper {
 	private Map<String, Set<Long>> m_labels;
 	private Map<InstructionNode, InstructionNode> m_functionInstuctionToOriginal;
 	
-    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, int nodeNumber, int coreNumber,
+    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, CoreId coreId,
 			Map<InstructionNode, InstructionNode> map, InstructionDecoder instructionDecoder,
 			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labels) throws AbortedException {
     	m_functionInstuctionToOriginal = map;
@@ -52,7 +53,7 @@ public class SourceMapper {
 
         // Must record the XE timestamp before loading files
         m_xeLastModified = xeLoader.getFile().lastModified();
-        m_sourceFiles = createSourceFiles(src, engine, xeLoader, nodeNumber, coreNumber);
+        m_sourceFiles = createSourceFiles(src, engine, xeLoader, coreId);
 	}
 
 	//GUI only
@@ -173,11 +174,11 @@ public class SourceMapper {
     }
 
     private List<SourceFile> createSourceFiles(CommandSource src, Engine engine, XeLoader xeLoader,
-    		int nodeNumber, int coreNumber) throws AbortedException {
+    		CoreId coreId) throws AbortedException {
 
     	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
 
-    	DebugInfo di = xeLoader.getDebugInfo(nodeNumber, coreNumber);
+    	DebugInfo di = xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
         DebugEngine de = di.getDebugEngine();
 
 		Collection<DebugFile> debugFiles = de.getDebugFiles();

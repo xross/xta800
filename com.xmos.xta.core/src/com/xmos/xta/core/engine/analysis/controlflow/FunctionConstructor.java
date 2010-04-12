@@ -15,13 +15,13 @@ import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class FunctionConstructor {
 
 	private InstructionDecoder m_instDecoder;
 	private Notifier m_notifier;
-	private int m_nodeId;
-	private int m_coreId;
+	private CoreId m_coreId;
 	private CommandSource m_src;
 	private Set<InstructionNode> m_functionStarts;
 	private Set<InstructionNode> m_functionEnds;
@@ -32,15 +32,14 @@ public class FunctionConstructor {
 	private static final int RAMBASE = 0x10000;
 
 	public FunctionConstructor(InstructionDecoder instDecoder, Notifier notifier, Sections sections,
-			int node, int core, CommandSource src, InstructionMnemonics mnenonics, SymbolTable symbolTable) {
+			CoreId coreId, CommandSource src, InstructionMnemonics mnenonics, SymbolTable symbolTable) {
 		m_instDecoder = instDecoder;
 		m_notifier = notifier;
 		m_functionStarts = new IteratableSet<InstructionNode>();
 		m_functionEnds = new NonIteratableSet<InstructionNode>();
 		m_sections = sections;
 		m_mnenonics = mnenonics;
-		m_nodeId = node;
-		m_coreId = core;
+		m_coreId = coreId;
 		m_src = src;
 		m_symbolTable = symbolTable;
 	}
@@ -120,7 +119,7 @@ public class FunctionConstructor {
 	
 	
 	private void addUserBranchTargetsToFunctionStarts(){
-		Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_nodeId, m_coreId);	
+		Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_coreId);	
 		for(InstructionNode instruction : m_instDecoder.getInstructions()){
 			XtaInstruction inst = instruction.getXtaInstruction();
 			if(inst.isLink()){
@@ -139,7 +138,7 @@ public class FunctionConstructor {
 
 	private void addThreadStartsToFunctionStarts(){
 		
-		for (long pc : m_sections.getThreadStartPoints(m_nodeId, m_coreId)) {
+		for (long pc : m_sections.getThreadStartPoints(m_coreId)) {
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			
 			if (threadNode != null) {
@@ -153,7 +152,7 @@ public class FunctionConstructor {
 	}
 
 	private void addThreadStopsToFunctionEnds(){
-		for (long pc : m_sections.getThreadStopPoints(m_nodeId, m_coreId)) {
+		for (long pc : m_sections.getThreadStopPoints(m_coreId)) {
 			InstructionNode threadNode = m_instDecoder.getNode(pc);
 			if (threadNode != null) {
 				m_functionEnds.add(threadNode);

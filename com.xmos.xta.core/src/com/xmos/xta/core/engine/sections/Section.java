@@ -3,26 +3,29 @@ package com.xmos.xta.core.engine.sections;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public abstract class Section {
-	private int m_nodeNumber;
-	private int m_coreNumber;
+	private CoreId m_coreId;
 	private Notifier m_notifier;
 
-	Section(int nodeNumber, int coreNumber, Notifier notifier) {
-		m_nodeNumber = nodeNumber;
-		m_coreNumber = coreNumber;
+	Section(CoreId coreId, Notifier notifier) {
+		m_coreId = coreId;
 		m_notifier = notifier;
 	}
 
 	abstract boolean load(CommandSource src, XeLoader xeLoader);
 
-	public int getNodeNumber() {
-		return m_nodeNumber;
+	public CoreId getCoreId() {
+		return m_coreId;
+	}
+
+	public int getNodeChainIndex() {
+		return m_coreId.getNodeChainIndex();
 	}
 
 	public int getCoreNumber() {
-		return m_coreNumber;
+		return m_coreId.getCoreNumber();
 	}
 
 	Notifier getNotifier() {

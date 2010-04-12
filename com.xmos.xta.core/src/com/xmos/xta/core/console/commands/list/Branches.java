@@ -12,7 +12,7 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Branches extends Command {
 	private static final String[] COMMAND_NAMES = { "branches" };
@@ -107,8 +107,8 @@ public class Branches extends Command {
 	}
 
 	private void listBranches(Engine engine, Console console) {
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			Map<Reference, Set<BranchInfo>> branches = engine.getBranches(activeCore.getNode(), activeCore.getCore());
+		for (CoreId activeCore : engine.getActiveCores()) {			
+			Map<Reference, Set<BranchInfo>> branches = engine.getBranches(activeCore);
 			for (Reference fromRef : branches.keySet()) {
 				String to = getTo(branches, fromRef, false);
 				if (to.length() > 0) {

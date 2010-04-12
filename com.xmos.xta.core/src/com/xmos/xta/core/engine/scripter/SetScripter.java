@@ -38,7 +38,7 @@ class SetScripter {
                	outputPortableWarnings(script, known);
                	m_scripter.addScriptCommand(script, scriptStr);
            		
-           		processed.add(known);       	    	
+           		processed.add(known);
        	    }   	    	
         }       				    	
     }

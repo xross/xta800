@@ -66,9 +66,9 @@ import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.utils.CoreCollection;
 import com.xmos.xta.core.engine.utils.CoreConfig;
-import com.xmos.xta.core.engine.utils.NodeCoreCollection;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class Engine extends Notifier implements Aborter {
@@ -92,31 +92,31 @@ public class Engine extends Notifier implements Aborter {
 	private int m_timeOut;
 	private int m_numErrors;
 	private long m_loadStartTime;
-	private Map<Integer, Long> m_nodeHz;
-	private NodeCoreCollection<Integer> m_coreThreads;
-	private NodeCoreCollection<Boolean> m_structuralGraphUpToDate;
-	private NodeCoreCollection<SourceMapper> m_sourceMappers;
-	private NodeCoreCollection<InstructionDecoder> m_instructionDecoders;
-	private NodeCoreCollection<CallGraph> m_callGraphs;
+	private Map<String, Long> m_nodeHz;
+	private CoreCollection<Integer> m_coreThreads;
+	private CoreCollection<Boolean> m_structuralGraphUpToDate;
+	private CoreCollection<SourceMapper> m_sourceMappers;
+	private CoreCollection<InstructionDecoder> m_instructionDecoders;
+	private CoreCollection<CallGraph> m_callGraphs;
 	private Collection<FileLocation> m_userSpecifedFileLocations;
 	private Scripter m_scripter;
-	private Collection<NodeCorePair> m_activeCores;
+	private Collection<CoreId> m_activeCores;
 	private PathPoints m_pathPoints;
 	private Debugger m_debugger;
 
 	public Engine(Config config) {
 		super(config);
-		m_sourceMappers = new NodeCoreCollection<SourceMapper>();
-		m_instructionDecoders = new NodeCoreCollection<InstructionDecoder>();
-		m_callGraphs = new NodeCoreCollection<CallGraph>();
-		m_structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
-		m_nodeHz = new IteratableMap<Integer, Long>();
-		m_coreThreads = new NodeCoreCollection<Integer>();
+		m_sourceMappers = new CoreCollection<SourceMapper>();
+		m_instructionDecoders = new CoreCollection<InstructionDecoder>();
+		m_callGraphs = new CoreCollection<CallGraph>();
+		m_structuralGraphUpToDate = new CoreCollection<Boolean>();
+		m_nodeHz = new IteratableMap<String, Long>();
+		m_coreThreads = new CoreCollection<Integer>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_routeContainers = new LinkedList<RouteContainer>();
 		m_exclusions = new ArrayList<Reference>();
-		m_activeCores = new ArrayList<NodeCorePair>();
+		m_activeCores = new ArrayList<CoreId>();
 		m_config = config;
 		m_executableFile = null;
 		m_srcPaths = ".";
@@ -163,20 +163,20 @@ public class Engine extends Notifier implements Aborter {
 		return m_xeLoader.getMemoryImages();
 	}
 
-	public MemoryImage getMemoryImage(int nodeNumber, int coreNumber) {
-		return m_xeLoader.getMemoryImage(nodeNumber, coreNumber);
+	public MemoryImage getMemoryImage(CoreId coreId) {
+		return m_xeLoader.getMemoryImage(coreId.getNodeChainIndex(), coreId.getCoreNumber());
 	}
 
-	public SymbolTable getSymbolTable(int nodeNumber, int coreNumber) {
-		return m_xeLoader.getSymbolTable(nodeNumber, coreNumber);
+	public SymbolTable getSymbolTable(CoreId coreId) {
+		return m_xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber());
 	}
 
-	public SourceMapper getSourceMapper(int nodeNumber, int coreNumber) {
-		return m_sourceMappers.get(nodeNumber, coreNumber);
+	public SourceMapper getSourceMapper(CoreId coreId) {
+		return m_sourceMappers.get(coreId);
 	}
 
-	public CallGraph getCallGraph(NodeCorePair core) {
-		return m_callGraphs.get(core.getNode(), core.getCore());
+	public CallGraph getCallGraph(CoreId coreId) {
+		return m_callGraphs.get(coreId);
 	}
 
 	public PathPoints getPathPoints() {
@@ -318,8 +318,7 @@ public class Engine extends Notifier implements Aborter {
 		try {
 			for (Route route : getRoute(routeId)) {				
 				Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF, 
-						route.getRouteCoreContainer().getNodeNumber(),
-						route.getRouteCoreContainer().getCoreNumber());
+						route.getRouteCoreContainer().getCoreId());
 
 				if (resolveReference(reference)) {
 					if (route.getRouteUnknowns().canInstructionPause(reference)) {
@@ -428,13 +427,14 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
-		for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
-			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
-				SourceMapper sourceMapper = m_sourceMappers.get(nodeNumber, coreNumber);
+		for (int nodeChainIndex : m_xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(m_xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				SourceMapper sourceMapper = m_sourceMappers.get(coreId);
 				if (sourceMapper != null) {
-					updateSourceMapper(src, notifier, sourceMapper, fileName, file, nodeNumber, coreNumber);
+					updateSourceMapper(src, notifier, sourceMapper, fileName, file, coreId);
 				}
-				m_userSpecifedFileLocations.add(new FileLocation(nodeNumber, coreNumber, fileName, file));
+				m_userSpecifedFileLocations.add(new FileLocation(nodeChainIndex, coreNumber, fileName, file));
 			}
 		}
 	}
@@ -450,26 +450,26 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	// Get/Set Frequency.
 	// ===================================================================== //			
-	public void setFrequency(CommandSource src, int nodeNumber, double frequency) {
+	public void setFrequency(CommandSource src, String nodeId, double frequency) {
 		if (checkFrequency(src, frequency)) {
-			m_nodeHz.put(nodeNumber, (long)(frequency * 1000000));
+			m_nodeHz.put(nodeId, (long)(frequency * 1000000));
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");			
 		}
 	}
 
-	public double getFrequency(int nodeNumber) {
-		if (m_nodeHz.containsKey(nodeNumber)) {
-			return (double)m_nodeHz.get(nodeNumber) / 1000000;
+	public double getFrequency(String nodeId) {
+		if (m_nodeHz.containsKey(nodeId)) {
+			return (double)m_nodeHz.get(nodeId) / 1000000;
 		} else {
 			return CoreConfig.DEFAULT_FREQUENCY_MHZ;
 		}
 	}
 	
-	public Map<Integer, Double> getFrequencyMap() {
-		Map<Integer, Double> frequencies = new NonIteratableMap<Integer, Double>();
-		for (Integer nodeNumber : m_nodeHz.keySet()) {
-			double frequency = (double)m_nodeHz.get(nodeNumber) / 1000000;
-			frequencies.put(nodeNumber, frequency);
+	public Map<String, Double> getFrequencyMap() {
+		Map<String, Double> frequencies = new NonIteratableMap<String, Double>();
+		for (String nodeId : m_nodeHz.keySet()) {
+			double frequency = (double)m_nodeHz.get(nodeId) / 1000000;
+			frequencies.put(nodeId, frequency);
 		}
 		return frequencies;
 	}
@@ -477,26 +477,25 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	// Get/Set Num Threads.
 	// ===================================================================== //		
-	public void setNumThreads(CommandSource src, int nodeNumber, int coreNumber, int numThreads) {
+	public void setNumThreads(CommandSource src, CoreId coreId, int numThreads) {
 		if (checkNumThreads(src, numThreads)) {
-   		    m_coreThreads.add(nodeNumber, coreNumber, numThreads);
+   		    m_coreThreads.add(coreId, numThreads);
 	    	notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		}
 	}
 
-	public int getNumThreads(int nodeNumber, int coreNumber) {
-		Integer threads = m_coreThreads.get(nodeNumber, coreNumber);
+	public int getNumThreads(CoreId coreId) {
+		Integer threads = m_coreThreads.get(coreId);
 		if (threads == null) {
 			return CoreConfig.DEFAULT_THREADS;
 		}
 		return threads;
 	}
 
-	public Map<NodeCorePair, Integer> getNumThreadMap() {
-		Map<NodeCorePair, Integer> threads = new NonIteratableMap<NodeCorePair, Integer>();
-		for (Pair<Integer, Integer> nodeCore : m_coreThreads.getEntries()) {
-			threads.put(new NodeCorePair(nodeCore.first, nodeCore.second), 
-					m_coreThreads.get(nodeCore.first, nodeCore.second));
+	public Map<CoreId, Integer> getNumThreadMap() {
+		Map<CoreId, Integer> threads = new NonIteratableMap<CoreId, Integer>();
+		for (CoreId coreId : m_coreThreads.getEntries()) {
+			threads.put(coreId, m_coreThreads.get(coreId));
 		}
 		return threads;
 	}
@@ -504,8 +503,8 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	// Function Names/Pcs
 	// ===================================================================== //
-	public Set<String> getFunctionNames(int nodeNumber, int coreNumber) {
-		Set<FunctionContainer> functionContainers = m_callGraphs.get(nodeNumber, coreNumber).getFunctionContainers();
+	public Set<String> getFunctionNames(CoreId coreId) {
+		Set<FunctionContainer> functionContainers = m_callGraphs.get(coreId).getFunctionContainers();
 		if (functionContainers != null) {
 			Set<String> functionNames = new IteratableSet<String>();
 			for(FunctionContainer fc : functionContainers){
@@ -520,25 +519,22 @@ public class Engine extends Notifier implements Aborter {
 	public Collection<String> getNonSystemFunctionNames() {
 		List<String> functionNames = new LinkedList<String>();
 
-		for (NodeCorePair activeCore : getActiveCores()) {
-			int nodeNumber = activeCore.getNode();
-			int coreNumber = activeCore.getCore();
-
-			if (!m_xeLoader.isLoaded(nodeNumber, coreNumber))
+		for (CoreId coreId : getActiveCores()) {
+			if (!m_xeLoader.isLoaded(coreId.getNodeChainIndex(), coreId.getCoreNumber()))
 				continue;
 
-			List<String> nodeCoreFunctions = new LinkedList<String>();
-			nodeCoreFunctions.addAll(getFunctionNames(nodeNumber, coreNumber));
+			List<String> coreFunctions = new LinkedList<String>();
+			coreFunctions.addAll(getFunctionNames(coreId));
 	
 			Set<String> systemFunctions = new NonIteratableSet<String>();
-			Collection<String> systems = m_sections.getSystems(nodeNumber, coreNumber);
-			for (String functionName : nodeCoreFunctions) {
+			Collection<String> systems = m_sections.getSystems(coreId);
+			for (String functionName : coreFunctions) {
 				if (isSystemFunction(systems, functionName)) {
 					systemFunctions.add(functionName);
 				}
 			}
-			nodeCoreFunctions.removeAll(systemFunctions);
-			functionNames.addAll(nodeCoreFunctions);
+			coreFunctions.removeAll(systemFunctions);
+			functionNames.addAll(coreFunctions);
 		}
 
 		Set<String> uniqueNames = new IteratableSet<String>();
@@ -549,9 +545,9 @@ public class Engine extends Notifier implements Aborter {
 		return functionNames;
 	}
 	
-	public List<Long> getFunctionStartPcs(String functionName, int nodeNumber, int coreNumber) {		
-		List<Long> pcs = new LinkedList<Long>();		
-		for(FunctionContainer fc : m_callGraphs.get(nodeNumber, coreNumber).getFunctionContainers()){
+	public List<Long> getFunctionStartPcs(String functionName, CoreId coreId) {
+		List<Long> pcs = new LinkedList<Long>();
+		for(FunctionContainer fc : m_callGraphs.get(coreId).getFunctionContainers()){
 			if(functionName.equals(fc.getFunctionName())){
 				pcs.add(fc.getStartInstruction().getPC());
 			}
@@ -565,9 +561,9 @@ public class Engine extends Notifier implements Aborter {
 	public void addActiveCores(CommandSource src) {
 		m_activeCores.clear();
 		if (m_xeLoader.isLoaded()) {
-			for (int nodeNumber : m_xeLoader.getNodeNumbers()) {
-				for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)) {
-					m_activeCores.add(new NodeCorePair(nodeNumber, coreNumber));
+			for (int nodeChainIndex : m_xeLoader.getNodeChainIndexes()) {
+				for (int coreNumber : m_xeLoader.getCoreNumbers(nodeChainIndex)) {
+					m_activeCores.add(new CoreId(m_xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
 				}
 			}
 		}
@@ -575,8 +571,8 @@ public class Engine extends Notifier implements Aborter {
 		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}	
 
-	public void addActiveCore(CommandSource src, NodeCorePair activeCore) {		
-		if (m_xeLoader.isLoaded(activeCore.getNode(), activeCore.getCore())) {
+	public void addActiveCore(CommandSource src, CoreId activeCore) {		
+		if (m_xeLoader.isLoaded(activeCore.getNodeChainIndex(), activeCore.getCoreNumber())) {
 			if (!m_activeCores.contains(activeCore)) {
 				m_activeCores.add(activeCore);
 			}						
@@ -586,7 +582,7 @@ public class Engine extends Notifier implements Aborter {
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"node: %d, Core: %d not currently loaded", 
-					activeCore.getNode(), activeCore.getCore()));
+					activeCore.getNodeChainIndex(), activeCore.getCoreNumber()));
 		}		
 	}
 
@@ -596,25 +592,13 @@ public class Engine extends Notifier implements Aborter {
 		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}
 
-	public void removeActiveCores(CommandSource src, int nodeNumber) {
-		Iterator<NodeCorePair> iter = m_activeCores.iterator();
-		while (iter.hasNext()) {
-			NodeCorePair activeCore = iter.next();
-			if (activeCore.getNode() == nodeNumber) {
-				iter.remove();
-			}
-		}
-		m_pathPoints.refresh();
-		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
-	}
-
-	public void removeActiveCore(CommandSource src, NodeCorePair activeCore) {
+	public void removeActiveCore(CommandSource src, CoreId activeCore) {
 		m_activeCores.remove(activeCore);
 		m_pathPoints.refresh();
 		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}
 
-	public Collection<NodeCorePair> getActiveCores() {
+	public Collection<CoreId> getActiveCores() {
 		return m_activeCores;
 	}
 
@@ -664,10 +648,10 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	public void addFunctionTime(CommandSource src, String functionName, TimeUnit timeUnit) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 			
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.FUNCTION_REF, activeCore);
 			
 			if (resolveReference(functionRef)) {
 				m_defines.addFunctionTime(functionRef, timeUnit);
@@ -683,12 +667,12 @@ public class Engine extends Notifier implements Aborter {
 
 	public void addPathTime(CommandSource src, String from, String to, TimeUnit timeUnit) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF, activeCore);
 			Reference toRef = ReferenceFactory.createReference(to, 
-					ReferenceClass.ENDPOINT_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF, activeCore);
 
 			if (resolveReference(fromRef) && resolveReference(toRef)) {
 			    m_defines.addPathTime(fromRef, toRef, timeUnit);
@@ -736,10 +720,10 @@ public class Engine extends Notifier implements Aborter {
 
 	public void removeFunctionTime(CommandSource src, String functionName) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.FUNCTION_REF_WITH_EVERYTHING, activeCore);
 			
 			if (resolveReference(functionRef)) {
 				m_defines.removeFunctionTime(functionRef);
@@ -755,12 +739,12 @@ public class Engine extends Notifier implements Aborter {
 
 	public void removePathTime(CommandSource src, String from, String to) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
-					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore);
 			Reference toRef = ReferenceFactory.createReference(to, 
-					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore);
 
 			if (resolveReference(fromRef) && resolveReference(toRef)) {
 			    m_defines.removePathTime(fromRef, toRef);
@@ -845,9 +829,7 @@ public class Engine extends Notifier implements Aborter {
 			for (Route route : getRoute(routeId)) {
 				
 				Reference functionRef = ReferenceFactory.createReference(functionName, 
-						ReferenceClass.FUNCTION_REF,
-						route.getRouteCoreContainer().getNodeNumber(),
-						route.getRouteCoreContainer().getCoreNumber());
+						ReferenceClass.FUNCTION_REF, route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(functionRef)) {
 					FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);					
@@ -880,13 +862,12 @@ public class Engine extends Notifier implements Aborter {
 		boolean hit = false;		
 		try {			
 			for (Route route : getRoute(routeId)) {
-				int node = route.getRouteCoreContainer().getNodeNumber();
-				int core = route.getRouteCoreContainer().getCoreNumber();
+				CoreId coreId = route.getRouteCoreContainer().getCoreId();
 
 				Reference fromRef = ReferenceFactory.createReference(from, 
-						ReferenceClass.ENDPOINT_REF, node, core);
+						ReferenceClass.ENDPOINT_REF, coreId);
 				Reference toRef = ReferenceFactory.createReference(to, 
-						ReferenceClass.ENDPOINT_REF, node, core);
+						ReferenceClass.ENDPOINT_REF, coreId);
 
 				if (resolveReference(fromRef) && resolveReference(toRef)) {
 					PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);					
@@ -918,8 +899,7 @@ public class Engine extends Notifier implements Aborter {
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ENDPOINT_REF,
-				        route.getRouteCoreContainer().getNodeNumber(),
-				        route.getRouteCoreContainer().getCoreNumber());
+				        route.getRouteCoreContainer().getCoreId());
 								
 				if (resolveReference(reference)) {
 					if (!route.getRouteUnknowns().canInstructionPause(reference))
@@ -972,8 +952,7 @@ public class Engine extends Notifier implements Aborter {
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
-				        route.getRouteCoreContainer().getNodeNumber(),
-				        route.getRouteCoreContainer().getCoreNumber());
+				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
 					route.getRouteUnknowns().checkSetLoopIterations(reference, iterations);
@@ -1041,8 +1020,7 @@ public class Engine extends Notifier implements Aborter {
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
-				        route.getRouteCoreContainer().getNodeNumber(),
-				        route.getRouteCoreContainer().getCoreNumber());
+				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
 					route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations);
@@ -1107,8 +1085,7 @@ public class Engine extends Notifier implements Aborter {
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
-				        route.getRouteCoreContainer().getNodeNumber(),
-				        route.getRouteCoreContainer().getCoreNumber());
+				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
 					route.getRouteUnknowns().checkSetLoopScope(reference, absolute);
@@ -1171,8 +1148,7 @@ public class Engine extends Notifier implements Aborter {
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY_REF,
-				        route.getRouteCoreContainer().getNodeNumber(),
-				        route.getRouteCoreContainer().getCoreNumber());
+				        route.getRouteCoreContainer().getCoreId());
 
 				if (resolveReference(reference)) {
 					Set<Node> nodes = route.getReferencedNodes(reference);
@@ -1224,9 +1200,9 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	public boolean addExclusion(CommandSource src, String refString) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF, activeCore);
 			
 			if (alreadyExcluded(reference)) {
 				notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for ref: %s", reference.getRef()));
@@ -1256,9 +1232,9 @@ public class Engine extends Notifier implements Aborter {
 
 	public boolean removeExclusion(CommandSource src, String refString) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore);
 			
 			if (resolveReference(reference)) {
                 Iterator<Reference> iter = m_exclusions.iterator();
@@ -1289,10 +1265,10 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	public boolean addBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
-					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF, activeCore);
 			boolean fromResolved = resolveReference(fromRef);
 			
 			if (fromResolved)			
@@ -1301,7 +1277,7 @@ public class Engine extends Notifier implements Aborter {
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
 				Reference ref = ReferenceFactory.createReference(toRefString, 
-						ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());				
+						ReferenceClass.ANY_REF, activeCore);				
 				toRefs.add(ref);
 			}		
 			boolean toResolved = true;
@@ -1312,8 +1288,8 @@ public class Engine extends Notifier implements Aborter {
 			}
 			
 			if (fromResolved && toResolved) {
-				if (m_sections.addToBranches(src, activeCore.getNode(), activeCore.getCore(), fromRef, toRefs)) {
-					m_structuralGraphUpToDate.add(activeCore.getNode(), activeCore.getCore(), false);
+				if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
+					m_structuralGraphUpToDate.add(activeCore, false);
 					hit = true;
 				}				
 			}
@@ -1327,10 +1303,10 @@ public class Engine extends Notifier implements Aborter {
 
 	public boolean removeBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
-					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());
+					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore);
 			boolean fromResolved = resolveReference(fromRef);
 			
 			if (fromResolved)
@@ -1339,7 +1315,7 @@ public class Engine extends Notifier implements Aborter {
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
 				Reference ref = ReferenceFactory.createReference(toRefString, 
-						ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore.getNode(), activeCore.getCore());				
+						ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore);				
 				toRefs.add(ref);
 			}		
 			boolean toResolved = true;
@@ -1350,8 +1326,8 @@ public class Engine extends Notifier implements Aborter {
 			}
 			
 			if (fromResolved && toResolved) {
-				if (m_sections.removeFromBranches(src, activeCore.getNode(), activeCore.getCore(), fromRef, toRefs)) {
-					m_structuralGraphUpToDate.add(activeCore.getNode(), activeCore.getCore(), false);
+				if (m_sections.removeFromBranches(src, activeCore, fromRef, toRefs)) {
+					m_structuralGraphUpToDate.add(activeCore, false);
 					hit = true;
 				}				
 			}			
@@ -1363,9 +1339,9 @@ public class Engine extends Notifier implements Aborter {
 		return hit;
 	}
 
-	private void checkInstructionIsBranch(CommandSource src, Reference ref, NodeCorePair activeCore) {
+	private void checkInstructionIsBranch(CommandSource src, Reference ref, CoreId activeCore) {
 		for (long pc : ref.getPcs()) {
-			InstructionNode node = m_instructionDecoders.get(activeCore.getNode(), activeCore.getCore()).getNode(pc);
+			InstructionNode node = m_instructionDecoders.get(activeCore).getNode(pc);
 			if (node == null) {
 				notify(src, Notifier.NOTIFY_WARNING,
 						String.format("adding branch from non-existant instruction at %s",
@@ -1387,10 +1363,12 @@ public class Engine extends Notifier implements Aborter {
 	public Map<Reference, List<Reference>> getUserBranches() {
 		Map<Reference, List<Reference>> branches = new IteratableMap<Reference, List<Reference>>();
 		
-        for (int nodeNumber : m_xeLoader.getNodeNumbers()){
-            for (int coreNumber : m_xeLoader.getCoreNumbers(nodeNumber)){
+        for (int nodeChainIndex : m_xeLoader.getNodeChainIndexes()) {
+            for (int coreNumber : m_xeLoader.getCoreNumbers(nodeChainIndex)) {
             	
-        		Map<Reference, Set<BranchInfo>> currentBranches = getBranches(nodeNumber, coreNumber);
+        		Map<Reference, Set<BranchInfo>> currentBranches = getBranches(
+        				new CoreId(m_xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
+        		
         		for (Reference from : currentBranches.keySet()) {
         			Set<BranchInfo> to = currentBranches.get(from);
         			List<Reference> toRefs = new ArrayList<Reference>();
@@ -1408,69 +1386,81 @@ public class Engine extends Notifier implements Aborter {
 		return branches;
 	}
 
-	public Map<Reference, Set<BranchInfo>> getBranches(int nodeNumber, int coreNumber) {
-		return m_sections.getBranches(nodeNumber, coreNumber);
+	public Map<Reference, Set<BranchInfo>> getBranches(CoreId coreId) {
+		return m_sections.getBranches(coreId);
 	}
 
-	public Map<String, Set<Long>> getLabels(int nodeNumber, int coreNumber) {
-		return m_sections.getLabels(nodeNumber, coreNumber);
+	public Map<String, Set<Long>> getLabels(CoreId coreId) {
+		return m_sections.getLabels(coreId);
 	}
 
-	public List<CodePointInfo> getSrcLabels(int nodeNumber, int coreNumber) {
-		return m_sections.getSrcLabels(nodeNumber, coreNumber);
+	public List<CodePointInfo> getSrcLabels(CoreId coreId) {
+		return m_sections.getSrcLabels(coreId);
 	}
 
-	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(int nodeNumber, int coreNumber) {
-		return m_sections.getSrcLabelTable(nodeNumber, coreNumber);
+	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(CoreId coreId) {
+		return m_sections.getSrcLabelTable(coreId);
 	}
 
-	public List<CodePointInfo> getEndpoints(int nodeNumber, int coreNumber) {
-		return m_sections.getEndpoints(nodeNumber, coreNumber);
+	public List<CodePointInfo> getEndpoints(CoreId coreId) {
+		return m_sections.getEndpoints(coreId);
 	}
 
-	public Map<Long, CodePointTableInfo> getEndpointTable(int nodeNumber, int coreNumber) {
-		return m_sections.getEndpointTable(nodeNumber, coreNumber);
+	public Map<Long, CodePointTableInfo> getEndpointTable(CoreId coreId) {
+		return m_sections.getEndpointTable(coreId);
 	}
 
-	public List<CodePointInfo> getCalls(int nodeNumber, int coreNumber) {
-		return m_sections.getCalls(nodeNumber, coreNumber);
+	public List<CodePointInfo> getCalls(CoreId coreId) {
+		return m_sections.getCalls(coreId);
 	}
 
-	public Map<Long, CodePointTableInfo> getCallTable(int nodeNumber, int coreNumber) {
-		return m_sections.getCallTable(nodeNumber, coreNumber);
+	public Map<Long, CodePointTableInfo> getCallTable(CoreId coreId) {
+		return m_sections.getCallTable(coreId);
 	}
 
-	public Collection<Long> getThreadStartPoints(int nodeNumber, int coreNumber) {
-		return m_sections.getThreadStartPoints(nodeNumber, coreNumber);
+	public Collection<Long> getThreadStartPoints(CoreId coreId) {
+		return m_sections.getThreadStartPoints(coreId);
 	}
 
-	public Collection<Long> getThreadStopPoints(int nodeNumber, int coreNumber) {
-		return m_sections.getThreadStopPoints(nodeNumber, coreNumber);
+	public Collection<Long> getThreadStopPoints(CoreId coreId) {
+		return m_sections.getThreadStopPoints(coreId);
 	}
 
-	public Collection<SrcStringInfo> getSrcLevelCommands(int nodeNumber, int coreNumber) {
-		return m_sections.getSrcLevelCommands(nodeNumber, coreNumber);
+	public Collection<SrcStringInfo> getSrcLevelCommands(CoreId coreId) {
+		return m_sections.getSrcLevelCommands(coreId);
 	}
 
-	public Collection<SrcLevelLoopInfo> getSrcLevelLoops(int nodeNumber, int coreNumber) {
-		return m_sections.getSrcLevelLoops(nodeNumber, coreNumber);
+	public Collection<SrcLevelLoopInfo> getSrcLevelLoops(CoreId coreId) {
+		return m_sections.getSrcLevelLoops(coreId);
 	}
 
-	public Collection<String> getSystems(int nodeNumber, int coreNumber) {
-		return m_sections.getSystems(nodeNumber, coreNumber);
+	public Collection<String> getSystems(CoreId coreId) {
+		return m_sections.getSystems(coreId);
 	}
 
-	public boolean updateControlFlowGraphs(CommandSource src, NodeCorePair core) {
-		int nodeNumber = core.getNode();
-		int coreNumber = core.getCore();
+    public CoreId getCoreId(String coreReference) {
+    	XnLoader xnLoader = m_xeLoader.getXnLoader();
+		Pair<Integer,Integer> nodeCore = xnLoader.getNodeChainIndexCoreNumber(coreReference);
+		if (nodeCore == null) {
+    		return null;
+		}
+		int nodeChainIndex = nodeCore.first;
+		int coreNumber = nodeCore.second;
+		
+    	if (m_xeLoader.getMemoryImage(nodeChainIndex, coreNumber) == null) {
+    		return null;
+    	}		
+    	return new CoreId(xnLoader, nodeChainIndex, coreNumber);
+    }
 
-		assert(m_xeLoader.isLoaded(nodeNumber, coreNumber));	    
-	    if (!m_structuralGraphUpToDate.get(nodeNumber, coreNumber)) {
-			NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>(m_callGraphs);
-			NodeCoreCollection<SourceMapper> sourceMappers = new NodeCoreCollection<SourceMapper>(m_sourceMappers);
-			NodeCoreCollection<InstructionDecoder> instructionDecoders = new NodeCoreCollection<InstructionDecoder>(m_instructionDecoders);
+	public boolean updateControlFlowGraphs(CommandSource src, CoreId coreId) {
+		assert(m_xeLoader.isLoaded(coreId.getNodeChainIndex(), coreId.getCoreNumber()));
+	    if (!m_structuralGraphUpToDate.get(coreId)) {
+			CoreCollection<CallGraph> callGraphs = new CoreCollection<CallGraph>(m_callGraphs);
+			CoreCollection<SourceMapper> sourceMappers = new CoreCollection<SourceMapper>(m_sourceMappers);
+			CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>(m_instructionDecoders);
 			
-			if (buildNodeCore(callGraphs, instructionDecoders, sourceMappers, m_xeLoader, m_sections, src, nodeNumber, coreNumber)) {
+			if (buildNodeCore(callGraphs, instructionDecoders, sourceMappers, m_xeLoader, m_sections, src, coreId)) {
 				m_callGraphs = callGraphs;
 				m_sourceMappers = sourceMappers;
 				m_instructionDecoders = instructionDecoders;
@@ -1486,16 +1476,17 @@ public class Engine extends Notifier implements Aborter {
 		
 		notify(src, Notifier.HOLD_MESSAGES, "");
 		
-		NodeCoreCollection<CallGraph> callGraphs = new NodeCoreCollection<CallGraph>();
-		NodeCoreCollection<Boolean> structuralGraphUpToDate = new NodeCoreCollection<Boolean>();
-		NodeCoreCollection<SourceMapper> sourceMappers = new NodeCoreCollection<SourceMapper>();
-		NodeCoreCollection<InstructionDecoder> instructionDecoders = new NodeCoreCollection<InstructionDecoder>();
+		CoreCollection<CallGraph> callGraphs = new CoreCollection<CallGraph>();
+		CoreCollection<Boolean> structuralGraphUpToDate = new CoreCollection<Boolean>();
+		CoreCollection<SourceMapper> sourceMappers = new CoreCollection<SourceMapper>();
+		CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>();
 		
-		for(int nodeNumber : xeLoader.getNodeNumbers()){
-			for(int coreNumber : xeLoader.getCoreNumbers(nodeNumber)){
-				boolean success = buildNodeCore(callGraphs, instructionDecoders, sourceMappers, xeLoader, sections, src, nodeNumber, coreNumber);
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				boolean success = buildNodeCore(callGraphs, instructionDecoders, sourceMappers, xeLoader, sections, src, coreId);
 				if (success){
-					structuralGraphUpToDate.add(nodeNumber, coreNumber, true);
+					structuralGraphUpToDate.add(coreId, true);
 				} else {
 					return false;
 				}
@@ -1511,28 +1502,28 @@ public class Engine extends Notifier implements Aborter {
 		return true;
 	}
 	
-	private boolean buildNodeCore(NodeCoreCollection<CallGraph> callGraphs,
-			NodeCoreCollection<InstructionDecoder> instructionDecoders,
-			NodeCoreCollection<SourceMapper> sourceMappers, 
+	private boolean buildNodeCore(CoreCollection<CallGraph> callGraphs,
+			CoreCollection<InstructionDecoder> instructionDecoders,
+			CoreCollection<SourceMapper> sourceMappers, 
 			XeLoader xeLoader, Sections sections, CommandSource src, 
-			int nodeNumber, int coreNumber) {
+			CoreId coreId) {
 		
-		setAnalysisName(String.format("Processing node: %d, core: %d", nodeNumber, coreNumber));
+		setAnalysisName(String.format("Processing %s", coreId.toString()));
 		InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 		
 		//Binary Stage
-		InstructionDecoder instructionDecoder = new InstructionDecoder(nodeNumber, coreNumber, xeLoader);
+		InstructionDecoder instructionDecoder = new InstructionDecoder(coreId, xeLoader);
 		try {
 			instructionDecoder.decode();
 		} catch (Exception e) {
 			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return false;
 		}
-		instructionDecoders.add(nodeNumber, coreNumber, instructionDecoder);
+		instructionDecoders.add(coreId, instructionDecoder);
 		
 		//Control Flow Stage
-		FunctionConstructor fc = new FunctionConstructor(instructionDecoder, this, sections, nodeNumber, coreNumber, src, 
-				mnenonics, xeLoader.getSymbolTable(nodeNumber, coreNumber));
+		FunctionConstructor fc = new FunctionConstructor(instructionDecoder, this, sections, coreId, src, 
+				mnenonics, xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber()));
 
 		try {
 			fc.process();
@@ -1546,14 +1537,14 @@ public class Engine extends Notifier implements Aborter {
 		Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
 
 		//add all the successors
-		SuccessorAdder sa = new SuccessorAdder(nodeNumber, coreNumber, instructionDecoder, sections, functionEndNodes, this, src, mnenonics);
+		SuccessorAdder sa = new SuccessorAdder(coreId, instructionDecoder, sections, functionEndNodes, this, src, mnenonics);
 		sa.process();
 
 		UnresolvedSetter us = new UnresolvedSetter(functionStartNodes);
 		us.process();
 		
 		//add function reference nodes
-		FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(instructionDecoder, m_notifier, src, xeLoader, nodeNumber, coreNumber, sections);
+		FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(instructionDecoder, m_notifier, src, xeLoader, coreId, sections);
 		frna.process(functionStartNodes);
 
 		Set<FunctionContainer> functionContainers = frna.getFunctionContainers();
@@ -1561,31 +1552,32 @@ public class Engine extends Notifier implements Aborter {
 		FnopAdder fa = new FnopAdder(functionContainers);
 		fa.process();
 		
-		ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(nodeNumber, coreNumber), functionContainers, 
-				sections.getLabels(nodeNumber, coreNumber));
+		ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber()),
+				functionContainers, sections.getLabels(coreId));
 
 		setBranchTargets(instructionDecoder, functionContainers);
 
 		linkFunctions(functionContainers);
 
 		CallGraph cg = new CallGraph(functionContainers);
-		callGraphs.add(nodeNumber, coreNumber, cg);
+		callGraphs.add(coreId, cg);
 		SourceMapper sourceMapper;
 		try {
-			sourceMapper = new SourceMapper(src, this, xeLoader, nodeNumber, coreNumber, frna.getFunctionInstuctionToOriginal(),
-					instructionDecoder, functionContainers, sections.getLabels(nodeNumber, coreNumber));
+			sourceMapper = new SourceMapper(src, this, xeLoader, coreId, frna.getFunctionInstuctionToOriginal(),
+					instructionDecoder, functionContainers, sections.getLabels(coreId));
 
 		} catch (AbortedException e) {
 			return false;
 		}
 
 		for (FileLocation fileLocation : m_userSpecifedFileLocations) {
-			if ((fileLocation.m_nodeNumber == nodeNumber) && (fileLocation.m_coreNumber == coreNumber)) {
+			if ((fileLocation.m_nodeChainIndex == coreId.getNodeChainIndex()) &&
+				(fileLocation.m_coreNumber == coreId.getCoreNumber())) {
 				updateSourceMapper(src, m_notifier, sourceMapper,
-						fileLocation.m_fileName, fileLocation.m_file, nodeNumber, coreNumber);
+						fileLocation.m_fileName, fileLocation.m_file, coreId);
 			}
 		}
-		sourceMappers.add(nodeNumber, coreNumber, sourceMapper);
+		sourceMappers.add(coreId, sourceMapper);
 		
 		return true;
 	}
@@ -1668,19 +1660,18 @@ public class Engine extends Notifier implements Aborter {
 	}
 
     private void updateSourceMapper(CommandSource src, Notifier notifier, SourceMapper sourceMapper,
-    		String fileName, File file, int nodeNumber, int coreNumber) {
+    		String fileName, File file, CoreId coreId) {
 
-        DebugEngine debugEngine = m_xeLoader.getDebugInfo(nodeNumber, coreNumber).getDebugEngine();
+        DebugEngine debugEngine = m_xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber()).getDebugEngine();
         SourceFile sf = sourceMapper.getSourceFile(fileName);
         sourceMapper.setFile(src, notifier, debugEngine, sf, file);
     }
 
 	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass refClass) {		
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
+		for (CoreId activeCore : m_activeCores) {
 			
-			Reference reference = ReferenceFactory.createReference(refString, 
-					refClass, activeCore.getNode(), activeCore.getCore());
+			Reference reference = ReferenceFactory.createReference(refString, refClass, activeCore);
 			
 			if (resolveReference(reference)) {
 				update.run(reference);
@@ -1705,9 +1696,9 @@ public class Engine extends Notifier implements Aborter {
 			// All the source level commands are present on each core, 
 			// so make sure we only run them once..
 			assert(!m_activeCores.isEmpty());
-			NodeCorePair activeCore = m_activeCores.iterator().next();
+			CoreId activeCore = m_activeCores.iterator().next();
 			
-			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore.getNode(), activeCore.getCore());
+			Collection<SrcStringInfo> srcStringInfos = getSrcLevelCommands(activeCore);
 			startAnalysis("Running source level commands", srcStringInfos.size());
 			
 		    for (SrcStringInfo cmdInfo : srcStringInfos) {
@@ -1731,8 +1722,8 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	private void initialiseCoreStates(XeLoader xeLoader) {
-		m_nodeHz = new IteratableMap<Integer, Long>();
-		m_coreThreads = new NodeCoreCollection<Integer>();
+		m_nodeHz = new IteratableMap<String, Long>();
+		m_coreThreads = new CoreCollection<Integer>();
 
 		XnLoader xnLoader = xeLoader.getXnLoader();
 		ProgInfoLoader progInfoLoader = xeLoader.getProgInfoLoader();
@@ -1740,17 +1731,19 @@ public class Engine extends Notifier implements Aborter {
 			return;
 		}
 
-		for (int nodeNumber : xeLoader.getNodeNumbers()){
-			m_nodeHz.put(nodeNumber, xnLoader.getFrequencyHz(nodeNumber));
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeNumber)){
-				int coreThreads = getCoreThreads(xnLoader, progInfoLoader, nodeNumber, coreNumber);
-				m_coreThreads.add(nodeNumber, coreNumber, coreThreads);
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			String nodeId = xnLoader.getNodeId(nodeChainIndex);
+			m_nodeHz.put(nodeId, xnLoader.getFrequencyHz(nodeChainIndex));
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)){
+				int coreThreads = getCoreThreads(xnLoader, progInfoLoader, nodeChainIndex, coreNumber);
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				m_coreThreads.add(coreId, coreThreads);
 			}
 		}
 	}
 
-	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeNumber, int coreNumber) {
-		int nodeRoutingId = xnLoader.getNodeRoutingId(nodeNumber);
+	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeChainIndex, int coreNumber) {
+		int nodeRoutingId = xnLoader.getNodeRoutingId(nodeChainIndex);
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
 			if ((entry.getNodeRoutingId() == nodeRoutingId) && (entry.getCoreNumber() == coreNumber) &&
 				(entry.getName().equals("thread"))) {
@@ -1791,9 +1784,9 @@ public class Engine extends Notifier implements Aborter {
 	
 	private void initialiseActiveCores(XeLoader xeLoader) {
 		m_activeCores.clear();
-		for (int nodeNumber : xeLoader.getNodeNumbers()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeNumber)) {
-				m_activeCores.add(new NodeCorePair(nodeNumber, coreNumber));
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				m_activeCores.add(new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
 			}
 		}
 	}
@@ -1804,9 +1797,8 @@ public class Engine extends Notifier implements Aborter {
 
 	public boolean validateReference(String refString) {
 		boolean hit = false;
-		for (NodeCorePair activeCore : m_activeCores) {
-			Reference fromEndPoint = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore.getNode(), activeCore.getCore());
+		for (CoreId activeCore : m_activeCores) {
+			Reference fromEndPoint = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF, activeCore);
 			
 			if (resolveReference(fromEndPoint)) {
 				hit = true;
@@ -1817,13 +1809,13 @@ public class Engine extends Notifier implements Aborter {
 }
 
 class FileLocation {
-	int m_nodeNumber;
+	int m_nodeChainIndex;
 	int m_coreNumber;
 	String m_fileName;
 	File m_file;
 
-	FileLocation(int nodeNumber, int coreNumber, String fileName, File file) {
-		m_nodeNumber = nodeNumber;
+	FileLocation(int nodeChainIndex, int coreNumber, String fileName, File file) {
+		m_nodeChainIndex = nodeChainIndex;
 		m_coreNumber = coreNumber;
 		m_fileName = fileName;
 		m_file = file;

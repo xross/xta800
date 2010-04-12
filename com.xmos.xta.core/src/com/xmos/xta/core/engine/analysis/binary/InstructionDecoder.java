@@ -12,17 +12,16 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstructionDecoder;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class InstructionDecoder {
-	private int m_nodeId;
-	private int m_coreId;
+	private CoreId m_coreId;
 	private long m_endPc;
 	private NonIteratableMap<Long, InstructionNode> m_decodedInstructions;
 	private List<InstructionNode> m_orderedInstructions;
 	private XeLoader m_xeLoader;
 
-	public InstructionDecoder(int nodeId, int coreId, XeLoader xeLoader) {
-		m_nodeId = nodeId;
+	public InstructionDecoder(CoreId coreId, XeLoader xeLoader) {
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
 		m_endPc = Long.MIN_VALUE;
@@ -31,14 +30,14 @@ public class InstructionDecoder {
 	}
 
 	public void decode() throws Exception {
-		MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_nodeId, m_coreId);
-		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_nodeId, m_coreId);
+		MemoryImage memoryImage = m_xeLoader.getMemoryImage(m_coreId.getNodeChainIndex(), m_coreId.getCoreNumber());
+		SymbolTable symbolTable = m_xeLoader.getSymbolTable(m_coreId.getNodeChainIndex(), m_coreId.getCoreNumber());
 		XtaInstructionDecoder instructionDecoder = XtaInstructionDecoder.createInstructionDecoder(m_xeLoader.getArchitecture());
 		if (instructionDecoder == null) {
 			throw new Exception("Architecture not supported");
 		}
 
-		for (ElfSection section: m_xeLoader.getSymbolTable(m_nodeId, m_coreId).getElfHandler().getSections()) {
+		for (ElfSection section: symbolTable.getElfHandler().getSections()) {
 			if (section.isExecutable()){
 				long sectionAddress = XtaInstruction.makeLongPc(section.getAddress());
 				long pc = sectionAddress;

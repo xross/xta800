@@ -6,7 +6,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
-import com.xmos.xta.core.engine.utils.NodeCorePair;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Debugger {
 	private Engine m_engine; 
@@ -17,7 +17,7 @@ public class Debugger {
 
 	public void dumpControlFlow(CommandSource src, String functionName, Console console) {
 		boolean hit = false;		
-		for (NodeCorePair activeCore : m_engine.getActiveCores()) {
+		for (CoreId activeCore : m_engine.getActiveCores()) {
 			
 			CallGraph callGraph = m_engine.getCallGraph(activeCore);
 			assert(callGraph != null);

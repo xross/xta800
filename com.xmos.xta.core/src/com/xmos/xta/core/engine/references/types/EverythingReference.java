@@ -1,16 +1,17 @@
 package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class EverythingReference extends ReferenceType {
-	EverythingReference(String ref, int nodeNumber, int coreNumber) {
-		super(ref, Type.EVERYTHING, nodeNumber, coreNumber);
+	EverythingReference(String ref, CoreId coreId) {
+		super(ref, Type.EVERYTHING, coreId);
 		setResolved(true);
 	}
 
-	public ReferenceType create(Engine engine, String reference, int nodeNumber, int coreNumber) {
+	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (reference.equals("*")) {
-	    	return new EverythingReference(reference, nodeNumber, coreNumber);
+	    	return new EverythingReference(reference, coreId);
 		}
 		return null;
 	}

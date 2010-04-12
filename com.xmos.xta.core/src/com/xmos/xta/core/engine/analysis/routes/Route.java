@@ -45,10 +45,7 @@ public class Route {
 		m_baseOfRouteNode = node;
 		Architecture architecture = engine.getXeLoader().getArchitecture();
 		
-		m_timing = new RouteTiming(src, this, 
-				m_coreContainer.getCoreConfig(), 
-				m_coreContainer.getNodeNumber(), 
-				m_coreContainer.getCoreNumber());
+		m_timing = new RouteTiming(src, this,  m_coreContainer.getCoreConfig(), m_coreContainer.getCoreId());
 		
 		m_unknowns = new RouteUnknowns(this);
 		
