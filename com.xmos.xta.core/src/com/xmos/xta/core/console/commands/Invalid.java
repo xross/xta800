@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 
 public class Invalid extends Command {
 	private static final String[] COMMAND_NAMES = { "" };
@@ -36,11 +37,6 @@ public class Invalid extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	CommandSource src = getSrc();
-    	console.display("xta: ");
-		if (src.getLineNum() > 0) {
-			console.display(src.getFileName() + ":" + src.getLineNum() + ": ");
-		}
-		console.display("error: " + m_errorMessage);
+		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, m_errorMessage);		
     }
 }

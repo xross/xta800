@@ -47,7 +47,5 @@ public class FunctionTime extends Command {
 		if (isExecutableLoaded(engine, console)) {
 			engine.removeFunctionTime(getSrc(), m_functionName);
 		}
-
-		
     }
 }
