@@ -40,7 +40,7 @@ $retval = system("@ARGV load $genDir/test.xe " .
        "analyze function main " .
        "-set required - 10 ns " .
        "print summary " .
-       "-exit >> $genDir/Terror.txt 2>>&1");
+       "-exit >> $genDir/Terror.txt 2>&1");
 
 if (($retval >> 8) == 1) {
   $message = "RETURN CODE OK";
