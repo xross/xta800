@@ -7,8 +7,8 @@ public class Analyze extends CommandContainer {
 	private static final String[] COMMAND_NAMES = { "analyze", "analyse" };
 
 	static private Command[] m_options = {
+		new Endpoints(),
 		new Function(),
-		new Path(),
 	};
 
 	public Analyze() { super(COMMAND_NAMES); }
