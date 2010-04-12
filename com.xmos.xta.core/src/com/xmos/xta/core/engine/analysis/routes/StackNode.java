@@ -1,5 +1,7 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -9,6 +11,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 public class StackNode implements Comparable<StackNode>{
 	private List<Stack<FunctionReferenceNode>> m_nodeStacks;
 	private InstructionNode m_instruction;
+	
 	public StackNode(InstructionNode instruction, List<Stack<FunctionReferenceNode>> stacks){
 		m_nodeStacks = stacks;
 		m_instruction = instruction;
@@ -34,5 +37,23 @@ public class StackNode implements Comparable<StackNode>{
 
 	public int compareTo(StackNode o) { 
 		return this.hashCode() - o.hashCode();
+	}
+	
+	public Collection<String> getBackTrails() {
+		Collection<String> backTrails = new ArrayList<String>();
+
+		for (Stack<FunctionReferenceNode> stack : m_nodeStacks) {
+			String backTrail = "";			
+			for (FunctionReferenceNode node : stack) {
+				
+				long callPc = node.getFunctionCallPc();
+				if (callPc != 0) {
+					backTrail += String.format("CALL:0x%x,", callPc);					
+				}
+			}
+			backTrail += String.format("0x%x", m_instruction.getPC());
+			backTrails.add(backTrail);
+		}
+		return backTrails;
 	}
 }

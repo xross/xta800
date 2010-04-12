@@ -48,7 +48,7 @@ public class VerifyReference extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        if (engine.validateReference(m_refString)){
+        if (engine.getDebugger().validateReference(m_refString)){
         	console.display("true\n");
         } else {
         	console.display("false\n");

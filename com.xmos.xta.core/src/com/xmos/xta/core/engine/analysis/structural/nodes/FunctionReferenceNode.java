@@ -73,21 +73,21 @@ public class FunctionReferenceNode extends Node {
 		super.getBackTrail(refStr);
 		refStr.append(String.format("CALL:0x%x,", m_functionCallInstruction.getPC()));
 	}
+	
+	public InstructionNode getFunctionStartInstruction(){
+		return m_functionStartInstruction;
+	}
 
-	public long getFunctionCallPc(){
-		if(m_functionCallInstruction != null){
+	public long getFunctionCallPc() {
+		if (m_functionCallInstruction != null) {
 			return m_functionCallInstruction.getPC();
 		} else {
 			return 0x0;
 		}
 	}
 	
-	public InstructionNode getFunctionStartInstruction(){
-		return m_functionStartInstruction;
-	}
-
-	public long getFunctionStartPc(){
-		if(m_isKnownFunctionTarget){
+	public long getFunctionStartPc() {
+		if (m_isKnownFunctionTarget) {
 			return m_functionStartInstruction.getPC();
 		} else {
 			return 0x0;

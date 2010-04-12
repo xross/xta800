@@ -1794,18 +1794,6 @@ public class Engine extends Notifier implements Aborter {
 	private boolean validateRouteCount(){
 		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
-
-	public boolean validateReference(String refString) {
-		boolean hit = false;
-		for (CoreId activeCore : m_activeCores) {
-			Reference fromEndPoint = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF, activeCore);
-			
-			if (resolveReference(fromEndPoint)) {
-				hit = true;
-			}
-		}
-		return hit;
-	}
 }
 
 class FileLocation {
