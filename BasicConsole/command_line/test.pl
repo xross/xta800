@@ -22,7 +22,7 @@ my $cmds =
        "-add functiontime main 10001 ns " .
        "-add pathtime 0x10000 0x10002 10001 ns " .
        "-config freq 0 999 " .
-       "-config threads 0 0 99 " .
+       "-config threads stdcore[0] 99 " .
        "-config case BEST " .
        "-config case WORST " .
        "-config srcpaths /test/path/srcpath/ " .
