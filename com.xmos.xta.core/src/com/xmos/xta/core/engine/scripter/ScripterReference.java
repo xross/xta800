@@ -161,8 +161,8 @@ public class ScripterReference {
 		// Try the user-defined
 		Set<String> names = getNames(infos);
 		for (String name : names) {
-			Set<Long> endPointPcs = getPcs(infos, name);
-			if (endPointPcs.equals(baseRef.getPcs())) {
+			Set<Long> userPcs = getPcs(infos, name);
+			if (userPcs.equals(baseRef.getPcs())) {
 				initialise(name, refClass, name, false);
 				return true;
 			}
@@ -174,8 +174,8 @@ public class ScripterReference {
 			// Try the ones from the compiler
 			names = getNames(tableInfos);
 			for (String name : names) {
-				Set<Long> endPointPcs = getPcs(tableInfos, name);
-				if (endPointPcs.equals(baseRef.getPcs())) {
+				Set<Long> tablePcs = getPcs(tableInfos, name);
+				if (tablePcs.equals(baseRef.getPcs())) {
 					initialise(name, refClass, scripter.getUniqueLabel(), true);
 					return true;
 				}
