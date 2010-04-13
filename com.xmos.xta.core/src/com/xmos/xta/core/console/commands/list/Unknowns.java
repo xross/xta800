@@ -54,7 +54,6 @@ public class Unknowns extends Command {
 		if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
-	    boolean found = false;
 	    for (Route route : engine.getRoute(m_routeId)) {
 		    Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.UNKNOWN);
 		    if (unknowns.size() > 0) {
@@ -65,11 +64,7 @@ public class Unknowns extends Command {
 				    		unknown.getNode().getStartPc(),
 				    		unknown.getNode().getBackTrace("")));
 				}
-				found = true;
 		    }
-	    }
-	    if (!found) {
-		    console.display("none\n");
 	    }
     }
 }
