@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XSystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="XSystem.xsd">
+  <XCoreArch reason="Requires more than one core">xs1b</XCoreArch>
+</XSystem>
