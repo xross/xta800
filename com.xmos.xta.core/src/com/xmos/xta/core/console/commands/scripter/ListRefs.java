@@ -39,10 +39,6 @@ public class ListRefs extends Command {
 		Scripter scripter = engine.getScripter();
 		scripter.createRefs();
 		Collection<ScripterReference> refs = scripter.getRefs();
-		if (refs.size() == 0) {
-			console.display("none\n");
-			return;
-		}
 
 		console.display(String.format("%-10s %-10s %-10s -> %10s\n",
 				"Modifiable", "Enabled", "Reference", "MapsTo"));

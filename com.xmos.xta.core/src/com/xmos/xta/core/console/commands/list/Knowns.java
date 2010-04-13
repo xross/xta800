@@ -55,7 +55,6 @@ public class Knowns extends Command {
 	    if (!validateRouteId(engine, console, m_routeId))
 		    return;
 
-	    boolean found = false;
 	    for (Route route : engine.getRoute(m_routeId)) {
 		    Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.KNOWN);
 		    if (unknowns.size() > 0) {
@@ -71,11 +70,7 @@ public class Knowns extends Command {
 				    }
 				    console.display("\n");
 				}
-				found = true;
 		    }
-	    }
-	    if (!found) {
-		    console.display("none\n");
 	    }
     }
 }
