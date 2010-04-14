@@ -21,7 +21,7 @@ system("@ARGV load $genDir/test.xe " .
         "print trace - " .
         "-exit > $genDir/$directory.txt 2>&1");
 
-system("xsim -t -f $genDir/test.xe > $genDir/$filename.out");
+system("xsim -t --enable-fnop-tracing $genDir/test.xe > $genDir/$filename.out");
 
 open(INFILE, "$genDir/$filename.out") or die "Can't open input file";
 open(OUTFILE, ">$genDir/$filename.parsed") or die "Can't open file to write";
