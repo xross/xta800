@@ -622,10 +622,14 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	public void setSelectedRouteId(CommandSource src, int routeId) {
-		assert((routeId != ROUTE_ID_INVALID) || (routeId != ROUTE_ID_LAST));
-		Collection<Route> routes = getRoute(routeId);
-		assert(routes.size() == 1);
-		setSelectedRoute(src, routes.iterator().next());
+		if (routeId == ROUTE_ID_INVALID) {
+			setSelectedRoute(src, null);
+		} else {
+			assert(routeId != ROUTE_ID_LAST);
+			Collection<Route> routes = getRoute(routeId);
+			assert(routes.size() == 1);
+			setSelectedRoute(src, routes.iterator().next());
+		}
 	}
 
 	// ===================================================================== //
