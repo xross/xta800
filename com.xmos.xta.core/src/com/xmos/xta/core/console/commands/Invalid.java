@@ -37,6 +37,6 @@ public class Invalid extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, m_errorMessage);		
+		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, m_errorMessage);
     }
 }

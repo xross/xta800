@@ -107,7 +107,7 @@ public class Shell {
 
     private void processCommands(String[] args, CommandSource src) {
 	    for (int i = 0; i < args.length; ++i) {
-	    	Command command = CommandFactory.buildCommand(m_engine, src, args, i, m_commandHistory, m_console);
+	    	Command command = CommandFactory.buildCommand(src, args, i, m_commandHistory, m_console);
 	    	if (command == null) {
 	    		if (!m_executeArgsOnly) {
 	    			usage();
@@ -158,7 +158,7 @@ public class Shell {
                 ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
                 if (tokenGroups.size() > 0) {
                     tokens = tokenGroups.toArray(new String[0]);
-                    Command command = CommandFactory.buildCommand(m_engine,
+                    Command command = CommandFactory.buildCommand(
                     		consoleCommand.getSrc(), tokens, 0, m_commandHistory, m_console);
 
                     if (!commandIsValid(command, tokens)) {
