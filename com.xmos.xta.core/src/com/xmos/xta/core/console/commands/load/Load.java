@@ -62,7 +62,7 @@ public class Load extends Command {
     private void runSectionCommand(Shell shell, Engine engine, Console console, String commandStr, CommandSource src) {
         String[] tokens = commandStr.trim().split("\\s+");
 
-        Command command = CommandFactory.buildCommand(engine, src, tokens, 0, new Vector<Command>(), console);
+        Command command = CommandFactory.buildCommand(src, tokens, 0, new Vector<Command>(), console);
 
         if (command == null) {
           	command = new Invalid(commandStr,

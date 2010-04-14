@@ -25,7 +25,6 @@ import com.xmos.xta.core.console.commands.status.Status;
 import com.xmos.xta.core.console.commands.version.Version;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.Notifier;
 
 public class CommandFactory {
 	static private Command[] m_commands = {
@@ -54,18 +53,14 @@ public class CommandFactory {
 		return m_commands;
 	}
 
-    public static Command buildCommand(Engine engine, CommandSource src, String[] args, int index,
+    public static Command buildCommand(CommandSource src, String[] args, int index,
     		Vector<Command> commandHistory, Console console) {
     	String arg = args[index];
     	
     	
         if (isPlingCommand(arg)) {
-        	Command command = getPingCommand(arg, commandHistory);
-        	if (command == null) {
-        		engine.notify(src, Notifier.NOTIFY_ERROR, "invalid command: '" + arg + "'");		
-		    	return null;
-			} else {
-
+        	Command command = getPlingCommand(arg, commandHistory);
+        	if (command != null) {
 				command.setSrc(src);
 				return command;
 			}
@@ -75,13 +70,7 @@ public class CommandFactory {
     	for (Command command : m_commands) {
     		if (command.matches(arg)) {
     			Command cloned = command.clone(args, index);
-    			if (cloned == null) {
-            		engine.notify(src, Notifier.NOTIFY_ERROR,
-            				"invalid argument(s) to '" + command.name() +
-            				"' command (Try 'help " + command.name() + "'..)");		
-
-    			} else {
-    				//System.out.println("-------- " + cloned.commandLine());
+    			if (cloned != null) {
         			cloned.setSrc(src);
         			if (!processFileRedirect(cloned, args, index)) {
         				return null;
@@ -108,7 +97,7 @@ public class CommandFactory {
         return false;
     }
 
-    private static Command getPingCommand(String arg, Vector<Command> commandHistory) {
+    private static Command getPlingCommand(String arg, Vector<Command> commandHistory) {
     	arg = arg.substring(1);
 
         int commandIndex;

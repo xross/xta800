@@ -91,7 +91,7 @@ public class Source extends Command {
                                 tokens = tokenGroups.toArray(new String[0]);
 
 	                    		CommandSource src = new CommandSource(Type.FILE, m_fileName, lineNumber);
-	                            Command command = CommandFactory.buildCommand(engine, src,
+	                            Command command = CommandFactory.buildCommand(src,
 	                            		tokens, 0, shell.getCommandHistory(), console);
 
 	                            boolean invalidCommand = false;
