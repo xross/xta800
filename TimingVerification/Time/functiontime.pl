@@ -24,7 +24,7 @@ my $suite = basename($cwd);
 
 if (!$noBuild) {
     system("xcc -target=$target -march=$arch test.xc -O1 -o $genDir/test.xe >  $genDir/$suite.log 2>&1");
-    system("xsim -t -f $genDir/test.xe >  $suite.trace ");
+    system("xsim -t --enable-fnop-tracing $genDir/test.xe >  $suite.trace ");
 }
 
 unlink("$suite.log.expect");
