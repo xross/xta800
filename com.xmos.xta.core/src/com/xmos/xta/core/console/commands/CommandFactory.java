@@ -24,7 +24,6 @@ import com.xmos.xta.core.console.commands.source.Source;
 import com.xmos.xta.core.console.commands.status.Status;
 import com.xmos.xta.core.console.commands.version.Version;
 import com.xmos.xta.core.engine.CommandSource;
-import com.xmos.xta.core.engine.Engine;
 
 public class CommandFactory {
 	static private Command[] m_commands = {
