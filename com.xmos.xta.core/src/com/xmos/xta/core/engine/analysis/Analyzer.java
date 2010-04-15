@@ -23,8 +23,7 @@ public class Analyzer {
 	private List<RouteContainer> m_routeContainers;
 	
 	public static final boolean development_mode = false;
-	
-	
+		
 	public Analyzer(Engine engine, List<Route> routes, List<RouteContainer> routeContainers) {
 		m_engine = engine;
 		m_routes = routes;
