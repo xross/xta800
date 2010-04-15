@@ -42,6 +42,14 @@ import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Scripter {
 	private Engine m_engine;
+	
+	private Collection<CoreId> m_initialActiveCores;
+	private Collection<Reference> m_initialExclusions;
+	private Map<Reference, List<Reference>> m_initialBranches;
+	private Defines m_initialDefines;
+	private Map<String, Double> m_initialFrequencies;
+	private Map<CoreId, Integer> m_initialNumThreads;
+	
 	private Collection<CoreId> m_currentActiveCores;
 	private Collection<Reference> m_currentExclusions;
 	private Map<Reference, List<Reference>> m_currentBranches;
@@ -63,15 +71,24 @@ public class Scripter {
 
 	public Scripter(Engine engine) {
 		m_engine = engine;
+
+		m_initialActiveCores = new ArrayList<CoreId>();
+		m_initialExclusions = new ArrayList<Reference>();
+		m_initialBranches = new NonIteratableMap<Reference, List<Reference>>();
+		m_initialDefines = new Defines();
+		m_initialFrequencies = new NonIteratableMap<String, Double>();
+		m_initialNumThreads = new NonIteratableMap<CoreId, Integer>();		
+
 		m_currentActiveCores = new ArrayList<CoreId>();
 		m_currentExclusions = new ArrayList<Reference>();
-		m_currentDefines = new Defines();
 		m_currentBranches = new NonIteratableMap<Reference, List<Reference>>();
+		m_currentDefines = new Defines();
+		m_currentFrequencies = new NonIteratableMap<String, Double>();
+		m_currentNumThreads = new NonIteratableMap<CoreId, Integer>();		
+		
 		m_autoLabels = new NonIteratableSet<String>();
 		m_disables = new IteratableSet<String>();
 		m_renames = new IteratableMap<String, String>();
-		m_currentFrequencies = new NonIteratableMap<String, Double>();
-		m_currentNumThreads = new NonIteratableMap<CoreId, Integer>();
 		m_uniqueReferences = null;
 		m_allReferences = null;
 		
@@ -80,23 +97,26 @@ public class Scripter {
 	}
 
 	public void setEngineLoadAndRunDone() {
-		m_currentActiveCores = new ArrayList<CoreId>(m_engine.getActiveCores());
-		m_currentExclusions = new ArrayList<Reference>(m_engine.getExclusions());
-		m_currentDefines = new Defines(m_engine.getDefines());
-		m_currentFrequencies = new NonIteratableMap<String, Double>(m_engine.getFrequencyMap());
-		m_currentNumThreads = new NonIteratableMap<CoreId, Integer>(m_engine.getNumThreadMap());		
-		m_uniqueReferences = null;
-		m_allReferences = null;
-
+		m_initialActiveCores = new ArrayList<CoreId>(m_engine.getActiveCores());
+		m_initialExclusions = new ArrayList<Reference>(m_engine.getExclusions());
+		m_initialBranches = new NonIteratableMap<Reference, List<Reference>>(m_engine.getUserBranches());
+		m_initialDefines = new Defines(m_engine.getDefines());
+		m_initialFrequencies = new NonIteratableMap<String, Double>(m_engine.getFrequencyMap());
+		m_initialNumThreads = new NonIteratableMap<CoreId, Integer>(m_engine.getNumThreadMap());	
+		
 		m_disables.clear();
 		m_autoLabels.clear();
 		m_renames.clear();
-		
+
+		m_uniqueReferences = null;
+		m_allReferences = null;
 		m_embedIntoSource = false;
-		m_embedFileName = null;
+		m_embedFileName = null;		
 	}
 
 	public String dump() {
+		resetState();
+		
 		if (m_embedIntoSource) {
 			// Ensure it is ok to modify the source file
 			if (m_embedFileName == null) {
@@ -308,6 +328,17 @@ public class Scripter {
 		m_embedFileName = embedFileName;
 	}
 
+    public void addScriptCommand(StringBuffer script, String command) {
+    	// All commands should be single line
+    	assert(command.lastIndexOf("\n") == -1);
+    	
+		if (m_embedIntoSource) {
+			script.append("#pragma xta command \"" + command + "\"\n"); 		
+		} else {
+			script.append(command + "\n");
+		}
+	}
+	
 	Reference createReferenceForUnknown(Unknown unknown) {
 		String refString = unknown.getNode().getReferenceStr();
 		CoreId coreId = unknown.getRoute().getRouteCoreContainer().getCoreId();
@@ -324,7 +355,7 @@ public class Scripter {
     	str.append(getReferenceString(ref.getBase()));
     	return str.toString();
 	}
-    
+    	
 	private StringBuffer createScript() {
 		StringBuffer script = new StringBuffer();
  	
@@ -782,17 +813,6 @@ public class Scripter {
 		return m_engine.getSourceMapper(new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
 	}
 
-    public void addScriptCommand(StringBuffer script, String command) {
-    	// All commands should be single line
-    	assert(command.lastIndexOf("\n") == -1);
-    	
-		if (m_embedIntoSource) {
-			script.append("#pragma xta command \"" + command + "\"\n"); 		
-		} else {
-			script.append(command + "\n");
-		}
-	}
-
     private String commentString() {
 		if (m_embedIntoSource) {
 			return "//";
@@ -800,4 +820,13 @@ public class Scripter {
 			return "#";
 		}
 	}
+    
+    private void resetState() {
+		m_currentActiveCores = new ArrayList<CoreId>(m_initialActiveCores);
+		m_currentExclusions = new ArrayList<Reference>(m_initialExclusions);
+		m_currentBranches = new NonIteratableMap<Reference, List<Reference>>(m_initialBranches);
+		m_currentDefines = new Defines(m_initialDefines);
+		m_currentFrequencies = new NonIteratableMap<String, Double>(m_initialFrequencies);
+		m_currentNumThreads = new NonIteratableMap<CoreId, Integer>(m_initialNumThreads);			
+    }
 }
