@@ -52,7 +52,7 @@ public class Debugger {
 		boolean hit = false;
 		for (CoreId activeCore : m_engine.getActiveCores()) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore);
+					ReferenceClass.ANY, activeCore);
 			
 			if (reference.resolve(m_engine)) {
 				hit = true;
@@ -66,7 +66,7 @@ public class Debugger {
 		
 		for (CoreId activeCore : m_engine.getActiveCores()) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore);
+					ReferenceClass.ANY, activeCore);
 
 			if (reference.resolve(m_engine)) {
 			    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
@@ -88,7 +88,7 @@ public class Debugger {
 	    try {
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY_REF,
+						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 
 				if (reference.resolve(m_engine)) {

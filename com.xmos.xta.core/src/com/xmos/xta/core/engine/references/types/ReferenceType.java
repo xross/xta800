@@ -26,7 +26,6 @@ public abstract class ReferenceType {
 	private CoreId m_coreId;
 
 	public enum Type {
-		PC,
 		LABEL,
 		FUNCTION,
 		ENDPOINT,

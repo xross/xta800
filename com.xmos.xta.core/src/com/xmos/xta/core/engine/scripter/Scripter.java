@@ -27,7 +27,9 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.defines.Defines;
@@ -37,8 +39,8 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
-import com.xmos.xta.core.engine.utils.FileNameMatcher;
 import com.xmos.xta.core.engine.utils.CoreId;
+import com.xmos.xta.core.engine.utils.FileNameMatcher;
 
 public class Scripter {
 	private Engine m_engine;
@@ -109,7 +111,7 @@ public class Scripter {
 		}
 		
 		createRefs();
-		Map<SourceFile, List<Long>> fileLineNumbers = getFileLineNumbers();
+		Map<String, List<Long>> fileLineNumbers = getFileLineNumbers();
 		addPragmasToFiles(fileLineNumbers);
 		StringBuffer script = createScript();
 		if (m_embedIntoSource) {
@@ -120,12 +122,12 @@ public class Scripter {
 		}
 	}
 	
-	String getUniqueLabel() {
+	String getUniqueLabel(String prefix) {
 		int i = 0;
-		String label = "label_" + Integer.toString(i);
+		String label = prefix + "_" + Integer.toString(i);
 		while (labelExists(label)) {
 			i++;
-			label = "label_" + Integer.toString(i);
+			label = prefix + "_" + Integer.toString(i);
 		}
 		m_autoLabels.add(label);
 		return label;
@@ -140,7 +142,7 @@ public class Scripter {
 		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
 			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
 				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY_REF, coreId);
+				Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY, coreId);
 				if (ref.resolve(m_engine)) {
 					return true;
 				}
@@ -244,27 +246,27 @@ public class Scripter {
 	       			addReference(routeCoreContainer.getFunctionReference());
 	       		}
 	
-	       		for (Reference ref : routeContainer.getBranches().keySet()) {
-	       			addReference(ref);
-	       			addReferences(routeContainer.getBranches().get(ref));
-	       		}
-	
-	       		addDefineReferences(routeContainer.getDefines());
-	
-	        	for (Reference ref : routeContainer.getExclusions()) {
-	        		addReference(ref);
-	        	}
-	
 	       		for (Route route : routeCoreContainer.getRoutes()) {
 	       			for (Unknown unknown : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {
 	       				if (unknown.getSource() == Unknown.Source.SET) {
 		       				for (Reference ref : unknown.getReferences()) {
-		       					addReference(ref, unknown);
+		       					addReference(ref, unknown, route);
 		       				}
 	       				}	       				
 	       			}
 	    		}
        		}
+       		
+       		for (Reference ref : routeContainer.getBranches().keySet()) {
+       			addReference(ref);
+       			addReferences(routeContainer.getBranches().get(ref));
+       		}
+
+       		addDefineReferences(routeContainer.getDefines());
+
+        	for (Reference ref : routeContainer.getExclusions()) {
+        		addReference(ref);
+        	}
     	}
 
     	// Apply all current disables and renames
@@ -272,7 +274,7 @@ public class Scripter {
     	renameReferences();
 
     	// Disable those which can't be done due to source file issues
-    	Map<SourceFile, List<Long>> fileLineNumbers = getFileLineNumbers();
+    	Map<String, List<Long>> fileLineNumbers = getFileLineNumbers();
     	disableRefsForInvalidFiles(fileLineNumbers);
 	}
 
@@ -311,7 +313,7 @@ public class Scripter {
 	Reference createReferenceForUnknown(Unknown unknown) {
 		String refString = unknown.getNode().getReferenceStr();
 		CoreId coreId = unknown.getRoute().getRouteCoreContainer().getCoreId();
-		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY_REF, coreId);
+		Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY, coreId);
 		return ref;
 	}
     
@@ -529,30 +531,34 @@ public class Scripter {
 		}
 	}
 
-	private void addReference(Reference ref, Unknown unknown) {
+	private void addReference(Reference ref, Unknown unknown, Route route) {
 		if (ref == null) {
 			ref = createReferenceForUnknown(unknown);
 		} 
-		addReference(ref);
+		addReference(ref, unknown.getType(), unknown.getNode());
 	}
 
 	private void addReference(Reference ref) {
+		addReference(ref, UnknownFactory.Type.OTHER, null);
+	}
+
+	private void addReference(Reference ref, UnknownFactory.Type type, Node node) {
 		assert(ref != null);
 
 		for (ReferenceType baseRef : ref.getBackTrail()) {
-			addReference(baseRef);
+			addReference(baseRef, UnknownFactory.Type.OTHER, null);
 		}
-		addReference(ref.getBase());
+		addReference(ref.getBase(), type, node);
 	}
 
-	private void addReference(ReferenceType baseRef) {
+	private void addReference(ReferenceType baseRef, UnknownFactory.Type type, Node node) {
 		for (ScripterReference ref : m_allReferences) {
 			if (ref.getBaseReference() == baseRef) {
 				return;
 			}
 		}
 		
-		ScripterReference newRef = new ScripterReference(this, m_engine, baseRef);
+		ScripterReference newRef = new ScripterReference(this, m_engine, baseRef, type, node);
 		m_allReferences.add(newRef);
 		
 		ScripterReference scripterReference = getReference(baseRef.getScripterRef());
@@ -579,10 +585,12 @@ public class Scripter {
     	return scripterReference.getReferenceString();
 	}
 
-	private void disableRefsForInvalidFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
-		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
-			if (!sourceFile.okToWrite(getSourceMapper())) {
-				disableRefsForFile(sourceFile.getFullFileName());
+	private void disableRefsForInvalidFiles(Map<String, List<Long>> fileLineNumbers) {
+		for (String fileName : fileLineNumbers.keySet()) {
+			SourceFile sourceFile = getSourceFile(fileName);
+
+			if ((sourceFile == null) || !sourceFile.okToWrite(getSourceMapper())) {
+				disableRefsForFile(fileName);
 			}
 		}
 	}
@@ -597,9 +605,14 @@ public class Scripter {
 		}
 	}
 
-	private void addPragmasToFiles(Map<SourceFile, List<Long>> fileLineNumbers) {
-		for (SourceFile sourceFile : fileLineNumbers.keySet()) {
-			List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
+	private void addPragmasToFiles(Map<String, List<Long>> fileLineNumbers) {
+		for (String fileName : fileLineNumbers.keySet()) {
+			SourceFile sourceFile = getSourceFile(fileName);
+			if (sourceFile == null) {
+				continue;
+			}
+			
+			List<Long> lineNumbers = fileLineNumbers.get(fileName);
 
 			if (!fileContainsActivePragmas(sourceFile, lineNumbers)) {
 				continue;
@@ -748,30 +761,20 @@ public class Scripter {
 		return true;
 	}
 
-	private Map<SourceFile, List<Long>> getFileLineNumbers() {
-		Map<SourceFile, List<Long>> fileLineNumbers = new IteratableMap<SourceFile, List<Long>>();
+	private Map<String, List<Long>> getFileLineNumbers() {
+		Map<String, List<Long>> fileLineNumbers = new IteratableMap<String, List<Long>>();
 
-		XeLoader xeLoader = m_engine.getXeLoader();
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				SourceMapper sourceMapper = m_engine.getSourceMapper(coreId);				
-				for (ScripterReference scripterReference : m_uniqueReferences) {
-					String fileName = scripterReference.getFileName();
-					if (!fileName.equals("")) {
-						SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
-						if (sourceFile != null){
-							List<Long> lineNumbers = fileLineNumbers.get(sourceFile);
-							if (lineNumbers == null) {
-								lineNumbers = new LinkedList<Long>();
-								fileLineNumbers.put(sourceFile, lineNumbers);
-							}
-							lineNumbers.add(scripterReference.getLineNum());
-						}
-					}
-				}	
+		for (ScripterReference scripterReference : m_uniqueReferences) {
+			String fileName = getFileName(scripterReference);
+			if (!fileName.equals("")) {
+				List<Long> lineNumbers = fileLineNumbers.get(fileName);
+				if (lineNumbers == null) {
+					lineNumbers = new LinkedList<Long>();
+					fileLineNumbers.put(fileName, lineNumbers);
+				}
+				lineNumbers.add(scripterReference.getLineNum());
 			}
-		};		
+		}	
 		return fileLineNumbers;
 	}
 	
@@ -799,5 +802,30 @@ public class Scripter {
 		} else {
 			return "#";
 		}
+	}
+
+	private SourceFile getSourceFile(String fileName) {
+		XeLoader xeLoader = m_engine.getXeLoader();
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				SourceMapper sourceMapper = m_engine.getSourceMapper(coreId);
+				SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
+				if (sourceFile != null) {
+					return sourceFile;
+				}
+			}
+		}
+		return null;
+	}
+
+	// Ensure that all valid representations of a file name are mapped to the same string
+	private String getFileName(ScripterReference scripterReference) {
+		String fileName = scripterReference.getFileName();
+		SourceFile sourceFile = getSourceFile(fileName);
+		if (sourceFile == null) {
+			return fileName;
+		}
+		return sourceFile.getFullFileName();
 	}
 }

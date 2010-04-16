@@ -84,7 +84,7 @@ public class PathPoints {
 
 		boolean hit = false;		
 		for (CoreId activeCore : m_engine.getActiveCores()) {
-			Reference reference = ReferenceFactory.createReference(refStr, ReferenceClass.ENDPOINT_REF, activeCore);
+			Reference reference = ReferenceFactory.createReference(refStr, ReferenceClass.ENDPOINT, activeCore);
 
 			if (reference.resolve(m_engine)) {
 				endpoints.put(activeCore, reference);
