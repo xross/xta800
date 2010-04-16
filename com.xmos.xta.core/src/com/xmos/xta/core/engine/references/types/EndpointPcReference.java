@@ -33,7 +33,7 @@ public class EndpointPcReference extends ReferenceType {
 	}
 
 	public String name() {
-		return "Pc";
+		return "EndpointPc";
 	}
 
 	public String description() {

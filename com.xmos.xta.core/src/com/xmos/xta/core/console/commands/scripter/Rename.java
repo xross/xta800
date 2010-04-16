@@ -31,7 +31,7 @@ public class Rename extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <ANY_REF> <TO_NAME>: Rename a mapping";
+        return name() + " <ANY> <TO_NAME>: Rename a mapping";
     }
 
     public Command clone(String[] args, int index) {

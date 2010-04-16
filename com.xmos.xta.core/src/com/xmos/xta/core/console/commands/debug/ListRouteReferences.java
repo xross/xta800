@@ -36,7 +36,7 @@ public class ListRouteReferences extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <route id> <ANY_REF>: list all the matching references for the given reference on the given route";
+        return name() + " <route id> <ANY>: list all the matching references for the given reference on the given route";
     }
 
     public Command clone(String[] args, int index) {

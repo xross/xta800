@@ -33,7 +33,7 @@ public class VerifyReference extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <ANY_REF>: verify the existance of the given reference";
+        return name() + " <ANY>: verify the existance of the given reference";
     }
 
     public Command clone(String[] args, int index) {

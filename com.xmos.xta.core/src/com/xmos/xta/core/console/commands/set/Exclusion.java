@@ -36,7 +36,7 @@ public class Exclusion extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = name() + " <route id> <ANY_REF>: Sets an exclusion on the given reference";
+        String descString = name() + " <route id> <ANY>: Sets an exclusion on the given reference";
        	return descString;
     }
 

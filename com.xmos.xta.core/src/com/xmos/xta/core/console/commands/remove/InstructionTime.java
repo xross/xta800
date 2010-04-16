@@ -32,7 +32,7 @@ public class InstructionTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-		return name() + " <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines";
+		return name() + " <ENDPOINT|*>: Removes the given instruction time from the list of defines";
     }
 
     public Command clone(String[] args, int index) {

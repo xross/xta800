@@ -34,7 +34,7 @@ public class LoopScope extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = name() + " <ANY_REF> <scope>: Adds the given loop scope define to the list of defines";
+    	String descString = name() + " <ANY> <scope>: Adds the given loop scope define to the list of defines";
     	if (detailed) {
         	descString += "\n";
     		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";

@@ -32,7 +32,7 @@ public class Loop extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-		return name() + " <ANY_REF|*>: Removes the given loop count define to the list of defines";
+		return name() + " <ANY|*>: Removes the given loop count define to the list of defines";
     }
 
     public Command clone(String[] args, int index) {

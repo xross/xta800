@@ -47,7 +47,7 @@ public class Branch extends Command {
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return name() + " <from LABEL_REF|*> [<to LABEL_REF|*>]+: Removes the given from/to references from the branches list";
+        return name() + " <from BRANCH|*> [<to INSTRUCTION|*>]+: Removes the given from/to references from the branches list";
 	}
 
 	public Command clone(String[] args, int index) {
