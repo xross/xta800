@@ -161,7 +161,7 @@ analyse csdfsefsas
 set loop 2 0x11ad4 2 
 -status 
 -scripter enable 
-config case WORST 
+config case worst 
 -analyse  
 mhz 
 remove to f 
@@ -405,7 +405,7 @@ clear
 -scripter enable 
 -status 
 -config verbosity 1.6226861491858686E308 - 
-config case WORST 
+config case worst 
 -source  
 -set pathtime 4 0x13c6a ep3  ns 
 -scripter disable 
@@ -609,7 +609,7 @@ help set
 remove functiontime - 
 config verbosity  0 
 -list pathtimes 
-config case WORST 
+config case worst 
 -set csdfsefsas csdfsefsas 
 analyse path f test.xc:33 
 clear 
@@ -634,7 +634,7 @@ version csdfsefsas csdfsefsas csdfsefsas
 -print structure csdfsefsas *  
 version cycles 
 help history 
-config case BEST 
+config case best 
 source 6.777066024384481E307 
 -load test.xe 
 -add looppath - 0 
@@ -713,7 +713,7 @@ set loopscope 1 ep1 absolute
 -scripter enable 
 load test.xe 
 list loopscopes 
--config case WORST 
+-config case worst 
 -add loop * 1 
 -pwd 
 analyse 0x12668 
@@ -785,7 +785,7 @@ add pathtime - g - ns
 add exclusion 0xj4b818 
 analyse path g ep2 
 -list functiontimes 
--config case BEST 
+-config case best 
 set pathtime 1 ep1 - ep3 main 
 source 0.0 
 -mhz 
@@ -829,7 +829,7 @@ status
 -version 
 -version csdfsefsas 
 - 
-config case BEST 
+config case best 
 -scripter disable 
 add exclusion ep4 
 ns 
@@ -896,7 +896,7 @@ set loopscope 0 ep1 a
 -pwd 
 -print distribution csdfsefsas 
 remove to test.xc:45 
--config case BEST 
+-config case best 
 -add pathtime  * 0.0 mhz 
 -load csdfsefsas 
 pwd mhz 
@@ -963,7 +963,7 @@ load csdfsefsas
 - 
 scripter enable 
 -load ns 
-config case WORST 
+config case worst 
 -help echo 
 -echo "0 " 
 -csdfsefsas - 

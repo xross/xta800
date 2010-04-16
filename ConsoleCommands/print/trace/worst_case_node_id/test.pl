@@ -12,7 +12,7 @@ system("xcc -target=$target -nostartfiles -march=$arch -g test.s -o $genDir/test
 }
 system("@ARGV load $genDir/test.xe " .
        "analyze function main " .
-       "-config case WORST " .
+       "-config case worst " .
        "-print trace - - " .
        "-exit > $genDir/worst_case_node_id.txt 2>&1");
 

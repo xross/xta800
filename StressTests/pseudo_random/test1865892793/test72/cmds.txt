@@ -35,7 +35,7 @@ pwd
 -add instructiontime ep1 - mhz 
 -source - 
 -scripter dump 
-config case BEST 
+config case best 
 -csdfsefsas  
 load test.xe 
 version 
@@ -48,7 +48,7 @@ status
 -status 
 analyse path ep3 * 
 config verbosity 2147483647 
--config case WORST 
+-config case worst 
 status csdfsefsas ep4 
 config verbosity -897407507 
 -status csdfsefsas g 
@@ -83,7 +83,7 @@ source mhz
 list test.xc:46 
 -analyse csdfsefsas 
 -scripter disable 
--config case WORST 
+-config case worst 
 config freq - 
 clear 
 set csdfsefsas  
@@ -197,7 +197,7 @@ clear
 -clear csdfsefsas  
 -history 
 config case 2 
-config case WORST 
+config case worst 
 version cycles 
 echo csdfsefsas csdfsefsas 
 pwd 
@@ -278,7 +278,7 @@ load mhz
 scripter dump 
 -clear 
 history mhz 
--config case WORST 
+-config case worst 
 -status 2 
 -list calls 
 print csdfsefsas csdfsefsas 
@@ -486,7 +486,7 @@ list unknowns -
 -print src 0 ns 
 -echo csdfsefsas 
 history ep3 
-config case WORST 
+config case worst 
 list sources 
 config freq 0 
 -remove loop test.xc:7 
@@ -532,7 +532,7 @@ remove to *
 -analyse function - 
 analyse function 0x11827 
 -load test.xe 
--config case BEST 
+-config case best 
 source 0.0 
 -status csdfsefsas 
 -status 
@@ -741,7 +741,7 @@ pwd
 -set pathtime 2 mhz - - cycles 
 -source test.xc:23 
 -add exclusion test.xc:41 
-config case WORST 
+config case worst 
 -status 
 -set to  0x1281d 
 source csdfsefsas 
@@ -752,11 +752,11 @@ source g
 load csdfsefsas csdfsefsas - 
 echo  
 -scripter dump 
--config case WORST 
+-config case worst 
 csdfsefsas cycles 
 analyse path h - 
 -scripter enable 
-config case WORST 
+config case worst 
 load - 
 scripter enable 
 help scripter 
@@ -896,7 +896,7 @@ set loopscope 1 0xj745ce r
 version 
 set functiontime 3 - - cycles 
 -source  
--config case BEST 
+-config case best 
 -csdfsefsas csdfsefsas 
 -history 0 
 history 

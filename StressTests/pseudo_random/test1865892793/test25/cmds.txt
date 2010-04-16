@@ -110,7 +110,7 @@ pwd
 set required 0 0.0 mhz 
 -set from  ep2 
 -print trace ep1 
-config case WORST 
+config case worst 
 list loops 
 -status cycles 
 load csdfsefsas mhz 
@@ -254,7 +254,7 @@ set to  ep3
 version 
 history 
 remove loop mhz 
--config case BEST 
+-config case best 
 load test.xe 
 set to  - 
 -scripter disable 
@@ -265,7 +265,7 @@ scripter enable
 set looppath 2 f - 
 scripter disable 
 remove loop - 
-config case WORST 
+config case worst 
 pwd 
 -scripter dump 
 load test.xe 
@@ -298,10 +298,10 @@ remove to h
 print distribution 1.7550729266371445E308 
 version 5.870895654564106E307 
 config verbosity 2 
--config case BEST 
+-config case best 
 -pwd csdfsefsas 
 remove loop ep3 
--config case BEST 
+-config case best 
 -print structure 0xj8ab4b 
 source test.xc:24 
 -version 0.0 
@@ -359,7 +359,7 @@ help config
 -analyse ns 
 -remove loop ep2 
 -list srclabels 
--config case BEST 
+-config case best 
 -remove csdfsefsas * 
 scripter disable 
 analyse path ep3 0 
@@ -451,7 +451,7 @@ clear
 load csdfsefsas csdfsefsas 
 source  
 add loopscope ep1 relative 
-config case WORST 
+config case worst 
 test.xc:25 
 clear 
 help status 
@@ -614,7 +614,7 @@ remove 0xjbf2d9
 -pwd 
 help clear 
 status  
-config case BEST 
+config case best 
 print trace - 
 list threadstoppoints 
 -help source 
@@ -800,7 +800,7 @@ pwd
 -status  
 source csdfsefsas 
 add loop - 1 
-config case WORST 
+config case worst 
 csdfsefsas  
 clear main 
 -set  
@@ -832,7 +832,7 @@ config verbosity - -
 csdfsefsas  
 clear 
 -analyse function * 
-config case WORST 
+config case worst 
 analyse function * 
 help history 
 -pwd mhz 
@@ -985,7 +985,7 @@ echo "- "
 set from  test.xc:15 
 analyse function h 
 list csdfsefsas 
--config case WORST 
+-config case worst 
 analyse function test.xc:6 
 -clear 
 -source  

@@ -120,7 +120,7 @@ list pathtimes
 -analyse function 0xj9d24e 
 -source csdfsefsas 
 list sources 
-config case BEST 
+config case best 
 list unknowns - 
 list exclusions 
 source cycles 
@@ -151,7 +151,7 @@ load cycles
 -list csdfsefsas csdfsefsas mhz 
 set loop 4 0xj963a3 cycles 
 -status 0xjdfcd6 
-config case BEST 
+config case best 
 echo csdfsefsas csdfsefsas mhz 
 -history 0xj5bd37 
 -load test.xe 
@@ -294,7 +294,7 @@ add loopscope test.xc:40 relative
 -help echo 
 -list calls 
 add loop h 5.6836653340797E307 
--config case BEST 
+-config case best 
 pwd 
 load cycles 
 -echo "ns " 
@@ -322,7 +322,7 @@ load
 -print summary 
 -remove instructiontime csdfsefsas csdfsefsas 
 print asm csdfsefsas csdfsefsas csdfsefsas - 2 
--config case WORST 
+-config case worst 
 history csdfsefsas 
 -status 
 -add instructiontime 0x10e87 - ns 
@@ -380,7 +380,7 @@ echo "csdfsefsas csdfsefsas "
 config verbosity 1.5982368180580636E308 - 
 status - 
 version 
-config case WORST 
+config case worst 
 -clear ns 
 set functiontime 3 csdfsefsas  0.0 mhz 
 -analyse path 0xj99e47 csdfsefsas 
@@ -472,7 +472,7 @@ source
 -pwd 0xj97cf4 
 remove loopscope * 
 -set instructiontime 2 0xjbfaa1 f ns 
-config case WORST 
+config case worst 
 -source test.xc:46 
 clear  
 pwd 
@@ -542,7 +542,7 @@ set required 3 csdfsefsas mhz
 -print warnings 
 status 
 remove csdfsefsas 
--config case WORST 
+-config case worst 
 remove exclusion - 
 -echo "ns " 
 -pwd  
@@ -598,17 +598,17 @@ analyse path * 0xj7b81f
 -print structure 1 
 -clear 
 config freq - 
-config case WORST 
+config case worst 
 -list functiontimes 
 -history  
 -status csdfsefsas 
-config case WORST 
+config case worst 
 -add exclusion 0.0 
 source ns 
 pwd 
 source  
 -clear 2147483647 
--config case WORST 
+-config case worst 
 help config 
 help source 
 help pwd 
@@ -652,7 +652,7 @@ scripter disable
 echo "- " 
 -pwd 
 set pathtime 4 - ep3  mhz 
--config case WORST 
+-config case worst 
 analyse path ep2 0x106ac 
 scripter enable 
 scripter enable 
@@ -769,7 +769,7 @@ scripter enable
 0.0 
 pwd cycles 
 -print 0xje4c19 
--config case WORST 
+-config case worst 
 print distribution 0.0 2147483647 
 pwd mhz 
 -help load 
@@ -822,7 +822,7 @@ history
 -scripter enable 
 -echo  
 scripter disable 
--config case WORST 
+-config case worst 
 -source  
 version 
 -load test.xe 
@@ -902,7 +902,7 @@ version -
 set from  h 
 -list looppaths 
 load test.xe 
--config case WORST 
+-config case worst 
 -status 
 -help help 
 -history 0.0 
@@ -946,7 +946,7 @@ pwd
 load test.xe 
 -print distribution 1 
 add pathtime 0xj24585 test.xc:37 2147483647 mhz 
--config case WORST 
+-config case worst 
 -status 
 -print trace -1024648220 
 -config verbosity 1 0.0 

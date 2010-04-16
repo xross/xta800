@@ -133,7 +133,7 @@ status g
 scripter dump 
 -add pathtime 0xj3ea0d - csdfsefsas  csdfsefsas 
 -pwd  
-config case BEST 
+config case best 
 -echo "csdfsefsas mhz " 
 -help help 
 -version - 
@@ -247,7 +247,7 @@ clear csdfsefsas csdfsefsas ns
 -pwd 
 -list functions 
 -add functiontime - - cycles 
--config case BEST 
+-config case best 
 scripter disable 
 -version 
 history csdfsefsas  
@@ -289,7 +289,7 @@ history
 -clear 
 -help status 
 print asm 871103071 2 
--config case BEST 
+-config case best 
 main 
 set loopscope 2 - csdfsefsas ns 
 -print trace 2 
@@ -297,7 +297,7 @@ set loopscope 2 - csdfsefsas ns
 test.xc:28 
 source ns 
 clear 
--config case WORST 
+-config case worst 
 -remove to h 
 -config verbosity cycles csdfsefsas 
 -clear 0xj3f185 
@@ -348,7 +348,7 @@ status
 -list loops 
 version 
 -load test.xe 
-config case WORST 
+config case worst 
 history - 
 config case csdfsefsas 
 -help remove 
@@ -550,7 +550,7 @@ scripter enable
 list srclabels 
 -help source 
 -print warnings 
--config case WORST 
+-config case worst 
 -version * 
 source csdfsefsas 
 -source f 
@@ -558,7 +558,7 @@ source csdfsefsas
 -pwd 
 analyse path - - 
 load test.xe 
--config case WORST 
+-config case worst 
 help csdfsefsas 
 -csdfsefsas csdfsefsas csdfsefsas 
 version 
@@ -569,7 +569,7 @@ list endpoints
 -list calls 
 -scripter enable 
 -list calls 
--config case BEST 
+-config case best 
 -history 
 load test.xe 
 -scripter dump 
@@ -662,7 +662,7 @@ status
 status csdfsefsas 
 -remove route 4 
 remove looppath * 
--config case WORST 
+-config case worst 
 status 
 pwd test.xc:11 
 help csdfsefsas 
@@ -702,7 +702,7 @@ analyse path ep1 -
 config verbosity - 
 -add loopscope test.xc:11  
 scripter disable 
--config case BEST 
+-config case best 
 version 
 clear csdfsefsas 
 add exclusion 0x13ded 
@@ -733,7 +733,7 @@ print asm csdfsefsas
 -csdfsefsas csdfsefsas  
 -pwd 
 -source  
-config case WORST 
+config case worst 
 version 
 remove branch g 0xj65657 - 0xj8a122 0xj74711 ep2 0xjb1ad8 0x11900 
 -version 
@@ -790,12 +790,12 @@ add instructiontime 0xj3375a - csdfsefsas
 config freq 0.0 
 load csdfsefsas - 
 remove exclusion f 
-config case WORST 
+config case worst 
 -echo  
 csdfsefsas  
 pwd 
 help config 
--config case WORST 
+-config case worst 
 source csdfsefsas 
 add functiontime main csdfsefsas csdfsefsas  mhz 
 set from  0xj5453d 
@@ -813,7 +813,7 @@ set instructiontime 2 * - 1.090367996820159E308
 set pathtime 1 h g 1.3783592188560168E308 cycles 
 analyse function mhz 
  
-config case WORST 
+config case worst 
 version 
 -status 
 echo csdfsefsas 751649350 
@@ -821,14 +821,14 @@ help status
 -print trace mhz 
 history csdfsefsas csdfsefsas 
 -help version 
--config case BEST 
+-config case best 
 list srccommands 
 -pwd 1.3767243555880837E307 
 source cycles 
 -csdfsefsas * 
 test.xc:24 
 add instructiontime 0xj2808b csdfsefsas - 2 
--config case BEST 
+-config case best 
 clear csdfsefsas 
 -help analyse 
 -load test.xe 
@@ -869,7 +869,7 @@ analyse path 0xj4735a ep4
 add exclusion - 
 echo "2147483647 " 
 -set loopscope 4 * r 
--config case BEST 
+-config case best 
 csdfsefsas - 
 add loopscope 0x11f9b csdfsefsas 
 -remove branch 0x104ed g ep3 0x10f57 csdfsefsas 0x105d7 f 

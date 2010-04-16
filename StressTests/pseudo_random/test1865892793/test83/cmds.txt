@@ -68,7 +68,7 @@ pwd
 echo "csdfsefsas ns " 
 analyse function - 
 -echo "1.1157689145624135E308 " 
-config case WORST 
+config case worst 
 config freq 0 
 load csdfsefsas csdfsefsas 
 pwd csdfsefsas 0xj62bb3 
@@ -216,7 +216,7 @@ echo "csdfsefsas "
 -load test.xe 
 -clear  
 -set pathtime 2 test.xc:41 0xj777d2 335559113 mhz 
-config case WORST 
+config case worst 
 analyse cycles 
 -help 0x129cf 
 -pwd 
@@ -264,8 +264,8 @@ analyse function *
 -source  
 pwd csdfsefsas 
 -history 
--config case BEST 
-config case BEST 
+-config case best 
+config case best 
 source  
 pwd  
 add loop ep2 - 
@@ -304,7 +304,7 @@ version
 -load test.xc:28 
 analyse mhz 
 source csdfsefsas 
--config case WORST 
+-config case worst 
 -pwd 
 status csdfsefsas 
 -add branch - 
@@ -314,7 +314,7 @@ help exit
 -print src csdfsefsas cycles 
 -0xjeb910 
 -scripter dump 
--config case BEST 
+-config case best 
 -help analyse 
 scripter enable 
 -status 
@@ -387,7 +387,7 @@ remove pathtime 0x11b66 0x13faf
 print trace ep3 - 
 -add branch 0x1209f f csdfsefsas - - - 0xj15358 
 -set functiontime 0 ep1 - cycles 
-config case BEST 
+config case best 
 set - 
 -print distribution - csdfsefsas 
 source csdfsefsas * 
@@ -413,7 +413,7 @@ help analyse
  
 -set 1.2376076440113181E308 
 -help help 
-config case WORST 
+config case worst 
 load csdfsefsas 
 -scripter dump 
 -set pathtime 0  test.xc:35 0 mhz 
@@ -430,7 +430,7 @@ print summary
 remove functiontime test.xc:37 
 -remove instructiontime 0x12336 
 -source 0xj163c2 
--config case WORST 
+-config case worst 
 -analyse path h * 
 config freq - 
 -remove loop ep3 
@@ -479,7 +479,7 @@ status ns
 -set pathtime 1 0x1279a 0x12f9d 7.891588809821217E307 cycles 
 -analyse path 0x1339a * 
 -source ep3 
--config case WORST 
+-config case worst 
 -add functiontime 0x1067f 2 ns 
 list loops 
 print structure - - 
@@ -560,7 +560,7 @@ scripter enable
 -echo csdfsefsas csdfsefsas 
 analyse function main 
 list allsrclabels 
-config case BEST 
+config case best 
 -help list 
 add looppath - - 
 config case csdfsefsas  
@@ -882,7 +882,7 @@ mhz
 -scripter dump 
 -analyse path test.xc:41 ep4 
 -scripter dump 
--config case BEST 
+-config case best 
 -history 0.0 
 -clear csdfsefsas - 
 -scripter enable 

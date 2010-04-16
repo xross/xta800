@@ -10,7 +10,7 @@ remove from -
 -scripter disable 
 -list looppaths 
 csdfsefsas 
--config case WORST 
+-config case worst 
 -list pathtimes 
 clear csdfsefsas 
 -version 
@@ -67,7 +67,7 @@ list allendpoints
 -set pathtime 4  ep2 callf,callf,callh,callh,callh,callf,callf,callf,callf,callf,callh,main,callh,g, ep3 0 csdfsefsas 
 set instructiontime 0 test.xc:30 csdfsefsas 0.0 
 version 
-config case BEST 
+config case best 
 config freq - 
 -source 1.706207504408438E308 
 clear 
@@ -224,7 +224,7 @@ help history
 list branches 
 -callh,h,callg,main,callh,callh,callg,callh,callg,callh, test.xc:9 
 -set loopscope 3 0.0 absolute 
--config case WORST 
+-config case worst 
 -print structure 581677207 0.0 
 set looppath 3 callf,callf,callg,f,callg,callh,callg,callf, ep3 2147483647 
 source csdfsefsas 
@@ -271,7 +271,7 @@ config verbosity - -
 version 
 set pathtime 1 callf,h,callg,callf,callf,callh,callf,callg, test.xc:20 ep3 - ns 
 pwd 
-config case WORST 
+config case worst 
 -csdfsefsas  
 status cycles 
 -history - 
@@ -345,7 +345,7 @@ status
 -print src ns 
 clear 
 -print trace  
--config case WORST 
+-config case worst 
 -set looppath 3 0xj81cdd 2147483647 
 -version 0xja8ee3 
 pwd csdfsefsas  
@@ -364,7 +364,7 @@ remove functiontime  main
 -add looppath  ep2 1 
 echo csdfsefsas csdfsefsas  
 -scripter enable 
-config case BEST 
+config case best 
 -status 
 -source csdfsefsas - 
 version 
@@ -373,7 +373,7 @@ version
 status csdfsefsas csdfsefsas 
 source cycles 
 set functiontime 0 * 2147483647 mhz 
-config case WORST 
+config case worst 
 help history 
 scripter enable 
 help load 
@@ -398,7 +398,7 @@ analyse
 -echo - 
 print warnings 
 -remove csdfsefsas ep4 
--config case WORST 
+-config case worst 
 list functiontimes 
 csdfsefsas 
 scripter disable 
@@ -410,7 +410,7 @@ scripter enable
 -help exit 
 print structure 1.6444237253594468E308 
 -source csdfsefsas 
-config case WORST 
+config case worst 
 load  
 set loopscope 4 - a 
 status csdfsefsas main 
@@ -572,10 +572,10 @@ list loopscopes
 history * 
 print nodeinfo 0 
 status mhz 
--config case WORST 
+-config case worst 
 -analyse function 0x12145 
 -analyse function callg,callf,callf,callg,callg,callh,callf,f, ep2 
-config case WORST 
+config case worst 
 -clear 
 print mix 2 0.0 
 history - 
@@ -652,7 +652,7 @@ source csdfsefsas
 source ns 
 -config case csdfsefsas - 
 -pwd 
--config case WORST 
+-config case worst 
 -clear 
 print nodeinfo g 
 -version 
@@ -690,7 +690,7 @@ print structure  2
 analyse function callf,h,callh,callh,callg,f,callh,callh,callf,callh,callh,main, main 
 -set looppath 1 ep2 callg,callf,callh,callh,callh,callh,callg,callh,callf,callf,callg,g,callh,callh,callg,g,callg,callh, test.xc:7 
 -analyse 0x10dbe 
--config case BEST 
+-config case best 
 -source  
 version mhz 
 analyse path 0x121b3 callg,main,callh,callh,callf,callf,callh,callh, ep1 
@@ -828,7 +828,7 @@ remove pathtime - -
 remove exclusion test.xc:11 
 echo csdfsefsas  
 remove loopscope csdfsefsas csdfsefsas ep2 
-config case BEST 
+config case best 
 list exclusions 
 add branch callg,callg,callf,g,callh,g, test.xc:9 0xjef605 callg,h, test.xc:23 - f callh,g,callg,callh,callg,callf,callh,callg, ep3 0xjfd6c6 
 print structure 2 
@@ -876,7 +876,7 @@ version
 remove  
 help print 
 -config freq 2.0702798614112037E307 
-config case WORST 
+config case worst 
 print asm  
 -history mhz 
 -status cycles 
@@ -886,7 +886,7 @@ source -
 echo "csdfsefsas  " 
 help echo 
 -source csdfsefsas 
--config case WORST 
+-config case worst 
 -config freq 1 
 -load 0xj58acd 
 history 
@@ -943,7 +943,7 @@ config freq ns
 -source test.xc:15 
 -set 2147483647 
 load test.xe 
-config case WORST 
+config case worst 
 -remove branch 0xjed30d 0.0 callh,callg,callf,callf, ep2 ep1 h 
 -version csdfsefsas 
 analyse mhz 

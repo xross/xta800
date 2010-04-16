@@ -123,11 +123,11 @@ echo "csdfsefsas "
 pwd csdfsefsas 
 source  
 -source * 
-config case BEST 
+config case best 
 -status ns 
 -version 
 help add 
--config case WORST 
+-config case worst 
 -print distribution -999194634 csdfsefsas csdfsefsas - 
 5.074394697829844E307 
 add pathtime 0xj3e5b5 test.xc:47 - ns 
@@ -138,7 +138,7 @@ echo mhz
 status csdfsefsas  
 pwd csdfsefsas 
 -config verbosity csdfsefsas csdfsefsas cycles 0.0 
--config case BEST 
+-config case best 
 -history  
 source ns 
 list loopscopes 
@@ -150,7 +150,7 @@ help scripter
 -source - 
 history 
 -history 
-config case BEST 
+config case best 
 -echo  
 version 
 print nodeinfo 1.7091980254429843E308 3.9114852747696037E307 
@@ -169,7 +169,7 @@ list allcalls
 remove instructiontime csdfsefsas 0xjdf13a 
 source ns 
 -clear mhz 
--config case BEST 
+-config case best 
 list looppaths 
 remove from - 
 -clear 
@@ -286,7 +286,7 @@ print routeinfo 1
 remove pathtime 0xj3c950 ep1 
 -print distribution - 
 set pathtime 0 0x13615 0xjb4e7f 0.0 cycles 
-config case BEST 
+config case best 
 set functiontime 4 test.xc:36 - mhz 
 -help print 
 -source ep2 
@@ -482,17 +482,17 @@ echo "- "
 print distribution - csdfsefsas 1 
 version 
 version 
-config case BEST 
+config case best 
 -remove looppath ep2 
 set functiontime 2 0x12078 0.0 cycles 
 -print routeinfo  
 -scripter enable 
--config case WORST 
+-config case worst 
 -help add 
 config verbosity - 6.082987301719958E307 
 -scripter disable 
 -history ep3 
-config case BEST 
+config case best 
 0x125ab 
 -csdfsefsas 
 -remove functiontime 0x1026d 
@@ -586,7 +586,7 @@ scripter dump
 -source - 
 list functiontimes 
 -load ep2 
--config case WORST 
+-config case worst 
 -print structure mhz  
 -config freq 1.4400203959987654E308 
 -scripter enable 
@@ -794,7 +794,7 @@ list calls
 analyse csdfsefsas 
 -status ns 
 -print nodeinfo - - 
-config case WORST 
+config case worst 
 -config freq - 
 -analyse path * test.xc:5 
 list functiontimes 
@@ -816,7 +816,7 @@ list allcalls
 remove loopscope 0x102d0 
 -status 
 add branch main ep4 main ep2 
-config case BEST 
+config case best 
 -remove from f 
 clear csdfsefsas 
 scripter dump 
@@ -825,12 +825,12 @@ scripter dump
 history mhz 
 add loop csdfsefsas csdfsefsas * -38650383 
 remove pathtime - - 
-config case WORST 
+config case worst 
 scripter dump 
 status 
-config case BEST 
+config case best 
 -echo " " 
--config case BEST 
+-config case best 
 set looppath 2 * 2 
 -set to  0xje5512 
 -set pathtime 4 * -  ns 
@@ -856,7 +856,7 @@ pwd
 print distribution 0xj21248 
 -remove from - 
 pwd 
--config case BEST 
+-config case best 
 -remove pathtime csdfsefsas csdfsefsas csdfsefsas 0xjb8351 0xjfa54e 
 -0x13607 
 -scripter enable 
@@ -984,7 +984,7 @@ remove to 0xje1b6e
 clear 
 -scripter dump 
 -csdfsefsas ns 
-config case WORST 
+config case worst 
 remove branch 0xjfe8c4 * 0xjb53da test.xc:9 * test.xc:45 0x11899 test.xc:42 mhz 
 config verbosity - 
 set loopscope 4 ep4 r 

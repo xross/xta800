@@ -1,5 +1,5 @@
 
-int label_0() {
+int endpoint_0() {
   timer t;
   int x,y;
   
@@ -10,5 +10,5 @@ int label_0() {
 }
 
 int main() {
-  return label_0();
+  return endpoint_0();
 }

@@ -3,7 +3,7 @@ add functiontime callh,callf,callh,h, ep2 - ns
 add branch - 0x11bb6 0x10d60 ep1 0xj68641 * 
 source csdfsefsas 0 
 clear csdfsefsas 
-config case BEST 
+config case best 
 echo "csdfsefsas " 
 status 
 -load test.xe 
@@ -139,7 +139,7 @@ analyse path ep3 -
 set instructiontime 3 callf,callh,callg,callh,callg,f,callh,f,callf,main,callf,f, ep3 0 ns 
 list functiontimes 
 -remove exclusion g 
--config case BEST 
+-config case best 
 print summary 
 list sources 
 -clear 2 
@@ -420,7 +420,7 @@ help analyse
 -print summary 
 print mix - mhz 
 -print structure  
--config case BEST 
+-config case best 
 history 
 -config freq - 
 add loopscope ep3 absolute 
@@ -504,7 +504,7 @@ add instructiontime 0x10af2 2147483647 ns
 clear 
 status 2 
 echo "csdfsefsas csdfsefsas " 
--config case WORST 
+-config case worst 
 remove exclusion callh,g,callh,callh,callf,g, test.xc:9 
 -print src 0.0 - 
 -set looppath 0 ep2 1.3941671983728295E308 
@@ -523,7 +523,7 @@ set csdfsefsas
 source f 
 -csdfsefsas 
 -load csdfsefsas 
--config case WORST 
+-config case worst 
 -load test.xe 
 -pwd 
 -scripter disable 
@@ -564,7 +564,7 @@ help history
 -set loop 3 - - 
 version 
 history 
--config case WORST 
+-config case worst 
 config case mhz 
 pwd  
 clear 
@@ -579,7 +579,7 @@ print csdfsefsas
 -version csdfsefsas 
 -remove loop 0xjeebd2 
 load csdfsefsas 
--config case BEST 
+-config case best 
 add pathtime - * 8.944142959349046E307 ns 
 help set 
 -pwd mhz 
@@ -695,7 +695,7 @@ set pathtime 0 callf,callf,callf,h,callg,callh,callf,g, ep4 * - ns
 print csdfsefsas 
 remove functiontime  ep1 
 -version csdfsefsas 0xj10a25 
-config case WORST 
+config case worst 
 - 
 pwd 
 -version 
@@ -768,7 +768,7 @@ analyse path test.xc:18 0x135c5
 status 0x119b1 
 -clear 
 config verbosity - 0.0 
-config case WORST 
+config case worst 
 source csdfsefsas - 
 load test.xe 
 -status 
@@ -782,7 +782,7 @@ analyse function test.xc:38
 -history  
 csdfsefsas csdfsefsas 
 config freq csdfsefsas csdfsefsas 
-config case BEST 
+config case best 
 clear  
 -help remove 
 -set instructiontime 3 * 1.3802928986995558E308 * 
@@ -850,7 +850,7 @@ list srcloops
 -source csdfsefsas 
 set loopscope 0 ep4 ns 
 history 
-config case WORST 
+config case worst 
 source - 
 source  
 help remove 
@@ -976,7 +976,7 @@ print mix -
 -load test.xe 
 -help version 
 version 
--config case BEST 
+-config case best 
 load  
 set instructiontime 3 test.xc:33 - mhz 
 add instructiontime 2.0308893527673757E307 0.0 cycles 

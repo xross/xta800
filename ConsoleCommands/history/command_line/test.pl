@@ -26,8 +26,8 @@ system("@ARGV  " .
 
        "-config freq 0 999 " .
        "-config threads stdcore[0] 99 " .
-       "-config case BEST " .
-       "-config case WORST " .
+       "-config case best " .
+       "-config case worst " .
        "-config srcpaths /test/path/srcpath/ " .
 
        "-clear " .

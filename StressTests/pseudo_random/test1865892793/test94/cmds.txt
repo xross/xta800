@@ -9,7 +9,7 @@ help echo
 -status 
 echo 0xj6eff9 
 scripter disable 
-config case WORST 
+config case worst 
 -set loopscope 2 0xjd8107 absolute 
 -help load 
 load csdfsefsas 
@@ -25,7 +25,7 @@ ep3
 set required 2 1.5208019305128584E308 mhz 
 list exclusions 
 version 
-config case WORST 
+config case worst 
 help set 
 help config 
 -history 
@@ -97,7 +97,7 @@ version
 -version 
 list loops 
 -remove looppath 0xjb0afa 
-config case BEST 
+config case best 
 -print - 
 -remove loop - 
 -version - 
@@ -373,7 +373,7 @@ history
 source ep4 
 remove functiontime test.xc:16 
 -set looppath 1 0xj482a6 cycles 
-config case WORST 
+config case worst 
 history csdfsefsas  
 analyse function h 
 5.660698974949165E307 
@@ -390,7 +390,7 @@ analyse function f
 -status 
 config verbosity 2 - 
 add branch test.xc:28 * - 0x101a9 - f 
--config case BEST 
+-config case best 
 set required 1 csdfsefsas ns 
 -f 
 -source  
@@ -412,7 +412,7 @@ pwd
 echo " " 
 set instructiontime 3 test.xc:31 - ns 
 -scripter disable 
--config case WORST 
+-config case worst 
 -analyse function ep3 
 -csdfsefsas csdfsefsas  
 -print trace 1.4446500531169986E308 
@@ -452,7 +452,7 @@ print summary
 -add loop - 0.0 
 history 
 -remove from * 
--config case WORST 
+-config case worst 
 -list knowns -1870871578 
 -scripter dump 
 -config freq -1544497065 
@@ -559,7 +559,7 @@ add looppath * h
 -analyse function 0xjc7ada 
 -csdfsefsas 
 scripter disable 
--config case BEST 
+-config case best 
 -list threadstoppoints 
 scripter disable 
 -analyse path 0xjc221f f 
@@ -628,7 +628,7 @@ source
 -ns 
 -help config 
 -set pathtime 3 * * csdfsefsas cycles 
-config case BEST 
+config case best 
 -history cycles 
 -help echo 
 set to  0x1203e 
@@ -735,7 +735,7 @@ help pwd
 -config freq - 
 analyse function 0x11b51 
 help exit 
-config case BEST 
+config case best 
 -config freq 1 
 -source  
 version 
@@ -818,7 +818,7 @@ version 0.0
 -analyse - 
 -status  
 -pwd 
--config case BEST 
+-config case best 
 -clear 
 -scripter dump 
 -scripter enable 
@@ -903,7 +903,7 @@ clear
 load test.xe 
 version 
 -clear mhz 
--config case BEST 
+-config case best 
 -remove branch test.xc:2 - 2 csdfsefsas  0x10544 
 -clear 
 -status 

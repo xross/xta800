@@ -39,7 +39,7 @@ set to  test.xc:11
 -echo mhz 
 history 
 -config verbosity 1 
-config case BEST 
+config case best 
 history csdfsefsas 
 -version csdfsefsas - 
 config freq 2 
@@ -143,7 +143,7 @@ remove loop *
 -config verbosity cycles 219334724 
 status 
 -help remove 
--config case WORST 
+-config case worst 
 -echo cycles 
 -analyse path * ep2 
 scripter dump 
@@ -164,7 +164,7 @@ csdfsefsas csdfsefsas
 -echo " " 
 csdfsefsas 
 source  
-config case WORST 
+config case worst 
 -add loop * 0.0 
 -status csdfsefsas 
 -set pathtime 1 0xjdd68f main 0 ns 
@@ -201,7 +201,7 @@ load test.xe
 status 0x1283b 
 -history 
 -history 
-config case WORST 
+config case worst 
 print nodeinfo 0.0 4.3862201796077743E307 
 -print summary 
 remove to test.xc:11 
@@ -223,7 +223,7 @@ scripter enable
 version csdfsefsas 1.116034340235254E308 
 load test.xe 
 -clear 
--config case WORST 
+-config case worst 
 -history 
 -analyse function csdfsefsas 
 -print warnings 
@@ -236,7 +236,7 @@ clear
 analyse path 0x10216 main 
 pwd csdfsefsas cycles 
 -print warnings 
-config case WORST 
+config case worst 
 print routeinfo - 
 -print summary 
 list functiontimes 
@@ -261,7 +261,7 @@ source mhz
 print routeinfo 1.1019636591108296E308 
 -remove from 0x12912 
 -clear csdfsefsas - 
-config case WORST 
+config case worst 
 -source csdfsefsas 
 -help clear 
 status 
@@ -293,7 +293,7 @@ remove functiontime h
 -clear 
  
 -remove branch test.xc:5 0xj8d090 
-config case WORST 
+config case worst 
 -echo -1367095819 
 -clear 
 -status ep3 
@@ -646,14 +646,14 @@ help history
 -source csdfsefsas - 
 -print trace 5.696455348365748E307 354161754 
 -config verbosity 2 
--config case WORST 
+-config case worst 
 version 
 add instructiontime ep3 - g 
 -help exit 
 -source  
 status 
 -set to  ep2 
--config case BEST 
+-config case best 
 -help analyse 
 -version 
 -scripter enable 
@@ -663,7 +663,7 @@ print trace 0.0
 clear * 
 analyse 6.414437655448568E306 
 history 
-config case WORST 
+config case worst 
 load  
 set instructiontime 3 0.0 - cycles 
 -set loop 0 test.xc:7 0.0 
@@ -734,7 +734,7 @@ list knowns 0.0
 scripter enable 
 analyse function ep3 
 clear 
--config case BEST 
+-config case best 
 -list instructiontime 
 -cycles 
  
@@ -771,7 +771,7 @@ pwd csdfsefsas csdfsefsas
 scripter enable 
 list allsrclabels 
 config verbosity 0.0 
--config case WORST 
+-config case worst 
 pwd 
 clear h 
 -status 
@@ -907,7 +907,7 @@ add exclusion -
 -remove cycles 
 -clear 
 -remove from ep1 
--config case WORST 
+-config case worst 
 -config freq  
 remove route 0 
 -list loopscopes 

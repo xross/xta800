@@ -58,7 +58,7 @@ pwd h
 list allendpoints 
 -analyse path ep2 0xjf8108 
 -version 3.2167738526841205E306 
-config case BEST 
+config case best 
 pwd csdfsefsas  
 -set to  0xj1e895 
 load ns 
@@ -75,12 +75,12 @@ scripter disable
 echo csdfsefsas 
 list unknowns 0 
 -status cycles 
-config case BEST 
+config case best 
 -add loop - - 
 -pwd 
 print src csdfsefsas 
 print distribution csdfsefsas 
-config case BEST 
+config case best 
 -source csdfsefsas 
 -remove exclusion 0xj1369c 
 -set functiontime 0 ep4 1.5693672194868772E308 cycles 
@@ -144,7 +144,7 @@ set loopscope 0 main r
 version 1052380166 
 status 
 -pwd csdfsefsas 
--config case WORST 
+-config case worst 
 -load 1757841847 
 -load 0x12a70 
 echo "ns " 
@@ -206,11 +206,11 @@ echo -
 remove from 0xjec9c9 
 config freq 2 
 - 
--config case WORST 
+-config case worst 
 -help config 
 clear 
 pwd 
--config case WORST 
+-config case worst 
 status 1 
 -source csdfsefsas 
 -history - 
@@ -252,7 +252,7 @@ add looppath h 2147483647
 -history csdfsefsas 
 source f 
 -pwd 
-config case BEST 
+config case best 
 source csdfsefsas 
 history mhz 
 -list looppaths 
@@ -287,7 +287,7 @@ help print
 -pwd  
 -config verbosity - 
 -print asm g 2.610862403364075E307 
-config case WORST 
+config case worst 
 -list  
 -list functions 
 -csdfsefsas csdfsefsas 
@@ -344,7 +344,7 @@ analyse path - -
 -echo "csdfsefsas csdfsefsas " 
 list calls 
 -remove branch 0x1148d 0x11d7b ep3 f ep2 * * ep1 4.769712713946968E307 * 
-config case BEST 
+config case best 
 -version 
 print distribution 0 csdfsefsas 
 pwd csdfsefsas 0x13028 
@@ -359,11 +359,11 @@ list srccommands
 -load test.xe 
 -config freq - 
 -history 
-config case WORST 
+config case worst 
 -history 
 -add branch * * * 1.5842656669390807E308 - ep1 ep4 test.xc:42 0x1120b * 
 -remove functiontime g 
-config case BEST 
+config case best 
 mhz 
 add loopscope * absolute 
 echo ep2 
@@ -566,7 +566,7 @@ config verbosity 0.0 1
 -pwd csdfsefsas mhz 
 -status 
 list labels 
--config case WORST 
+-config case worst 
 help pwd 
 config verbosity csdfsefsas csdfsefsas csdfsefsas csdfsefsas csdfsefsas  0 
 load test.xe 
@@ -603,7 +603,7 @@ echo csdfsefsas
 remove pathtime ep4 - 
 -remove loop 0x11897 
 -print mix 366540347 
-config case WORST 
+config case worst 
 -load cycles 
 version 
 add looppath * 0 
@@ -622,7 +622,7 @@ clear
 status * 
 -set required 4 -2114468418 mhz 
 list calls 
--config case WORST 
+-config case worst 
 -print  
 -load 0.0 
 remove csdfsefsas 
@@ -777,7 +777,7 @@ print src csdfsefsas csdfsefsas
 -analyse function ep4 
 -source  
 -clear csdfsefsas  
--config case WORST 
+-config case worst 
 list threadstartpoints 
 -analyse csdfsefsas 
 config verbosity 2147483647 

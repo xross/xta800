@@ -76,7 +76,7 @@ clear
 help remove 
 analyse function 0xjb4d29 
 -print asm ns 
-config case WORST 
+config case worst 
 -load 0x13822 
 scripter enable 
 set required 2 - csdfsefsas 
@@ -151,7 +151,7 @@ help exit
 list instructiontime 
 echo "h " 
 -echo "callf,callg, ep4 " 
-config case WORST 
+config case worst 
 csdfsefsas 
 help set 
 remove pathtime h * 
@@ -293,7 +293,7 @@ config case
 -scripter disable 
 -history callg,callg,callh,g, ep1 
 help set 
--config case WORST 
+-config case worst 
 set from  f 
 -echo csdfsefsas 
 -list looppaths 
@@ -412,7 +412,7 @@ analyse path csdfsefsas 2147483647 0x11cae
 -status * 
 version csdfsefsas 
 -echo "- " 
-config case BEST 
+config case best 
 list allcalls 
 -clear - 
 -load test.xe 
@@ -824,7 +824,7 @@ pwd
 -clear csdfsefsas 
 -help echo 
 pwd 
-config case WORST 
+config case worst 
 -print src -517349355 
 -help version 
 -analyse function test.xc:3 
@@ -879,7 +879,7 @@ add pathtime callg,f,callh,h,callg,f, test.xc:32 csdfsefsas csdfsefsas  - ns
 clear 
 status 
 -scripter disable 
-config case BEST 
+config case best 
 help scripter 
 version 
 config freq 4.565353756555823E307 
@@ -932,7 +932,7 @@ version
 -remove 0 
 history  
 version - 
-config case BEST 
+config case best 
 -source  
 -clear csdfsefsas 
 -load csdfsefsas 
@@ -945,7 +945,7 @@ config verbosity csdfsefsas ep3
 list pathtimes 
 add loopscope * absolute 
 echo "csdfsefsas " 
-config case WORST 
+config case worst 
 -echo " " 
 add pathtime test.xc:2 ep2 0 mhz 
 help print 

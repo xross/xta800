@@ -4,7 +4,7 @@ load csdfsefsas
 load 0x121b1 
 -scripter dump 
 source  
-config case BEST 
+config case best 
 -help config 
 -print distribution csdfsefsas 
 set looppath 1 callg,callg,callg,main,callh,callg,callg,h,callh,f,callg,callg, test.xc:19 - 
@@ -243,7 +243,7 @@ remove looppath g
 -scripter disable 
 -list allsrclabels 
 -analyse path test.xc:23 callf,main,callh,callg, f 
--config case BEST 
+-config case best 
 version 
 -list sources 
 print summary 
@@ -258,7 +258,7 @@ source csdfsefsas
 ns 
 scripter dump 
 list sources 
-config case BEST 
+config case best 
 -help help 
 -status 
 help load 
@@ -370,7 +370,7 @@ echo csdfsefsas
 -remove instructiontime 0x10c0d 
 help print 
 -remove route 2 
--config case WORST 
+-config case worst 
 -add looppath callf,h,callf,main,callh,callh,callf,callf,callf,callf,callg,main,callf,callg,callg,h, test.xc:31 - 
 list loops 
 0x120b3 
@@ -381,7 +381,7 @@ help exit
 -print nodeinfo 2 
 help print 
 status  
-config case WORST 
+config case worst 
 -scripter dump 
 clear csdfsefsas 
 -clear 
@@ -439,7 +439,7 @@ version 0.0
 pwd csdfsefsas callf,main,callf,callf,callf,callh,callg,callf,callh,h,callf,callh,callh,callg,callf,g, test.xc:40 
 -history 
 -pwd csdfsefsas csdfsefsas 
-config case WORST 
+config case worst 
 -version  
 clear  
 -clear 1 
@@ -466,7 +466,7 @@ help list
 remove loop 0x1234d 
 status cycles 
 -remove looppath * 
-config case WORST 
+config case worst 
 status 
 print trace - 0 
 echo "csdfsefsas 2147483647 " 
@@ -495,7 +495,7 @@ load ep4
 -help help 
 config freq callf,callg,callg,main,callf,callg,callh,h,callf,callg,callh,g,callg,callg,callg,g, ep3 
 -pwd 
-config case WORST 
+config case worst 
 -help print 
 -echo "1.3202404424766477E308 " 
 load test.xe 
@@ -507,7 +507,7 @@ remove instructiontime 0xj3bfbc
 -source csdfsefsas 2147483647 
 history 
 -source cycles 
--config case BEST 
+-config case best 
 -remove route 4 
 version 
 pwd csdfsefsas csdfsefsas 
@@ -539,7 +539,7 @@ pwd ep4
 -source callf,f,callf,callh,callg,callh,callg,f,callg,g,callf,h,callh,callg, test.xc:11 
 -add functiontime callf,callf,callg,callg,callg,h,callh,callf,callf,callh,callg,g, test.xc:32 - cycles 
 pwd 
-config case WORST 
+config case worst 
 help help 
 remove from test.xc:9 
 -load test.xe 
@@ -624,8 +624,8 @@ print trace csdfsefsas 2
 list endpoints 
 echo  
 analyse csdfsefsas - 
--config case WORST 
--config case WORST 
+-config case worst 
+-config case worst 
 source callh,callg,callh,f,callg,main, ep1 
 -remove pathtime 0x10271 ep3 
 version 
@@ -639,7 +639,7 @@ print trace 2147483647 -656768926
 source callg,callh,callh,h,callf,callf,callg,main,callh,g,callg,callh, main 
 -history 
 set required 0 0.0 mhz 
--config case WORST 
+-config case worst 
 -config verbosity - 
 help source 
 -scripter dump 
@@ -914,8 +914,8 @@ print csdfsefsas 0xj9ff00
 -add exclusion h 
 analyse 1481646532 
 list looppaths 
--config case BEST 
-config case WORST 
+-config case best 
+config case worst 
 -print structure 0xj4196b 
 -print  
 add looppath callf,f,callf,main,callg,h, ep3 1.4081722824945573E308 
@@ -985,7 +985,7 @@ analyse path callg,callf,callf,g,callh,f,callg,callh,callh,callg,callf,g, ep4 ep
 -load test.xe 
 -print asm - - 
 -load test.xe 
--config case BEST 
+-config case best 
 -history 1.3317854527507193E308 
 clear 
 help version 

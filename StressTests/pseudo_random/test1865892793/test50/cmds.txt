@@ -33,9 +33,9 @@ pwd
 print structure - 
 -load - 
 scripter enable 
-config case BEST 
+config case best 
 -remove from - 
-config case WORST 
+config case worst 
 set required 0 407236643 mhz 
 -history cycles 
 -list instructiontime 
@@ -188,7 +188,7 @@ scripter disable
 -status 
 -remove functiontime * 
 -load test.xe 
-config case BEST 
+config case best 
 -status csdfsefsas 
 help echo 
 -clear 
@@ -273,7 +273,7 @@ list unknowns
 -pwd csdfsefsas 
 -remove exclusion ep3 
 clear 
--config case WORST 
+-config case worst 
 set loopscope 1 ep1 r 
 -help source 
 version csdfsefsas ns 
@@ -479,7 +479,7 @@ set loopscope 1 h r
 clear csdfsefsas 
 -clear  
 history 
-config case WORST 
+config case worst 
 status 
 source csdfsefsas ns 
 help analyse 
@@ -592,7 +592,7 @@ pwd
 pwd  
 pwd  
 -print distribution - 
-config case WORST 
+config case worst 
 print distribution 2147483647 
 -version 
 -csdfsefsas 
@@ -626,7 +626,7 @@ config verbosity -
 -pwd 
 -clear 
 source ns 
--config case BEST 
+-config case best 
 -help print 
 -history 0x12ab0 
 -history 
@@ -789,7 +789,7 @@ status ns
 add branch h h test.xc:13 - ep3 g * main 0xjba5a7 csdfsefsas csdfsefsas - 
 -history csdfsefsas csdfsefsas  
 scripter disable 
--config case WORST 
+-config case worst 
 version test.xc:5 
 -print warnings 
 history csdfsefsas  
@@ -885,7 +885,7 @@ pwd ns
 load  
 set to  csdfsefsas  
 help analyse 
--config case BEST 
+-config case best 
 -remove pathtime 0xj2d605 test.xc:47 
 status 
 -set loopscope 3 0x13d67 relative 
@@ -914,7 +914,7 @@ history
 csdfsefsas 
 version 
 echo csdfsefsas  
--config case BEST 
+-config case best 
 load  
 -status csdfsefsas 
 help history 

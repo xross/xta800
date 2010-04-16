@@ -97,7 +97,7 @@ source csdfsefsas
 -echo " " 
 -history 
 -clear  
-config case WORST 
+config case worst 
 -analyse function  
 cycles 
 -remove  
@@ -141,7 +141,7 @@ pwd
 -clear 1 
 status csdfsefsas csdfsefsas 
 version 
-config case WORST 
+config case worst 
 csdfsefsas csdfsefsas 
 -list labels 
 version 
@@ -215,7 +215,7 @@ print distribution 2
 config freq - 
 add exclusion - 
 -help pwd 
-config case BEST 
+config case best 
 -load cycles 
 history csdfsefsas csdfsefsas 
 -csdfsefsas  
@@ -297,7 +297,7 @@ echo "csdfsefsas  "
 add loopscope - a 
 load test.xc:9 
 -print  
-config case WORST 
+config case worst 
 -echo "csdfsefsas csdfsefsas " 
 -echo ns 
 -scripter disable 
@@ -315,7 +315,7 @@ load 0
 analyse ep2 
 -source ep1 
 -clear 
--config case BEST 
+-config case best 
 -source ns 
 set from  f 
 -analyse path test.xc:7 f 
@@ -385,7 +385,7 @@ pwd
 -history * 
 remove branch h 0x12c90 g  
 -set loopscope 3 ep3 r 
--config case WORST 
+-config case worst 
 -analyse path - ep1 
 -load  
 clear csdfsefsas 
@@ -471,7 +471,7 @@ list unknowns -1110407056
 -source  
 list pathtimes 
 -0x13a39 
--config case WORST 
+-config case worst 
 -echo mhz 
 -clear csdfsefsas  
 print structure * 
@@ -528,7 +528,7 @@ list calls
 help remove 
 -analyse test.xc:9 
 -pwd  
--config case WORST 
+-config case worst 
 -pwd  
 -echo  
 -history 
@@ -661,7 +661,7 @@ status
 print trace  
 -remove loop ep4 
 -status 
--config case WORST 
+-config case worst 
 -version 
 -echo "csdfsefsas  " 
 -version  
@@ -778,7 +778,7 @@ load test.xe
 list srcloops 
 config verbosity 2 9.765148603126631E307 
 -history cycles 
--config case BEST 
+-config case best 
 scripter disable 
 -version 
 -pwd 
@@ -975,7 +975,7 @@ scripter disable
 source csdfsefsas test.xc:12 
 -csdfsefsas 
 -help scripter 
--config case WORST 
+-config case worst 
 scripter enable 
 -remove to 0xjd8f89 
 -source  

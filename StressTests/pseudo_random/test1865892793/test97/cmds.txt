@@ -3,7 +3,7 @@ version -
 echo csdfsefsas csdfsefsas 2147483647 
 -help scripter 
 version 
--config case BEST 
+-config case best 
 -history  
 -history callg,g,callf,callf,callf,f,callh,callf,callg,h, main 
 -pwd csdfsefsas 
@@ -26,7 +26,7 @@ echo
 -pwd 
 -analyse csdfsefsas ns 
 -status 2147483647 
-config case BEST 
+config case best 
 remove route 1 
 -analyse function test.xc:14 
 history 
@@ -55,7 +55,7 @@ version
 set from  callh,h, h 
 load test.xe 
 remove functiontime mhz 
-config case WORST 
+config case worst 
 -pwd - 
 -echo  
 -echo "csdfsefsas " 
@@ -151,7 +151,7 @@ set looppath 1 ep3 -42158160
 clear 
 pwd csdfsefsas csdfsefsas 
 add exclusion ep2 
--config case WORST 
+-config case worst 
 -source - 
 -remove from ep4 
 -print asm csdfsefsas mhz 
@@ -160,7 +160,7 @@ remove route 3
 -list pathtimes 
 print warnings 
 -clear 
--config case WORST 
+-config case worst 
 -list sources 
 -version ns 
 analyse path  main callh,callf,callg,f,callh,callh,callg,f,callg,g,callh,f, ep3 
@@ -281,7 +281,7 @@ scripter dump
 -add loop callf,main,callh,g,callg,callf,callh,main,callg,f,callf,f,callf,main,callf,main,callf,main, test.xc:6 csdfsefsas  
 -echo csdfsefsas 
 -analyse path - callf,callg,callf,h,callf,callg,callg,callf, ep1 
-config case BEST 
+config case best 
 -print trace  5.374613252290805E307 
 -list functiontimes 
 scripter disable 
@@ -370,7 +370,7 @@ source ns
 -print summary 
 -print asm - 
 -source  
-config case BEST 
+config case best 
 config freq 2 
 -add pathtime test.xc:43 callg,g,callh,callh,callf,callf, ep2 2147483647 mhz 
 add branch f * ep2 
@@ -388,7 +388,7 @@ clear ep3
 -clear 
 -echo "csdfsefsas mhz " 
 -load  
--config case WORST 
+-config case worst 
 -remove looppath test.xc:16 
 history mhz 
 echo 1.6426550483238045E308 
@@ -418,7 +418,7 @@ history csdfsefsas
 analyse path test.xc:10 - 
 -config verbosity 2147483647 
 -source csdfsefsas csdfsefsas csdfsefsas 
-config case WORST 
+config case worst 
 status 
 -remove from - 
 -source  
@@ -540,9 +540,9 @@ print
 -scripter enable 
 -add branch 0x11002 
 -config freq - 
-config case WORST 
+config case worst 
 -config case mhz 
--config case BEST 
+-config case best 
 csdfsefsas 
 remove exclusion callg,main,callf,callg,callh,f,callf,callg,callg,callf, ep4 
 -history 
@@ -824,8 +824,8 @@ analyse path callf,main,callg,g,callg,callg,callf,g,callf,callf,callg,g,callf,ca
 -clear 
 help list 
 -print src 1.4727693854839704E307 
-config case BEST 
-config case BEST 
+config case best 
+config case best 
 echo " " 
 -remove instructiontime * 
 -config freq 0 
@@ -862,7 +862,7 @@ scripter enable
 config freq - 
 analyse function 0xj6c64f 
 list loopscopes 
--config case WORST 
+-config case worst 
 clear  
 echo "csdfsefsas " 
 -list srcloops 
@@ -876,7 +876,7 @@ pwd
 scripter enable 
 status 
  
-config case BEST 
+config case best 
 -history  
 -version g 
 -pwd 
@@ -970,7 +970,7 @@ pwd 0xjc7b11
 -status callg,h,callh,callh,callg,callf, h 
 scripter disable 
 -pwd 
-config case WORST 
+config case worst 
 analyse path main 0x136a9 
 -version csdfsefsas 
 -analyse * 

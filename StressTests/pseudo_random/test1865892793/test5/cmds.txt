@@ -46,7 +46,7 @@ scripter enable
 status cycles 
 -ns 
 echo "0 " 
--config case WORST 
+-config case worst 
 help pwd 
 print distribution csdfsefsas csdfsefsas csdfsefsas mhz 
 load test.xe 
@@ -116,7 +116,7 @@ echo "csdfsefsas - "
 -version 
 pwd 
 echo 0.0 
--config case WORST 
+-config case worst 
 echo "csdfsefsas " 
 -add looppath 0x13c23 1 
 -source csdfsefsas cycles 
@@ -189,7 +189,7 @@ set looppath 0 0xj2dd28 1
 echo "csdfsefsas " 
 -load f 
 -status 
-config case WORST 
+config case worst 
 -remove route 4 
 -status 
 status 0.0 
@@ -225,7 +225,7 @@ pwd
 -load test.xe 
 -echo "csdfsefsas ns " 
 -load 0x138e7 
--config case WORST 
+-config case worst 
 -history 
 -print src -1001775308 - 
 help print 
@@ -248,13 +248,13 @@ print distribution 2147483647
 -status 
 -csdfsefsas 
 print mix 385290788 -1972180118 
-config case BEST 
+config case best 
 -load test.xe 
 help add 
 -print warnings 
 list endpoints 
 remove instructiontime * 
-config case BEST 
+config case best 
 -clear  
 load  
 status 
@@ -304,7 +304,7 @@ config verbosity csdfsefsas ns
 -scripter dump 
 -add exclusion test.xc:31 
 -csdfsefsas 
--config case WORST 
+-config case worst 
 -list pathtimes 
 -source csdfsefsas csdfsefsas csdfsefsas 0 
 -load  
@@ -411,7 +411,7 @@ remove route 0
 remove route 2 
 -set looppath 0 0xj44619 2 
 print mix csdfsefsas 
-config case BEST 
+config case best 
 print trace  
 config verbosity 0.0 - 
 help print 
@@ -602,7 +602,7 @@ load *
 remove instructiontime g 
 version csdfsefsas 
 set loop 0 0xjd8ade 0xj7f798 
--config case BEST 
+-config case best 
 -add looppath ep3 csdfsefsas csdfsefsas 
 -remove from 0x10edc 
 -* 
@@ -759,7 +759,7 @@ version
 -source  
 scripter disable 
 help analyse 
-config case BEST 
+config case best 
 -config freq 0x1114d 
  
 help list 
@@ -826,7 +826,7 @@ remove from csdfsefsas
 -help help 
 echo  
 load csdfsefsas 
-config case BEST 
+config case best 
 - 
 clear 
 remove loop - 
@@ -972,7 +972,7 @@ help add
 -add branch ep1 h 0xj8a7f1 0xjfa99f csdfsefsas * test.xc:26 
 -analyse function - 
 help scripter 
--config case BEST 
+-config case best 
 pwd 
 -status mhz 
 list srclabels 

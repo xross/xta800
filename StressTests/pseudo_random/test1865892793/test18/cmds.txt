@@ -1,7 +1,7 @@
 -remove to - 
 load test.xe 
 -pwd -595332323 
-config case BEST 
+config case best 
 -list endpoints 
 -set loopscope 2 csdfsefsas cycles a 
 -set looppath 2 * 1 
@@ -95,7 +95,7 @@ pwd
 help history 
 help echo 
 -version 
-config case WORST 
+config case worst 
 -set from  test.xc:9 
 -version csdfsefsas - 
 -scripter disable 
@@ -107,7 +107,7 @@ version
 analyse path 0xjde80c ep2 
 -help source 
 status 
-config case WORST 
+config case worst 
 -clear 
 -source csdfsefsas csdfsefsas h 
 remove functiontime 0xj308a9 
@@ -346,7 +346,7 @@ version
 analyse function 0xjed5d3 
 remove looppath ep2 
 -version 
-config case WORST 
+config case worst 
 -status 
 -remove route 1 
 -status 
@@ -360,7 +360,7 @@ scripter disable
 analyse function - 
 clear 
 -status csdfsefsas  
-config case BEST 
+config case best 
 -status 
 source csdfsefsas 0.0 
 -pwd 
@@ -385,7 +385,7 @@ source
 echo mhz 
 print warnings 
 remove branch - - 0.0 * main test.xc:22 0x117b6 f 
-config case WORST 
+config case worst 
 -set pathtime 3 0x1091d - csdfsefsas csdfsefsas   
 status csdfsefsas  
 pwd ns 
@@ -423,7 +423,7 @@ echo csdfsefsas csdfsefsas
 -echo "ep4 " 
 -source csdfsefsas ns 
 clear  
-config case BEST 
+config case best 
 status csdfsefsas 
 echo "csdfsefsas 0x11d86 " 
 -- 
@@ -463,7 +463,7 @@ pwd
 -status 
 help load 
 clear 
--config case WORST 
+-config case worst 
 source csdfsefsas 
 history 
 -history csdfsefsas h 
@@ -529,7 +529,7 @@ source
 clear 
 -set required 4 2147483647 mhz 
 -csdfsefsas 
--config case BEST 
+-config case best 
 -analyse function test.xc:7 
 -print distribution - 
 -pwd 
@@ -680,7 +680,7 @@ pwd
 -cycles 
 add loopscope ep2 - 
 -analyse csdfsefsas 
--config case BEST 
+-config case best 
 help print 
 add pathtime * 0x116c0 2 csdfsefsas 
 remove instructiontime ep2 
@@ -729,7 +729,7 @@ clear
 list sources 
 remove exclusion test.xc:2 
 -echo "csdfsefsas " 
-config case WORST 
+config case worst 
 remove loop g 
 -config verbosity - 
 -source  
@@ -940,7 +940,7 @@ csdfsefsas
 -source  
 -set looppath 4 test.xc:11 1 
 -clear 
-config case WORST 
+config case worst 
 -remove route 3 
 -csdfsefsas ns 
 print mix 3.1336729344938193E307 

@@ -192,7 +192,7 @@ config case
  
 -help status 
 scripter disable 
-config case WORST 
+config case worst 
 csdfsefsas 
 version 
 set functiontime 1 callf,callg,callh,g,callh,callh,callh,callh,callg,callg,callh,main,callf,callg,callg,g,callh,f, test.xc:30 csdfsefsas 0.0 
@@ -222,7 +222,7 @@ set to  main
 help load 
 -source 1 
 csdfsefsas csdfsefsas 
--config case BEST 
+-config case best 
 set loopscope 4  absolute 
 -csdfsefsas 
 -clear 
@@ -248,12 +248,12 @@ scripter dump
 -status 
 -remove exclusion csdfsefsas csdfsefsas ep4 
 config verbosity 0 
-config case BEST 
+config case best 
 -csdfsefsas csdfsefsas 
 print csdfsefsas callf,callf,callh,g, test.xc:38 
 -clear csdfsefsas 
 clear csdfsefsas 
-config case WORST 
+config case worst 
 remove loop csdfsefsas csdfsefsas 0xj89714 
 echo - 
 -csdfsefsas 
@@ -269,7 +269,7 @@ csdfsefsas
 -add loop f - 
 -list allcalls 
 analyse function * 
-config case BEST 
+config case best 
 -csdfsefsas  
 - 
 -load  
@@ -598,7 +598,7 @@ pwd
 -clear 
 remove looppath 0xj841f3 
 set pathtime 2 f callh,callg, g 0.0 cycles 
--config case WORST 
+-config case worst 
 -list srccommands 
 analyse path callg,f,callf,main,callg,callh,callh,callg,callg,h,callh,h,callg,h, test.xc:9 0xj703b9 
 history ns 
@@ -622,7 +622,7 @@ remove pathtime ep2 0x13a35
 scripter dump 
 print summary 
 set functiontime 4 0xjd81ae 2058172905 - 
--config case BEST 
+-config case best 
 pwd - 
 -status 
 status 
@@ -644,7 +644,7 @@ load test.xe
 -echo csdfsefsas 
 -set looppath 4 callf,callg,callg,callg,callh,callg,callf,main,callh,callg,callf,main,callf,main,callg,f,callf,main, g 5.084208333431644E307 
 -config freq 0.0 
--config case BEST 
+-config case best 
 -version 
 -echo ns 
 history csdfsefsas 
@@ -836,7 +836,7 @@ echo csdfsefsas csdfsefsas
 config freq - 
 clear cycles 
 -config verbosity -  
-config case WORST 
+config case worst 
 set from  * 
 help version 
 -list endpoints 
@@ -929,7 +929,7 @@ list knowns 2147483647
 -echo mhz 
 echo csdfsefsas 
 -echo "callh,main,callh,callg,callg,callg,callh,f,callg,callf,callh,callf,callg,callf,callh,callf, test.xc:4 " 
--config case BEST 
+-config case best 
 -clear 
 -history  
 -list unknowns 1.164054451794456E308 

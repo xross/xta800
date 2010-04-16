@@ -31,7 +31,7 @@ status
 list looppaths 
 help set 
 -status 0xjee551 
-config case BEST 
+config case best 
 -scripter disable 
 remove functiontime - 
 -remove functiontime * 
@@ -275,7 +275,7 @@ analyse function *
 load test.xe 
 print mix - 
 -1486158827 
-config case WORST 
+config case worst 
 remove loopscope ep4 
 print routeinfo  
 -help list 
@@ -298,7 +298,7 @@ pwd
 -print routeinfo 2 
 -set required 2 - cycles 
 -remove exclusion * 
-config case WORST 
+config case worst 
 -history csdfsefsas main 
 -print trace 3.2362055366009616E307 - 
 -analyse path csdfsefsas  
@@ -398,7 +398,7 @@ version
 -print asm 0.0 
 -set loopscope 4 0xj22e17 absolute 
 analyse function  
--config case WORST 
+-config case worst 
 pwd 
 -analyse path 0x10a12 ep2 
 version 
@@ -696,7 +696,7 @@ list endpoints
 -analyse csdfsefsas 
 -set required 3 6.922973484612436E307 ns 
 version  
-config case BEST 
+config case best 
 source  
 -history 
 -history 
@@ -713,7 +713,7 @@ add branch - ep3 test.xc:37
 version - 
 -list instructiontime 
 echo "2 " 
--config case WORST 
+-config case worst 
 -history  
 -version 
 -analyse function  
@@ -768,7 +768,7 @@ remove -
 list knowns 5.875886420792175E307 
 status ns 
 -pwd 
--config case WORST 
+-config case worst 
 -version  
 version 
 pwd 2147483647 
@@ -807,7 +807,7 @@ print warnings
 -load csdfsefsas 1.2919010924042903E308 
 source ns 
 -help config 
--config case BEST 
+-config case best 
 -print routeinfo 0.0 
 analyse function ep3 
 analyse function test.xc:5 
@@ -869,7 +869,7 @@ version
 -print nodeinfo 1.1467395023711647E308 
 load test.xe 
 load  
-config case BEST 
+config case best 
 -csdfsefsas ns 
 -clear ns 
 -analyse path f csdfsefsas 
@@ -965,7 +965,7 @@ version csdfsefsas
 -config case 1 
 -add exclusion 0xj5556d 
 set from  cycles 
-config case WORST 
+config case worst 
 -set required 4 2 cycles 
 -version csdfsefsas ep2 
 -scripter disable 

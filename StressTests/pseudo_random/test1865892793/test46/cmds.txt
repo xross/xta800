@@ -110,7 +110,7 @@ set instructiontime 3 * 746279244 ns
 -load test.xe 
 status csdfsefsas 
 -config verbosity 1847602331 1.3918128913236415E308 
-config case BEST 
+config case best 
 -scripter enable 
 -version 
 -status cycles 
@@ -250,7 +250,7 @@ help help
 --766358406 
 pwd 
 -config verbosity -  
-config case BEST 
+config case best 
 history  
 -list instructiontime 
 clear 
@@ -368,7 +368,7 @@ clear -
 set loopscope 3 test.xc:15 csdfsefsas mhz 
 -pwd 
 -history 
-config case WORST 
+config case worst 
 load test.xe 
 -print asm 1.5150590728980753E308 
 -help status 
@@ -376,7 +376,7 @@ help version
 print nodeinfo 2147483647 
 -help load 
 clear  
-config case BEST 
+config case best 
 scripter enable 
 source csdfsefsas csdfsefsas 
 -version csdfsefsas 
@@ -419,7 +419,7 @@ scripter dump
 -set from  0x1088d 
 -clear  
 pwd csdfsefsas csdfsefsas csdfsefsas 
--config case WORST 
+-config case worst 
 print distribution  
 echo  
 scripter disable 
@@ -432,7 +432,7 @@ config freq 1.0340266902419499E308
 set to  ep2 
 status csdfsefsas - 
 -status 
-config case WORST 
+config case worst 
 history csdfsefsas  
 scripter enable 
 -source cycles 
@@ -484,7 +484,7 @@ list unknowns 2147483647
 set loopscope 0 * relative 
 status 
 pwd - 
--config case WORST 
+-config case worst 
 print summary 
 -echo csdfsefsas  
 -version csdfsefsas 
@@ -707,7 +707,7 @@ analyse function 0xj493f2
 remove from 0xja268f 
 -version 
 -print trace 0.0 0.0 
--config case BEST 
+-config case best 
 -source ns 
 history 0xjb6b99 
 -remove pathtime 0xj72d14 h 
@@ -815,7 +815,7 @@ help source
 -add instructiontime * f mhz 
 add functiontime ep1 - ns 
 history 
--config case WORST 
+-config case worst 
 status 
 pwd csdfsefsas 0xj37845 
 status 
@@ -896,7 +896,7 @@ pwd
 -load main 
 -help scripter 
 -echo  
-config case BEST 
+config case best 
 -set looppath 1 0x1117c - 
 -pwd 
 -print src test.xc:29 
@@ -925,7 +925,7 @@ echo "csdfsefsas  "
 -set instructiontime 4 - - cycles 
 print  
 ns 
--config case WORST 
+-config case worst 
 echo "0xj45eb8 " 
 print routeinfo - 
 -add pathtime * 0xj5efe0 - ns 
@@ -971,7 +971,7 @@ help exit
 -scripter disable 
 -list srcloops 
 -set to  - 
--config case BEST 
+-config case best 
 -mhz 
 -analyse path test.xc:13 f 
 -print warnings 

@@ -40,7 +40,7 @@ history
 -list srclabels 
 pwd 
 -add loopscope 0x1115d r 
--config case BEST 
+-config case best 
 -scripter enable 
 -add instructiontime ep4   
 -list knowns 2 
@@ -48,7 +48,7 @@ csdfsefsas
 -remove pathtime csdfsefsas  f 
 load test.xe 
 -print warnings 
-config case BEST 
+config case best 
 version - 
 -load test.xe 
 - 
@@ -103,12 +103,12 @@ analyse function -
 help config 
 remove loopscope callf,callf,callh,main,callh,callf,callh,main,callf,callg,callf,callh,callg,main,callg,callg, test.xc:8 
 -list allendpoints 
--config case BEST 
+-config case best 
 -analyse function g 
 analyse function main 
 -add pathtime - * cycles ns 
 -load csdfsefsas 6.01632055361396E307 
--config case WORST 
+-config case worst 
 echo csdfsefsas 
 -version 
 -help config 
@@ -241,7 +241,7 @@ add loopscope - a
 version 
 remove functiontime 0xj8e57c 
 -list loops 
--config case WORST 
+-config case worst 
  
 version 
 -print csdfsefsas cycles 
@@ -294,7 +294,7 @@ set to  h
 -add pathtime 0xj9e879 * 0.0 ns 
 -pwd csdfsefsas  
 scripter enable 
--config case BEST 
+-config case best 
 pwd cycles 
 -source csdfsefsas 
 history csdfsefsas 
@@ -750,7 +750,7 @@ add loopscope callg,callh,callf,callg,callf,f,callf,callg,callf,g,callh,f,callg,
 set instructiontime 4 0xj5e933 1 ns 
 load csdfsefsas csdfsefsas csdfsefsas 
 echo " " 
-config case BEST 
+config case best 
 print src 0x11df3 
 -help callg,callh,callg,h,callg,f,callg,f, test.xc:27 
 csdfsefsas 
@@ -785,7 +785,7 @@ list sources
 callf,callh,callf,h,callh,callf,callf,callg, test.xc:43 
 echo ns 
 -load csdfsefsas csdfsefsas 0x11605 
--config case WORST 
+-config case worst 
 echo callf,callf,callf,callh,callh,main,callh,callf,callf,g,callg,f,callf,callh,callh,f, test.xc:44 
 load - 
 pwd 
@@ -800,7 +800,7 @@ help pwd
 -help source 
 remove branch callf,callg, f mhz ep3 0xjc56ba 
 -csdfsefsas 
--config case WORST 
+-config case worst 
 -add pathtime - ep4 - ns 
 add loop  - 
 help print 
@@ -947,12 +947,12 @@ scripter disable
 -status mhz 
 -analyse function callh,h,callh,callg,callh,h,callh,callh,callh,g,callh,callg, test.xc:3 
 history 
--config case BEST 
+-config case best 
 set mhz 
 - 
 -scripter dump 
 -scripter disable 
-config case BEST 
+config case best 
 print structure - 
 -clear csdfsefsas  
 print  
@@ -966,9 +966,9 @@ load test.xe
 pwd 
 scripter dump 
 -list unknowns 2 
-config case BEST 
+config case best 
 -set from  0xj81b4c 
--config case BEST 
+-config case best 
 -echo "test.xc:23 " 
 status  
 -list calls 
@@ -996,7 +996,7 @@ status csdfsefsas
 clear 
 -source csdfsefsas * 
 print mix 4.23732267352972E307 
-config case BEST 
+config case best 
 -scripter enable 
 exit 
 exit 

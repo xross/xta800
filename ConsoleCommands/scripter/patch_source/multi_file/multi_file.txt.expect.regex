@@ -1,8 +1,8 @@
 Modifiable Enabled    Reference  ->     MapsTo
-true       true       foo.xc:15  ->    label_\d+
+true       true       foo.xc:15  -> endpoint_0
 true       true       .+/bar.xc:11 ->    label_\d+
-true       true       .+/bar.xc:6 ->    label_\d+
-true       true       .+/bar.xc:9 ->    label_\d+
+true       true       .+/bar.xc:6 -> +call_\d+
+true       true       .+/bar.xc:9 -> +call_\d+
 Modifiable Enabled    Reference  ->     MapsTo
 true       true       foo.xc:15  ->          x
 true       true       .+/bar.xc:11 -> out_of_bounds

@@ -96,11 +96,11 @@ clear
 status csdfsefsas 
 clear 3.2579932880189276E307 
 -pwd * 
-config case WORST 
+config case worst 
 -print csdfsefsas 
 -echo "csdfsefsas csdfsefsas " 
 scripter disable 
--config case BEST 
+-config case best 
 csdfsefsas 
 -source csdfsefsas 
 pwd 
@@ -109,7 +109,7 @@ pwd
 remove loop test.xc:8 
 version  
 history 
-config case BEST 
+config case best 
 source csdfsefsas csdfsefsas cycles 
 history 
 source * 
@@ -321,7 +321,7 @@ pwd
 echo "csdfsefsas " 
 -version csdfsefsas 
 echo - 
-config case BEST 
+config case best 
 analyse  
 config verbosity csdfsefsas 0.0 
 set functiontime 3 ep2 1.7064186608887189E308 cycles 
@@ -365,7 +365,7 @@ analyse path csdfsefsas 0xj66edf
 -print warnings 
 status 
 remove route 4 
--config case BEST 
+-config case best 
 print trace ns 
 help clear 
 -remove looppath * 
@@ -564,7 +564,7 @@ config verbosity - csdfsefsas
 -analyse cycles 
 -load csdfsefsas h 
 help version 
--config case WORST 
+-config case worst 
 -status - 
 -help add 
 pwd 
@@ -719,7 +719,7 @@ remove instructiontime 0x12509
 help history 
 clear csdfsefsas 
 -remove loopscope * 
-config case WORST 
+config case worst 
 print mix 1.0768694369055887E308 - 
 -status csdfsefsas 
 history 
@@ -947,7 +947,7 @@ pwd
 list csdfsefsas  
 config verbosity -1529288032 
 clear csdfsefsas 
--config case WORST 
+-config case worst 
 source 0x12aa2 
 csdfsefsas csdfsefsas 
 -source csdfsefsas  

@@ -9,7 +9,7 @@ remove instructiontime test.xc:33
 source ns 
 remove loopscope - 
 -echo "cycles " 
--config case WORST 
+-config case worst 
 -list test.xc:16 
 set - 
 -source ep1 
@@ -104,7 +104,7 @@ print mix - csdfsefsas
 list functions 
 echo mhz 
 help add 
-config case WORST 
+config case worst 
 load test.xe 
 -config verbosity - csdfsefsas 
 -clear mhz 
@@ -265,7 +265,7 @@ list functiontimes
 config verbosity 1.0522676023479874E307 
 -list labels 
 list branches 
--config case BEST 
+-config case best 
 pwd  
 -set loop 2 0x12909 - 
 echo - 
@@ -288,7 +288,7 @@ echo "0 "
 -version 
 -history 
 scripter disable 
-config case BEST 
+config case best 
 -analyse path ep1 main 
 -source mhz 
 -clear 
@@ -359,7 +359,7 @@ list exclusions
 -clear 
 -set loopscope 1 0xjabe89 relative 
 -config freq - 
--config case WORST 
+-config case worst 
 load test.xe 
 -set loop 0 0xj3267e 0.0 
 analyse path * f 
@@ -392,7 +392,7 @@ clear csdfsefsas
 -scripter disable 
 set looppath 1 test.xc:37 0.0 
 -version 
-config case WORST 
+config case worst 
 -pwd 5.806474313885172E307 
 load test.xe 
 add exclusion f 
@@ -414,7 +414,7 @@ status csdfsefsas
 -load  
 add loopscope * relative 
 help scripter 
--config case WORST 
+-config case worst 
 scripter disable 
 source csdfsefsas 
 version 
@@ -568,7 +568,7 @@ status
 list threadstoppoints 
 -help help 
 version - 
-config case BEST 
+config case best 
 add exclusion - 
 source f 
 print mix csdfsefsas 
@@ -643,7 +643,7 @@ clear
 ep3 
 -status 
 -help history 
--config case WORST 
+-config case worst 
 -version - 
 list exclusions 
 list loops 
@@ -705,7 +705,7 @@ version
 status csdfsefsas - 
 pwd 
 add looppath ep3 - 
-config case BEST 
+config case best 
 list loops 
 -print summary 
 -remove loop - 
@@ -749,7 +749,7 @@ echo "csdfsefsas * "
 -clear csdfsefsas 
 -remove loop * 
 echo csdfsefsas 
-config case WORST 
+config case worst 
 -clear 
 history 
 pwd 
@@ -766,7 +766,7 @@ pwd
 scripter enable 
 -scripter dump 
 -pwd 
-config case WORST 
+config case worst 
 version 0 
 scripter dump 
 history 

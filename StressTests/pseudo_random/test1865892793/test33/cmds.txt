@@ -118,7 +118,7 @@ add functiontime test.xc:31 csdfsefsas csdfsefsas csdfsefsas  cycles
 -analyse path callf,g,callf,f,callh,h,callg,callg,callf,main,callg,g,callh,callh, test.xc:37 callf,g,callg,f,callg,g,callg,callf,callg,h,callg,callh, test.xc:38 
 history 
 status  
--config case BEST 
+-config case best 
 list srcloops 
 help set 
 -version 
@@ -132,7 +132,7 @@ history ns
 -analyse csdfsefsas 
 -remove csdfsefsas 
 -help help 
-config case BEST 
+config case best 
 version 
 -source csdfsefsas h 
 remove to * 
@@ -363,7 +363,7 @@ clear
 history csdfsefsas 
 -status cycles 
 -set from  test.xc:14 
--config case BEST 
+-config case best 
 scripter disable 
 -source csdfsefsas mhz 
 -load test.xe 
@@ -721,7 +721,7 @@ status
 -add loopscope 0xj8fec2 absolute 
 pwd csdfsefsas - 
 -clear cycles 
--config case BEST 
+-config case best 
 version 
 -config verbosity csdfsefsas 2 
 -source - 
@@ -829,8 +829,8 @@ scripter enable
 version 
 scripter disable 
 set loop 1 ep4 - 
-config case WORST 
-config case WORST 
+config case worst 
+config case worst 
 status mhz 
 source csdfsefsas csdfsefsas 
 -print src 2 

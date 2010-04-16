@@ -36,7 +36,7 @@ echo csdfsefsas
 -config freq - 
 source cycles 
 -scripter disable 
--config case BEST 
+-config case best 
 clear mhz 
 scripter disable 
 set functiontime 2 * csdfsefsas 0.0 ns 
@@ -79,7 +79,7 @@ status
 add functiontime cycles - cycles 
 history 
 config freq mhz 
-config case WORST 
+config case worst 
 config freq 1.5606530175212131E308 
 scripter enable 
 9.439776664070042E307 
@@ -247,7 +247,7 @@ help list
 print distribution 1.167189208070591E308 
 -version cycles 
 cycles 
-config case BEST 
+config case best 
 -pwd  
 -print asm 0.0 
 pwd 
@@ -269,7 +269,7 @@ pwd csdfsefsas
 clear h 
 clear 
 source csdfsefsas 
--config case BEST 
+-config case best 
 -history csdfsefsas csdfsefsas 
 -clear cycles 
 -history 
@@ -337,7 +337,7 @@ list loopscopes
 load test.xe 
 -version 
 print routeinfo csdfsefsas csdfsefsas ns 
--config case BEST 
+-config case best 
 remove from test.xc:25 
 status 
 list srccommands 
@@ -468,7 +468,7 @@ version
 version 
 history test.xc:43 
 -help pwd 
--config case BEST 
+-config case best 
 scripter dump 
 -config verbosity csdfsefsas - 
 -source - 
@@ -774,7 +774,7 @@ analyse csdfsefsas
 -add branch 0xjd2091 - 0x12b05 0x10e41 h 
 -add branch * - g 0xj1deeb 
 scripter disable 
--config case WORST 
+-config case worst 
 -version csdfsefsas mhz 
 clear 
 status  
@@ -812,7 +812,7 @@ add looppath - -
 -add branch f ep2 * ep2 
 clear 
 -analyse path 0xjf07c5 test.xc:47 
-config case WORST 
+config case worst 
 -version ns 
 -load test.xe 
 remove branch test.xc:4 0xjb486c g 0xj13668 0xj6fad3 0x113c6 * 8.920684200839927E307 cycles 
@@ -823,7 +823,7 @@ add loopscope test.xc:15 a
 -version csdfsefsas csdfsefsas 
 source mhz 
 -history 
--config case WORST 
+-config case worst 
 print trace  
 analyse cycles 
 -remove branch * * 0x12f44 f 0x10835 

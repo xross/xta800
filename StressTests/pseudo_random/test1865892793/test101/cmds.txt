@@ -256,7 +256,7 @@ load
 status csdfsefsas mhz 
 -load test.xe 
 clear 
-config case BEST 
+config case best 
 list allsrclabels 
 set functiontime 4 0x103a2 0 ns 
 status mhz 
@@ -362,7 +362,7 @@ status -
 status  
 remove to csdfsefsas csdfsefsas 0x10b21 
 version 
--config case WORST 
+-config case worst 
 -scripter dump 
 -h 
 -status csdfsefsas csdfsefsas csdfsefsas csdfsefsas test.xc:8 
@@ -535,7 +535,7 @@ csdfsefsas 8.217556552897632E307
 help analyse 
 -pwd 
 analyse path 0x12492 g 
-config case BEST 
+config case best 
 analyse path 7.053409762365332E307 f 
 status 
 - 
@@ -747,7 +747,7 @@ clear mhz
 analyse path * ep2 
 -echo "csdfsefsas csdfsefsas csdfsefsas " 
 -config verbosity 0.0 
--config case WORST 
+-config case worst 
 history 
 version 
 help print 
@@ -756,7 +756,7 @@ source
 echo csdfsefsas 
 clear  
 -status csdfsefsas - 
-config case WORST 
+config case worst 
 -help scripter 
 help remove 
 print mix mhz 
@@ -768,7 +768,7 @@ config freq 1
 -set to  - 
 -version  
 scripter dump 
--config case BEST 
+-config case best 
 -source h 
 remove functiontime ep3 
 analyse path - ep3 
@@ -850,11 +850,11 @@ set pathtime 1 h ep3 cycles cycles
 -history 8.605197876452767E306 
 -config verbosity mhz 0.0 
 list instructiontime 
--config case WORST 
+-config case worst 
 list allcalls 
 -pwd 
 add branch csdfsefsas csdfsefsas  0xjb7542 
--config case WORST 
+-config case worst 
 -source csdfsefsas 
 -history 
 source cycles 
@@ -927,12 +927,12 @@ history
 add exclusion f 
 remove exclusion - 
 echo 1270853047 
-config case WORST 
+config case worst 
 -status csdfsefsas 
 source csdfsefsas 
 scripter enable 
 -set looppath 4 f 0.0 
--config case BEST 
+-config case best 
 csdfsefsas 
 help load 
 config verbosity csdfsefsas cycles 2 
@@ -966,7 +966,7 @@ history
 -help csdfsefsas 2147483647 
 -status csdfsefsas csdfsefsas ns 
 -source  
--config case BEST 
+-config case best 
 -add looppath ep1 - 
 print summary 
 status 
@@ -994,7 +994,7 @@ remove loop 0x13e82
 history mhz 
 -analyse path * * 
 -load csdfsefsas * 
-config case WORST 
+config case worst 
 -config case 0xj41f1b 
 csdfsefsas  
 -source cycles 

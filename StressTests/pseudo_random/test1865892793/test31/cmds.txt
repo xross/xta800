@@ -6,7 +6,7 @@ history csdfsefsas
 load callg,h,callh,callg,callf,callf,callg,f, main 
 -clear  
 add loop 0xj92472 - 
-config case WORST 
+config case worst 
 echo  
 -remove loopscope ep4 
 status 
@@ -14,13 +14,13 @@ status
 source 1 
 source  
 -add exclusion  ep1 
-config case BEST 
+config case best 
 print - 
 version 0x12957 
 load - 
 -load test.xe 
 status csdfsefsas csdfsefsas - 
--config case WORST 
+-config case worst 
 -history 
 -pwd csdfsefsas  
 -help history 
@@ -44,7 +44,7 @@ remove
 -print warnings 
 print summary 
 add pathtime   h csdfsefsas  cycles 
-config case BEST 
+config case best 
 -help scripter 
 history 
 load test.xe 
@@ -72,7 +72,7 @@ set from   g
 set loopscope 0 * test.xc:7 
 set functiontime 3 callg,callg,callf,callh,callh,callh,callg,callh,callh,h,callh,callg,callf,h,callh,main, main 2147483647 mhz 
 -clear ep3 
-config case WORST 
+config case worst 
 - 
 -config verbosity 0.0 
 source csdfsefsas 
@@ -117,7 +117,7 @@ status
 -csdfsefsas 
 csdfsefsas 
 -set csdfsefsas 
-config case WORST 
+config case worst 
 -version mhz 
 -- 
 status 
@@ -156,14 +156,14 @@ echo "csdfsefsas  "
 -load csdfsefsas 
 -help version 
 status 0x11905 
-config case WORST 
+config case worst 
 print callf,main,callh,callf,callh,callf,callh,h,callh,callh,callf,main,callh,callf,callh,main,callh,callh, test.xc:6 
 load callh,f,callf,f,callg,h,callg,callh,callg,main,callh,callh,callg,f,callg,h,callf,callg, main 
 -add functiontime 0x11b1e main 2 
 -set required 3 csdfsefsas ns 
 load csdfsefsas  
 -clear csdfsefsas csdfsefsas  
--config case WORST 
+-config case worst 
 history 
 -clear 
 add branch callf,callh,callh,callg,callg,callf, f test.xc:18 g callg,h,callf,callh,callg,callh, test.xc:42 test.xc:30 
@@ -208,7 +208,7 @@ status
 print src - 
 scripter dump 
 set instructiontime 3 test.xc:12 csdfsefsas csdfsefsas mhz 
-config case BEST 
+config case best 
 -csdfsefsas 
 -pwd 
 -analyse path callh,callh, ep3 callg,main,callf,f,callf,callh,callf,callf, ep2 
@@ -218,7 +218,7 @@ print mhz
 -print mix 0.0 0.0 
 echo " " 
 -set  
-config case BEST 
+config case best 
 -status 
 -history cycles 
 version 
@@ -233,9 +233,9 @@ config freq 2
 -analyse csdfsefsas csdfsefsas 
 scripter disable 
 -add pathtime h ep3 csdfsefsas csdfsefsas csdfsefsas 
--config case BEST 
+-config case best 
 -source cycles 
--config case BEST 
+-config case best 
 -status 
 -scripter dump 
 echo csdfsefsas csdfsefsas csdfsefsas 
@@ -393,7 +393,7 @@ analyse callf,callg,callg,callh,callh,main,callf,callf,callh,h,callf,f,callf,cal
 -echo  
 scripter dump 
 analyse path f main 
--config case WORST 
+-config case worst 
 -config verbosity 0.0 
 print asm 0.0 1.0766234832892872E308 
 -status csdfsefsas csdfsefsas cycles 
@@ -467,7 +467,7 @@ help analyse
 -set to  0x10003 
 -remove route 4 
 pwd 
-config case BEST 
+config case best 
 -pwd 
 -analyse function 0x12c13 
 version callg,callh,callh,callg,callh,callh,callf,callh, ep1 
@@ -526,7 +526,7 @@ help source
 -config verbosity 1.7721487613389007E308 - 
 -source callg,callf,callf,main, main 
 -print summary 
-config case BEST 
+config case best 
 source csdfsefsas 
 help echo 
 -pwd 
@@ -540,7 +540,7 @@ scripter disable
 -csdfsefsas 
 config freq 0 
 -config verbosity 0.0 
-config case BEST 
+config case best 
 status 
 load test.xe 
 source csdfsefsas csdfsefsas f 
@@ -603,7 +603,7 @@ status csdfsefsas
 help add 
 -2100293741 
 -status 
-config case BEST 
+config case best 
 -add loopscope callf,callg,callg,callf,callf,g,callh,main, ep1 r 
 -history csdfsefsas 
 -- 
@@ -618,7 +618,7 @@ scripter dump
 -add branch  g ep1 ep3 ep4 
 -remove  
 -echo 0.0 
--config case BEST 
+-config case best 
 ep3 
 list loops 
 add instructiontime callg,main,callh,g,callf,callf,callh,h,callf,f,callh,callg, ep1 0.0  
@@ -947,7 +947,7 @@ pwd
 add functiontime callg,h,callf,h,callf,f,callh,callg,callg,callh,callg,g,callh,f,callg,callh,callg,callh, test.xc:44 0.0 cycles 
 -load  
 -source csdfsefsas 0xj50591 
-config case WORST 
+config case worst 
 clear csdfsefsas 
 version cycles 
 -pwd csdfsefsas csdfsefsas 
@@ -956,12 +956,12 @@ source
 -echo "2.5753209720908493E307 " 
 echo csdfsefsas 0x11531 
 -source  
-config case WORST 
+config case worst 
 -config freq 1 
 source - 
 source csdfsefsas  f 
 -add functiontime callg,callf,callf,g,callf,callh,callg,callf,callf,h, g csdfsefsas ns 
--config case BEST 
+-config case best 
 list functions 
 source csdfsefsas cycles 
 -clear 0x12a0b 

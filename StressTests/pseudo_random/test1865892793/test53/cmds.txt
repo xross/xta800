@@ -487,7 +487,7 @@ analyse path ep2 -
 -load callg,callg,callf,callf,callh,callg,callg,main, ep3 
 -load test.xe 
 history 
--config case WORST 
+-config case worst 
 config freq 0.0 
 remove to ep4 
 -load test.xe 
@@ -543,7 +543,7 @@ list loops
 --634326035 
 clear csdfsefsas csdfsefsas 
 clear 
-config case BEST 
+config case best 
 load test.xe 
 history 0.0 
 -echo 0xja0ed7 
@@ -775,7 +775,7 @@ list allsrclabels
 set functiontime 3  g - ns 
 config verbosity 1.0835719150181054E308 ns 
 -add functiontime 0xj8292f 0.0 cycles 
-config case BEST 
+config case best 
 -list endpoints 
 -load test.xe 
 add branch test.xc:2 csdfsefsas callh,main,callg,callh,callg,main,callg,callf,callh,h, f callg,callh,callf,g,callh,callf,callg,callg,callh,callf,callf,g, main callf,callh,callf,callh,callf,g,callf,callh,callg,callf,callh,callg,callh,callf,callh,callg, test.xc:19 
@@ -891,7 +891,7 @@ echo
 -remove from cycles 
 history ns 
 -source callg,callg,callf,main,callg,callg,callh,callh,callh,callg,callg,h,callg,callf, test.xc:17 
--config case WORST 
+-config case worst 
 -history csdfsefsas csdfsefsas ns 
 -load csdfsefsas cycles 
 pwd 
@@ -912,7 +912,7 @@ remove to callh,main,callg,f, test.xc:23
 analyse  
 add loop - 3.6855786245570373E307 
 -echo "csdfsefsas csdfsefsas " 
-config case BEST 
+config case best 
 - 
 -load mhz 
 -set from  0x119de 
@@ -929,13 +929,13 @@ history -
 echo - 
 set loopscope 4 ep3 relative 
 config case  
-config case BEST 
+config case best 
 pwd 
 -csdfsefsas  
 -print warnings 
 source csdfsefsas 
 version mhz 
-config case BEST 
+config case best 
 list threadstoppoints 
 -config verbosity csdfsefsas 1 
 status -114566143 

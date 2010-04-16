@@ -11,8 +11,8 @@
 9: add pathtime 0x10000 0x10002 10001 ns
 10: config freq 0 999.000000
 11: config threads stdcore\[0\] 99
-12: config case BEST
-13: config case WORST
+12: config case best
+13: config case worst
 14: config srcpaths /test/path/srcpath/
 15: clear
 16: echo "hello"

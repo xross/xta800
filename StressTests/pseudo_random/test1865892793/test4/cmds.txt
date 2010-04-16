@@ -425,7 +425,7 @@ csdfsefsas
 -scripter dump 
 status csdfsefsas 
 -list looppaths 
-config case WORST 
+config case worst 
 -history csdfsefsas main 
 -scripter disable 
 config freq 3.380710327132168E307 
@@ -457,7 +457,7 @@ cycles
 -load test.xe 
 -list unknowns 1 
 -remove loop csdfsefsas cycles 
-config case BEST 
+config case best 
 -version csdfsefsas 0xj30a00 
 remove from ep4 
 -load 0x13597 
@@ -480,7 +480,7 @@ add exclusion ep3
 config verbosity csdfsefsas csdfsefsas csdfsefsas cycles 
 -scripter enable 
 clear - 
--config case WORST 
+-config case worst 
 clear 
 source mhz 
 -clear 
@@ -611,7 +611,7 @@ source ns
 load cycles 
 echo "csdfsefsas " 
 analyse csdfsefsas  
--config case BEST 
+-config case best 
 -config verbosity - 
 -clear csdfsefsas 
 load csdfsefsas 
@@ -656,7 +656,7 @@ load 0xj9a2e2
 -set loopscope 2 0xj1e99e a 
 echo " " 
 help status 
-config case WORST 
+config case worst 
 -remove csdfsefsas 
 add loopscope - a 
 -0xje26f1 
@@ -667,7 +667,7 @@ source csdfsefsas csdfsefsas 0
 -status  
 pwd 
 -help status 
--config case BEST 
+-config case best 
 -status csdfsefsas 0xj7ee8d 
 source  
 help help 
@@ -713,7 +713,7 @@ set to  *
 set to  main 
 pwd  
 -clear mhz 
--config case BEST 
+-config case best 
 help add 
 help analyse 
 -status 
@@ -783,7 +783,7 @@ help version
 version csdfsefsas 
 mhz 
 -csdfsefsas 0.0 
-config case WORST 
+config case worst 
 -status 
 -source  
 list instructiontime 
@@ -877,7 +877,7 @@ cycles
 scripter enable 
 load test.xe 
 -analyse function 0xj83497 
--config case WORST 
+-config case worst 
 add looppath - 0.0 
 pwd 
 config verbosity -  
@@ -896,7 +896,7 @@ add pathtime ep1 0xj1e787 - ns
 version 
 -add looppath ep2 - 
 clear 
--config case BEST 
+-config case best 
 history 
 -analyse function * 
 source * 
@@ -965,7 +965,7 @@ print nodeinfo 2 1
 version 
 -set instructiontime 4 test.xc:30 1.6152698859257296E308 ns 
 history csdfsefsas 
-config case WORST 
+config case worst 
 list functiontimes 
 -list srclabels 
 -set from  0x12a44 

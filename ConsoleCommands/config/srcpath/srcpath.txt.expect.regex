@@ -3,7 +3,7 @@ TimingFailAsError: true
 WarnAsError: false
 ErrorAsWarn: false
 SrcPaths: .*up;.
-Case: WORST
+Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz

@@ -1,11 +1,11 @@
 Modifiable Enabled    Reference  ->     MapsTo
-false      false      foo.xc:15  ->    label_\d+
+false      false      foo.xc:15  -> endpoint_0
 true       true       .+/bar.xc:11 ->    label_\d+
-true       true       .+/bar.xc:6 ->    label_\d+
-true       true       .+/bar.xc:9 ->    label_\d+
+true       true       .+/bar.xc:6 ->     call_\d+
+true       true       .+/bar.xc:9 ->     call_\d+
 xta: .+/cmds.txt:9: error: Reference 'foo.xc:15' cannot be renamed
 Modifiable Enabled    Reference  ->     MapsTo
-false      false      foo.xc:15  ->    label_\d+
+false      false      foo.xc:15  -> endpoint_0
 true       true       .+/bar.xc:11 -> out_of_bounds
 true       true       .+/bar.xc:6 ->      start
 true       true       .+/bar.xc:9 ->       stop

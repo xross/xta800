@@ -38,7 +38,7 @@ remove from ep1
 -version  
 -scripter dump 
 print trace - 
--config case BEST 
+-config case best 
 history 
 config freq 1 
 -config verbosity 2147483647 
@@ -61,7 +61,7 @@ load test.xe
 scripter dump 
 add functiontime 0x1359e - ns 
 -set loop 4 ep1 - 
-config case WORST 
+config case worst 
 -version 
 -echo "- " 
 status cycles 
@@ -80,7 +80,7 @@ set 2
 -status csdfsefsas 
 pwd 
 config verbosity 1209932533 0.0 
--config case WORST 
+-config case worst 
 help load 
 -echo "ep1 " 
 echo "* " 
@@ -194,7 +194,7 @@ pwd
 csdfsefsas ns 
 config verbosity 0 0.0 
 clear csdfsefsas 
-config case BEST 
+config case best 
 -analyse path 0xja98c9 0xjb1946 
 -scripter dump 
 -set to  ep3 
@@ -205,7 +205,7 @@ add pathtime 1.2423523102847548E307 csdfsefsas 0xjf0fe7 csdfsefsas mhz
 clear 
 - 
 load test.xe 
-config case WORST 
+config case worst 
 -0.0 
 -source  
 -add loopscope ep1 r 
@@ -363,7 +363,7 @@ f
 add instructiontime 0x12f5a 2 ns 
 0.0 
 -status 
--config case BEST 
+-config case best 
 -list labels 
 add branch 0x10fb0 
 echo "csdfsefsas " 
@@ -417,11 +417,11 @@ version csdfsefsas
 add instructiontime ep3 - 1 
 -help clear 
 -version csdfsefsas cycles 
--config case WORST 
+-config case worst 
 scripter enable 
 version csdfsefsas 
 load test.xe 
-config case BEST 
+config case best 
 config case csdfsefsas cycles 
 -clear 0xj13ec8 
 -analyse path 1 0x102e2 
@@ -435,7 +435,7 @@ clear
 scripter enable 
 -remove looppath h 
 -version csdfsefsas 
--config case WORST 
+-config case worst 
 -status 
 -help pwd 
 version 
@@ -493,7 +493,7 @@ echo " "
 load test.xe 
 -analyse path 0xj5a3a8 ep3 
 -load test.xe 
-config case WORST 
+config case worst 
 -print asm 5.733213552094866E307 
 -clear csdfsefsas - 
 -print trace 0.0 
@@ -557,7 +557,7 @@ load test.xe
 -csdfsefsas csdfsefsas csdfsefsas 
 -0x1093b 
 set to  * 
-config case WORST 
+config case worst 
 echo csdfsefsas mhz 
 -list loopscopes 
 -config verbosity 2.9560123685939715E307 csdfsefsas 0 
@@ -637,7 +637,7 @@ pwd
 load test.xe 
 -pwd  
 list endpoints 
-config case BEST 
+config case best 
 echo "csdfsefsas csdfsefsas mhz " 
 list srclabels 
 -status 2.496144729166407E306 
@@ -709,7 +709,7 @@ help 0xj26f98
 print trace 0.0 
 config verbosity 1.2224754774611074E308 - 
 -pwd csdfsefsas csdfsefsas csdfsefsas csdfsefsas 
--config case BEST 
+-config case best 
 -add loopscope 0x117d3 absolute 
 -remove loopscope f 
 echo csdfsefsas 
@@ -792,7 +792,7 @@ analyse path test.xc:35 ep1
 version csdfsefsas  
 -clear csdfsefsas csdfsefsas 
 -add looppath h - 
-config case BEST 
+config case best 
 -load csdfsefsas  
 source g 
 remove  
@@ -838,7 +838,7 @@ version
 csdfsefsas 
 -help version 
 -set functiontime 0 * 1676395568 ns 
--config case WORST 
+-config case worst 
 scripter enable 
 add loopscope cycles relative 
 source  
@@ -870,7 +870,7 @@ status -
 -pwd 
 -clear 
 -config case 2147483647 
-config case BEST 
+config case best 
 -list threadstoppoints 
 load test.xe 
 -echo "csdfsefsas * " 

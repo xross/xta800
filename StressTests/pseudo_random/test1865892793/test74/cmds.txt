@@ -207,7 +207,7 @@ analyse function test.xc:13
 -scripter disable 
 set loop 4 callh,callg,callh,g,callh,g, test.xc:39 - 
 -print warnings 
-config case WORST 
+config case worst 
 pwd 
 set 0xj42031 
 -pwd - 
@@ -232,11 +232,11 @@ remove instructiontime callg,callh,callg,callg,callf,g,callf,callg,callh,callh,c
 set looppath 1 callf,f,callf,callh,callf,main,callg,callg,callf,h, ep2 1.4384347937539058E308 
 remove to callf,callg,callh,g,callf,callf,callh,callg,callh,f, test.xc:42 
 -pwd ns 
--config case WORST 
+-config case worst 
 pwd 
 analyse callf,f,callg,main,callg,callh, test.xc:5 
 pwd 2147483647 
--config case BEST 
+-config case best 
 -add loopscope 0x11b43 a 
 analyse function - 
 print csdfsefsas 
@@ -366,7 +366,7 @@ remove functiontime callf,callh,callh,callh,callf,f,callg,callf, ep2
 add looppath callh,callf,callh,h,callg,main,callh,callf,callf,main,callg,callh,callh,callh, f 1.6692623050407107E308 
 echo " " 
 -list unknowns 1 
-config case BEST 
+config case best 
 -clear  
 echo "ns " 
 -pwd 
@@ -409,7 +409,7 @@ print distribution -
 -status csdfsefsas 
 -ns 
 -csdfsefsas 
-config case BEST 
+config case best 
 -source 0.0 
 -remove to  g 
 -list labels 
@@ -428,7 +428,7 @@ status ns
 echo " " 
 -load csdfsefsas 
 version csdfsefsas 0x11b8f 
-config case BEST 
+config case best 
 -ns 
 -load test.xe 
 status 2147483647 
@@ -508,7 +508,7 @@ version
 history 
 -clear 
 history 
-config case WORST 
+config case worst 
 -version 0x12428 
 status  
 remove to g 
@@ -585,7 +585,7 @@ print src 1
 -help cycles 
 set instructiontime 0 0x10323 0 mhz 
 config freq - 
-config case BEST 
+config case best 
 -set loopscope 4  ep2 csdfsefsas 
 analyse function csdfsefsas 
 -remove loop callf,callh,callh,h,callf,f,callg,callh,callf,callh,callh,callh,callf,callh, ep3 
@@ -837,7 +837,7 @@ echo -
 -set pathtime 3 callh,h,callf,callf,callh,f,callf,callh,callf,g,callf,callg, test.xc:27 - 1 mhz 
 -load cycles 
 -status 
-config case WORST 
+config case worst 
 echo "csdfsefsas " 
  
 list srcloops 
@@ -881,11 +881,11 @@ remove loopscope f
 echo csdfsefsas 
 config freq csdfsefsas ns 
 -scripter enable 
-config case WORST 
+config case worst 
 list exclusions 
 -scripter dump 
 config freq - 
-config case BEST 
+config case best 
 -echo " " 
 print src 0 
 -list threadstoppoints 

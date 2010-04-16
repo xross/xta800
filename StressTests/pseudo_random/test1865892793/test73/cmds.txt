@@ -31,7 +31,7 @@ cycles
 -config verbosity 0.0 
 echo "0xjb46a0 " 
 echo "0.0 " 
-config case BEST 
+config case best 
 source ns 
 clear mhz 
 help help 
@@ -100,7 +100,7 @@ config verbosity mhz
 remove exclusion 0x137c5 
 -analyse path 0xj2ffb9 test.xc:16 
 version 
-config case WORST 
+config case worst 
 -echo  
 pwd 
 clear 
@@ -133,7 +133,7 @@ status
 version 
 version csdfsefsas 
 -source 8.597374459968185E307 
--config case BEST 
+-config case best 
 pwd csdfsefsas 
 version 
 add looppath ep3 3.2502915621179524E307 
@@ -194,12 +194,12 @@ scripter enable
  
 -version 
 -pwd 
-config case BEST 
+config case best 
 -echo - 
 clear 
 pwd 
 list instructiontime 
--config case WORST 
+-config case worst 
 -1426048599 
 pwd mhz 
 load csdfsefsas csdfsefsas * 
@@ -266,7 +266,7 @@ config verbosity 2147483647 3.9377156702889985E307
 -set looppath 4 - - 
 add branch csdfsefsas csdfsefsas ep1 ep4 test.xc:47 ns callh,f, main callf,main,callf,callf,callf,callg,callh,g,callh,callf,callf,callf,callg,main, g callf,callf, test.xc:23 * 
 echo 0xj796cf 
--config case WORST 
+-config case worst 
 source cycles 
 -load test.xc:42 
 -help pwd 
@@ -279,7 +279,7 @@ csdfsefsas cycles
 list allcalls 
 scripter disable 
 -config case * 
-config case BEST 
+config case best 
 clear 
 -analyse path ep3 ep4 
 -- 
@@ -452,7 +452,7 @@ source csdfsefsas 3.609263645269615E307
 -echo "csdfsefsas " 
 -list instructiontime 
 add exclusion callh,main,callf,f,callg,g, test.xc:17 
--config case BEST 
+-config case best 
 -pwd 
 print mix csdfsefsas 
 source 8.526295104139878E307 
@@ -554,7 +554,7 @@ scripter dump
 load csdfsefsas 
 -history cycles 
 scripter disable 
--config case BEST 
+-config case best 
 -add pathtime h callh,callh,callh,callg, g - cycles 
 -remove from ep1 
 -clear  test.xc:2 
@@ -565,7 +565,7 @@ status 0xj4fb0f
 -clear  
 scripter dump 
 scripter enable 
-config case WORST 
+config case worst 
 -config freq 2 
 -scripter enable 
 -add functiontime ep2 4.979068602828821E307 ns 
@@ -582,7 +582,7 @@ print mix -
 -remove instructiontime test.xc:2 
 remove loop callg,h,callh,f,callf,g,callg,callf,callf,callf, ep1 
 -list branches 
-config case WORST 
+config case worst 
 -version  
 scripter disable 
 analyse function - 
@@ -890,7 +890,7 @@ status
 * 
 clear 
 -print warnings 
-config case WORST 
+config case worst 
 list srcloops 
 config case f 
 status 
@@ -978,7 +978,7 @@ analyse path  callg,callh,callf,callh,callh,callh,callf,callf,callf,callh, ep3
 pwd 
 -pwd 
 version 
-config case WORST 
+config case worst 
 print ns 
 source ns 
 -remove from csdfsefsas 

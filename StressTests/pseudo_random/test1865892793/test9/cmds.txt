@@ -45,12 +45,12 @@ set instructiontime 2 h - mhz
 918541263 
 config case  
 scripter dump 
--config case BEST 
+-config case best 
 -version 
 -remove pathtime * ep3 
 -history 
 -help history 
-config case BEST 
+config case best 
 -print summary 
 -ns 
 -status 
@@ -81,7 +81,7 @@ scripter dump
 add instructiontime * -  
 print summary 
 -clear f 
--config case WORST 
+-config case worst 
 -history 
 cycles 
 -set required 4 0.0 ns 
@@ -153,7 +153,7 @@ status
 set looppath 1 - 2 
 -source  
 -load  
-config case BEST 
+config case best 
 -echo "mhz " 
 -history 
 -version csdfsefsas 
@@ -165,10 +165,10 @@ pwd csdfsefsas
 -list unknowns csdfsefsas  
 help csdfsefsas 
 -help csdfsefsas ns 
--config case BEST 
+-config case best 
 pwd test.xc:17 
 -clear 0.0 
--config case WORST 
+-config case worst 
 -print distribution 2147483647 
 remove loopscope test.xc:43 
 pwd 
@@ -244,7 +244,7 @@ pwd
 print structure 0.0 
 source csdfsefsas  
 -pwd 
--config case BEST 
+-config case best 
 -version 
 remove from test.xc:38 
 -analyse path - - 
@@ -381,7 +381,7 @@ status
 -history 7.747039829789704E307 
 analyse path 0x10234 g 
 -version csdfsefsas - 
--config case BEST 
+-config case best 
 -history  
 help help 
 -csdfsefsas  
@@ -442,7 +442,7 @@ load
 -analyse csdfsefsas 
 -help pwd 
 source csdfsefsas 
-config case WORST 
+config case worst 
 -version  
 -print mix 2147483647 
 -print summary 
@@ -537,7 +537,7 @@ source ep1
 add loopscope test.xc:39 a 
 -source mhz 
 print distribution 9.349489033624178E307 2147483647 
-config case BEST 
+config case best 
 pwd csdfsefsas h 
 -add pathtime - test.xc:44 ns ns 
 analyse csdfsefsas csdfsefsas 0x11d7d 
@@ -648,7 +648,7 @@ analyse cycles
 -config verbosity - csdfsefsas 
 -version csdfsefsas  
 print warnings 
--config case BEST 
+-config case best 
 -source  
 - 
 load cycles 
@@ -864,7 +864,7 @@ add instructiontime ep1 - cycles
 -analyse - 
 load test.xe 
 list instructiontime 
--config case WORST 
+-config case worst 
 -scripter enable 
 clear 
 pwd 
@@ -946,11 +946,11 @@ echo "csdfsefsas 0.0 "
 version  
 -load test.xe 
 -config verbosity mhz 0 
-config case BEST 
+config case best 
 print trace f 
 -print structure - 
 -set loopscope 4 0x139a6 0 
-config case WORST 
+config case worst 
 print warnings 
 list srccommands 
 version 

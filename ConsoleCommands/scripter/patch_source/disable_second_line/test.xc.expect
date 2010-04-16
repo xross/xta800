@@ -18,12 +18,12 @@ int bar(){
     int x;
     while(1){
         x = foo();
-        #pragma xta call "label_0"
+        #pragma xta call "call_0"
         x = foo();
         x = foo();
         x = foo();
     }
-    #pragma xta label "label_2"
+    #pragma xta label "label_0"
     return x;
 }
 

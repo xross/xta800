@@ -43,7 +43,7 @@ version
 remove loop 0xj9aec9 
 add loopscope ep1 csdfsefsas 
 -set from  test.xc:27 
--config case WORST 
+-config case worst 
 clear cycles 
 -remove exclusion ep1 
 version 
@@ -84,7 +84,7 @@ list sources
 -echo "ns " 
 -history 
 -add loopscope 0x123d5 absolute 
-config case BEST 
+config case best 
 -remove route 3 
 -set csdfsefsas csdfsefsas csdfsefsas mhz 
 -pwd  
@@ -213,7 +213,7 @@ set instructiontime 1 * -2027411332
 -csdfsefsas csdfsefsas 
 -echo csdfsefsas 0xj35155 
 csdfsefsas 
-config case BEST 
+config case best 
 -add branch ep3 0x122ad - g test.xc:28 ep3 0xjc1ddb csdfsefsas test.xc:41 test.xc:22 
 list srcloops 
 scripter enable 
@@ -372,7 +372,7 @@ echo -
 remove csdfsefsas 
 -status - 
 -list endpoints 
--config case WORST 
+-config case worst 
 print summary 
 -version test.xc:15 
 -add instructiontime - 0.0  
@@ -420,7 +420,7 @@ analyse path g 0xjc1309
 csdfsefsas 
 version 
 add functiontime 0x13126 - cycles 
--config case WORST 
+-config case worst 
 analyse function 0x127e7 
 -list knowns - 
 -add instructiontime * csdfsefsas csdfsefsas csdfsefsas csdfsefsas cycles cycles 
@@ -645,7 +645,7 @@ print mix csdfsefsas
 analyse path test.xc:20 * 
 scripter enable 
 pwd csdfsefsas 
-config case BEST 
+config case best 
 -echo "ns " 
 scripter dump 
 -remove route 3 
@@ -666,7 +666,7 @@ load test.xe
 -scripter enable 
 status 
 -echo 0 
-config case WORST 
+config case worst 
 status 
 -echo " " 
 -source  
@@ -794,7 +794,7 @@ echo "csdfsefsas "
 -list loopscopes 
 -print trace 1 
 clear csdfsefsas 
--config case WORST 
+-config case worst 
 list threadstartpoints 
 -help print 
 -load ns 
@@ -948,7 +948,7 @@ echo csdfsefsas
 print nodeinfo 2 - 
 status 
 -load test.xe 
--config case WORST 
+-config case worst 
 -csdfsefsas csdfsefsas 0.0 
 version csdfsefsas  
 config freq 0 
@@ -980,7 +980,7 @@ echo "csdfsefsas "
 -analyse function 0x13d02 
 remove to * 
 clear csdfsefsas 
--config case BEST 
+-config case best 
 -remove route 2 
 -scripter dump 
 -analyse csdfsefsas  

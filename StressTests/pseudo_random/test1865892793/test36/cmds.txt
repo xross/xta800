@@ -8,7 +8,7 @@ load 1.3744798386068018E307
 -load csdfsefsas 
 -version  
 print warnings 
-config case WORST 
+config case worst 
 -set to  ep3 
 echo  
 -echo * 
@@ -43,7 +43,7 @@ remove looppath f
 -list labels 
 echo  
 help status 
--config case BEST 
+-config case best 
 -help remove 
 -set instructiontime 4 test.xc:43 0 csdfsefsas 
 -help history 
@@ -154,7 +154,7 @@ set looppath 2 1.0177062908532602E308 1
 help pwd 
 csdfsefsas 
 -analyse function ep1 
-config case WORST 
+config case worst 
 -source csdfsefsas 
 echo * 
 -clear 
@@ -169,7 +169,7 @@ add branch 0xj7a808 - *
 clear 
 version  
 analyse path csdfsefsas - 
--config case BEST 
+-config case best 
 print src 0 
 csdfsefsas 
 -set pathtime 1 h 0x13978 -  
@@ -379,7 +379,7 @@ status csdfsefsas
 analyse csdfsefsas csdfsefsas cycles 
 -set pathtime 0 * * 1505483272 ns 
 set required 0 - mhz 
--config case WORST 
+-config case worst 
 -history  
 list calls 
 pwd 
@@ -593,7 +593,7 @@ analyse -
 remove looppath 0x12fbd 
 -echo test.xc:7 
 - 
--config case BEST 
+-config case best 
 -analyse 0 
 -source csdfsefsas csdfsefsas 
 -list allsrclabels 

@@ -21,7 +21,7 @@ history
 scripter disable 
 set required 2 0 1 
 -history csdfsefsas 
--config case WORST 
+-config case worst 
 load test.xe 
 source csdfsefsas ep2 
 help csdfsefsas 
@@ -202,7 +202,7 @@ add loopscope 0xj4c98f mhz
 help list 
 -csdfsefsas 
 scripter dump 
-config case BEST 
+config case best 
 -remove from test.xc:24 
 load test.xe 
 help help 
@@ -271,10 +271,10 @@ version -
 -help print 
  
 load 0x1259b 
--config case WORST 
+-config case worst 
 -cycles 
 source cycles 
-config case WORST 
+config case worst 
 echo csdfsefsas csdfsefsas csdfsefsas csdfsefsas ep1 
 remove functiontime 0xj8da16 
 -echo csdfsefsas csdfsefsas 
@@ -444,7 +444,7 @@ help set
 -status cycles 
 help set 
 set to  0x12f77 
--config case BEST 
+-config case best 
 set pathtime 0 0xjd723a csdfsefsas * 2  
 -clear 
 -load test.xe 
@@ -642,7 +642,7 @@ list g
 source  
 -history 
 -status ns 
-config case WORST 
+config case worst 
 -clear test.xc:8 
 status csdfsefsas 
 -version 
@@ -769,7 +769,7 @@ help config
 -history 
 -load * 
 -print routeinfo 2147483647 
-config case BEST 
+config case best 
 -status  
 -csdfsefsas csdfsefsas 
 -status 
@@ -920,7 +920,7 @@ set instructiontime 0 ep3 967643571 csdfsefsas
 -print distribution 0.0 
 -source  
 -version csdfsefsas csdfsefsas  
--config case BEST 
+-config case best 
 -analyse csdfsefsas 0.0 
 -help source 
 remove instructiontime ep4 

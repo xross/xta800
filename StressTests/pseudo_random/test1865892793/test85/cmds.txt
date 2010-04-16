@@ -53,9 +53,9 @@ csdfsefsas -
 source main 
 -list allendpoints 
 - 
--config case BEST 
+-config case best 
 version ns 
--config case WORST 
+-config case worst 
 -add looppath 0x105dc 2147483647 
 -status 
 -list unknowns - 
@@ -67,7 +67,7 @@ history
 scripter enable 
 analyse function csdfsefsas  
 -help history 
-config case BEST 
+config case best 
 -version 2 
 -analyse path - 0x1042d 
 -scripter enable 
@@ -110,7 +110,7 @@ source csdfsefsas
 pwd  
 -status csdfsefsas 
 cycles 
-config case BEST 
+config case best 
 -source 1 
 pwd 
 pwd csdfsefsas  
@@ -496,7 +496,7 @@ remove loopscope test.xc:16
 echo csdfsefsas 
 -pwd 0 
 source csdfsefsas 
-config case BEST 
+config case best 
 -set required 3 csdfsefsas 0.0 cycles 
 -clear 
 set instructiontime 2 * 2147483647 cycles 
@@ -652,7 +652,7 @@ source 1.5156858055877456E308
 -- 
 status 
 -load test.xe 
--config case BEST 
+-config case best 
 -help exit 
 analyse path 0xjc2b82 0xjf05c5 
 load  
@@ -672,7 +672,7 @@ remove branch h g ep3
 -- 
 -pwd csdfsefsas 
 -set functiontime 1  csdfsefsas  
-config case WORST 
+config case worst 
 analyse mhz 
 -version cycles 
 -config verbosity 1.1817819121939635E308 
@@ -732,7 +732,7 @@ print nodeinfo csdfsefsas -
 version  
 set csdfsefsas 
 load cycles 
-config case BEST 
+config case best 
 -echo  
 -set instructiontime 2 0x13375 - 0x10c81 
 -set required 4 0.0 cycles 

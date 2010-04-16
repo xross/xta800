@@ -4,7 +4,7 @@ set functiontime 3 ep2 csdfsefsas 0xj74d9d csdfsefsas
 -remove branch - ep3 0x1243b cycles g - 0xja1645 - 
 -remove loopscope * 
 -status 
--config case BEST 
+-config case best 
 scripter dump 
 -version 
 -history csdfsefsas 0xj8f2fe 
@@ -36,7 +36,7 @@ list sources
 -help set 
 scripter dump 
 print mix - 7.408695884565493E307 
--config case BEST 
+-config case best 
 echo csdfsefsas 
 scripter enable 
 -source csdfsefsas 
@@ -62,7 +62,7 @@ history
 -print src csdfsefsas ep3 
 -load test.xe 
 -clear 
--config case WORST 
+-config case worst 
 version csdfsefsas 
 -set from  0x13fbf 
 clear 
@@ -115,7 +115,7 @@ set -
 -clear 
 -add exclusion 0x12ead 
 -scripter enable 
--config case BEST 
+-config case best 
 scripter enable 
 status csdfsefsas 
 version  
@@ -140,7 +140,7 @@ source csdfsefsas
 add pathtime ep3 0xj32b39 2 mhz 
 -help exit 
 -source csdfsefsas - 
--config case BEST 
+-config case best 
 echo mhz 
 config verbosity 1.5819936479790751E308 8.951584141221356E307 
 - 
@@ -214,7 +214,7 @@ analyse csdfsefsas ns
 -config verbosity 1 - 
 -remove route 0 
 -version  
-config case BEST 
+config case best 
 set required 1 0 mhz 
 -status cycles 
 -print asm cycles 1 
@@ -352,7 +352,7 @@ help set
 -list pathtimes 
 -print * 
 version 
-config case WORST 
+config case worst 
 -add instructiontime - 1.686429308874074E308 ns 
 add instructiontime test.xc:3 test.xc:38 cycles 
 -set instructiontime 3 test.xc:17 2 mhz 
@@ -377,7 +377,7 @@ history
 -analyse path test.xc:33 0xjab55e 
 -help scripter 
 version  
--config case WORST 
+-config case worst 
 -add looppath csdfsefsas cycles - 
 history - 
 -analyse function 0xj6d3aa 
@@ -443,12 +443,12 @@ config verbosity csdfsefsas
 clear csdfsefsas ep3 
 list loops 
 -load test.xc:10 
--config case WORST 
+-config case worst 
 -config freq 1.2452830706257229E308 
 -clear  
 add exclusion test.xc:9 
 -help pwd 
--config case BEST 
+-config case best 
 -source csdfsefsas 
 -list branches 
 -scripter disable 
@@ -469,7 +469,7 @@ history
 -load test.xe 
 -remove exclusion ep3 
 add looppath 1.6669658823701457E308 - 
-config case WORST 
+config case worst 
 list unknowns 9.261708020494977E307 
 history - 
 help analyse 
@@ -527,7 +527,7 @@ add functiontime ep2 0.0 cycles
 -source csdfsefsas csdfsefsas 
 -analyse path test.xc:1 test.xc:25 
 -source csdfsefsas  
--config case BEST 
+-config case best 
 -status csdfsefsas  
 config verbosity 1 
 scripter dump 
@@ -708,7 +708,7 @@ config case ns
 help status 
 clear  
 list exclusions 
--config case WORST 
+-config case worst 
 -echo "- " 
 -echo "ep2 " 
 set looppath 2 * 1 
@@ -784,7 +784,7 @@ echo mhz
 -print src 0.0 
 source  
 -history 
-config case WORST 
+config case worst 
 -list loops 
 analyse csdfsefsas 
 add pathtime * ep1 2147483647 ns 
@@ -833,7 +833,7 @@ version 4.4035558892332593E307
 -scripter dump 
 -clear main 
 -status 
-config case BEST 
+config case best 
 analyse path 0xj4426e 0xjaa42e 
 -status 
 set functiontime 2 test.xc:35 - mhz 
@@ -920,7 +920,7 @@ source -
 remove to f 
 -help scripter 
 source  
--config case WORST 
+-config case worst 
 history 
 -scripter disable 
 print warnings 
@@ -952,7 +952,7 @@ remove instructiontime 5.26807942006482E307
 -echo 0.0 
 config freq 0.0 
 4.764143208800188E307 
-config case WORST 
+config case worst 
 analyse path test.xc:15 0xjb420d 
 history 1.7086439702692007E308 
 -pwd csdfsefsas 
@@ -964,7 +964,7 @@ set required 1 - ns
 help help 
 source csdfsefsas 
 -load test.xe 
--config case WORST 
+-config case worst 
 -help scripter 
 -help set 
 -add loopscope g 8.513890150284706E307 

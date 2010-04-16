@@ -332,7 +332,7 @@ clear
 -pwd 
 echo csdfsefsas 
 csdfsefsas mhz 
--config case BEST 
+-config case best 
 help help 
 -0xj169dc 
 add looppath 0xje365a f 
@@ -708,7 +708,7 @@ print src 0.0
 -echo "csdfsefsas csdfsefsas  " 
 print warnings 
 -status 
--config case BEST 
+-config case best 
 -history 
 source ns 
 csdfsefsas cycles 

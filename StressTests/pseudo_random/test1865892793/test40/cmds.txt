@@ -66,7 +66,7 @@ remove branch csdfsefsas -
 remove instructiontime  
 clear 
 -list knowns 0.0 
--config case BEST 
+-config case best 
 echo "csdfsefsas  " 
 -pwd 
 status 
@@ -129,7 +129,7 @@ analyse path 0xjf5425 0xj5535a
 scripter enable 
 -scripter enable 
 pwd  
--config case BEST 
+-config case best 
 -add instructiontime f - cycles 
 -version 
 -remove loop - 
@@ -158,7 +158,7 @@ history
 -list sources 
 -print structure - 0.0 
 history 
-config case WORST 
+config case worst 
 -history csdfsefsas 
 echo  
 -pwd 
@@ -484,7 +484,7 @@ analyse path 0xjcf86f 0xj10f0f
 -ns 
 -remove route 3 
 -echo "csdfsefsas " 
-config case BEST 
+config case best 
 version 
 -print routeinfo - 
 history cycles 
@@ -499,7 +499,7 @@ history
 add loopscope - relative 
 pwd  
 config verbosity 1.0214319339138603E308 1.5881448376713529E308 
--config case WORST 
+-config case worst 
 -add loopscope test.xc:16 a 
 config verbosity - 2 
 -add instructiontime 0xjc4fe6 0.0 cycles 
@@ -564,7 +564,7 @@ status 0x12849
 add loopscope ep4 r 
 scripter dump 
 - 
--config case WORST 
+-config case worst 
 -add loop ep3 - 
 -source 0.0 
 -list srcloops 
@@ -579,7 +579,7 @@ scripter disable
 add branch test.xc:43  
 pwd 
 add pathtime test.xc:31 * cycles  
-config case WORST 
+config case worst 
 -echo " " 
 config verbosity 2 - 
 -help load 
@@ -651,7 +651,7 @@ mhz
 echo csdfsefsas 
 -set loopscope 4 test.xc:22 a 
 -load test.xe 
--config case WORST 
+-config case worst 
 -config case  
 -version 
 -status csdfsefsas 
@@ -744,7 +744,7 @@ set from
 list allsrclabels 
 history csdfsefsas csdfsefsas 
 history 
--config case BEST 
+-config case best 
 -history 
 -print mix csdfsefsas 
 status 
@@ -878,7 +878,7 @@ history
 -status 
 version 
 analyse path 0x11bd9  
--config case BEST 
+-config case best 
 version 
 analyse csdfsefsas  
 load test.xe 
@@ -987,7 +987,7 @@ help csdfsefsas
 config freq csdfsefsas 
 -ns 
 -history 
--config case WORST 
+-config case worst 
 -config case ns 
 -pwd csdfsefsas cycles 
 -analyse 0x12d6b 

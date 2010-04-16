@@ -12,7 +12,7 @@ set *
 -set looppath 4 test.xc:33 0.0 
 source csdfsefsas 0x121f6 
 -add pathtime 0xj4f88f test.xc:41 0.0 cycles 
--config case BEST 
+-config case best 
 -csdfsefsas 5.87950260238152E307 
 -echo "0xj83984 " 
 -load  
@@ -113,7 +113,7 @@ load 0xjb066f
 -source csdfsefsas csdfsefsas * 
 -load csdfsefsas 
 config verbosity 1 
--config case BEST 
+-config case best 
 -load test.xe 
 csdfsefsas mhz 
 -analyse mhz 
@@ -151,7 +151,7 @@ add instructiontime * - ns
 -print nodeinfo 0.0 
 clear  
 -remove instructiontime test.xc:43 
-config case BEST 
+config case best 
 help status 
 -analyse function  
 source csdfsefsas cycles 
@@ -231,7 +231,7 @@ echo "csdfsefsas "
 analyse function 0xjea8f4 
 -load test.xe 
 -set pathtime 1 csdfsefsas 0x12265 - csdfsefsas ns 
--config case BEST 
+-config case best 
 -clear 
 history * 
 -echo  
@@ -336,7 +336,7 @@ scripter enable
 scripter enable 
 -clear 
 -status 
-config case BEST 
+config case best 
 list allcalls 
 status  
 -analyse path test.xc:35 0xjd9ddb 
@@ -359,7 +359,7 @@ list functions
 -status ns 
 -clear cycles 
 load test.xe 
-config case WORST 
+config case worst 
 -source  
 scripter disable 
 print distribution 4.2056241269184745E307 1.5212410929430395E308 
@@ -371,7 +371,7 @@ scripter disable
 scripter enable 
 clear 
 -pwd 
--config case WORST 
+-config case worst 
 status  
 -history 
 add instructiontime ep4 csdfsefsas mhz 
@@ -422,7 +422,7 @@ history ns
 -help echo 
 -history 
 -list labels 
-config case WORST 
+config case worst 
 -echo "test.xc:21 " 
 -version 
 list knowns - 
@@ -498,7 +498,7 @@ help config
 clear 
 print csdfsefsas 
 -remove route 4 
-config case WORST 
+config case worst 
 help add 
 -list looppaths 
 analyse csdfsefsas csdfsefsas ep2 
@@ -518,7 +518,7 @@ add instructiontime ep3 - csdfsefsas
 -echo  
 clear csdfsefsas 
 version csdfsefsas ns 
-config case BEST 
+config case best 
 version csdfsefsas 
 version 
 -help analyse 
@@ -532,12 +532,12 @@ echo "csdfsefsas csdfsefsas  "
 -history 
 -version - 
 -echo "* " 
-config case WORST 
+config case worst 
 -version 0 
 -scripter enable 
 -help history 
 -help set 
--config case WORST 
+-config case worst 
 -source csdfsefsas 
 pwd cycles 
 -clear csdfsefsas csdfsefsas 
@@ -599,7 +599,7 @@ pwd ns
 -load test.xe 
 -version 
 help list 
--config case WORST 
+-config case worst 
 clear csdfsefsas 
 history csdfsefsas csdfsefsas 
 -history cycles 
@@ -929,7 +929,7 @@ version
 -echo "csdfsefsas " 
 -print distribution 0.0 
 -list loopscopes 
--config case BEST 
+-config case best 
 -status 
 remove to h 
 load test.xe 
@@ -937,7 +937,7 @@ source
 source ep1 
 status  
 remove functiontime csdfsefsas csdfsefsas 
--config case WORST 
+-config case worst 
 source f 
 -history  
 -help remove 
@@ -947,7 +947,7 @@ source f
 -scripter enable 
 clear 
 history csdfsefsas 
--config case BEST 
+-config case best 
 help version 
 list labels 
 -list allcalls 

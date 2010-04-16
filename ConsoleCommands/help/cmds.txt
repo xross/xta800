@@ -16,9 +16,9 @@ help scripter
 help set
 help source
 help status
-help PC_REF
-help FUNCTION_REF
-help LABEL_REF
-help ENDPOINT_REF
-help ANY_REF
+help FUNCTION
+help BRANCH
+help INSTRUCTION
+help ENDPOINT
+help ANY
 exit

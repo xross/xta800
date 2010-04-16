@@ -9,7 +9,7 @@ remove from 0xj7c556
 -analyse csdfsefsas 
 help scripter 
 -status  
--config case WORST 
+-config case worst 
 set loop 2 test.xc:29 - 
 -pwd 
 -source csdfsefsas 
@@ -22,7 +22,7 @@ version
 set looppath 4 - csdfsefsas 
 history 
 clear  
-config case BEST 
+config case best 
 help status 
 add pathtime 0xj25e68 - -  
 -help history 
@@ -33,7 +33,7 @@ load test.xe
 -list branches 
 help help 
 print structure 1380512670 * 
--config case BEST 
+-config case best 
 source csdfsefsas 
 load csdfsefsas csdfsefsas 
 version csdfsefsas 
@@ -78,7 +78,7 @@ pwd csdfsefsas
 add instructiontime * 0.0 cycles 
 -set loop 0 test.xc:9 5.412303547359058E307 
 echo cycles 
--config case WORST 
+-config case worst 
 status 
 -history 
 print structure test.xc:25 
@@ -213,12 +213,12 @@ version
 analyse csdfsefsas 
 -add pathtime ep2 - csdfsefsas csdfsefsas ns 
 -load mhz 
--config case WORST 
+-config case worst 
 config case main 
 -source 0 
 list srclabels 
 source csdfsefsas 
--config case WORST 
+-config case worst 
 help exit 
 -list sources 
 -list srccommands 
@@ -226,7 +226,7 @@ status cycles
 source csdfsefsas 
 -echo csdfsefsas 
 -list pathtimes 
--config case WORST 
+-config case worst 
 1 
 -print structure - 2147483647 
 clear 2147483647 
@@ -453,7 +453,7 @@ clear
 -add instructiontime g - cycles 
 scripter enable 
 -echo * 
-config case BEST 
+config case best 
 -csdfsefsas 
 remove branch f 
 -load - 
@@ -593,7 +593,7 @@ history
 version csdfsefsas 
 source - 
 -source 1831138496 
--config case BEST 
+-config case best 
 -help version 
 list instructiontime 
 add exclusion - 
@@ -606,7 +606,7 @@ echo csdfsefsas csdfsefsas
 source test.xc:30 
 history 
 version csdfsefsas  
-config case BEST 
+config case best 
 -source 2147483647 
 -scripter disable 
 -version csdfsefsas - 
@@ -619,7 +619,7 @@ history
 -echo csdfsefsas 
 remove functiontime - 
 remove from 0x131f4 
-config case BEST 
+config case best 
 -print distribution 2147483647 
 source csdfsefsas 
 -print summary 
@@ -637,7 +637,7 @@ clear
 -remove instructiontime 0xj22610 
 -status 
 csdfsefsas 
-config case WORST 
+config case worst 
 -analyse cycles 
 -history csdfsefsas 
 -scripter disable 
@@ -748,7 +748,7 @@ scripter dump
 -help help 
 -analyse path test.xc:12 * 
 mhz 
-config case WORST 
+config case worst 
 -list knowns 1.6868627646506872E308 
 print asm - 
 pwd csdfsefsas csdfsefsas 
@@ -873,7 +873,7 @@ history
 -scripter disable 
 -source csdfsefsas 
 -echo 1.1755654298562246E308 
-config case WORST 
+config case worst 
 list endpoints 
 load test.xe 
 -version 

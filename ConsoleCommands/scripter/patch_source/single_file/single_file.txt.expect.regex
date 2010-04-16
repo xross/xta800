@@ -1,6 +1,6 @@
 Modifiable Enabled    Reference  ->     MapsTo
-true       true       test.xc:13 ->    label_\d+
-true       true       .+/test.xc:25 ->    label_\d+
+true       true       test.xc:13 -> endpoint_0
+true       true       .+/test.xc:25 ->    label_0
 Modifiable Enabled    Reference  ->     MapsTo
 true       true       test.xc:13 ->          x
 true       true       .+/test.xc:25 -> out_of_bounds

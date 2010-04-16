@@ -301,7 +301,7 @@ remove branch h 0xjd7a8c - *
 clear 
 version 
 -status 0xjfdb15 
--config case BEST 
+-config case best 
 -source - 
 scripter enable 
 -version 
@@ -363,7 +363,7 @@ remove loop
 pwd mhz 
 source csdfsefsas ns 
 -source cycles 
-config case WORST 
+config case worst 
 help echo 
 -echo "csdfsefsas csdfsefsas " 
 h 
@@ -604,7 +604,7 @@ version
 print * 
 history csdfsefsas csdfsefsas 
 config freq  
--config case WORST 
+-config case worst 
 -load test.xe 
 -list threadstartpoints 
 history 
@@ -643,7 +643,7 @@ source
 pwd mhz 
 scripter disable 
 remove route 0 
--config case BEST 
+-config case best 
 analyse  
 -help source 
 -help remove 
@@ -700,9 +700,9 @@ echo " "
 -history  
 -echo - 
 scripter dump 
-config case BEST 
--config case WORST 
--config case WORST 
+config case best 
+-config case worst 
+-config case worst 
 -analyse cycles 
 print summary 
 -help history 
@@ -755,7 +755,7 @@ version csdfsefsas
 -source  
 -help load 
 -config verbosity 1 7.644760657341298E307 
-config case WORST 
+config case worst 
 add loopscope - absolute 
 -config verbosity csdfsefsas cycles - 
 pwd 
@@ -832,7 +832,7 @@ source
 -set instructiontime 3 - - cycles 
 -list allsrclabels 
 -list knowns 1 
-config case BEST 
+config case best 
 status 1 
 version  
 print distribution csdfsefsas 
@@ -953,7 +953,7 @@ add functiontime h  ns
 -add functiontime g 0.0 mhz 
 load test.xe 
 -add loopscope h r 
--config case WORST 
+-config case worst 
 -clear  
 status  
 -history 

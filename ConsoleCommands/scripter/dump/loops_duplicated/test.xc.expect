@@ -14,11 +14,14 @@ void f() {
     }
 
     for (int i = 0; i < 10; ++i) {
+        #pragma xta label "loop_iterations_0"
         res += 1;
     }
 
     for (int i = 0; i < 10; ++i) {
+        #pragma xta label "loop_iterations_1"
         if (i & 0x1) {
+            #pragma xta label "loop_path_iterations_0"
             res += 1;
         }
     }
@@ -32,7 +35,7 @@ void g() {
 }
     
 int main() {
-    #pragma xta call "label_0"
+    #pragma xta call "call_0"
     g();
     return 0;
 }

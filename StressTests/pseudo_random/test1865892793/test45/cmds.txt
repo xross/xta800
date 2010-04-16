@@ -209,7 +209,7 @@ print mix 2147483647
 -clear 0x1264f 
 -status mhz 
 -help echo 
-config case WORST 
+config case worst 
 status 
 -history  
 add pathtime csdfsefsas csdfsefsas  * 0.0 mhz 
@@ -356,7 +356,7 @@ scripter dump
 clear csdfsefsas 
 -load csdfsefsas 
 -help config 
-config case BEST 
+config case best 
 version 
 -list functions 
 scripter dump 
@@ -589,7 +589,7 @@ add exclusion -
 remove looppath - 
 scripter dump 
 load test.xe 
--config case WORST 
+-config case worst 
 -print mix 1.3070838465409847E308 
 scripter dump 
 help exit 
@@ -807,7 +807,7 @@ pwd
 -status csdfsefsas 
 echo "csdfsefsas - " 
 -set to  ep2 
--config case BEST 
+-config case best 
 scripter enable 
 -help clear 
 version 
@@ -831,7 +831,7 @@ clear
 status 
 -set looppath 3 g 0.0 
 -remove csdfsefsas 
-config case BEST 
+config case best 
 -config freq -1535222881 
 clear 
 -pwd 2 
@@ -878,7 +878,7 @@ source *
 print routeinfo - 
 scripter dump 
 -pwd 
--config case BEST 
+-config case best 
 remove branch 2147483647 0xjbc9be - 0xj5c8e4 0xjd46b7 
 -remove exclusion test.xc:4 
 - 
@@ -939,7 +939,7 @@ scripter disable
 -load csdfsefsas 
 -set loop 4 0x13d1e - 
 -scripter disable 
--config case WORST 
+-config case worst 
 -config case csdfsefsas 
 -remove functiontime * 
 history 
@@ -960,7 +960,7 @@ analyse path test.xc:47 -
 help history 
 analyse csdfsefsas  
 -set loopscope 4 ns relative 
--config case WORST 
+-config case worst 
 help analyse 
 echo " " 
 -list srclabels 
@@ -973,7 +973,7 @@ print distribution - -
 -help set 
 -help echo 
 -remove - 
-config case WORST 
+config case worst 
 pwd -1097883759 
 analyse function * 
 -clear 

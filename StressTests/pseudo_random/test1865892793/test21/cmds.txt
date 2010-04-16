@@ -56,7 +56,7 @@ help config
 -config freq - 
 -config case mhz 
 -analyse path csdfsefsas cycles ep3 
-config case WORST 
+config case worst 
 print src 0x107de 
 pwd 0.0 
 -analyse test.xc:33 
@@ -160,7 +160,7 @@ analyse path test.xc:31 test.xc:10
 -history csdfsefsas 
 list knowns - 
 -analyse function test.xc:13 
-config case BEST 
+config case best 
 -analyse function - 
 -status 
 -set looppath 1 0xj3c76f 1.3833358745490254E308 
@@ -232,7 +232,7 @@ add loop ep2 csdfsefsas csdfsefsas cycles
 scripter enable 
 -print nodeinfo 2147483647 
 -help version 
--config case WORST 
+-config case worst 
 -analyse function 0x133c2 
 -pwd 
 -load test.xe 
@@ -262,7 +262,7 @@ analyse 1.9781504216698052E307
 -analyse path 0xjee7d1 ep1 
 status 6.769641809785116E307 
 add branch * csdfsefsas  test.xc:20 
--config case BEST 
+-config case best 
 list knowns 2147483647 
 analyse function 0xj34c8b 
 -source - 
@@ -282,13 +282,13 @@ scripter enable
 -print structure 1 
 -version 
 -ns 
--config case BEST 
+-config case best 
 help exit 
 set from  * 
 analyse path 0x132ec h 
 set instructiontime 2 ep1 3.5169567190100946E307 test.xc:19 
 -help clear 
--config case BEST 
+-config case best 
 -remove to csdfsefsas 
 -print warnings 
 -clear 
@@ -304,7 +304,7 @@ remove functiontime ep1
 -remove functiontime 0xjc0e14 
 add branch - 
 set functiontime 0 f 2 mhz 
-config case BEST 
+config case best 
 print distribution 1.2564036549874202E308 
 -status main 
 -pwd - 
@@ -478,7 +478,7 @@ add pathtime test.xc:3 test.xc:16 -1845817567 mhz
 list instructiontime 
 -echo "csdfsefsas cycles " 
 pwd 0xjb2a47 
--config case WORST 
+-config case worst 
 history  
 list labels 
 -version 
@@ -595,7 +595,7 @@ help add
 -print structure - 2147483647 
 history ns 
 -scripter dump 
--config case BEST 
+-config case best 
 -history  
 1.2206183616841919E308 
 -history csdfsefsas 
@@ -604,7 +604,7 @@ source ns
 analyse csdfsefsas csdfsefsas - 
 history 
 -help version 
-config case WORST 
+config case worst 
 version 
 -history csdfsefsas 
 -clear 
@@ -621,7 +621,7 @@ add branch 0xjdbde6 - ep1 0x11460 ep1 *
 echo "mhz " 
 -version - 
 -remove branch - - main - - * 0x12dd9 0xj3a0d9 0x10e05 0xj6e91c 
--config case WORST 
+-config case worst 
 -analyse function 0x107d2 
 history 0.0 
 -echo csdfsefsas 
@@ -813,7 +813,7 @@ list threadstoppoints
 -csdfsefsas 
 -list branches 
 -list knowns * 
--config case BEST 
+-config case best 
 -history 2147483647 
 pwd 
 -remove loopscope csdfsefsas 
@@ -939,7 +939,7 @@ set pathtime 4 0xj4578a ep1 452160518 mhz
 analyse path  test.xc:33 
 -load  
 -print asm - - 
-config case BEST 
+config case best 
 -clear 1243412645 
 * 
 -add functiontime  1 mhz 

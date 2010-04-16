@@ -127,7 +127,7 @@ set from  0x1139a
 load csdfsefsas csdfsefsas 0xj30009 
 remove loopscope * 
 -version 
-config case WORST 
+config case worst 
 set from  ep1 
 version 
 -status csdfsefsas 
@@ -174,7 +174,7 @@ print asm csdfsefsas
 -status  
 -help list 
 -print summary 
-config case WORST 
+config case worst 
 -set functiontime 1 ep4 * csdfsefsas * 
 -pwd 
 status 
@@ -267,7 +267,7 @@ print trace 1.4738326488998615E307
 -status 
 list srccommands 
 -remove exclusion * 
-config case BEST 
+config case best 
 add loop 0.0 2 
 -add loop 0xj5a700 1 
 echo csdfsefsas 
@@ -301,7 +301,7 @@ add exclusion ep2
 version csdfsefsas 1.4153939090578193E308 
 print mix 1.69057325163564E308 2147483647 
 version 
--config case WORST 
+-config case worst 
 -echo "ns " 
 history - 
 analyse path f test.xc:36 
@@ -429,7 +429,7 @@ load test.xe
 -list labels 
 version csdfsefsas 
 -add instructiontime * 0.0 ns 
-config case BEST 
+config case best 
 -remove looppath * 
 -clear 
 -add loopscope f a 
@@ -562,7 +562,7 @@ remove branch - * f 0xj9929c 0xj2821e 0x11602 - 0x10f7c 0x10fd9
 help csdfsefsas csdfsefsas 
 -pwd  
 print csdfsefsas 
--config case WORST 
+-config case worst 
 echo "g " 
 help set 
 help analyse 
@@ -699,7 +699,7 @@ version
 -list sources 
 -version 
 -history  
-config case BEST 
+config case best 
 analyse g 
 -help print 
 -clear 
@@ -809,7 +809,7 @@ list threadstoppoints
 -config freq cycles 
 pwd 0xjae840 
 history 1 
--config case WORST 
+-config case worst 
 -clear 
 set to  0xj5f6f7 
 -add loop - 0 
@@ -923,7 +923,7 @@ version
 analyse path h test.xc:44 
 -config verbosity 1.5964190051182477E308 
 -clear 
--config case WORST 
+-config case worst 
 add exclusion  
 pwd 
 -version 
@@ -976,7 +976,7 @@ config verbosity -
 remove branch - test.xc:24 
 -load 0xjadfbb 
 -source csdfsefsas 
--config case BEST 
+-config case best 
 status h 
 clear 
 load test.xe 

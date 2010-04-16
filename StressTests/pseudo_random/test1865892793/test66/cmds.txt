@@ -37,7 +37,7 @@ clear 8.994589086093511E306
 status csdfsefsas 
 -list instructiontime 
 -csdfsefsas 
-config case BEST 
+config case best 
  
 -load  
 analyse function test.xc:32 
@@ -51,13 +51,13 @@ list threadstoppoints
 -analyse function callg,callg, ep1 
 -version 
 -print src - csdfsefsas  
-config case WORST 
+config case worst 
 -status  
 echo cycles 
 -print structure csdfsefsas  0 
 -source f 
 load 8.633263125487111E307 
-config case WORST 
+config case worst 
 help source 
 test.xc:34 
 echo 0xj588aa 
@@ -133,7 +133,7 @@ help pwd
 echo " " 
 -set required 0 1 mhz 
 analyse path callf,callf,callf,callf,callf,main,callh,callf,callg,callg, ep2 csdfsefsas 
--config case BEST 
+-config case best 
 history 
 source mhz 
 -list labels 
@@ -149,7 +149,7 @@ status
 clear 
 echo " " 
 clear 
-config case BEST 
+config case best 
 -config verbosity 1.6234561284155612E308 
 -status csdfsefsas 
  
@@ -192,13 +192,13 @@ source
 -add exclusion - 
 remove to h 
 -remove instructiontime  
-config case WORST 
+config case worst 
 pwd 
 pwd csdfsefsas 
 -version 0x10a5f 
 -1150258516 
 source csdfsefsas csdfsefsas csdfsefsas ns 
--config case BEST 
+-config case best 
 remove from 0x1294d 
 -config freq csdfsefsas csdfsefsas - 
 -clear 
@@ -206,7 +206,7 @@ remove from 0x1294d
 -print src  
 -help add 
 pwd 
-config case BEST 
+config case best 
 pwd 
 pwd  
 analyse path 0xj947cf csdfsefsas csdfsefsas csdfsefsas csdfsefsas  
@@ -235,7 +235,7 @@ load csdfsefsas csdfsefsas
 source mhz 
 scripter disable 
 -add loop - 5.415718827233411E307 
-config case WORST 
+config case worst 
 -pwd csdfsefsas 
 scripter enable 
 -remove loopscope 0x1318b 
@@ -329,7 +329,7 @@ add loopscope 0xjbf703 0x12e9a
 list functiontimes 
 -pwd 
 -clear 
--config case BEST 
+-config case best 
 -analyse function callg,callf,callg,callh, main 
 -set pathtime 0 0xj8b6b2 ep4 2 9.929055232172467E307 
 -source csdfsefsas 150418468 
@@ -503,7 +503,7 @@ scripter enable
 -history 
 history 0.0 
 clear 
--config case WORST 
+-config case worst 
 echo "csdfsefsas csdfsefsas 0 " 
 -load test.xe 
 -list * 
@@ -739,13 +739,13 @@ source csdfsefsas
 1.6904083659164826E308 
 -list loops 
 h 
-config case BEST 
+config case best 
 -list srcloops 
 -load 0x128b0 
 list functiontimes 
 scripter enable 
 -load  
--config case BEST 
+-config case best 
 -add pathtime  0x12a79 - ns 
 -help echo 
 add instructiontime -  csdfsefsas  
@@ -753,7 +753,7 @@ load csdfsefsas test.xc:1
 add loop callf,main,callg,h,callg,callg,callg,callf,callg,callg, ep2 1 
 remove loopscope callg,main,callf,callg,callh,f,callh,callg,callh,g, g 
 -pwd - 
--config case WORST 
+-config case worst 
 status h 
 remove route 3 
 -source csdfsefsas cycles 
@@ -767,7 +767,7 @@ help source
 -source h 
 -version csdfsefsas 0xj19dc0 
 add loop callg,callh,callh,callf,callf,main,callh,callg, test.xc:21 458341366 
--config case WORST 
+-config case worst 
 add branch g 
 source  
 remove to 0xjd7e36 
@@ -835,7 +835,7 @@ clear csdfsefsas csdfsefsas
 -echo "callf,callg,callg,f,callf,h,callg,h,callg,f,callf,main, test.xc:22 " 
 print warnings 
 -remove functiontime - 
-config case BEST 
+config case best 
 source csdfsefsas 
 -source csdfsefsas ep4 
 scripter dump 
@@ -854,10 +854,10 @@ load test.xe
 -status callf,main,callh,g,callh,callh,callg,callg,callh,callg,callg,f, test.xc:34 
 -remove route 2 
 -version 
-config case BEST 
+config case best 
 -add instructiontime callf,g,callh,g,callf,h,callg,h,callg,callh, f - cycles 
 -list threadstoppoints 
--config case WORST 
+-config case worst 
 -history callg,callh,callg,g, test.xc:17 
 -clear 
 set instructiontime 1 0xj7707b csdfsefsas csdfsefsas ns 
@@ -886,7 +886,7 @@ print summary
 clear ep2 
 -echo cycles 
 -status 
-config case BEST 
+config case best 
 -print summary 
 status 
 -analyse csdfsefsas 

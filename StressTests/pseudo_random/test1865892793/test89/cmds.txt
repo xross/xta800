@@ -123,7 +123,7 @@ list exclusions
 -add looppath * 1.5215597778154822E308 
 print  
 -help echo 
-config case BEST 
+config case best 
 -echo " " 
 scripter disable 
 -analyse function callf,g, ep3 
@@ -185,7 +185,7 @@ version
 list threadstartpoints 
 set csdfsefsas 
 -config freq 0 
-config case BEST 
+config case best 
 load test.xe 
 history 1.8098664650868892E307 
 -remove loop ep3 
@@ -342,7 +342,7 @@ echo "ep3 "
 scripter enable 
 -help remove 
 -version - 
--config case BEST 
+-config case best 
 list allcalls 
 clear * 
 -source 0x10b76 
@@ -447,7 +447,7 @@ list allcalls
 -list csdfsefsas 
 -remove pathtime mhz callg,main,callf,h,callh,callg,callh,callh,callh,h,callf,callg,callh,g,callf,callh, ep2 
 -version 
-config case WORST 
+config case worst 
 pwd 
 -add branch ep4 test.xc:35 g 0x10adf ep1 test.xc:43 0xj75d1e 0xj5c16d ep1 
 scripter disable 
@@ -526,7 +526,7 @@ source csdfsefsas
 -set pathtime 0 0x12773 0x1323d mhz ns 
 help config 
 -list pathtimes 
-config case WORST 
+config case worst 
 -version 
 -status 
 source  
@@ -803,7 +803,7 @@ analyse path ep2 callh,f,callh,g,callh,g,callg,callf,callf,main,callg,main, ep1
 -list sources 
 set instructiontime 1 test.xc:17 - mhz 
 -history 
-config case WORST 
+config case worst 
 -add branch 0.0 
 -print src - - 
 -pwd csdfsefsas csdfsefsas callg,f,callg,callh, main 
@@ -981,7 +981,7 @@ echo mhz
 -csdfsefsas - 
 -remove from h 
 load mhz 
--config case BEST 
+-config case best 
 remove instructiontime callf,callg,callh,f, g 
 ns 
 -clear 

@@ -125,7 +125,7 @@ clear
 -list srclabels 
 -load test.xe 
 -print nodeinfo  
--config case WORST 
+-config case worst 
 -help load 
 -- 
 -load test.xe 
@@ -323,7 +323,7 @@ pwd
 config freq - 
 -pwd 
 -set loop 4 ep2  
-config case WORST 
+config case worst 
 -print warnings 
 clear - 
 -remove looppath h 
@@ -349,7 +349,7 @@ add exclusion -
 set to  ep3 
 config verbosity 2147483647 csdfsefsas 
 -add pathtime 0x12111 f test.xc:3 test.xc:39 
-config case WORST 
+config case worst 
 clear 
 -clear csdfsefsas 
 -clear 
@@ -512,7 +512,7 @@ remove functiontime csdfsefsas csdfsefsas cycles
 analyse path *  
 -help list 
 -print distribution csdfsefsas mhz 
-config case WORST 
+config case worst 
 source  
 -scripter disable 
 -echo "ep3 " 
@@ -567,7 +567,7 @@ print distribution 1.3653812592176976E308
 scripter dump 
 version csdfsefsas 
 config case  
-config case BEST 
+config case best 
 -add loopscope * r 
 -echo - 
 list loops 
@@ -685,7 +685,7 @@ analyse function csdfsefsas ns
 clear 
 -print nodeinfo 1.4721820873201878E308 - 
 -scripter enable 
-config case WORST 
+config case worst 
 clear csdfsefsas 
 clear cycles 
 -source mhz 
@@ -739,7 +739,7 @@ load 0x10c01
 add functiontime - 2046223643 mhz 
 -mhz 
 -version 
-config case BEST 
+config case best 
 print trace 2147483647 
 analyse path f ep1 
 -source * 
@@ -907,7 +907,7 @@ version csdfsefsas 5.353366274621084E307
 -help config 
 set from  - 
 source csdfsefsas csdfsefsas  
-config case WORST 
+config case worst 
 -add looppath test.xc:2 1 
 -list loopscopes 
 source csdfsefsas - 
@@ -930,7 +930,7 @@ list srccommands
 source csdfsefsas - 
 -pwd 
 -remove functiontime test.xc:46 
-config case BEST 
+config case best 
 -pwd  
 -load csdfsefsas 
 version  

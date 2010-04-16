@@ -11,7 +11,9 @@ void f\(\) {
     }
 
     for \(int i = 0; i < 10; \+\+i\) {
+        #pragma xta label "loop_iterations_0"
         for \(int j = 0; j < 3; \+\+j\) {
+            #pragma xta label "loop_iterations_1"
             res \+= j;
         }
         res \+= i;
@@ -26,7 +28,7 @@ void g\(\) {
 }
     
 int main\(\) {
-    #pragma xta call "label_0"
+    #pragma xta call "call_0"
     g\(\);
     return 0;
 }
@@ -40,20 +42,14 @@ int main\(\) {
 #pragma xta command "set loop - f1,outer 10"
 #pragma xta command "set loop - f1,inner 20"
 #pragma xta command "set loopscope - f1,inner a"
-// Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-#pragma xta command "set loop - label_0,f1,0x[0-9a-fA-F]{5} 30"
-// Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-#pragma xta command "set loop - label_0,f1,0x[0-9a-fA-F]{5} 40"
-// Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-#pragma xta command "set loopscope - label_0,f1,0x[0-9a-fA-F]{5} a"
+#pragma xta command "set loop - call_0,f1,loop_iterations_0 30"
+#pragma xta command "set loop - call_0,f1,loop_iterations_1 40"
+#pragma xta command "set loopscope - call_0,f1,loop_iterations_1 a"
 #pragma xta command "set loop - f2,outer 50"
 #pragma xta command "set loop - f2,inner 60"
 #pragma xta command "set loopscope - f2,inner a"
-// Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-#pragma xta command "set loop - label_0,f2,0x[0-9a-fA-F]{5} 70"
-// Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-#pragma xta command "set loop - label_0,f2,0x[0-9a-fA-F]{5} 80"
-// Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-#pragma xta command "set loopscope - label_0,f2,0x[0-9a-fA-F]{5} a"
+#pragma xta command "set loop - call_0,f2,loop_iterations_0 70"
+#pragma xta command "set loop - call_0,f2,loop_iterations_1 80"
+#pragma xta command "set loopscope - call_0,f2,loop_iterations_1 a"
 #pragma xta command "set required - 1.0 us"
 

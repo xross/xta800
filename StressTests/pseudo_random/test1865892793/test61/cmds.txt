@@ -44,7 +44,7 @@ set loopscope 1 ep3 absolute
 -pwd 
 -ep1 
 analyse test.xc:45 
--config case WORST 
+-config case worst 
 -source csdfsefsas 
 -clear  
 -scripter enable 
@@ -370,7 +370,7 @@ set pathtime 1 - 0xj6606c 0 ns
 print asm 5.379621629117873E307 - 
 -load test.xe 
 scripter enable 
-config case BEST 
+config case best 
 -status mhz 
 -add pathtime 0x13c39 test.xc:23 2 cycles 
 source csdfsefsas csdfsefsas csdfsefsas csdfsefsas csdfsefsas 
@@ -419,7 +419,7 @@ remove branch csdfsefsas ep1
 source h 
 cycles 
 -source csdfsefsas 
-config case BEST 
+config case best 
 - 
 -echo  
 -echo "csdfsefsas " 
@@ -463,11 +463,11 @@ list sources
 history 
 - 
 -clear csdfsefsas 
-config case WORST 
+config case worst 
 scripter enable 
 history 
 -analyse function 0x13db8 
--config case BEST 
+-config case best 
 clear ns 
 -csdfsefsas test.xc:28 
 remove pathtime 0x10cf8 f 
@@ -683,12 +683,12 @@ pwd csdfsefsas 1.039959633310035E308
 source * 
 -set pathtime 2 0xj98fc2 f 0.0 cycles 
 -help set 
--config case WORST 
+-config case worst 
 -list csdfsefsas 
 -analyse function main 
 analyse function main 
 -load test.xe 
--config case WORST 
+-config case worst 
 -source csdfsefsas 
 -help ns 
 add branch  test.xc:14 ep2 test.xc:13 f 0x131d8 0xj71121 
@@ -750,7 +750,7 @@ remove from *
 -list allsrclabels 
 source 1 
 -source csdfsefsas 
-config case WORST 
+config case worst 
 -list instructiontime 
 -set looppath 0 test.xc:44 0.0 
 source csdfsefsas  
@@ -823,7 +823,7 @@ add instructiontime * 0 ns
 print asm - 
 -status csdfsefsas test.xc:22 
 -analyse path - main 
-config case WORST 
+config case worst 
 -list labels 
 analyse path test.xc:21 g 
 remove looppath 0xj4fbb2 
@@ -866,8 +866,8 @@ print src 2 6.717518400390739E307
 -status csdfsefsas 0.0 
 -echo "cycles " 
 status 
-config case BEST 
-config case BEST 
+config case best 
+config case best 
 -scripter dump 
 remove looppath 0xjcf0bd 
 list threadstartpoints 

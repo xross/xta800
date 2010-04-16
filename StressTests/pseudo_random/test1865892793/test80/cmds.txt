@@ -24,7 +24,7 @@ load csdfsefsas 5.649955412465317E307
 -pwd 
 scripter disable 
 - 
-config case BEST 
+config case best 
 set instructiontime 2 * 2147483647 cycles 
 -status 
 set required 0 2 cycles 
@@ -42,7 +42,7 @@ source csdfsefsas csdfsefsas csdfsefsas csdfsefsas
 pwd mhz 
 -pwd 
 analyse path g h 
--config case BEST 
+-config case best 
 -scripter dump 
 scripter enable 
 config verbosity 1658873806 
@@ -59,7 +59,7 @@ analyse path ep3 g
 pwd - 
 pwd  
 remove loopscope - 
--config case BEST 
+-config case best 
 -help help 
 -load test.xe 
 analyse function - 
@@ -88,7 +88,7 @@ config verbosity - -
 -analyse path ep3 - 
 -history 
 config verbosity 2 0 
--config case BEST 
+-config case best 
 pwd csdfsefsas  
 clear 
 -scripter dump 
@@ -207,7 +207,7 @@ set required 0 5.250196074799337E307 mhz
 -analyse - 
 -set required 0 2147483647 mhz 
 history 
--config case WORST 
+-config case worst 
 -version 
 -print mix -47963736 -52765099 
 -add loop 0x12481 csdfsefsas csdfsefsas  
@@ -274,7 +274,7 @@ clear
 list threadstartpoints 
 -set required 1  mhz 
 echo csdfsefsas 0xjb85af 
-config case BEST 
+config case best 
 -history  
 scripter disable 
 clear 
@@ -325,7 +325,7 @@ csdfsefsas csdfsefsas
 add instructiontime ep3 - cycles 
 -help print 
 -remove loopscope 0x12b61 
-config case WORST 
+config case worst 
 -echo ns 
 print mix csdfsefsas - 
 echo " " 
@@ -470,7 +470,7 @@ list
 -set loopscope 4 test.xc:39 relative 
 -add functiontime * csdfsefsas -  
 mhz 
-config case WORST 
+config case worst 
 set loop 1 -  
 source mhz 
 -version - 
@@ -537,7 +537,7 @@ print trace 0
 -history csdfsefsas test.xc:19 
 -analyse  
 -remove loopscope ep3 
-config case BEST 
+config case best 
 -clear  
 version csdfsefsas 
 -clear - 
@@ -573,7 +573,7 @@ source
 analyse csdfsefsas 
 pwd mhz 
 -load test.xe 
-config case WORST 
+config case worst 
 help set 
 list branches 
 add branch ep3 f ep3 0x10fb5 ep3 - 
@@ -617,7 +617,7 @@ add functiontime mhz csdfsefsas csdfsefsas * cycles
 load 0.0 
 -- 
 -load csdfsefsas 
-config case WORST 
+config case worst 
 clear * 
 scripter dump 
 remove instructiontime - 
@@ -647,7 +647,7 @@ add functiontime 0x1238a - ns
 -remove from h 
 -clear  
 version 
-config case WORST 
+config case worst 
 add branch * cycles * test.xc:3 ep2 
 clear 2147483647 
 -config freq 1 
@@ -696,12 +696,12 @@ version csdfsefsas
 add exclusion * 
 -add functiontime 0xj4c441 - ns 
 history 0x1073b 
--config case WORST 
+-config case worst 
 pwd 
 -load test.xe 
 -scripter dump 
 source csdfsefsas csdfsefsas 0.0 
-config case WORST 
+config case worst 
 help version 
 version ns 
 config case  
@@ -827,7 +827,7 @@ list srcloops
 load cycles 
 -remove from 0xjfd329 
 clear 
-config case WORST 
+config case worst 
 -print warnings 
 -echo csdfsefsas 
 -print nodeinfo - 

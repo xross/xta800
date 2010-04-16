@@ -21,7 +21,7 @@ load csdfsefsas
 -add loopscope - absolute 
 -remove exclusion * 
 clear mhz 
--config case WORST 
+-config case worst 
 pwd csdfsefsas csdfsefsas 
 -config freq 0.0 
 set pathtime 1 f h 2 cycles 
@@ -80,7 +80,7 @@ source csdfsefsas
 -analyse path f ep4 
 -add loop - 1.4505797494435555E308 
 -source ns 
-config case WORST 
+config case worst 
 -add branch 0x1141d test.xc:5 test.xc:31 0xj79d41 * 0x10c17 
 -set functiontime 3 0x12f9d 0x12eba cycles 
 -clear csdfsefsas csdfsefsas 
@@ -203,7 +203,7 @@ config freq 0.0
 -pwd * 
 -pwd  
 -config verbosity - 
--config case BEST 
+-config case best 
 -print mix 2147483647 
 -clear  
 -load test.xe 
@@ -267,7 +267,7 @@ help help
 scripter dump 
 set functiontime 0 0xja2bc5  cycles 
 -echo mhz 
--config case BEST 
+-config case best 
 history 
 scripter enable 
 analyse path 0x12212 0xj7168c 
@@ -300,7 +300,7 @@ echo "csdfsefsas "
 config verbosity 6.889760438291041E307 
 history * 
 source  
--config case WORST 
+-config case worst 
 clear ep3 
 scripter disable 
 remove from h 
@@ -389,7 +389,7 @@ source 0x120ad
 echo "csdfsefsas " 
 -load test.xe 
 source 1 
-config case WORST 
+config case worst 
 -config verbosity 8.558121644140838E307 csdfsefsas 2147483647 
 analyse cycles 
 -source 0xjdbf7f 
@@ -424,7 +424,7 @@ echo "csdfsefsas "
 -set looppath 2 * - 
 -echo csdfsefsas ns 
 -pwd csdfsefsas 
-config case BEST 
+config case best 
 load test.xe 
 list knowns -1552337198 
 -echo "0.0 " 
@@ -499,7 +499,7 @@ add pathtime - - 2.7665070651149486E307 cycles
 -load test.xe 
 -help config 
 pwd 
-config case BEST 
+config case best 
 -- 
 -history 
 -help echo 
@@ -600,7 +600,7 @@ load 1.6047190868076951E308
 -help config 
 -analyse path - 0xj6878b 
 -h 
--config case WORST 
+-config case worst 
 -scripter enable 
 -remove branch ep1 0x13f1b 
 status  
@@ -735,7 +735,7 @@ history csdfsefsas
 help add 
 -scripter disable 
 -remove branch - * -680679446 0x135c2 test.xc:22 
-config case WORST 
+config case worst 
 -analyse function - 
 -help status 
 -scripter dump 
@@ -950,7 +950,7 @@ scripter disable
 status ns 
 remove instructiontime 0xj38854 
 -version 
--config case BEST 
+-config case best 
 -analyse csdfsefsas 0 
 -history 
 pwd 

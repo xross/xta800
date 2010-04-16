@@ -33,7 +33,7 @@ print mix -
 print mix 2147483647 
 -scripter dump 
 status 
-config case WORST 
+config case worst 
 scripter disable 
 list srcloops 
 clear 
@@ -229,7 +229,7 @@ list knowns -
 analyse path * ep1 
 -list loops 
 -set loopscope 2 - absolute 
--config case WORST 
+-config case worst 
 -2147483647 
 -pwd 
 -print src csdfsefsas 
@@ -437,7 +437,7 @@ load test.xe
 pwd 
 -config verbosity test.xc:42 
 -0xj24792 
--config case BEST 
+-config case best 
 pwd 1.7032964673670627E308 
 add pathtime 0x121c3 * -1346089897 mhz 
 remove cycles 
@@ -591,7 +591,7 @@ history
 -history 
 -source  
 scripter enable 
--config case WORST 
+-config case worst 
 -help analyse 
 -analyse path 0.0 0xjf6d7c 
 -version 
@@ -745,7 +745,7 @@ history csdfsefsas
 history 
 version 
 load test.xe 
-config case BEST 
+config case best 
 set loop 0 h - 
 status 
 -help load 
@@ -773,10 +773,10 @@ help list
 -config case mhz 
 -clear 
 cycles 
-config case WORST 
+config case worst 
 print ns 
--config case WORST 
--config case BEST 
+-config case worst 
+-config case best 
 print structure - 2.7521638697888497E307 
 -version 
 help clear 
@@ -843,7 +843,7 @@ status 0.0
 source 2.2019748601192854E307 
 -clear 
 config case 0.0 
-config case BEST 
+config case best 
 -clear ep3 
 help source 
 -pwd 
@@ -899,7 +899,7 @@ list threadstoppoints
 -load test.xe 
 source ns 
 -print test.xc:33 
-config case WORST 
+config case worst 
 version csdfsefsas 
 load test.xe 
 print warnings 
@@ -951,7 +951,7 @@ source cycles
 source csdfsefsas 
 -echo "csdfsefsas ns " 
 load cycles 
-config case WORST 
+config case worst 
 -pwd 
 -print distribution * 
 -help load 

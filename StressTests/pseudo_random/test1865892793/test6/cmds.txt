@@ -120,7 +120,7 @@ cycles
 -add loopscope h 0x13943 
 remove instructiontime - 
 load csdfsefsas csdfsefsas 
--config case WORST 
+-config case worst 
  
 set loopscope 1 - r 
 pwd 
@@ -283,7 +283,7 @@ set required 0 - ns
 load mhz 
 -pwd 
 history cycles 
-config case BEST 
+config case best 
 -source csdfsefsas 
 version 
 status ns 
@@ -299,7 +299,7 @@ list endpoints
 -load csdfsefsas 
 -remove route 1 
 remove loop * 
--config case BEST 
+-config case best 
 0.0 
 -set required 4 0.0 ns 
 -status csdfsefsas 
@@ -317,7 +317,7 @@ version -
 print structure - 
 help source 
 load * 
-config case WORST 
+config case worst 
 history 0.0 
 pwd 
 -echo f 
@@ -564,7 +564,7 @@ add looppath 0x13418 csdfsefsas
 scripter enable 
 history 
 version * 
-config case BEST 
+config case best 
 load - 
 echo "csdfsefsas csdfsefsas " 
 -status 
@@ -619,8 +619,8 @@ load
 -add exclusion test.xc:3 
 clear 
 -echo - 
-config case BEST 
--config case BEST 
+config case best 
+-config case best 
 pwd 
 -echo ns 
 pwd - 
@@ -667,7 +667,7 @@ set to  f
 -config freq - 
 -set cycles 
 version 
-config case BEST 
+config case best 
 -clear csdfsefsas 
 -list functiontimes 
 load csdfsefsas 
@@ -739,7 +739,7 @@ pwd -
 -print routeinfo 0.0 
 add loopscope 0x12340 a 
 clear * 
--config case WORST 
+-config case worst 
 -version  
 set looppath 1 0xj74fe4 0.0 
 history 5.402441497755551E307 
@@ -793,7 +793,7 @@ list threadstoppoints
 -set - 
 -version 
 source - 
--config case WORST 
+-config case worst 
 list mhz 
 remove instructiontime ep1 
 help status 
@@ -883,7 +883,7 @@ clear mhz
 list endpoints 
 -history 
 -pwd 
-config case WORST 
+config case worst 
 -clear 1 
 load test.xe 
 clear test.xc:12 
@@ -949,7 +949,7 @@ remove exclusion 0xj25b42
 remove pathtime 0x1000e 0xj463e4 
 -add functiontime 0xjc8f99 0 ns 
 echo csdfsefsas 
-config case WORST 
+config case worst 
 -scripter dump 
 -scripter disable 
 -pwd - 

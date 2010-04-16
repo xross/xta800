@@ -29,7 +29,7 @@ list knowns
 set required 1 1.7706909049074422E308 mhz 
 -csdfsefsas 
 -echo "2 " 
-config case WORST 
+config case worst 
 -remove pathtime * test.xc:15 
 version - 
 pwd csdfsefsas 
@@ -94,7 +94,7 @@ source -
 -help history 
 echo "csdfsefsas csdfsefsas " 
 -remove loop 0xj89a57 
-config case BEST 
+config case best 
 -scripter enable 
 source mhz 
 scripter enable 
@@ -116,7 +116,7 @@ echo csdfsefsas
 -pwd h 
 history  
 -echo " " 
--config case WORST 
+-config case worst 
 -remove csdfsefsas 1.486460084708164E308 
 -status 
 -analyse function ep1 
@@ -133,7 +133,7 @@ scripter dump
 -load 0x116d8 
 analyse path - * 
 -remove csdfsefsas 
--config case WORST 
+-config case worst 
 print distribution csdfsefsas csdfsefsas 
 add looppath ep1 - 
 remove loop 0xj741e0 
@@ -149,7 +149,7 @@ print csdfsefsas
 status 
 -config freq 0x13cf9 
 -set loop 3 - 0x11869 
--config case WORST 
+-config case worst 
 set from  ep2 
 -help config 
 version csdfsefsas 
@@ -248,7 +248,7 @@ load test.xe
 list allcalls 
 history - 
 -remove from test.xc:15 
-config case WORST 
+config case worst 
 echo " " 
  
 -source csdfsefsas 
@@ -331,7 +331,7 @@ remove branch * test.xc:15 0xj79530
 -source ns 
 load - 
 add looppath g 0.0 
--config case WORST 
+-config case worst 
 -add branch test.xc:15 0x123d9 - f  - 
 -echo " " 
 -print asm 2147483647 
@@ -348,7 +348,7 @@ csdfsefsas
 -load test.xe 
 -config verbosity 2 - 
 remove loop main 
-config case WORST 
+config case worst 
 analyse csdfsefsas 
 load test.xe 
 analyse path test.xc:17 main 
@@ -449,7 +449,7 @@ status
 source csdfsefsas csdfsefsas csdfsefsas ns 
 load csdfsefsas 
 -clear csdfsefsas  
--config case WORST 
+-config case worst 
 -remove loop 0xj31813 
 analyse path 0xja5637 * 
 version ns 
@@ -666,7 +666,7 @@ print asm -
 -0xjcab8b 
 set pathtime 1 h 0xj8cc1a - csdfsefsas 
 -clear 
-config case BEST 
+config case best 
 source  
 clear 
 -pwd 
@@ -686,7 +686,7 @@ history csdfsefsas
 -pwd 
 -echo "csdfsefsas  " 
 analyse  
--config case BEST 
+-config case best 
 -set looppath 0 h 0.0 
 -status 
 -- 
@@ -784,7 +784,7 @@ history
 -version  
 -print asm csdfsefsas 
 analyse csdfsefsas - 
-config case BEST 
+config case best 
 analyse 0.0 
 -- 
 load cycles 

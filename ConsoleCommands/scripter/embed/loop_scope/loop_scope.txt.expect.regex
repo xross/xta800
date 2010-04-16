@@ -4,10 +4,10 @@ false      true       main       ->       main
 false      true       f1         ->         f1
 false      true       outer      ->      outer
 false      true       inner      ->      inner
-true       true       CALL:0x[0-9a-fA-F]{5} ->    label_0
+true       true       CALL:0x[0-9a-fA-F]{5} ->     call_0
 false      true       CALL:0x[0-9a-fA-F]{5} ->         f1
-false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
-false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+true       true       0x[0-9a-fA-F]{5}    -> loop_iterations_0
+true       true       0x[0-9a-fA-F]{5}    -> loop_iterations_1
 false      true       f2         ->         f2
 false      true       CALL:0x[0-9a-fA-F]{5} ->         f2
 TWO

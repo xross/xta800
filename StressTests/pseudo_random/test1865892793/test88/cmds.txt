@@ -196,7 +196,7 @@ remove functiontime g
 -pwd 
 -help pwd 
 set looppath 3 - 0.0 
-config case BEST 
+config case best 
 -remove route 1 
 print mix 0.0 2147483647 
 -analyse  
@@ -264,7 +264,7 @@ add instructiontime - 288021270 cycles
 -status 
 -print mix 1.3071940264687661E308 2 
 -scripter enable 
-config case BEST 
+config case best 
 status csdfsefsas 0 
 echo cycles 
 version 
@@ -356,7 +356,7 @@ clear
 clear 
 -set looppath 3 * 0.0 
 list srcloops 
--config case WORST 
+-config case worst 
 -print warnings 
 -list allendpoints 
 -add branch test.xc:30 0xjdd462 
@@ -480,7 +480,7 @@ list loopscopes
 -scripter disable 
 remove pathtime 0xjd3ed2 callh,f,callh,g,callg,h,callh,callh,callf,main,callg,callg, test.xc:43 
 -print warnings 
-config case BEST 
+config case best 
 help scripter 
 history mhz 
 print routeinfo csdfsefsas csdfsefsas  
@@ -621,7 +621,7 @@ print trace 2147483647
 remove from callf,g,callg,callf,callf,h,callh,callg,callg,h,callh,callf,callf,f,callh,g, main 
 -analyse function 0x1086b 
 source csdfsefsas  
-config case WORST 
+config case worst 
 -load cycles 
 -version 0xje869d 
 print summary 
@@ -743,7 +743,7 @@ set to  0x12cc5
 -source csdfsefsas 
 version 
 -remove from  
-config case WORST 
+config case worst 
 config case callh,callh,callf,callg, ep3 
 print src - * 
 -version 
@@ -758,7 +758,7 @@ echo -
 scripter enable 
 -print trace csdfsefsas  
 source  
-config case WORST 
+config case worst 
 print  
 load mhz 
 analyse function 0x13a6a 
@@ -770,7 +770,7 @@ help source
 load cycles 
 history 
 -csdfsefsas - 
--config case BEST 
+-config case best 
 -history  
 -set functiontime 2 - 0.0 mhz 
 source cycles 
@@ -785,7 +785,7 @@ remove functiontime test.xc:47
 load test.xe 
 -list functiontimes 
 -history 
-config case WORST 
+config case worst 
 -history csdfsefsas 
 -pwd  
 csdfsefsas 
@@ -851,14 +851,14 @@ load test.xe
 history csdfsefsas callg,callh,callh,g, ep1 
 echo "csdfsefsas  " 
 set csdfsefsas 0x106b4 
-config case BEST 
+config case best 
 status 0 
 list functions 
 config freq csdfsefsas ns 
 -set functiontime 4 callg,callh,callf,callg, test.xc:6 2147483647 mhz 
 load test.xe 
 clear 
-config case WORST 
+config case worst 
 history 
 -print asm - 
 version 0.0 

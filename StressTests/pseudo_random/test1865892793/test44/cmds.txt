@@ -90,7 +90,7 @@ echo csdfsefsas
 remove loopscope 0x13b31 
 -version 
 -echo "ns " 
--config case WORST 
+-config case worst 
 config verbosity - csdfsefsas 
 add loopscope callg,callg,callh,callf, f a 
 -set required 3 - ns 
@@ -194,7 +194,7 @@ analyse function  g
 set required 4  mhz 
 -pwd  
 -pwd callh,callf,callg,callg,callg,callf,callh,callh,callg,callg,callg,main,callg,g, test.xc:43 
--config case BEST 
+-config case best 
 scripter dump 
 -echo "csdfsefsas " 
 -help scripter 
@@ -350,7 +350,7 @@ print mix ns
 help source 
 -remove functiontime csdfsefsas - 
 -print routeinfo 1 
-config case WORST 
+config case worst 
 -history csdfsefsas 
 clear 
 add loopscope 0x11520 r 
@@ -507,7 +507,7 @@ print mix 0
 csdfsefsas 
 -load csdfsefsas csdfsefsas 
 -source ns 
-config case WORST 
+config case worst 
 -source 1 
 -config freq 0.0 
 -analyse path h callh,h,callf,g,callh,callg,callf,h,callg,callh,callf,callf,callf,callf,callg,callf,callh,main, f 
@@ -629,7 +629,7 @@ print asm -
 -echo cycles 
 source cycles 
 set instructiontime 2 ep3 3.5139809683961225E306 cycles 
--config case BEST 
+-config case best 
 list threadstartpoints 
 -clear 
 remove loop - 
@@ -650,7 +650,7 @@ history
 -config freq 0.0 
 history  
 load test.xe 
-config case WORST 
+config case worst 
 -pwd 
 config freq 2 
 source csdfsefsas 
@@ -744,7 +744,7 @@ help
 -status 
 config case 0.0 
 -version csdfsefsas csdfsefsas cycles 
-config case BEST 
+config case best 
 -set looppath 0 - 0xja7015 
 -scripter disable 
 status 
@@ -758,8 +758,8 @@ set from  csdfsefsas
 history 
 -add branch ep2 
 source cycles 
-config case WORST 
-config case BEST 
+config case worst 
+config case best 
 -config freq - 
 scripter enable 
 -help remove 
@@ -859,7 +859,7 @@ print asm 0.0 -
 -clear 
 -scripter disable 
 -remove to callg,g,callf,callg,callf,callg, ep3 
--config case BEST 
+-config case best 
 -status 
 version csdfsefsas test.xc:41 
 -load  
@@ -890,7 +890,7 @@ echo " "
 -status 
 clear callg,main,callg,callg, main 
 source  
-config case BEST 
+config case best 
 -history cycles 
 set loopscope 0 ep4 relative 
 -config verbosity -452906878 
@@ -911,7 +911,7 @@ remove loopscope ep2
 config freq - 
 -remove loopscope csdfsefsas callh,h,callh,callh,callg,callh,callg,callh, ep3 
 -analyse csdfsefsas 
--config case WORST 
+-config case worst 
 set loopscope 4 ep1 csdfsefsas 
 -scripter dump 
 load csdfsefsas cycles 

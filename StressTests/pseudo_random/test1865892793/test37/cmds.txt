@@ -63,7 +63,7 @@ status
 -version 
 -analyse function 0xj25101 
 -source  
--config case BEST 
+-config case best 
 -config verbosity - 
 analyse function - 
 -load 0xj5bf8c 
@@ -97,7 +97,7 @@ clear
 help history 
 -clear 
 print routeinfo 2 
-config case BEST 
+config case best 
 status csdfsefsas 
 -status 
 add loop ep1 - 
@@ -163,7 +163,7 @@ status
 list threadstartpoints 
 -echo  
 echo - 
--config case WORST 
+-config case worst 
 -csdfsefsas csdfsefsas csdfsefsas csdfsefsas 
 -status ns 
 -mhz 
@@ -175,7 +175,7 @@ version
 pwd 
 -set instructiontime 2 ep4 1.683537578867506E308 csdfsefsas 
 list allcalls 
-config case WORST 
+config case worst 
 scripter disable 
 -version 
 remove functiontime 0x10fb1 
@@ -238,7 +238,7 @@ remove branch - main main 0x104f2 f csdfsefsas csdfsefsas  g
 -set from  0xj77ab5 
 remove looppath test.xc:4 
 -status  
-config case BEST 
+config case best 
 load csdfsefsas 
 -pwd  
 remove to test.xc:11 
@@ -379,14 +379,14 @@ config freq mhz
 history  
 -analyse path 0x13883 - 
 list loops 
--config case WORST 
+-config case worst 
 clear csdfsefsas 
 -clear csdfsefsas csdfsefsas 
 -set to  - 
 load mhz 
 - 
 csdfsefsas 
--config case WORST 
+-config case worst 
 remove to - 
 version  
 help config 
@@ -394,12 +394,12 @@ help config
 load test.xe 
 -list exclusions 
 help config 
-config case BEST 
+config case best 
 scripter dump 
 echo "csdfsefsas 0x12548 " 
 pwd 
 -echo "csdfsefsas 6.602024697634069E307 " 
--config case WORST 
+-config case worst 
 -analyse csdfsefsas mhz 
 echo "f " 
 remove branch csdfsefsas csdfsefsas 0xj272e2 
@@ -521,7 +521,7 @@ set pathtime 3 - test.xc:31 1.350232028722476E308 *
 scripter enable 
 -add exclusion main 
 -config freq - 
--config case WORST 
+-config case worst 
 echo "csdfsefsas -1029273007 " 
 load test.xe 
 -print structure - 
@@ -580,7 +580,7 @@ help scripter
 -scripter enable 
 load test.xe 
 analyse path csdfsefsas 0xjeb985 * 
-config case BEST 
+config case best 
 status csdfsefsas 
 clear 
 -status 
@@ -648,7 +648,7 @@ version -
 status  
 add looppath ep4 - 
 -config freq csdfsefsas 
-config case BEST 
+config case best 
 analyse function cycles 
 clear 
 load test.xe 
@@ -665,7 +665,7 @@ load test.xe
 -analyse path - 0xj93ca4 
 echo "ns " 
 list labels 
--config case WORST 
+-config case worst 
 -version csdfsefsas 
 -history 
 -print distribution csdfsefsas 137490576 0.0 
@@ -775,7 +775,7 @@ config freq -1096631632
 -ns 
 source cycles 
 -clear 
-config case WORST 
+config case worst 
 print summary 
 -source 0.0 
 -print src - 
@@ -884,7 +884,7 @@ status
 config case - 
 -load  
 source mhz 
-config case WORST 
+config case worst 
 csdfsefsas 
 pwd csdfsefsas 
 clear cycles 
@@ -981,7 +981,7 @@ help echo
 scripter disable 
 -add functiontime ep3 - 1797365685 
 -history 
-config case BEST 
+config case best 
 -load test.xe 
 list srclabels 
 -source csdfsefsas 
@@ -996,7 +996,7 @@ analyse path test.xc:14 test.xc:29
 remove from 0xj6102c 
 source csdfsefsas  
 clear csdfsefsas csdfsefsas - 
-config case BEST 
+config case best 
 -set required 4 1  
 exit - 
 exit csdfsefsas 

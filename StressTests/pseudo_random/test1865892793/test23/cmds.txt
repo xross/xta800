@@ -4,10 +4,10 @@ csdfsefsas csdfsefsas
 pwd  
 -analyse path - callh,callg,callg,g,callh,f,callf,main,callh,main,callg,callh,callh,callh,ep2 
 -source callg,f,callf,callg,callh,main,callg,callg,callf,callg,callh,g,callf,callh,callg,h,ep1 
-config case BEST 
+config case best 
 source 222485745 
 print distribution 0.0 
--config case BEST 
+-config case best 
 -list knowns -906891561 
 -set to  test.xc:39 
 version 
@@ -21,7 +21,7 @@ add branch main test.xc:46 - callg,f,callh,callf,callg,callf,callf,callf,callf,f
 config verbosity 0.0 
 config verbosity 2147483647 - 
 analyse path callf,callf,callh,callf,callh,main,callf,callg,ep3 callh,main,callh,f,callf,f,callh,g,callf,callg,h 
-config case BEST 
+config case best 
 -status 
 -echo callg,callf,callf,callf,callg,main,callg,callh,callf,g,callg,callf,callf,g,callf,callf,test.xc:11 
 version 
@@ -53,7 +53,7 @@ version callh,h,callh,callg,callh,callf,callf,callg,callh,callf,callh,callh,f
 pwd 
 source csdfsefsas h 
 status 
-config case BEST 
+config case best 
 -version - 
 -pwd csdfsefsas  
 -echo csdfsefsas 

@@ -43,7 +43,7 @@ remove route 0
 status csdfsefsas  
 scripter disable 
 -help set 
--config case BEST 
+-config case best 
 -0x12cf0 
 analyse csdfsefsas 
 set - 
@@ -67,11 +67,11 @@ print trace 2 0
 - 
 -list endpoints 
 -help clear 
-config case BEST 
+config case best 
 echo "csdfsefsas " 
 list sources 
 -scripter dump 
--config case BEST 
+-config case best 
 -pwd csdfsefsas 
 -pwd csdfsefsas 
 -add loopscope 0x10477 r 
@@ -184,7 +184,7 @@ set loopscope 3 0xj8778f a
 -source mhz 
 scripter dump 
 -help echo 
-config case WORST 
+config case worst 
 list cycles 
 -help load 
 remove instructiontime * 
@@ -261,7 +261,7 @@ pwd
 source 0xj2d12f 
 load csdfsefsas 
 config verbosity 0.0 1.676265007841345E308 
--config case WORST 
+-config case worst 
 history 
 -- 
 -load  
@@ -481,7 +481,7 @@ source csdfsefsas
 history 
 -add pathtime - main 2147483647 mhz 
 -analyse function ep3 
-config case BEST 
+config case best 
 version 
 -status * 
 echo csdfsefsas 
@@ -506,7 +506,7 @@ scripter disable
 history cycles 
 print trace *  
 -echo  
--config case WORST 
+-config case worst 
 source 0xjde4cb 
 -help analyse 
 load 1.4286660944002767E308 
@@ -551,7 +551,7 @@ status test.xc:35
 -help set 
 -scripter enable 
 help add 
--config case WORST 
+-config case worst 
 pwd 
 -help list 
 -1585692745 
@@ -583,7 +583,7 @@ add branch - 0x12e09 ep4  0x13e2b *
 csdfsefsas 
 -scripter disable 
 -add looppath *  
-config case BEST 
+config case best 
 -status 
 -pwd 
 -set to  0x10218 
@@ -625,7 +625,7 @@ history mhz
 pwd 
 -source ns 
 print summary 
-config case BEST 
+config case best 
 -set instructiontime 4 0x13fbf - 1276437892 
 load csdfsefsas csdfsefsas csdfsefsas csdfsefsas  
 list instructiontime 
@@ -672,7 +672,7 @@ echo "csdfsefsas "
 print nodeinfo 0.0 
 add loop 0xj660d8 2 
 -add pathtime  h 9.27877861028417E307 csdfsefsas csdfsefsas csdfsefsas csdfsefsas 
-config case WORST 
+config case worst 
 source h 
 -add branch - h 0xj2b88f ep3 test.xc:5 ep3 
 analyse - 
@@ -778,7 +778,7 @@ remove to *
 -remove instructiontime csdfsefsas 
 -echo "h " 
 load test.xe 
--config case WORST 
+-config case worst 
 -load test.xe 
 remove 2 
 pwd 1.3968132027991536E308 
@@ -844,7 +844,7 @@ load test.xe
 add functiontime g 5.613548901535694E307 csdfsefsas 
 -csdfsefsas  
 clear 
--config case WORST 
+-config case worst 
 history csdfsefsas 0x135d7 
 version 
 add branch ep3 ep1 0x12832  - test.xc:11 csdfsefsas  0xj2337a 0x12158 
@@ -921,7 +921,7 @@ echo "csdfsefsas "
 history 
 status 
 help help 
-config case WORST 
+config case worst 
 -set pathtime 0 ep1 ep4 4.2505357844885466E307 mhz 
 echo "1.5488774246665694E308 " 
 source  
@@ -942,7 +942,7 @@ print structure 2147483647 csdfsefsas csdfsefsas -
 print warnings 
 echo "csdfsefsas ns " 
 -version 
--config case WORST 
+-config case worst 
 -print asm  
 print asm 3.4777911848012876E307 
 history h 
@@ -995,7 +995,7 @@ source 4.054782392633565E307
 scripter enable 
 pwd cycles 
 -analyse function  
--config case BEST 
+-config case best 
 analyse function 0x13e4e 
 -load ns 
 exit 

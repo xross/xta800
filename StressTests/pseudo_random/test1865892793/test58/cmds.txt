@@ -166,14 +166,14 @@ list csdfsefsas csdfsefsas
 -scripter dump 
 * 
 pwd 
-config case WORST 
+config case worst 
 add pathtime g 0x11171 -  
 -print nodeinfo 0.0 
 add looppath ep4 main 
 -csdfsefsas csdfsefsas 
 set instructiontime 4 0x13b4b - cycles 
 -clear 
--config case BEST 
+-config case best 
 -analyse mhz 
 remove branch f 0xj23797 g 0x12033 ep4 
 echo " " 
@@ -318,7 +318,7 @@ add exclusion ep3
 -status 
 -analyse ns 
 -help exit 
--config case BEST 
+-config case best 
 print summary 
 source f 
 -help remove 
@@ -377,7 +377,7 @@ config verbosity 0.0 0.0
 -list exclusions 
 pwd 
 clear 
-config case WORST 
+config case worst 
 version 
 -pwd 
 -analyse test.xc:39 
@@ -416,7 +416,7 @@ csdfsefsas
 ep2 
 load test.xe 
 -ep2 
--config case BEST 
+-config case best 
 -clear - 
 -source ep2 
 -echo "csdfsefsas " 
@@ -461,7 +461,7 @@ list allendpoints
 -analyse path * ep3 
 -status 
 version 
-config case BEST 
+config case best 
 -set pathtime 0 csdfsefsas 1 1 cycles 
 history 
 set instructiontime 0 * - ns 
@@ -480,7 +480,7 @@ source -377620183
 -status 
 print distribution 1.0675785466309916E308 
 -help add 
--config case BEST 
+-config case best 
 print mix 2147483647 
 ns 
 -pwd * 
@@ -509,7 +509,7 @@ remove pathtime h 0xj91128
 -clear 
 csdfsefsas 
 clear csdfsefsas 0 
-config case WORST 
+config case worst 
 -version 
 -version 
 print structure - 1734184542 
@@ -770,7 +770,7 @@ history
 add pathtime - 0xj9243c - csdfsefsas 
 remove instructiontime mhz 
 version csdfsefsas 
-config case BEST 
+config case best 
 add pathtime 0x10a23 test.xc:5 - mhz 
 -source 0x11571 
 print nodeinfo  
@@ -825,7 +825,7 @@ history csdfsefsas
 pwd 2.414363011195526E307 
 echo csdfsefsas 0xjc5fb5 
 -remove loopscope 0x13654 
--config case BEST 
+-config case best 
 pwd 
 help clear 
 source test.xc:34 
@@ -935,7 +935,7 @@ analyse function ns
 clear * 
 add exclusion csdfsefsas 
 source mhz 
-config case WORST 
+config case worst 
 - 
 -status 
 set loopscope 2 * r 

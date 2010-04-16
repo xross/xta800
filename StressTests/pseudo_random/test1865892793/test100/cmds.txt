@@ -37,7 +37,7 @@ add instructiontime csdfsefsas 3.4735061646957704E307 cycles
 -version ns 
 clear cycles 
 -config case csdfsefsas csdfsefsas  
-config case WORST 
+config case worst 
 load test.xe 
 -print mix csdfsefsas csdfsefsas  
 -remove pathtime h 0x137f7 
@@ -73,7 +73,7 @@ help exit
 list loops 
 set instructiontime 2 * 5.596938938214264E307 mhz 
 history 
--config case WORST 
+-config case worst 
 -analyse 0.0 
 0xj54de8 
 clear 
@@ -322,7 +322,7 @@ add functiontime -  cycles
 list labels 
 csdfsefsas  
 -add loop h 1.349107611681039E308 
-config case BEST 
+config case best 
 -pwd  
 set to  h 
 csdfsefsas 
@@ -386,7 +386,7 @@ print mix 2 -1866450951
 config case  
 -source csdfsefsas 
 -status 
--config case WORST 
+-config case worst 
 status csdfsefsas csdfsefsas 
 -echo csdfsefsas 
 source  
@@ -415,7 +415,7 @@ pwd
 help help 
 clear 
 -add branch 0x12190 0xj2c654 - 1.6611497508366293E308 main 0x118b8 0x137ed * 
--config case BEST 
+-config case best 
 add functiontime test.xc:16 1.142700729734773E308 mhz 
 source - 
 echo "csdfsefsas " 
@@ -475,7 +475,7 @@ version ns
 -load test.xe 
 -clear csdfsefsas 0.0 
 -clear ns 
--config case WORST 
+-config case worst 
 -scripter enable 
 -clear 
 version * 
@@ -504,7 +504,7 @@ remove instructiontime -
 analyse function * 
 -load test.xe 
 print summary 
--config case BEST 
+-config case best 
 -help history 
 -set looppath 1 * test.xc:34 
 -add loop 0x1224b 2147483647 
@@ -628,7 +628,7 @@ set loopscope 4 test.xc:47 r
 -help pwd 
 analyse path - 0x13fc7 
 scripter dump 
--config case BEST 
+-config case best 
 -echo csdfsefsas  
 load test.xe 
 -print structure  
@@ -738,7 +738,7 @@ status
 -help scripter 
 -echo csdfsefsas 
 -source csdfsefsas 
-config case WORST 
+config case worst 
 -print asm csdfsefsas csdfsefsas 
 history 
 status 
@@ -823,7 +823,7 @@ version
 -clear 
 add branch * * * test.xc:29 ep3 
 pwd 
--config case BEST 
+-config case best 
 -config case 0x12fbe 
 -echo "-1625389142 " 
 -status ns 
@@ -876,7 +876,7 @@ load test.xe
 list allcalls 
 source  
 list pathtimes 
-config case BEST 
+config case best 
 -pwd csdfsefsas 
 -print csdfsefsas 2147483647 
 history csdfsefsas  

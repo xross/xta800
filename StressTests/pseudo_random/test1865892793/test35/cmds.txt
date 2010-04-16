@@ -376,7 +376,7 @@ config freq 1
 -version 
 list loops 
 -version 
--config case WORST 
+-config case worst 
 -clear 2147483647 
 -source  
 print - 
@@ -407,7 +407,7 @@ list endpoints
 history 
 -add branch 0x12261 test.xc:45 f * csdfsefsas - - 
 -set required 0 csdfsefsas csdfsefsas ns 
--config case WORST 
+-config case worst 
 -* 
 set from  csdfsefsas 
 -remove route 1 
@@ -417,7 +417,7 @@ add instructiontime - - cycles
 clear 
 -echo 1169987210 
 load ns 
-config case WORST 
+config case worst 
 -status 
 print structure - 6.302659880186655E307 
 print trace ep1 
@@ -566,7 +566,7 @@ set required 3 0
 -clear 
 -print trace csdfsefsas 104828513 
 print  
-config case WORST 
+config case worst 
 -history 
 print routeinfo mhz 
 config freq  
@@ -574,7 +574,7 @@ config freq
 echo main 
 remove from - 
 set pathtime 3 0x11b9f 0xj627ba csdfsefsas csdfsefsas 
--config case WORST 
+-config case worst 
 source  
 pwd 
 -version 
@@ -659,7 +659,7 @@ version
 -print mix 2 - 
 pwd 
 status 
-config case WORST 
+config case worst 
 -echo csdfsefsas mhz 
 scripter disable 
 -history 
@@ -744,7 +744,7 @@ scripter dump
 add loop * mhz 
 -scripter dump 
 analyse path - test.xc:25 
--config case WORST 
+-config case worst 
 -echo "csdfsefsas " 
 load test.xe 
 set loopscope 1 0x1136d relative 
@@ -814,7 +814,7 @@ add functiontime 0x10ed7 2 0xj6f09f
 print summary 
 source - 
 -add instructiontime h 0 mhz 
--config case WORST 
+-config case worst 
 version 
 clear  
 list functions 
@@ -957,7 +957,7 @@ list allendpoints
 -analyse path * * 
 -scripter enable 
 -set loopscope 0 ep1 cycles 
--config case WORST 
+-config case worst 
 help exit 
 scripter disable 
 -print routeinfo 0.0 

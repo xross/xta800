@@ -17,7 +17,7 @@ config verbosity 6.101852689969868E307 csdfsefsas
 set functiontime 2 csdfsefsas 1.4226858992871566E308 cycles 
 remove branch csdfsefsas 0x10750 - 0xj59ce1 0xj87bdf 0xjedca0 ep1 * 0xjdfc00 0xj22fa1 
 -version csdfsefsas csdfsefsas 
-config case BEST 
+config case best 
 -analyse path * - 
 -help load 
 -add functiontime test.xc:22 0.0 cycles 
@@ -37,7 +37,7 @@ config verbosity 1.587955181403063E308
 -version 
 add pathtime 0xj8f57c ep2 - csdfsefsas  
 -version main 
--config case BEST 
+-config case best 
 source csdfsefsas 1 
 -- 
 -analyse path 0x13b0e 0x1063c 
@@ -80,7 +80,7 @@ analyse function g
 -source csdfsefsas mhz 
 -pwd 
 -clear 
--config case WORST 
+-config case worst 
 load ep4 
 -list functions 
 remove loop ep3 
@@ -157,7 +157,7 @@ echo " "
 source csdfsefsas 
 history - 
 echo csdfsefsas 
-config case WORST 
+config case worst 
 -echo "csdfsefsas ep2 " 
 scripter dump 
 -help scripter 
@@ -212,7 +212,7 @@ set csdfsefsas
 -clear ns 
 status 
 scripter dump 
-config case WORST 
+config case worst 
 scripter disable 
 version 
 -version 2147483647 
@@ -293,7 +293,7 @@ history
 -echo " " 
 -analyse g 
 -remove instructiontime * 
--config case BEST 
+-config case best 
 -load test.xe 
 print mix csdfsefsas 
 -echo "csdfsefsas  " 
@@ -307,7 +307,7 @@ csdfsefsas csdfsefsas
 echo * 
 -config freq 0 
 -help history 
-config case BEST 
+config case best 
 source 0x1378c 
 -set looppath 2 ep2 1.789532225491419E308 
 -status ns 
@@ -478,7 +478,7 @@ scripter disable
 clear 
 -analyse  
 print structure 0.0 
--config case WORST 
+-config case worst 
 config freq ep1 
 -source csdfsefsas csdfsefsas 
 -analyse csdfsefsas csdfsefsas ep1 
@@ -625,7 +625,7 @@ source test.xc:36
 -load csdfsefsas 
 cycles 
 -set pathtime 1 - - - mhz 
--config case BEST 
+-config case best 
 add branch g f f - 0xj38bfa csdfsefsas 
 -remove loop 0xj6a03f 
 -add pathtime f ep3 - csdfsefsas 0 
@@ -662,7 +662,7 @@ history
 -load test.xe 
 -remove route 2 
 source ns 
-config case WORST 
+config case worst 
 set from  0x10443 
 -status csdfsefsas 
 -load test.xe 
@@ -682,7 +682,7 @@ help clear
 -set to  test.xc:44 
 clear cycles 
 -history  
-config case WORST 
+config case worst 
 -csdfsefsas csdfsefsas 
 load csdfsefsas csdfsefsas 
 test.xc:27 
@@ -758,7 +758,7 @@ clear
 source 0x11fef 
 -scripter disable 
 -set looppath 3 test.xc:31 0 
--config case BEST 
+-config case best 
 help exit 
 2 
 -scripter dump 
@@ -903,7 +903,7 @@ set loopscope 3 * csdfsefsas
 help set 
 list allsrclabels 
 add exclusion 0x12121 
-config case WORST 
+config case worst 
 -load test.xe 
 print summary 
 set csdfsefsas 
@@ -933,7 +933,7 @@ help scripter
 -version 
 -version csdfsefsas 
 -1 
--config case WORST 
+-config case worst 
 scripter disable 
 -analyse  
 analyse 0x130f3 

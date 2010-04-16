@@ -4,10 +4,10 @@ false      true       main       ->       main
 false      true       f1         ->         f1
 false      true       outer      ->      outer
 false      true       inner      ->      inner
-true       true       CALL:0x[0-9a-fA-F]{5} ->    label_0
-false      true       CALL:0x[0-9a-fA-F]{5} ->         f1
-false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
-false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+true       true       CALL:0x[0-9a-fA-F]{5} -> +call_0
+false      true       CALL:0x[0-9a-fA-F]{5} -> +f1
+true       true       0x[0-9a-fA-F]{5}    -> loop_iterations_0
+true       true       0x[0-9a-fA-F]{5}    -> loop_iterations_1
 false      true       f2         ->         f2
 false      true       CALL:0x[0-9a-fA-F]{5} ->         f2
 TWO
@@ -16,9 +16,9 @@ false      true       main       ->       main
 false      true       f1         ->         f1
 false      true       outer      ->      outer
 false      true       inner      ->      inner
-false      true       label_0    ->    label_0
-false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
-false      true       0x[0-9a-fA-F]{5}    ->    0x[0-9a-fA-F]{5}
+false      true       call_0     ->     call_0
+false      true       loop_iterations_0 -> loop_iterations_0
+false      true       loop_iterations_1 -> loop_iterations_1
 false      true       f2         ->         f2
 # load ".+test.xe"
 
@@ -29,19 +29,13 @@ analyze function main
 set loop - f1,outer 10
 set loop - f1,inner 20
 set loopscope - f1,inner a
-# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - label_0,f1,0x[0-9a-fA-F]{5} 30
-# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - label_0,f1,0x[0-9a-fA-F]{5} 40
-# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loopscope - label_0,f1,0x[0-9a-fA-F]{5} a
+set loop - call_0,f1,loop_iterations_0 30
+set loop - call_0,f1,loop_iterations_1 40
+set loopscope - call_0,f1,loop_iterations_1 a
 set loop - f2,outer 50
 set loop - f2,inner 60
 set loopscope - f2,inner a
-# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - label_0,f2,0x[0-9a-fA-F]{5} 70
-# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loop - label_0,f2,0x[0-9a-fA-F]{5} 80
-# Warning: '0x[0-9a-fA-F]{5}' is a non-portable reference.
-set loopscope - label_0,f2,0x[0-9a-fA-F]{5} a
+set loop - call_0,f2,loop_iterations_0 70
+set loop - call_0,f2,loop_iterations_1 80
+set loopscope - call_0,f2,loop_iterations_1 a
 

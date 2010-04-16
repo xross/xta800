@@ -188,7 +188,7 @@ print trace -
 remove from ep3 
 remove loop - 
 -set looppath 1 0x1026b - 
--config case BEST 
+-config case best 
 -remove functiontime g 
 -add looppath callh,callh,callg,f,callf,g,callf,f,callh,h, test.xc:41 - 
 echo " " 
@@ -255,12 +255,12 @@ help load
 source csdfsefsas 
 -status csdfsefsas callg,f,callg,f, f 
 -add loopscope ep3 a 
-config case WORST 
+config case worst 
 -echo "ep2 " 
 analyse path - callg,callh,callh,callf,callh,g,callf,g,callh,g, h 
 pwd 
 remove pathtime callf,callg,callf,f,callh,callg,callg,callf,callf,h, ep1  
-config case WORST 
+config case worst 
 -clear 2147483647 
 analyse path ep4 g 
 remove loop test.xc:10 
@@ -283,7 +283,7 @@ add loop callf,callh, main -
 -print nodeinfo - 
 pwd  
 -config verbosity - 
-config case WORST 
+config case worst 
 status 
 list srclabels 
 list knowns 1.2234614153607723E308 
@@ -519,7 +519,7 @@ print
 -add branch callg,callh,callg,h,callf,callg,callh,callf,callh,f,callf,main,callf,callf,callg,g, ep3 - test.xc:32 0x106c6 - * callf,callf,callh,g,callh,callf, test.xc:45 0xjf9311 - * 
 -clear 
 -config verbosity - 
-config case WORST 
+config case worst 
 remove pathtime ep3 - 
 load test.xe 
 help version 
@@ -724,7 +724,7 @@ config case 0xjb213c
 -echo "csdfsefsas -2106892954 " 
 config freq 0.0 
 source - 
--config case BEST 
+-config case best 
 -status 
 remove from h 
 -pwd 
@@ -802,13 +802,13 @@ history
 -clear 
 history 
 -history -238124614 
--config case BEST 
+-config case best 
 -version 
 -remove from ep2 
 status 
 -config verbosity  2147483647 
 -print asm 1.780152949784523E308 
-config case WORST 
+config case worst 
 add instructiontime * cycles csdfsefsas 
 remove loop 0xjcbbe6 
 print routeinfo csdfsefsas 
@@ -924,7 +924,7 @@ source
 load ns 
 remove branch 0xja0d4d callh,h,callh,callg,callg,g,callh,callg,callg,callg,callf,callh,callh,g,callh,main,callf,main, test.xc:25 0xjea09a ep4 test.xc:5 * callf,callf,callf,callf,callg,f,callh,callf, test.xc:28 g callg,callf,callg,main, test.xc:47 
 -echo "mhz " 
--config case WORST 
+-config case worst 
 -pwd 
 -status 
 -list endpoints 

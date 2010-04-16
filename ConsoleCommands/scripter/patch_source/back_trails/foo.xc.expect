@@ -19,7 +19,7 @@ int foo(){
 
 int main()
 {
-  #pragma xta call "label_4"
+  #pragma xta call "call_2"
   return bar();
 }
 

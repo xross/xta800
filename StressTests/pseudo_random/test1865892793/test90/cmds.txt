@@ -95,7 +95,7 @@ help load
 clear 
 pwd  
 history csdfsefsas 
-config case BEST 
+config case best 
 -list allsrclabels 
 -echo "csdfsefsas  " 
 clear 
@@ -104,7 +104,7 @@ help clear
 pwd csdfsefsas csdfsefsas 
 -source test.xc:23 
 -print distribution 0.0 
-config case WORST 
+config case worst 
 -status 
 status csdfsefsas 
 -remove instructiontime 0xj86f3c 
@@ -176,15 +176,15 @@ pwd csdfsefsas test.xc:17
 remove pathtime 0x11c1a - 
 -print structure ns 
 source csdfsefsas ns 
--config case BEST 
+-config case best 
 -list calls 
 config verbosity - 
 -clear 
-config case BEST 
+config case best 
 remove instructiontime - 
 echo "csdfsefsas " 
 analyse function csdfsefsas 1.6955131632758157E308 
-config case BEST 
+config case best 
 analyse function * 
 help print 
 -version csdfsefsas 
@@ -207,7 +207,7 @@ remove branch 0x11566 * ep1
 add functiontime ep2 - cycles 
 load  
 version 
-config case WORST 
+config case worst 
 -config freq 0.0 
 load test.xe 
 load csdfsefsas 
@@ -304,7 +304,7 @@ clear -
 csdfsefsas cycles 
 -add looppath * 0.0 
 echo csdfsefsas 
-config case BEST 
+config case best 
 -status csdfsefsas 
 -echo csdfsefsas csdfsefsas 
 -add exclusion ep3 
@@ -328,7 +328,7 @@ add loop * -
 -history 
 history 
 -add instructiontime 0x119ed - cycles 
-config case WORST 
+config case worst 
 -help list 
 -scripter enable 
 -clear  
@@ -436,7 +436,7 @@ scripter disable
 scripter disable 
 -add functiontime 0xjbb0f9 2 ns 
 echo 2 
-config case BEST 
+config case best 
 -status 
 -version ns 
 -status 0x11376 
@@ -464,7 +464,7 @@ load test.xe
 analyse path test.xc:12 0x10174 
 -analyse path ep4 0x13797 
 set from  - 
-config case WORST 
+config case worst 
 clear 
 -source csdfsefsas 
 -status csdfsefsas 
@@ -500,7 +500,7 @@ version
 clear 
 --1553393806 
 load test.xe 
--config case BEST 
+-config case best 
 version csdfsefsas ns 
 -clear 
 -analyse path test.xc:30 0x13471 
@@ -591,7 +591,7 @@ status mhz
 source ns 
 version csdfsefsas test.xc:40 
 -add functiontime test.xc:17 0.0 cycles 
-config case BEST 
+config case best 
 -version 
 add pathtime csdfsefsas 4.53810872445318E307 - mhz 
 history 
@@ -649,7 +649,7 @@ config freq -1225497990
 -config verbosity 0 
 -list threadstartpoints 
 add pathtime * csdfsefsas 0 1 
--config case BEST 
+-config case best 
 history 
 scripter disable 
 set pathtime 3 - ep4  0.0 
@@ -673,7 +673,7 @@ clear cycles
 scripter enable 
 history  
 -list loops 
-config case WORST 
+config case worst 
 -scripter dump 
 -list functiontimes 
 -echo  
@@ -759,7 +759,7 @@ clear
 load test.xe 
 config case  
 -pwd ep2 
--config case WORST 
+-config case worst 
 clear 
 echo " " 
 -list functiontimes 
@@ -827,7 +827,7 @@ echo
 -print warnings 
 -pwd 
 remove loop h 
-config case BEST 
+config case best 
 remove loop csdfsefsas - 
 -version 
 -clear 0.0 

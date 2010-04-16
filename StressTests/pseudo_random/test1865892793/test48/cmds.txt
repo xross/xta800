@@ -248,7 +248,7 @@ version
 -set required 3 2147483647 cycles 
 version csdfsefsas 
 scripter disable 
--config case BEST 
+-config case best 
 -mhz 
 clear  
 source cycles 
@@ -310,7 +310,7 @@ help scripter
 clear csdfsefsas 
 history - 
 -csdfsefsas * 
--config case WORST 
+-config case worst 
 -status  
 scripter enable 
 -source  
@@ -471,7 +471,7 @@ source 7.602121075140303E307
 -remove branch h test.xc:37 ep3 
 version 
 history 
-config case WORST 
+config case worst 
 -print summary 
 -add branch * ep1 0xj3d90f 0x1261a 0x13d58 
 -add functiontime * csdfsefsas 0 cycles 
@@ -530,7 +530,7 @@ csdfsefsas
 -scripter enable 
 -echo csdfsefsas 
 -source csdfsefsas 
--config case WORST 
+-config case worst 
 scripter enable 
 pwd  
 -analyse path 0x13d19 test.xc:20 
@@ -702,7 +702,7 @@ list csdfsefsas
 -version ns 
 remove branch test.xc:7 ep2 - 
 -print summary 
--config case WORST 
+-config case worst 
 -add loopscope 0x1046b relative 
 -version 
 -echo "csdfsefsas " 
@@ -780,12 +780,12 @@ set to  *
 -remove functiontime 0xj49fe3 
 add functiontime h 1.1994663911592091E308 cycles 
 status  
-config case BEST 
+config case best 
 -config verbosity 7.435604766148391E307 
  
 -echo  
 echo "h " 
-config case BEST 
+config case best 
 -status csdfsefsas  
 -version 
 -list branches 
@@ -860,7 +860,7 @@ echo "cycles "
 -load csdfsefsas 
 version 5.838198141914789E307 
 pwd 
-config case BEST 
+config case best 
 echo 0x1165a 
 clear 1 
 history csdfsefsas cycles 
@@ -885,7 +885,7 @@ add loopscope 0x133bb relative
 clear 
 version 1404986249 
 -config verbosity 1.7704774775884584E307 
--config case BEST 
+-config case best 
 -load 7.830041573795423E307 
 help history 
 -set loop 0 * 1 
@@ -894,7 +894,7 @@ list branches
 -list allendpoints 
 -set pathtime 2 0xj15281 f 1 ns 
 -scripter dump 
-config case BEST 
+config case best 
 -load csdfsefsas ns 
 -pwd csdfsefsas csdfsefsas 
 scripter disable 
@@ -910,10 +910,10 @@ pwd
 -print asm - 
 analyse path 0xj806c4 0x12a82 
 -add loopscope test.xc:33 r 
-config case WORST 
+config case worst 
 help add 
 -load test.xe 
-config case BEST 
+config case best 
 -history csdfsefsas 2147483647 
 -echo "- " 
 -list allendpoints 

@@ -12,7 +12,7 @@ pwd csdfsefsas 7.944471750619479E307
 echo "csdfsefsas 2 " 
 clear main 
 -clear 0x10cee 
--config case WORST 
+-config case worst 
 remove ns 
 load ns 
 remove to 0x12bd2 
@@ -274,7 +274,7 @@ source 0xja38c9
 clear  
 -echo 8.776667796816457E307 
 source  
-config case BEST 
+config case best 
 -source 0.0 
 -source csdfsefsas 
 help print 
@@ -337,11 +337,11 @@ echo "cycles "
 -clear 
 -set 0.0 
 set pathtime 0 * f - cycles 
-config case BEST 
+config case best 
 -add looppath * 2147483647 
 -0x1307b 
 -history csdfsefsas 
-config case BEST 
+config case best 
 -echo 0.0 
 -source cycles 
 -pwd 
@@ -381,7 +381,7 @@ history
 source csdfsefsas 0x11b9e 
 clear 
 set 2 
--config case BEST 
+-config case best 
 -- 
 -clear - 
 set from   
@@ -416,7 +416,7 @@ set loopscope 0 * 1187493422
 -print nodeinfo test.xc:27 
 -set functiontime 3 ep3 - cycles 
 load  
-config case WORST 
+config case worst 
 -echo csdfsefsas 
 list functiontimes 
 -history ep1 
@@ -701,7 +701,7 @@ clear
 remove  
 -clear 
 -csdfsefsas - 
--config case BEST 
+-config case best 
 -remove looppath * 
 config verbosity 0 
 pwd 
@@ -709,7 +709,7 @@ echo ep3
 -list looppaths 
 set instructiontime 2 0xj4d418 -1281990496 cycles 
 print routeinfo - 
-config case BEST 
+config case best 
 history csdfsefsas  
 scripter enable 
 scripter disable 
@@ -906,7 +906,7 @@ status
 -source h 
 -pwd cycles 
 help pwd 
-config case WORST 
+config case worst 
 add exclusion * 
 -add functiontime f -1198584749 mhz 
 config freq 6.177391414185462E307 

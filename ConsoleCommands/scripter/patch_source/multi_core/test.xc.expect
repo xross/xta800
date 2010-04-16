@@ -5,7 +5,7 @@ int f(int i) {
   int j = 0;
   int k = 0;
   for (j = 0; j < i; ++j) {
-    #pragma xta label "label_0"
+    #pragma xta label "loop_iterations_0"
     ++k;
   }
   return j + k;

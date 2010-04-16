@@ -18,53 +18,53 @@
   [-]status: Display current status
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
-      option: branch <from LABEL_REF> [<to LABEL_REF>]+: Adds the given from/to references to the branches list
+      option: branch <from BRANCH> [<to INSTRUCTION>]+: Adds the given from/to references to the branches list
       option: core <core id|*>: Add core to active set
-      option: exclusion <ANY_REF>: Adds the given reference to the list of exclusions
-      option: functiontime <FUNCTION_REF> <value> <mode>: Adds the given function time to the list of defines
+      option: exclusion <ANY>: Adds the given reference to the list of exclusions
+      option: functiontime <FUNCTION> <value> <mode>: Adds the given function time to the list of defines
           mode: ns:     nanoseconds
           mode: us:     microseconds
           mode: ms:     milliseconds
           mode: MHz:    megahertz
           mode: cycles: processor thread cycles
-      option: instructiontime <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines
+      option: instructiontime <ENDPOINT> <value> <mode>: Adds the given instruction time to the list of defines
           mode: ns:     nanoseconds
           mode: us:     microseconds
           mode: ms:     milliseconds
           mode: MHz:    megahertz
           mode: cycles: processor thread cycles
-      option: loop <ANY_REF> <iterations>: Adds the given loop count define to the list of defines
-      option: looppath <ANY_REF> <iterations>: Adds the given loop path count define to the list of defines
-      option: loopscope <ANY_REF> <scope>: Adds the given loop scope define to the list of defines
+      option: loop <ANY> <iterations>: Adds the given loop count define to the list of defines
+      option: looppath <ANY> <iterations>: Adds the given loop path count define to the list of defines
+      option: loopscope <ANY> <scope>: Adds the given loop scope define to the list of defines
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: pathtime <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Adds the given path time to the list of defines
+      option: pathtime <from ENDPOINT> <to ENDPOINT> <value> <mode>: Adds the given path time to the list of defines
           mode: ns:     nanoseconds
           mode: us:     microseconds
           mode: ms:     milliseconds
           mode: MHz:    megahertz
           mode: cycles: processor thread cycles
   [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
-      option: endpoints <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyze between the specified endpoints
-      option: function <FUNCTION_REF>: Analyze the given function
+      option: endpoints <from ENDPOINT> <to ENDPOINT>: Analyze between the specified endpoints
+      option: function <FUNCTION>: Analyze the given function
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
-      option: case <BEST/WORST>: Sets the case (currently: WORST)
+      option: case <best/worst>: Sets the case (currently: worst)
       option: Ewarning <on/off>: treat errors as warnings or not (currently: off)
       option: freq <node id> <core frequency>: Sets the operating frequency in MHz for the given node
-      option: from <ENDPOINT_REF>: Sets the from endpoint
+      option: from <ENDPOINT>: Sets the from endpoint
       option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
       option: threads <core id> <num threads>: Sets number of threads currently executing for the given core
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not (currently: on)
-      option: to <ENDPOINT_REF>: Sets the to endpoint
+      option: to <ENDPOINT>: Sets the to endpoint
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: Werror <on/off>: treat warnings as errors or not (currently: off)
   [-]echo "text": Prints the text to the console
   [-]exit: Quits the application
   [-]help [command/option]: Displays help message for the given command/option
-      options: PC_REF, FUNCTION_REF, LABEL_REF, ENDPOINT_REF, ANY_REF
+      options: FUNCTION, BRANCH, INSTRUCTION, ENDPOINT, ANY
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
       option: allcalls: Lists all the possible locations for calls
@@ -104,43 +104,43 @@
       option: distribution <route id> [node id]: Display time distribution for the given route/node
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
-      option: branch <from LABEL_REF|*> [<to LABEL_REF|*>]+: Removes the given from/to references from the branches list
+      option: branch <from BRANCH|*> [<to INSTRUCTION|*>]+: Removes the given from/to references from the branches list
       option: core <core id|*>: Remove core from active set
-      option: exclusion <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions
-      option: functiontime <FUNCTION_REF|*>: Removes the given functon time from the list of defines
-      option: instructiontime <ENDPOINT_REF|*>: Removes the given instruction time from the list of defines
-      option: loop <ANY_REF|*>: Removes the given loop count define to the list of defines
-      option: looppath <ANY_REF|*>: Removes the given loop path count define to the list of defines
-      option: loopscope <ANY_REF|*>: Removes the given loop scope define to the list of defines
-      option: pathtime <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines
+      option: exclusion <ANY|*>: Removes the given reference (or all if '*') from the list of exclusions
+      option: functiontime <FUNCTION|*>: Removes the given functon time from the list of defines
+      option: instructiontime <ENDPOINT|*>: Removes the given instruction time from the list of defines
+      option: loop <ANY|*>: Removes the given loop count define to the list of defines
+      option: looppath <ANY|*>: Removes the given loop path count define to the list of defines
+      option: loopscope <ANY|*>: Removes the given loop scope define to the list of defines
+      option: pathtime <from ENDPOINT|*> <to ENDPOINT|*>: Removes the given path time from the list of defines
       option: route <route id>: Removes the route with the given id from the current analysis
   [-]scripter <option> <arg0> <arg1>...: Work with the script generator
-      option: disable <ANY_REF>: Disable a mapping
+      option: disable <ANY>: Disable a mapping
       option: dump: Dump script which represents the current state - also embeds active pragmas into source
       option: embed <filename>: Embed the script into the designated file - also embed active pragmas into source
-      option: enable <ANY_REF>: Enable a mapping
+      option: enable <ANY>: Enable a mapping
       option: listrefs: List all references which will be used in the script
-      option: rename <ANY_REF> <TO_NAME>: Rename a mapping
+      option: rename <ANY> <TO_NAME>: Rename a mapping
   [-]set <option> <arg0> <arg1>...: Set path information
-      option: exclusion <route id> <ANY_REF>: Sets an exclusion on the given reference
-      option: functiontime <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route
+      option: exclusion <route id> <ANY>: Sets an exclusion on the given reference
+      option: functiontime <route id> <FUNCTION> <value> <mode>: Set timing requirement for the given function on the given route
           mode: ns:     nanoseconds
           mode: us:     microseconds
           mode: ms:     milliseconds
           mode: MHz:    megahertz
           mode: cycles: processor thread cycles
-      option: instructiontime <route id> <ENDPOINT_REF> <value> <mode>: Sets the time taken for the instruction at the given pc
+      option: instructiontime <route id> <ENDPOINT> <value> <mode>: Sets the time taken for the instruction at the given pc
           mode: ns:     nanoseconds
           mode: us:     microseconds
           mode: ms:     milliseconds
           mode: MHz:    megahertz
           mode: cycles: processor thread cycles
-      option: loop <route id> <ANY_REF> <iterations>: Sets the number of iterations for the loop identified
-      option: looppath <route id> <ANY_REF> <iterations>: Sets the number of iterations for the path identified
-      option: loopscope <route id> <ANY_REF> <scope>: Sets the scope of the referenced loop
+      option: loop <route id> <ANY> <iterations>: Sets the number of iterations for the loop identified
+      option: looppath <route id> <ANY> <iterations>: Sets the number of iterations for the path identified
+      option: loopscope <route id> <ANY> <scope>: Sets the scope of the referenced loop
           scope: relative/r: Iteration number propagates to the enclosing path (Default)
           scope: absolute/a: Absolute number of iterations
-      option: pathtime <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route
+      option: pathtime <route id> <from ENDPOINT> <to ENDPOINT> <value> <mode>: Set timing requirement for the given path on the given route
           mode: ns:     nanoseconds
           mode: us:     microseconds
           mode: ms:     milliseconds
@@ -155,27 +155,35 @@
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
   Any of the following are permitted:
-    Pc: Raw program counter specified in the format: 0x*
-  Any of the following are permitted:
+    FunctionPc: Raw program counter specified in the format: 0x*
     Function: Any function
   Any of the following are permitted:
-    Pc: Raw program counter specified in the format: 0x*
+    EndpointPc: Raw program counter specified in the format: 0x*
+    CallPc: Call specified in the format: 0x*
+    CallFileLine: Call specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section
   Any of the following are permitted:
-    Pc: Raw program counter specified in the format: 0x*
-    Endpoint: Endpoint specified using the source level pragma mechanism
-    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
-    Call: Call specified using the source level pragma mechanism
-    CallFileLine: Call specified in the format: 'file name:line number'
-    CallPc: Call specified in the format: 0x*
+    EndpointPc: Raw program counter specified in the format: 0x*
+    FunctionPc: Raw program counter specified in the format: 0x*
+    Function: Any function
     Label: Any source or assembly level symbol defined with respect to an executable section
   Any of the following are permitted:
-    Pc: Raw program counter specified in the format: 0x*
-    Endpoint: Endpoint specified using the source level pragma mechanism
+    EndpointPc: Raw program counter specified in the format: 0x*
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
-    Call: Call specified using the source level pragma mechanism
-    CallFileLine: Call specified in the format: 'file name:line number'
+    Endpoint: Endpoint specified using the source level pragma mechanism
     CallPc: Call specified in the format: 0x*
-    SrcLabel: Source label specified using the source level pragma mechanism
+    CallFileLine: Call specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
+    Label: Any source or assembly level symbol defined with respect to an executable section
+  Any of the following are permitted:
+    SrcLabelPc: Raw program counter specified in the format: 0x*
+    EndpointPc: Raw program counter specified in the format: 0x*
+    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
+    Endpoint: Endpoint specified using the source level pragma mechanism
+    CallPc: Call specified in the format: 0x*
+    CallFileLine: Call specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
     SrcLabelFileLine: Source label specified in the format: 'file name:line number'
+    SrcLabel: Source label specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section

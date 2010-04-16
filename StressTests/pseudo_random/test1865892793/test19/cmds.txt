@@ -194,7 +194,7 @@ csdfsefsas
 -print src csdfsefsas  
 status csdfsefsas 
 source callg,main,callf,main,callg,main,callh,g,callg,callh,callg,callf,callh,h,callh,main, h 
-config case WORST 
+config case worst 
 -clear 
 -remove route 4 
 version csdfsefsas 
@@ -272,7 +272,7 @@ remove branch main ep2
 analyse path test.xc:34 * 
 -set loopscope 2 test.xc:10 csdfsefsas 0.0 
 csdfsefsas 0 
-config case WORST 
+config case worst 
 pwd csdfsefsas mhz 
 echo "csdfsefsas ns " 
 -3.355201932719689E307 
@@ -324,7 +324,7 @@ status
 -status * 
 help pwd 
 pwd cycles 
--config case BEST 
+-config case best 
 -clear callg,g,callg,callf, f 
 -history csdfsefsas csdfsefsas 2147483647 
 add functiontime f 0.0 cycles 
@@ -403,7 +403,7 @@ config case csdfsefsas 0xj53a44
 remove looppath callh,callg,callg,main,callf,h,callh,callg,callg,main,callh,f,callf,main,callf,main, ep3 
 help config 
 scripter disable 
-config case BEST 
+config case best 
 list sources 
 source csdfsefsas 
 -config verbosity 2 
@@ -426,12 +426,12 @@ remove functiontime -
 set instructiontime 0 ep4 csdfsefsas ns 
 -* 
 load test.xe 
-config case BEST 
+config case best 
 -scripter disable 
 remove functiontime h 
 -pwd 
 -history test.xc:41 
-config case WORST 
+config case worst 
 add loopscope * r 
 analyse path callh,callf,callh,callh,callg,main,callh,callg,callf,callh,callf,h, h callf,callh,callg,callf,callg,main,callg,callg,callg,callf,callg,callg,callf,callf,callf,callh, h 
 help remove 
@@ -476,13 +476,13 @@ history
 load csdfsefsas csdfsefsas 
 -help exit 
 print distribution - 2 
--config case BEST 
+-config case best 
 config case  
 -clear 
 -load  
 -scripter dump 
 add branch callf,g,callh,callh,callf,callh, g callg,main,callf,h,callf,callh,callh,g,callh,callh,callg,main,callh,callh, test.xc:45 0xjcdd13 
-config case WORST 
+config case worst 
 load test.xe 
 help config 
 -add pathtime csdfsefsas 0xj7c08b 0.0 mhz 
@@ -524,7 +524,7 @@ echo 4.4618917606353807E307
 -source  
 help pwd 
 -source g 
--config case WORST 
+-config case worst 
 -load test.xe 
 set loopscope 2 0x12bb6 ns 
 history csdfsefsas cycles 
@@ -732,7 +732,7 @@ set required 2 1.7085614735411964E308 ns
 config freq 1.436969665974042E308 
 load test.xe 
 list allsrclabels 
-config case WORST 
+config case worst 
 -source csdfsefsas mhz 
 load - 
 remove functiontime 0xjc0c99 
@@ -743,7 +743,7 @@ version 0
 pwd 
 -pwd 
 -print src 1 
-config case BEST 
+config case best 
 remove pathtime callf,callf,callg,g,callh,g,callg,f,callg,f,callf,callg, ep1 ep4 
 status  
 -add branch ep1 test.xc:9 mhz test.xc:10 0x11e4e ep2 
@@ -910,7 +910,7 @@ config freq -
 history 
 load test.xe 
 pwd csdfsefsas 
-config case BEST 
+config case best 
 clear 0.0 
 version csdfsefsas  
 list unknowns 2147483647 
@@ -987,7 +987,7 @@ set instructiontime 1 0xj45c2a 2147483647 mhz
 status cycles 
 -config case csdfsefsas 
 load csdfsefsas  
--config case BEST 
+-config case best 
 history - 
 remove from csdfsefsas 
 -history callg,callg,callf,callg,callg,callg, test.xc:31 

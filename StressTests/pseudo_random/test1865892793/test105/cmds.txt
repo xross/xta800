@@ -74,7 +74,7 @@ analyse csdfsefsas
 -clear 
 f 
 set csdfsefsas 
-config case BEST 
+config case best 
 help print 
 ns 
 -clear csdfsefsas 
@@ -137,7 +137,7 @@ status csdfsefsas csdfsefsas csdfsefsas ns
 remove route 1 
 -source mhz 
 pwd 
--config case WORST 
+-config case worst 
 -version 
 remove  
 echo csdfsefsas mhz 
@@ -148,7 +148,7 @@ add pathtime - 0xj12b64 - ns
 source csdfsefsas 
 remove 0.0 
 add pathtime * callf,h,callf,f, ep1 0.0 ns 
-config case WORST 
+config case worst 
 -clear 
 -print nodeinfo 0.0 2 
 -version csdfsefsas 
@@ -244,7 +244,7 @@ remove loopscope test.xc:14
 add loop - 0 
 -history 
 print summary 
-config case WORST 
+config case worst 
 add branch ep3 csdfsefsas  ep2 0xjf0663 0x11b5e callf,main,callh,h,callg,callh,callh,callg,callg,g,callh,h,callg,f,callg,callg,callf,g, ep1 
 -analyse path * callg,main,callg,g,callg,callg,callg,g,callg,callg,callh,g,callh,callg,callf,h,callg,main, g 
 history csdfsefsas test.xc:19 
@@ -317,7 +317,7 @@ set pathtime 1 callg,f,callg,g,callf,callg,callh,callh,callf,f, main  0.0 cycles
 pwd csdfsefsas  
 list exclusions 
 -remove branch h ep3 0xjda13e 0xjd73da h  test.xc:29 main 
-config case WORST 
+config case worst 
 scripter enable 
 -load csdfsefsas - 
 set instructiontime 2 main - mhz 
@@ -345,7 +345,7 @@ help add
 echo  
 -clear 
 -analyse path ep4 callg,callg,callg,callg,callf,callf, ep1 
-config case WORST 
+config case worst 
 -csdfsefsas 
 -history 
 pwd 
@@ -480,12 +480,12 @@ help exit
 0xj6bd29 
 load test.xe 
 list instructiontime 
-config case BEST 
+config case best 
 analyse cycles 
 analyse function 0xj3a3cd 
 -source csdfsefsas 
 help status 
-config case BEST 
+config case best 
 clear 
 add loop 1.2520275693026679E308 0.0 
 history 
@@ -499,7 +499,7 @@ config freq -
 history mhz 
 -list labels 
 list sources 
-config case WORST 
+config case worst 
 list functions 
 -history 
 -pwd 
@@ -654,7 +654,7 @@ set loop 1 callg,h,callh,callg,callf,h,callh,callf,callh,callh,callg,main,callf,
 -remove loopscope * 
 -version csdfsefsas 
 -scripter disable 
-config case BEST 
+config case best 
 set loopscope 4 main a 
 -remove exclusion - 
 -scripter dump 
@@ -774,14 +774,14 @@ help -
 -load test.xe 
 set loopscope 2 0xj77073 a 
 -source csdfsefsas ns 
-config case WORST 
+config case worst 
 pwd 
 load csdfsefsas  
 -csdfsefsas ep1 
 help config 
 scripter dump 
 -status  
--config case WORST 
+-config case worst 
 set to  test.xc:14 
 -history csdfsefsas mhz 
 -load cycles 
@@ -832,7 +832,7 @@ set loop 2 test.xc:9 0.0
 set required 1 cycles ns 
 -version csdfsefsas  
 -help csdfsefsas mhz 
-config case BEST 
+config case best 
 analyse function * 
 load test.xe 
 -analyse function test.xc:31 
@@ -857,7 +857,7 @@ scripter enable
 source csdfsefsas mhz 
 -list threadstartpoints 
 -version 
--config case WORST 
+-config case worst 
 -remove pathtime 0xj647f9 callf,g,callf,callh, h 
 version csdfsefsas 
 -help pwd 
@@ -899,7 +899,7 @@ clear
 history callf,callg,callh,callf,callh,h,callf,callh,callf,callg,callg,callf, main 
 list allsrclabels 
 history 
-config case BEST 
+config case best 
 csdfsefsas 
 -analyse function 0x10c51 
 add exclusion 0x10a16 
@@ -958,7 +958,7 @@ config verbosity - csdfsefsas
 -echo "cycles " 
 -history 
 -version mhz 
-config case BEST 
+config case best 
 version - 
 -source csdfsefsas ep4 
 clear cycles 

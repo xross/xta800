@@ -64,7 +64,7 @@ analyse csdfsefsas
 -set functiontime 4 * - test.xc:24 
 -echo "csdfsefsas " 
 -status csdfsefsas csdfsefsas 2147483647 
--config case BEST 
+-config case best 
 -set functiontime 3 callh,callh,callf,g,callf,g,callg,callg,callf,h,callg,f,callh,callf,callg,callg, f - mhz 
 -add loop ep4 6.999039810406837E307 
 source 2 
@@ -157,7 +157,7 @@ load
 -clear 
 version - 
 config freq -423216243 
--config case WORST 
+-config case worst 
 echo g 
 config freq - 
 -help load 
@@ -213,7 +213,7 @@ clear
 source callg,main,callf,h,callf,callh,callf,callf,callh,h,callf,g, main 
 -add exclusion callh,callh,callf,main,callg,callh,callg,main,callg,callf,callh,callf,callf,f,callh,h,callf,callg, g 
 -list looppaths 
--config case WORST 
+-config case worst 
 -clear 1 
 -source csdfsefsas 
 remove route 1 
@@ -246,7 +246,7 @@ analyse path callh,callf,callg,main,callg,g,callf,callf,callh,h,callf,callh,call
 -set loop 0 ep3 -736333180 
 -history 
 -scripter dump 
--config case WORST 
+-config case worst 
 print summary 
  
 -set pathtime 1 callg,callg,callf,main,callh,callf,callf,callg,callg,callg,callh,callg,callf,callf,callh,callg,callg,callg, h  csdfsefsas  
@@ -317,7 +317,7 @@ status
 load  
 pwd 
 -scripter enable 
--config case BEST 
+-config case best 
  
 csdfsefsas 0.0 
 -add looppath 0x111b8 cycles 
@@ -365,7 +365,7 @@ help load
 version 
 -clear csdfsefsas -1547828884 
 -version csdfsefsas 
--config case BEST 
+-config case best 
 source  
 status 0xja8644 
 -pwd 
@@ -550,7 +550,7 @@ history
 -add exclusion - 
 -scripter dump 
 help analyse 
-config case BEST 
+config case best 
 -source csdfsefsas cycles 
 -version 
 source test.xc:15 
@@ -563,7 +563,7 @@ set to  0xj18663
 status 
 -version 
 clear 
-config case BEST 
+config case best 
 status - 
 -set loopscope 2 0x132d1 r 
 -clear csdfsefsas 
@@ -623,7 +623,7 @@ config verbosity csdfsefsas csdfsefsas ep2 -
 help print 
 -list csdfsefsas 
 help list 
-config case WORST 
+config case worst 
 -analyse function test.xc:43 
 -analyse ns 
 -config verbosity 7.6184994932101E306 2 
@@ -820,7 +820,7 @@ history
 -version csdfsefsas 
 print distribution callf,callg,callg,f,callf,f,callg,f,callg,callg, ep1 
 -source csdfsefsas  
-config case WORST 
+config case worst 
 -version 
 remove route 0 
 -remove loopscope * 
@@ -945,7 +945,7 @@ print distribution ep1
 set loop 3 callg,h,callh,callg,callh,h,callf,callf,callh,callg,callh,callg, g mhz 
 -pwd csdfsefsas ns 
 scripter dump 
-config case WORST 
+config case worst 
 -analyse path * g 
 -set from  csdfsefsas mhz 
 print routeinfo - 

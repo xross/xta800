@@ -92,11 +92,11 @@ analyse path  test.xc:9 0xjc8b17
 -status 
 -remove from callg,main, test.xc:16 
 clear csdfsefsas csdfsefsas 
-config case WORST 
+config case worst 
 print asm 9.093494246335887E307 
 analyse path 0xjd5f40 h 
 analyse function callf,h,callf,g,callg,callh,callh,callg,callf,f,callh,callf,callh,callg, test.xc:1 
-config case WORST 
+config case worst 
 -set loopscope 0 ep2 absolute 
 echo * 
 -callf,callg,callf,h,callh,h,callf,callh,callh,callf,callg,callg,callh,callh,callg,h, g 
@@ -299,7 +299,7 @@ help set
 -analyse path callf,main,callh,h,callf,h,callf,f,callf,callg,callf,callf,callh,g,callf,callg,callh,callh, test.xc:39 ep2 
 -history csdfsefsas csdfsefsas 
 -list pathtimes 
-config case WORST 
+config case worst 
 remove to - 
 list srcloops 
 remove instructiontime - 
@@ -598,7 +598,7 @@ help clear
 scripter disable 
 -0xj8eec6 
 remove csdfsefsas 
--config case WORST 
+-config case worst 
 cycles 
 -load csdfsefsas 
 scripter enable 
@@ -668,7 +668,7 @@ echo 2
 load test.xe 
 status 
 source csdfsefsas cycles 
--config case WORST 
+-config case worst 
 history 
 -history - 
 -help csdfsefsas callf,f,callf,g,callg,callg, test.xc:33 
@@ -692,7 +692,7 @@ clear
 -pwd 0xjb65a0 
 load test.xe 
 -pwd 
--config case BEST 
+-config case best 
 status  
 add loop - csdfsefsas 
 clear mhz 
@@ -731,7 +731,7 @@ scripter disable
 source 4.724694464284717E307 
 -source cycles 
 scripter dump 
--config case BEST 
+-config case best 
 clear csdfsefsas 
 pwd csdfsefsas 
 -set functiontime 1 - 1.2680529992455225E308 ns 
@@ -779,7 +779,7 @@ config freq 1
 pwd 
 set * 
 -clear 
-config case BEST 
+config case best 
 -list calls 
 -list exclusions 
 print summary 

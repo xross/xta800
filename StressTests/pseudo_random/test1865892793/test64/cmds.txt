@@ -35,7 +35,7 @@ analyse function csdfsefsas csdfsefsas
 - 
 -echo ns 
 add functiontime ep1 2 mhz 
--config case BEST 
+-config case best 
 -pwd 
 -source csdfsefsas csdfsefsas 5.048273339632164E307 
 -source  
@@ -56,7 +56,7 @@ remove exclusion csdfsefsas ns
 -version 
 -status 
 -clear ns 
-config case WORST 
+config case worst 
 set loopscope 1 * absolute 
 - 
 print mix 6.419053150273454E307 
@@ -118,7 +118,7 @@ history
 -print warnings 
 print distribution csdfsefsas csdfsefsas 
 -analyse path 0xj7a999 ep3 
--config case WORST 
+-config case worst 
 analyse path test.xc:32 test.xc:39 
 history - 
 -pwd 
@@ -136,7 +136,7 @@ set loop 1 * 2
 print distribution cycles 
 load test.xc:41 
 -status 0.0 
-config case WORST 
+config case worst 
 help status 
 -scripter enable 
 scripter disable 
@@ -145,7 +145,7 @@ add looppath 0xj54467 -1625295999
 -remove instructiontime - 
 -echo "5.112766888727234E306 " 
 help echo 
--config case WORST 
+-config case worst 
 -load test.xe 
 -version 
 echo "csdfsefsas " 
@@ -253,7 +253,7 @@ add pathtime test.xc:42 test.xc:42 1.3688759613699752E308 cycles
 -load test.xe 
 source csdfsefsas csdfsefsas 
 - 
-config case WORST 
+config case worst 
 -scripter disable 
 -clear ns 
 pwd csdfsefsas  
@@ -428,7 +428,7 @@ help history
 scripter enable 
 -remove route 0 
 -pwd csdfsefsas 
--config case WORST 
+-config case worst 
 version 
 source csdfsefsas csdfsefsas 
 -config freq 0.0 
@@ -497,10 +497,10 @@ clear csdfsefsas
 -version csdfsefsas csdfsefsas 
 list threadstoppoints 
 history - 
-config case BEST 
+config case best 
 -source - 
 -print trace - 1.3736478441524402E308 
-config case WORST 
+config case worst 
 -clear  
 pwd 
 -pwd 
@@ -508,7 +508,7 @@ pwd
 pwd csdfsefsas csdfsefsas 
 clear 
 analyse path 0x126e2 - 
--config case BEST 
+-config case best 
 -help history 
 -analyse path main  
 list looppaths 
@@ -529,7 +529,7 @@ load test.xe
 -print summary 
 -status csdfsefsas csdfsefsas 
 -history  
--config case BEST 
+-config case best 
 - 
 load test.xe 
 csdfsefsas 
@@ -589,7 +589,7 @@ remove to test.xc:26
 -source 1.2688117535238385E308 
 print asm 5.698057706180452E307 csdfsefsas 0.0 
 -print distribution csdfsefsas 
-config case WORST 
+config case worst 
 -config freq 1 
 -version 
 set csdfsefsas csdfsefsas ns 
@@ -707,7 +707,7 @@ echo csdfsefsas
 -remove branch 0xj2e0b8 * 0xj768a1 ep2 - 0x12c5b ep2 
 add loop test.xc:15 - 
 -set loopscope 0 * r 
-config case WORST 
+config case worst 
 -list labels 
 analyse csdfsefsas 
 scripter disable 
@@ -759,7 +759,7 @@ clear csdfsefsas csdfsefsas -
 version 
 -config freq 2 
 pwd 
-config case BEST 
+config case best 
 -set from  0x12c47 
 status 
 set instructiontime 3 test.xc:44 1.766951436408319E308 ns 
@@ -853,7 +853,7 @@ status
 history  
 -ns 
 -source csdfsefsas 
-config case WORST 
+config case worst 
 list threadstoppoints 
 -load test.xe 
 -set to  csdfsefsas csdfsefsas 
@@ -929,7 +929,7 @@ source csdfsefsas csdfsefsas -
 -source 0x10817 
 load csdfsefsas g 
 clear * 
--config case BEST 
+-config case best 
 pwd 
 set loopscope 3 0xjecef2 cycles 
 -echo "csdfsefsas " 
@@ -939,7 +939,7 @@ clear cycles
 config verbosity ns 
 add functiontime - 2 ns 
 source csdfsefsas 
-config case WORST 
+config case worst 
 -ns 
 help scripter 
 -remove functiontime 0x1245c 

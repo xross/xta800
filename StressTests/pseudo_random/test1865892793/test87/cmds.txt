@@ -52,7 +52,7 @@ remove pathtime callg,main,callg,g,callf,f,callf,callg,callh,callf, h 0xjff0fe
 version cycles 
 set instructiontime 2 test.xc:35 - cycles 
 list loopscopes 
-config case BEST 
+config case best 
 clear mhz 
 -analyse - 
 -csdfsefsas 
@@ -159,7 +159,7 @@ csdfsefsas
 -csdfsefsas 
 -clear 
 -status 
-config case WORST 
+config case worst 
 -remove route 2 
 load  
 - 
@@ -232,7 +232,7 @@ ep1
 list unknowns - 
 print nodeinfo 2 
 load test.xe 
-config case BEST 
+config case best 
 -status  
 echo csdfsefsas  
 clear 
@@ -252,7 +252,7 @@ echo " "
 -load 0.0 
 csdfsefsas csdfsefsas 
 set from  * 
--config case BEST 
+-config case best 
 list looppaths 
 source - 
 -clear 
@@ -274,7 +274,7 @@ list srcloops
 set required 4 csdfsefsas 2147483647 ns 
 pwd 3.6230284071719835E307 
 print summary 
-config case WORST 
+config case worst 
 history 
 -analyse path 0x11c10 ep3 
 add functiontime g 2.568199324470804E307 mhz 
@@ -388,7 +388,7 @@ remove from 0xjaf659
 source  
 -add exclusion 1.689225424870552E308 
 -version 
--config case WORST 
+-config case worst 
 remove functiontime  f 
 print  
 help config 
@@ -546,7 +546,7 @@ list allsrclabels
 history csdfsefsas 
 config verbosity csdfsefsas csdfsefsas mhz 
 pwd callf,callg,callg,main,callf,callf,callh,main, ep3 
--config case BEST 
+-config case best 
 -print summary 
 scripter enable 
 set  
@@ -618,10 +618,10 @@ print src -
 pwd mhz 
 list labels 
 version - 
-config case WORST 
+config case worst 
 analyse csdfsefsas callg,g, f 
 -- 
--config case BEST 
+-config case best 
 pwd 
 remove pathtime test.xc:46 callh,callf,callf,callg,callh,f,callg,callg, ep4 
 -clear callf,callf,callg,h,callh,callh,callg,callh,callh,h,callf,callf,callg,main, test.xc:29 
@@ -690,7 +690,7 @@ history
 history 
 -csdfsefsas csdfsefsas 
 version csdfsefsas 
--config case WORST 
+-config case worst 
 source csdfsefsas 
 set instructiontime 1 h 1581251747 cycles 
 -csdfsefsas cycles 
@@ -859,7 +859,7 @@ echo csdfsefsas
 -print trace callh,g,callh,g, h 
 clear -1188884990 
 csdfsefsas 
-config case WORST 
+config case worst 
 -help version 
 -set loopscope 1 - r 
 source  
@@ -910,7 +910,7 @@ load csdfsefsas
 -status  
 -pwd 
 -analyse path test.xc:25 0xj468e9 
-config case WORST 
+config case worst 
 -analyse csdfsefsas csdfsefsas 
 list srclabels 
 -add functiontime callh,callf,callg,g,callg,f,callh,main,callh,f, main  ns 
@@ -989,7 +989,7 @@ status
 -history 
 analyse path h f 
 -analyse path - 0xj6044c 
-config case WORST 
+config case worst 
 load test.xe 
 -load test.xe 
 -set loop 3  2147483647 

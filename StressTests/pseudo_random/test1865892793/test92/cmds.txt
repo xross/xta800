@@ -160,7 +160,7 @@ remove branch csdfsefsas csdfsefsas callg,callf,callg,g,callg,main,callh,main, t
 print nodeinfo - 
 -history 
 -version * 
-config case BEST 
+config case best 
 -analyse path 0x13253 g 
 version ns 
 scripter enable 
@@ -437,10 +437,10 @@ load test.xe
 help set 
 version csdfsefsas 
 -analyse path test.xc:41 * 
-config case WORST 
+config case worst 
 help exit 
 clear csdfsefsas 
--config case WORST 
+-config case worst 
 -remove instructiontime  
 -scripter disable 
 scripter dump 
@@ -494,7 +494,7 @@ remove branch test.xc:3 callg,g,callg,callh,callg,g,callh,callg,callg,f,callh,ma
 help callh,f,callh,h,callg,h,callf,g,callf,main,callh,f,callg,callg,callg,f,callf,g, h 
 scripter dump 
 -list threadstartpoints 
--config case BEST 
+-config case best 
 load - 
 -analyse csdfsefsas csdfsefsas 
 -load  
@@ -510,10 +510,10 @@ load
 -print distribution - 
 -clear 
 set from  callf,f, ep3 
-config case BEST 
--config case WORST 
+config case best 
+-config case worst 
 -print nodeinfo csdfsefsas csdfsefsas cycles  
--config case BEST 
+-config case best 
 load test.xe 
 -print mix csdfsefsas 
 list srclabels 
@@ -591,12 +591,12 @@ print warnings
 -echo "4.874608724807039E307 " 
 -scripter disable 
 history - 
-config case BEST 
+config case best 
 -set from  - 
 -list labels 
 status 
 list threadstartpoints 
-config case WORST 
+config case worst 
 load test.xe 
 version 
 clear 
@@ -627,10 +627,10 @@ echo csdfsefsas 0.0
 -analyse path * ep4 
 status 0.0 
 -help analyse 
-config case WORST 
+config case worst 
 add loop csdfsefsas mhz 
 -set functiontime 4 * - cycles 
--config case BEST 
+-config case best 
 pwd 
 -echo " " 
 -echo  
@@ -736,7 +736,7 @@ config verbosity - 1.0109557008248431E308
 -analyse csdfsefsas 
 -mhz 
 -pwd 
--config case BEST 
+-config case best 
 -remove from h 
 status 
 clear 
@@ -800,7 +800,7 @@ csdfsefsas callf,g,callh,h,callh,callh,callf,main,callh,f,callg,callg,callg,call
 status 
 -source  
 -load callf,callf,callg,callf,callh,g,callh,callg,callg,callh,callf,callg, test.xc:44 
-config case BEST 
+config case best 
 -add pathtime 0xjd863b main 0.0 cycles 
 -add instructiontime - - csdfsefsas 
 list srclabels 
@@ -820,7 +820,7 @@ help history
 -help csdfsefsas 1.0257476998053298E308 
 clear csdfsefsas 
 pwd  
-config case BEST 
+config case best 
 -echo "- " 
 -set instructiontime 1 callf,callh,callf,main,callg,h,callf,callg,callh,callf,callf,main, test.xc:22 csdfsefsas mhz 4.8001355599921596E306 
 -list functiontimes 
@@ -867,7 +867,7 @@ print asm test.xc:13
 set  
 -config freq h 
 status * 
-config case BEST 
+config case best 
 analyse path ep2 csdfsefsas csdfsefsas - 
 -add loop f 2 
 version 
@@ -924,7 +924,7 @@ version
 -print nodeinfo - 2147483647 
 -version 
 -load csdfsefsas csdfsefsas 
--config case WORST 
+-config case worst 
 -history 
 -echo "csdfsefsas " 
 -status csdfsefsas csdfsefsas  

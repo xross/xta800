@@ -48,7 +48,7 @@ set pathtime 2 * 0x10120 1.5862739269406209E308 mhz
 scripter disable 
 help pwd 
 list srcloops 
--config case WORST 
+-config case worst 
 status 
 set pathtime 0 mhz * 0 mhz 
 add loop callh,callf,callf,callh,callf,callh, g - 
@@ -82,7 +82,7 @@ help echo
 config verbosity - csdfsefsas csdfsefsas 
 -history csdfsefsas  
 source  
--config case WORST 
+-config case worst 
 -clear  
 -clear  
 - 
@@ -130,7 +130,7 @@ echo " "
 echo "- " 
 -load - 
 pwd 
--config case BEST 
+-config case best 
 -set loopscope 1 0xjb3ac3 r 
 list calls 
 -help version 
@@ -233,7 +233,7 @@ scripter disable
 source csdfsefsas 
 -help echo 
 status 
--config case BEST 
+-config case best 
 print structure 2.5420066286248797E307 
 list branches 
 -history 
@@ -339,7 +339,7 @@ remove looppath test.xc:38
 -remove loop - 
 source csdfsefsas 
 -analyse function callh,callf,callg,g,callg,callh,callg,h,callf,f,callh,callf, test.xc:41 
--config case WORST 
+-config case worst 
 version ns 
 analyse csdfsefsas csdfsefsas * 
 -scripter enable 
@@ -593,7 +593,7 @@ analyse path - 0xj1169d
 scripter dump 
 source ns 
 -echo csdfsefsas 
-config case BEST 
+config case best 
 -remove exclusion ep3 
 remove pathtime 0x12eaa f 
 echo  
@@ -634,7 +634,7 @@ add pathtime callh,callf,callg,h,callg,h,callf,callf,callh,f,callh,f,callg,callh
 -set required 1 2147483647 ns 
 -source 0x10fc6 
 -load csdfsefsas  
-config case BEST 
+config case best 
 print routeinfo - 
 -help load 
 -add exclusion 0xj5359a 
@@ -656,7 +656,7 @@ pwd
 remove to - 
 -print structure 1.4959398756929194E308 - 
 version ns 
-config case BEST 
+config case best 
 list callh,callh,callf,callf,callf,callf, ep1 
 -help csdfsefsas 
 -pwd  
@@ -832,7 +832,7 @@ source *
 analyse path callh,f,callf,callg,callg,g, test.xc:33 callf,h,callf,g, g 
 help version 
 scripter dump 
-config case WORST 
+config case worst 
 -add pathtime csdfsefsas callf,f,callh,callf,callh,g,callf,h,callh,callh,callg,callh,callf,callf,callh,g, main * - ns 
 print src 1.5588330144268092E308 
 list srccommands 

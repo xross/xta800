@@ -16,7 +16,7 @@ add pathtime g 0xj19508 595187257 ns
 pwd mhz 
 -print structure csdfsefsas  
 -list functions 
--config case WORST 
+-config case worst 
 f 
 scripter disable 
 -status 
@@ -228,7 +228,7 @@ version -
 version 
 -add pathtime main * 1.6248158261790179E308 cycles 
 set looppath 0 ep1 6.733480238230223E307 
-config case BEST 
+config case best 
 echo  
 -version  
 -config verbosity - mhz 
@@ -240,7 +240,7 @@ history csdfsefsas mhz
 -config case csdfsefsas csdfsefsas cycles 
 help analyse 
 source test.xc:44 
--config case WORST 
+-config case worst 
 list pathtimes 
 set from  0x100fc 
 -load test.xe 
@@ -338,7 +338,7 @@ pwd csdfsefsas
 -print asm - csdfsefsas 
 add pathtime csdfsefsas csdfsefsas  - csdfsefsas 
 print structure  
-config case WORST 
+config case worst 
 -analyse 0xj71e3c 
 set * 
 status csdfsefsas 
@@ -360,7 +360,7 @@ version
 help remove 
 -remove loop h 
 -status  
-config case BEST 
+config case best 
 load test.xe 
 -remove branch - h 0xje7603 0x12898 cycles * ep2 h - f 
 analyse function test.xc:32 
@@ -395,7 +395,7 @@ history
 pwd 
 remove functiontime - 
 -print mix - -1528696448 
-config case BEST 
+config case best 
 version - 
 scripter dump 
 -add pathtime 0xjb45c4 - - cycles 
@@ -440,12 +440,12 @@ source
 csdfsefsas csdfsefsas  
 help add 
 status 
-config case WORST 
+config case worst 
 -list allendpoints 
 analyse function test.xc:43 
 version 1.1840316528524146E308 
 source - 
-config case WORST 
+config case worst 
 -status 
 help add 
 status f 
@@ -543,7 +543,7 @@ list endpoints
 help add 
 -analyse function * 
 -cycles 
--config case WORST 
+-config case worst 
 -echo csdfsefsas 
 -print trace * 
 -analyse path * ep2 
@@ -642,7 +642,7 @@ remove looppath 1.3370304662769918E308
 -list threadstartpoints 
 -config freq csdfsefsas 
 -clear  
--config case BEST 
+-config case best 
 -load csdfsefsas 
 -clear 
 load test.xe 
@@ -932,7 +932,7 @@ add loopscope f r
 clear 
 status csdfsefsas 
 version 
--config case WORST 
+-config case worst 
 print summary 
 -source  
 remove looppath 0xj436eb 
@@ -985,7 +985,7 @@ clear ep3
 set required 1 ns mhz 
 status csdfsefsas 
 list loops 
--config case BEST 
+-config case best 
 -add pathtime 7.293948902611758E307 * * 0 
 source  
 -print trace - 

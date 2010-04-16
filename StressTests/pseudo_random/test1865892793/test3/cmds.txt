@@ -6,7 +6,7 @@ status csdfsefsas csdfsefsas
 add instructiontime 0x114af 0 mhz 
 -print src 2147483647 ep3 
 -clear 
-config case WORST 
+config case worst 
 version 
 print nodeinfo 3.3247054754321035E307 5.893587081306199E307 
 print warnings 
@@ -283,7 +283,7 @@ source
 -load csdfsefsas csdfsefsas  
 -clear 
 -1.5941451828159184E308 
--config case BEST 
+-config case best 
 print nodeinfo 2147483647 
 -echo csdfsefsas 
 -scripter dump 
@@ -304,7 +304,7 @@ scripter disable
 -config freq 2 
 -add functiontime ep3 2 0.0 
 -clear 0.0 
--config case WORST 
+-config case worst 
 history ep4 
 -echo  
 -set from  ep3 
@@ -320,8 +320,8 @@ analyse csdfsefsas
 load test.xe 
 remove route 3 
 -list instructiontime 
--config case BEST 
-config case BEST 
+-config case best 
+config case best 
 version csdfsefsas csdfsefsas - 
 status csdfsefsas ns 
 -help source 
@@ -431,7 +431,7 @@ mhz
 -clear 0x13d9f 
 clear csdfsefsas - 
 -source - 
--config case WORST 
+-config case worst 
 scripter disable 
 -history  ep1 
 source 5.492620510284859E307 
@@ -546,7 +546,7 @@ config case
 -add pathtime - 0xj8400c 0 ns 
 add functiontime ep2 1.5341944805966419E308 mhz 
 list loopscopes 
--config case BEST 
+-config case best 
 -remove looppath * 
 -load csdfsefsas - 
 -scripter disable 
@@ -568,7 +568,7 @@ add looppath cycles csdfsefsas
 help history 
 status csdfsefsas 
 config freq 3.824449160018476E307 
--config case BEST 
+-config case best 
 -status 
 scripter disable 
 -add loop csdfsefsas  0 
@@ -593,7 +593,7 @@ clear
 -set instructiontime 3 0x11c3d 2 ns 
 -remove to * 
 source csdfsefsas csdfsefsas 
--config case WORST 
+-config case worst 
 clear csdfsefsas csdfsefsas 
 csdfsefsas csdfsefsas 
 -set from  0xj6be54 
@@ -725,7 +725,7 @@ echo "- "
 -echo "csdfsefsas " 
 -add instructiontime  ep3 - cycles 
 -help load 
-config case BEST 
+config case best 
 history -744153086 
 echo csdfsefsas cycles 
 -print warnings 
@@ -780,7 +780,7 @@ pwd cycles
 -echo " " 
 print src 0 0.0 
 -version csdfsefsas  
-config case WORST 
+config case worst 
 pwd 
 history csdfsefsas 
 -clear  
@@ -802,7 +802,7 @@ help list
 help help 
 -history csdfsefsas - 
 -set pathtime 4 0x10a42 ep4 0 ns 
-config case BEST 
+config case best 
 -source 1.095182869441805E308 
 csdfsefsas 
 2147483647 
@@ -836,7 +836,7 @@ status
 -add pathtime csdfsefsas f 2147483647 ns 
 -scripter enable 
 -status 
--config case WORST 
+-config case worst 
 echo " " 
 -callh,callf,callh,g, g 
 -g 
@@ -927,7 +927,7 @@ version
 -config verbosity 1 csdfsefsas  
 -status csdfsefsas * 
 echo csdfsefsas 
--config case WORST 
+-config case worst 
 pwd 
 add loopscope main r 
 -load test.xc:30 
@@ -993,7 +993,7 @@ remove instructiontime *
 echo - 
 -print trace ns 0.0 
 clear  
-config case WORST 
+config case worst 
 -echo " " 
 echo " " 
 set from  test.xc:34 

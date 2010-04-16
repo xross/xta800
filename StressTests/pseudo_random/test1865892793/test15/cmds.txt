@@ -70,7 +70,7 @@ config verbosity ns csdfsefsas csdfsefsas csdfsefsas
 -status 
 -help version 
 -list endpoints 
--config case WORST 
+-config case worst 
 -status 0.0 
 config freq 2147483647 
 -remove looppath - 
@@ -349,7 +349,7 @@ version
 remove exclusion csdfsefsas csdfsefsas csdfsefsas 
 -pwd 
 status csdfsefsas 
-config case WORST 
+config case worst 
 analyse function ep2 
 remove from 0x1354f 
 -set pathtime 0 test.xc:45 - - cycles 
@@ -409,7 +409,7 @@ echo 0xj28f74
 scripter disable 
 pwd csdfsefsas 
 list allsrclabels 
--config case BEST 
+-config case best 
 -source  
 -source  
 -status csdfsefsas csdfsefsas 
@@ -560,7 +560,7 @@ config freq -1287310160
 csdfsefsas  
 set from  0xj803ef 
 -pwd 
--config case BEST 
+-config case best 
 set pathtime 0 - 0x1255e cycles csdfsefsas 
 -load -871906881 
 status 
@@ -687,7 +687,7 @@ print routeinfo -
 -8.447768482516029E306 
 -version csdfsefsas 
 -clear csdfsefsas 
--config case WORST 
+-config case worst 
 -echo "csdfsefsas " 
 -clear 
 version 
@@ -729,7 +729,7 @@ pwd
 -set pathtime 2 0xj3971e 0x13735 csdfsefsas cycles 
 -version csdfsefsas 
 history 
--config case WORST 
+-config case worst 
 analyse path 0x1251a 0x12718 
 -list instructiontime 
 -pwd cycles 
@@ -799,11 +799,11 @@ source csdfsefsas
 load test.xe 
 help list 
 -history csdfsefsas csdfsefsas 
-config case BEST 
+config case best 
 -help list 
 echo "cycles " 
 -clear 
-config case BEST 
+config case best 
 -add exclusion * 
 -echo csdfsefsas 
 analyse path ep4 test.xc:31 
@@ -831,7 +831,7 @@ scripter disable
 print routeinfo 0.0 
  
 - 
--config case WORST 
+-config case worst 
 version  
 -set functiontime 4 g - mhz 
 remove instructiontime ep3 
@@ -859,7 +859,7 @@ print asm 1.428374526413503E308 0.0
 version 2147483647 
 history 
 -version 
--config case WORST 
+-config case worst 
 scripter enable 
 -source main 
 -history 
@@ -939,7 +939,7 @@ analyse path ep1 h
 source  
 -list srclabels 
 status 0xj66be2 
--config case BEST 
+-config case best 
 print routeinfo 2 
 set pathtime 0 0x130f6 - 0 mhz 
 remove functiontime ep3 

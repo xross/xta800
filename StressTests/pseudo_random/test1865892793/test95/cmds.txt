@@ -50,7 +50,7 @@ history
 scripter enable 
 -version 
 -clear csdfsefsas 
-config case BEST 
+config case best 
 -echo "mhz " 
 -set looppath 3 - - 
 -analyse 0.0 
@@ -91,7 +91,7 @@ add instructiontime  test.xc:35 127345297 mhz
 print csdfsefsas ns 
 config freq - 
 clear 
--config case BEST 
+-config case best 
 config freq csdfsefsas 
 -analyse path 0xj5afa0 - 
 source csdfsefsas csdfsefsas - 
@@ -114,7 +114,7 @@ echo " "
 pwd 
 -callh,f,callf,h,callg,callg,callg,callf,callf,h,callg,callg,callh,callf,callg,callh, ep1 
 -history csdfsefsas 
--config case WORST 
+-config case worst 
 load csdfsefsas 
 -add pathtime 0x11d27 0xj17774 csdfsefsas csdfsefsas ns 
 -source  
@@ -136,7 +136,7 @@ scripter dump
 analyse path * - 
 -csdfsefsas callg,callf, ep2 
 load  
-config case BEST 
+config case best 
 analyse function - 
 -version 
 add loopscope callf,f,callh,f,callh,f,callg,main,callh,callh,callg,callf,callg,callh,callh,callh, h r 
@@ -182,7 +182,7 @@ csdfsefsas csdfsefsas
 remove to * 
 source csdfsefsas 
 config verbosity -  
--config case BEST 
+-config case best 
 -source csdfsefsas  
 list unknowns - 
 print routeinfo 1.4464394402670767E308 
@@ -237,10 +237,10 @@ pwd
 config freq - 
 load 0x12f61 
 analyse  
--config case WORST 
+-config case worst 
 -analyse - 
 echo "csdfsefsas " 
--config case BEST 
+-config case best 
 -list loopscopes 
 list allcalls 
 -set looppath 2 callg,main,callh,f,callh,g, h - 
@@ -271,7 +271,7 @@ history
 -help echo 
 -analyse function * 
 pwd csdfsefsas 
--config case WORST 
+-config case worst 
 -version csdfsefsas  
 clear  
 load 0xjda5ba 
@@ -422,7 +422,7 @@ help print
 load csdfsefsas csdfsefsas 
 print csdfsefsas 
 version 
-config case BEST 
+config case best 
 clear csdfsefsas callg,callg,callh,main,callg,f,callf,f,callf,g,callg,h, ep1 
 source 1.5533209975285974E308 
 analyse path * ep1 
@@ -451,7 +451,7 @@ source
 -list functiontimes 
 -print structure 0.0 0 
 list exclusions 
--config case WORST 
+-config case worst 
 add loopscope 0xjfb2e3 relative 
 source ns 
 -status 
@@ -466,7 +466,7 @@ pwd
 config verbosity 0.0 1.190702146601562E308 
 help test.xc:36 
 -remove 0xjf2b28 
-config case WORST 
+config case worst 
 pwd  
 print mix test.xc:41 
 -list looppaths 
@@ -486,11 +486,11 @@ csdfsefsas
 -version 
 csdfsefsas 
 pwd csdfsefsas csdfsefsas 
-config case BEST 
+config case best 
 - 
 history csdfsefsas 
 print - 
--config case BEST 
+-config case best 
 list unknowns - 
 scripter dump 
  
@@ -559,7 +559,7 @@ clear
 -analyse  
 source callf,callh,callf,g,callg,callg,callf,callf,callf,g, test.xc:20 
 -clear 1.7783374409859252E308 
--config case WORST 
+-config case worst 
 -add pathtime  ep4 main 2147483647 ns 
 echo mhz 
 help add 
@@ -651,7 +651,7 @@ config freq csdfsefsas
 -status csdfsefsas * 
 clear  
 load csdfsefsas 
--config case BEST 
+-config case best 
 version 
 pwd 
 -config freq 2.7767083480475364E307 
@@ -672,7 +672,7 @@ csdfsefsas
 -0.0 
 -scripter dump 
 load test.xe 
--config case BEST 
+-config case best 
 -remove looppath 0xj92e9e 
 0.0 
 list pathtimes 
@@ -684,7 +684,7 @@ list exclusions
 version - 
 -clear 
 -clear 
-config case WORST 
+config case worst 
 analyse csdfsefsas test.xc:12 
 -clear 0x10a42 
 clear mhz 
@@ -749,7 +749,7 @@ set -
 list knowns - 
 -set to  0x13633 
 -version  
--config case WORST 
+-config case worst 
 -load test.xe 
 -print trace 0.0 0.0 
 -history 
@@ -828,7 +828,7 @@ config verbosity 2
 history 
 -load test.xe 
 -status csdfsefsas csdfsefsas 
-config case WORST 
+config case worst 
 add branch csdfsefsas 0.0 callf,main,callh,callg,callh,h,callh,callf, ep3 ep1 0x112cf 1.0753830162642143E308 
 echo "0x12eef " 
 print structure - 
@@ -870,7 +870,7 @@ list exclusions
 -version callf,callf,callh,callh,callh,callf,callg,callf,callh,callg,callh,f, ep2 
 -add functiontime callh,callf,callg,callg,callf,callh,callh,callg,callf,g,callf,h,callh,callh, f 0.0 cycles 
 -add instructiontime ep3 - callf,f,callh,callh,callg,main,callf,h, g 
-config case BEST 
+config case best 
 status 
 -source  
 -add loopscope f r 
@@ -960,7 +960,7 @@ source csdfsefsas 9.27740324679728E307
 -1 
 remove pathtime * * 
 -scripter enable 
-config case WORST 
+config case worst 
 add loopscope 0xjeab5c a 
 -add loopscope callf,main,callg,main,callf,h,callf,h,callh,f,callh,callg,callf,callh,callh,callf,callh,callf, ep1 absolute 
 set to  0xj3d7af 

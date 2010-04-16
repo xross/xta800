@@ -1,6 +1,6 @@
 config freq 0 100
 config threads stdcore[0] 5
-config case BEST
+config case best
 
 add branch source1 target2 target3 target4
 add exclusion source2

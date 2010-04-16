@@ -1,7 +1,7 @@
 version csdfsefsas * 
 -help 0.0 
 load test.xe 
-config case BEST 
+config case best 
 -history ep1 
 -help load 
 -print warnings 
@@ -37,7 +37,7 @@ print src 0x12343
 config freq ns 
 -add loopscope - r 
 -status f 
--config case BEST 
+-config case best 
 -help remove 
 echo csdfsefsas 
 echo "- " 
@@ -232,7 +232,7 @@ help pwd
 -remove to 0x1280b 
 -set - 
 version  
--config case WORST 
+-config case worst 
 -print warnings 
 remove instructiontime - 
 -history csdfsefsas 
@@ -243,7 +243,7 @@ status
 -analyse test.xc:9 
 -list pathtimes 
 help load 
--config case WORST 
+-config case worst 
 history 
 -help add 
 clear 
@@ -326,7 +326,7 @@ clear csdfsefsas
 status 
 -source csdfsefsas csdfsefsas 
 status ns 
-config case BEST 
+config case best 
 -pwd 
 -set loopscope 0 - a 
 help status 
@@ -345,7 +345,7 @@ csdfsefsas
 -source 0x12f4a 
 -clear 
 -remove branch ep1 * h test.xc:30 0xje9f14 - ep1 0x12b71 
--config case WORST 
+-config case worst 
 -set looppath 1 * 2059491792 
 -help version 
 -load 1.4034586356268202E308 
@@ -357,7 +357,7 @@ status cycles
 -analyse 0 
 ns 
 -remove pathtime * test.xc:6 
-config case WORST 
+config case worst 
 load test.xe 
 config freq 2147483647 
 pwd csdfsefsas 
@@ -365,7 +365,7 @@ pwd csdfsefsas
 echo  
 echo - 
 -echo "- " 
-config case BEST 
+config case best 
 scripter dump 
 -echo " " 
 -help pwd 
@@ -397,7 +397,7 @@ source csdfsefsas csdfsefsas
 -version - 
 -scripter enable 
 -clear 2147483647 
--config case BEST 
+-config case best 
 -add instructiontime f 0.0 cycles 
 history test.xc:21 
 config verbosity - 
@@ -418,9 +418,9 @@ analyse function csdfsefsas -
 -status 
 -list instructiontime 
 -list srccommands 
-config case WORST 
+config case worst 
 add looppath - 1 
-config case BEST 
+config case best 
 status 
 -add branch ep3 0x133f2 test.xc:35 0xj52eb1 
 -status 
@@ -469,7 +469,7 @@ scripter disable
 list allsrclabels 
 -0x11e6e 
 echo csdfsefsas 0.0 
--config case BEST 
+-config case best 
 -pwd 
 list exclusions 
 -pwd 
@@ -573,7 +573,7 @@ clear
 -echo  
 -analyse function g 
 -print mix csdfsefsas 
-config case BEST 
+config case best 
 help pwd 
 add loop 0xjd414d 14007217 
 -scripter enable 
@@ -789,7 +789,7 @@ set functiontime 3 test.xc:46 - ns
 clear 
 add looppath ep1 - 
 -add looppath 0x1374a -477913419 
-config case BEST 
+config case best 
 -pwd 9.46777477571671E306 
  
 version 0xj38330 
@@ -813,7 +813,7 @@ list csdfsefsas
 -history 
 -remove from ep3 
 source 249976476 
--config case BEST 
+-config case best 
 -analyse path csdfsefsas  h 
 -print routeinfo cycles 
 -list branches 
@@ -849,7 +849,7 @@ clear
 -scripter dump 
 -status 
 -pwd 
--config case WORST 
+-config case worst 
 -set pathtime 2 f h 0.0 csdfsefsas 
 -add loop * 7.094329281017436E307 
 -list functions 

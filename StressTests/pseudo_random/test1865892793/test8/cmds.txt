@@ -81,7 +81,7 @@ print structure  -
 config verbosity mhz - 
 list functions 
 source ep1 
-config case BEST 
+config case best 
 list 0x134b4 
 print summary 
 pwd 
@@ -174,7 +174,7 @@ load test.xe
 version 
 clear 
 source csdfsefsas 
-config case WORST 
+config case worst 
 -echo 1.0932246941590819E308 
 load - 
 -load cycles 
@@ -193,7 +193,7 @@ help clear
 help add 
 -set loopscope 2 - relative 
 set to  0x10f0f 
--config case WORST 
+-config case worst 
 scripter dump 
 -echo 9.03389180227087E307 
 history 
@@ -223,10 +223,10 @@ history
 pwd 
 -echo 0x12426 
 help clear 
-config case WORST 
+config case worst 
 -echo "csdfsefsas " 
 scripter dump 
--config case WORST 
+-config case worst 
 -pwd callf,callh,callg,g,callg,callg,callf,callh,callg,callf,callh,main,callg,callh, main 
 -analyse  
 -status 
@@ -298,7 +298,7 @@ source ns
 -history 
 clear 
 -remove looppath 0xj5c983 
--config case WORST 
+-config case worst 
 status 
 -add loopscope callf,main,callf,h,callh,main,callf,callh,callf,h,callf,callg,callh,callf,callg,callf, ep4  
 remove csdfsefsas 
@@ -308,7 +308,7 @@ remove csdfsefsas
 -analyse function main 
 -scripter enable 
 -print 1.292954909262548E308 
--config case BEST 
+-config case best 
 config freq - 
 -analyse function ep3 
 -list calls 
@@ -455,7 +455,7 @@ scripter disable
 remove functiontime * 
 -add functiontime ep2 0.0 cycles 
 - 
-config case BEST 
+config case best 
 print src csdfsefsas 1.7356710336991975E308 0.0 
 clear mhz 
 history csdfsefsas mhz 
@@ -613,7 +613,7 @@ version h
 -echo test.xc:23 
 -help print 
 clear  
-config case BEST 
+config case best 
 load  
 set required 0 0 csdfsefsas 
 source csdfsefsas - 
@@ -887,7 +887,7 @@ pwd 6.795374211702949E307
 -status 
 remove functiontime csdfsefsas csdfsefsas 
 print routeinfo 0 
--config case BEST 
+-config case best 
 -scripter disable 
 mhz 
 -cycles 
@@ -941,7 +941,7 @@ list srclabels
 -echo "- " 
 status mhz 
 -remove functiontime ep3 
-config case BEST 
+config case best 
 -help load 
 add instructiontime f callg,callh, ep3 csdfsefsas 
 -load test.xe 

@@ -2,7 +2,7 @@
 -scripter disable 
 -source csdfsefsas 
 -load test.xe 
-config case BEST 
+config case best 
 -config verbosity 0.0 1 
 load  
 -set looppath 2 0xjd10d6 - 
@@ -311,7 +311,7 @@ analyse path * 0xjf2612
 list allendpoints 
 -set from  - 
 help add 
--config case BEST 
+-config case best 
 -set to  csdfsefsas 
 -version 
 -analyse path ep1 test.xc:3 
@@ -400,7 +400,7 @@ status
 -print distribution ep3 3.406737190987026E307 
 help - 
 -add loopscope 0x11e6c absolute 
-config case WORST 
+config case worst 
 -remove looppath ep3 
 -source test.xc:31 
 -set to  0x1254c 
@@ -419,7 +419,7 @@ scripter dump
 clear csdfsefsas csdfsefsas 
 -history 
 -pwd 
--config case WORST 
+-config case worst 
 add branch *  * 
 -list functions 
 -1.5305574566595173E308 
@@ -446,7 +446,7 @@ remove looppath *
 version 
 -history 
 -set to  test.xc:32 
--config case BEST 
+-config case best 
 -scripter disable 
 -load test.xc:30 
 add exclusion 0xjbd93b 
@@ -489,7 +489,7 @@ scripter dump
 -list exclusions 
 load test.xe 
 echo "ns " 
-config case BEST 
+config case best 
 history  
  
 -- 
@@ -499,7 +499,7 @@ analyse function ep3
 -csdfsefsas 
 -print mix 0.0 0 
 -load ns 
-config case WORST 
+config case worst 
 add looppath test.xc:11 - 
 -set pathtime 0 ep2 test.xc:9 0.0 cycles 
 status csdfsefsas 
@@ -606,7 +606,7 @@ help analyse
 -version csdfsefsas 
 clear 
 echo "csdfsefsas " 
--config case BEST 
+-config case best 
 analyse function 0x12155 
 -version csdfsefsas csdfsefsas 
 -add loop 0x12178 1 
@@ -753,7 +753,7 @@ config freq 1.745770525822035E308
 -history 
 help version 
 status 
--config case BEST 
+-config case best 
 -set loopscope 0 - csdfsefsas 
 add pathtime 0x10338 - - ns 
 print nodeinfo csdfsefsas 

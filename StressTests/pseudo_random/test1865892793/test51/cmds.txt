@@ -64,8 +64,8 @@ pwd
 load test.xe 
 -source ep3 
 -clear 
--config case BEST 
--config case WORST 
+-config case best 
+-config case worst 
 list loops 
 -version csdfsefsas 
 -clear 
@@ -85,7 +85,7 @@ add loop 0x1371a 2147483647
 -history 
 -list unknowns  
 -analyse csdfsefsas 
-config case WORST 
+config case worst 
 history 
 -config verbosity  mhz 
 history 
@@ -132,7 +132,7 @@ echo "0x10db7 "
 -- 
 pwd 
 -config verbosity mhz - 
-config case WORST 
+config case worst 
 -version  
  
 -version csdfsefsas 
@@ -259,7 +259,7 @@ help echo
 -status 1.1692169775796936E308 
 -echo 9.557912744556017E307 
 clear 
-config case BEST 
+config case best 
 csdfsefsas 
 -echo "* " 
 -analyse function - 
@@ -312,13 +312,13 @@ load -
 -add looppath 0x12904 - 
 -set loopscope 0 ep3 a 
 add loopscope 0.0 absolute 
-config case WORST 
+config case worst 
 echo "mhz " 
 load 0.0 
 history 
 -print summary 
 -add pathtime * ep1 1.9348386477318076E307 mhz 
--config case BEST 
+-config case best 
 -status 2 
 -echo csdfsefsas 
 -source - 
@@ -453,7 +453,7 @@ history
 analyse path * * 
 analyse path main  
 load test.xe 
-config case WORST 
+config case worst 
 add functiontime ep1 - cycles 
 config verbosity 0 0.0 
 -pwd csdfsefsas 
@@ -465,7 +465,7 @@ list unknowns -
 history test.xc:21 
 -list looppaths 
 -echo "csdfsefsas " 
--config case BEST 
+-config case best 
 -help clear 
 -cycles 
 -status  
@@ -502,7 +502,7 @@ status
 csdfsefsas 
 analyse path * h 
 add looppath ep2 - 
--config case BEST 
+-config case best 
 -version 1 
 remove pathtime ep3 test.xc:10 
 -config freq - 
@@ -552,7 +552,7 @@ history csdfsefsas
 scripter enable 
 -config case ns 
 remove loopscope 0x12622 
-config case WORST 
+config case worst 
 clear 
 -clear csdfsefsas 
 print distribution csdfsefsas 2 
@@ -737,7 +737,7 @@ clear ep4
 -source csdfsefsas 
 0 
 config freq 0.0 
--config case WORST 
+-config case worst 
 -set loopscope 0 0x11272 relative 
 load csdfsefsas 
 -help status 
@@ -876,10 +876,10 @@ set csdfsefsas
 help help 
 -print trace 0.0 
 pwd 
-config case WORST 
+config case worst 
 -status 
 add loopscope 0x12225 a 
-config case WORST 
+config case worst 
 print asm - 
 -status mhz 
 remove exclusion 0xj70387 

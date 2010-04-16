@@ -50,7 +50,7 @@ scripter disable
 history 
 status 
 csdfsefsas csdfsefsas mhz 
--config case BEST 
+-config case best 
 -analyse  
 add looppath - - 
 source 1833694529 
@@ -88,7 +88,7 @@ history
 -echo "csdfsefsas cycles " 
 print distribution 1 1.2071982068103842E308 
 list allcalls 
-config case WORST 
+config case worst 
 -source - 
 remove instructiontime ep4 
 -csdfsefsas csdfsefsas 
@@ -309,7 +309,7 @@ echo 0xjd9e8b
 load h 
 -status ep3 
 analyse path 0.0 0xj3ff76 
--config case BEST 
+-config case best 
 set csdfsefsas 
 -clear - 
 -help load 
@@ -335,7 +335,7 @@ list functiontimes
 -pwd 2 
 -pwd 0xje61b1 
 -add pathtime 0x1337f ep2 - csdfsefsas 
-config case BEST 
+config case best 
 help list 
 help list 
 -source test.xc:46 
@@ -343,7 +343,7 @@ echo
 -pwd 
 -print  
 clear 
--config case WORST 
+-config case worst 
 set loop 2 * 0 
 source  
 remove from test.xc:9 
@@ -575,7 +575,7 @@ list exclusions
 echo 0x10867 
 config verbosity ep1 - 
 -help load 
-config case WORST 
+config case worst 
 pwd 
 pwd 
 status csdfsefsas ns 
@@ -596,7 +596,7 @@ print src csdfsefsas csdfsefsas
 help list 
 -history 
 -remove loopscope test.xc:39 
-config case BEST 
+config case best 
 -list allcalls 
 source  
 -add exclusion csdfsefsas  
@@ -627,7 +627,7 @@ list branches
 status  
 -version csdfsefsas 
 csdfsefsas 
--config case WORST 
+-config case worst 
 -print warnings 
 list loopscopes 
 - 
@@ -670,8 +670,8 @@ list knowns 1
 -pwd csdfsefsas csdfsefsas  
 -add looppath main 0.0 
 list allsrclabels 
-config case BEST 
--config case BEST 
+config case best 
+-config case best 
 source -1308515134 
 echo  
 add functiontime main 1.2259551492117655E307 cycles 
@@ -902,7 +902,7 @@ scripter disable
 add exclusion - 
 -version csdfsefsas 
 scripter dump 
--config case BEST 
+-config case best 
 csdfsefsas  
 -version csdfsefsas 
 source - 

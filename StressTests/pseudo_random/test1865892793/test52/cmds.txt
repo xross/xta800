@@ -36,7 +36,7 @@ csdfsefsas 0x13868
 -ns 
 -pwd  
 -history  
--config case WORST 
+-config case worst 
 echo f 
 -pwd 
 version 
@@ -306,7 +306,7 @@ list exclusions
 set required 4 0.0 csdfsefsas csdfsefsas test.xc:24 
 -history 
 -config freq 0.0 
-config case BEST 
+config case best 
 scripter dump 
 -scripter enable 
 source csdfsefsas 
@@ -320,7 +320,7 @@ source
 set to  test.xc:27 
 -add functiontime 0x131d7 0.0 mhz 
 -scripter enable 
--config case WORST 
+-config case worst 
 list labels 
 -source mhz 
 -set required 2 - f 
@@ -330,14 +330,14 @@ list threadstoppoints
 source cycles 
 load test.xe 
 -history  
-config case BEST 
+config case best 
 -pwd cycles 
 -list srcloops 
 -add looppath ep3 - 
 list csdfsefsas 
 -test.xc:27 
 -set from  -1908392582 
--config case BEST 
+-config case best 
 -scripter enable 
 -source csdfsefsas 1 
 -pwd ns 
@@ -386,7 +386,7 @@ list allcalls
 config verbosity 0.0 - 
 -remove pathtime 0xj73307 csdfsefsas csdfsefsas 
 -set required 0  cycles 
--config case WORST 
+-config case worst 
 -source csdfsefsas csdfsefsas csdfsefsas 
 load test.xe 
 echo "csdfsefsas csdfsefsas " 
@@ -471,7 +471,7 @@ clear h
 -clear 
 status  
 -list functiontimes 
--config case WORST 
+-config case worst 
 clear 
 -help load 
 print asm mhz  
@@ -593,7 +593,7 @@ history *
 -print csdfsefsas 
 -echo csdfsefsas 
 list allsrclabels 
--config case WORST 
+-config case worst 
 source csdfsefsas  
 -print mix 2 
 list allendpoints 
@@ -733,7 +733,7 @@ print summary
 -version 
 -echo "csdfsefsas  " 
 print summary 
--config case BEST 
+-config case best 
 history f 
 -remove branch 0x13a68 - - test.xc:38 - 
 list pathtimes 
@@ -885,17 +885,17 @@ history
 echo "* " 
 pwd 1.3975468966115456E308 
 -analyse csdfsefsas 
-config case WORST 
+config case worst 
 -list srcloops 
 clear  
 -set required 3 0 mhz 
 -version csdfsefsas 
 list exclusions 
--config case WORST 
--config case BEST 
+-config case worst 
+-config case best 
 -scripter disable 
 -test.xc:41 
-config case WORST 
+config case worst 
 clear 
 -scripter disable 
 -clear csdfsefsas 
@@ -904,7 +904,7 @@ scripter enable
 status 0x11738 
 version 
 -echo f 
-config case WORST 
+config case worst 
 -remove looppath f 
 analyse path  * 
 version  

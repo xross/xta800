@@ -13,7 +13,7 @@ system("xcc -target=$target -march=$arch -nostartfiles -g test.s -o $genDir/test
 system("@ARGV load $genDir/test.xe " .
        "-analyze path 0x10040 0x10080 " .
        "-print structure - " .
-       "-analyze path PC:0x10040 PC:0x10080 " .
+       "-analyze path ENDPOINT:0x10040 ENDPOINT:0x10080 " .
        "-print structure - " .
        "-exit > $genDir/pcs.txt 2>&1");
 

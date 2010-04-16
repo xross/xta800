@@ -46,7 +46,7 @@ remove csdfsefsas
  
 version 2147483647 
 scripter enable 
-config case WORST 
+config case worst 
 -add loopscope g absolute 
 -scripter disable 
 remove loop callf,callf,callf,g, ep1 
@@ -85,7 +85,7 @@ set
 ns 
 csdfsefsas 
 load - 
--config case WORST 
+-config case worst 
 source csdfsefsas 
 -list exclusions 
 -clear csdfsefsas 
@@ -150,7 +150,7 @@ add functiontime test.xc:42 0.0 mhz
 version 
 -source ep2 
 echo csdfsefsas  
-config case WORST 
+config case worst 
 help add 
 load  
 -history cycles 
@@ -164,10 +164,10 @@ history
 source mhz 
 -add loop - 1 
 print asm 2 
-config case WORST 
+config case worst 
 add functiontime csdfsefsas - cycles 
 csdfsefsas 
--config case BEST 
+-config case best 
 -add exclusion callh,main,callg,callg,callh,f, g 
 -version 
 analyse path csdfsefsas csdfsefsas cycles callg,main,callg,f,callf,callg,callf,h,callg,callf,callg,callg,callh,callf,callg,callf,callh,main, ep1 
@@ -188,7 +188,7 @@ remove loop callh,callf,callh,callg,callg,callh,callg,h,callg,h,callg,callf, ep4
 -print nodeinfo 1.0683703461742067E308 
 -help  
 version 
-config case WORST 
+config case worst 
 add looppath test.xc:22 - 
 source csdfsefsas 
 -load test.xe 
@@ -218,9 +218,9 @@ config verbosity 2147483647 0.0
 -scripter dump 
 history 
 -scripter enable 
-config case WORST 
+config case worst 
 -pwd ns 
-config case WORST 
+config case worst 
 -history csdfsefsas mhz 
 history  
 set instructiontime 3 0x13df0 1 ns 
@@ -299,7 +299,7 @@ version
 -print routeinfo 1.2658727057413059E308 
 -analyse mhz 
 clear 
-config case WORST 
+config case worst 
 print src 0.0 
 -help csdfsefsas 
 analyse path callg,h,callg,h, test.xc:19 0x10ccc 
@@ -403,7 +403,7 @@ status
 version 
 -load test.xe 
 -print warnings 
--config case BEST 
+-config case best 
 help echo 
 analyse - 
 -version  
@@ -440,7 +440,7 @@ add instructiontime g - cycles
 -status 
 config verbosity 0 
 -clear  
-config case WORST 
+config case worst 
 remove to csdfsefsas  
 help source 
 help pwd 
@@ -566,7 +566,7 @@ load ns
 add instructiontime * - ns 
 -echo "csdfsefsas " 
 pwd 
-config case BEST 
+config case best 
 add instructiontime g - cycles 
 help csdfsefsas 
 load test.xe 
@@ -615,7 +615,7 @@ config case -
 help list 
 -config freq - 
 -echo "csdfsefsas " 
--config case BEST 
+-config case best 
 -print routeinfo csdfsefsas ep3 
 analyse  ep2 
 version 
@@ -772,7 +772,7 @@ config verbosity 1.157689698325418E307
 remove instructiontime callh,f, ep1 
 analyse  
 -analyse callf,h,callf,g,callg,callg,callf,main,callh,callf,callg,callf, test.xc:5 
-config case WORST 
+config case worst 
 -set looppath 4 - - 
 version ep2 
 analyse function 0xj1e3d3 
@@ -925,7 +925,7 @@ version
 -source csdfsefsas mhz 
 load csdfsefsas -871786104 
 load mhz 
-config case WORST 
+config case worst 
 list knowns  
 -analyse csdfsefsas 
 -status 

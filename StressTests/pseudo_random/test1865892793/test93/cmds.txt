@@ -80,7 +80,7 @@ scripter enable
 help history 
 -status 
 help add 
-config case BEST 
+config case best 
 -analyse csdfsefsas 
 config verbosity 6.287366562613506E307 h 
 -csdfsefsas csdfsefsas ns 
@@ -165,7 +165,7 @@ analyse path ep3 test.xc:39
 pwd 
 -scripter enable 
 help source 
--config case WORST 
+-config case worst 
 -pwd csdfsefsas 
 -analyse csdfsefsas 
 csdfsefsas csdfsefsas  
@@ -594,7 +594,7 @@ config freq csdfsefsas 0.0
 remove loopscope test.xc:4 
 -load g 
 version 
-config case BEST 
+config case best 
 echo  
 -help echo 
 analyse path - cycles 
@@ -727,7 +727,7 @@ scripter dump
 status csdfsefsas 
 set looppath 4 0xj78bd2 -472272681 
 -clear * 
-config case BEST 
+config case best 
 -scripter dump 
 -analyse 1 
 -scripter enable 
@@ -774,7 +774,7 @@ clear
 -list csdfsefsas  
 set required 0 - cycles 
 -print warnings 
--config case WORST 
+-config case worst 
 source ep1 
 -history 
 -version  
@@ -850,7 +850,7 @@ source 1.2471947470464366E308
 -config case f 
 -print trace csdfsefsas 
 scripter enable 
--config case BEST 
+-config case best 
 version csdfsefsas 
 analyse path f 0xjc723d 
 status csdfsefsas  

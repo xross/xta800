@@ -41,7 +41,7 @@ load test.xe
 -source 0xj3a4d3 
 remove pathtime * csdfsefsas csdfsefsas 
 history 9.37832496910659E307 
-config case BEST 
+config case best 
 csdfsefsas 
 -analyse function - 
 -status 
@@ -68,7 +68,7 @@ pwd cycles
 -list unknowns - 
 print mix csdfsefsas 
 -version  
-config case WORST 
+config case worst 
 list knowns * 
 -ns 
 help print 
@@ -178,7 +178,7 @@ echo "csdfsefsas csdfsefsas "
 pwd 
 -scripter dump 
 set instructiontime 0 ep1 1.1361230051223299E308 h 
-config case BEST 
+config case best 
 help pwd 
 csdfsefsas 
 -version - 
@@ -411,7 +411,7 @@ echo "csdfsefsas csdfsefsas "
 -add branch 0xje368f 
 -version csdfsefsas 
 set required 2 2  
-config case BEST 
+config case best 
 -set pathtime 3 g g 6.492741612041789E307 mhz 
 echo csdfsefsas 
 -set pathtime 0 f ep3 - cycles 
@@ -432,7 +432,7 @@ status csdfsefsas csdfsefsas
 set looppath 1 ep3 - 
 version mhz 
 clear ns 
--config case BEST 
+-config case best 
 history 
 set to  ep3 
 -help exit 
@@ -446,7 +446,7 @@ pwd
 -scripter enable 
 version 9.163081051567233E307 
 -cycles 
--config case BEST 
+-config case best 
 -list loops 
 pwd csdfsefsas csdfsefsas cycles 
 pwd  
@@ -461,7 +461,7 @@ config verbosity  2
 -clear ns 
 config verbosity - 1.724582583553956E308 
 -scripter enable 
-config case WORST 
+config case worst 
 -config freq 2 
 -set functiontime 1 ep4 - csdfsefsas csdfsefsas 
 remove to test.xc:16 
@@ -473,7 +473,7 @@ pwd
 clear 
 clear csdfsefsas csdfsefsas csdfsefsas 0 
 -pwd 
-config case BEST 
+config case best 
 analyse path h 0xj87dbb 
 -source  
 -source ns 
@@ -518,7 +518,7 @@ scripter dump
 source mhz 
 -print summary 
 -status  
-config case WORST 
+config case worst 
 scripter enable 
 print csdfsefsas f 
 list threadstoppoints 
@@ -639,7 +639,7 @@ source mhz
 remove branch * test.xc:26 * 0xj93600 cycles  * * - g 
 print mix - csdfsefsas 
 status 
-config case WORST 
+config case worst 
 list allcalls 
 set instructiontime 4  2.016242829683235E307  
 -remove from g 
@@ -678,7 +678,7 @@ clear
 version 
 -scripter disable 
  
-config case BEST 
+config case best 
 version csdfsefsas mhz 
 print nodeinfo - 
 -scripter enable 
@@ -856,7 +856,7 @@ status csdfsefsas csdfsefsas
 -echo csdfsefsas 
 -version  
 -set csdfsefsas 
-config case BEST 
+config case best 
 set mhz 
 set pathtime 2 test.xc:5 h 0.0 cycles 
 -source g 

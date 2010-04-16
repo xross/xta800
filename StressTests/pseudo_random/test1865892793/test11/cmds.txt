@@ -124,7 +124,7 @@ list srcloops
 -list endpoints 
 config case csdfsefsas  
 -source mhz 
--config case BEST 
+-config case best 
 -source csdfsefsas 
 -scripter disable 
 set loop 3 test.xc:28 - 
@@ -180,7 +180,7 @@ source -
 -analyse function 0xj8ad89 
 -scripter enable 
 -version 0xjbef01 
--config case WORST 
+-config case worst 
 -list threadstoppoints 
 -config verbosity -1506011599 
 -config freq 6.320399095969017E307 
@@ -203,7 +203,7 @@ source
 -pwd ns 
 -clear 
 source csdfsefsas ep3 
-config case BEST 
+config case best 
 -version 
 -analyse path 0x10667 ep4 
 - 
@@ -307,8 +307,8 @@ status mhz
 print structure - 
 -config freq - 
 analyse path 0x104b3 f 
-config case WORST 
-config case WORST 
+config case worst 
+config case worst 
 analyse function ep4 
 add looppath - - 
 -help set 
@@ -398,7 +398,7 @@ load csdfsefsas
 -add looppath * - 
 help list 
 scripter disable 
--config case BEST 
+-config case best 
 -clear * 
 h 
 source - 
@@ -406,7 +406,7 @@ source -
 -source 0.0 
 -load ep3 
 print distribution 209861116 
-config case BEST 
+config case best 
 list calls 
 scripter enable 
 -config verbosity  0.0 
@@ -903,7 +903,7 @@ analyse csdfsefsas
 -status - 
 -version 
 load  
-config case BEST 
+config case best 
 scripter disable 
 -print src - 
 -source h 
@@ -929,7 +929,7 @@ scripter enable
 config freq 0.0 
 help history 
 scripter dump 
-config case BEST 
+config case best 
 -set functiontime 2 0xjf3c95 - 0x12682 
 -load test.xe 
 -source csdfsefsas  

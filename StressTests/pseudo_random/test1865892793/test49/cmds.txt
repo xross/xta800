@@ -21,7 +21,7 @@ config verbosity - -1435981709
 list functiontimes 
 -clear 
 pwd 
-config case WORST 
+config case worst 
 source ns 
 version -1726681839 
 -set looppath 2 ep3 1.2341005518417508E308 
@@ -102,7 +102,7 @@ clear
 -ns 
 -set pathtime 0 ep3 mhz  cycles 
 -version  
--config case WORST 
+-config case worst 
 -help pwd 
 -config case csdfsefsas ns 
 -pwd csdfsefsas 
@@ -152,7 +152,7 @@ load 9.03944393451504E307
 analyse path ep2 * 
 -history csdfsefsas - 
 -status 
-config case BEST 
+config case best 
 load cycles 
 version 
 -print warnings 
@@ -207,7 +207,7 @@ history csdfsefsas -
 remove branch ep3 test.xc:47 
 -status 
 -clear 
--config case BEST 
+-config case best 
 config freq 1529670304 
 echo h 
 -load csdfsefsas 
@@ -227,7 +227,7 @@ clear
 -set looppath 0 * 1 
 -version 2 
 set loop 0 ep2 0.0 
--config case WORST 
+-config case worst 
 set from  * 
 -echo csdfsefsas  
 remove branch 0xj1c82e - 0xj1c55e main * * 
@@ -388,7 +388,7 @@ status cycles
 echo "h " 
 history 
 set instructiontime 2 ep1 1.6225653332260028E308 cycles 
--config case WORST 
+-config case worst 
 remove loop f 
 -pwd  
 set instructiontime 1 csdfsefsas  0.0 mhz 
@@ -427,7 +427,7 @@ analyse function *
 echo  
 history 
 print mix * 
--config case BEST 
+-config case best 
 load csdfsefsas csdfsefsas 
 -history 
 -scripter disable 
@@ -457,7 +457,7 @@ clear
 -list instructiontime 
 history  
 set looppath 2 test.xc:4 - 
--config case BEST 
+-config case best 
 -0xjaa7d6 
 -remove from - 
 - 
@@ -492,7 +492,7 @@ scripter enable
 -add instructiontime - - mhz 
 -print src - csdfsefsas 
 -scripter enable 
-config case WORST 
+config case worst 
 -help help 
 - 
 -csdfsefsas csdfsefsas 0x10ead 
@@ -538,7 +538,7 @@ analyse path - test.xc:38
 -set required 1 csdfsefsas csdfsefsas mhz 
 -analyse path ep1 ep1 
 status  
-config case BEST 
+config case best 
 -remove from  
 -version 
 -source ns 
@@ -796,7 +796,7 @@ pwd ns
  
 -load - 
 version 
--config case WORST 
+-config case worst 
 analyse path 0xj5d3d8 f 
 -print mix 0.0 
 analyse path * - 
@@ -871,7 +871,7 @@ pwd
 -remove pathtime main ep3 
 pwd 
 -echo 779942090 
--config case BEST 
+-config case best 
 pwd ns 
 analyse path test.xc:27 * 
 load mhz 

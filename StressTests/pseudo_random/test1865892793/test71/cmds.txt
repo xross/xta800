@@ -83,7 +83,7 @@ print trace csdfsefsas
 -source 0x13be7 
 add functiontime test.xc:47 - cycles 
 -history 
-config case BEST 
+config case best 
 -add loopscope 0x10b8b relative 
 -source 2 
 load csdfsefsas  
@@ -143,7 +143,7 @@ add looppath test.xc:25 0.0
 -source csdfsefsas 
 set from  ep1 
 -load test.xe 
-config case BEST 
+config case best 
 csdfsefsas 0xj4d5a2 
 -load test.xe 
 -remove to h 
@@ -157,13 +157,13 @@ add pathtime ep1 main 0.0 cycles
 remove looppath 0xj9e906 
 print structure 2 0.0 
 load test.xe 
-config case BEST 
+config case best 
 remove to test.xc:21 
 -remove exclusion 0xjacd1b 
 -help * 
 pwd 
 help print 
-config case WORST 
+config case worst 
 source  
 -history 
 pwd 
@@ -182,7 +182,7 @@ list srclabels
 list loopscopes 
 -remove pathtime * test.xc:45 
 add functiontime 0x11782 - ns 
-config case BEST 
+config case best 
 list threadstartpoints 
 -0xje003d 
 -help list 
@@ -211,7 +211,7 @@ scripter disable
 -echo "1 " 
 -add pathtime test.xc:20 * csdfsefsas csdfsefsas mhz 
 analyse path test.xc:30 h 
--config case WORST 
+-config case worst 
 set to  * 
 scripter enable 
 -status csdfsefsas csdfsefsas csdfsefsas cycles 
@@ -288,7 +288,7 @@ set looppath 4 0x13d54 0.0
 -echo "csdfsefsas " 
 set instructiontime 4 * 2147483647 ns 
 -source  
-config case WORST 
+config case worst 
 -add loopscope f relative 
 -set required 2 0 f 
 -echo  
@@ -384,7 +384,7 @@ pwd
 source csdfsefsas  
 version 7.406070256718491E307 
 set to  csdfsefsas csdfsefsas 
-config case BEST 
+config case best 
 -add functiontime 0x12e43 0.0 ns 
 -load csdfsefsas  
 set pathtime 3 test.xc:8 ep3 csdfsefsas csdfsefsas csdfsefsas ep1 
@@ -521,7 +521,7 @@ echo "csdfsefsas "
 -echo "- " 
 pwd 
 load test.xe 
-config case WORST 
+config case worst 
 analyse path 0xj25168 mhz 
 -0x13696 
 -list loops 
@@ -541,7 +541,7 @@ pwd
 echo csdfsefsas 
 set instructiontime 0 * 2 ns 
 print nodeinfo 1.005168399269986E308 
-config case BEST 
+config case best 
 echo  
 status mhz 
 add functiontime ep4 - csdfsefsas 
@@ -698,13 +698,13 @@ set instructiontime 3 0xj626b2 354854248 ns
 -history 
 -list looppaths 
 -add loopscope * a 
--config case WORST 
+-config case worst 
 -csdfsefsas csdfsefsas cycles 
 -list srcloops 
 set looppath 3 0x1363d  
 load test.xe 
 clear csdfsefsas  
--config case BEST 
+-config case best 
 -version 
 history csdfsefsas 
 -source csdfsefsas * 
@@ -848,7 +848,7 @@ load test.xe
 pwd csdfsefsas cycles 
 history 0xj4660b 
 source csdfsefsas ns 
--config case BEST 
+-config case best 
 -source  
 -load test.xe 
 -analyse path 6.476377392002843E307 test.xc:9 
@@ -949,7 +949,7 @@ history
 -set from  f 
 -history - 
 -version 0.0 
--config case WORST 
+-config case worst 
 -pwd 
 echo " " 
 -version 
@@ -968,7 +968,7 @@ load test.xe
 version 
 -list srcloops 
 help remove 
--config case WORST 
+-config case worst 
 -clear csdfsefsas 
 print structure 1.686147180018763E308 
 -config verbosity 1.700442934716943E308 
