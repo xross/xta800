@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -191,6 +190,7 @@ public class ScripterReference {
 
 		if (baseRef.getLineNum() > 0) {
 			initialise(baseRef.getRef(), refClass, scripter.getUniqueLabel(refPrefix), true);
+			return true;
 		} else {
 			// Try the ones from the compiler
 			names = getNames(tableInfos);
@@ -265,8 +265,10 @@ public class ScripterReference {
 	private Set<Long> getPcsForNode(UnknownFactory.Type type, Node node) {
 		assert(type != null);
 		final Set<Long> pcs = new IteratableSet<Long>();
+		final boolean isLoop = ((type == UnknownFactory.Type.LOOP_ITERATIONS) || (type == UnknownFactory.Type.LOOP_SCOPE));
+
 		Node enclosingNode = null;
-		if ((type == UnknownFactory.Type.LOOP_ITERATIONS) || (type == UnknownFactory.Type.LOOP_SCOPE)) {
+		if (isLoop) {
 			enclosingNode = node.getEnclosingLoopNode();
 		} else if ((type == UnknownFactory.Type.LOOP_PATH_ITERATIONS) || (type == UnknownFactory.Type.EXCLUSION)) {
 			enclosingNode = node.getEnclosingOptionNode();
@@ -276,6 +278,30 @@ public class ScripterReference {
 			enclosingNode.traverse(new DefaultNodeTraverser() {
 				public TraverseStatus foundInstructionNode(Node node) {
 					pcs.add(((InstructionNode)node).getPC());
+					return TraverseStatus.CONTINUE;
+				}
+
+				public TraverseStatus foundInfiniteLoopNode(Node node) {
+					if (isLoop) {
+						// Prevent loops from finding references within inner loops
+						return TraverseStatus.NO_CHILDREN;
+					}
+					return TraverseStatus.CONTINUE;
+				}
+
+				public TraverseStatus foundSelfLoopNode(Node node) {
+					if (isLoop) {
+						// Prevent loops from finding references within inner loops
+						return TraverseStatus.NO_CHILDREN;
+					}
+					return TraverseStatus.CONTINUE;
+				}
+
+				public TraverseStatus foundInfiniteSelfLoopNode(Node node) {
+					if (isLoop) {
+						// Prevent loops from finding references within inner loops
+						return TraverseStatus.NO_CHILDREN;
+					}
 					return TraverseStatus.CONTINUE;
 				}
 			});
@@ -303,7 +329,7 @@ public class ScripterReference {
 	}
 
 	private Set<Long> getPcs(Collection<? extends ScriptableInfo> infos, String name) {
-		Set<Long> pcs = new NonIteratableSet<Long>();
+		Set<Long> pcs = new IteratableSet<Long>();
 		for (ScriptableInfo info : infos) {
 			if (info.toReferenceString().equals(name)) {
 				pcs.add(info.getPc());

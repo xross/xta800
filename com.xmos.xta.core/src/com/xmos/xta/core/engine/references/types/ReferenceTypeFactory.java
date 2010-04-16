@@ -72,13 +72,13 @@ public class ReferenceTypeFactory {
 		
 
 		m_referenceClasses.put(ReferenceClass.FUNCTION_WITH_EVERYTHING,
-				new ReferenceClassType(true, new ReferenceType[] {
+				new ReferenceClassType(false, new ReferenceType[] {
 					new EverythingReference(null, m_coreId),
 					new FunctionPcReference(null, m_coreId),
 					new FunctionReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.BRANCH_WITH_EVERYTHING,
-				new ReferenceClassType(true, new ReferenceType[] {
+				new ReferenceClassType(false, new ReferenceType[] {
 					new EverythingReference(null, m_coreId),
 					new EndpointPcReference(null, m_coreId),
 					new CallPcReference(null, m_coreId),
@@ -87,7 +87,7 @@ public class ReferenceTypeFactory {
 					new LabelReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.INSTRUCTION_WITH_EVERYTHING,
-				new ReferenceClassType(true, new ReferenceType[] {
+				new ReferenceClassType(false, new ReferenceType[] {
 					new EverythingReference(null, m_coreId),
 					new EndpointPcReference(null, m_coreId),
 					new FunctionPcReference(null, m_coreId),
@@ -95,7 +95,7 @@ public class ReferenceTypeFactory {
 					new LabelReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.ENDPOINT_WITH_EVERYTHING,
-				new ReferenceClassType(true, new ReferenceType[] {
+				new ReferenceClassType(false, new ReferenceType[] {
 					new EverythingReference(null, m_coreId),
 					new EndpointPcReference(null, m_coreId),
 					new EndpointFileLineReference(null, m_coreId),
@@ -106,7 +106,7 @@ public class ReferenceTypeFactory {
 					new LabelReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.ANY_WITH_EVERYTHING,
-				new ReferenceClassType(true, new ReferenceType[] {
+				new ReferenceClassType(false, new ReferenceType[] {
 					new EverythingReference(null, m_coreId),
 					new SrcLabelPcReference(null, m_coreId),
 					new EndpointPcReference(null, m_coreId),

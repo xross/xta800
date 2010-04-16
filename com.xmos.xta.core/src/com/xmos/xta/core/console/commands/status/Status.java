@@ -46,7 +46,7 @@ public class Status extends Command {
     			engine.getConfig().getErrorsAsWarnings() ? "true" : "false"));
 
     	console.display(String.format("SrcPaths: %s\n", engine.getSrcPaths()));
-    	console.display(String.format("Case: %s\n", engine.getCase().toString()));
+    	console.display(String.format("Case: %s\n", engine.getCase().toString().toLowerCase()));
     	console.display(String.format("Verbosity: %d\n", engine.getVerbosity()));
     	
     	File executable = engine.getExecutable();
