@@ -41,7 +41,7 @@ public class FunctionTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = name() + " <route id> <FUNCTION_REF> <value> <mode>: Set timing requirement for the given function on the given route";
+        String descString = name() + " <route id> <FUNCTION> <value> <mode>: Set timing requirement for the given function on the given route";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

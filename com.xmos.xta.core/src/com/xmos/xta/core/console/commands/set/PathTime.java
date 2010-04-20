@@ -45,7 +45,7 @@ public class PathTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = name() + " <route id> <from ENDPOINT_REF> <to ENDPOINT_REF> <value> <mode>: Set timing requirement for the given path on the given route";
+    	String descString = name() + " <route id> <from ENDPOINT> <to ENDPOINT> <value> <mode>: Set timing requirement for the given path on the given route";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

@@ -108,11 +108,11 @@ public class Branches extends Section {
 
 	        	Collection<Reference> toRefs = new IteratableSet<Reference>();
 	    		Reference toRef = ReferenceFactory.createReference(String.format("0x%x", toPc), 
-	    				ReferenceClass.PC_REF, getCoreId());
+	    				ReferenceClass.INSTRUCTION, getCoreId());
 	        	toRefs.add(toRef);
 	        	
 	    		Reference fromRef = ReferenceFactory.createReference(String.format("0x%x", fromPc), 
-	    				ReferenceClass.PC_REF, getCoreId());
+	    				ReferenceClass.BRANCH, getCoreId());
 	    		
 	    		add(src, fromRef, toRefs, false);
 	        }

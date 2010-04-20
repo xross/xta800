@@ -33,7 +33,7 @@ public class ListGlobalReferences extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <ANY_REF>: list all the matching references for the given reference on the global tree";
+        return name() + " <ANY>: list all the matching references for the given reference on the global tree";
     }
 
     public Command clone(String[] args, int index) {

@@ -717,7 +717,7 @@ public class RouteConstructor {
 
 			Reference reference = ReferenceFactory.createReference(
 					String.format("0x%x", srcLevelLoopInfo.getPc()),
-					ReferenceClass.PC_REF, coreId);
+					ReferenceClass.INSTRUCTION, coreId);
 
 			CommandSource src = new CommandSource(Type.COMPILER);
 			for (Route route : m_routes) {

@@ -44,7 +44,7 @@ public class Endpoints extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <from ENDPOINT_REF> <to ENDPOINT_REF>: Analyze between the specified endpoints";
+        return name() + " <from ENDPOINT> <to ENDPOINT>: Analyze between the specified endpoints";
     }
 
     public Command clone(String[] args, int index) {

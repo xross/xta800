@@ -36,7 +36,7 @@ public class Analyzer {
 		boolean routeFound = false;
 		for (CoreId activeCore : m_engine.getActiveCores()) {			
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION_REF, activeCore);
+					ReferenceClass.FUNCTION, activeCore);
 
 			if (functionRef.resolve(m_engine)) {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 

@@ -317,7 +317,7 @@ public class Engine extends Notifier implements Aborter {
 	public boolean canInstructionPause(int routeId, String refString) {		
 		try {
 			for (Route route : getRoute(routeId)) {				
-				Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT_REF, 
+				Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT, 
 						route.getRouteCoreContainer().getCoreId());
 
 				if (resolveReference(reference)) {
@@ -655,7 +655,7 @@ public class Engine extends Notifier implements Aborter {
 		for (CoreId activeCore : m_activeCores) {
 			
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION_REF, activeCore);
+					ReferenceClass.FUNCTION, activeCore);
 			
 			if (resolveReference(functionRef)) {
 				m_defines.addFunctionTime(functionRef, timeUnit);
@@ -674,9 +674,9 @@ public class Engine extends Notifier implements Aborter {
 		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
-					ReferenceClass.ENDPOINT_REF, activeCore);
+					ReferenceClass.ENDPOINT, activeCore);
 			Reference toRef = ReferenceFactory.createReference(to, 
-					ReferenceClass.ENDPOINT_REF, activeCore);
+					ReferenceClass.ENDPOINT, activeCore);
 
 			if (resolveReference(fromRef) && resolveReference(toRef)) {
 			    m_defines.addPathTime(fromRef, toRef, timeUnit);
@@ -695,7 +695,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addInstructionTime(reference, timeUnit);
 			}
-		}, ReferenceClass.ANY_REF);		
+		}, ReferenceClass.ANY);		
 	}
 
 	public void addLoop(CommandSource src, String refString, final long iterations) {
@@ -703,7 +703,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoop(reference, iterations);
 			}
-		}, ReferenceClass.ANY_REF);
+		}, ReferenceClass.ANY);
 	}
 
 	public void addLoopPath(CommandSource src, String refString, final long iterations) {
@@ -711,7 +711,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopPath(reference, iterations);
 			}
-		}, ReferenceClass.ANY_REF);
+		}, ReferenceClass.ANY);
 	}
 
 	public void addLoopScope(CommandSource src, String refString, final boolean absolute) {
@@ -719,7 +719,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopScope(reference, absolute);
 			}
-		}, ReferenceClass.ANY_REF);
+		}, ReferenceClass.ANY);
 	}
 
 	public void removeFunctionTime(CommandSource src, String functionName) {
@@ -727,7 +727,7 @@ public class Engine extends Notifier implements Aborter {
 		for (CoreId activeCore : m_activeCores) {
 
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION_REF_WITH_EVERYTHING, activeCore);
+					ReferenceClass.FUNCTION_WITH_EVERYTHING, activeCore);
 			
 			if (resolveReference(functionRef)) {
 				m_defines.removeFunctionTime(functionRef);
@@ -746,9 +746,9 @@ public class Engine extends Notifier implements Aborter {
 		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
-					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore);
+					ReferenceClass.ENDPOINT_WITH_EVERYTHING, activeCore);
 			Reference toRef = ReferenceFactory.createReference(to, 
-					ReferenceClass.ENDPOINT_REF_WITH_EVERYTHING, activeCore);
+					ReferenceClass.ENDPOINT_WITH_EVERYTHING, activeCore);
 
 			if (resolveReference(fromRef) && resolveReference(toRef)) {
 			    m_defines.removePathTime(fromRef, toRef);
@@ -767,7 +767,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeInstructionTime(reference);
 			}
-		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
+		}, ReferenceClass.ANY_WITH_EVERYTHING);
 	}
 
 	public void removeLoop(CommandSource src, String refString) {
@@ -775,7 +775,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoop(reference);
 			}
-		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
+		}, ReferenceClass.ANY_WITH_EVERYTHING);
 	}
 
 	public void removeLoopPath(CommandSource src, String refString) {
@@ -783,7 +783,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoopPath(reference);
 			}
-		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
+		}, ReferenceClass.ANY_WITH_EVERYTHING);
 	}
 
 	public void removeLoopScope(CommandSource src, String refString) {
@@ -791,7 +791,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoopScope(reference);
 			}
-		}, ReferenceClass.ANY_REF_WITH_EVERYTHING);
+		}, ReferenceClass.ANY_WITH_EVERYTHING);
 	}
 
 	public Collection<FunctionTimeInfo> getFunctionTimeDefines() {
@@ -833,7 +833,7 @@ public class Engine extends Notifier implements Aborter {
 			for (Route route : getRoute(routeId)) {
 				
 				Reference functionRef = ReferenceFactory.createReference(functionName, 
-						ReferenceClass.FUNCTION_REF, route.getRouteCoreContainer().getCoreId());
+						ReferenceClass.FUNCTION, route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(functionRef)) {
 					FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);					
@@ -869,9 +869,9 @@ public class Engine extends Notifier implements Aborter {
 				CoreId coreId = route.getRouteCoreContainer().getCoreId();
 
 				Reference fromRef = ReferenceFactory.createReference(from, 
-						ReferenceClass.ENDPOINT_REF, coreId);
+						ReferenceClass.ENDPOINT, coreId);
 				Reference toRef = ReferenceFactory.createReference(to, 
-						ReferenceClass.ENDPOINT_REF, coreId);
+						ReferenceClass.ENDPOINT, coreId);
 
 				if (resolveReference(fromRef) && resolveReference(toRef)) {
 					PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);					
@@ -902,7 +902,7 @@ public class Engine extends Notifier implements Aborter {
 	    	Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ENDPOINT_REF,
+						ReferenceClass.ENDPOINT,
 				        route.getRouteCoreContainer().getCoreId());
 								
 				if (resolveReference(reference)) {
@@ -955,7 +955,7 @@ public class Engine extends Notifier implements Aborter {
 			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY_REF,
+						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
@@ -1023,7 +1023,7 @@ public class Engine extends Notifier implements Aborter {
 			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY_REF,
+						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
@@ -1088,7 +1088,7 @@ public class Engine extends Notifier implements Aborter {
 			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY_REF,
+						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
@@ -1151,7 +1151,7 @@ public class Engine extends Notifier implements Aborter {
 	    try {
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY_REF,
+						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 
 				if (resolveReference(reference)) {
@@ -1206,7 +1206,7 @@ public class Engine extends Notifier implements Aborter {
 		boolean hit = false;
 		for (CoreId activeCore : m_activeCores) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF, activeCore);
+					ReferenceClass.ANY, activeCore);
 			
 			if (alreadyExcluded(reference)) {
 				notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for ref: %s", reference.getRef()));
@@ -1238,7 +1238,7 @@ public class Engine extends Notifier implements Aborter {
 		boolean hit = false;
 		for (CoreId activeCore : m_activeCores) {
 			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore);
+					ReferenceClass.ANY_WITH_EVERYTHING, activeCore);
 			
 			if (resolveReference(reference)) {
                 Iterator<Reference> iter = m_exclusions.iterator();
@@ -1272,7 +1272,7 @@ public class Engine extends Notifier implements Aborter {
 		for (CoreId activeCore : m_activeCores) {
 
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
-					ReferenceClass.ANY_REF, activeCore);
+					ReferenceClass.ANY, activeCore);
 			boolean fromResolved = resolveReference(fromRef);
 			
 			if (fromResolved)			
@@ -1281,7 +1281,7 @@ public class Engine extends Notifier implements Aborter {
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
 				Reference ref = ReferenceFactory.createReference(toRefString, 
-						ReferenceClass.ANY_REF, activeCore);				
+						ReferenceClass.ANY, activeCore);				
 				toRefs.add(ref);
 			}		
 			boolean toResolved = true;
@@ -1310,7 +1310,7 @@ public class Engine extends Notifier implements Aborter {
 		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
-					ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore);
+					ReferenceClass.ANY_WITH_EVERYTHING, activeCore);
 			boolean fromResolved = resolveReference(fromRef);
 			
 			if (fromResolved)
@@ -1319,7 +1319,7 @@ public class Engine extends Notifier implements Aborter {
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
 				Reference ref = ReferenceFactory.createReference(toRefString, 
-						ReferenceClass.ANY_REF_WITH_EVERYTHING, activeCore);				
+						ReferenceClass.ANY_WITH_EVERYTHING, activeCore);				
 				toRefs.add(ref);
 			}		
 			boolean toResolved = true;

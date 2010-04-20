@@ -5,14 +5,19 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
+import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.ScriptableInfo;
+import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
@@ -26,7 +31,8 @@ public class ScripterReference {
 	private String m_mapsToLabel;
 	private boolean m_useBaseFileLine;
 
-	public ScripterReference(Scripter scripter, Engine engine, ReferenceType baseRef) {
+	public ScripterReference(Scripter scripter, Engine engine, ReferenceType baseRef,
+			UnknownFactory.Type type, Node node) {
 		m_engine = engine;
 		m_isEnabled = true;
 		m_isModifiable = false;
@@ -36,7 +42,9 @@ public class ScripterReference {
 		m_useBaseFileLine = true;
 
 		if (!baseRef.isPortable()) {
-			tryHighestLevelReference(scripter, baseRef);
+			assert(type != null);
+			String refPrefix = chooseRefPrefix(type, baseRef);
+			tryHighestLevelReference(scripter, baseRef, type, node, refPrefix);
 		}
 	}
 
@@ -125,38 +133,50 @@ public class ScripterReference {
 		}
 	}
 
-	private void tryHighestLevelReference(Scripter scripter, ReferenceType baseRef) {
-
-		ReferenceType.Type type = baseRef.getType();
+	private void tryHighestLevelReference(Scripter scripter, ReferenceType baseRef,
+			UnknownFactory.Type type, Node node, String refPrefix) {
+		
+		ReferenceType.Type refType = baseRef.getType();
 		CoreId coreId = m_baseRef.getCoreId();
-		if (type == ReferenceType.Type.ENDPOINT) {
-			tryMatching(scripter, baseRef,
+		boolean done = false;
+		
+		if (refType == ReferenceType.Type.ENDPOINT) {
+			done = tryMatching(scripter, baseRef,
 					m_engine.getEndpoints(coreId),
 					m_engine.getEndpointTable(coreId).values(),
-					ReferenceClass.ENDPOINT_REF);
+					ReferenceClass.ENDPOINT, refPrefix);
 
-		} else if (type == ReferenceType.Type.CALL) {
-			tryMatching(scripter, baseRef,
+		} else if (refType == ReferenceType.Type.CALL) {
+			done = tryMatching(scripter, baseRef,
 					m_engine.getCalls(coreId),
 					m_engine.getCallTable(coreId).values(),
-					ReferenceClass.ANY_REF);
+					ReferenceClass.ANY, refPrefix);
+
+		} else if (refType == ReferenceType.Type.FUNCTION) {
+			tryFunctions(scripter, baseRef);
+			done = true; // Don't try any other matching
 
 		} else {
-			boolean matched = tryMatching(scripter, baseRef,
+			done = tryMatching(scripter, baseRef,
 					m_engine.getSrcLabels(coreId),
 					m_engine.getSrcLabelTable(coreId).values(),
-					ReferenceClass.ANY_REF);
-
-			if (!matched) {
-				tryLabels(scripter, baseRef);
-			}
+					ReferenceClass.ANY, refPrefix);
 		}
+		
+		if (done)
+			return;
+		
+		done = tryMatchingSource(scripter, baseRef, type, node, refPrefix);
+		if (done)
+			return;
+		
+		tryLabels(scripter, baseRef);
 	}
 
 	private boolean tryMatching(Scripter scripter, ReferenceType baseRef,
 			Collection<? extends ScriptableInfo> infos,
 			Collection<? extends ScriptableInfo> tableInfos,
-			ReferenceClass refClass) {
+			ReferenceClass refClass, String refPrefix) {
 
 		// Try the user-defined
 		Set<String> names = getNames(infos);
@@ -169,14 +189,15 @@ public class ScripterReference {
 		}
 
 		if (baseRef.getLineNum() > 0) {
-			initialise(baseRef.getRef(), refClass, scripter.getUniqueLabel(), true);
+			initialise(baseRef.getRef(), refClass, scripter.getUniqueLabel(refPrefix), true);
+			return true;
 		} else {
 			// Try the ones from the compiler
 			names = getNames(tableInfos);
 			for (String name : names) {
 				Set<Long> tablePcs = getPcs(tableInfos, name);
 				if (tablePcs.equals(baseRef.getPcs())) {
-					initialise(name, refClass, scripter.getUniqueLabel(), true);
+					initialise(name, refClass, scripter.getUniqueLabel(refPrefix), true);
 					return true;
 				}
 			}
@@ -184,11 +205,116 @@ public class ScripterReference {
 		return false;
 	}
 
+	private void tryFunctions(Scripter scripter, ReferenceType baseRef) {
+		CoreId coreId = baseRef.getCoreId();
+		Set<String> functionNames = m_engine.getFunctionNames(coreId);
+		for (String functionName : functionNames) {
+			if (m_engine.getFunctionStartPcs(functionName, coreId).equals(baseRef.getPcs())) {
+				initialise(functionName, ReferenceClass.FUNCTION, functionName, false);
+				return;
+			}
+		}
+	}
+
+	private boolean tryMatchingSource(Scripter scripter, ReferenceType baseRef,
+			UnknownFactory.Type type, Node node, String refPrefix) {
+		
+		if (node == null) {
+			return false;
+		}
+		
+		Set<Long> pcs = getPcsForNode(type, node);
+		CoreId coreId = baseRef.getCoreId();
+		Set<Reference> options = getSourceLinesForPcs(pcs, coreId);
+		Reference reference = chooseBest(options);
+		
+		if (reference != null) {
+			m_mapsTo = reference;
+			m_mapsTo.resolve(m_engine);
+			m_mapsToLabel = scripter.getUniqueLabel(refPrefix);
+			m_isModifiable = true;
+			m_useBaseFileLine = false;
+			return true;
+		}
+		return false;
+	}
+
+	private Reference chooseBest(Set<Reference> options) {
+		if (options.isEmpty()) {
+			return null;
+		}
+		return options.iterator().next();
+	}
+
+	private Set<Reference> getSourceLinesForPcs(Set<Long> pcs, CoreId coreId) {
+		Collection<SrcLabelTableInfo> table = m_engine.getSrcLabelTable(coreId).values();
+		Set<Reference> references = new IteratableSet<Reference>();
+		
+		Set<String> names = getNames(table);
+		for (String name : names) {
+			Set<Long> tablePcs = getPcs(table, name);
+			if (pcs.containsAll(tablePcs)) {
+				Reference ref = ReferenceFactory.createReference(name, ReferenceClass.ANY, coreId);
+				references.add(ref);
+			}
+		}
+
+		return references;
+	}
+
+	private Set<Long> getPcsForNode(UnknownFactory.Type type, Node node) {
+		assert(type != null);
+		final Set<Long> pcs = new IteratableSet<Long>();
+		final boolean isLoop = ((type == UnknownFactory.Type.LOOP_ITERATIONS) || (type == UnknownFactory.Type.LOOP_SCOPE));
+
+		Node enclosingNode = null;
+		if (isLoop) {
+			enclosingNode = node.getEnclosingLoopNode();
+		} else if ((type == UnknownFactory.Type.LOOP_PATH_ITERATIONS) || (type == UnknownFactory.Type.EXCLUSION)) {
+			enclosingNode = node.getEnclosingOptionNode();
+		}
+		
+		if (enclosingNode != null) {
+			enclosingNode.traverse(new DefaultNodeTraverser() {
+				public TraverseStatus foundInstructionNode(Node node) {
+					pcs.add(((InstructionNode)node).getPC());
+					return TraverseStatus.CONTINUE;
+				}
+
+				public TraverseStatus foundInfiniteLoopNode(Node node) {
+					if (isLoop) {
+						// Prevent loops from finding references within inner loops
+						return TraverseStatus.NO_CHILDREN;
+					}
+					return TraverseStatus.CONTINUE;
+				}
+
+				public TraverseStatus foundSelfLoopNode(Node node) {
+					if (isLoop) {
+						// Prevent loops from finding references within inner loops
+						return TraverseStatus.NO_CHILDREN;
+					}
+					return TraverseStatus.CONTINUE;
+				}
+
+				public TraverseStatus foundInfiniteSelfLoopNode(Node node) {
+					if (isLoop) {
+						// Prevent loops from finding references within inner loops
+						return TraverseStatus.NO_CHILDREN;
+					}
+					return TraverseStatus.CONTINUE;
+				}
+			});
+		}
+		
+		return pcs;
+	}
+
 	private void tryLabels(Scripter scripter, ReferenceType baseRef) {
 		Map<String, Set<Long>> labels = m_engine.getLabels(m_baseRef.getCoreId());
 		for (String label : labels.keySet()) {
 			if (labels.get(label).equals(baseRef.getPcs())) {
-				initialise(label, ReferenceClass.LABEL_REF, label, false);
+				initialise(label, ReferenceClass.INSTRUCTION, label, false);
 				return;
 			}
 		}
@@ -203,9 +329,9 @@ public class ScripterReference {
 	}
 
 	private Set<Long> getPcs(Collection<? extends ScriptableInfo> infos, String name) {
-		Set<Long> pcs = new NonIteratableSet<Long>();
+		Set<Long> pcs = new IteratableSet<Long>();
 		for (ScriptableInfo info : infos) {
-			if (info.toString().equals(name)) {
+			if (info.toReferenceString().equals(name)) {
 				pcs.add(info.getPc());
 			}
 		}
@@ -220,5 +346,19 @@ public class ScripterReference {
 		m_isModifiable = isModifiable;
 		
 		m_useBaseFileLine = (m_mapsTo.getLineNum() == 0);
+	}
+
+	private String chooseRefPrefix(UnknownFactory.Type type, ReferenceType baseRef) {
+		if (type != UnknownFactory.Type.OTHER) {
+			return type.toString().toLowerCase();
+		} else {
+			ReferenceType.Type refType = baseRef.getType();
+			if (refType == ReferenceType.Type.ENDPOINT) {
+				return "endpoint";
+			} else if (refType == ReferenceType.Type.CALL) {
+				return "call";
+			}
+		}
+		return "label";
 	}
 }

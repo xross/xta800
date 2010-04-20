@@ -33,7 +33,7 @@ public class DumpControlFlow extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <FUNCTION_REF>: Dump the control flow (dot) graph for the given function";
+        return name() + " <FUNCTION>: Dump the control flow (dot) graph for the given function";
     }
 
     public Command clone(String[] args, int index) {

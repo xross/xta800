@@ -37,7 +37,7 @@ public class InstructionTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = name() + " <ENDPOINT_REF> <value> <mode>: Adds the given instruction time to the list of defines";
+    	String descString = name() + " <ENDPOINT> <value> <mode>: Adds the given instruction time to the list of defines";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

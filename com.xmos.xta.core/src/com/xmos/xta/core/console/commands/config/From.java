@@ -29,7 +29,7 @@ public class From extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-       	return name() + " <ENDPOINT_REF>: Sets the from endpoint";
+       	return name() + " <ENDPOINT>: Sets the from endpoint";
     }
 
     public Command clone(String[] args, int index) {

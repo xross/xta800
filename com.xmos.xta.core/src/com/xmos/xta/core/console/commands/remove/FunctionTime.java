@@ -32,7 +32,7 @@ public class FunctionTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return name() + " <FUNCTION_REF|*>: Removes the given functon time from the list of defines";
+    	return name() + " <FUNCTION|*>: Removes the given functon time from the list of defines";
     }
 
     public Command clone(String[] args, int index) {

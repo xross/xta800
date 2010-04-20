@@ -34,7 +34,7 @@ public class PathTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-		return name() + " <from ENDPOINT_REF|*> <to ENDPOINT_REF|*>: Removes the given path time from the list of defines";
+		return name() + " <from ENDPOINT|*> <to ENDPOINT|*>: Removes the given path time from the list of defines";
     }
 
     public Command clone(String[] args, int index) {

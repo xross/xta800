@@ -4,18 +4,18 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
-public class PcReference extends ReferenceType {
-	PcReference(String ref, CoreId coreId) {
-		super(ref, Type.PC, coreId);
+public class SrcLabelPcReference extends ReferenceType {
+	SrcLabelPcReference(String ref, CoreId coreId) {
+		super(ref, Type.SRCLABEL, coreId);
 		if (ref != null) {
 		    addPc(getPcString(ref));
 		}
 	}
 
 	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
-		if (checkTypeString(reference, Type.PC, 1) &&
+		if (checkTypeString(reference, Type.SRCLABEL, 1) &&
 		    isPcString(reference)) {
-			return new PcReference(reference, coreId);
+			return new SrcLabelPcReference(reference, coreId);
 		}
 		return null;
 	}
@@ -33,7 +33,7 @@ public class PcReference extends ReferenceType {
 	}
 
 	public String name() {
-		return "Pc";
+		return "SrcLabelPc";
 	}
 
 	public String description() {

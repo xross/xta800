@@ -50,7 +50,7 @@ public class Branch extends Command {
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return name() + " <from LABEL_REF> [<to LABEL_REF>]+: Adds the given from/to references to the branches list";
+        return name() + " <from BRANCH> [<to INSTRUCTION>]+: Adds the given from/to references to the branches list";
 	}
 
 	public Command clone(String[] args, int index) {

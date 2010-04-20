@@ -182,8 +182,6 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 			}
 		} else if(r.getType() == ReferenceType.Type.LABEL){
 			return matchRefPc(frn, engine, currentPc, r, stack);
-		} else if(r.getType() == ReferenceType.Type.PC){
-			return matchRefPc(frn, engine, currentPc, r, stack);
 		} else if(r.getType() == ReferenceType.Type.SRCLABEL){
 			return matchRefPc(frn, engine, currentPc, r, stack);
 		} else assert(false); 

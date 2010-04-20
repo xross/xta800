@@ -27,16 +27,16 @@ public class Case extends Command {
 
     public String commandLine() {
     	switch (m_case) {
-    	case BEST:  return name() + " BEST";
-    	case WORST: return name() + " WORST";
+    	case BEST:  return name() + " best";
+    	case WORST: return name() + " worst";
     	}
     	assert(false);
     	return "";
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + String.format(" <BEST/WORST>: Sets the case (currently: %s)",
-        		engine.getCase().toString());
+        return name() + String.format(" <best/worst>: Sets the case (currently: %s)",
+        		engine.getCase().toString().toLowerCase());
     }
 
     public Command clone(String[] args, int index) {
@@ -44,9 +44,9 @@ public class Case extends Command {
 			return null;
 
     	Node.Case c;
-    	if (args[index + 1].equals(Node.Case.WORST.toString())) {
+    	if (args[index + 1].equals(Node.Case.WORST.toString().toLowerCase())) {
     		c = Node.Case.WORST;
-    	} else if (args[index + 1].equals(Node.Case.BEST.toString())) {
+    	} else if (args[index + 1].equals(Node.Case.BEST.toString().toLowerCase())) {
     		c = Node.Case.BEST;
     	} else {
             return null;

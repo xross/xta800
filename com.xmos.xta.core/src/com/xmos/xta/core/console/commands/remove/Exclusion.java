@@ -32,7 +32,7 @@ public class Exclusion extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return name() + " <ANY_REF|*>: Removes the given reference (or all if '*') from the list of exclusions";
+    	return name() + " <ANY|*>: Removes the given reference (or all if '*') from the list of exclusions";
     }
 
     public Command clone(String[] args, int index) {
