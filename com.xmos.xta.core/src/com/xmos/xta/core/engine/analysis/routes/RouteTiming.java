@@ -83,6 +83,12 @@ public class RouteTiming {
 		return (int)((getWorstTime(status) / m_maxTime.getNs()) * m_coreConfig.m_frequency);
 	}
 
+	public Status getWorstCaseTimeStatus() {
+		Status status = new Status();
+		getWorstTime(status);
+		return status;
+	}
+
 	public String getDescription(Level level) {
 		String description = "";
 		if (isTimingSpecified()) {
