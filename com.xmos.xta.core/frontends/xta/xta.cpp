@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <string>
 #include <sstream>
 #include "XBHandler.h"
 #include "ElfHandler.h"
@@ -156,13 +158,17 @@ void checkJavaVersion(int major, int minor)
     exit(1);
   }
 
+  // Truncate, mainly for the benefit of squish which wraps the JVM
+  size_t start = output.find("java version \"");
+  output = output.substr(start);
+
   int javaMajorVersion = 0;
   int javaMinorVersion = 0;
   int offset = getInt(output.c_str(), 14, javaMajorVersion); // Start after java version "
   getInt(output.c_str(), offset + 1, javaMinorVersion); // Skip '.'
   
   if ((javaMajorVersion < major) || (javaMinorVersion < minor)) {
-    fprintf(stderr, "xta: error: java version must be %d.%d or newer\n", major, minor);
+    fprintf(stderr, "xta: error: java version must be %d.%d or newer but found %d.%d\n", major, minor, javaMajorVersion, javaMinorVersion);
     exit(1);
   }
 }
