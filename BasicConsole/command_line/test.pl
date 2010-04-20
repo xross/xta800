@@ -63,8 +63,10 @@ my $cmds =
        "-exit > $genDir/command_line.txt 2>&1";
 
 if (join("", @ARGV) =~ m/emma\.jar/) {
-  system("java -DConsole=Basic -cp \$XMOS_ROOT/infr_libs_java/com.xmos.libs/jars/emma.jar emma run -ix -org.* -quiet -raw -outfile ./coveragedata  -jar \$INSTALLS_DIR/xta.jar $cmds");
+  my $xmosRoot = $ENV{'XMOS_ROOT'};
+  system("java -DConsole=Basic -cp $xmosRoot/infr_libs_java/com.xmos.libs/jars/emma.jar emma run -ix -org.* -quiet -raw -outfile ./coveragedata  -jar \$INSTALLS_DIR/xta.jar $cmds");
 } else {
-  system("java -DConsole=Basic -jar \$INSTALLS_DIR/xta.jar $cmds");
+  my $installsDir = $ENV{'INSTALLS_DIR'};
+  system("java -DConsole=Basic -jar $installsDir/xta.jar $cmds");
 }
       
