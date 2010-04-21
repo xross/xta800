@@ -8,25 +8,25 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
   </Declarations>
 
   <Nodes>
-    <Node Id="0" Type="XS1-G4A" SystemFrequency="500">
+    <Node Id="0" Type="XS1-G4A" SystemFrequency="500" oscillator="25">
       <Core Number="0" Reference="stdcore[0]"/>
       <Core Number="1" Reference="stdcore[1]"/>
       <Core Number="2" Reference="stdcore[2]"/>
       <Core Number="3" Reference="stdcore[3]"/>
     </Node>
-    <Node Id="1" Type="XS1-G4A">
+    <Node Id="1" Type="XS1-G4A" SystemFrequency="400" oscillator="25">
       <Core Number="0" Reference="stdcore[4]"/>
       <Core Number="1" Reference="stdcore[5]"/>
       <Core Number="2" Reference="stdcore[6]"/>
       <Core Number="3" Reference="stdcore[7]"/>
     </Node>
-    <Node Id="2" Type="XS1-G4A" SystemFrequency="500Hz">
+    <Node Id="2" Type="XS1-G4A" SystemFrequency="300" oscillator="25">
       <Core Number="0" Reference="stdcore[8]"/>
       <Core Number="1" Reference="stdcore[9]"/>
       <Core Number="2" Reference="stdcore[10]"/>
       <Core Number="3" Reference="stdcore[11]"/>
     </Node>
-    <Node Id="3" Type="XS1-G4A" SystemFrequency="500khz">
+    <Node Id="3" Type="XS1-G4A" SystemFrequency="200" oscillator="25">
       <Core Number="0" Reference="stdcore[12]"/>
       <Core Number="1" Reference="stdcore[13]"/>
       <Core Number="2" Reference="stdcore[14]"/>
