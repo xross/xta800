@@ -237,7 +237,7 @@ public class Scripter {
 		return m_uniqueReferences;
 	}
 
-	public boolean promptUser() {
+	public boolean anyModifiableReferences() {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
 			if (scripterReference.isModifiable()) {
 				return true;
