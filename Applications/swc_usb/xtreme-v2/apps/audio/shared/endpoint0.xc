@@ -875,7 +875,7 @@ EP_GENERAL,                             /* 2   bDescriptorSubtype */
   '\0' \
 }
 
-#define STRINGER(x) PRODUCT#x
+#define STRINGER(x) "Xtreme "#x
 /* Standard descriptors */
 static unsigned char devDesc[] = DESC_DEVICE;
 //static unsigned char cfgDesc[] = DESC_CONFIG;

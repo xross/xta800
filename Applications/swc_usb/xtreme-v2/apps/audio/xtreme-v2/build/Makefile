@@ -56,7 +56,7 @@ TEST_INCLUDES  	= -I $(XUD_INC_DIR) \
 #ADAT            = -DADAT
 ADAT            = -DSPDIF -DASYNC
 BUILD_FLAGS   		= -target=XC-1 $(ADAT) -Wall -D UIFM_MODE=2 -fsubword-select \
-									-D PRODUCT='"Xtreme "' \
+									\
 					  -D VENDOR_LSB=0x92 -D VENDOR_MSB=0x0A -D PRODUCT_LSB=0x11 -D PRODUCT_MSB=0x70 -g 
 # -Wunused-parameter
 
