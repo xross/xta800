@@ -23,6 +23,7 @@ import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.xnloader.XmlHandler;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.analysis.Analyzer;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
@@ -92,7 +93,7 @@ public class Engine extends Notifier implements Aborter {
 	private int m_timeOut;
 	private int m_numErrors;
 	private long m_loadStartTime;
-	private Map<String, Long> m_nodeHz;
+	private Map<String, Integer> m_nodeHz;
 	private CoreCollection<Integer> m_coreThreads;
 	private CoreCollection<Boolean> m_structuralGraphUpToDate;
 	private CoreCollection<SourceMapper> m_sourceMappers;
@@ -110,7 +111,7 @@ public class Engine extends Notifier implements Aborter {
 		m_instructionDecoders = new CoreCollection<InstructionDecoder>();
 		m_callGraphs = new CoreCollection<CallGraph>();
 		m_structuralGraphUpToDate = new CoreCollection<Boolean>();
-		m_nodeHz = new IteratableMap<String, Long>();
+		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
@@ -452,7 +453,7 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //			
 	public void setFrequency(CommandSource src, String nodeId, double frequency) {
 		if (checkFrequency(src, frequency)) {
-			m_nodeHz.put(nodeId, (long)(frequency * 1000000));
+			m_nodeHz.put(nodeId, (int)(frequency * 1000000));
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");			
 		}
 	}
@@ -1726,7 +1727,7 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	private void initialiseCoreStates(XeLoader xeLoader) {
-		m_nodeHz = new IteratableMap<String, Long>();
+		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
 
 		XnLoader xnLoader = xeLoader.getXnLoader();
@@ -1734,16 +1735,27 @@ public class Engine extends Notifier implements Aborter {
 		if ((xnLoader == null) || (progInfoLoader == null)) {
 			return;
 		}
-
+		
 		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			String nodeId = xnLoader.getNodeId(nodeChainIndex);
-			m_nodeHz.put(nodeId, xnLoader.getFrequencyHz(nodeChainIndex));
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)){
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {				
 				int coreThreads = getCoreThreads(xnLoader, progInfoLoader, nodeChainIndex, coreNumber);
 				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
 				m_coreThreads.add(coreId, coreThreads);
 			}
 		}
+
+		// Initialise the frequencies with the default for each node..
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+		    String nodeId = xnLoader.getNodeId(nodeChainIndex);			
+		    m_nodeHz.put(nodeId, (int)XmlHandler.DEFAULT_FREQUENCY_HZ);
+		}
+
+		// Sets the frequencies with the ones actually used (from the proginfo sector)..
+		for (Integer nodeRoutingId : progInfoLoader.getNodeFrequencies().keySet()) {			
+			int nodeChainIndex = xnLoader.getNodeChainIndex(nodeRoutingId);			
+			String nodeId = xnLoader.getNodeId(nodeChainIndex);			
+			m_nodeHz.put(nodeId, progInfoLoader.getNodeFrequencies().get(nodeRoutingId));
+		}		
 	}
 
 	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeChainIndex, int coreNumber) {
