@@ -15,7 +15,7 @@
 #define CAMERA_H_
 #include <xs1.h>
 #include <print.h>
-#include "buffer/line_buf.h"
+#include "line_buf.h"
 
 /* camera thread */
 void doCamera(streaming chanend c_lcd_pro, streaming chanend c_lcd_cntrl, clock clk, clock clk2, in port Y_UV_port, in port PCLK_port, out port EXCLK_port, in port HREF_port, in port VSYNC_port, out port p_cam_rst);

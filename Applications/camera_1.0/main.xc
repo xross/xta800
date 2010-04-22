@@ -13,9 +13,9 @@
  **/                                   
 #include <xs1.h>
 
-#include "camera/camera.h"
-#include "lcd/lcd_svr.h"
-#include "buffer/line_buf.h"
+#include "camera.h"
+#include "lcd_svr.h"
+#include "line_buf.h"
 
 
 #define LCD_CORE 3

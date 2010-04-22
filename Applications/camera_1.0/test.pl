@@ -7,15 +7,13 @@ my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
-my $directory = "camera_1.0";
 
 if (!$noBuild) {
-    system("xmake > $genDir/$directory.log 2>&1");
-    system("mv bin/XDK/camera.xe $genDir/test.xe > $genDir/$directory.log 2>&1");
+    system("xcc -target=$target -march=$arch -g -O3 main.xc lcd_svr.xc camera.xc sccb.xc line_buf.xc -o $genDir/test.xe > $genDir/test.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .
         "-analyse path a a " .
         "print structure - " .
-        "-exit > $genDir/$directory.txt 2>&1");
+        "-exit > $genDir/test.txt 2>&1");
 

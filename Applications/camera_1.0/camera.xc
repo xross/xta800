@@ -12,8 +12,8 @@
  * Copyright XMOS Ltd 2009
  **/                                   
 
-#include "camera/camera.h"
-#include "camera/sccb.h"
+#include "camera.h"
+#include "sccb.h"
  
 
 #define COLOUR_GBR422 1

@@ -11,7 +11,7 @@
  *
  * Copyright XMOS Ltd 2009
  **/                                   
-#include "lcd/lcd_svr.h"
+#include "lcd_svr.h"
 
 
 void delay( unsigned instr_count )

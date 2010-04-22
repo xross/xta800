@@ -18,7 +18,7 @@
 #include <print.h>
 #include <platform.h>
 
-#include "buffer/line_buf.h"
+#include "line_buf.h"
 
 #define LCD_LINE_COUNT 240
 #define LCD_COLM_COUNT 320

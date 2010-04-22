@@ -11,7 +11,7 @@
  *
  * Copyright XMOS Ltd 2009
  **/                                   
-#include "buffer/line_buf.h"
+#include "line_buf.h"
 
 #include <print.h>
 
