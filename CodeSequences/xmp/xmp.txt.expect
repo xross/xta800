@@ -86,52 +86,52 @@ stdcore[61], Threads: 1 (Debug information avaliable)
 stdcore[62], Threads: 1 (Debug information avaliable)
 stdcore[63], Threads: 1 (Debug information avaliable)
 No routes analyzed
-Route(0) path: loop to loop
+Route(0) endpoints: loop to loop
     No Timing Specified
 
-Route(1) path: loop to loop
+Route(1) endpoints: loop to loop
     No Timing Specified
 
-Route(2) path: loop to loop
+Route(2) endpoints: loop to loop
     No Timing Specified
 
-Route(3) path: loop to loop
+Route(3) endpoints: loop to loop
     No Timing Specified
 
-Route(4) path: loop to loop
+Route(4) endpoints: loop to loop
     No Timing Specified
 
-Route(5) path: loop to loop
+Route(5) endpoints: loop to loop
     No Timing Specified
 
-Route(6) path: loop to loop
+Route(6) endpoints: loop to loop
     No Timing Specified
 
-Route(7) path: loop to loop
+Route(7) endpoints: loop to loop
     No Timing Specified
 
-Route(8) path: loop to loop
+Route(8) endpoints: loop to loop
     No Timing Specified
 
-Route(9) path: loop to loop
+Route(9) endpoints: loop to loop
     No Timing Specified
 
-Route(10) path: loop to loop
+Route(10) endpoints: loop to loop
     No Timing Specified
 
-Route(11) path: loop to loop
+Route(11) endpoints: loop to loop
     No Timing Specified
 
-Route(12) path: loop to loop
+Route(12) endpoints: loop to loop
     No Timing Specified
 
-Route(13) path: loop to loop
+Route(13) endpoints: loop to loop
     No Timing Specified
 
-Route(14) path: loop to loop
+Route(14) endpoints: loop to loop
     No Timing Specified
 
-Route(15) path: loop to loop
+Route(15) endpoints: loop to loop
     No Timing Specified
 
 Fail, Timing Unspecified

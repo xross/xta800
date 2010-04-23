@@ -25,7 +25,7 @@ xta: cmds.txt:24: error: References not resolved on any active core
 stdcore[0]::test.xc:25
 stdcore[0]::test.xc:26
 ============= analyze path
-Route(0) path: test.xc:25 to test.xc:26
+Route(0) endpoints: test.xc:25 to test.xc:26
     No Timing Specified
 
 Fail, Timing Unspecified

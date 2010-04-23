@@ -1,28 +1,28 @@
-Route\(\d+\) path: sendRawSample to sendRawSample
+Route\(\d+\) endpoints: sendRawSample to sendRawSample
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: interS1ThreadInput to interS1ThreadInput
+Route\(\d+\) endpoints: interS1ThreadInput to interS1ThreadInput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: interS1ThreadOutput to interS1ThreadOutput
+Route\(\d+\) endpoints: interS1ThreadOutput to interS1ThreadOutput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: interS2ThreadInput to interS2ThreadInput
+Route\(\d+\) endpoints: interS2ThreadInput to interS2ThreadInput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 6.2 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: interS2ThreadOutput to interS2ThreadOutput
+Route\(\d+\) endpoints: interS2ThreadOutput to interS2ThreadOutput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: pwmThreadLow1 to pwmThreadHigh
+Route\(\d+\) endpoints: pwmThreadLow1 to pwmThreadHigh
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: pwmThreadLow2 to pwmThreadHigh
+Route\(\d+\) endpoints: pwmThreadLow2 to pwmThreadHigh
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: pwmThreadHigh to pwmThreadLow1
+Route\(\d+\) endpoints: pwmThreadHigh to pwmThreadLow1
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) path: pwmThreadHigh to pwmThreadLow2
+Route\(\d+\) endpoints: pwmThreadHigh to pwmThreadLow2
     Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Fail, 3/9, Max Violation: \d+\.\d+ [mun]s

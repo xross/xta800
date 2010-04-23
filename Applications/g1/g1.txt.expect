@@ -1,49 +1,49 @@
-Route(0) path: sdr_input0_0 to sdr_input0_1
+Route(0) endpoints: sdr_input0_0 to sdr_input0_1
     Pass with 4 unknowns, Num Paths: 1, Slack: 158.0 ns, Required: 333.0 ns, Worst: 175.0 ns, Min Core Frequency: 210 MHz
 
-Route(1) path: sdr_input0_1 to sdr_input0_2
+Route(1) endpoints: sdr_input0_1 to sdr_input0_2
     Pass with 7 unknowns, Num Paths: 1, Slack: 18.0 ns, Required: 333.0 ns, Worst: 315.0 ns, Min Core Frequency: 378 MHz
 
-Route(2) path: sdr_input0_2 to sdr_input0_3
+Route(2) endpoints: sdr_input0_2 to sdr_input0_3
     Pass with 5 unknowns, Num Paths: 1, Slack: 140.5 ns, Required: 333.0 ns, Worst: 192.5 ns, Min Core Frequency: 231 MHz
 
-Route(3) path: sdr_input0_3 to sdr_input0_0
+Route(3) endpoints: sdr_input0_3 to sdr_input0_0
     Pass with 6 unknowns, Num Paths: 1, Slack: 35.5 ns, Required: 333.0 ns, Worst: 297.5 ns, Min Core Frequency: 357 MHz
 
-Route(4) path: sdr_input1_0 to sdr_input1_1
+Route(4) endpoints: sdr_input1_0 to sdr_input1_1
     Pass with 4 unknowns, Num Paths: 1, Slack: 158.0 ns, Required: 333.0 ns, Worst: 175.0 ns, Min Core Frequency: 210 MHz
 
-Route(5) path: sdr_input1_1 to sdr_input1_2
+Route(5) endpoints: sdr_input1_1 to sdr_input1_2
     Pass with 7 unknowns, Num Paths: 1, Slack: 18.0 ns, Required: 333.0 ns, Worst: 315.0 ns, Min Core Frequency: 378 MHz
 
-Route(6) path: sdr_input1_2 to sdr_input1_3
+Route(6) endpoints: sdr_input1_2 to sdr_input1_3
     Pass with 5 unknowns, Num Paths: 1, Slack: 140.5 ns, Required: 333.0 ns, Worst: 192.5 ns, Min Core Frequency: 231 MHz
 
-Route(7) path: sdr_input1_3 to sdr_input1_0
+Route(7) endpoints: sdr_input1_3 to sdr_input1_0
     Pass with 6 unknowns, Num Paths: 1, Slack: 35.5 ns, Required: 333.0 ns, Worst: 297.5 ns, Min Core Frequency: 357 MHz
 
-Route(8) path: sdr_input2_0 to sdr_input2_1
+Route(8) endpoints: sdr_input2_0 to sdr_input2_1
     Pass with 5 unknowns, Num Paths: 1, Slack: 105.5 ns, Required: 333.0 ns, Worst: 227.5 ns, Min Core Frequency: 273 MHz
 
-Route(9) path: sdr_input2_1 to sdr_input2_2
+Route(9) endpoints: sdr_input2_1 to sdr_input2_2
     Pass with 7 unknowns, Num Paths: 1, Slack: 53.0 ns, Required: 333.0 ns, Worst: 280.0 ns, Min Core Frequency: 336 MHz
 
-Route(10) path: sdr_input2_2 to sdr_input2_3
+Route(10) endpoints: sdr_input2_2 to sdr_input2_3
     Pass with 5 unknowns, Num Paths: 1, Slack: 105.5 ns, Required: 333.0 ns, Worst: 227.5 ns, Min Core Frequency: 273 MHz
 
-Route(11) path: sdr_input2_3 to sdr_input2_0
+Route(11) endpoints: sdr_input2_3 to sdr_input2_0
     Pass with 5 unknowns, Num Paths: 1, Slack: 88.0 ns, Required: 333.0 ns, Worst: 245.0 ns, Min Core Frequency: 294 MHz
 
-Route(12) path: sdr_input3_0 to sdr_input3_1
+Route(12) endpoints: sdr_input3_0 to sdr_input3_1
     Pass with 5 unknowns, Num Paths: 1, Slack: 105.5 ns, Required: 333.0 ns, Worst: 227.5 ns, Min Core Frequency: 273 MHz
 
-Route(13) path: sdr_input3_1 to sdr_input3_2
+Route(13) endpoints: sdr_input3_1 to sdr_input3_2
     Pass with 7 unknowns, Num Paths: 1, Slack: 53.0 ns, Required: 333.0 ns, Worst: 280.0 ns, Min Core Frequency: 336 MHz
 
-Route(14) path: sdr_input3_2 to sdr_input3_3
+Route(14) endpoints: sdr_input3_2 to sdr_input3_3
     Pass with 5 unknowns, Num Paths: 1, Slack: 105.5 ns, Required: 333.0 ns, Worst: 227.5 ns, Min Core Frequency: 273 MHz
 
-Route(15) path: sdr_input3_3 to sdr_input3_0
+Route(15) endpoints: sdr_input3_3 to sdr_input3_0
     Pass with 5 unknowns, Num Paths: 1, Slack: 88.0 ns, Required: 333.0 ns, Worst: 245.0 ns, Min Core Frequency: 294 MHz
 
 Pass, Min Core Frequency: 378 MHz

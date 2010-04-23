@@ -6,10 +6,10 @@ stdcore\[1\], label: call_function_a1, pc: 0x[0-9a-fA-F]+, compilation dir: .*ca
 stdcore\[1\], label: call_function_b1, pc: 0x[0-9a-fA-F]+, compilation dir: .*call_call, filename: test.xc, line number: 23
 xta: cmds.txt:11: error: 'call_function_a0' is not a valid endpoint on any active core
 xta: cmds.txt:11: error: 'call_function_b0' is not a valid endpoint on any active core
-Route\(0\) path: call_function_a0 to call_function_b0
+Route\(0\) endpoints: call_function_a0 to call_function_b0
     No Timing Specified
 
-Route\(1\) path: call_function_a1 to call_function_b1
+Route\(1\) endpoints: call_function_a1 to call_function_b1
     No Timing Specified
 
 Fail, Timing Unspecified

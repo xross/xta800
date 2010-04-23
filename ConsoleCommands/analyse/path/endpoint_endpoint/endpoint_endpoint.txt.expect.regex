@@ -6,10 +6,10 @@ stdcore\[1\], label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_en
 stdcore\[1\], label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 22
 xta: cmds.txt:10: error: 'output0' is not a valid endpoint on any active core
 xta: cmds.txt:10: error: 'input0' is not a valid endpoint on any active core
-Route\(0\) path: output0 to input0
+Route\(0\) endpoints: output0 to input0
     No Timing Specified
 
-Route\(1\) path: output1 to input1
+Route\(1\) endpoints: output1 to input1
     No Timing Specified
 
 Fail, Timing Unspecified
