@@ -492,7 +492,7 @@ public class Scripter {
     	case PATH:
 		    outputPortableWarnings(script, routeCoreContainer.getFromReference());
 		    outputPortableWarnings(script, routeCoreContainer.getToReferences().iterator().next());
-		    addScriptCommand(script, String.format("analyze path %s %s",
+		    addScriptCommand(script, String.format("analyze endpoints %s %s",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
 		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
