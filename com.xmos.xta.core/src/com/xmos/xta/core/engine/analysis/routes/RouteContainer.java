@@ -32,7 +32,7 @@ public class RouteContainer {
 	
     public RouteContainer(String fromName, String toName, Engine engine, CommandSource src) {    	
 		m_mode = RouteMode.PATH;
-		m_description = String.format("path: %s to %s", fromName, toName);
+		m_description = String.format("endpoints: %s to %s", fromName, toName);
 		initialise(engine, src);
     }
 
