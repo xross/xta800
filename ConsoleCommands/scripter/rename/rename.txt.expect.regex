@@ -41,19 +41,19 @@ xta: cmds.txt:28: error: Reference 'x' cannot be renamed
 # Route: x => x
 #
 add exclusion the_great_outdoors
-analyze path x x
+analyze endpoints x x
 
 #
 # Route: test.xc:21 => test.xc:22
 #
 # Warning: 'test.xc:21' is a non-portable reference.
 # Warning: 'test.xc:22' is a non-portable reference.
-analyze path test.xc:21 test.xc:22
+analyze endpoints test.xc:21 test.xc:22
 
 #
 # Route: test.xc:21 => test.xc:22
 #
 # Warning: 'test.xc:21' is a non-portable reference.
 # Warning: 'test.xc:22' is a non-portable reference.
-analyze path test.xc:21 test.xc:22
+analyze endpoints test.xc:21 test.xc:22
 

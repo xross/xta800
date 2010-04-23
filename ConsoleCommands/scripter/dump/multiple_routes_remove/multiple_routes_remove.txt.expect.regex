@@ -4,14 +4,14 @@
 # Route: x => x
 #
 add exclusion the_great_outdoors
-analyze path x x
+analyze endpoints x x
 remove route 1
 remove route 3
 
 #
 # Route: x => x
 #
-analyze path x x
+analyze endpoints x x
 remove route 6
 remove route 7
 

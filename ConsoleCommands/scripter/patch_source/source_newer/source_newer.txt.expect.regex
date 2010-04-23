@@ -18,15 +18,15 @@ true       true       .+/bar.xc:9 ->       stop
 add exclusion out_of_bounds
 # Warning: 'foo.xc:15' is a non-portable reference.
 # Warning: 'foo.xc:15' is a non-portable reference.
-analyze path foo.xc:15 foo.xc:15
+analyze endpoints foo.xc:15 foo.xc:15
 
 #
 # Route: start => stop
 #
-analyze path start stop
+analyze endpoints start stop
 
 #
 # Route: start => start
 #
-analyze path start start
+analyze endpoints start start
 

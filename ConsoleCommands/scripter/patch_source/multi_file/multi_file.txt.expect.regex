@@ -14,15 +14,15 @@ true       true       .+/bar.xc:9 ->       stop
 # Route: x => x
 #
 add exclusion out_of_bounds
-analyze path x x
+analyze endpoints x x
 
 #
 # Route: start => stop
 #
-analyze path start stop
+analyze endpoints start stop
 
 #
 # Route: start => start
 #
-analyze path start start
+analyze endpoints start start
 

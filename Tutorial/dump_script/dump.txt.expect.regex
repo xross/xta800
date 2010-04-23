@@ -3,14 +3,14 @@
 #
 # Route: tx_start => tx_loop
 #
-analyze path tx_start tx_loop
+analyze endpoints tx_start tx_loop
 set required - 8.68 us
 
 #
 # Route: tx_loop => tx_loop
 #
 add exclusion tx_stop
-analyze path tx_loop tx_loop
+analyze endpoints tx_loop tx_loop
 set required - 8.68 us
 
 #
@@ -18,7 +18,7 @@ set required - 8.68 us
 #
 remove exclusion \*
 add exclusion tx_loop_exclusion
-analyze path tx_loop tx_stop
+analyze endpoints tx_loop tx_stop
 set required - 8.68 us
 
 #
@@ -27,6 +27,6 @@ set required - 8.68 us
 remove exclusion \*
 add exclusion tx_loop_exclusion
 add exclusion tx_done
-analyze path tx_stop tx_start
+analyze endpoints tx_stop tx_start
 set required - 8.68 us
 

@@ -16,5 +16,5 @@ true       true       .+/bar.xc:11 ->    label_0
 # Route: startCall,x => stopCall,x
 #
 add exclusion call_2,label_0
-analyze path startCall,x stopCall,x
+analyze endpoints startCall,x stopCall,x
 

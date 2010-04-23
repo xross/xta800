@@ -4,7 +4,7 @@
 # Route: x => x
 #
 add exclusion the_great_outdoors
-analyze path x x
+analyze endpoints x x
 set required 0 100.0 ns
 set required 1 200.0 ns
 set required 2 300.0 ns

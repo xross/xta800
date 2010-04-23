@@ -10,5 +10,5 @@ true       true       .+/test.xc:25 -> out_of_bounds
 # Route: x => x
 #
 add exclusion out_of_bounds
-analyze path x x
+analyze endpoints x x
 

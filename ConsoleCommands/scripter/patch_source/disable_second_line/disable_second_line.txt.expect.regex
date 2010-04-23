@@ -13,5 +13,5 @@ true       true       test.xc:25 ->    label_0
 #
 add exclusion label_0
 # Warning: 'test.xc:24' is a non-portable reference.
-analyze path call_0 test.xc:24
+analyze endpoints call_0 test.xc:24
 

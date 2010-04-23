@@ -111,14 +111,14 @@ char rxByte(in port rxd)
 //
 // Route: tx_start => tx_loop
 //
-#pragma xta command "analyze path tx_start tx_loop"
+#pragma xta command "analyze endpoints tx_start tx_loop"
 #pragma xta command "set required - 8.68 us"
 
 //
 // Route: tx_loop => tx_loop
 //
 #pragma xta command "add exclusion tx_stop"
-#pragma xta command "analyze path tx_loop tx_loop"
+#pragma xta command "analyze endpoints tx_loop tx_loop"
 #pragma xta command "set required - 8.68 us"
 
 //
@@ -126,7 +126,7 @@ char rxByte(in port rxd)
 //
 #pragma xta command "remove exclusion *"
 #pragma xta command "add exclusion tx_loop_exclusion"
-#pragma xta command "analyze path tx_loop tx_stop"
+#pragma xta command "analyze endpoints tx_loop tx_stop"
 #pragma xta command "set required - 8.68 us"
 
 //
@@ -135,6 +135,6 @@ char rxByte(in port rxd)
 #pragma xta command "remove exclusion *"
 #pragma xta command "add exclusion tx_loop_exclusion"
 #pragma xta command "add exclusion tx_done"
-#pragma xta command "analyze path tx_stop tx_start"
+#pragma xta command "analyze endpoints tx_stop tx_start"
 #pragma xta command "set required - 8.68 us"
 

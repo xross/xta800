@@ -4,7 +4,7 @@
 # Route: x => x
 #
 add exclusion the_great_outdoors
-analyze path x x
+analyze endpoints x x
 set loop 0 loop_iterations_0 10
 set loop 1 loop_iterations_0 20
 set loop 2 loop_iterations_0 30
