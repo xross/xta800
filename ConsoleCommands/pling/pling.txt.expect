@@ -13,4 +13,4 @@ Case: worst
 Verbosity: 0
 No executable loaded
 1: status
-2: source cmds.txt
+2: source "cmds.txt"

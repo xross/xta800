@@ -1,4 +1,4 @@
 .*
 [^^^]
-1: source cmds.txt
+1: source "cmds.txt"
 2: history

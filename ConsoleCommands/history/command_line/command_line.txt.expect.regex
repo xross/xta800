@@ -19,7 +19,7 @@
 17: pwd
 18: help
 19: help history
-20: load invalid.xe
+20: load "invalid.xe"
 21: list branches
 22: list labels
 23: list srclabels
@@ -44,7 +44,7 @@
 42: set instructiontime - label1 99 cycles
 43: set instructiontime - 0x1000 50000 cycles
 44: add instructiontime 0x10000 50008 us
-45: source invalid.txt
+45: source "invalid.txt"
 46: status
 47: version
 48: history
