@@ -45,7 +45,8 @@ public class Shell {
 	public void execute(String commandStr, CommandSource src) {
 		m_executeArgsOnly = true;
         String[] tokens = commandStr.trim().split("\\s+");
-    	processCommands(tokens, src);
+        ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
+    	processCommands(tokenGroups.toArray(new String[] {}), src);
     	execute();
 	}
 

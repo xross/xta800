@@ -36,7 +36,7 @@ public class Load extends Command {
 	}
 
     public String commandLine() {
-    	return name() + " " + m_executableName;
+    	return name() + " \"" + m_executableName + "\"";
     }
 
     public String description(Engine engine, boolean detailed) {

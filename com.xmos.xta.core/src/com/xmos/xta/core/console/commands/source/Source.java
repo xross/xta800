@@ -40,7 +40,7 @@ public class Source extends Command {
 	}
 
     public String commandLine() {
-    	return name() + " " + m_fileName;
+    	return name() + " \"" + m_fileName + "\"";
     }
 
     public String description(Engine engine, boolean detailed) {
