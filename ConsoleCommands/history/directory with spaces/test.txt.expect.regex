@@ -1,4 +1,4 @@
 hello
-1: load ".*/directory with spaces/csim__xs1b__default/test.xe"
+1: load ".*/directory with spaces/.*/test.xe"
 2: source ".*/directory with spaces/cmds.txt"
 3: history
