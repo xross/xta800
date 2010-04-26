@@ -196,7 +196,12 @@ public class Shell {
       	for (Command command : avaliableCommands) {
       		m_console.display(String.format("  %s\n", command.description(m_engine, false)));
       	}
-        System.exit(1);
+      	
+      	if (m_engine.getConfig().getErrorsAsWarnings()) {
+      		System.exit(0);
+      	} else {
+      		System.exit(1);
+      	}
 	}
 
 	private boolean preCommandExecute(Command command) {
