@@ -10,7 +10,7 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 
 public class Exit extends Command {
-	private static final String[] COMMAND_NAMES = { "exit" };
+	private static final String[] COMMAND_NAMES = { "exit", "quit" };
 
 	public Exit() {
 		super(COMMAND_NAMES);
