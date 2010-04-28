@@ -20,6 +20,8 @@ bool xeContainsXtaCommands(char *xeName);
 void checkJavaVersion(int major, int minor);
 int getInt(const char *str, int offset, int &number);
 
+#define CONSOLE_BASIC "\"--console-basic\""
+
 int main(int argc, char **argv)
 {
   const char *jarName = "xta.jar";
@@ -37,8 +39,15 @@ int main(int argc, char **argv)
 
     if (needToRun(argc, argv)) {
       checkJavaVersion(1, 5);
-      
-      string command = "java " + jvmArgString + " -jar \"" + jar + "\"" + args;
+     
+      string consoleStr = "";
+      size_t pos = args.find(CONSOLE_BASIC);
+      if (pos != string::npos) {
+          args.erase(pos, strlen(CONSOLE_BASIC));           
+          consoleStr = "-DConsole=Basic";
+      }
+ 
+      string command = "java " + jvmArgString + " " + consoleStr + " -jar \"" + jar + "\"" + args;
       int returnCode = run(command.c_str());
       return returnCode;
     } else {
