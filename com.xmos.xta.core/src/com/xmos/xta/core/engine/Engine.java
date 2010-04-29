@@ -381,7 +381,7 @@ public class Engine extends Notifier implements Aborter {
 			setSelectedRoute(src, null);
 			assert(validateRouteCount());
 
-		} else if (m_selectedRoute.getRouteId() == routeId) {
+		} else if ((m_selectedRoute != null) && (m_selectedRoute.getRouteId() == routeId)) {
 			this.setSelectedRoute(src, m_routes.get(m_routes.size() - 1));
 			assert(validateRouteCount());
 		}
