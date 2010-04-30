@@ -18,11 +18,11 @@ my $retval = system("@ARGV load $genDir/test.xe " .
        "config Terror off " .
        "config Ewarning on " .
        "help config " .
-       "status " .
-       "config Ewarning off " .
-       "status " .
-       "config Ewarning on " .
-       "analyze function nonexistant " .
+       "-status " .
+       "-config Ewarning off " .
+       "-status " .
+       "-config Ewarning on " .
+       "-analyze function nonexistant " .
        "-exit > $genDir/test.txt 2>&1");
 
 if (($retval >> 8) == 0) {

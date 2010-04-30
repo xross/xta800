@@ -5,7 +5,7 @@
   [-]debug <option> <arg0> <arg1>...: Internal debug commands
   [-]echo "text": Prints the text to the console
   [-]exit: Quits the application
-  [-]help [command/option]: Displays help message for the given command/option
+  [-]help [command|command subcommand|option]: Displays help message for the given arguments
   [-]history: Displays the command history
   [-]load <xe file>: Loads the given xmos executable file
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
@@ -21,29 +21,12 @@
       option: branch <from BRANCH> [<to INSTRUCTION>]+: Adds the given from/to references to the branches list
       option: core <core id|*>: Add core to active set
       option: exclusion <ANY>: Adds the given reference to the list of exclusions
-      option: functiontime <FUNCTION> <value> <mode>: Adds the given function time to the list of defines
-          mode: ns:     nanoseconds
-          mode: us:     microseconds
-          mode: ms:     milliseconds
-          mode: MHz:    megahertz
-          mode: cycles: processor thread cycles
-      option: instructiontime <ENDPOINT> <value> <mode>: Adds the given instruction time to the list of defines
-          mode: ns:     nanoseconds
-          mode: us:     microseconds
-          mode: ms:     milliseconds
-          mode: MHz:    megahertz
-          mode: cycles: processor thread cycles
+      option: functiontime <FUNCTION> <value> <MODE>: Adds the given function time to the list of defines
+      option: instructiontime <ENDPOINT> <value> <MODE>: Adds the given instruction time to the list of defines
       option: loop <ANY> <iterations>: Adds the given loop count define to the list of defines
       option: looppath <ANY> <iterations>: Adds the given loop path count define to the list of defines
-      option: loopscope <ANY> <scope>: Adds the given loop scope define to the list of defines
-          scope: relative/r: Iteration number propagates to the enclosing path (Default)
-          scope: absolute/a: Absolute number of iterations
-      option: pathtime <from ENDPOINT> <to ENDPOINT> <value> <mode>: Adds the given path time to the list of defines
-          mode: ns:     nanoseconds
-          mode: us:     microseconds
-          mode: ms:     milliseconds
-          mode: MHz:    megahertz
-          mode: cycles: processor thread cycles
+      option: loopscope <ANY> <SCOPE>: Adds the given loop scope define to the list of defines
+      option: pathtime <from ENDPOINT> <to ENDPOINT> <value> <MODE>: Adds the given path time to the list of defines
   [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
       option: endpoints <from ENDPOINT> <to ENDPOINT>: Analyze between the specified endpoints
       option: function <FUNCTION>: Analyze the given function
@@ -63,8 +46,8 @@
       option: Werror <on/off>: treat warnings as errors or not (currently: off)
   [-]echo "text": Prints the text to the console
   [-]exit: Quits the application
-  [-]help [command/option]: Displays help message for the given command/option
-      options: FUNCTION, BRANCH, INSTRUCTION, ENDPOINT, ANY
+  [-]help [command|command subcommand|option]: Displays help message for the given arguments
+      options: FUNCTION, BRANCH, INSTRUCTION, ENDPOINT, ANY, MODE, SCOPE
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
       option: allcalls: Lists all the possible locations for calls
@@ -123,52 +106,30 @@
       option: rename <ANY> <TO_NAME>: Rename a mapping
   [-]set <option> <arg0> <arg1>...: Set path information
       option: exclusion <route id> <ANY>: Sets an exclusion on the given reference
-      option: functiontime <route id> <FUNCTION> <value> <mode>: Set timing requirement for the given function on the given route
-          mode: ns:     nanoseconds
-          mode: us:     microseconds
-          mode: ms:     milliseconds
-          mode: MHz:    megahertz
-          mode: cycles: processor thread cycles
-      option: instructiontime <route id> <ENDPOINT> <value> <mode>: Sets the time taken for the instruction at the given pc
-          mode: ns:     nanoseconds
-          mode: us:     microseconds
-          mode: ms:     milliseconds
-          mode: MHz:    megahertz
-          mode: cycles: processor thread cycles
+      option: functiontime <route id> <FUNCTION> <value> <MODE>: Set timing requirement for the given function on the given route
+      option: instructiontime <route id> <ENDPOINT> <value> <MODE>: Sets the time taken for the instruction at the given pc
       option: loop <route id> <ANY> <iterations>: Sets the number of iterations for the loop identified
       option: looppath <route id> <ANY> <iterations>: Sets the number of iterations for the path identified
-      option: loopscope <route id> <ANY> <scope>: Sets the scope of the referenced loop
-          scope: relative/r: Iteration number propagates to the enclosing path (Default)
-          scope: absolute/a: Absolute number of iterations
-      option: pathtime <route id> <from ENDPOINT> <to ENDPOINT> <value> <mode>: Set timing requirement for the given path on the given route
-          mode: ns:     nanoseconds
-          mode: us:     microseconds
-          mode: ms:     milliseconds
-          mode: MHz:    megahertz
-          mode: cycles: processor thread cycles
-      option: required <route id> <value> <mode>: Sets the maximum allowed time taken for the given route
-          mode: ns:     nanoseconds
-          mode: us:     microseconds
-          mode: ms:     milliseconds
-          mode: MHz:    megahertz
-          mode: cycles: processor thread cycles
+      option: loopscope <route id> <ANY> <SCOPE>: Sets the scope of the referenced loop
+      option: pathtime <route id> <from ENDPOINT> <to ENDPOINT> <value> <MODE>: Set timing requirement for the given path on the given route
+      option: required <route id> <value> <MODE>: Sets the maximum allowed time taken for the given route
   [-]source <file name>: Sources the given command file
   [-]status: Display current status
-  Any of the following are permitted:
+  Any of the following types are permitted in this reference class:
     FunctionPc: Raw program counter specified in the format: 0x*
     Function: Any function
-  Any of the following are permitted:
+  Any of the following types are permitted in this reference class:
     EndpointPc: Raw program counter specified in the format: 0x*
     CallPc: Call specified in the format: 0x*
     CallFileLine: Call specified in the format: 'file name:line number'
     Call: Call specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section
-  Any of the following are permitted:
+  Any of the following types are permitted in this reference class:
     EndpointPc: Raw program counter specified in the format: 0x*
     FunctionPc: Raw program counter specified in the format: 0x*
     Function: Any function
     Label: Any source or assembly level symbol defined with respect to an executable section
-  Any of the following are permitted:
+  Any of the following types are permitted in this reference class:
     EndpointPc: Raw program counter specified in the format: 0x*
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
     Endpoint: Endpoint specified using the source level pragma mechanism
@@ -176,7 +137,7 @@
     CallFileLine: Call specified in the format: 'file name:line number'
     Call: Call specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section
-  Any of the following are permitted:
+  Any of the following types are permitted in this reference class:
     SrcLabelPc: Raw program counter specified in the format: 0x*
     EndpointPc: Raw program counter specified in the format: 0x*
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
