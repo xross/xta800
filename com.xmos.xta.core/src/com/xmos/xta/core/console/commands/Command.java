@@ -24,6 +24,7 @@ public abstract class Command {
     	ENDPOINT,
     	LABEL,
     	HELP,
+    	HELPCOMMAND,
     	IGNORE,
     }
     public enum RedirectMode {

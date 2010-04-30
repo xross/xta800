@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import jline.ArgumentCompletor;
 import jline.Completor;
 import jline.FileNameCompletor;
 import jline.NullCompletor;
 import jline.SimpleCompletor;
 
-import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.IteratableMap;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.engine.Engine;
@@ -20,13 +19,13 @@ import com.xmos.xta.core.engine.Engine;
 public class XtaCompletor implements Completor {
 	private static final boolean DEBUG = false;
 
-    private ArgumentCompletor m_baseCompletor;
+    private XtaArgumentCompletor m_baseCompletor;
     private Map<String, Completor> m_subCompletors;
     private Engine m_engine;
 
 	public XtaCompletor(Engine engine) {
 		m_engine = engine;
-		m_subCompletors = new NonIteratableMap<String, Completor>();
+		m_subCompletors = new IteratableMap<String, Completor>();
 		createCommandCompletors();
 		if (DEBUG) displayCommandCompletors();
 	}
@@ -74,7 +73,7 @@ public class XtaCompletor implements Completor {
 	  	  	    subCommandStrings[index] = commands[index].name();
 	  	        createSubCommandCompleters(commands[index], commandLevel + 1, command.name());
 	  	  	}
-  	        ArgumentCompletor argCompletor = createArgCompletor(
+	  	  XtaArgumentCompletor argCompletor = createArgCompletor(
   	        		new SimpleCompletor(subCommandStrings), commandLevel);
 	  	    m_subCompletors.put(getCompleteCommandString(prefix, command), argCompletor);
 
@@ -84,6 +83,8 @@ public class XtaCompletor implements Completor {
 	  		// Adds the completors for the options of this (leaf) sub-command.
 	        if (DEBUG) System.out.printf("(LEAF) ");
 
+	        List<HelpCommandCompletor> helpCommandCompletors = new ArrayList<HelpCommandCompletor>();
+	        
   		    List<Completor> completors = new ArrayList<Completor>();
 	  	    for (Command.ArgType argType : command.getArgTypes()) {
 	  		    switch (argType) {
@@ -116,7 +117,14 @@ public class XtaCompletor implements Completor {
 	  		    	if (DEBUG) System.out.printf("[help]");
 	  			    completors.add(new HelpCompletor());
 			        break;
-
+			        			       
+	  		    case HELPCOMMAND:
+	  		    	if (DEBUG) System.out.printf("[helpcommand]");
+	  		    	HelpCommandCompletor completor = new HelpCommandCompletor();
+	  			    completors.add(completor);
+	  			    helpCommandCompletors.add(completor);
+			        break;
+			        
 	  		    case IGNORE:
 	  		    	if (DEBUG) System.out.printf("[ignore]");
 	  		    	completors.add(new NullCompletor());
@@ -130,26 +138,28 @@ public class XtaCompletor implements Completor {
 	  	    if (DEBUG) System.out.printf(" (%d) ", completors.size());
 
     	  	if (completors.size() > 0) {
-  		        ArgumentCompletor argCompletor = createArgCompletor(completors, commandLevel);
+    	  		XtaArgumentCompletor argCompletor = createArgCompletor(completors, commandLevel);
 	            m_subCompletors.put(getCompleteCommandString(prefix, command), argCompletor);
 
+	            for (HelpCommandCompletor helpCommandCompletor : helpCommandCompletors) {
+	            	helpCommandCompletor.setParent(argCompletor);
+	            }	            
 		  	    if (DEBUG) System.out.printf(" %s", argCompletor.toString());
     	  	}
 	  	    if (DEBUG) System.out.printf("\n");
 	  	}
 	}
 
-	private ArgumentCompletor createArgCompletor(Completor subCompletor, int commandLevel) {
+	private XtaArgumentCompletor createArgCompletor(Completor subCompletor, int commandLevel) {
 		List<Completor> subCompletors = new ArrayList<Completor>();
 		subCompletors.add(subCompletor);
 		return createArgCompletor(subCompletors, commandLevel);
 	}
 
-	private ArgumentCompletor createArgCompletor(List<Completor> subCompletors, int commandLevel) {
+	private XtaArgumentCompletor createArgCompletor(List<Completor> subCompletors, int commandLevel) {
 		addNullCompletors(subCompletors, commandLevel);
     	subCompletors.add(new NullCompletor());
-	    ArgumentCompletor completor = new ArgumentCompletor(subCompletors);
-	    completor.setStrict(false);
+	    XtaArgumentCompletor completor = new XtaArgumentCompletor(subCompletors);
 	    return completor;
 	}
 

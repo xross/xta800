@@ -35,7 +35,7 @@ public abstract class CommandContainer extends Command {
         	sb.append("\n");
         	for (Command option : getSubCommands()) {
         		sb.append("      option: ");
-        		sb.append(option.description(engine, true));
+        		sb.append(option.description(engine, false));
         		sb.append( "\n");
         	}
         	String optionsString= sb.toString();
@@ -64,5 +64,5 @@ public abstract class CommandContainer extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
     	m_option.setSrc(getSrc());
     	m_option.execute(shell, engine, console);
-    }
+    }    
 }

@@ -38,7 +38,7 @@ public class FunctionTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = name() + " <FUNCTION> <value> <mode>: Adds the given function time to the list of defines";
+    	String descString = name() + " <FUNCTION> <value> <MODE>: Adds the given function time to the list of defines";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}

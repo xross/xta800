@@ -35,7 +35,7 @@ public class Required extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = name() + " <route id> <value> <mode>: Sets the maximum allowed time taken for the given route";
+        String descString = name() + " <route id> <value> <MODE>: Sets the maximum allowed time taken for the given route";
       	if (detailed) {
            	descString += "\n" + TimeUnit.getHelp();
        	}

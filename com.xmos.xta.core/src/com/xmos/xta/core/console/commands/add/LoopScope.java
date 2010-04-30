@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.utils.Scope;
 
 public class LoopScope extends Command {
 	private static final String[] COMMAND_NAMES = { "loopscope" };
@@ -30,15 +31,15 @@ public class LoopScope extends Command {
 	}
 
     public String commandLine() {
-       	return name() + " " + " " + m_refString + " " + (m_absolute ? "absolute" : "relative");
+       	return name() + " " + " " + m_refString + " " + 
+       	    (m_absolute ? Scope.getAbsoluteStr() : Scope.getRelativeStr());
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = name() + " <ANY> <scope>: Adds the given loop scope define to the list of defines";
+    	String descString = name() + " <ANY> <SCOPE>: Adds the given loop scope define to the list of defines";
     	if (detailed) {
         	descString += "\n";
-    		descString += "          scope: relative/r: Iteration number propagates to the enclosing path (Default)\n";
-    		descString += "          scope: absolute/a: Absolute number of iterations";
+        	descString += Scope.getHelp();
     	}
     	return descString;
     }
@@ -49,12 +50,10 @@ public class LoopScope extends Command {
 		}
 
     	boolean absolute;
-	    if ((args[index + 2].compareTo("relative") == 0) ||
-	    	(args[index + 2].compareTo("r") == 0)){
+	    if (Scope.isRelative(args[index + 2])){
 	    	absolute = false;
-
-	    } else if ((args[index + 2].compareTo("absolute") == 0) ||
-		         (args[index + 2].compareTo("a") == 0)){
+	    }
+	    else if (Scope.isAbsolute(args[index + 2])){
 	    	absolute = true;
 
 	    } else {
@@ -67,7 +66,6 @@ public class LoopScope extends Command {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
 		}
-
 		engine.addLoopScope(getSrc(), m_refString, m_absolute);
     }
  }

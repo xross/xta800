@@ -41,7 +41,7 @@ public class InstructionTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        String descString = name() + " <route id> <ENDPOINT> <value> <mode>: Sets the time taken for the instruction at the given pc";
+        String descString = name() + " <route id> <ENDPOINT> <value> <MODE>: Sets the time taken for the instruction at the given pc";
        	if (detailed) {
            	descString += "\n";
            	descString += TimeUnit.getHelp();

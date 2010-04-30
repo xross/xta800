@@ -39,7 +39,7 @@ public class PathTime extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-    	String descString = name() + " <from ENDPOINT> <to ENDPOINT> <value> <mode>: Adds the given path time to the list of defines";
+    	String descString = name() + " <from ENDPOINT> <to ENDPOINT> <value> <MODE>: Adds the given path time to the list of defines";
        	if (detailed) {
        		descString += "\n" + TimeUnit.getHelp();
        	}
