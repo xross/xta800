@@ -9,7 +9,7 @@ public class TimeUnit {
 		CYCLES,
 		INVALID,
 	}
-
+	
 	private CoreConfig m_coreConfig;
 	private Units m_units;
 	private long m_cycles;
@@ -30,6 +30,10 @@ public class TimeUnit {
 		return new String[] {"ns", "us", "ms", "MHz", "cycles"};
 	}
 
+	public static String[] getUnitsDesc() {
+		return new String[] {"nanoseconds", "microseconds", "milliseconds", "megahertz", "processor thread cycles"};
+	}
+	
 	public TimeUnit(String value, String units) {
 		try {
 		   	if (units.equals("ns")) {

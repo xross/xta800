@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.references.types;
 
 import java.util.Map;
 
-import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.util.IteratableMap;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.utils.CoreId;
 
@@ -25,7 +25,7 @@ public class ReferenceTypeFactory {
 	
 	private static Map<ReferenceClass, ReferenceClassType> m_referenceClasses;
 	static {
-		m_referenceClasses = new NonIteratableMap<ReferenceClass, ReferenceClassType>();
+		m_referenceClasses = new IteratableMap<ReferenceClass, ReferenceClassType>();
 		
 		m_referenceClasses.put(ReferenceClass.FUNCTION,
 				new ReferenceClassType(true, new ReferenceType[] {
@@ -132,6 +132,10 @@ public class ReferenceTypeFactory {
 			}
 		}
 		return new ErrorReference(reference, m_coreId);
+	}
+
+	public static Map<ReferenceClass, ReferenceClassType> getReferenceClasses() {
+		return m_referenceClasses;
 	}
 	
 	public static ReferenceClassType getReferenceClass(ReferenceClass classType) {
