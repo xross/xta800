@@ -45,7 +45,8 @@ public class DumpManual extends Command {
     private void dumpCommandsSection(Engine engine, Console console) {
     	Command[] avaliableCommands = CommandFactory.getCommands();
     	for (Command command : avaliableCommands) {    		
-    		console.display(String.format("\\section{%s}\n\n", command.name()));    		
+    		console.display(String.format("\\section{%s}\n", command.name()));    		
+    		console.display(String.format("\\label{section:%s}\n\n", command.name()));    		
     		
     		if (command instanceof CommandContainer) {
                	for (Command subCommand : command.getSubCommands()) {
@@ -60,7 +61,8 @@ public class DumpManual extends Command {
     }
     
     private void dumpTimingModesSection(Engine engine, Console console) {
-    	console.display("\\section{Timing Modes}\n\n");
+    	console.display("\\section{Timing Modes}\n");
+    	console.display("\\label{section:TimingModes}\n\n");
     	console.display("The avaliable timing modes are:\n");
     	int length = TimeUnit.getUnits().length;
     	for (int i = 0; i < length; ++i) {
@@ -70,7 +72,8 @@ public class DumpManual extends Command {
     }
     
     private void dumpLoopScopesSection(Engine engine, Console console) {    	
-    	console.display("\\section{Loops Scopes}\n\n");
+    	console.display("\\section{Loop Scopes}\n");
+    	console.display("\\label{section:LoopScopes}\n\n");
     	console.display("Supported values for scope are:\n");
     	console.display("\\command{relative/r}\n\n");
     	console.display("Iteration number propagates to the enclosing path (Default)\n");
@@ -79,7 +82,8 @@ public class DumpManual extends Command {
     }
 
     private void dumpReferenceClassesSection(Engine engine, Console console) {    	
-    	console.display("\\section{Reference Classes}\n\n");
+    	console.display("\\section{Reference Classes}\n");
+    	console.display("\\label{section:ReferenceClasses}\n\n");
     
 		for (ReferenceClass referenceClass : ReferenceTypeFactory.getReferenceClasses().keySet()) {
 			String refClassName = referenceClass.toString().replaceAll("\\_", "\\\\_");
