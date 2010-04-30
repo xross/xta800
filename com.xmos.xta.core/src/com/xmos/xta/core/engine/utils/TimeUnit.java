@@ -27,11 +27,25 @@ public class TimeUnit {
 	}
 
 	public static String[] getUnits() {
-		return new String[] {"ns", "us", "ms", "MHz", "cycles"};
+		return new String[] {
+				"ns", 
+				"us", 
+				"ms", 
+				"MHz", 
+				"cycles"};
 	}
 
 	public static String[] getUnitsDesc() {
-		return new String[] {"nanoseconds", "microseconds", "milliseconds", "megahertz", "processor thread cycles"};
+		return new String[] {
+				"nanoseconds", 
+				"microseconds", 
+				"milliseconds", 
+				"megahertz",
+				
+				"the thread cycle count is the number of scheduled slots " +
+				"that the thread required to perform the sequence. The relationship " + 
+				"between thread cycles and time is a function of the number of " +
+				"threads currently running and the core frequency"};
 	}
 	
 	public TimeUnit(String value, String units) {
