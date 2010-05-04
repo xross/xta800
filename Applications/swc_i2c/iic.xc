@@ -360,7 +360,7 @@ XMOS_RTN_t iic_read(uint address, char data[], uint numBytes)
   
   for (i=0; i<numBytes-1; i++)
   {
-    #pragma xta label "iic_read_receiveByte"
+    #pragma xta call "iic_read_receiveByte"
     data[i] = iic_phy_receiveByte(0);
   }
   
