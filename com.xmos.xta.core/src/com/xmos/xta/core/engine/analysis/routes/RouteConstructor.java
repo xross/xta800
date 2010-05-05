@@ -24,6 +24,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
@@ -413,11 +414,14 @@ public class RouteConstructor {
 					firstInstruction = false;
 					repeat = true;
 				} else {
+					boolean connected = false;
 					if(routeMode == RouteMode.FUNCTION || !stackNodesContainNode(endStackNodes, currentStack, next)){
 						CommonMethods.connect(nextWorkingSetNode, currentNode);
+						connected = true;
 					}
-					if(stackNodesContainNode(endStackNodes, currentStack, next)){
+					if(stackNodesContainNode(endStackNodes, currentStack, next) && ! connected){
 						loopFormingEndNodes.add(currentNode);
+						connectToNullNode(currentNode, workingSet);
 					} 
 				}
 			} else if(nextNodes.size() > 1){
@@ -428,11 +432,14 @@ public class RouteConstructor {
 								exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
 								nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
 					} else {
+						boolean connected = false;
 						if(routeMode == RouteMode.FUNCTION || !stackNodesContainNode(endStackNodes, currentStack, next)){
 							CommonMethods.connect(nextWorkingSetNode, currentNode);
+							connected = true;
 						}
-						if(stackNodesContainNode(endStackNodes, currentStack, next)){
+						if(stackNodesContainNode(endStackNodes, currentStack, next) && ! connected){
 							loopFormingEndNodes.add(currentNode);
+							connectToNullNode(currentNode, workingSet);
 						} 
 					}
 				}
@@ -440,6 +447,24 @@ public class RouteConstructor {
 		}
 	}
 	
+	private void connectToNullNode(Node currentNode,
+			Set<Node> workingSet) {
+		//search the working set for a null node
+		NullNode nullNode = null;
+		
+		for(Node node : workingSet){
+			if(node instanceof NullNode){
+				nullNode = (NullNode) node;
+				break;
+			}
+		}
+		if(nullNode == null){
+			nullNode = new NullNode();
+		}
+		
+		addToWorkingSet(currentNode, nullNode, workingSet);
+	}
+
 	private Set<Node> getValidBranches(List<StackNode> branchStackNodes,
 			Stack<FunctionReferenceNode> currentStack, Node node, Map<StackNode, Set<Node>> branchToNext) {
 		Set<Node> validNextNodes = new IteratableSet<Node>();
@@ -495,6 +520,8 @@ public class RouteConstructor {
 		}
 		assert(originalStartNode != null);
 		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
+		
+		dumpGraph(workingSet);
 		Node startNode = sae.basicBlock(workingSet, originalStartNode, m_engine, "route");
 		
 		dumpGraph(workingSet);

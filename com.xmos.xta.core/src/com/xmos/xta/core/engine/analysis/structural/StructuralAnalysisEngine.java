@@ -300,6 +300,8 @@ public class StructuralAnalysisEngine {
 		assert(!toDo.isEmpty());
 		Map<Node, Set<Node>> nexts = new IteratableMap<Node, Set<Node>>();
 		Map<Node, Node> instToBlock = new NonIteratableMap<Node, Node>();
+		boolean foundNullNode = false;
+		
 		while(!toDo.isEmpty()){
 
 			Node current = toDo.iterator().next();
@@ -354,6 +356,14 @@ public class StructuralAnalysisEngine {
 						}
 					}
 					next.getNextNodes().clear();
+				} else if(next instanceof NullNode){
+					next.getPrevNodes().clear();
+					newWorkingSet.add(next);
+					seenNodes.add(next);
+					instToBlock.put(next, next);
+					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
+					foundNullNode = true;
+					next.getNextNodes().clear();
 				} else if(!seenNodes.contains(next)){
 					toDo.add(next);
 				}
@@ -364,15 +374,17 @@ public class StructuralAnalysisEngine {
 				CommonMethods.connect(instToBlock.get(next), node);
 			}
 		}
-		
-		Set<Node> seen = new NonIteratableSet<Node>();
-		Set<Node> terminals = new IteratableSet<Node>();
-		findEndPoints(firstNode, seen, terminals);
-		NullNode n = new NullNode();
-		for(Node node : terminals){
-			CommonMethods.connect(n, node);
+		if(!foundNullNode){
+			Set<Node> seen = new NonIteratableSet<Node>();
+			Set<Node> terminals = new IteratableSet<Node>();
+			findEndPoints(firstNode, seen, terminals);
+			NullNode n = new NullNode();
+			for(Node node : terminals){
+				CommonMethods.connect(n, node);
+			}
+			newWorkingSet.add(n);
 		}
-		newWorkingSet.add(n);
+		
 		workingSet.clear();
 		workingSet.addAll(newWorkingSet);
 		dumpTree("after_BB_"+ string, workingSet, false);
@@ -408,7 +420,11 @@ public class StructuralAnalysisEngine {
 			return false;
 		}
 		
-		if(!(next instanceof InstructionNode || next instanceof NullNode)){
+		if(next instanceof NullNode) {
+			return false;
+		}
+		
+		if(!(next instanceof InstructionNode)) {
 			return false;
 		}
 		if(getPrevNodes(next, workingSet).size() > 1){
