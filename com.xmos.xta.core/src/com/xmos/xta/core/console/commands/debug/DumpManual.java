@@ -110,6 +110,6 @@ public class DumpManual extends Command {
 		String commandStr = command.description(engine, false);
 		String[] commandArray = commandStr.split(":", 2);		        		
 		assert(commandArray.length == 2);
-		return commandArray[index].trim();    	
+		return commandArray[index].trim().replaceAll("\\_", "\\\\_");
     }
 }
