@@ -91,7 +91,7 @@ public class RouteUnknowns {
 
 	public void checkSetLoopIterations(Node node) throws Exception {
 		if (node.getEnclosingInfiniteLoopNode() != null)
-			throw new Exception("Cannot set loop iterations on an infintie loop");
+			throw new Exception("Cannot set loop iterations on an infinite loop");
 
 		if (node.getEnclosingLoopNode() == null)
 			throw new Exception("Must be within a loop to be able to set loop iterations");
@@ -158,7 +158,7 @@ public class RouteUnknowns {
 
 	public void checkSetLoopPathIterations(Node node) throws Exception {
 		if (node.getEnclosingInfiniteLoopNode() != null)
-			throw new Exception("Cannot set loop iterations on an infintie loop");
+			throw new Exception("Cannot set loop iterations on an infinite loop");
 
 		if (node.getEnclosingLoopNode() == null)
 			throw new Exception("Must be within a loop to be able to set loop path iterations");
