@@ -299,7 +299,11 @@ public class RouteConstructor {
 			repeat = false;
 			
 			Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
-
+			//System.out.println("on node " + currentNode);
+			if(currentNode instanceof InstructionNode && ((InstructionNode)currentNode).getPC() == 0x10120){
+			//	System.out.println("on node " + currentNode);
+			}
+			
 			if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 				currentExclusionsFound.add(currentNode);
 				addToWorkingSet(previous, currentNode, workingSet);
@@ -384,6 +388,7 @@ public class RouteConstructor {
 				case PATH:
 					if(!workingSet.isEmpty()){
 						loopFormingEndNodes.add(previous);
+						connectToNullNode(previous, workingSet);
 						return;
 					}
 				}
@@ -393,6 +398,9 @@ public class RouteConstructor {
 			addToWorkingSet(previous, currentNode, workingSet);
 			
 			Set<Node> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
+			
+			
+		//	System.out.println("nexts: " + nextNodes);
 			
 			if(nextNodes.size() == 0){
 				FunctionReferenceNode callingFnRef = currentStack.peek();
@@ -415,7 +423,12 @@ public class RouteConstructor {
 					repeat = true;
 				} else {
 					boolean connected = false;
-					if(routeMode == RouteMode.FUNCTION || !stackNodesContainNode(endStackNodes, currentStack, next)){
+					if(routeMode == RouteMode.FUNCTION || 
+							(!stackNodesContainNode(endStackNodes, currentStack, next) &&
+									
+									!stackNodesContainNode(exclusionStackNodes, currentStack, next)
+							//true		
+							)){
 						CommonMethods.connect(nextWorkingSetNode, currentNode);
 						connected = true;
 					}

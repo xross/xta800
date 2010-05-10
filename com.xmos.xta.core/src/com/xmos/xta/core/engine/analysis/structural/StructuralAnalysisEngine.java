@@ -301,7 +301,7 @@ public class StructuralAnalysisEngine {
 		Map<Node, Set<Node>> nexts = new IteratableMap<Node, Set<Node>>();
 		Map<Node, Node> instToBlock = new NonIteratableMap<Node, Node>();
 		boolean foundNullNode = false;
-		
+		Node nullNode = null;
 		while(!toDo.isEmpty()){
 
 			Node current = toDo.iterator().next();
@@ -363,6 +363,7 @@ public class StructuralAnalysisEngine {
 					instToBlock.put(next, next);
 					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
 					foundNullNode = true;
+					nullNode = next;
 					next.getNextNodes().clear();
 				} else if(!seenNodes.contains(next)){
 					toDo.add(next);
@@ -374,11 +375,14 @@ public class StructuralAnalysisEngine {
 				CommonMethods.connect(instToBlock.get(next), node);
 			}
 		}
-		if(!foundNullNode){
-			Set<Node> seen = new NonIteratableSet<Node>();
-			Set<Node> terminals = new IteratableSet<Node>();
-			findEndPoints(firstNode, seen, terminals);
-			NullNode n = new NullNode();
+		
+		Set<Node> seen = new NonIteratableSet<Node>();
+		Set<Node> terminals = new IteratableSet<Node>();
+		findEndPoints(firstNode, seen, terminals);
+		
+		NullNode n = new NullNode();
+			
+		if(terminals.size() > 1){	
 			for(Node node : terminals){
 				CommonMethods.connect(n, node);
 			}
