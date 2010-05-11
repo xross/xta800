@@ -22,16 +22,16 @@ public class LabelReference extends ReferenceType {
 	public boolean resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
-
+		boolean found = false;
 	    Map<String, Set<Long>> labels = engine.getLabels(getCoreId());
 		if (labels.containsKey(label)) {
 	    	for (Long pc : labels.get(label)) {
 	    		addPc(pc);
 	    	}
 	        setResolved(true);
-	        return true;
+	        found = true;
 	    }
-	    return false;
+	    return found;
 	}
 
 	public String name() {

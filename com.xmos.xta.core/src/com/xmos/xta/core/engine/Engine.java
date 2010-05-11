@@ -34,9 +34,11 @@ import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionReferenceNodeAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
 import com.xmos.xta.core.engine.analysis.controlflow.UnresolvedSetter;
+import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
+import com.xmos.xta.core.engine.analysis.routes.StackNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -1292,11 +1294,15 @@ public class Engine extends Notifier implements Aborter {
 				}
 			}
 			
-			if (fromResolved && toResolved) {
-				if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
-					m_structuralGraphUpToDate.add(activeCore, false);
-					hit = true;
-				}				
+			List<StackNode> stackNodes = getPathStackNodes(m_callGraphs.get(activeCore), fromRef);
+			
+			if(!stackNodes.isEmpty()) {
+				if (fromResolved && toResolved) {
+					if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
+						m_structuralGraphUpToDate.add(activeCore, false);
+						hit = true;
+					}				
+				}
 			}
 		}
 		
@@ -1304,6 +1310,11 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}
 		return hit;
+	}
+	
+	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) {
+		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
+		return prm.matchReference(callGraph, reference, this);
 	}
 
 	public boolean removeBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {

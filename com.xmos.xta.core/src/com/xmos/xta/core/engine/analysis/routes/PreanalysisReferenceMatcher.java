@@ -119,7 +119,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 					
 					long currentPc = pc;
 					FunctionReferenceNode frn = copy.pop();
-					while(!copy.isEmpty() && !matchingList.isEmpty()){
+					while(!matchingList.isEmpty()){
 						if (debug) System.out.println("checking function " + frn.getFunctionName() + " from pc 0x" + Long.toHexString(currentPc));
 						Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, engine, stack);
 						while(res.first){
@@ -139,6 +139,8 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 							res = fnRefContainsReference(frn, currentPc, matchingList, engine, stack);
 						} 
 						currentPc = frn.getFunctionCallPc();
+						if(copy.isEmpty())
+							break;
 						frn = copy.pop();
 						
 					}
