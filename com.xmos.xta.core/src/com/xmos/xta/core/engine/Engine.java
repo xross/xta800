@@ -1308,7 +1308,10 @@ public class Engine extends Notifier implements Aborter {
 		
 		if (!hit) {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+		} else {
+			initControlFlowGraphs(src, m_xeLoader, m_sections);
 		}
+		
 		return hit;
 	}
 	

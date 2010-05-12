@@ -45,7 +45,6 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 	
 	private List<FunctionContainer> getBaseContianers(Reference ref, CallGraph callGraph){
 		List<FunctionContainer> fnContainers = new LinkedList<FunctionContainer>();
-		
 		for(FunctionContainer fc : callGraph.getFunctionContainers()){
 			
 			if(ref.getBase().getType() == Type.FUNCTION){
@@ -61,6 +60,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 				}
 			}
 		}
+		
 		return fnContainers;
 	}
 
