@@ -1,13 +1,26 @@
 # Only designed to work with 4 threads
 config threads stdcore[0] 4
 
-# =========================================================================== #
-# Phy loop must complete in 25 bit times of 10ns
-# =========================================================================== #
+remove core *
+add core stdcore[0]
 
-add exclusion commandReceived
-analyze path dataReceiveLoop dataReceiveLoop
-set required - 250 ns
+#
+# RX
+#
+add exclusion handleErrorLabel
+add exclusion phyLoop
+add exclusion startTx
+analyze endpoints startRx startRx
+
+# Worst-case time is where the synchronization brings edge forward by 4 samples (4 * 40 = 160ns)
+set required - 840 ns
+
+#
+# TX
+#
+remove exclusion startTx
+add exclusion startRx
+analyze endpoints startTx startTx
+set required - 1.0 us
 
 print summary
-exit

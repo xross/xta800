@@ -1,4 +1,7 @@
-Route\(0\) endpoints: dataReceiveLoop to dataReceiveLoop
-    Fail with \d+ unknowns, Num Paths: 8, Violation: 50.0 [mun]s, Required: 250.0 [mun]s, Worst: 300.0 [mun]s, Min Core Frequency: 480 MHz
+Route\(0\) endpoints: startRx to startRx
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: 60.0 ns, Required: 840.0 ns, Worst: 780.0 ns, Min Core Frequency: 371 MHz
 
-Fail, 1/1, Max Violation: 50.0 [mun]s
+Route\(1\) endpoints: startTx to startTx
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: 40.0 ns, Required: 1.0 us, Worst: 960.0 ns, Min Core Frequency: 384 MHz
+
+Pass, Min Core Frequency: 384 MHz

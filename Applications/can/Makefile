@@ -1,8 +1,6 @@
 
-SOURCE = source
-INCLUDES = -I include
-FILES = $(SOURCE)/CanFunctions.xc $(SOURCE)/CanExtra.c $(SOURCE)/CanAsm.S $(SOURCE)/CanPhyRx.S
+FILES = CanFunctions.xc CanPhy.xc CanTest.xc
 
 all:
-	xcc -Wall -O2  -g $(FILES) $(INCLUDES) -target=$(TARGET) -o $(TARGETDIR)/can.xe
+	xcc -Wall -O3 -g $(FILES) -target=$(TARGET) -o $(TARGETDIR)/can.xe
 

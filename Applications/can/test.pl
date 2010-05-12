@@ -13,5 +13,6 @@ system("xmake TARGETDIR=$genDir TARGET=$target > $genDir/can.log 2>&1");
 
 system("@ARGV load $genDir/can.xe " .
        "source cmds.txt " .
+       "-exit " .
        "> $genDir/can.txt 2>&1");
 
