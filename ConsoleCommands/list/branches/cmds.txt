@@ -1,7 +1,6 @@
 echo 1
 list branches
 add branch source1 target2 target3 target4
-add branch source2 target1 target2 target3
 analyze function main
 echo 2
 list branches
