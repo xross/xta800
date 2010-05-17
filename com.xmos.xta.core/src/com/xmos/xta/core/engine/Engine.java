@@ -1578,7 +1578,7 @@ public class Engine extends Notifier implements Aborter {
 
 		linkFunctions(functionContainers);
 
-		CallGraph cg = new CallGraph(functionContainers);
+		CallGraph cg = new CallGraph(functionContainers, coreId);
 		callGraphs.add(coreId, cg);
 		SourceMapper sourceMapper;
 		try {

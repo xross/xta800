@@ -7,6 +7,7 @@ public class Debug extends CommandContainer {
 	private static final String[] COMMAND_NAMES = { "debug" };
 
 	static private Command[] m_options = {
+		new DumpActiveExclusions(),
 		new DumpControlFlow(),
 		new DumpManual(),
 		new VerifyReference(),

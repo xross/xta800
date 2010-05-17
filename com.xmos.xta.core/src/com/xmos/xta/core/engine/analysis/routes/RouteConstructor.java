@@ -70,14 +70,14 @@ public class RouteConstructor {
 	private List<Route> m_routes;
 	private Engine m_engine;
 	private RouteCoreContainer m_coreContainer;
-	
+	private CoreId m_core;
 	public RouteConstructor(Engine engine, CallGraph callGraph,
-			RouteCoreContainer routeCoreContainer) throws AbortedException {
+			RouteCoreContainer routeCoreContainer, CoreId core) throws AbortedException {
 		m_callGraph = callGraph;
 		m_routes = new ArrayList<Route>();
 		m_engine = engine;
 		m_coreContainer = routeCoreContainer;	
-		
+		m_core = core;
 		assert(m_callGraph != null);
 		assert(m_engine != null);
 	}
@@ -101,8 +101,11 @@ public class RouteConstructor {
 		buildBranchStackNodes(branchStackNodes, branchToNext);
 		
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
+
 		for(Reference ref : m_engine.getExclusions()){
-			exclusionStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
+			if(ref.getCoreId().equals(m_core)){
+				exclusionStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
+			}
 		}
 		
 		if (routeContainer.getMode() == RouteMode.FUNCTION){

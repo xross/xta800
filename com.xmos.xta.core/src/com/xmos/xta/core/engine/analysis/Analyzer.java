@@ -126,7 +126,7 @@ public class Analyzer {
 			return false;
 		
 
-		RouteConstructor routeConstructor = new RouteConstructor(m_engine, m_engine.getCallGraph(core), routeCoreContainer);
+		RouteConstructor routeConstructor = new RouteConstructor(m_engine, m_engine.getCallGraph(core), routeCoreContainer, core);
 		RouteError error = routeConstructor.analyze(src);
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {
