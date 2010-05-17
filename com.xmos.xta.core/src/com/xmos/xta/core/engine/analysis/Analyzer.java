@@ -56,7 +56,7 @@ public class Analyzer {
 	    return true;
 	}
 
-	public boolean analyzePath(CommandSource src, PathPoints pathPoints) {
+	public boolean analyzeEndpoints(CommandSource src, PathPoints pathPoints) {
         RouteContainer routeContainer = new RouteContainer(pathPoints.getFromName(), pathPoints.getToName(), m_engine, src);
 
 		boolean routeFound = false;

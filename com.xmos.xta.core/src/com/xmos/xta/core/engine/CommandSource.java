@@ -2,13 +2,14 @@ package com.xmos.xta.core.engine;
 
 public class CommandSource {
 	public enum Type {
-		CONSOLE,          // Commands typed in via the console.
-		GUI,              // Actions run via the gui.
-		FILE,             // Commands embedded in the source.
-		COMMAND_LINE,     // Commands passed on the command line.
-		COMPILER,         // Actions prompted via the compiler.
-		CONSOLE_VIA_GUI,  // Actions passed to the gui console via the gui.
-		SRC_LEVEL_COMMAND,// Embedded command in the executable
+		CONSOLE,           // Commands typed in via the console.
+		GUI,               // Actions run via the gui.
+		FILE,              // Commands sourced from an xta script.
+		COMMAND_LINE,      // Commands passed on the command line.
+		COMPILER,          // Actions prompted via the compiler.
+		CONSOLE_VIA_GUI,   // Actions passed to the gui console via the gui.
+		SRC_LEVEL_COMMAND, // Embedded command in the executable
+		JYTHON,            // Commands run from a jython script.
 	}
 
 	private String m_fileName;

@@ -260,9 +260,9 @@ public class Engine extends Notifier implements Aborter {
 		return analyzer.analyzeFunction(src, functionName);
 	}
 
-	public boolean analyzePath(CommandSource src) {
+	public boolean analyzeEndpoints(CommandSource src) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		return analyzer.analyzePath(src, m_pathPoints);
+		return analyzer.analyzeEndpoints(src, m_pathPoints);
 	}
 
 	public Notifier getNotifier() {

@@ -300,8 +300,6 @@ public class StructuralAnalysisEngine {
 		assert(!toDo.isEmpty());
 		Map<Node, Set<Node>> nexts = new IteratableMap<Node, Set<Node>>();
 		Map<Node, Node> instToBlock = new NonIteratableMap<Node, Node>();
-		boolean foundNullNode = false;
-		Node nullNode = null;
 		while(!toDo.isEmpty()){
 
 			Node current = toDo.iterator().next();
@@ -362,8 +360,6 @@ public class StructuralAnalysisEngine {
 					seenNodes.add(next);
 					instToBlock.put(next, next);
 					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
-					foundNullNode = true;
-					nullNode = next;
 					next.getNextNodes().clear();
 				} else if(!seenNodes.contains(next)){
 					toDo.add(next);

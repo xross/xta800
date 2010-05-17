@@ -72,7 +72,7 @@ public class Endpoints extends Command {
 			if (!fromOk || !toOk)
 				return;
 		}
-		engine.analyzePath(getSrc());
+		engine.analyzeEndpoints(getSrc());
     }
 
 	private boolean hasEndPoints() {

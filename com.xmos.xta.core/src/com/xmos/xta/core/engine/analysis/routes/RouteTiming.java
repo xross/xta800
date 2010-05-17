@@ -64,28 +64,28 @@ public class RouteTiming {
 	}
 
 	public long getViolationCycles(Status status) {
-		return getWorstCycles(status) - m_maxTime.getCycles();
+		return getCycles(status, Case.WORST) - m_maxTime.getCycles();
 	}
 
 	public double getViolationTime(Status status) {
-		return getWorstTime(status) - m_maxTime.getNs();
+		return getTime(status, Case.WORST) - m_maxTime.getNs();
 	}
 
 	public long getSlackCycles(Status status) {
-		return m_maxTime.getCycles() - getWorstCycles(status);
+		return m_maxTime.getCycles() - getCycles(status, Case.WORST);
 	}
 
 	public double getSlackTime(Status status) {
-		return m_maxTime.getNs() - getWorstTime(status);
+		return m_maxTime.getNs() - getTime(status, Case.WORST);
 	}
 
 	public int getMinFrequency(Status status) {
-		return (int)((getWorstTime(status) / m_maxTime.getNs()) * m_coreConfig.m_frequency);
+		return (int)((getTime(status, Case.WORST) / m_maxTime.getNs()) * m_coreConfig.m_frequency);
 	}
 
 	public Status getWorstCaseTimeStatus() {
 		Status status = new Status();
-		getWorstTime(status);
+		getTime(status, Case.WORST);
 		return status;
 	}
 
@@ -143,7 +143,7 @@ public class RouteTiming {
 						Conversion.getTimeString(m_maxTime.getNs()));
 
 				Status worstTimeStatus = new Status();
-				double worstTime = getWorstTime(worstTimeStatus);
+				double worstTime = getTime(worstTimeStatus, Case.WORST);
 		    	if (worstTimeStatus.isExceptionalCase()) {
 		    		description += String.format("Worst: %s, ", worstTimeStatus.getString());
 
@@ -165,7 +165,7 @@ public class RouteTiming {
 				description += "\n";
 
 		    	Status status = new Status();
-		    	double worstTime = getWorstTime(status);
+		    	double worstTime = getTime(status, Case.WORST);
 
 		    	if (status.isExceptionalCase()) {
 		    		description += String.format("Worst Case:  %s\n", status.getString());
@@ -174,7 +174,7 @@ public class RouteTiming {
 		    		description += String.format("Worst Case Timing:  %8s,%8.2f MHz,%8d thread cycles\n",
 		    				Conversion.getTimeString(worstTime),
 		    				getMhz(worstTime),
-		    				getWorstCycles(new Status()));
+		    				getCycles(new Status(), Case.WORST));
 		    	}
 
 				if (isTimingSpecified()) {
@@ -222,24 +222,24 @@ public class RouteTiming {
 		return description;
 	}
 
+	public long getCycles(Status status, Case c) {
+		Node worstCaseSubRoute = m_route.getNode();
+		return worstCaseSubRoute.getAttributes().getNumCycles(c, status, null);
+	}
+
+	public double getTime(Status status, Case c) {
+		Node worstCaseSubRoute = m_route.getNode();
+		return worstCaseSubRoute.getAttributes().getTimeTaken(c, status, null);
+	}
+	
 	private boolean passedTiming() {
 		Status status = new Status();
-		double worstTime = getWorstTime(status);
+		double worstTime = getTime(status, Case.WORST);
 		if (status.isComplete()) {
 			if ((worstTime <= m_maxTime.getNs()) && (worstTime != Double.POSITIVE_INFINITY))
 			    return true;
 		}
 		return false;
-	}
-
-	private long getWorstCycles(Status status) {
-		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes().getNumCycles(Case.WORST, status, null);
-	}
-
-	private double getWorstTime(Status status) {
-		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes().getTimeTaken(Case.WORST, status, null);
 	}
 
     private double getMhz(double ns) {

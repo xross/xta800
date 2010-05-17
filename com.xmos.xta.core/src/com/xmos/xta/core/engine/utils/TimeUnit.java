@@ -80,6 +80,29 @@ public class TimeUnit {
 		m_coreConfig = null;
 	}
 
+	public TimeUnit(double value, String units) throws Exception {
+	   	if (units.equals("ns")) {
+	   		m_ns = value;
+	   		m_units = Units.NS;
+
+   	   	} else if (units.equals("us")) {
+   	   		m_ns = value * 1000.0;
+	   		m_units = Units.NS;
+
+   	   	} else if (units.equals("ms")) {
+   	   		m_ns = value * 1000000.0;
+	   		m_units = Units.NS;
+
+   	   	} else if (units.equals("MHz") || units.equals("mhz")) {
+   	   	    m_mhz = value;
+	   		m_units = Units.MHZ;
+
+   	   	} else {
+			throw new Exception("Invalid units");   	   		
+   	   	}
+		m_coreConfig = null;
+	}
+	
 	public TimeUnit(CoreConfig coreConfig, long value, Units units) {
 		assert(units == Units.CYCLES);
    	    m_cycles = value;
@@ -172,8 +195,6 @@ public class TimeUnit {
 	}
 
 	public double getNs() {
-		assert(m_coreConfig != null);
-
        	switch (m_units) {
        	case NS:
            	return m_ns;
@@ -182,6 +203,7 @@ public class TimeUnit {
        		return 1000.0 / m_mhz;
 
        	case CYCLES:
+    		assert(m_coreConfig != null);
        		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
        	    return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
        	}
@@ -190,8 +212,6 @@ public class TimeUnit {
 	}
 
 	public double getMhz() {
-		assert(m_coreConfig != null);
-
        	switch (m_units) {
        	case NS:
        		return 1000.0 / m_ns;
@@ -200,10 +220,29 @@ public class TimeUnit {
            	return m_mhz;
 
        	case CYCLES:
+    		assert(m_coreConfig != null);
        	  	int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
             return m_coreConfig.m_frequency / (threadFactor * m_cycles);
        	}
        	assert(false);
        	return 0;
+	}
+	
+	public double getValue(String units) throws Exception {
+	   	if (units.equals("ns")) {
+	   		return getNs();
+
+   	   	} else if (units.equals("us")) {
+	   		return getNs() / 1000.0;
+
+   	   	} else if (units.equals("ms")) {
+	   		return getNs() / 1000000.0;
+
+   	   	} else if (units.equals("MHz") || units.equals("mhz")) {
+	   		return getMhz();
+
+   	   	} else {
+			throw new Exception("Invalid units");
+   	   	}		
 	}
 }

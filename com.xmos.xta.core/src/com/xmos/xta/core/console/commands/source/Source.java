@@ -4,6 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Properties;
+
+import org.python.util.PythonInterpreter;
+import org.python.core.PyList;
+import org.python.core.PyString;
+import org.python.core.PySystemState;
 
 import com.xmos.libs.util.StringUtil;
 import com.xmos.xta.core.console.Console;
@@ -20,19 +27,22 @@ public class Source extends Command {
 	private static final String[] COMMAND_NAMES = { "source" };
 
 	private String m_fileName;
+	private String[] m_args;
 
 	public Source() {
 		super(COMMAND_NAMES);
 		m_fileName = "";
+		m_args = new String[]{};
 	}
 
-	public Source(String fileName) {
+	public Source(String fileName, String[] args) {
 		super(COMMAND_NAMES);
 		m_fileName = fileName;
+		m_args = args;
 	}
 
     public int numArgs() {
-    	return 1;
+    	return 1 + (m_args.length - 1);
     }
 
 	public ArgType[] getArgTypes() {
@@ -40,11 +50,15 @@ public class Source extends Command {
 	}
 
     public String commandLine() {
-    	return name() + " \"" + m_fileName + "\"";
+    	String commandLine = name();
+    	for (String arg : m_args) {
+    		commandLine += " \"" + arg + "\"";
+    	}
+    	return commandLine; 
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <file name>: Sources the given command file";
+        return name() + " <file name> [args]: Sources the given script file";
     }
 
     public Command clone(String[] args, int index) {
@@ -52,10 +66,48 @@ public class Source extends Command {
 			return null;
 
     	String fileName = args[index + 1];
-        return new Source(fileName);
+		Collection<String> scriptArgs = new ArrayList<String>();
+		int i = 1;
+		while (!areArgsDone(args, index + i)) {
+			scriptArgs.add(args[index + i]);
+			++i;
+		}    	
+        return new Source(fileName, scriptArgs.toArray(new String[]{}));
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
+    	String extension = m_fileName.substring(m_fileName.lastIndexOf('.') + 1, m_fileName.length());
+    	if (extension.equals("py")) {
+    		sourceJythonScript(shell, engine, console);
+    		
+    	} else {
+    		sourceXtaScript(shell, engine, console);
+    	}
+    }
+    
+    private void sourceJythonScript(Shell shell, Engine engine, Console console) {
+    	Properties postProperties = new Properties();
+    	Properties systemProperties = System.getProperties();
+    	
+    	if (systemProperties.getProperty("python.home") == null) {
+    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "python.home property not set");
+    		return;
+    	}    	
+	    PythonInterpreter.initialize(systemProperties, postProperties, new String[] {""});        
+        PythonInterpreter interp = getPythonInterpreter(m_args);
+
+        interp.setOut(new ScriptConsoleWriter(console));
+        interp.setErr(new ScriptConsoleWriter(console));
+        
+        interp.set(ScriptInterface.XTA_OBJECT_REFERENCE, new ScriptInterface(shell, engine, console, m_fileName));        
+        try {
+            interp.execfile(m_fileName);
+        } catch (Exception e) {
+        	console.display(e.toString() + "\n");
+        }
+    }
+    
+    private void sourceXtaScript(Shell shell, Engine engine, Console console) {    	    
         try {
             BufferedReader fp = new BufferedReader(new FileReader(m_fileName));
             int location = shell.getLocation(this);
@@ -132,4 +184,14 @@ public class Source extends Command {
    					"unable to open file for reading: %s", m_fileName));
         }
     }
+    
+    private PythonInterpreter getPythonInterpreter(String[] args) {
+        PySystemState pySystemState = new PySystemState();        
+       	PyList argv = new PyList();
+        for (String arg : args) {
+            argv.append(new PyString(arg));
+        }
+        pySystemState.argv = argv;        
+        return new PythonInterpreter(null, pySystemState);    	
+    }    
 }
