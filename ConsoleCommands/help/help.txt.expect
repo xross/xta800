@@ -14,7 +14,7 @@
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
   [-]scripter <option> <arg0> <arg1>...: Work with the script generator
   [-]set <option> <arg0> <arg1>...: Set path information
-  [-]source <file name>: Sources the given command file
+  [-]source <file name> [args]: Sources the given script file
   [-]status: Display current status
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
@@ -113,7 +113,7 @@
       option: loopscope <route id> <ANY> <SCOPE>: Sets the scope of the referenced loop
       option: pathtime <route id> <from ENDPOINT> <to ENDPOINT> <value> <MODE>: Set timing requirement for the given path on the given route
       option: required <route id> <value> <MODE>: Sets the maximum allowed time taken for the given route
-  [-]source <file name>: Sources the given command file
+  [-]source <file name> [args]: Sources the given script file
   [-]status: Display current status
   Any of the following types are permitted in this reference class:
     FunctionPc: Raw program counter specified in the format: 0x*
