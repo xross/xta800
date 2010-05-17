@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
 
-import org.python.util.PythonInterpreter;
 import org.python.core.PyList;
 import org.python.core.PyString;
 import org.python.core.PySystemState;
+import org.python.util.PythonInterpreter;
 
 import com.xmos.libs.util.StringUtil;
 import com.xmos.xta.core.console.Console;
@@ -23,26 +23,39 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 
-public class Source extends Command {
+public class Source extends Command {	
 	private static final String[] COMMAND_NAMES = { "source" };
 
+	private enum ScriptType { XTA, JYTHON, }
+	
 	private String m_fileName;
+	private ScriptType m_scriptType;
 	private String[] m_args;
+	
 
 	public Source() {
 		super(COMMAND_NAMES);
 		m_fileName = "";
+		m_scriptType = ScriptType.XTA;
 		m_args = new String[]{};
 	}
 
-	public Source(String fileName, String[] args) {
+	public Source(String fileName, ScriptType scriptType, String[] args) {
 		super(COMMAND_NAMES);
 		m_fileName = fileName;
+		m_scriptType = scriptType;
 		m_args = args;
 	}
 
     public int numArgs() {
-    	return 1 + (m_args.length - 1);
+    	
+    	switch (m_scriptType) {
+    	case JYTHON: return m_args.length;    		
+    	case XTA:    return 1;    		
+    	default:
+            assert(false);
+            return 0;
+    	}    	    
     }
 
 	public ArgType[] getArgTypes() {
@@ -50,11 +63,21 @@ public class Source extends Command {
 	}
 
     public String commandLine() {
-    	String commandLine = name();
-    	for (String arg : m_args) {
-    		commandLine += " \"" + arg + "\"";
-    	}
-    	return commandLine; 
+    	switch (m_scriptType) {
+    	case JYTHON:
+        	String commandLine = name();
+        	for (String arg : m_args) {
+        		commandLine += " \"" + arg + "\"";
+        	}
+        	return commandLine; 
+            
+    	case XTA:    		
+    		return name() + " \"" + m_fileName + "\"";
+    		
+    	default:
+            assert(false);
+            return null;
+    	}    	
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -66,22 +89,31 @@ public class Source extends Command {
 			return null;
 
     	String fileName = args[index + 1];
-		Collection<String> scriptArgs = new ArrayList<String>();
-		int i = 1;
-		while (!areArgsDone(args, index + i)) {
-			scriptArgs.add(args[index + i]);
-			++i;
-		}    	
-        return new Source(fileName, scriptArgs.toArray(new String[]{}));
+    	ScriptType scriptType = getScriptType(fileName);
+    	
+    	switch (scriptType) {
+    	case JYTHON:
+    		Collection<String> scriptArgs = getScriptArgs(args, index);
+            return new Source(fileName, scriptType, scriptArgs.toArray(new String[]{}));
+            
+    	case XTA:
+    		return new Source(fileName, scriptType, new String[]{});
+    		
+    	default: 
+    		assert(false);
+    		return null;
+    	}
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	String extension = m_fileName.substring(m_fileName.lastIndexOf('.') + 1, m_fileName.length());
-    	if (extension.equals("py")) {
+    	switch (m_scriptType) {
+    	case JYTHON:
     		sourceJythonScript(shell, engine, console);
-    		
-    	} else {
+    		break;
+            
+    	case XTA:
     		sourceXtaScript(shell, engine, console);
+    		break;
     	}
     }
     
@@ -173,13 +205,12 @@ public class Source extends Command {
                     ++lineNumber;
                 }
                 fp.close();
-            }
-            catch (IOException e) {
+                
+            } catch (IOException e) {
        			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
        					"problem reading the file: %s", m_fileName));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
    			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
    					"unable to open file for reading: %s", m_fileName));
         }
@@ -193,5 +224,24 @@ public class Source extends Command {
         }
         pySystemState.argv = argv;        
         return new PythonInterpreter(null, pySystemState);    	
-    }    
+    }   
+    
+    private ScriptType getScriptType(String fileName) {
+    	String extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+    	if (extension.equals("py")) {   
+    		return ScriptType.JYTHON;
+    	} else {
+    		return ScriptType.XTA;
+    	}
+    }
+    
+    private Collection<String> getScriptArgs(String[] args, int index) {  		
+        Collection<String> scriptArgs = new ArrayList<String>();
+	    int i = 1;
+	    while (!areArgsDone(args, index + i)) {
+		    scriptArgs.add(args[index + i]);
+		    ++i;
+	    }    	
+        return scriptArgs;
+    }
 }
