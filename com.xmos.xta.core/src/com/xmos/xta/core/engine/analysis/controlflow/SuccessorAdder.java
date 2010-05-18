@@ -71,7 +71,15 @@ public class SuccessorAdder {
 
 	private void addTargetsToAllBranchInstructions(Node instruction, XtaInstruction inst) {
 
-		if(inst.isLink()) return;
+		if(inst.isLink()) {
+			long target = inst.getPc() + inst.getNumBytes();
+			InstructionNode blReturn = m_instDecoder.getNode(target);
+			if(blReturn != null){
+				
+				instruction.addBranchReturnNode(blReturn);
+			}
+			return;
+		}
 
 		if (inst.getBranchPcRelative() && inst.isBranch()) {
 			long target = inst.getBranchPcRelativeTargetPc();

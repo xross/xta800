@@ -18,22 +18,29 @@ public class UnresolvedSetter {
 	public void process() {
 		for(InstructionNode inst : m_functionStartNodes){
 			Set<Node> seen = new NonIteratableSet<Node>();
-			Set<Node> isUnresolved = new NonIteratableSet<Node>();
-			findUnresolved(inst, seen, isUnresolved);
+			findUnresolved(inst, seen);
 		}
 	}
 
-	private void findUnresolved(Node inst, Set<Node> seen, Set<Node> isUnresolved) {
+	private void findUnresolved(Node inst, Set<Node> seen) {
 		Set<Node> following = new IteratableSet<Node>();
 		following.add(inst);
 		while(!following.isEmpty()){
 			Node current = following.iterator().next();
+			
 			seen.add(current);
 			boolean isBranch = isBranch(current);
 			int nonTerminatingNextInstructionCount = countNext(current);
 			if(nonTerminatingNextInstructionCount == 0 && isBranch){
 				current.setUnresolved(true);
 			} else {
+				if(current instanceof InstructionNode){
+					InstructionNode i = (InstructionNode)current;
+					if(i.getXtaInstruction().isLink()) {
+						following.addAll(i.getBranchReturnNodes());
+					}
+				}
+				
 				for(Node next : current.getNextNodes()){
 					if(!seen.contains(next)){
 						following.add(next);

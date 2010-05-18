@@ -1527,7 +1527,7 @@ public class Engine extends Notifier implements Aborter {
 		Set<InstructionNode> functionStartNodes = fc.getFunctionStarts();
 		
 		Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
-
+		
 		//add all the successors
 		SuccessorAdder sa = new SuccessorAdder(coreId, instructionDecoder, sections, functionEndNodes, this, src, mnenonics);
 		sa.process();
@@ -1551,7 +1551,7 @@ public class Engine extends Notifier implements Aborter {
 
 		linkFunctions(functionContainers);
 
-		CallGraph cg = new CallGraph(functionContainers);
+		CallGraph cg = new CallGraph(functionContainers, coreId);
 		callGraphs.add(coreId, cg);
 		SourceMapper sourceMapper;
 		try {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -278,6 +279,22 @@ public abstract class Node implements Comparable<Node> {
 
 	public void replaceChildren(List<Node> children) {
 		assert(false);
+	}
+	
+	private Set<Node> m_branchReturnNodes;
+	public void addBranchReturnNode(InstructionNode node) {
+		if(m_branchReturnNodes == null){
+			m_branchReturnNodes = new IteratableSet<Node>();
+		}
+		m_branchReturnNodes.add(node);
+		
 	}	
+	
+	public Set<Node> getBranchReturnNodes(){
+		if(m_branchReturnNodes == null){
+			m_branchReturnNodes = new IteratableSet<Node>();
+		}
+		return m_branchReturnNodes;
+	}
 }
 
