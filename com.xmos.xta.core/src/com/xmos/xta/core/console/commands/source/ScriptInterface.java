@@ -12,9 +12,10 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
+import com.xmos.xta.core.engine.defines.DefineInfo;
+import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class ScriptInterface {
@@ -80,6 +81,128 @@ public class ScriptInterface {
         checkForErrors("removeExclusion");
     }
 
+    public Collection<String> getExclusions() throws Exception {
+    	Collection<String> exclusions = new ArrayList<String>();
+        for (Reference exclusion : m_engine.getExclusions()) {
+        	exclusions.add(exclusion.getRef());
+        }
+        return exclusions;
+    }
+
+    public void addBranch(String fromRefString, Collection<String> toRefStrings) throws Exception {
+    	m_engine.addBranch(m_src, fromRefString, toRefStrings);
+        checkForErrors("addBranch");
+    }    
+
+    public void removeBranch(String fromRefString, Collection<String> toRefStrings) throws Exception {
+    	m_engine.removeBranch(m_src, fromRefString, toRefStrings);
+        checkForErrors("removeBranch");
+    }    
+
+    public Collection<String> getBranches() throws Exception {
+    	Collection<String> branches = new ArrayList<String>();
+        for (Reference branch : m_engine.getUserBranches().keySet()) {
+        	branches.add(branch.getRef());
+        }
+        return branches;
+    }
+    
+    public Collection<String> getBranchTargets(String branch) throws Exception {
+    	Collection<String> branchTargets = new ArrayList<String>();
+        for (Reference ref : m_engine.getUserBranches().keySet()) {
+        	if (ref.getRef().equals(branch)) {
+                for (Reference targetRef : m_engine.getUserBranches().get(ref)) {
+                	branchTargets.add(targetRef.getRef());
+                }
+        	}
+        }    	
+        return branchTargets;
+    }    
+    
+    public void addLoop(String ref, long iterations) throws Exception {
+    	m_engine.addLoop(m_src, ref, iterations);
+        checkForErrors("addLoop");
+    }    
+
+    public void removeLoop(String ref) throws Exception {
+    	m_engine.removeLoop(m_src, ref);
+        checkForErrors("removeLoop");
+    }
+    
+    public Collection<String> getLoops() throws Exception {
+    	return getDefines(m_engine.getLoopDefines());
+    }
+
+    public void addLoopPath(String ref, long iterations) throws Exception {
+    	m_engine.addLoopPath(m_src, ref, iterations);
+        checkForErrors("addLoopPath");
+    }    
+
+    public void removeLoopPath(String ref) throws Exception {
+    	m_engine.removeLoopPath(m_src, ref);
+        checkForErrors("removeLoopPath");
+    }
+    
+    public Collection<String> getLoopPaths() throws Exception {
+    	return getDefines(m_engine.getLoopPathDefines());
+    }
+
+    public void addLoopScope(String ref, boolean absolute) throws Exception {
+    	m_engine.addLoopScope(m_src, ref, absolute);
+        checkForErrors("addLoopScope");
+    }    
+
+    public void removeLoopScope(String ref) throws Exception {
+    	m_engine.removeLoopScope(m_src, ref);
+        checkForErrors("removeLoopScope");
+    }
+    
+    public Collection<String> getLoopScopes() throws Exception {
+    	return getDefines(m_engine.getLoopScopeDefines());
+    }
+
+    public void addInstructionTime(String ref, double value, String units) throws Exception {
+    	m_engine.addInstructionTime(m_src, ref, new TimeUnit(value, units));
+        checkForErrors("addInstructionTime");
+    }    
+
+    public void removeInstructionTime(String ref) throws Exception {
+    	m_engine.removeInstructionTime(m_src, ref);
+        checkForErrors("removeInstructionTime");
+    }
+    
+    public Collection<String> getInstructionTimes() throws Exception {
+    	return getDefines(m_engine.getInstructionTimeDefines());
+    }
+
+    public void addFunctionTime(String ref, double value, String units) throws Exception {
+    	m_engine.addFunctionTime(m_src, ref, new TimeUnit(value, units));
+        checkForErrors("addFunctionTime");
+    }
+
+    public void removeFunctionTime(String ref) throws Exception {
+    	m_engine.removeFunctionTime(m_src, ref);
+        checkForErrors("removeFunctionTime");
+    }
+    
+    public Collection<String> getFunctionTimes() throws Exception {
+    	return getDefines(m_engine.getFunctionTimeDefines());
+    }
+
+    public void addPathTime(String fromRef, String toRef, double value, String units) throws Exception {
+    	m_engine.addPathTime(m_src, fromRef, toRef, new TimeUnit(value, units));
+        checkForErrors("addPathTime");
+    }
+
+    public void removePathTime(String fromRef, String toRef) throws Exception {
+    	m_engine.removePathTime(m_src, fromRef, toRef);
+        checkForErrors("removePathTime");
+    }
+
+    public Collection<String> getPathTimes() throws Exception {
+    	return getDefines(m_engine.getPathTimeDefines());
+    }
+    
 	// ===================================================================== //
     // Set Methods
 	// ===================================================================== //
@@ -89,7 +212,45 @@ public class ScriptInterface {
         checkForErrors("setRequired");
     }
 
-	// ===================================================================== //
+    public void setFunctionTime(int routeId, String refString, double value, String units) throws Exception {
+    	TimeUnit timeUnit = new TimeUnit(value, units);    	    
+    	m_engine.setFunctionTime(m_src, routeId, refString, timeUnit);
+        checkForErrors("setFunctionTime");    	
+    }
+
+    public void setPathTime(int routeId, String fromRef, String toRef, double value, String units) throws Exception {
+    	TimeUnit timeUnit = new TimeUnit(value, units);    	    
+    	m_engine.setPathTime(m_src, routeId, fromRef, toRef, timeUnit);
+        checkForErrors("setPathTime");    	
+    }
+    
+    public void setInstructionTime(int routeId, String refString, double value, String units) throws Exception {
+    	TimeUnit timeUnit = new TimeUnit(value, units);    	    
+    	m_engine.setInstructionTime(m_src, routeId, refString, timeUnit);
+        checkForErrors("setInstructionTime");
+    }
+    
+    public void setLoop(int routeId, String refString, long iterations) throws Exception {
+    	m_engine.setLoop(m_src, routeId, refString, iterations);
+        checkForErrors("setLoop");
+    }
+
+    public void setLoopPath(int routeId, String refString, long iterations) throws Exception {
+    	m_engine.setLoopPath(m_src, routeId, refString, iterations);
+        checkForErrors("setLoopPath");
+    }
+
+    public void setLoopScope(int routeId, String refString, boolean absolute) throws Exception {
+    	m_engine.setLoopScope(m_src, routeId, refString, absolute);
+        checkForErrors("setLoopScope");
+    }
+    
+    public void setExclusion(int routeId, String refString) throws Exception {
+    	m_engine.setExclusion(m_src, routeId, refString);
+        checkForErrors("setExclusion");
+    }
+
+    // ===================================================================== //
     // Get Methods
 	// ===================================================================== //
     public double getRequired(int routeId, String units) throws Exception {
@@ -108,11 +269,11 @@ public class ScriptInterface {
     	return getTime(routeId, units, Case.BEST);
     }
 
-    public String getRouteSummary(int routeId) throws Exception {
+    public String getRouteDescription(int routeId) throws Exception {
     	try {
-          	return getRoute(routeId).getRouteTiming().getDescription(Level.COMPLETE);
+          	return getRoute(routeId).getRouteCoreContainer().getRouteContainer().getDescription();
     	} catch (Exception e) {
-    		throw new Exception("getRouteSummary: " + e.getMessage());
+    		throw new Exception("xta.getRouteDescription: " + e.getMessage());
     	}
     }
 
@@ -152,4 +313,12 @@ public class ScriptInterface {
     		throw new Exception(xtaObjectReference + ": " + m_notifier.getErrorMessage());    		    
     	}    	
     }
+    
+    private Collection<String> getDefines(Collection<? extends DefineInfo> infos) throws Exception {
+    	Collection<String> collection = new ArrayList<String>();
+        for (DefineInfo info : infos) {
+        	collection.add(info.getDescription() + " " + info.getValue());
+        }
+        return collection;
+    }    
 }

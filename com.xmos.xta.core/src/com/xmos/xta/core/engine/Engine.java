@@ -1310,16 +1310,10 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		} else {
 			initControlFlowGraphs(src, m_xeLoader, m_sections);
-		}
-		
+		}		
 		return hit;
 	}
 	
-	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) {
-		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(callGraph, reference, this);
-	}
-
 	public boolean removeBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
 		boolean hit = false;
 		for (CoreId activeCore : m_activeCores) {
@@ -1356,27 +1350,6 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}
 		return hit;
-	}
-
-	private void checkInstructionIsBranch(CommandSource src, Reference ref, CoreId activeCore) {
-		for (long pc : ref.getPcs()) {
-			InstructionNode node = m_instructionDecoders.get(activeCore).getNode(pc);
-			if (node == null) {
-				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from non-existant instruction at %s",
-						ref.toString()));
-				return;
-			}
-
-			XtaInstruction inst = node.getXtaInstruction();
-			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
-				notify(src, Notifier.NOTIFY_WARNING,
-						String.format("adding branch from instruction which is not a branch: %s",
-						inst.toString()));
-				return;
-			}
-		}
 	}
 	
 	public Map<Reference, List<Reference>> getUserBranches() {
@@ -1824,6 +1797,32 @@ public class Engine extends Notifier implements Aborter {
 	private boolean validateRouteCount(){
 		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
+	
+	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) {
+		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
+		return prm.matchReference(callGraph, reference, this);
+	}
+	
+	private void checkInstructionIsBranch(CommandSource src, Reference ref, CoreId activeCore) {
+		for (long pc : ref.getPcs()) {
+			InstructionNode node = m_instructionDecoders.get(activeCore).getNode(pc);
+			if (node == null) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from non-existant instruction at %s",
+						ref.toString()));
+				return;
+			}
+
+			XtaInstruction inst = node.getXtaInstruction();
+			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
+			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
+				notify(src, Notifier.NOTIFY_WARNING,
+						String.format("adding branch from instruction which is not a branch: %s",
+						inst.toString()));
+				return;
+			}
+		}
+	}	
 }
 
 class FileLocation {
