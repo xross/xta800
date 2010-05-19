@@ -24,17 +24,20 @@ public class SrcLabelFileLineReference extends ReferenceType {
 		String fileName = getFileName(ref);
         long lineNumber = getLineNumber(ref);
 
-		for (SrcLabelTableInfo info : engine.getSrcLabelTable(getCoreId()).values()) {
-            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, engine.getSourceMapper(getCoreId())) &&
-            	((lineNumber >= info.getLineNumberStart()) &&
-            	 (lineNumber <= info.getLineNumberEnd()))) {
+		for (SrcLabelTableInfo info : engine.getSrcLabelTable(getCoreId())
+				.values()) {
+			if (((lineNumber >= info.getLineNumberStart()) && (lineNumber <= info
+					.getLineNumberEnd()))
+					&& FileNameMatcher.isMatch(info.getCompilationDir(), info
+							.getFileName(), fileName, engine
+							.getSourceMapper(getCoreId()))) {
 
-            	addPc(info.getPc());
-            	setFileName(fileName);
-            	setLineNum(lineNumber);
-            	setResolved(true);
-            	return true;
-            }
+				addPc(info.getPc());
+				setFileName(fileName);
+				setLineNum(lineNumber);
+				setResolved(true);
+				return true;
+			}
 		}
 		return false;
 	}

@@ -124,9 +124,11 @@ public abstract class ReferenceType {
         long lineNumber  = getLineNumber(ref);
 
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
-            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper) &&
-            	((lineNumber >= info.getLineNumberStart()) &&
-            	 (lineNumber <= info.getLineNumberEnd()))) {
+            if (((lineNumber >= info.getLineNumberStart()) &&
+            	 (lineNumber <= info.getLineNumberEnd()))  &&
+            		
+            		FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper))
+            	{
             	return true;
             }
 		}
@@ -136,14 +138,14 @@ public abstract class ReferenceType {
 	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable, SourceMapper sourceMapper) {
 		String fileName = getFileName(ref);
         long lineNumber  = getLineNumber(ref);
-
+        
 		for (CodePointTableInfo info : codePointTable.values()) {
-            if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper) &&
-            	(info.getLineNumber() == lineNumber)) {
+            if (info.getLineNumber() == lineNumber && FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper)) {
             	return true;
             }
 		}
 		return false;
+
 	}
 
 	boolean isSourceReference(String ref) {

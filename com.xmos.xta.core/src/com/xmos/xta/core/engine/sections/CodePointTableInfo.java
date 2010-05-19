@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.sections;
 
 import java.io.File;
 
-public class CodePointTableInfo extends SectionInfo implements FileLineInfo {
+public class CodePointTableInfo extends SectionInfo implements FileLineInfo{
     private long m_pc;
     private String m_compilationDir;
     private String m_fileName;
@@ -17,7 +17,7 @@ public class CodePointTableInfo extends SectionInfo implements FileLineInfo {
     	m_fileName = fileName;
     	m_lineNumber = lineNumber;
     }
-
+    
     public long getPc() {
     	return m_pc;
     }
@@ -41,4 +41,6 @@ public class CodePointTableInfo extends SectionInfo implements FileLineInfo {
     public String toReferenceString() {
     	return toString();
     }
+    
+    
 }

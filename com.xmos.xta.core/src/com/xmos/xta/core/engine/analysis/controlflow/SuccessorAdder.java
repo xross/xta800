@@ -75,7 +75,6 @@ public class SuccessorAdder {
 			long target = inst.getPc() + inst.getNumBytes();
 			InstructionNode blReturn = m_instDecoder.getNode(target);
 			if(blReturn != null){
-				
 				instruction.addBranchReturnNode(blReturn);
 			}
 			return;

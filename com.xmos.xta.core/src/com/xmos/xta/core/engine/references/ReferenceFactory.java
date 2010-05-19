@@ -11,8 +11,7 @@ public class ReferenceFactory {
 		
     	String[] subRefs = refString.split(",");
 
-        ReferenceType baseType = ReferenceTypeFactory.createReferenceType(
-        		subRefs[subRefs.length - 1], referenceClass, coreId);
+        ReferenceType baseType = ReferenceTypeFactory.createReferenceType(subRefs[subRefs.length - 1], referenceClass, coreId);
 
         Reference reference = new Reference(baseType);
 		for (int index = 0; index < (subRefs.length - 1); ++index) {
