@@ -13,7 +13,9 @@ import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -54,7 +56,7 @@ public class StructuralAnalysisEngine {
 	}
 
 	public Node createStructure(Collection<Node> workingSet, Node treeStart,
-			Engine engine, String jobPrefix) throws AbortedException {
+			Engine engine, String jobPrefix) throws AbortedException, MemoryMonitorException {
 		
 		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) {
 			return workingSet.iterator().next();
@@ -62,12 +64,20 @@ public class StructuralAnalysisEngine {
 
 		buildDominatorTree(workingSet, treeStart);
 
-		boolean working = true;
-		
+		boolean working = true;		
 		boolean dominatorTreeUpToDate = true;
 		
 		while (working) {
-			engine.provideFeedback(jobPrefix + " - nodes left: " + workingSet.size());
+			
+			String feedback = jobPrefix + " - nodes left: " + workingSet.size();
+			if (engine.getVerbosity() >= Config.VERBOSITY_DISPLAY_MEMORY_USAGE) {
+				feedback += String.format("\nMemory Usage [max/total/free]: %d/%d/%d",
+					Runtime.getRuntime().maxMemory(),
+					Runtime.getRuntime().totalMemory(),
+					Runtime.getRuntime().freeMemory());
+			}
+			engine.provideFeedback(feedback);
+						
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new NonIteratableSet<Node>());
 			working = false;
@@ -80,7 +90,12 @@ public class StructuralAnalysisEngine {
 					Collections.reverse(postOrder);
 				}
 				for (Node node : postOrder) {
+					
 					engine.getAbort();
+					if (engine.getMemoryMonitor().outOfMemoryAbort()) {
+						throw new MemoryMonitorException();
+					}
+					
 					if (pm.isMatch(node, workingSet, treeStart, engine)) {
 						assert(sanityCheckGraph(workingSet));
 						treeStart = pm.getTreeStart();
@@ -268,7 +283,9 @@ public class StructuralAnalysisEngine {
 		return;
 	}
 
-	public Node makeFnContainerIntoStructure(FunctionContainer functionContainer, Engine engine) {
+	public Node makeFnContainerIntoStructure(FunctionContainer functionContainer, Engine engine) 
+	    throws AbortedException, MemoryMonitorException {
+		
 		Set<Node> workingSet = new IteratableSet<Node>();
 		workingSet.addAll(functionContainer.getFunctionContents());
 		assert(workingSet.contains(functionContainer.getStartInstruction()));
@@ -276,11 +293,7 @@ public class StructuralAnalysisEngine {
 		
 		Node startNode = basicBlock(workingSet, functionContainer.getStartInstruction(), engine, functionContainer.getFunctionName());
 		Node structureNode = null;
-		try {
-			structureNode = createStructure(workingSet, startNode, engine, "Converting CFG to structure");
-		} catch (AbortedException e) {
-			e.printStackTrace();
-		}
+		structureNode = createStructure(workingSet, startNode, engine, "Converting CFG to structure");
 		assert(workingSet.size() == 1);
 		dumpTree("finished_"+ functionContainer.getFunctionName(), workingSet, false);
 		Node structuralNode = workingSet.iterator().next();

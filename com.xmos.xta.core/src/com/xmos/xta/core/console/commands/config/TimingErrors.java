@@ -36,7 +36,7 @@ public class TimingErrors extends Command {
     public String description(Engine engine, boolean detailed) {
     	Config config = engine.getConfig();
         return name() + String.format(" <on/off>: treat timing failures as errors or not (currently: %s)",
-        	config.m_timingFailuresAsErrors ? "on" : "off");
+        	config.getTimingFailuresAsErrors() ? "on" : "off");
     }
 
     public Command clone(String[] args, int index) {

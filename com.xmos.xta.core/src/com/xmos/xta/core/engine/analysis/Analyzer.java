@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.PathPoints;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -28,6 +29,7 @@ public class Analyzer {
 		m_engine = engine;
 		m_routes = routes;
 		m_routeContainers = routeContainers;
+		engine.getMemoryMonitor().reset();
 	}
 
 	public boolean analyzeFunction(CommandSource src, String functionName) {
@@ -107,6 +109,10 @@ public class Analyzer {
 		} catch (final java.lang.StackOverflowError e) {
 			if (development_mode) e.printStackTrace();
 			m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
+			return false;
+
+		} catch (MemoryMonitorException e) {
+			m_engine.notify(src, Notifier.NOTIFY_ERROR, "heap memory running low, aborting");
 			return false;
 			
 		} catch (AbortedException e) {

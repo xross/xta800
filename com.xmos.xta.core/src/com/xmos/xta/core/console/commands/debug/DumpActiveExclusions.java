@@ -6,7 +6,9 @@ import java.util.List;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
@@ -50,12 +52,17 @@ public class DumpActiveExclusions extends Command {
 				System.out.println(exclusionStack.getInstruction());
 			}
     	}
-    	
-    	
     }
     
     private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference, Engine engine) {
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(callGraph, reference, engine);
+		try {
+			return prm.matchReference(callGraph, reference, engine);
+
+		} catch (AbortedException e) {
+			return null;
+		} catch (MemoryMonitorException e) {
+			return null;
+		}
 	}
 }

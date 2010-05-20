@@ -22,7 +22,7 @@ public class CallGraph {
 	private Map<FunctionContainer, Set<FunctionReferenceNode>> m_fnRefToCallees;
 	private Set<FunctionReferenceNode> m_uncalledFunctions;
 	private Map<FunctionReferenceNode, FunctionContainer> m_containingFunction;
-	private CoreId m_coreId;
+	
 	public CallGraph(Set<FunctionContainer> functionContainers, CoreId coreId){
 		m_functionContainers = functionContainers;
 		m_fnRefToCallees = new IteratableMap<FunctionContainer, Set<FunctionReferenceNode>>();
@@ -32,7 +32,6 @@ public class CallGraph {
 		if(debug_call_graph){
 			dumpCallGraph();
 		}
-		m_coreId = coreId;
 	}
 
 	private void dumpCallGraph(){

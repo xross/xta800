@@ -215,7 +215,7 @@ public class Shell {
     		if (!m_console.openRedirectFile(command.getFileRedirect(), command.getFileRedirectMode(), command.getSrc(), m_notifier)) {
     			return false;
     		}
-    	}    	
+    	}
     	return true;
 	}
 

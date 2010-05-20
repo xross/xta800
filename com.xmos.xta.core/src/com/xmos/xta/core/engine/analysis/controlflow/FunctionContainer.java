@@ -6,7 +6,9 @@ import java.util.Set;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.console.Console;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -75,7 +77,7 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		return null;
 	}
 
-	public Node getCachedFunction(Engine engine) {
+	public Node getCachedFunction(Engine engine) throws AbortedException, MemoryMonitorException {
 		if(m_cachedFunction == null){
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 			m_cachedFunction = sae.makeFnContainerIntoStructure(this, engine);

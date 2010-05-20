@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Stack;
 
 import com.xmos.libs.util.Pair;
+import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
@@ -19,7 +21,8 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 
 	private static final boolean debug = false;
 	
-	public List<StackNode> matchReference(CallGraph callGraph, Reference ref, Engine engine) {
+	public List<StackNode> matchReference(CallGraph callGraph, Reference ref, Engine engine) 
+	    throws AbortedException, MemoryMonitorException {
 		
 		if (debug) System.out.println("####### begin reference match " + ref + " ###########");
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
@@ -64,7 +67,9 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return fnContainers;
 	}
 
-	public List<StackNode> refineStackNodes(List<StackNode> stackNodes, Reference reference, CallGraph callGraph, Engine engine) {
+	public List<StackNode> refineStackNodes(List<StackNode> stackNodes, Reference reference, CallGraph callGraph, Engine engine) 
+	    throws AbortedException, MemoryMonitorException {
+		
 		List<StackNode> refinedStackNodes = new LinkedList<StackNode>();
 		if (debug) System.out.println("\nMatching reference: " + reference);
 
@@ -99,15 +104,10 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 				InstructionNode inst = fn.getInstruction(pc);
 				
 				if(reference.getBase().getType() == Type.FUNCTION && fn.getStartInstruction() != inst){
-					//TODO tidy this up
 					continue;
 				}
 				
-				
-				
-				
 				List<Stack<FunctionReferenceNode>> callStacks = callGraph.getStacks(fn);
-
 				
 				for(Stack<FunctionReferenceNode> stack : callStacks){
 					if (debug) {
@@ -162,7 +162,8 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 	}
 	
 	private Pair<Boolean, Long> fnRefContainsReference(FunctionReferenceNode frn, Long currentPc, 
-			List<ReferenceType> refList, Engine engine, Stack<FunctionReferenceNode> stack ) {
+			List<ReferenceType> refList, Engine engine, Stack<FunctionReferenceNode> stack ) 
+		throws AbortedException, MemoryMonitorException {
 		
 		if(refList.isEmpty()) return new Pair<Boolean, Long>(false, (long)0);
 		
@@ -194,7 +195,9 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 
 	//this matches references that resolve to a set of pcs
 	private Pair<Boolean, Long> matchRefPc(FunctionReferenceNode frn, Engine engine, Long latestPc, 
-			ReferenceType r, Stack<FunctionReferenceNode> stack) {
+			ReferenceType r, Stack<FunctionReferenceNode> stack) 
+		throws AbortedException, MemoryMonitorException {
+		
 		FunctionContainer fc = frn.getFunctionContainer();
 		Node node = fc.getCachedFunction(engine);
 		setParent(node);

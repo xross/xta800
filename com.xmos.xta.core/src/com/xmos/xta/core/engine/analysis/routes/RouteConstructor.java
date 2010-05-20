@@ -15,6 +15,7 @@ import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
@@ -164,21 +165,11 @@ public class RouteConstructor {
 		applyDefines(src);
 		return RouteError.SUCCESS;
 	}
-/*
-	private List<StackNode> getUnresolvedStackNodes(CallGraph callGraph) {
-		List<StackNode> stackNodes = new LinkedList<StackNode>();
-		for(FunctionContainer fc :callGraph.getFunctionContainers()){
-			for(InstructionNode inst : fc.getFunctionInstructionNodes()){
-				if(inst.isUnresolved()){
-					stackNodes.addAll(c);
-				}
-			}
-		}
-		return stackNodes;
-	}
-*/
+
 	private void buildBranchStackNodes(List<StackNode> branchStackNodes,
-			Map<StackNode, Set<Node>> branchToNext) {
+			Map<StackNode, Set<Node>> branchToNext) 
+	    throws AbortedException, MemoryMonitorException {
+		
 		for(Reference ref : m_engine.getUserBranches().keySet()){
 			List<StackNode> stackNodes = getPathStackNodes(m_callGraph, ref);
 			branchStackNodes.addAll(stackNodes);
@@ -204,19 +195,20 @@ public class RouteConstructor {
 		}
 	}
 
-	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) {
+	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) 
+	    throws AbortedException, MemoryMonitorException {
+		
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 		return prm.matchReference(callGraph, reference, m_engine);
 	}
 	
 	private Pair<FunctionNode, Boolean> makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
-			List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
+			List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) 
+		throws AbortedException, MemoryMonitorException {
 		
 		List<StackNode> endStackNodes = getFunctionEndStackNodes(currentStack);
 		
 		//find unresolved instructions
-		
-		
 		FunctionReferenceNode fnRef = currentStack.peek();
 		
 		if(!fnRef.isKnownFunction()){
@@ -261,7 +253,8 @@ public class RouteConstructor {
 	}
 	
 	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
-			List<StackNode> exclusionStackNodes, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext) throws AbortedException{
+			List<StackNode> exclusionStackNodes, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext) 
+	    throws AbortedException, MemoryMonitorException {
 
 		Set<Node> workingSet = new IteratableSet<Node>();
 		Set<Node> currentExclusionsFound = new IteratableSet<Node>();
@@ -294,7 +287,7 @@ public class RouteConstructor {
 			Map<NodeDescriptor, Node> nodeToWorkingSet, 
 			Set<Node> loopFormingEndNodes,
 			boolean firstInstruction, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext)
-	throws AbortedException {
+	throws AbortedException, MemoryMonitorException {
 		
 		boolean repeat = true;
 		while(repeat){
@@ -525,7 +518,8 @@ public class RouteConstructor {
 	}
 
 	private Node convertGraphToStructure(Set<Node> workingSet, NodeDescriptor startNodeDescriptor,
-			Map<NodeDescriptor, Node> nodeToWorkingSet) throws AbortedException {
+			Map<NodeDescriptor, Node> nodeToWorkingSet) 
+	    throws AbortedException, MemoryMonitorException {
 		
 		Node originalStartNode = null;
 		for(NodeDescriptor nd : nodeToWorkingSet.keySet()){

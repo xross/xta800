@@ -106,6 +106,7 @@ public class Engine extends Notifier implements Aborter {
 	private Collection<CoreId> m_activeCores;
 	private PathPoints m_pathPoints;
 	private Debugger m_debugger;
+	private MemoryMonitor m_memoryMonitor;
 
 	public Engine(Config config) {
 		super(config);
@@ -132,6 +133,7 @@ public class Engine extends Notifier implements Aborter {
 		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
 		m_pathPoints = new PathPoints(this);
 		m_debugger = new Debugger(this);
+		m_memoryMonitor = new MemoryMonitor();
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -190,6 +192,10 @@ public class Engine extends Notifier implements Aborter {
 		return m_debugger;
 	}
 
+	public MemoryMonitor getMemoryMonitor() {
+		return m_memoryMonitor;
+	}
+	
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -289,20 +295,20 @@ public class Engine extends Notifier implements Aborter {
 	}
 	
 	public void setCase(CommandSource src, Case c) {
-		m_config.m_case = c;
+		m_config.setCase(c);
 		notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 	}
 
 	public Case getCase() {
-		return m_config.m_case;
+		return m_config.getCase();
 	}
 
 	public void setVerbosity(int verbosity) {
-		m_config.m_verbosity = verbosity;
+		m_config.setVerbosity(verbosity);
 	}
 
 	public int getVerbosity() {
-		return m_config.m_verbosity;
+		return m_config.getVerbosity();
 	}
 
 	public void setWarnAsErrors(boolean errorOn) {
@@ -314,7 +320,7 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	public void setTimingFailuresAsErrors(boolean errorsOn) {
-		m_config.m_timingFailuresAsErrors = errorsOn;
+		m_config.setTimingFailuresAsErrors(errorsOn);
 	}
 
 	public boolean canInstructionPause(int routeId, String refString) {		
@@ -1294,16 +1300,19 @@ public class Engine extends Notifier implements Aborter {
 				}
 			}
 			
-			List<StackNode> stackNodes = getPathStackNodes(m_callGraphs.get(activeCore), fromRef);
-			
-			if(!stackNodes.isEmpty()) {
-				if (fromResolved && toResolved) {
-					if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
-						m_structuralGraphUpToDate.add(activeCore, false);
-						hit = true;
-					}				
+			try {
+				List<StackNode> stackNodes = getPathStackNodes(m_callGraphs.get(activeCore), fromRef);
+				if(!stackNodes.isEmpty()) {
+					if (fromResolved && toResolved) {
+						if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
+							m_structuralGraphUpToDate.add(activeCore, false);
+							hit = true;
+						}				
+					}
 				}
-			}
+			} catch (AbortedException e) {
+			} catch (MemoryMonitorException e) {
+			}			
 		}
 		
 		if (!hit) {
@@ -1708,7 +1717,7 @@ public class Engine extends Notifier implements Aborter {
 			    	
 				} catch (AbortedException e) {
 					break;
-				}
+			    }
 			}
 		}
 	}
@@ -1798,7 +1807,9 @@ public class Engine extends Notifier implements Aborter {
 		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
 	
-	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) {
+	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) 
+	    throws AbortedException, MemoryMonitorException {
+		
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 		return prm.matchReference(callGraph, reference, this);
 	}

@@ -43,7 +43,7 @@ public class Exit extends Command {
 		if (engine.getNumErrors() > 0) {
 			errors = 1;
 
-    	} else if (engine.getConfig().m_timingFailuresAsErrors) {
+    	} else if (engine.getConfig().getTimingFailuresAsErrors()) {
 			for (Route route : engine.getRoutes()) {
 				RouteTiming routeTiming = route.getRouteTiming();
 				if (routeTiming.isTimingSpecified()) {

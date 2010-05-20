@@ -39,7 +39,7 @@ public class Status extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
 
     	console.display(String.format("TimingFailAsError: %s\n",
-    			engine.getConfig().m_timingFailuresAsErrors ? "true" : "false"));
+    			engine.getConfig().getTimingFailuresAsErrors() ? "true" : "false"));
     	console.display(String.format("WarnAsError: %s\n",
     			engine.getConfig().getWarningsAsErrors() ? "true" : "false"));
     	console.display(String.format("ErrorAsWarn: %s\n",

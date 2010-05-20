@@ -19,6 +19,9 @@ public class Debug extends CommandContainer {
 		new LoopScope(),
 		new ListGlobalReferences(),
 		new ListRouteReferences(),
+		new MemUsage(),
+		new GetMemThreshold(),
+		new SetMemThreshold(),
 	};
 
 	public Debug() { super(COMMAND_NAMES); }

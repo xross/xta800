@@ -40,7 +40,9 @@ public class SourceMapper {
 	
     public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, CoreId coreId,
 			Map<InstructionNode, InstructionNode> map, InstructionDecoder instructionDecoder,
-			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labels) throws AbortedException {
+			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labels) 
+        throws AbortedException {
+    	
     	m_functionInstuctionToOriginal = map;
     	m_labels = labels;
         m_instructionDecoder = instructionDecoder;
