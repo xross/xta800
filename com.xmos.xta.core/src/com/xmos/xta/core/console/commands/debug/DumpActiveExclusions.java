@@ -44,7 +44,10 @@ public class DumpActiveExclusions extends Command {
     		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
 			for(Reference ref : engine.getExclusions()){
 				if(ref.getCoreId().equals(coreId)){
-					exclusionStackNodes.addAll(getPathStackNodes(engine.getCallGraph(coreId), ref, engine));
+					List<StackNode> stackNodes = getPathStackNodes(engine.getCallGraph(coreId), ref, engine);
+					if (stackNodes != null) {
+					    exclusionStackNodes.addAll(stackNodes);
+					}
 				}
 			}
 			System.out.println(coreId + ":");
