@@ -36,7 +36,6 @@
          basedir="${build}"
          includes="com/xmos/xta/**, version.xml"
          manifest="manifests/xta">
-         <zipfileset src="../../infr_libs_java/com.xmos.libs/jars/jline-0.9.94.jar"/>
          <zipfileset src="../../infr_libs_java/com.xmos.libs/jars/jython.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/dwarfhandler.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/elfhandler.jar"/>
