@@ -8,11 +8,10 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xmake TARGETDIR=$genDir TARGET=$target > $genDir/can.log 2>&1");
+system("xmake -C Release/ -f Makefile all -B TARGETDIR=$genDir TARGET=$target > $genDir/CAN.log 2>&1");
 }
 
-system("@ARGV load $genDir/can.xe " .
-       "source cmds.txt " .
-       "-exit " .
-       "> $genDir/can.txt 2>&1");
+system("@ARGV load Release/CAN.xe " .
+       "-source cmds.txt " .
+       "-exit > $genDir/can.txt 2>&1");
 

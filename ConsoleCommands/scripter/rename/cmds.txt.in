@@ -5,6 +5,7 @@ analyze path x x
 
 analyze path test.xc:21 test.xc:22
 scripter listrefs
+scripter rename test.xc:21 "a space"
 scripter rename test.xc:21 start
 scripter listrefs
 scripter rename test.xc:22 stop

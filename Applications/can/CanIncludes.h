@@ -7,8 +7,7 @@
 #include <float.h>
 #include <xclib.h>
 
-//#define SIM_TESTING
-#define DEBUG
+#define SIM_TESTING
 
 #ifdef __XC__
 # include <platform.h>
@@ -117,15 +116,23 @@ struct CanPacket {
 struct CanPhyState {
 	STATE        state;
 	ERROR        error;
+	unsigned int time;
 	unsigned int packetCrc;
 
-	int          txActive;
-	int          txComplete;
+	unsigned int bitStuffingActive;
 
-	int          activeError;
-	int          rxErrorCount;
-	int          txErrorCount;
-	int          doCrc;
+	unsigned int lastBit;
+
+	int          txComplete;
 };
+
+//todo:
+//  receiver errors to handle:
+//    glitches
+//  do the timing properly according to specs
+//  support various bitrates  (only 500K and 100K are supported for now)
+//  bus arbitration
+//  
+
 
 #endif
