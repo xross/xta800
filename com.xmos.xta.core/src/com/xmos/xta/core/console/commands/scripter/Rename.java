@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.scripter.Scripter;
 
 public class Rename extends Command {
@@ -45,6 +46,13 @@ public class Rename extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
+
+		for (int i = 0; i < m_to.length(); i++) {
+			if (Character.isSpaceChar(m_to.charAt(i))) {
+	    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "spaces not supported in labels");
+		        return;
+			}
+		}
 
 		Scripter scripter = engine.getScripter();
 		scripter.createRefs();
