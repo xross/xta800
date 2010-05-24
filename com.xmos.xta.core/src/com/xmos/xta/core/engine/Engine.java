@@ -1757,8 +1757,10 @@ public class Engine extends Notifier implements Aborter {
 	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeChainIndex, int coreNumber) {
 		int nodeRoutingId = xnLoader.getNodeRoutingId(nodeChainIndex);
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
-			if ((entry.getNodeRoutingId() == nodeRoutingId) && (entry.getCoreNumber() == coreNumber) &&
-				(entry.getName().equals("thread"))) {
+			if ((entry.getNodeRoutingId() == nodeRoutingId) &&
+				(entry.getCoreNumber() == coreNumber) &&
+				entry.getType().equals(ProgInfoLoader.PI_CATEGORY_THREADS) &&
+				entry.getType().getLabel().equals(ProgInfoLoader.PI_LABEL_USED)) {
 
 				int worstCase = entry.getWorstCase();
 				if (worstCase > 0) {
