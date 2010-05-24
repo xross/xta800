@@ -1,7 +1,21 @@
-Route\(0\) endpoints: startRx to startRx
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: 60.0 ns, Required: 840.0 ns, Worst: 780.0 ns, Min Core Frequency: 371 MHz
+stdcore\[0\]:
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} ldaw \(lu6\) r11, cp\[0x[0-9a-fA-F]{2}\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} stw \(ru6\) r2, sp\[0x[0-9a-fA-F]{2}\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} in \(2r\) r0, res\[r0\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} in \(2r\) r0, res\[r0\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} in \(2r\) r0, res\[r0\]
+stdcore\[1\]:
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} ldaw \(lu6\) r11, cp\[0x[0-9a-fA-F]{2}\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} stw \(ru6\) r2, sp\[0x[0-9a-fA-F]{2}\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} in \(2r\) r0, res\[r0\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} in \(2r\) r0, res\[r0\]
+\(canPhyRxTx\+\d+\) 0x[0-9a-fA-F]{5} in \(2r\) r0, res\[r0\]
+stdcore\[2\]:
+stdcore\[3\]:
+Route\(0\) endpoints: txCheckBit to txCheckBit
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0 ns, Required: 1.0 us, Worst: \d+.0 ns, Min Core Frequency: \d+ MHz
 
-Route\(1\) endpoints: startTx to startTx
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: 40.0 ns, Required: 1.0 us, Worst: 960.0 ns, Min Core Frequency: 384 MHz
+Route\(1\) endpoints: txCheckBit to txCheckBit
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.0 ns, Required: 1.0 us, Worst: \d+.0 ns, Min Core Frequency: \d+ MHz
 
-Pass, Min Core Frequency: 384 MHz
+Pass, Min Core Frequency: \d+ MHz

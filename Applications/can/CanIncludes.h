@@ -7,25 +7,11 @@
 #include <float.h>
 #include <xclib.h>
 
+#define SIM_TESTING
 
 #ifdef __XC__
 # include <platform.h>
 #endif
-
-#define STRESS_LIMIT 1000
-
-#define SYSTEM_CLOCK 100000000
-
-#define QUANTA_SYNC_SEGS      1
-#define QUANTA_PROP_SEGS      8
-#define QUANTA_PHASE1_SEGS    8
-#define QUANTA_PHASE2_SEGS    8
-#define QUANTA_SJW_SEGS       4
-#define QUANTA_TOTAL_SEGS    (QUANTA_SYNC_SEGS + QUANTA_PROP_SEGS + QUANTA_PHASE1_SEGS + QUANTA_PHASE2_SEGS) 
-
-#define BAUD_RATE 1000000
-
-#define CLOCK_DIV (SYSTEM_CLOCK/(BAUD_RATE * QUANTA_TOTAL_SEGS * 2))
 
 /*
  * Assuming 25 time quanta then the following baud rates are avaliable.
@@ -56,17 +42,18 @@
  *  5000      400
  */
 
-#define BIT_TIME (SYSTEM_CLOCK / BAUD_RATE )  //baud rate prescaler
+#define SYSTEM_CLOCK 100000000
+#define BAUD_RATE      1000000
 
-#define QUANTA_SYNC     (QUANTA_SYNC_SEGS)
-#define QUANTA_PROP    (QUANTA_PROP_SEGS)
-#define QUANTA_PHASE1    (QUANTA_PHASE1_SEGS)
-#define QUANTA_PHASE2    (QUANTA_PHASE2_SEGS)
-#define QUANTA_SJW    (QUANTA_SJW_SEGS)
-#define QUANTA_TOTAL    (QUANTA_TOTAL_SEGS) 
+#define QUANTA_SYNC      1
+#define QUANTA_PROP      8
+#define QUANTA_PHASE1    8
+#define QUANTA_PHASE2    8
+#define QUANTA_SJW       4
+#define QUANTA_TOTAL    (QUANTA_SYNC + QUANTA_PROP + QUANTA_PHASE1 + QUANTA_PHASE2)
+#define CLOCK_DIV       (SYSTEM_CLOCK / (BAUD_RATE * QUANTA_TOTAL * 2))
 
-#define SAMPLE_TIME (BIT_TIME*(QUANTA_SYNC + QUANTA_PROP + QUANTA_PHASE1)/QUANTA_TOTAL)
-
+#define BIT_TIME (SYSTEM_CLOCK / BAUD_RATE)
 
 typedef enum {
 	STATE_SOF          =  0,
@@ -96,16 +83,16 @@ typedef enum {
 	STATE_OVERLOAD_DEL = 24,
 	STATE_BUS_IDLE     = 25,
 
-	STATE_DATA
-
 } STATE;
 
 typedef enum {
-	ERROR_NONE         = 0,
-	ERROR_BIT_ERROR    = 1,
-	ERROR_STUFF_ERROR  = 2,
-	ERROR_FORM_ERROR   = 3,
-	ERROR_CRC_ERROR    = 4,
+	ERROR_NONE          = 0,
+	ERROR_BIT_ERROR     = 1,
+	ERROR_STUFF_ERROR   = 2,
+	ERROR_FORM_ERROR    = 3,
+	ERROR_CRC_ERROR     = 4,
+	ERROR_ILLEGAL_STATE = 5,
+	ERROR_NO_ACK        = 6,
 } ERROR;
 
 struct CanPacket {
@@ -132,16 +119,12 @@ struct CanPhyState {
 	unsigned int time;
 	unsigned int packetCrc;
 
-	int          sendStuffBit;
 	unsigned int bitStuffingActive;
 
 	unsigned int lastBit;
 
-	int          txActive;
 	int          txComplete;
 };
-
-#include "CanFunctions.h"
 
 //todo:
 //  receiver errors to handle:

@@ -1,109 +1,12 @@
 #include "CanIncludes.h"
 #include "CanFunctions.h"
 #include <print.h>
+#include <stdlib.h>
 
-on stdcore[0] : port led0 = XS1_PORT_4A;
-on stdcore[0] : port led1 = XS1_PORT_4B;
-on stdcore[0] : port led2 = XS1_PORT_4C;
-
-on stdcore[0] : port ledRed   = XS1_PORT_1F;
-on stdcore[0] : port ledGreen = XS1_PORT_1E;
-
-void driveLeds(unsigned int value) {
+void driveLeds(port led0, port led1, port led2, unsigned int value) {
 	led0 <: value;
 	led1 <: (value >> 4);
 	led2 <: (value >> 8);
-}
-
-/*
-	CanNetworkTx is the transmitter side of network layer 
-	All it is doing for now is sending packets to the Data Link Layer 
-	and also printing them on the consol (over RS232) for now.
-*/
-void canNetworkTx(chanend txChan) {
-	struct CanPacket p;
-	timer t;
-	unsigned time;
-	int green = 0;
-
-	p.SOF = 0;
-	p.ID  = 0x200;
-	p.RTR = 0;
-	p.IEB = 0;
-	p.RB0 = 0;
-	p.DLC = 4;
-	p.DATA[0] = 0xFE;
-	p.DATA[1] = 0xE1;
-	p.DATA[2] = 0xDE;
-	p.DATA[3] = 0xAD;
-	p.CRC = 0;
-	p.CRC_DEL = 1;
-	p.ACK_DEL = 1;
-	p._EOF = 0x7F;
-	
-	while (1) {
-		if (green) {
-			ledRed :> void;
-			ledGreen <: 1;
-		} else {
-			ledGreen :> void;
-			ledRed <: 1;
-		}
-		green = ~green;
-
-		for (int i = 0; i < 10; i++) {
-			t when timerafter(time + 10000000) :> time;
-		}
-
-//		txChan <: p;
-	}
-}
-
-/*
- * CanNetworkRx is receiver side of the network layer
- * All it is doing for now is recieving packets from the Data Link Layer
- * and printing them on the consol (over RS232) for now.
- */
-void canNetworkRx(chanend rxChan) {
-	unsigned count = 1;
-	int direction = 0;
-	timer t;
-	unsigned int time;
-
-	t :> time;
-	driveLeds(count);
-
-	while(1) {
-		unsigned int value = 0;
-
-		select {
-		case inuint_byref(rxChan, value):
-			direction = ~direction;
-			break;
-
-		case t when timerafter(time + 1500000) :> time:
-			driveLeds(count);
-			break;
-		}
-
-		if (value) {
-			// Error detected - stop
-			driveLeds((1 << value) - 1);
-			while(1);
-		}
-
-		if (direction) {
-			count = count << 1;
-			if (count > (1 << 12)) {
-				count = 1;
-			}
-		} else {
-			count = count >> 1;
-			if (count == 0) {
-				count = (1 << 12);
-			}
-		}
-	}
 }
 
 void printPacket(struct CanPacket &p) {
@@ -166,4 +69,84 @@ void initPacket(struct CanPacket &p) {
 	p.CRC_DEL = 0xffffffff;
 	p.ACK_DEL = 0xffffffff;
 	p._EOF = 0xffffffff;
+}
+
+void randomizePacket(struct CanPacket &p, int bitZero) {
+	// Fields which are fixed unless injecting errors
+	p.SOF = 0;
+	p.RB0 = 0;
+	p.CRC_DEL = 1;
+	p.ACK_DEL = 1;
+	p._EOF = 0x7F;
+
+	p.ID  = rand() & 0x7ff;
+	if (rand() & 0x1) {
+		// Create extended packet
+		p.SRR = 0;
+		p.IEB = 1;
+		p.EID = rand() & 0x3ffff;
+		p.RTR = 0;
+		p.RB1 = 0;
+
+		p.EID = (p.EID & ~1) | bitZero;
+	} else {
+		// Create normal packet
+		p.SRR = 0;
+		p.IEB = 0;
+		p.EID = 0;
+		p.RTR = 0;
+		p.RB1 = 0;
+
+		p.ID = (p.ID & ~1) | bitZero;
+	}
+
+	p.DLC = rand() % 9;
+	for (int i = 0; i < p.DLC; i++) {
+		p.DATA[i] = rand() & 0xff;
+	}
+
+	// CRC is calculated by transmitter
+	p.CRC = 0;
+}
+
+#pragma unsafe arrays
+void sendPacket(chanend c, struct CanPacket &p) {
+	outuint(c, p.SOF);
+	outuint(c, p.ID);
+	outuint(c, p.SRR);
+	outuint(c, p.IEB);
+	outuint(c, p.EID);
+	outuint(c, p.RTR);
+	outuint(c, p.RB1);
+	outuint(c, p.RB0);
+	outuint(c, p.DLC);
+	for (int i = 0; i < p.DLC; i++) {
+		#pragma xta label "sendLoop"
+		outuint(c, p.DATA[i]);
+	}
+	outuint(c, p.CRC);
+	outuint(c, p.CRC_DEL);
+	outuint(c, p.ACK_DEL);
+	outuint(c, p._EOF);
+}
+
+#pragma unsafe arrays
+void receivePacket(chanend c, struct CanPacket &p) {
+	p.SOF = inuint(c);
+	p.ID  = inuint(c);
+	p.SRR = inuint(c);
+	p.IEB = inuint(c);
+	p.EID = inuint(c);
+	p.RTR = inuint(c);
+	p.RB1 = inuint(c);
+	p.RB0 = inuint(c);
+	p.DLC = inuint(c);
+	for (int i = 0; i < p.DLC; i++) {
+		#pragma xta label "receiveLoop"
+		p.DATA[i] = inuint(c);
+	}
+	p.CRC = inuint(c);
+	p.CRC_DEL = inuint(c);
+	p.ACK_DEL = inuint(c);
+	p._EOF = inuint(c);
 }

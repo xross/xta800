@@ -3,6 +3,7 @@ false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
 true       true       test.xc:21 ->     call_0
 true       true       test.xc:22 ->     call_1
+xta: cmds.txt:8: error: spaces not supported in labels
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
@@ -13,7 +14,7 @@ false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
 true       true       test.xc:21 ->      start
 true       true       test.xc:22 ->       stop
-xta: cmds.txt:13: error: Reference 'stop' not used in scripter
+xta: cmds.txt:14: error: Reference 'stop' not used in scripter
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
@@ -34,7 +35,7 @@ false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
 true       false      test.xc:21 ->      start
 true       false      test.xc:22 ->       stop
-xta: cmds.txt:28: error: Reference 'x' cannot be renamed
+xta: cmds.txt:29: error: Reference 'x' cannot be renamed
 # load ".*test.xe"
 
 #
