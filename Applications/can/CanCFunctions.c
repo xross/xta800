@@ -1,11 +1,10 @@
 
 #include "CanIncludes.h"
-#include "CanFunctions.h"
 
 extern int alignTable[];
 
 void initAlignTable() {
-	int aligned = QUANTA_TOTAL - QUANTA_SJW;
+	int aligned = QUANTA_TOTAL - QUANTA_PHASE2;
 
 	for (int zeros = 0; zeros < 33; zeros++) {
 		alignTable[zeros] = QUANTA_TOTAL;
@@ -28,21 +27,10 @@ void initAlignTable() {
 			}
 		}
 	}
-}
 
-#if 0
-void canNetworkTx_c(unsigned int txChan, unsigned int ledGreen, unsigned int ledRed, int bitZero,
-		struct CanPacket txPackets[]) {
-	canNetworkTx(txChan, ledGreen, ledRed, bitZero, txPackets);
+	/*
+	 * Used when starting the RX state machine in order to align to the sample time
+	 * in one instruction
+	 */
+	alignTable[33] = QUANTA_TOTAL - QUANTA_PHASE2;
 }
-
-void canNetworkRx_c(unsigned int rxChan, unsigned int led0, unsigned int led1, unsigned int led2,
-		struct CanPacket rxPackets[]) {
-	canNetworkRx(rxChan, led0, led1, led2, rxPackets);
-}
-
-void canPhy_c(unsigned int rxChan, unsigned int txChan, unsigned int clk, unsigned int canRx, unsigned int canTx,
-		struct CanPacket rxPackets[], struct CanPacket txPackets[]) {
-	canPhy(rxChan, txChan, clk, canRx, canTx, rxPackets, txPackets);
-}
-#endif

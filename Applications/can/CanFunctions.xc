@@ -1,13 +1,9 @@
-#include "CanIncludes.h"
-#include "CanFunctions.h"
 #include <print.h>
 #include <stdlib.h>
+#include <xs1.h>
 
-void driveLeds(port led0, port led1, port led2, unsigned int value) {
-	led0 <: value;
-	led1 <: (value >> 4);
-	led2 <: (value >> 8);
-}
+#include "CanIncludes.h"
+#include "CanFunctions.h"
 
 void printPacket(struct CanPacket &p) {
 	printstr("SOF: ");
@@ -53,22 +49,22 @@ void printPacket(struct CanPacket &p) {
 }
 
 void initPacket(struct CanPacket &p) {
-	p.SOF = 0xffffffff;
-	p.ID  = 0xffffffff;
-	p.SRR = 0xffffffff;
-	p.IEB = 0xffffffff;
-	p.EID = 0xffffffff;
-	p.RTR = 0xffffffff;
-	p.RB1 = 0xffffffff;
-	p.RB0 = 0xffffffff;
-	p.DLC = 0xffffffff;
+	p.SOF = 0;
+	p.ID  = 0;
+	p.SRR = 0;
+	p.IEB = 0;
+	p.EID = 0;
+	p.RTR = 0;
+	p.RB1 = 0;
+	p.RB0 = 0;
+	p.DLC = 0;
 	for (int i = 0; i < 8; i++) {
-		p.DATA[i] = 0xffffffff;
+		p.DATA[i] = 0;
 	}
-	p.CRC = 0xffffffff;
-	p.CRC_DEL = 0xffffffff;
-	p.ACK_DEL = 0xffffffff;
-	p._EOF = 0xffffffff;
+	p.CRC = 0;
+	p.CRC_DEL = 1;
+	p.ACK_DEL = 1;
+	p._EOF = 0xf7;
 }
 
 void randomizePacket(struct CanPacket &p, int bitZero) {
@@ -111,42 +107,54 @@ void randomizePacket(struct CanPacket &p, int bitZero) {
 
 #pragma unsafe arrays
 void sendPacket(chanend c, struct CanPacket &p) {
-	outuint(c, p.SOF);
+//	outuint(c, p.SOF);
 	outuint(c, p.ID);
 	outuint(c, p.SRR);
 	outuint(c, p.IEB);
 	outuint(c, p.EID);
 	outuint(c, p.RTR);
-	outuint(c, p.RB1);
-	outuint(c, p.RB0);
+//	outuint(c, p.RB1);
+//	outuint(c, p.RB0);
 	outuint(c, p.DLC);
-	for (int i = 0; i < p.DLC; i++) {
-		#pragma xta label "sendLoop"
-		outuint(c, p.DATA[i]);
-	}
-	outuint(c, p.CRC);
-	outuint(c, p.CRC_DEL);
-	outuint(c, p.ACK_DEL);
-	outuint(c, p._EOF);
+	outuint(c, p.DATA[0]);
+	outuint(c, p.DATA[1]);
+	outuint(c, p.DATA[2]);
+	outuint(c, p.DATA[3]);
+	outuint(c, p.DATA[4]);
+	outuint(c, p.DATA[5]);
+	outuint(c, p.DATA[6]);
+	outuint(c, p.DATA[7]);
+//	outuint(c, p.CRC);
+//	outuint(c, p.CRC_DEL);
+//	outuint(c, p.ACK_DEL);
+//	outuint(c, _EOF);
 }
 
 #pragma unsafe arrays
 void receivePacket(chanend c, struct CanPacket &p) {
-	p.SOF = inuint(c);
+//	p.SOF = 0;
 	p.ID  = inuint(c);
 	p.SRR = inuint(c);
 	p.IEB = inuint(c);
 	p.EID = inuint(c);
 	p.RTR = inuint(c);
-	p.RB1 = inuint(c);
-	p.RB0 = inuint(c);
+//	p.RB1 = 0;
+//	p.RB0 = 0;
 	p.DLC = inuint(c);
-	for (int i = 0; i < p.DLC; i++) {
-		#pragma xta label "receiveLoop"
-		p.DATA[i] = inuint(c);
-	}
-	p.CRC = inuint(c);
-	p.CRC_DEL = inuint(c);
-	p.ACK_DEL = inuint(c);
-	p._EOF = inuint(c);
+	p.DATA[0] = inuint(c);
+	p.DATA[1] = inuint(c);
+	p.DATA[2] = inuint(c);
+	p.DATA[3] = inuint(c);
+	p.DATA[4] = inuint(c);
+	p.DATA[5] = inuint(c);
+	p.DATA[6] = inuint(c);
+	p.DATA[7] = inuint(c);
+//	p.CRC = 0;
+//	p.CRC_DEL = 1;
+//	p.ACK_DEL = 1;
+//	p._EOF = 0x7f;
+}
+
+// Needing to be in a different file due to BUG 8295
+void rxReady(buffered in port:32 p, unsigned int &time) {
 }

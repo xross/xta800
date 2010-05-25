@@ -1,17 +1,7 @@
 #ifndef _CAN_INCLUDES
 #define _CAN_INCLUDES
 
-#include <xs1.h>
-#include <stdio.h>
-#include <print.h>
-#include <float.h>
-#include <xclib.h>
-
-#define SIM_TESTING
-
-#ifdef __XC__
-# include <platform.h>
-#endif
+#define DEBUG
 
 /*
  * Assuming 25 time quanta then the following baud rates are avaliable.
@@ -52,8 +42,6 @@
 #define QUANTA_SJW       4
 #define QUANTA_TOTAL    (QUANTA_SYNC + QUANTA_PROP + QUANTA_PHASE1 + QUANTA_PHASE2)
 #define CLOCK_DIV       (SYSTEM_CLOCK / (BAUD_RATE * QUANTA_TOTAL * 2))
-
-#define BIT_TIME (SYSTEM_CLOCK / BAUD_RATE)
 
 typedef enum {
 	STATE_SOF          =  0,
@@ -116,23 +104,15 @@ struct CanPacket {
 struct CanPhyState {
 	STATE        state;
 	ERROR        error;
-	unsigned int time;
 	unsigned int packetCrc;
 
-	unsigned int bitStuffingActive;
-
-	unsigned int lastBit;
-
+	int          txActive;
 	int          txComplete;
+
+	int          activeError;
+	int          rxErrorCount;
+	int          txErrorCount;
+	int          doCrc;
 };
-
-//todo:
-//  receiver errors to handle:
-//    glitches
-//  do the timing properly according to specs
-//  support various bitrates  (only 500K and 100K are supported for now)
-//  bus arbitration
-//  
-
 
 #endif
