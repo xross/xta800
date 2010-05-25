@@ -1759,7 +1759,7 @@ public class Engine extends Notifier implements Aborter {
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
 			if ((entry.getNodeRoutingId() == nodeRoutingId) &&
 				(entry.getCoreNumber() == coreNumber) &&
-				entry.getType().equals(ProgInfoLoader.PI_CATEGORY_THREADS) &&
+				entry.getType().getCategory().equals(ProgInfoLoader.PI_CATEGORY_THREADS) &&
 				entry.getType().getLabel().equals(ProgInfoLoader.PI_LABEL_USED)) {
 
 				int worstCase = entry.getWorstCase();
