@@ -64,12 +64,13 @@ public class FunctionConstructor {
 		
 		for(String functionName : m_symbolTable.getFunctionNames()){
 			
-			InstructionNode threadNode = m_instDecoder.getNode(m_symbolTable.symbolAddress(functionName));
+			long functionPc = m_symbolTable.symbolAddress(functionName);
+			InstructionNode threadNode = m_instDecoder.getNode(functionPc);
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
 			} else {
 				m_notifier.notify(m_src, Notifier.NOTIFY_WARNING,
-						"failed to find instruction at PC 0x" + Long.toHexString(RAMBASE));
+						"failed to find instruction at PC 0x" + Long.toHexString(functionPc) + " for function '" + functionName + "'");
 			}
 		}
 	}
