@@ -46,6 +46,7 @@
          <zipfileset src="../../infr_libs_java/export/jars/proginfoloader.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/isa.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/util.jar"/>
+         <zipfileset src="../../infr_libs_java/export/jars/memorymonitor.jar"/>
     </jar>
   </target>
 

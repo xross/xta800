@@ -3,12 +3,12 @@ package com.xmos.xta.core.console.commands.debug;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;

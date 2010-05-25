@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import com.xmos.libs.dwarfhandler.DebugEngine;
+import com.xmos.libs.memorymonitor.MemoryMonitor;
+import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
 import com.xmos.libs.util.IteratableMap;

@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;

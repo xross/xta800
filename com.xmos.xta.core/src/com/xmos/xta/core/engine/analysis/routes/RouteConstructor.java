@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
@@ -15,7 +16,6 @@ import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;

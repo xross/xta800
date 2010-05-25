@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
@@ -15,7 +16,6 @@ import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;

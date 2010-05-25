@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.MemoryMonitorException;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
