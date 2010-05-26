@@ -20,7 +20,7 @@
 #include "pwm.h"
 #include "led_controller.h"
 
-port p_speaker = XS1_PORT_1K;
+on stdcore[0] : port p_speaker = XS1_PORT_1K;
 
 int main(void)
 {

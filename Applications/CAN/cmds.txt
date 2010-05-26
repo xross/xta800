@@ -1,8 +1,0 @@
-add exclusion handleErrorLabel
-add exclusion phyLoop
-add exclusion startRx
-add exclusion txTurnaround
-debug dumpactiveexclusions
-analyze endpoints txCheckBit txCheckBit
-set required - 1 us
-print summary

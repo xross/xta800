@@ -14,11 +14,12 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <xs1.h>
+#include <platform.h>
 
 #include "sid_demo.h"
 #include "led_controller.h"
 
-in port p_buttons = XS1_PORT_4D;
+on stdcore[0] : in port p_buttons = XS1_PORT_4D;
 
 unsigned short load_addr;
 unsigned short init_addr;

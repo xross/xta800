@@ -1,2 +1,1 @@
-.*
-[^^^]
+CanTest.xc:246: warning: `ledChan_2' not used in two parallel statements

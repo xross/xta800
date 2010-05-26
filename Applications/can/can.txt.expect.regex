@@ -1,7 +1,34 @@
 Route\(0\) endpoints: startRx to startRx
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: 60.0 ns, Required: 840.0 ns, Worst: 780.0 ns, Min Core Frequency: 371 MHz
+    Pass with 4 unknowns, Num Paths: \d+, Slack: 40.0 ns, Required: 840.0 ns, Worst: 800.0 ns, Min Core Frequency: \d+ MHz
 
-Route\(1\) endpoints: startTx to startTx
-    Pass with \d+ unknowns, Num Paths: \d+, Slack: 40.0 ns, Required: 1.0 us, Worst: 960.0 ns, Min Core Frequency: 384 MHz
+Route\(1\) endpoints: startRx to startRx
+    Pass with 4 unknowns, Num Paths: \d+, Slack: 70.0 ns, Required: 840.0 ns, Worst: 770.0 ns, Min Core Frequency: \d+ MHz
 
-Pass, Min Core Frequency: 384 MHz
+Route\(2\) endpoints: txCheckBit to txCheckBit
+    Pass with 4 unknowns, Num Paths: \d+, Slack: 0.0 ns, Required: 980.0 ns, Worst: 980.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(3\) endpoints: txCheckBit to sendBit
+    Pass with 2 unknowns, Num Paths: \d+, Slack: 50.0 ns, Required: 300.0 ns, Worst: 250.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(4\) endpoints: txCheckBit to startRx
+    Pass with 3 unknowns, Num Paths: \d+, Slack: 100.0 ns, Required: 1.0 us, Worst: 900.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(5\) endpoints: txPacketRxStart to txPacketRxEnd
+    Pass with 15 unknowns, Num Paths: \d+, Slack: 240.0 ns, Required: 1.0 us, Worst: 760.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(6\) function: sendPacket
+    Pass with 14 unknowns, Num Paths: \d+, Slack: 680.0 ns, Required: 1.0 us, Worst: 320.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(7\) function: sendPacket
+    Pass with 14 unknowns, Num Paths: \d+, Slack: 680.0 ns, Required: 1.0 us, Worst: 320.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(8\) endpoints: startRx to sendError
+    Fail with 1 unknown, Num Paths: \d+, Violation: 170.0 ns, Required: 320.0 ns, Worst: 490.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(9\) endpoints: startRx to sendError
+    Fail with 1 unknown, Num Paths: \d+, Violation: 150.0 ns, Required: 320.0 ns, Worst: 470.0 ns, Min Core Frequency: \d+ MHz
+
+Route\(10\) endpoints: txCheckBit to sendError
+    Pass with 1 unknown, Num Paths: \d+, Slack: 90.0 ns, Required: 320.0 ns, Worst: 230.0 ns, Min Core Frequency: \d+ MHz
+
+Fail, 2/11, Max Violation: 170.0 ns
