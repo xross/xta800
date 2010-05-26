@@ -11,16 +11,24 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Reference implements Comparable<Reference>  {
+	private String m_coreIdString;
 	private ReferenceType m_base;
 	private List<ReferenceType> m_backTrail;
 
-	Reference(ReferenceType base) {
+	Reference(String coreIdString, ReferenceType base) {
+		m_coreIdString = coreIdString;
 		m_base = base;
 		m_backTrail = new ArrayList<ReferenceType>();
 	}
 
 	public String getRef() {
     	StringBuffer str = new StringBuffer();
+    	
+    	if (m_coreIdString != null) {    		
+    	    str.append(m_coreIdString);
+    	    str.append(ReferenceFactory.CORE_ID_SEPARATOR);
+    	}
+    	
     	for (ReferenceType backTrail : m_backTrail) {
     		str.append(backTrail.getRef());
     		str.append(",");

@@ -121,8 +121,7 @@ public class ReferenceTypeFactory {
 	}
 	private static Engine m_engine;
 
-	public static ReferenceType createReferenceType(String reference,  ReferenceClass classType, CoreId coreId) {
-		
+	public static ReferenceType createReferenceType(String reference,  ReferenceClass classType, CoreId coreId) {		
 		ReferenceClassType referenceClass = getReferenceClass(classType);
 		ReferenceType[] referenceTypes = referenceClass.getReferenceTypes();
 		for (ReferenceType referenceType : referenceTypes) {
@@ -132,6 +131,10 @@ public class ReferenceTypeFactory {
 			}
 		}
 		return new ErrorReference(reference, m_coreId);
+	}
+
+	public static ReferenceType createErrorReferenceType(String reference, CoreId coreId) {
+		return new ErrorReference(reference, coreId);
 	}
 
 	public static Map<ReferenceClass, ReferenceClassType> getReferenceClasses() {
@@ -147,5 +150,5 @@ public class ReferenceTypeFactory {
     public static void setEngine(Engine engine) {
     	assert(engine != null);
     	m_engine = engine;
-    }
+    }    
 }

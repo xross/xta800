@@ -197,7 +197,7 @@ public abstract class ReferenceType {
 		assert((refArray.length == 2) || (refArray.length == 3) || (refArray.length == 4));
 
 		if ((refArray.length == 4) || (refArray.length == 3) &&
-				(refArray[refArray.length - 3].length() == 1)) {
+			(refArray[refArray.length - 3].length() == 1)) {
 			return refArray[refArray.length - 3] + ":" + refArray[refArray.length - 2];
 		} else {
 			return refArray[refArray.length - 2];
