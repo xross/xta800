@@ -753,13 +753,12 @@ public class RouteConstructor {
 	}
 
 	private void setSrcLoopCounts() throws AbortedException {
-		m_engine.getAbort();
-		m_engine.provideFeedback("Setting loop counts on routes...");
-
 		CoreId coreId = m_coreContainer.getCoreId();
 		
 		// Sets the loop iteration counts specified at compile time.
 		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops(coreId)) {
+			m_engine.provideFeedback(String.format("Setting loop count at pc: 0x%x", srcLevelLoopInfo.getPc()));
+			m_engine.getAbort();
 
 			Reference reference = ReferenceFactory.createReference(
 					String.format("0x%x", srcLevelLoopInfo.getPc()),
