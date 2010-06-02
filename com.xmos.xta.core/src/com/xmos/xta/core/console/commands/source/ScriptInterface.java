@@ -16,6 +16,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class ScriptInterface {
@@ -277,6 +278,23 @@ public class ScriptInterface {
     	}
     }
 
+    // ===================================================================== //
+    // Config Methods
+	// ===================================================================== //
+    public void configThreads(String coreReference, int numThreads) throws Exception {
+    	CoreId coreId = m_engine.getCoreId(coreReference);
+		if (coreId == null) {
+			throw new Exception("configThreads: invalid core reference");	
+		}
+		m_engine.setNumThreads(m_src, coreId, numThreads);
+		checkForErrors("configThreads");
+    }
+
+    public void configFreq(String nodeId, double coreFrequency) throws Exception {
+    	m_engine.setFrequency(m_src, nodeId, coreFrequency);
+    	checkForErrors("configFreq");
+    }
+  
 	// ===================================================================== //
     // Private Helper Methods
 	// ===================================================================== //    

@@ -462,7 +462,7 @@ public class Engine extends Notifier implements Aborter {
 	// Get/Set Frequency.
 	// ===================================================================== //			
 	public void setFrequency(CommandSource src, String nodeId, double frequency) {
-		if (checkFrequency(src, frequency)) {
+		if (checkFrequency(src, nodeId, frequency)) {
 			m_nodeHz.put(nodeId, (int)(frequency * 1000000));
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");			
 		}
@@ -1783,7 +1783,11 @@ public class Engine extends Notifier implements Aborter {
 		return true;
 	}
 
-	private boolean checkFrequency(CommandSource src, double frequency) {
+	private boolean checkFrequency(CommandSource src, String nodeId, double frequency) {
+		if (!m_nodeHz.containsKey(nodeId)) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Invalid node id: %s", nodeId));
+			return false;
+		}
 		if (frequency <= 0) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Frequency '%.1f' invalid", frequency));
 			return false;
