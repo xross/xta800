@@ -263,11 +263,11 @@ public class ScriptInterface {
     }
 
     public double getWorstCase(int routeId, String units) throws Exception {
-    	return getTime(routeId, units, Case.WORST);
+    	return getTime(routeId, units, Case.WORST, "getWorstCase");
     }
 
     public double getBestCase(int routeId, String units) throws Exception {
-    	return getTime(routeId, units, Case.BEST);
+    	return getTime(routeId, units, Case.BEST, "getBestCase");
     }
 
     public String getRouteDescription(int routeId) throws Exception {
@@ -315,11 +315,11 @@ public class ScriptInterface {
     	return routeIds;    	
     }
     
-    private double getTime(int routeId, String units, Case c) throws Exception {
+    private double getTime(int routeId, String units, Case c, String exStr) throws Exception {
 		Status status = new Status();
 		double time = getRoute(routeId).getRouteTiming().getTime(status, c);
     	if (status.isExceptionalCase()) {
-    		throw new Exception("xta.getActual: timing on routeId " + routeId + " is " + status.getString());
+    		throw new Exception("xta." + exStr + ": timing on routeId " + routeId + " is " + status.getString());
     	} 
     	TimeUnit timeUnit = new TimeUnit(time, "ns");    	
    	    return timeUnit.getValue(units);
