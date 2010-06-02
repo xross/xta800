@@ -90,7 +90,7 @@ public class SourceMapper {
     public void setFile(CommandSource src, Notifier notifier, DebugEngine debugEngine,
     		SourceFile sourceFile, File file) {
 
-    	if (file == null)
+    	if ((file == null) || (sourceFile == null))
     		return;
 
     	DebugFile debugFile = sourceFile.getDebugFile();
