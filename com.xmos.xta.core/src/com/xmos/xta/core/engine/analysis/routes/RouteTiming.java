@@ -1,5 +1,8 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.xmos.libs.util.Conversion;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -63,6 +66,14 @@ public class RouteTiming {
 		return passedTiming();
 	}
 
+	public List<String> getWarnings() {
+		return getStrings(Unknown.Level.WARNING);
+	}
+
+	public List<String> getErrors() {
+		return getStrings(Unknown.Level.ERROR);
+	}
+	
 	public long getViolationCycles(Status status) {
 		return getCycles(status, Case.WORST) - m_maxTime.getCycles();
 	}
@@ -244,5 +255,15 @@ public class RouteTiming {
 
     private double getMhz(double ns) {
     	return (1.0 * 1000) / ns;
+    }
+    
+    private List<String> getStrings(Unknown.Level level) {
+    	List<String> strings = new ArrayList<String>();		
+    	for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
+    		if (unknown.getLevel() == level) {
+    			strings.add(unknown.getDescription());
+    		}
+    	}
+    	return strings;        	
     }
 }

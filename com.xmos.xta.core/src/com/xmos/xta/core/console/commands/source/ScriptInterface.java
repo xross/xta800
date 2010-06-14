@@ -269,7 +269,23 @@ public class ScriptInterface {
     public double getBestCase(int routeId, String units) throws Exception {
     	return getTime(routeId, units, Case.BEST, "getBestCase");
     }
+    
+    public List<String> getWarnings(int routeId) throws Exception {
+    	try {
+       	    return getRoute(routeId).getRouteTiming().getWarnings();
+    	} catch (Exception e) {
+    		throw new Exception("getWarnings: " + e.getMessage());
+    	}
+    }
 
+    public List<String> getErrors(int routeId) throws Exception {
+    	try {
+       	    return getRoute(routeId).getRouteTiming().getErrors();
+    	} catch (Exception e) {
+    		throw new Exception("getErrors: " + e.getMessage());
+    	}
+    }
+    
     public String getRouteDescription(int routeId) throws Exception {
     	try {
           	return getRoute(routeId).getRouteCoreContainer().getRouteContainer().getDescription();
