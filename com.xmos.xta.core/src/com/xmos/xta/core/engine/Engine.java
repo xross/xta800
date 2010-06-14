@@ -1441,16 +1441,18 @@ public class Engine extends Notifier implements Aborter {
 		return m_sections.getSystems(coreId);
 	}
 
-    public CoreId getCoreId(String coreReference) {
+    public CoreId getCoreId(CommandSource src, String coreReference) {
     	XnLoader xnLoader = m_xeLoader.getXnLoader();
 		Pair<Integer,Integer> nodeCore = xnLoader.getNodeChainIndexCoreNumber(coreReference);
 		if (nodeCore == null) {
+    		notify(src, Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
     		return null;
 		}
 		int nodeChainIndex = nodeCore.first;
 		int coreNumber = nodeCore.second;
 		
     	if (m_xeLoader.getMemoryImage(nodeChainIndex, coreNumber) == null) {
+    		notify(src, Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
     		return null;
     	}		
     	return new CoreId(xnLoader, nodeChainIndex, coreNumber);

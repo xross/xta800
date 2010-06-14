@@ -48,7 +48,7 @@ public class ScriptInterface {
     }
 
 	// ===================================================================== //
-    // Analyze Methods
+    // Route Creation/Deletion Methods
 	// ===================================================================== //
     public List<Integer> analyzeFunction(String functionName) throws Exception {
     	m_engine.analyzeFunction(m_src, functionName);
@@ -69,9 +69,37 @@ public class ScriptInterface {
     	return getLastRouteIds();
     }
 
+    public void removeRoute(int routeId) throws Exception {
+    	if (!m_engine.removeRoute(m_src, routeId)) {    	       	   
+    		throw new Exception("removeRoute: Unable to remove route: " + routeId);
+    	}    	
+    }
+    
 	// ===================================================================== //
     // Add/Remove Methods
 	// ===================================================================== //
+    public void addCore(String coreReference) throws Exception {
+    	CoreId coreId = m_engine.getCoreId(m_src, coreReference);
+    	checkForErrors("addCore");    	
+    	m_engine.addActiveCore(m_src, coreId);
+    	checkForErrors("addCore");
+    }
+
+    public void removeCore(String coreReference) throws Exception {
+    	CoreId coreId = m_engine.getCoreId(m_src, coreReference);
+    	checkForErrors("removeCore");    	
+    	m_engine.removeActiveCore(m_src, coreId);
+    	checkForErrors("removeCore");
+    }
+    
+    public Collection<String> getCores() throws Exception {
+    	Collection<String> cores = new ArrayList<String>();
+        for (CoreId coreId : m_engine.getActiveCores()) {
+        	cores.add(coreId.getCoreReference());
+        }
+        return cores;
+    }
+    
     public void addExclusion(String ref) throws Exception {
     	m_engine.addExclusion(m_src, ref);
         checkForErrors("addExclusion");
@@ -286,6 +314,14 @@ public class ScriptInterface {
     	}
     }
     
+    public List<Integer> getRouteIds() {
+    	List<Integer> routeIds = new ArrayList<Integer>();    	
+    	for (Route route : m_engine.getRoutes()) {
+    		routeIds.add(route.getRouteId());
+    	}
+    	return routeIds;
+    }
+     
     public String getRouteDescription(int routeId) throws Exception {
     	try {
           	return getRoute(routeId).getRouteCoreContainer().getRouteContainer().getDescription();
@@ -298,10 +334,8 @@ public class ScriptInterface {
     // Config Methods
 	// ===================================================================== //
     public void configThreads(String coreReference, int numThreads) throws Exception {
-    	CoreId coreId = m_engine.getCoreId(coreReference);
-		if (coreId == null) {
-			throw new Exception("configThreads: invalid core reference");	
-		}
+    	CoreId coreId = m_engine.getCoreId(m_src, coreReference);
+    	checkForErrors("configThreads");
 		m_engine.setNumThreads(m_src, coreId, numThreads);
 		checkForErrors("configThreads");
     }
