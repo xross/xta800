@@ -1259,7 +1259,8 @@ public class Engine extends Notifier implements Aborter {
                 Iterator<Reference> iter = m_exclusions.iterator();
                 while (iter.hasNext()) {
                     Reference ref = iter.next();
-                    if (ref.equals(reference)) {
+                    if (ref.equals(reference) && 
+                    	ref.getCoreId().getCoreReference().equals(reference.getCoreId().getCoreReference())) {
                         iter.remove();
                     }
                 }				
