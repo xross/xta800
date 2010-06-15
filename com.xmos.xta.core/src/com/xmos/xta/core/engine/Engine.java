@@ -198,6 +198,10 @@ public class Engine extends Notifier implements Aborter {
 		return m_memoryMonitor;
 	}
 	
+	public InstructionDecoder getInstructionDecoder(CoreId coreId) {
+		return m_instructionDecoders.get(coreId);
+	}
+	
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
