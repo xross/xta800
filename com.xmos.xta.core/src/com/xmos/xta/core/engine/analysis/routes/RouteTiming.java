@@ -108,8 +108,10 @@ public class RouteTiming {
 			}
 
 			if (level == Level.COMPLETE) {
-				description += String.format("Node: %d, Core: %d\n",
-						m_coreId.getNodeChainIndex(), m_coreId.getCoreNumber());
+				description += String.format("%s (node: %d, core: %d)\n",
+						m_coreId.getCoreReference(), 
+						m_coreId.getNodeChainIndex(), 
+						m_coreId.getCoreNumber());				
 			} else {
 				description += "    ";
 			}
@@ -119,7 +121,7 @@ public class RouteTiming {
 			} else {
 				description += "Fail";
 			}
-
+			
 			int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
 			if (numWarnings > 0)
 				description += " with " + numWarnings + " unknown";
@@ -223,8 +225,10 @@ public class RouteTiming {
 			}
 		} else {
 			if (level == Level.COMPLETE) {
-				description += String.format("Node: %d, Core: %d\n",
-						m_coreId.getNodeChainIndex(), m_coreId.getCoreNumber());
+				description += String.format("%s (node: %d, core: %d)\n",
+						m_coreId.getCoreReference(), 
+						m_coreId.getNodeChainIndex(), 
+						m_coreId.getCoreNumber());				
 			} else {
 				description += "    ";
 			}
