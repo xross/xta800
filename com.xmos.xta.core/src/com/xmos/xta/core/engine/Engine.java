@@ -89,6 +89,7 @@ public class Engine extends Notifier implements Aborter {
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
+	private long m_loadedFileLastModifiedTime;
 	private Notifier m_notifier;
 	private ProgressMonitor m_progressMonitor;
 	private String m_srcPaths;
@@ -125,6 +126,7 @@ public class Engine extends Notifier implements Aborter {
 		m_activeCores = new ArrayList<CoreId>();
 		m_config = config;
 		m_executableFile = null;
+		m_loadedFileLastModifiedTime = 0;
 		m_srcPaths = ".";
 		m_progressMonitor = null;
 		m_sections = new Sections();
@@ -249,6 +251,7 @@ public class Engine extends Notifier implements Aborter {
 	
 			m_exclusions = new ArrayList<Reference>();
 			m_executableFile = executableFile;
+			m_loadedFileLastModifiedTime = executableFile.lastModified();
 			m_xeLoader = xeLoader;
 			m_sections = sections;
 			m_routes.clear();
@@ -407,6 +410,10 @@ public class Engine extends Notifier implements Aborter {
 
 	public File getExecutable() {
 		return m_executableFile;
+	}
+
+	public long getExecutableLastModifiedTime() {
+		return m_loadedFileLastModifiedTime;
 	}
 
 	public void setMonitor(ProgressMonitor monitor) {
