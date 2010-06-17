@@ -5,22 +5,6 @@
 #
 remove core \*
 add core stdcore\[0\]
-# Warning: 'test.xc:25' is a non-portable reference.
-add exclusion test.xc:25
-remove core \*
-add core stdcore\[1\]
-# Warning: 'test.xc:27' is a non-portable reference.
-add exclusion test.xc:27
-remove core \*
-add core stdcore\[2\]
-# Warning: 'test.xc:29' is a non-portable reference.
-add exclusion test.xc:29
-remove core \*
-add core stdcore\[3\]
-# Warning: 'test.xc:31' is a non-portable reference.
-add exclusion test.xc:31
-remove core \*
-add core stdcore\[0\]
 # Warning: 'test.xc:37' is a non-portable reference.
 add instructiontime test.xc:37 20.0 us
 remove core \*
@@ -99,6 +83,22 @@ remove core \*
 add core stdcore\[3\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loopscope test.xc:43 false
+remove core \*
+add core stdcore\[0\]
+# Warning: 'test.xc:25' is a non-portable reference.
+add exclusion test.xc:25
+remove core \*
+add core stdcore\[1\]
+# Warning: 'test.xc:27' is a non-portable reference.
+add exclusion test.xc:27
+remove core \*
+add core stdcore\[2\]
+# Warning: 'test.xc:29' is a non-portable reference.
+add exclusion test.xc:29
+remove core \*
+add core stdcore\[3\]
+# Warning: 'test.xc:31' is a non-portable reference.
+add exclusion test.xc:31
 analyze function f
 # Warning: 'test.xc:55' is a non-portable reference.
 set instructiontime 0 test.xc:55 20.0 us

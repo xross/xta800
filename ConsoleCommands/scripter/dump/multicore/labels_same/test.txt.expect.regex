@@ -4,13 +4,13 @@
 # Route: f
 #
 add branch Lbranch Ltarget1 Ltarget2 Ltarget3 Ltarget4
-add exclusion then
 add functiontime g 1.0 us
 add instructiontime timer1 2.0 us
 add loop loop1 10
 add loop loop1_inner 5
 add looppath loop1_if 8
 add loopscope loop1_inner true
+add exclusion then
 analyze function f
 set instructiontime - timer2 2.0 us
 set loop - loop2 10
