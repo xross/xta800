@@ -1,5 +1,6 @@
 package com.xmos.xta.core.console.commands.list;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
+import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class Exclusions extends Command {
@@ -79,7 +81,11 @@ public class Exclusions extends Command {
 		if (m_routeIdSet) {
 			listExclusions(engine, console, engine.getRoute(m_routeId));
 		} else {
-			listExclusions(console, engine.getExclusions());
+			Collection<Reference> exclusions = new ArrayList<Reference>();
+		    for (ExclusionInfo info : engine.getExclusions()) {
+		    	exclusions.add(info.getReference());
+		    }			
+			listExclusions(console, exclusions);
 		}
     }
 
@@ -95,10 +101,10 @@ public class Exclusions extends Command {
 		    		}
 		    	}
 		    }
-		    
+
 		    RouteContainer routeContainer = route.getRouteCoreContainer().getRouteContainer();
-		    for (Reference ref : routeContainer.getExclusions()) {
-		    	uniqueExclusions.add(ref);
+		    for (ExclusionInfo info : routeContainer.getDefines().getExclusions()) {
+		    	uniqueExclusions.add(info.getReference());
 		    }
     	}
     	listExclusions(console, uniqueExclusions);

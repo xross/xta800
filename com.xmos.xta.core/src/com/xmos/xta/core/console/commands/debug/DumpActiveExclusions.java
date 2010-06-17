@@ -12,6 +12,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
 import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
+import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.CoreId;
 
@@ -42,7 +43,8 @@ public class DumpActiveExclusions extends Command {
     	
     	for(CoreId coreId : engine.getActiveCores()){
     		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
-			for(Reference ref : engine.getExclusions()){
+			for(ExclusionInfo info : engine.getExclusions()){
+				Reference ref = info.getReference();
 				if(ref.getCoreId().equals(coreId)){
 					List<StackNode> stackNodes = getPathStackNodes(engine.getCallGraph(coreId), ref, engine);
 					if (stackNodes != null) {

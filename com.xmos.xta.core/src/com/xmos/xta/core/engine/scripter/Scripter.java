@@ -46,14 +46,12 @@ public class Scripter {
 	private Engine m_engine;
 	
 	private Collection<CoreId> m_initialActiveCores;
-	private Collection<Reference> m_initialExclusions;
 	private Map<Reference, List<Reference>> m_initialBranches;
 	private Defines m_initialDefines;
 	private Map<String, Double> m_initialFrequencies;
 	private Map<CoreId, Integer> m_initialNumThreads;
 	
 	private Collection<CoreId> m_currentActiveCores;
-	private Collection<Reference> m_currentExclusions;
 	private Map<Reference, List<Reference>> m_currentBranches;
 	private Defines m_currentDefines;
 	private Map<String, Double> m_currentFrequencies;
@@ -75,14 +73,12 @@ public class Scripter {
 		m_engine = engine;
 
 		m_initialActiveCores = new ArrayList<CoreId>();
-		m_initialExclusions = new ArrayList<Reference>();
 		m_initialBranches = new NonIteratableMap<Reference, List<Reference>>();
 		m_initialDefines = new Defines();
 		m_initialFrequencies = new NonIteratableMap<String, Double>();
 		m_initialNumThreads = new NonIteratableMap<CoreId, Integer>();		
 
 		m_currentActiveCores = new ArrayList<CoreId>();
-		m_currentExclusions = new ArrayList<Reference>();
 		m_currentBranches = new NonIteratableMap<Reference, List<Reference>>();
 		m_currentDefines = new Defines();
 		m_currentFrequencies = new NonIteratableMap<String, Double>();
@@ -100,7 +96,6 @@ public class Scripter {
 
 	public void setEngineLoadAndRunDone() {
 		m_initialActiveCores = new ArrayList<CoreId>(m_engine.getActiveCores());
-		m_initialExclusions = new ArrayList<Reference>(m_engine.getExclusions());
 		m_initialBranches = new NonIteratableMap<Reference, List<Reference>>(m_engine.getUserBranches());
 		m_initialDefines = new Defines(m_engine.getDefines());
 		m_initialFrequencies = new NonIteratableMap<String, Double>(m_engine.getFrequencyMap());
@@ -283,10 +278,6 @@ public class Scripter {
        		}
 
        		addDefineReferences(routeContainer.getDefines());
-
-        	for (Reference ref : routeContainer.getExclusions()) {
-        		addReference(ref);
-        	}
     	}
 
     	// Apply all current disables and renames
@@ -375,7 +366,6 @@ public class Scripter {
        		updateFrequencies(routeContainer, script);
        		updateNumThreads(routeContainer, script);       		
         	addBranches(routeContainer, script);
-        	addExclusions(routeContainer, script);
         	addDefines(routeContainer, script);
        		updateActiveCores(routeContainer, script);
         	analyzeRoutes(routeContainer, script);
@@ -455,14 +445,6 @@ public class Scripter {
     			m_currentBranches, script, routeContainer.getActiveCores());		
     	
     	m_currentBranches = routeContainer.getBranches();    
-    }
-
-    private void addExclusions(RouteContainer routeContainer, StringBuffer script) {
-    	AddScripter scripter = new AddScripter(this);
-    	scripter.addExclusions(routeContainer.getExclusions(), 
-    			m_currentExclusions, script, routeContainer.getActiveCores());
-    	
-    	m_currentExclusions = routeContainer.getExclusions();
     }
 
 	private void addDefines(RouteContainer routeContainer, StringBuffer script) {		
@@ -851,7 +833,6 @@ public class Scripter {
     
     private void resetState() {
 		m_currentActiveCores = new ArrayList<CoreId>(m_initialActiveCores);
-		m_currentExclusions = new ArrayList<Reference>(m_initialExclusions);
 		m_currentBranches = new NonIteratableMap<Reference, List<Reference>>(m_initialBranches);
 		m_currentDefines = new Defines(m_initialDefines);
 		m_currentFrequencies = new NonIteratableMap<String, Double>(m_initialFrequencies);

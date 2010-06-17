@@ -33,6 +33,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNode
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
 import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
 import com.xmos.xta.core.engine.defines.LoopInfo;
@@ -105,7 +106,8 @@ public class RouteConstructor {
 		
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
 
-		for(Reference ref : m_engine.getExclusions()){
+		for(ExclusionInfo info : m_engine.getExclusions()){
+			Reference ref = info.getReference();
 			if(ref.getCoreId().equals(m_core)){
 				exclusionStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
 			}

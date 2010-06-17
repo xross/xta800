@@ -42,8 +42,8 @@ public class LoopScopeInfo implements DefineInfo {
     
     public boolean equals(Object o) {
 		boolean ret = false;
-		if(o != null) {
-			if(o instanceof LoopScopeInfo){
+		if (o != null) {
+			if (o instanceof LoopScopeInfo){
 				ret = ((LoopScopeInfo)o).m_reference.equals(m_reference) &&
 	                  (((LoopScopeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
 			}

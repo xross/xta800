@@ -15,6 +15,7 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.defines.DefineInfo;
+import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
@@ -112,8 +113,8 @@ public class ScriptInterface {
 
     public Collection<String> getExclusions() throws Exception {
     	Collection<String> exclusions = new ArrayList<String>();
-        for (Reference exclusion : m_engine.getExclusions()) {
-        	exclusions.add(exclusion.getRef());
+        for (ExclusionInfo info : m_engine.getExclusions()) {
+        	exclusions.add(info.getReference().getRef());
         }
         return exclusions;
     }

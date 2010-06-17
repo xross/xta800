@@ -14,6 +14,7 @@ public class Defines {
 	private Collection<LoopPathInfo> m_loopPaths;
 	private Collection<LoopScopeInfo> m_loopScopes;
 	private Collection<InstructionTimeInfo> m_instructionTimes;
+	private Collection<ExclusionInfo> m_exclusions;
 
     public Defines() {
     	m_functionTimes    = new ArrayList<FunctionTimeInfo>();
@@ -22,6 +23,7 @@ public class Defines {
     	m_loops            = new ArrayList<LoopInfo>();
     	m_loopPaths        = new ArrayList<LoopPathInfo>();
     	m_loopScopes       = new ArrayList<LoopScopeInfo>();
+    	m_exclusions       = new ArrayList<ExclusionInfo>();
 	}
 
     public Defines(Defines defines) {
@@ -31,6 +33,7 @@ public class Defines {
     	m_loops            = new ArrayList<LoopInfo>(defines.m_loops);
     	m_loopPaths        = new ArrayList<LoopPathInfo>(defines.m_loopPaths);
     	m_loopScopes       = new ArrayList<LoopScopeInfo>(defines.m_loopScopes);
+    	m_exclusions       = new ArrayList<ExclusionInfo>(defines.m_exclusions);
     }
 
 	public void updateScript(Defines defines, ScriptUpdater updater) {
@@ -52,6 +55,9 @@ public class Defines {
 		if (!m_loopScopes.equals(defines.getLoopScopes())) {
 			updater.update(m_loopScopes, defines.getLoopScopes(), "loopscope", "*");
 		}
+		if (!m_exclusions.equals(defines.getExclusions())) {
+			updater.update(m_exclusions, defines.getExclusions(), "exclusion", "*");
+		}
 	}
 	
     public void clear() {
@@ -61,6 +67,7 @@ public class Defines {
     	m_loops.clear();
     	m_loopPaths.clear();
     	m_loopScopes.clear();
+    	m_exclusions.clear();
     }
 
     public Collection<DefineInfo> getDefines() {
@@ -71,6 +78,7 @@ public class Defines {
     	defines.addAll(m_loops);
     	defines.addAll(m_loopPaths);
     	defines.addAll(m_loopScopes);
+    	defines.addAll(m_exclusions);
     	return defines;
     }
     
@@ -98,6 +106,10 @@ public class Defines {
     	return m_loopScopes;
     }
 
+    public Collection<ExclusionInfo> getExclusions() {
+    	return m_exclusions;
+    }
+    
 	public void addFunctionTime(Reference function, TimeUnit timeUnit) {
 		FunctionTimeInfo info = new FunctionTimeInfo(function, timeUnit);
 		m_functionTimes.remove(info);
@@ -134,6 +146,12 @@ public class Defines {
 		m_loopScopes.add(info);
 	}
 
+	public void addExclusion(Reference reference) {
+		ExclusionInfo info = new ExclusionInfo(reference);
+		m_exclusions.remove(info);
+		m_exclusions.add(info);
+	}
+	
 	public void removeFunctionTime(Reference function) {
 		Iterator<FunctionTimeInfo> iter = m_functionTimes.iterator();
 		while (iter.hasNext()) {
@@ -189,6 +207,17 @@ public class Defines {
 		while (iter.hasNext()) {
 			LoopScopeInfo info = iter.next();
 			if (info.getReference().equals(reference)) {
+				iter.remove();
+			}
+		}		
+	}
+
+	public void removeExclusion(Reference reference) {
+		Iterator<ExclusionInfo> iter = m_exclusions.iterator();
+		while (iter.hasNext()) {
+			ExclusionInfo info = iter.next();
+			if (info.getReference().equals(reference) && 
+				info.getReference().getCoreId().getCoreReference().equals(reference.getCoreId().getCoreReference())) {
 				iter.remove();
 			}
 		}		

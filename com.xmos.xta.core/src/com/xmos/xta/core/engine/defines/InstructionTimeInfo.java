@@ -43,7 +43,7 @@ public class InstructionTimeInfo implements DefineInfo {
         
 	public boolean equals(Object o) {
 		boolean ret = false;
-		if (o!=null) {
+		if (o != null) {
 			if (o instanceof InstructionTimeInfo) {
 				ret = ((InstructionTimeInfo)o).m_reference.equals(m_reference) &&
 			          (((InstructionTimeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));

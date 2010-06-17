@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Sourc
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
 import com.xmos.xta.core.engine.debugger.Debugger;
 import com.xmos.xta.core.engine.defines.Defines;
+import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
 import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
 import com.xmos.xta.core.engine.defines.LoopInfo;
@@ -85,7 +85,6 @@ public class Engine extends Notifier implements Aborter {
 	private XeLoader m_xeLoader;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
-	private Collection<Reference> m_exclusions;
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
@@ -122,7 +121,6 @@ public class Engine extends Notifier implements Aborter {
 		m_xeLoader = new XeLoader();
 		m_routes = new LinkedList<Route>();
 		m_routeContainers = new LinkedList<RouteContainer>();
-		m_exclusions = new ArrayList<Reference>();
 		m_activeCores = new ArrayList<CoreId>();
 		m_config = config;
 		m_executableFile = null;
@@ -249,7 +247,6 @@ public class Engine extends Notifier implements Aborter {
 			initialiseCoreStates(xeLoader);
 		    initialiseActiveCores(xeLoader);		
 	
-			m_exclusions = new ArrayList<Reference>();
 			m_executableFile = executableFile;
 			m_loadedFileLastModifiedTime = executableFile.lastModified();
 			m_xeLoader = xeLoader;
@@ -744,6 +741,14 @@ public class Engine extends Notifier implements Aborter {
 		}, ReferenceClass.ANY);
 	}
 
+	public void addExclusion(CommandSource src, String refString) {
+		updateDefines(src, refString, new DefinesUpdate() {
+			public void run(Reference reference) {
+				m_defines.addExclusion(reference);
+			}
+		}, ReferenceClass.ANY);
+	}
+	
 	public void removeFunctionTime(CommandSource src, String functionName) {
 		boolean hit = false;
 		for (CoreId activeCore : m_activeCores) {
@@ -816,6 +821,14 @@ public class Engine extends Notifier implements Aborter {
 		}, ReferenceClass.ANY_WITH_EVERYTHING);
 	}
 
+	public void removeExclusion(CommandSource src, String refString) {
+		updateDefines(src, refString, new DefinesUpdate() {
+			public void run(Reference reference) {
+				m_defines.removeExclusion(reference);
+			}
+		}, ReferenceClass.ANY_WITH_EVERYTHING);
+	}	
+	
 	public Collection<FunctionTimeInfo> getFunctionTimeDefines() {
 		return m_defines.getFunctionTimes();
 	}
@@ -840,6 +853,10 @@ public class Engine extends Notifier implements Aborter {
 		return m_defines.getLoopScopes();
 	}
 
+	public Collection<ExclusionInfo> getExclusions() {
+		return m_defines.getExclusions();
+	}
+	
 	public Defines getDefines() {
 		return m_defines;
 	}
@@ -1220,73 +1237,7 @@ public class Engine extends Notifier implements Aborter {
 			return false;
 		}
 	}
-	
-	// ===================================================================== //
-	// Exclusion Methods
-	// ===================================================================== //
-	public boolean addExclusion(CommandSource src, String refString) {
-		boolean hit = false;
-		for (CoreId activeCore : m_activeCores) {
-			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY, activeCore);
-			
-			if (alreadyExcluded(reference)) {
-				notify(src, Notifier.NOTIFY_ERROR, String.format("cannot add duplicate exclusion for ref: %s", reference.getRef()));
-				
-			} else if (resolveReference(reference)) {
-				m_exclusions.add(reference);
-                hit = true;				
-			}
-		}
 		
-		if (hit) {
-			notify(src, Notifier.NOTIFY_UPDATE_EXCLUSIONS, "");
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
-		}
-		return hit;
-	}
-
-	private boolean alreadyExcluded(Reference ref) {
-		for (Reference exclusion : m_exclusions) {
-			if (exclusion.equals(ref)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean removeExclusion(CommandSource src, String refString) {
-		boolean hit = false;
-		for (CoreId activeCore : m_activeCores) {
-			Reference reference = ReferenceFactory.createReference(refString, 
-					ReferenceClass.ANY_WITH_EVERYTHING, activeCore);
-			
-			if (resolveReference(reference)) {
-                Iterator<Reference> iter = m_exclusions.iterator();
-                while (iter.hasNext()) {
-                    Reference ref = iter.next();
-                    if (ref.equals(reference) && 
-                    	ref.getCoreId().getCoreReference().equals(reference.getCoreId().getCoreReference())) {
-                        iter.remove();
-                    }
-                }				
-				hit = true;
-			}
-		}
-		
-		if (hit) {
-			notify(src, Notifier.NOTIFY_UPDATE_EXCLUSIONS, "");
-		} else {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
-		}
-		return hit;
-	}
-
-	public Collection<Reference> getExclusions() {
-		return m_exclusions;
-	}
-	
 	// ===================================================================== //
 	// Section Methods
 	// ===================================================================== //

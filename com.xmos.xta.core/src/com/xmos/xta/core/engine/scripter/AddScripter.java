@@ -49,31 +49,7 @@ public class AddScripter {
 			}			
 		});
     }
-    
-    void addExclusions(Collection<Reference> exclusions, Collection<Reference> currentExclusions, 
-    		StringBuffer script, Collection<CoreId> activeCores) {
-
-    	if (!currentExclusions.equals(exclusions)) {
-    		if (!currentExclusions.isEmpty()) {
-    			m_scripter.addScriptCommand(script, "remove exclusion *");
-    		}
-
-			List<Reference> processed = new ArrayList<Reference>();    		
-        	for (Reference exclusion : exclusions) {    
-				if (!processed.contains(exclusion)) {
-	    		    if (exclusionSetOnAllActiveCores(exclusions, exclusion, activeCores, processed)) {
-	    		    	outputExclusion(script, exclusion);
-
-	        		} else {
-						outputCoreId(script, exclusion.getCoreId());
-	    		    	outputExclusion(script, exclusion);
-	        		}
-	    		    processed.add(exclusion);	
-				}
-        	}  
-    	}
-    }
-    
+        
     void addBranches(Map<Reference, List<Reference>> branches, Map<Reference, List<Reference>> currentBranches, 
     		StringBuffer script, Collection<CoreId> activeCores) {
   
@@ -123,29 +99,6 @@ public class AddScripter {
 		processed.addAll(matched.values());
 		return true;
     }
-
-    private boolean exclusionSetOnAllActiveCores(Collection<Reference> exclusions, 
-    		Reference thisExclusion, Collection<CoreId> activeCores, 
-    		List<Reference> processed) {
-
-		Map<CoreId, Reference> matched = new IteratableMap<CoreId, Reference>();
-		for (CoreId activeCore : activeCores)
-			matched.put(activeCore, null);
-
-    	Iterator<Reference> iter = exclusions.iterator();
-   		while (iter.hasNext()) {
-   			Reference exclusion = iter.next();
-   			if (exclusionMatch(thisExclusion, exclusion)) {
-				matched.put(exclusion.getCoreId(), exclusion);
-			}
-		}    	
-
-		if (matched.containsValue(null))
-			return false;
-
-		processed.addAll(matched.values());    	
-    	return true;
-    }
     
     private boolean branchSetOnAllActiveCores(Map<Reference, List<Reference>> branches, 
     		Entry<Reference, List<Reference>> thisBranch, Collection<CoreId> activeCores, 
@@ -180,13 +133,6 @@ public class AddScripter {
     	return true;
     }
         
-    private boolean exclusionMatch(Reference thisExclusion, Reference thatExclusion) {
-    	if (!thisExclusion.equals(thatExclusion))
-    		return false;
-    	
-    	return true;
-    }    
-        
     private boolean branchMatch(Entry<Reference, List<Reference>> thisBranch, Entry<Reference, List<Reference>> thatBranch) {
     	Reference thisFromRef = thisBranch.getKey();
     	Reference thatFromRef = thatBranch.getKey();
@@ -219,15 +165,11 @@ public class AddScripter {
 			commandString.append(" ");
 			commandString.append(m_scripter.getReferenceString(reference));
 		}
-		commandString.append(" ");
-		commandString.append(info.getValue());
-
+		if (!info.getValue().equals("")) {
+		    commandString.append(" ");
+		    commandString.append(info.getValue());
+		}
 		m_scripter.addScriptCommand(script, commandString.toString());
-    }
-    
-    private void outputExclusion(StringBuffer script, Reference exclusion) {
-		m_scripter.outputPortableWarnings(script, exclusion);
-		m_scripter.addScriptCommand(script, "add exclusion " + m_scripter.getReferenceString(exclusion));						        			    	
     }
     
     private void outputBranch(StringBuffer script, Entry<Reference, List<Reference>> branch) {

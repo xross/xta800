@@ -26,7 +26,6 @@ public class RouteContainer {
     private Collection<CoreId> m_activeCores;
 	private Map<String, Double> m_frequencies;
 	private Map<CoreId, Integer> m_numThreads;    
-	private Collection<Reference> m_exclusions;
 	private Map<Reference, List<Reference>> m_branches;
 	private Defines m_defines;
 	
@@ -79,10 +78,6 @@ public class RouteContainer {
     	return m_routeCoreContainers;
     }
     
-	public Collection<Reference> getExclusions() {
-		return m_exclusions;
-	}
-
 	public Map<Reference, List<Reference>> getBranches() {
 		return m_branches;
 	}
@@ -105,8 +100,6 @@ public class RouteContainer {
 		m_frequencies = new NonIteratableMap<String, Double>(engine.getFrequencyMap());
 		m_numThreads = new NonIteratableMap<CoreId, Integer>(engine.getNumThreadMap());		    	
     	m_routeCoreContainers = new ArrayList<RouteCoreContainer>();
-		m_exclusions = new ArrayList<Reference>();
-		m_exclusions.addAll(engine.getExclusions());
 		m_defines = new Defines(engine.getDefines());
 		m_branches = engine.getUserBranches();    	
     }
