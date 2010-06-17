@@ -124,9 +124,17 @@ public class AddScripter {
     }
     
     private boolean defineInfoMatch(DefineInfo thisInfo, DefineInfo thatInfo) {
-    	if (!thisInfo.getDescription().equals(thatInfo.getDescription())) 
+    	Reference[] thisReferences = thisInfo.getReferences();
+    	Reference[] thatReferences = thatInfo.getReferences();
+    	
+    	if (thisReferences.length != thatReferences.length)
     		return false;
     	
+    	for (int i = 0; i < thisReferences.length; ++i) {
+    		if (!thisReferences[i].equals(thatReferences[i])) {
+    			return false;
+    		}
+    	}    	
     	if (!thisInfo.getValue().equals(thatInfo.getValue())) 
     		return false;
     	
