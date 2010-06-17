@@ -130,6 +130,12 @@ public class Reference implements Comparable<Reference>  {
 	    	    }
 	        }
         }
+
+        if ((m_coreIdString != null) && (reference.m_coreIdString != null)) {
+        	if (!m_coreIdString.equals(reference.m_coreIdString)) {
+        		return false;
+        	}
+        }
     	return true;
     }
 
@@ -147,7 +153,10 @@ public class Reference implements Comparable<Reference>  {
     }
 
     public String toString() {
-    	return getCoreId().toString() + "::" + getRef();
+    	if (m_coreIdString != null) {    		
+        	return getRef();    		
+    	}
+        return getCoreId().toString() + "::" + getRef();    		
     }
 
 	public boolean matches(long pc) {

@@ -64,7 +64,6 @@ public class RouteConstructor {
 		COULD_NOT_FIND_STARTPOINT,
 		COULD_NOT_FIND_ENDPOINT,
 		SUCCESS,
-		ABORTED
 	}
 
 	private CallGraph m_callGraph;
@@ -72,6 +71,7 @@ public class RouteConstructor {
 	private Engine m_engine;
 	private RouteCoreContainer m_coreContainer;
 	private CoreId m_core;
+	
 	public RouteConstructor(Engine engine, CallGraph callGraph,
 			RouteCoreContainer routeCoreContainer, CoreId core) throws AbortedException {
 		m_callGraph = callGraph;
@@ -88,6 +88,8 @@ public class RouteConstructor {
 	}
 
 	public RouteError analyze(CommandSource src) throws Exception {
+		m_engine.provideFeedback("Starting analysis...");
+		
 		RouteContainer routeContainer = m_coreContainer.getRouteContainer();
 
 		if (m_coreContainer.getFromReference() == null) {
@@ -153,16 +155,17 @@ public class RouteConstructor {
 
 			if (!foundAtLeastOneStartPoint){
 				return RouteError.COULD_NOT_FIND_STARTPOINT;
-			}
-			
-			
-		} else  
+			}			
+		} else {  
 			assert(false);
+		}
 		
 		setUnknowns();
 		setSrcLoopCounts();
 		checkSupportedInstructions(src);
 		applyDefines(src);
+		
+		m_engine.provideFeedback("Analysis complete");
 		return RouteError.SUCCESS;
 	}
 
@@ -716,7 +719,10 @@ public class RouteConstructor {
 		System.out.println("}");
 	}
 
-	private void setUnknowns() {
+	private void setUnknowns() throws AbortedException {
+		m_engine.getAbort();
+		m_engine.provideFeedback("Setting unknowns on routes...");
+		
 		for (final Route route : m_routes) {
 			Node node = route.getNode();
 			node.traverse( new DefaultNodeTraverser() {
@@ -746,11 +752,13 @@ public class RouteConstructor {
 		}
 	}
 
-	private void setSrcLoopCounts() {
+	private void setSrcLoopCounts() throws AbortedException {
 		CoreId coreId = m_coreContainer.getCoreId();
 		
 		// Sets the loop iteration counts specified at compile time.
 		for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops(coreId)) {
+			m_engine.provideFeedback(String.format("Setting loop count at pc: 0x%x", srcLevelLoopInfo.getPc()));
+			m_engine.getAbort();
 
 			Reference reference = ReferenceFactory.createReference(
 					String.format("0x%x", srcLevelLoopInfo.getPc()),
@@ -766,7 +774,10 @@ public class RouteConstructor {
 		}
 	}
 
-	private void checkSupportedInstructions(final CommandSource src) {
+	private void checkSupportedInstructions(final CommandSource src) throws AbortedException {
+		m_engine.getAbort();
+		m_engine.provideFeedback("Checking for unsupported instructions...");		
+		
 		final Engine engine = m_engine;
 		final InstructionMnemonics mnenonics = new InstructionMnemonics(
 				m_engine.getXeLoader().getArchitecture());
@@ -811,6 +822,9 @@ public class RouteConstructor {
 	}
 
 	private void applyDefines(CommandSource src) throws AbortedException {
+		m_engine.getAbort();
+		m_engine.provideFeedback("Applying defines to route...");		
+
 		RouteDefines defines = new RouteDefines();
 		for (Route route : m_routes) {
 			for (FunctionTimeInfo info : m_engine.getFunctionTimeDefines()) {

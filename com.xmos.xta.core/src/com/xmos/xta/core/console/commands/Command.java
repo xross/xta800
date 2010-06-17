@@ -236,12 +236,7 @@ public abstract class Command {
     }
     
     public CoreId getCoreId(Engine engine, String coreReference) {
-    	CoreId coreId = engine.getCoreId(coreReference);
-		if (coreId == null) {
-    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
-    		return null;
-		}
-		return coreId;
+    	return engine.getCoreId(getSrc(), coreReference);
     }
 }
 

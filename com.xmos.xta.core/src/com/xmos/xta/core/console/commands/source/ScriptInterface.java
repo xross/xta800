@@ -16,6 +16,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class ScriptInterface {
@@ -47,7 +48,7 @@ public class ScriptInterface {
     }
 
 	// ===================================================================== //
-    // Analyze Methods
+    // Route Creation/Deletion Methods
 	// ===================================================================== //
     public List<Integer> analyzeFunction(String functionName) throws Exception {
     	m_engine.analyzeFunction(m_src, functionName);
@@ -68,9 +69,37 @@ public class ScriptInterface {
     	return getLastRouteIds();
     }
 
+    public void removeRoute(int routeId) throws Exception {
+    	if (!m_engine.removeRoute(m_src, routeId)) {    	       	   
+    		throw new Exception("removeRoute: Unable to remove route: " + routeId);
+    	}    	
+    }
+    
 	// ===================================================================== //
     // Add/Remove Methods
 	// ===================================================================== //
+    public void addCore(String coreReference) throws Exception {
+    	CoreId coreId = m_engine.getCoreId(m_src, coreReference);
+    	checkForErrors("addCore");    	
+    	m_engine.addActiveCore(m_src, coreId);
+    	checkForErrors("addCore");
+    }
+
+    public void removeCore(String coreReference) throws Exception {
+    	CoreId coreId = m_engine.getCoreId(m_src, coreReference);
+    	checkForErrors("removeCore");    	
+    	m_engine.removeActiveCore(m_src, coreId);
+    	checkForErrors("removeCore");
+    }
+    
+    public Collection<String> getCores() throws Exception {
+    	Collection<String> cores = new ArrayList<String>();
+        for (CoreId coreId : m_engine.getActiveCores()) {
+        	cores.add(coreId.getCoreReference());
+        }
+        return cores;
+    }
+    
     public void addExclusion(String ref) throws Exception {
     	m_engine.addExclusion(m_src, ref);
         checkForErrors("addExclusion");
@@ -262,13 +291,37 @@ public class ScriptInterface {
     }
 
     public double getWorstCase(int routeId, String units) throws Exception {
-    	return getTime(routeId, units, Case.WORST);
+    	return getTime(routeId, units, Case.WORST, "getWorstCase");
     }
 
     public double getBestCase(int routeId, String units) throws Exception {
-    	return getTime(routeId, units, Case.BEST);
+    	return getTime(routeId, units, Case.BEST, "getBestCase");
+    }
+    
+    public List<String> getWarnings(int routeId) throws Exception {
+    	try {
+       	    return getRoute(routeId).getRouteTiming().getWarnings();
+    	} catch (Exception e) {
+    		throw new Exception("getWarnings: " + e.getMessage());
+    	}
     }
 
+    public List<String> getErrors(int routeId) throws Exception {
+    	try {
+       	    return getRoute(routeId).getRouteTiming().getErrors();
+    	} catch (Exception e) {
+    		throw new Exception("getErrors: " + e.getMessage());
+    	}
+    }
+    
+    public List<Integer> getRouteIds() {
+    	List<Integer> routeIds = new ArrayList<Integer>();    	
+    	for (Route route : m_engine.getRoutes()) {
+    		routeIds.add(route.getRouteId());
+    	}
+    	return routeIds;
+    }
+     
     public String getRouteDescription(int routeId) throws Exception {
     	try {
           	return getRoute(routeId).getRouteCoreContainer().getRouteContainer().getDescription();
@@ -277,6 +330,21 @@ public class ScriptInterface {
     	}
     }
 
+    // ===================================================================== //
+    // Config Methods
+	// ===================================================================== //
+    public void configThreads(String coreReference, int numThreads) throws Exception {
+    	CoreId coreId = m_engine.getCoreId(m_src, coreReference);
+    	checkForErrors("configThreads");
+		m_engine.setNumThreads(m_src, coreId, numThreads);
+		checkForErrors("configThreads");
+    }
+
+    public void configFreq(String nodeId, double coreFrequency) throws Exception {
+    	m_engine.setFrequency(m_src, nodeId, coreFrequency);
+    	checkForErrors("configFreq");
+    }
+  
 	// ===================================================================== //
     // Private Helper Methods
 	// ===================================================================== //    
@@ -297,11 +365,11 @@ public class ScriptInterface {
     	return routeIds;    	
     }
     
-    private double getTime(int routeId, String units, Case c) throws Exception {
+    private double getTime(int routeId, String units, Case c, String exStr) throws Exception {
 		Status status = new Status();
 		double time = getRoute(routeId).getRouteTiming().getTime(status, c);
     	if (status.isExceptionalCase()) {
-    		throw new Exception("xta.getActual: timing on routeId " + routeId + " is " + status.getString());
+    		throw new Exception("xta." + exStr + ": timing on routeId " + routeId + " is " + status.getString());
     	} 
     	TimeUnit timeUnit = new TimeUnit(time, "ns");    	
    	    return timeUnit.getValue(units);

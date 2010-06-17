@@ -89,6 +89,7 @@ public class Engine extends Notifier implements Aborter {
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
+	private long m_loadedFileLastModifiedTime;
 	private Notifier m_notifier;
 	private ProgressMonitor m_progressMonitor;
 	private String m_srcPaths;
@@ -125,6 +126,7 @@ public class Engine extends Notifier implements Aborter {
 		m_activeCores = new ArrayList<CoreId>();
 		m_config = config;
 		m_executableFile = null;
+		m_loadedFileLastModifiedTime = 0;
 		m_srcPaths = ".";
 		m_progressMonitor = null;
 		m_sections = new Sections();
@@ -198,6 +200,10 @@ public class Engine extends Notifier implements Aborter {
 		return m_memoryMonitor;
 	}
 	
+	public InstructionDecoder getInstructionDecoder(CoreId coreId) {
+		return m_instructionDecoders.get(coreId);
+	}
+	
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -245,6 +251,7 @@ public class Engine extends Notifier implements Aborter {
 	
 			m_exclusions = new ArrayList<Reference>();
 			m_executableFile = executableFile;
+			m_loadedFileLastModifiedTime = executableFile.lastModified();
 			m_xeLoader = xeLoader;
 			m_sections = sections;
 			m_routes.clear();
@@ -405,6 +412,10 @@ public class Engine extends Notifier implements Aborter {
 		return m_executableFile;
 	}
 
+	public long getExecutableLastModifiedTime() {
+		return m_loadedFileLastModifiedTime;
+	}
+
 	public void setMonitor(ProgressMonitor monitor) {
 		m_progressMonitor = monitor;
 	}
@@ -462,7 +473,7 @@ public class Engine extends Notifier implements Aborter {
 	// Get/Set Frequency.
 	// ===================================================================== //			
 	public void setFrequency(CommandSource src, String nodeId, double frequency) {
-		if (checkFrequency(src, frequency)) {
+		if (checkFrequency(src, nodeId, frequency)) {
 			m_nodeHz.put(nodeId, (int)(frequency * 1000000));
 			notify(src, Notifier.NOTIFY_UPDATE_STATE, "");			
 		}
@@ -1255,7 +1266,8 @@ public class Engine extends Notifier implements Aborter {
                 Iterator<Reference> iter = m_exclusions.iterator();
                 while (iter.hasNext()) {
                     Reference ref = iter.next();
-                    if (ref.equals(reference)) {
+                    if (ref.equals(reference) && 
+                    	ref.getCoreId().getCoreReference().equals(reference.getCoreId().getCoreReference())) {
                         iter.remove();
                     }
                 }				
@@ -1441,16 +1453,18 @@ public class Engine extends Notifier implements Aborter {
 		return m_sections.getSystems(coreId);
 	}
 
-    public CoreId getCoreId(String coreReference) {
+    public CoreId getCoreId(CommandSource src, String coreReference) {
     	XnLoader xnLoader = m_xeLoader.getXnLoader();
 		Pair<Integer,Integer> nodeCore = xnLoader.getNodeChainIndexCoreNumber(coreReference);
 		if (nodeCore == null) {
+    		notify(src, Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
     		return null;
 		}
 		int nodeChainIndex = nodeCore.first;
 		int coreNumber = nodeCore.second;
 		
     	if (m_xeLoader.getMemoryImage(nodeChainIndex, coreNumber) == null) {
+    		notify(src, Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
     		return null;
     	}		
     	return new CoreId(xnLoader, nodeChainIndex, coreNumber);
@@ -1783,7 +1797,11 @@ public class Engine extends Notifier implements Aborter {
 		return true;
 	}
 
-	private boolean checkFrequency(CommandSource src, double frequency) {
+	private boolean checkFrequency(CommandSource src, String nodeId, double frequency) {
+		if (!m_nodeHz.containsKey(nodeId)) {
+			notify(src, Notifier.NOTIFY_ERROR, String.format("Invalid node id: %s", nodeId));
+			return false;
+		}
 		if (frequency <= 0) {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Frequency '%.1f' invalid", frequency));
 			return false;

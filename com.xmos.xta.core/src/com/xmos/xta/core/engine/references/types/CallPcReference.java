@@ -1,6 +1,8 @@
 package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
+import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
@@ -24,6 +26,14 @@ public class CallPcReference extends ReferenceType {
 		SourceMapper sourceMapper = engine.getSourceMapper(getCoreId());
 		if (sourceMapper == null)
 			return false;
+
+		InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());
+		for (Long pc : getPcs()) {
+			XtaInstruction inst = instructionDecoder.getNode(pc).getXtaInstruction();
+			if (!inst.isLink()) {
+				return false;
+			}
+		}
 
 		if (sourceMapper.areProfilablePcs(getPcs())) {
 	        setResolved(true);
