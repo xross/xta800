@@ -225,7 +225,7 @@ void DecoderGenerator::calculateBranchTargetInfo(FILE *outFp, DbFormat *fmt, DbI
     if (branchTargetOperand != NULL)
     {
       ASSERT(branchTargetOperand->isImm());
-      const string *scale = branchTargetOperand->getScale();
+      const string *scale = preProcess(branchTargetOperand->getScale());
 
       printIndent(outFp);
       fprintf(outFp, "  instruction.setBranchPcRelative(true);\n");
@@ -264,12 +264,16 @@ string *DecoderGenerator::preProcess(const string *txt)
       continue;
     }
 
-    if (*token == "getBits")
+    if (*token == "getBits") {
       newTxt = newTxt + "Instruction.getBits";
-    else if (*token == "getBitsHL")
+    } else if (*token == "getBitsHL") {
       newTxt = newTxt + "Instruction.getBitsHL";
-    else
+    } else if (*token == "ISSUE_MODE_MIN_INSTR_PKT_SIZE") {
+      // TODO: cope with issue mode 
+      newTxt = newTxt + "1";
+    } else {
       newTxt = newTxt + *token;
+    }
 
   }
   m_xmosUtils->stringLibrary->deleteStr(tokens);
