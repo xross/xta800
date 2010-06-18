@@ -32,6 +32,8 @@ public class TimeUnit {
 				"us", 
 				"ms", 
 				"MHz", 
+				"KHz", 
+				"Hz", 
 				"cycles"};
 	}
 
@@ -41,6 +43,8 @@ public class TimeUnit {
 				"microseconds", 
 				"milliseconds", 
 				"megahertz",
+				"kilohertz",
+				"hertz",
 				
 				"the thread cycle count is the number of scheduled slots " +
 				"that the thread required to perform the sequence. The relationship " + 
@@ -66,6 +70,14 @@ public class TimeUnit {
 	   	   	    m_mhz = Double.parseDouble(value);
 		   		m_units = Units.MHZ;
 
+	   	   	} else if (units.equals("KHz") || units.equals("khz")) {
+	   	   	    m_mhz = Double.parseDouble(value) / 1000.0;
+		   		m_units = Units.MHZ;
+
+	   	   	} else if (units.equals("Hz") || units.equals("hz")) {
+	   	   	    m_mhz = Double.parseDouble(value) / 1000000.0;
+		   		m_units = Units.MHZ;
+		   		
 	   	   	} else if (units.equals("cycles")) {
 	   	   	    m_cycles = Long.parseLong(value);
 		   		m_units = Units.CYCLES;
