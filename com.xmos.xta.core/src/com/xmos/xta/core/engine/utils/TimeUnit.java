@@ -22,6 +22,8 @@ public class TimeUnit {
    		helpStr += "          mode: us:     microseconds\n";
    		helpStr += "          mode: ms:     milliseconds\n";
    		helpStr += "          mode: MHz:    megahertz\n";
+   		helpStr += "          mode: KHz:    kilohertz\n";
+   		helpStr += "          mode: Hz:     hertz\n";
    		helpStr += "          mode: cycles: processor thread cycles";
    		return helpStr;
 	}
