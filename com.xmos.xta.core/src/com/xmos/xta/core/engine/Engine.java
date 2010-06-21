@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.memorymonitor.MemoryMonitor;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
@@ -55,6 +54,7 @@ import com.xmos.xta.core.engine.defines.LoopInfo;
 import com.xmos.xta.core.engine.defines.LoopPathInfo;
 import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
+import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
@@ -69,7 +69,6 @@ import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
-import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.CoreCollection;
 import com.xmos.xta.core.engine.utils.CoreConfig;
@@ -83,6 +82,7 @@ public class Engine extends Notifier implements Aborter {
 	public static final int NODE_ID_TOP_LEVEL = -4;
 
 	private XeLoader m_xeLoader;
+	private SourceMapper m_sourceMapper;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
 	private Route m_selectedRoute;
@@ -100,10 +100,9 @@ public class Engine extends Notifier implements Aborter {
 	private Map<String, Integer> m_nodeHz;
 	private CoreCollection<Integer> m_coreThreads;
 	private CoreCollection<Boolean> m_structuralGraphUpToDate;
-	private CoreCollection<SourceMapper> m_sourceMappers;
+	private CoreCollection<FunctionMapper> m_functionMappers;
 	private CoreCollection<InstructionDecoder> m_instructionDecoders;
 	private CoreCollection<CallGraph> m_callGraphs;
-	private Collection<FileLocation> m_userSpecifedFileLocations;
 	private Scripter m_scripter;
 	private Collection<CoreId> m_activeCores;
 	private PathPoints m_pathPoints;
@@ -112,13 +111,14 @@ public class Engine extends Notifier implements Aborter {
 
 	public Engine(Config config) {
 		super(config);
-		m_sourceMappers = new CoreCollection<SourceMapper>();
+		m_functionMappers = new CoreCollection<FunctionMapper>();
 		m_instructionDecoders = new CoreCollection<InstructionDecoder>();
 		m_callGraphs = new CoreCollection<CallGraph>();
 		m_structuralGraphUpToDate = new CoreCollection<Boolean>();
 		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
 		m_xeLoader = new XeLoader();
+		m_sourceMapper = null;
 		m_routes = new LinkedList<Route>();
 		m_routeContainers = new LinkedList<RouteContainer>();
 		m_activeCores = new ArrayList<CoreId>();
@@ -132,7 +132,6 @@ public class Engine extends Notifier implements Aborter {
 		m_timeOut = -1;
 		m_numErrors = 0;
 		m_scripter = new Scripter(this);
-		m_userSpecifedFileLocations = new ArrayList<FileLocation>();
 		m_pathPoints = new PathPoints(this);
 		m_debugger = new Debugger(this);
 		m_memoryMonitor = new MemoryMonitor();
@@ -166,6 +165,10 @@ public class Engine extends Notifier implements Aborter {
 		return m_xeLoader;
 	}
 
+	public SourceMapper getSourceMapper() {
+		return m_sourceMapper;
+	}
+	
 	public Vector<MemoryImage> getMemoryImages() {
 		return m_xeLoader.getMemoryImages();
 	}
@@ -178,10 +181,10 @@ public class Engine extends Notifier implements Aborter {
 		return m_xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber());
 	}
 
-	public SourceMapper getSourceMapper(CoreId coreId) {
-		return m_sourceMappers.get(coreId);
+	public FunctionMapper getFunctionMapper(CoreId coreId) {
+		return m_functionMappers.get(coreId);
 	}
-
+	
 	public CallGraph getCallGraph(CoreId coreId) {
 		return m_callGraphs.get(coreId);
 	}
@@ -239,14 +242,20 @@ public class Engine extends Notifier implements Aborter {
 		}
 
 		if (!isReloaded(executableFile)) {
-			m_userSpecifedFileLocations.clear();
+			SourceMapper.clearUserSpecifedFileLocations();
 		}
 
 		boolean successfulInit = initControlFlowGraphs(src, xeLoader, sections);
 		if (successfulInit){
+		    try {		    	
+		    	m_sourceMapper = new SourceMapper(src, this, xeLoader, m_instructionDecoders, sections);
+			} catch (AbortedException e) {
+				return false;
+			}
+			
 			initialiseCoreStates(xeLoader);
-		    initialiseActiveCores(xeLoader);		
-	
+		    initialiseActiveCores(xeLoader);
+		    		   	
 			m_executableFile = executableFile;
 			m_loadedFileLastModifiedTime = executableFile.lastModified();
 			m_xeLoader = xeLoader;
@@ -262,8 +271,7 @@ public class Engine extends Notifier implements Aborter {
 
 			m_scripter.setEngineLoadAndRunDone();
 			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
-		}
-		
+		}		
 		return successfulInit;
 	}
 
@@ -443,19 +451,6 @@ public class Engine extends Notifier implements Aborter {
 
 	public boolean isBusy() {
 		return m_progressMonitor != null;
-	}
-
-	public void updateSourceMappers(CommandSource src, Notifier notifier, String fileName, File file) {
-		for (int nodeChainIndex : m_xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : m_xeLoader.getCoreNumbers(nodeChainIndex)) {
-				CoreId coreId = new CoreId(m_xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				SourceMapper sourceMapper = m_sourceMappers.get(coreId);
-				if (sourceMapper != null) {
-					updateSourceMapper(src, notifier, sourceMapper, fileName, file, coreId);
-				}
-				m_userSpecifedFileLocations.add(new FileLocation(nodeChainIndex, coreNumber, fileName, file));
-			}
-		}
 	}
 
 	public void setAnalysisTimeOut(int time) {
@@ -1425,12 +1420,12 @@ public class Engine extends Notifier implements Aborter {
 		assert(m_xeLoader.isLoaded(coreId.getNodeChainIndex(), coreId.getCoreNumber()));
 	    if (!m_structuralGraphUpToDate.get(coreId)) {
 			CoreCollection<CallGraph> callGraphs = new CoreCollection<CallGraph>(m_callGraphs);
-			CoreCollection<SourceMapper> sourceMappers = new CoreCollection<SourceMapper>(m_sourceMappers);
+			CoreCollection<FunctionMapper> functionMappers = new CoreCollection<FunctionMapper>(m_functionMappers);
 			CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>(m_instructionDecoders);
 			
-			if (buildNodeCore(callGraphs, instructionDecoders, sourceMappers, m_xeLoader, m_sections, src, coreId)) {
+			if (buildNodeCore(callGraphs, instructionDecoders, functionMappers, m_xeLoader, m_sections, src, coreId)) {
 				m_callGraphs = callGraphs;
-				m_sourceMappers = sourceMappers;
+				m_functionMappers = functionMappers;
 				m_instructionDecoders = instructionDecoders;
 			} else {
 				return false;
@@ -1438,21 +1433,21 @@ public class Engine extends Notifier implements Aborter {
 		}
 	    return true;
 	}
-	
+
 	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){
 		m_loadStartTime = System.currentTimeMillis();
 		
 		notify(src, Notifier.HOLD_MESSAGES, "");
 		
 		CoreCollection<CallGraph> callGraphs = new CoreCollection<CallGraph>();
+		CoreCollection<FunctionMapper> functionMappers = new CoreCollection<FunctionMapper>();		
 		CoreCollection<Boolean> structuralGraphUpToDate = new CoreCollection<Boolean>();
-		CoreCollection<SourceMapper> sourceMappers = new CoreCollection<SourceMapper>();
 		CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>();
 		
 		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
 			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
 				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				boolean success = buildNodeCore(callGraphs, instructionDecoders, sourceMappers, xeLoader, sections, src, coreId);
+				boolean success = buildNodeCore(callGraphs, instructionDecoders, functionMappers, xeLoader, sections, src, coreId);
 				if (success){
 					structuralGraphUpToDate.add(coreId, true);
 				} else {
@@ -1462,7 +1457,7 @@ public class Engine extends Notifier implements Aborter {
 		}
 
 		m_callGraphs = callGraphs;
-		m_sourceMappers = sourceMappers;
+		m_functionMappers = functionMappers;
 		m_instructionDecoders = instructionDecoders;
 		m_structuralGraphUpToDate = structuralGraphUpToDate;
 		
@@ -1472,7 +1467,7 @@ public class Engine extends Notifier implements Aborter {
 	
 	private boolean buildNodeCore(CoreCollection<CallGraph> callGraphs,
 			CoreCollection<InstructionDecoder> instructionDecoders,
-			CoreCollection<SourceMapper> sourceMappers, 
+			CoreCollection<FunctionMapper> functionMappers, 
 			XeLoader xeLoader, Sections sections, CommandSource src, 
 			CoreId coreId) {
 		
@@ -1529,24 +1524,17 @@ public class Engine extends Notifier implements Aborter {
 
 		CallGraph cg = new CallGraph(functionContainers, coreId);
 		callGraphs.add(coreId, cg);
-		SourceMapper sourceMapper;
+		FunctionMapper functionMapper;
 		try {
-			sourceMapper = new SourceMapper(src, this, xeLoader, coreId, frna.getFunctionInstuctionToOriginal(),
-					instructionDecoder, functionContainers, sections.getLabels(coreId));
+			functionMapper = new FunctionMapper(src, this, xeLoader, 
+					frna.getFunctionInstuctionToOriginal(),
+					instructionDecoder, functionContainers, 
+					sections.getLabels(coreId), coreId);
 
 		} catch (AbortedException e) {
 			return false;
 		}
-
-		for (FileLocation fileLocation : m_userSpecifedFileLocations) {
-			if ((fileLocation.m_nodeChainIndex == coreId.getNodeChainIndex()) &&
-				(fileLocation.m_coreNumber == coreId.getCoreNumber())) {
-				updateSourceMapper(src, m_notifier, sourceMapper,
-						fileLocation.m_fileName, fileLocation.m_file, coreId);
-			}
-		}
-		sourceMappers.add(coreId, sourceMapper);
-		
+		functionMappers.add(coreId, functionMapper);		
 		return true;
 	}
 	
@@ -1626,14 +1614,6 @@ public class Engine extends Notifier implements Aborter {
 		}
 		return false;
 	}
-
-    private void updateSourceMapper(CommandSource src, Notifier notifier, SourceMapper sourceMapper,
-    		String fileName, File file, CoreId coreId) {
-
-        DebugEngine debugEngine = m_xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber()).getDebugEngine();
-        SourceFile sf = sourceMapper.getSourceFile(fileName);
-        sourceMapper.setFile(src, notifier, debugEngine, sf, file);
-    }
 
 	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass refClass) {		
 		boolean hit = false;
@@ -1775,7 +1755,7 @@ public class Engine extends Notifier implements Aborter {
 			}
 		}
 	}
-
+	
 	private boolean validateRouteCount(){
 		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
@@ -1807,18 +1787,4 @@ public class Engine extends Notifier implements Aborter {
 			}
 		}
 	}	
-}
-
-class FileLocation {
-	int m_nodeChainIndex;
-	int m_coreNumber;
-	String m_fileName;
-	File m_file;
-
-	FileLocation(int nodeChainIndex, int coreNumber, String fileName, File file) {
-		m_nodeChainIndex = nodeChainIndex;
-		m_coreNumber = coreNumber;
-		m_fileName = fileName;
-		m_file = file;
-	}
 }

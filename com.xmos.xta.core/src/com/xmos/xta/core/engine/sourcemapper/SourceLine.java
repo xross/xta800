@@ -1,92 +1,89 @@
 package com.xmos.xta.core.engine.sourcemapper;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
-import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.Pair;
+import com.xmos.libs.xeloader.DebugInfo;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.utils.CoreCollection;
+import com.xmos.xta.core.engine.utils.CoreId;
 
-public class SourceLine implements Line {
-	private String             m_line;
-	private long               m_lineNumber;
-	private List<Long>         m_statementPcs;
-	private List<Long>         m_pcs;
-	private SourceMapper       m_sourceMapper;
-	private SourceFile         m_sourceFile;
-	private DebugEngine        m_debugEngine;
-	private InstructionDecoder m_instructionDecoder;
+public class SourceLine {
+	private String     m_text;
+	private long       m_lineNumber;
+	private SourceFile m_sourceFile;
+	private XeLoader   m_xeLoader;
+	private CoreCollection<InstructionDecoder> m_instructionDecoders;
+	private CoreCollection<Collection<Long>> m_pcs;
+	private CoreCollection<Collection<Long>> m_statementPcs;
 	
-	public SourceLine(String line, long lineNumber, 
-			SourceMapper sourceMapper, SourceFile sourceFile, 
-			DebugEngine debugEngine, InstructionDecoder instructionDecoder) {
-		m_line = line;
+	public SourceLine(String text, long lineNumber, SourceFile sourceFile, 
+			XeLoader xeLoader, CoreCollection<InstructionDecoder> instructionDecoders) {
+		m_text = text;
 		m_lineNumber = lineNumber;
-		m_sourceMapper = sourceMapper;
 		m_sourceFile = sourceFile;
-		m_debugEngine = debugEngine;
-		m_instructionDecoder = instructionDecoder;
+		m_xeLoader = xeLoader;
+		m_instructionDecoders = instructionDecoders;		
+		m_pcs = new CoreCollection<Collection<Long>>();
+		m_statementPcs = new CoreCollection<Collection<Long>>();
 	}
 
-	public Collection<Long> getPcs() {
-		if (m_pcs == null) {
-			initialisePcsMap();
+	public Collection<Long> getPcs(CoreId coreId) {
+		if (m_pcs.get(coreId) == null) {
+			initialisePcsMap(coreId);
 		}		
-		return m_pcs;
+		return m_pcs.get(coreId);
 	}
 
-	//GUI only
-	public Collection<Long> getStatementPcs() {
-		if (m_statementPcs == null) {
-			initialiseStatementPcsMap();
+	public Collection<Long> getStatementPcs(CoreId coreId) {
+		if (m_statementPcs.get(coreId) == null) {
+			initialiseStatementPcsMap(coreId);
 		}		
-		return m_statementPcs;
+		return m_statementPcs.get(coreId);
 	}
+
+    public String getText() {
+        return m_text;
+    }
 
 	public long getLineNumber() {
 		return m_lineNumber;
 	}
-
-    public String getText() {
-        return m_line;
-    }
     
-    private void initialisePcsMap() {
-    	m_pcs = new ArrayList<Long>();
+    private void initialisePcsMap(CoreId coreId) {
+    	DebugInfo debugInfo = m_xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+    	assert(debugInfo != null);
     	
-		Collection<Pair<Long,Long>> addressRanges = m_debugEngine.getAddressRangesMatchingPath(
-				m_sourceFile.getFullFileName(), m_lineNumber);
-       	Collection<Long> addresses = rangesToAddresses(addressRanges);
-
-        for (long pc : addresses) {
-            if (m_sourceMapper.getFunction(pc) != null) {
-              	m_pcs.add(pc);
-            }
-        }
+		Collection<Pair<Long,Long>> addressRanges = debugInfo.getDebugEngine().getAddressRangesMatchingPath(
+				m_sourceFile.getFullFileName(), m_lineNumber);		
+		Collection<Long> pcs = rangesToAddresses(coreId, addressRanges);
+		
+        m_pcs.add(coreId, pcs);
     }
 
-	//GUI only
-    private void initialiseStatementPcsMap() {
-    	m_statementPcs = new ArrayList<Long>();
+    private void initialiseStatementPcsMap(CoreId coreId) {
+    	DebugInfo debugInfo = m_xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+    	assert(debugInfo != null);
     	
-    	Collection<Long> statementPcs = m_debugEngine.getStatementPcsMatchingPath(
+    	Collection<Long> statementPcs = debugInfo.getDebugEngine().getStatementPcsMatchingPath(
     			m_sourceFile.getFullFileName(), m_lineNumber);
 
-    	for (long statementPc : statementPcs) {
-        	m_statementPcs.add(statementPc);
-    	}
+       	m_statementPcs.add(coreId, statementPcs);
     }
 
-    private Collection<Long> rangesToAddresses(Collection<Pair<Long, Long>> addressRanges) {
+    private Collection<Long> rangesToAddresses(CoreId coreId, Collection<Pair<Long, Long>> addressRanges) {
+    	InstructionDecoder instructionDecoder = m_instructionDecoders.get(coreId);
+    	assert(instructionDecoder != null);
+    	
 		Set<Long> addresses = new IteratableSet<Long>();
 		for (Pair<Long, Long> range : addressRanges) {
-			long endPc = m_instructionDecoder.getEndPc();
+			long endPc = instructionDecoder.getEndPc();
 			for (long pc = range.first; (pc < range.second) && (pc <= endPc); pc += 2) {
-				InstructionNode node = m_instructionDecoder.getNode(pc);
+				InstructionNode node = instructionDecoder.getNode(pc);
 				if (node != null) {
 					addresses.add(pc);
 				}

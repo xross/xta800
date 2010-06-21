@@ -2,8 +2,8 @@ package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
+import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class CallPcReference extends ReferenceType {
@@ -23,8 +23,8 @@ public class CallPcReference extends ReferenceType {
 	}
 
 	public boolean resolve(Engine engine) {
-		SourceMapper sourceMapper = engine.getSourceMapper(getCoreId());
-		if (sourceMapper == null)
+		FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
+		if (functionMapper == null)
 			return false;
 
 		InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());
@@ -35,7 +35,7 @@ public class CallPcReference extends ReferenceType {
 			}
 		}
 
-		if (sourceMapper.areProfilablePcs(getPcs())) {
+		if (functionMapper.areProfilablePcs(getPcs())) {
 	        setResolved(true);
 	        return true;
 	    }

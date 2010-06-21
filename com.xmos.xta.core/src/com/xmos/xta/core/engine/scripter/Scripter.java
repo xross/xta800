@@ -792,10 +792,7 @@ public class Scripter {
 	}
 	
 	private SourceMapper getSourceMapper() {
-		XeLoader xeLoader = m_engine.getXeLoader();
-		int nodeChainIndex = xeLoader.getNodeChainIndexes().get(0);
-		int coreNumber = xeLoader.getCoreNumbers(0).get(0);
-		return m_engine.getSourceMapper(new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
+		return m_engine.getSourceMapper();
 	}
 
     private String commentString() {
@@ -807,16 +804,9 @@ public class Scripter {
 	}
 
     private SourceFile getSourceFile(String fileName) {
-		XeLoader xeLoader = m_engine.getXeLoader();
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				SourceMapper sourceMapper = m_engine.getSourceMapper(coreId);
-				SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
-				if (sourceFile != null) {
-					return sourceFile;
-				}
-			}
+		SourceFile sourceFile = m_engine.getSourceMapper().getSourceFile(fileName);
+		if (sourceFile != null) {
+			return sourceFile;
 		}
 		return null;
 	}

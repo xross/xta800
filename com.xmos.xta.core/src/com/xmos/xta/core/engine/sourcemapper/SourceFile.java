@@ -8,29 +8,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
 import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
+import com.xmos.xta.core.engine.utils.CoreCollection;
+import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SourceFile implements Comparable<SourceFile> {
-	private SourceMapper m_sourceMapper;	
 	private DebugFile m_debugFile;
-	private DebugEngine m_debugEngine;
-	private InstructionDecoder m_instructionDecoder;
+	private XeLoader m_xeLoader;
+	private CoreCollection<InstructionDecoder> m_instructionDecoders;
 	private ArrayList<SourceLine> m_sourceLines;
-	private Map<Long, SourceLine> m_pcToLine;
+	private CoreCollection<Map<Long, SourceLine>> m_pcToLine;
 
-	public SourceFile(SourceMapper sourceMapper, DebugFile debugFile, 
-			DebugEngine debugEngine, InstructionDecoder instructionDecoder) {
+	public SourceFile(DebugFile debugFile, XeLoader xeLoader, 
+			CoreCollection<InstructionDecoder> instructionDecoders) {
 		
-		m_sourceMapper = sourceMapper;
 		m_debugFile = debugFile;
-		m_debugEngine = debugEngine;
-		m_instructionDecoder = instructionDecoder;
+		m_xeLoader = xeLoader;
+		m_instructionDecoders = instructionDecoders;
 		m_sourceLines = new ArrayList<SourceLine>();
+		m_pcToLine = new CoreCollection<Map<Long, SourceLine>>();
 	}
 
+	public void readFile() {
+		try {
+			readFile(m_debugFile.getFile());
+		} catch (IOException e) {}
+	}
+	
 	public String getFileName() {
 		return m_debugFile.getFileName();
 	}
@@ -39,31 +46,23 @@ public class SourceFile implements Comparable<SourceFile> {
 		return m_debugFile.getFullFileName();
 	}
 
-	public void readFile() {
-		try {
-			readFile(m_debugFile.getFile());
-		} catch (IOException e) {}
+	public File getFile() {
+		return m_debugFile.getFile();
+	}
+
+	public DebugFile getDebugFile() {
+		return m_debugFile;
 	}
 
 	public List<SourceLine> getSourceLines() {
 		return m_sourceLines;
 	}
-
-	public File getFile() {
-		return m_debugFile.getFile();
-	}
-
-
-	//GUI only
-	public SourceLine getLineForPc(long pc) {
-		if (m_pcToLine == null) {
-			initialisePcToLineMap();
-		}		
-		return m_pcToLine.get(pc);
-	}
-
-	public DebugFile getDebugFile() {
-		return m_debugFile;
+	
+	public SourceLine getLineForPc(CoreId coreId, long pc) {
+		if (m_pcToLine.get(coreId) == null) {
+			initialisePcToLineMap(coreId);
+		}
+		return m_pcToLine.get(coreId).get(pc);
 	}
 
 	public boolean fileNameMatches(String fileName) {
@@ -90,11 +89,11 @@ public class SourceFile implements Comparable<SourceFile> {
 		BufferedReader inputFp = new BufferedReader(new FileReader(file));
 		String line = null;
 		while ((line = inputFp.readLine()) != null) {
-			// replace tabs with soft tabs
+			// Replace tabs with soft tabs
 			line = line.replaceAll("\t", "    ");
 			
-			SourceLine newLine = new SourceLine(line, lineNo, m_sourceMapper, 
-					this, m_debugEngine, m_instructionDecoder);
+			SourceLine newLine = new SourceLine(line, lineNo,
+					this, m_xeLoader, m_instructionDecoders);
 			
 			m_sourceLines.add(newLine);
 			lineNo++;
@@ -102,14 +101,14 @@ public class SourceFile implements Comparable<SourceFile> {
 		inputFp.close();
 	}	
 
-	//GUI only
-	private void initialisePcToLineMap() {
-		m_pcToLine = new NonIteratableMap<Long, SourceLine>();
+	private void initialisePcToLineMap(CoreId coreId) {
+		Map<Long, SourceLine> pcToLine = new NonIteratableMap<Long, SourceLine>();
 		
     	for (SourceLine sourceLine : m_sourceLines) {
-        	for (long statementPc : sourceLine.getStatementPcs()) {
-        		m_pcToLine.put(statementPc, sourceLine);
+        	for (long statementPc : sourceLine.getStatementPcs(coreId)) {
+        		pcToLine.put(statementPc, sourceLine);
         	}
         }
+    	m_pcToLine.add(coreId, pcToLine);
 	}
 }

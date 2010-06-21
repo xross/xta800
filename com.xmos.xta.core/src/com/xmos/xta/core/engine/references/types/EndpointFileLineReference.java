@@ -13,7 +13,7 @@ public class EndpointFileLineReference extends ReferenceType {
 	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (checkTypeString(reference, Type.ENDPOINT, 2) &&
 		    isSourceReference(reference) &&
-			inCodePointTable(reference, engine.getEndpointTable(coreId), engine.getSourceMapper(coreId))) {
+			inCodePointTable(reference, engine.getEndpointTable(coreId), engine.getSourceMapper())) {
 	    	return new EndpointFileLineReference(reference, coreId);
 		}
 		return null;
@@ -26,10 +26,9 @@ public class EndpointFileLineReference extends ReferenceType {
 
         boolean found = false;
 		for (CodePointTableInfo info : engine.getEndpointTable(getCoreId()).values()) {
-			if ((info.getLineNumber() == lineNumber) && FileNameMatcher.isMatch(info.getCompilationDir(), info
-					.getFileName(), fileName, engine
-					.getSourceMapper(getCoreId()))
-					) {
+			if ((info.getLineNumber() == lineNumber) && FileNameMatcher.isMatch(info.getCompilationDir(), 
+					info.getFileName(), fileName, 
+					engine.getSourceMapper())) {
 
 				addPc(info.getPc());
 				setFileName(fileName);

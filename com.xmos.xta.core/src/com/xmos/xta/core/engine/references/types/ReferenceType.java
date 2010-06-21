@@ -301,8 +301,7 @@ public abstract class ReferenceType {
         	return false;
         }
 
-        if (FileNameMatcher.isMatch(fileName, getFileName(),
-        		engine.getSourceMapper(m_coreId))) {
+        if (FileNameMatcher.isMatch(fileName, getFileName(), engine.getSourceMapper())) {
         	return true;
         }
 

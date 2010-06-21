@@ -13,7 +13,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
 	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
 		if (checkTypeString(reference, Type.SRCLABEL, 2) &&
 		    isSourceReference(reference) &&
-			inSrcLabelTable(reference, engine.getSrcLabelTable(coreId), engine.getSourceMapper(coreId))) {
+			inSrcLabelTable(reference, engine.getSrcLabelTable(coreId), engine.getSourceMapper())) {
 	    	return new SrcLabelFileLineReference(reference, coreId);
 		}
 	    return null;
@@ -26,11 +26,10 @@ public class SrcLabelFileLineReference extends ReferenceType {
 
 		for (SrcLabelTableInfo info : engine.getSrcLabelTable(getCoreId())
 				.values()) {
-			if (((lineNumber >= info.getLineNumberStart()) && (lineNumber <= info
-					.getLineNumberEnd()))
-					&& FileNameMatcher.isMatch(info.getCompilationDir(), info
-							.getFileName(), fileName, engine
-							.getSourceMapper(getCoreId()))) {
+			if (((lineNumber >= info.getLineNumberStart()) && (lineNumber <= info.getLineNumberEnd())) &&
+					FileNameMatcher.isMatch(info.getCompilationDir(), 
+							info.getFileName(), fileName, 
+							engine.getSourceMapper())) {
 
 				addPc(info.getPc());
 				setFileName(fileName);

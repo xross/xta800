@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
+import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLabelPcReference extends ReferenceType {
@@ -21,11 +21,11 @@ public class SrcLabelPcReference extends ReferenceType {
 	}
 
 	public boolean resolve(Engine engine) {
-		SourceMapper sourceMapper = engine.getSourceMapper(getCoreId());
-		if (sourceMapper == null)
+		FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
+		if (functionMapper == null)
 			return false;
 
-		if (sourceMapper.areProfilablePcs(getPcs())) {
+		if (functionMapper.areProfilablePcs(getPcs())) {
 	        setResolved(true);
 	        return true;
 	    }

@@ -4,17 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import com.xmos.libs.dwarfhandler.DebugEngine;
 import com.xmos.libs.dwarfhandler.DebugFile;
-import com.xmos.libs.util.IteratableMap;
-import com.xmos.libs.util.NonIteratableMap;
-import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
@@ -22,43 +15,37 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.sections.Sections;
+import com.xmos.xta.core.engine.utils.CoreCollection;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SourceMapper {
 	private long m_xeLastModified;
-    private List<Function> m_functions;
 	private List<SourceFile> m_sourceFiles;
-	private List<AssemblyLine> m_assemblyLines;
-	private InstructionDecoder m_instructionDecoder;
-	private Set<FunctionContainer> m_functionContainers;
-	private Map<Long, AssemblyLine> m_pcToAsm;
-	private Map<Long, Function> m_pcToFunction;
-	private Map<String, Set<Long>> m_labels;
-	private Map<InstructionNode, InstructionNode> m_functionInstuctionToOriginal;
 	
-    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, CoreId coreId,
-			Map<InstructionNode, InstructionNode> map, InstructionDecoder instructionDecoder,
-			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labels) 
-        throws AbortedException {
-    	
-    	m_functionInstuctionToOriginal = map;
-    	m_labels = labels;
-        m_instructionDecoder = instructionDecoder;
-        m_functionContainers = functionContainers;
-        m_pcToAsm = new NonIteratableMap<Long, AssemblyLine>();
-        m_pcToFunction = new NonIteratableMap<Long, Function>();
+	private static Collection<FileLocation> s_userSpecifedFileLocations = new ArrayList<FileLocation>();
+	
+	public static void clearUserSpecifedFileLocations() {
+		s_userSpecifedFileLocations.clear();
+	}
+	
+    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader,
+    		CoreCollection<InstructionDecoder> instructionDecoders,
+			Sections sections) throws AbortedException {
 
-        m_assemblyLines = createAssemblyLines();
-        m_functions = createFunctions();
+        m_xeLastModified = xeLoader.getFile().lastModified();    	
+        m_sourceFiles = createSourceFiles(src, engine, xeLoader, instructionDecoders);
 
-        // Must record the XE timestamp before loading files
-        m_xeLastModified = xeLoader.getFile().lastModified();
-        m_sourceFiles = createSourceFiles(src, engine, xeLoader, coreId);
+		for (FileLocation fileLocation : s_userSpecifedFileLocations) {
+			setFile(src, engine, getSourceFile(fileLocation.getFileName()), fileLocation.getFile());
+		}
 	}
 
-	//GUI only
+	public void update(CommandSource src, Notifier notifier, String fileName, File file) {
+        setFile(src, notifier, getSourceFile(fileName), file);
+		s_userSpecifedFileLocations.add(new FileLocation(fileName, file));
+	}
+    
     public File findFileForSourceFile(SourceFile sourceFile, FileFinder fileFinder) {
     	if (fileFinder == null) {
     		return null;
@@ -87,9 +74,7 @@ public class SourceMapper {
 		return file;
     }
 
-    public void setFile(CommandSource src, Notifier notifier, DebugEngine debugEngine,
-    		SourceFile sourceFile, File file) {
-
+    public void setFile(CommandSource src, Notifier notifier, SourceFile sourceFile, File file) {
     	if ((file == null) || (sourceFile == null))
     		return;
 
@@ -106,7 +91,6 @@ public class SourceMapper {
     	return (sourceLastModified > m_xeLastModified);
 	}
 
-	//GUI only
     public String getDebugFileName(String diskFileName) {
         for (SourceFile sourceFile : m_sourceFiles) {
         	try {
@@ -133,31 +117,6 @@ public class SourceMapper {
         return null;
     }
 
-	//GUI only
-	public List<Function> getFunctions() {
-        return m_functions;
-    }
-
-	public boolean areProfilablePcs(Set<Long> pcs) {
-		for (long pc : pcs) {
-			boolean found = false;
-			for (Function function : m_functions){
-				if (function.containsPc(pc)){
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public Function getFunction(long pc) {
-		return m_pcToFunction.get(pc);
-	}
-
     private void checkSourceFileDate(CommandSource src, Notifier notifier, File file) {
     	if (fileNewerThanBinary(file)) {
     		notifier.notify(src, Notifier.NOTIFY_WARNING,
@@ -176,19 +135,17 @@ public class SourceMapper {
     }
 
     private List<SourceFile> createSourceFiles(CommandSource src, Engine engine, XeLoader xeLoader,
-    		CoreId coreId) throws AbortedException {
+    		CoreCollection<InstructionDecoder> instructionDecoders) throws AbortedException {
 
     	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
-
-    	DebugInfo di = xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
-        DebugEngine de = di.getDebugEngine();
-
-		Collection<DebugFile> debugFiles = de.getDebugFiles();
+    	    	
+		Collection<DebugFile> debugFiles = getDebugFiles(xeLoader);
 		engine.startAnalysis("Processing sources", debugFiles.size());
+
       	for (DebugFile debugFile : debugFiles) {
 			File file = new File(debugFile.getFullFileName());
     		engine.provideFeedback(file.getName());
-
+    		
 			boolean done = false;
 			while (!done) {
 				Notifier notifier = engine.getNotifier();
@@ -198,19 +155,18 @@ public class SourceMapper {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
+					addSourceFile(src, notifier, xeLoader, debugFile, file, sourceFiles, instructionDecoders);
 					done = true;
 
 				} else {
 					file = findFileInSrcPaths(engine.getSrcPaths(), debugFile.getFileName());
-					addSourceFile(src, notifier, de, debugFile, file, sourceFiles);
+					addSourceFile(src, notifier, xeLoader, debugFile, file, sourceFiles, instructionDecoders);
 					done = true;
 				}
 			}
 			engine.provideWorkDone(1);
-			engine.getAbort();
+			engine.getAbort();			
 		}
-
         return sourceFiles;
     }
 
@@ -226,70 +182,36 @@ public class SourceMapper {
 	}
 
 	private void addSourceFile(CommandSource src, Notifier notifier,
-			DebugEngine debugEngine, DebugFile debugFile,
-			File file, List<SourceFile> sourceFiles) {
+			XeLoader xeLoader, DebugFile debugFile,
+			File file, List<SourceFile> sourceFiles,
+			CoreCollection<InstructionDecoder> instructionDecoders) {
 
     	SourceFile sourceFile = getSourceFile(debugFile, sourceFiles);
     	if (sourceFile == null) {
-    		sourceFile = new SourceFile(this, debugFile, debugEngine, m_instructionDecoder);
+    		sourceFile = new SourceFile(debugFile, xeLoader, instructionDecoders);
     	}
 		sourceFiles.add(sourceFile);
-    	setFile(src, notifier, debugEngine, sourceFile, file);
-	}
+    	setFile(src, notifier, sourceFile, file);
+	}	
 	
-	private List<AssemblyLine> createAssemblyLines() {
-		List<AssemblyLine> asmLines = new ArrayList<AssemblyLine>();
-		for (InstructionNode instNode : m_instructionDecoder.getInstructions()){
-			AssemblyLine assLine = new AssemblyLine(instNode, m_labels);
-			asmLines.add(assLine);
-			m_pcToAsm.put(instNode.getStartPc(), assLine);
+	private Collection<DebugFile> getDebugFiles(XeLoader xeLoader) {
+        List<DebugFile> sources = new ArrayList<DebugFile>();
+		
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {		
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				
+		    	DebugInfo debugInfo = xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+				Collection<DebugFile> debugFiles = debugInfo.getDebugEngine().getDebugFiles();
+
+		      	for (DebugFile debugFile : debugFiles) {
+		      		if (!sources.contains(debugFile)) {
+					    sources.add(debugFile);
+		      		}
+		      	}				
+			}
 		}
-        return asmLines;
-    }
-
-    private List<Function> createFunctions() {
-    	List<InstructionNode> instList = m_instructionDecoder.getInstructions();
-    	Map<Long, Function> pcToFunction = new IteratableMap<Long, Function>();
-    	
-
-    	Set<InstructionNode> starts = new NonIteratableSet<InstructionNode>();
-    	for(FunctionContainer fc : m_functionContainers){
-    		starts.add(m_functionInstuctionToOriginal.get(fc.getStartInstruction()));
-    	}
-    	
-    	for(FunctionContainer fc : m_functionContainers){	
-    		
-    		InstructionNode inst = m_functionInstuctionToOriginal.get(fc.getStartInstruction());
-    		
-    		int startIndex = instList.indexOf(inst);
-    		List<AssemblyLine> functionAssembly = new ArrayList<AssemblyLine>();
-    		functionAssembly.add(m_assemblyLines.get(startIndex));
-    		int index = startIndex +1;
-    		while (index < instList.size() && !starts.contains(instList.get(index))) {
-    			functionAssembly.add(m_assemblyLines.get(index));
-    			index++;
-    		}
-
-    		String fnName = fc.getFunctionName();
-    		
-    		Function function = new Function(fnName, functionAssembly);
-    		for (Line assembly : functionAssembly) {
-    			m_pcToFunction.put(assembly.getLineNumber(), function);
-    		}
-
-    		pcToFunction.put(inst.getPC(), function);
-    	}
-
-    	//sort the functions into ascending pc order
-    	List<Long> pcs = new LinkedList<Long>();
-    	pcs.addAll(pcToFunction.keySet());
-    	Collections.sort(pcs);
-
-    	List<Function> sortedFunctions = new LinkedList<Function>();
-    	for (long pc : pcs){
-    		sortedFunctions.add(pcToFunction.get(pc));
-    	}
-    	return sortedFunctions;
-    }
-
+		return sources;
+	}
 }
+

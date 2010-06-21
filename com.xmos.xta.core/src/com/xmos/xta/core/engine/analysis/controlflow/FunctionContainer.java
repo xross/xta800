@@ -37,7 +37,6 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		for(InstructionNode inst: m_functionInstructions){
 			m_containedPcs.add(inst.getPC());
 		}
-		
 	}
 
 	public InstructionNode getStartInstruction() {

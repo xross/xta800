@@ -14,10 +14,10 @@ import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.functionmapper.Function;
+import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.instructions.Disassembler;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
-import com.xmos.xta.core.engine.sourcemapper.Function;
-import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class AsmDisplayer {
@@ -37,7 +37,7 @@ public class AsmDisplayer {
 
         if (instructions.size() > 0) {
 	    	Map<String, Set<Long>> asmLinesCovered =
-	    		createAsmPcsCovered(instructions, m_engine.getSourceMapper(coreId));
+	    		createAsmPcsCovered(instructions, m_engine.getFunctionMapper(coreId));
 
 	        for (Iterator<Map.Entry<String, Set<Long>>> iter =
 	        	asmLinesCovered.entrySet().iterator(); iter.hasNext();) {
@@ -89,13 +89,13 @@ public class AsmDisplayer {
     }
 
     private Map<String, Set<Long>> createAsmPcsCovered(
-    		List<XtaInstruction> instructions, SourceMapper sourceMapper) {
+    		List<XtaInstruction> instructions, FunctionMapper functionMapper) {
 
         Map<String, Set<Long>> asmLinesCovered = new NonIteratableMap<String, Set<Long>>();
         for (XtaInstruction inst : instructions){
-            Function function = sourceMapper.getFunction(inst.getPc());
+            Function function = functionMapper.getFunction(inst.getPc());
             if (function != null) {
-	            String instString = function.getText();
+	            String instString = function.getName();
 	            if (asmLinesCovered.containsKey(instString)){
 	                asmLinesCovered.get(instString).add(inst.getPc());
 	            } else {

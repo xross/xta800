@@ -25,9 +25,9 @@ public class SrcDisplayer {
 
 	public void display(Node node, CoreId coreId) {
   	    List<XtaInstruction> instructions = node.getInstructions();
-		SourceMapper sourceMapper = m_engine.getSourceMapper(coreId);
+		SourceMapper sourceMapper = m_engine.getSourceMapper();
         NonIteratableMap<String, Set<Long>> linesCovered =
-        	createSrcLinesCovered(instructions, sourceMapper);
+        	createSrcLinesCovered(instructions, sourceMapper, coreId);
 
 		for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
 	        Set<Long> fileLines = linesCovered.get(sourceFile.getFullFileName());
@@ -52,7 +52,7 @@ public class SrcDisplayer {
     }
 
 	private NonIteratableMap<String, Set<Long>> createSrcLinesCovered(List<XtaInstruction> instructions,
-			SourceMapper sourceMapper) {
+			SourceMapper sourceMapper, CoreId coreId) {
 
 		NonIteratableMap<String, Set<Long>> linesCovered = new NonIteratableMap<String, Set<Long>>();
 		for (XtaInstruction inst : instructions) {
@@ -68,7 +68,7 @@ public class SrcDisplayer {
 				}
 
 				for (SourceLine sourceLine : sourceFile.getSourceLines()) {
-					if (sourceLine.getPcs().contains(inst.getPc())) {					
+					if (sourceLine.getPcs(coreId).contains(inst.getPc())) {					
 						sourceLines.add(sourceLine.getLineNumber());
 					}
 				}
