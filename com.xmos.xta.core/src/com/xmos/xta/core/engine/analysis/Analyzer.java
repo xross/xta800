@@ -127,10 +127,7 @@ public class Analyzer {
 	private boolean doRouteAnalysis(CommandSource src, RouteContainer routeContainer,
 			RouteCoreContainer routeCoreContainer, CoreId core) throws Exception {
 
-		if (!m_engine.updateControlFlowGraphs(src, core))
-			return false;
-
-		RouteConstructor routeConstructor = new RouteConstructor(m_engine, m_engine.getCallGraph(core), routeCoreContainer, core);
+		RouteConstructor routeConstructor = new RouteConstructor(m_engine, m_engine.getControlFlow(core), routeCoreContainer, core);
 		RouteError error = routeConstructor.analyze(src);
 
 		if (error == RouteError.NO_ENDPOINTS_FOUND ) {

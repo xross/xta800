@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.controlflow;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
-public class UnreachableCodeFinder {
+class UnreachableCodeFinder {
 
 	private Set<Node> m_unreachable;
 

@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.controlflow;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +24,7 @@ import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.utils.CoreId;
 
-public class FunctionReferenceNodeAdder {
+class FunctionReferenceNodeAdder {
 	private InstructionDecoder m_instDecoder;
 	private Notifier m_notifier;
 	private CommandSource m_src;
@@ -56,8 +56,6 @@ public class FunctionReferenceNodeAdder {
 		
 		List<InstructionNode> remainingInsts = new LinkedList<InstructionNode>(m_instDecoder.getInstructions());
 		
-		//m_executableBytes = countBytes(remainingInsts);
-		
 		for(InstructionNode startOfFunction : functionStartNodes){
 			Map<Node, Node> seen = new NonIteratableMap<Node, Node>();
 			
@@ -73,16 +71,16 @@ public class FunctionReferenceNodeAdder {
 				
 				InstructionNode inst = toDo.iterator().next();
 				remainingInsts.remove(inst);
-				Node parent = getInstruction(inst, seen, functionInstructions);
+				Node copyInst = getInstruction(inst, seen, functionInstructions);
 				for(Node next : inst.getNextNodes()){
 					if(!seen.containsKey(next)){
 						toDo.add((InstructionNode)next);		
 					}
-					Node copyInst = getInstruction(next, seen, functionInstructions);
-					CommonMethods.connect(copyInst, parent);
-					seen.put(next, copyInst);
+					Node copyNext = getInstruction(next, seen, functionInstructions);
+					CommonMethods.connect(copyNext, copyInst);
+					seen.put(next, copyNext);
 				}
-				
+
 				XtaInstruction xtaInst = inst.getXtaInstruction();
 				
 				if(xtaInst.isLink()){
@@ -95,9 +93,9 @@ public class FunctionReferenceNodeAdder {
 					if(m_mnenonics.isImplicitBranchAndLinkLocation(xtaInst)){
 						long targetPc = getBranchAndLinkTargetPC(inst);
 						InstructionNode target = m_instDecoder.getNode(targetPc);
-						FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionRefNodes);
+						FunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, target, functionRefNodes);
 						foundATarget = true;
-						CommonMethods.connect(fr, parent);
+						CommonMethods.connect(fr, copyInst);
 						if (branchLinkReturn != null) {	
 							CommonMethods.connect(branchLinkReturn, fr);
 							if(!found){
@@ -105,82 +103,56 @@ public class FunctionReferenceNodeAdder {
 							}
 						} 
 					} 
-					{
-						//see if the user has told us where the branch goes 
-						for (Reference ref : m_branchMap.keySet()) {
-							if (ref.matches(inst.getPC())) {
-								for (BranchInfo refTarget : m_branchMap.get(ref)) {
-									for (long targetPc : refTarget.getRef().getPcs()) {
-										InstructionNode target = (InstructionNode) getInstruction(m_instDecoder.getNode(targetPc), seen, functionInstructions);
-										FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, target, functionRefNodes);
-										CommonMethods.connect(fr, parent);	
-										if(target != null) {
-											foundATarget = true;
-										}
-										if(!ref.getBackTrail().isEmpty()){
-											fr.setBackTrail(ref);
-										}
-										if (branchLinkReturn != null) {	
-											CommonMethods.connect(branchLinkReturn, fr);
-											if(!found){
-												toDo.add(originalBLReturn);		
-											}
-										} 
+					//see if the user has told us where the branch goes 
+					for (Reference ref : m_branchMap.keySet()) {
+						if (ref.matches(inst.getPC())) {
+							for (BranchInfo refTarget : m_branchMap.get(ref)) {
+								for (long targetPc : refTarget.getRef().getPcs()) {
+									InstructionNode target = (InstructionNode) getInstruction(m_instDecoder.getNode(targetPc), seen, functionInstructions);
+									FunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, target, functionRefNodes);
+									CommonMethods.connect(fr, copyInst);	
+									if(target != null) {
+										foundATarget = true;
 									}
-								}
-							}
-						}
-						if(!foundATarget){
-							inst.setUnresolved(true);
-							parent.setUnresolved(true);
-							//TODO remove this as the following code should be unreachable
-							FunctionReferenceNode fr = addFunctionReferenceNode(inst, parent, null, functionRefNodes);
-							fr.setUnresolved(true);
-							if (branchLinkReturn != null) {	
-								CommonMethods.connect(fr, parent);
-								CommonMethods.connect(branchLinkReturn, fr);
-								if(!found){
-									toDo.add(originalBLReturn);		
+									if(!ref.getBackTrail().isEmpty()){
+										fr.setBackTrail(ref);
+									}
+									if (branchLinkReturn != null) {	
+										CommonMethods.connect(branchLinkReturn, fr);
+										if(!found){
+											toDo.add(originalBLReturn);		
+										}
+									} 
 								}
 							}
 						}
 					}
-				}
-				
+					if(!foundATarget){
+						copyInst.setUnresolved(true);
+						//TODO remove this as the following code should be unreachable
+						FunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, null, functionRefNodes);
+						fr.setUnresolved(true);
+						if (branchLinkReturn != null) {	
+							CommonMethods.connect(fr, copyInst);
+							CommonMethods.connect(branchLinkReturn, fr);
+							if(!found){
+								toDo.add(originalBLReturn);		
+							}
+						}
+					}
+				}				
 				toDo.remove(inst);
 			}
 			FunctionContainer fc = new FunctionContainer(copyStart, functionInstructions, functionRefNodes);
 			m_functionContainer.add(fc);
 			m_functionInstuctionToOriginal.put(copyStart, startOfFunction);
 		}
-		
-		//m_unreachableBytes = countBytes(remainingInsts);
-		
 	}
 
 	public Map<InstructionNode, InstructionNode> getFunctionInstuctionToOriginal(){
 		return m_functionInstuctionToOriginal;
 	}
 	
-	/*
-	public int getExecuableBytes(){
-		return m_executableBytes;
-	}
-	
-	public int getUnreachableBytes(){
-		return m_unreachableBytes;
-	}
-	
-	
-	private int countBytes(List<InstructionNode> insts) {
-		int totalBytes = 0;
-		for(InstructionNode inst : insts){
-			totalBytes += inst.getXtaInstruction().getNumBytes();
-		}
-		return totalBytes;
-	}
-	 */
-
 	private Node getInstruction(Node next, Map<Node, Node> seen, Set<InstructionNode> functionInstructions) {
 		assert(next instanceof InstructionNode);
 		if(seen.containsKey(next)){

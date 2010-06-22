@@ -29,9 +29,8 @@ public class SourceMapper {
 		s_userSpecifedFileLocations.clear();
 	}
 	
-    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader,
-    		CoreCollection<InstructionDecoder> instructionDecoders,
-			Sections sections) throws AbortedException {
+    public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, Sections sections, 
+    		CoreCollection<InstructionDecoder> instructionDecoders) throws AbortedException {
 
         m_xeLastModified = xeLoader.getFile().lastModified();    	
         m_sourceFiles = createSourceFiles(src, engine, xeLoader, instructionDecoders);

@@ -18,7 +18,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
-import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
+import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -67,21 +67,19 @@ public class RouteConstructor {
 		SUCCESS,
 	}
 
-	private CallGraph m_callGraph;
+	private ControlFlow m_controlFlow;
 	private List<Route> m_routes;
 	private Engine m_engine;
 	private RouteCoreContainer m_coreContainer;
 	private CoreId m_core;
 	
-	public RouteConstructor(Engine engine, CallGraph callGraph,
+	public RouteConstructor(Engine engine, ControlFlow controlFlow,
 			RouteCoreContainer routeCoreContainer, CoreId core) throws AbortedException {
-		m_callGraph = callGraph;
+		m_controlFlow = controlFlow;
 		m_routes = new ArrayList<Route>();
 		m_engine = engine;
 		m_coreContainer = routeCoreContainer;	
 		m_core = core;
-		assert(m_callGraph != null);
-		assert(m_engine != null);
 	}
 
 	public List<Route> getRoutes() {
@@ -109,12 +107,12 @@ public class RouteConstructor {
 		for(ExclusionInfo info : m_engine.getExclusions()){
 			Reference ref = info.getReference();
 			if(ref.getCoreId().equals(m_core)){
-				exclusionStackNodes.addAll(getPathStackNodes(m_callGraph, ref));
+				exclusionStackNodes.addAll(getPathStackNodes(m_controlFlow, ref));
 			}
 		}
 		
 		if (routeContainer.getMode() == RouteMode.FUNCTION){
-			List<StackNode> startStackNodes = getPathStackNodes(m_callGraph, m_coreContainer.getFromReference());
+			List<StackNode> startStackNodes = getPathStackNodes(m_controlFlow, m_coreContainer.getFromReference());
 			for(StackNode startStackNode : startStackNodes){
 				for(Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()){
 					
@@ -131,13 +129,13 @@ public class RouteConstructor {
 		} else if (routeContainer.getMode() == RouteMode.PATH){
 			Reference startRef = m_coreContainer.getFromReference();
 			
-			List<StackNode> startStackNodes = getPathStackNodes(m_callGraph, startRef);
+			List<StackNode> startStackNodes = getPathStackNodes(m_controlFlow, startRef);
 			
 			Collection<Reference> endRefs = m_coreContainer.getToReferences();
 			List<StackNode> endStackNodes = new LinkedList<StackNode>();
 			for(Reference end : endRefs){
 				
-				endStackNodes.addAll(getPathStackNodes(m_callGraph, end));
+				endStackNodes.addAll(getPathStackNodes(m_controlFlow, end));
 			}
 			boolean foundAtLeastOneStartPoint = false;
 			for (StackNode startStackNode : startStackNodes){
@@ -176,12 +174,12 @@ public class RouteConstructor {
 	    throws AbortedException, MemoryMonitorException {
 		
 		for(Reference ref : m_engine.getUserBranches().keySet()){
-			List<StackNode> stackNodes = getPathStackNodes(m_callGraph, ref);
+			List<StackNode> stackNodes = getPathStackNodes(m_controlFlow, ref);
 			branchStackNodes.addAll(stackNodes);
 			for(StackNode sn : stackNodes){
 				branchToNext.put(sn, new IteratableSet<Node>());
 				for(Reference next : m_engine.getUserBranches().get(ref)){
-					for(StackNode nextStackNode : getPathStackNodes(m_callGraph, next)){
+					for(StackNode nextStackNode : getPathStackNodes(m_controlFlow, next)){
 						if(sn.getInstruction().getXtaInstruction().isLink()){
 							for(Node nextFrn : sn.getInstruction().getNextNodes()){
 								if(nextFrn instanceof FunctionReferenceNode){
@@ -200,11 +198,11 @@ public class RouteConstructor {
 		}
 	}
 
-	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) 
+	private List<StackNode> getPathStackNodes(ControlFlow controlFlow, Reference reference) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(callGraph, reference, m_engine);
+		return prm.matchReference(controlFlow, reference, m_engine);
 	}
 	
 	private Pair<FunctionNode, Boolean> makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
@@ -301,9 +299,6 @@ public class RouteConstructor {
 			
 			Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
 			//System.out.println("on node " + currentNode);
-			if(currentNode instanceof InstructionNode && ((InstructionNode)currentNode).getPC() == 0x10120){
-			//	System.out.println("on node " + currentNode);
-			}
 			
 			if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 				currentExclusionsFound.add(currentNode);
@@ -399,9 +394,7 @@ public class RouteConstructor {
 			addToWorkingSet(previous, currentNode, workingSet);
 			
 			Set<Node> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
-			
-			
-		//	System.out.println("nexts: " + nextNodes);
+			//System.out.println("nexts: " + nextNodes);
 			
 			if(nextNodes.size() == 0){
 				FunctionReferenceNode callingFnRef = currentStack.peek();

@@ -8,8 +8,8 @@ import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -21,17 +21,17 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 
 	private static final boolean debug = false;
 	
-	public List<StackNode> matchReference(CallGraph callGraph, Reference ref, Engine engine) 
+	public List<StackNode> matchReference(ControlFlow controlFlow, Reference ref, Engine engine) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		if (debug) System.out.println("####### begin reference match " + ref + " ###########");
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
-		for(FunctionContainer matchingContainer : getBaseContianers(ref, callGraph)){
+		for(FunctionContainer matchingContainer : getBaseContianers(ref, controlFlow)){
 			
-			stackNodes.add(new StackNode(getInstructionFromContainer(matchingContainer,ref), callGraph.getStacks(matchingContainer)));
+			stackNodes.add(new StackNode(getInstructionFromContainer(matchingContainer,ref), controlFlow.getStacks(matchingContainer)));
 		}
 		
-		List<StackNode> s = refineStackNodes(stackNodes, ref, callGraph, engine);
+		List<StackNode> s = refineStackNodes(stackNodes, ref, controlFlow, engine);
 		if (debug) System.out.println("####### end reference match " + ref + " ###########");
 		return s;
 	}
@@ -46,9 +46,9 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return null;
 	}
 	
-	private List<FunctionContainer> getBaseContianers(Reference ref, CallGraph callGraph){
+	private List<FunctionContainer> getBaseContianers(Reference ref, ControlFlow controlFlow){
 		List<FunctionContainer> fnContainers = new LinkedList<FunctionContainer>();
-		for(FunctionContainer fc : callGraph.getFunctionContainers()){
+		for(FunctionContainer fc : controlFlow.getFunctionContainers()){
 			
 			if(ref.getBase().getType() == Type.FUNCTION){
 				if(ref.getPcs().contains(fc.getStartInstruction().getPC())){
@@ -67,7 +67,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return fnContainers;
 	}
 
-	public List<StackNode> refineStackNodes(List<StackNode> stackNodes, Reference reference, CallGraph callGraph, Engine engine) 
+	public List<StackNode> refineStackNodes(List<StackNode> stackNodes, Reference reference, ControlFlow controlFlow, Engine engine) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		List<StackNode> refinedStackNodes = new LinkedList<StackNode>();
@@ -98,7 +98,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 
 			List<Stack<FunctionReferenceNode>> stacks = new LinkedList<Stack<FunctionReferenceNode>>();
 
-			List<FunctionContainer> containedInFunction = callGraph.getFunctionContaining(pc);
+			List<FunctionContainer> containedInFunction = controlFlow.getFunctionContaining(pc);
 
 			for(FunctionContainer fn : containedInFunction){
 				InstructionNode inst = fn.getInstruction(pc);
@@ -107,7 +107,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 					continue;
 				}
 				
-				List<Stack<FunctionReferenceNode>> callStacks = callGraph.getStacks(fn);
+				List<Stack<FunctionReferenceNode>> callStacks = controlFlow.getStacks(fn);
 				
 				for(Stack<FunctionReferenceNode> stack : callStacks){
 					if (debug) {

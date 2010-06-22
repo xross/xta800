@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.controlflow;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.Collection;
 import java.util.Set;

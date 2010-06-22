@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.controlflow;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +16,7 @@ import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.utils.CoreId;
 
-public class SuccessorAdder {
+class SuccessorAdder {
 
 	private InstructionDecoder m_instDecoder;
 	private Map<Reference, Set<BranchInfo>> m_branchMap;
@@ -44,7 +44,6 @@ public class SuccessorAdder {
 			addUserSuccessors(node, inst);
 		}
 	}
-
 	
 	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
 		if(!inst.isLink()){

@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.controlflow;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.Set;
 
@@ -8,7 +8,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 
-public class UnresolvedSetter {
+class UnresolvedSetter {
 	private Set<InstructionNode> m_functionStartNodes;
 
 	public UnresolvedSetter(Set<InstructionNode> functionStartNodes) {
@@ -25,24 +25,27 @@ public class UnresolvedSetter {
 	private void findUnresolved(Node inst, Set<Node> seen) {
 		Set<Node> following = new IteratableSet<Node>();
 		following.add(inst);
-		while(!following.isEmpty()){
+		while (!following.isEmpty()) {
 			Node current = following.iterator().next();
 			
 			seen.add(current);
 			boolean isBranch = isBranch(current);
 			int nonTerminatingNextInstructionCount = countNext(current);
-			if(nonTerminatingNextInstructionCount == 0 && isBranch){
+			if (nonTerminatingNextInstructionCount == 0 && isBranch) {
 				current.setUnresolved(true);
-			} else {
-				if(current instanceof InstructionNode){
+				
+			} else {				
+				current.setUnresolved(false);
+				
+				if (current instanceof InstructionNode) {
 					InstructionNode i = (InstructionNode)current;
-					if(i.getXtaInstruction().isLink()) {
+					if (i.getXtaInstruction().isLink()) {
 						following.addAll(i.getBranchReturnNodes());
 					}
 				}
 				
-				for(Node next : current.getNextNodes()){
-					if(!seen.contains(next)){
+				for (Node next : current.getNextNodes()) {
+					if (!seen.contains(next)) {
 						following.add(next);
 					}
 				}

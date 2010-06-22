@@ -9,7 +9,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
+import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
@@ -46,7 +46,7 @@ public class DumpActiveExclusions extends Command {
 			for(ExclusionInfo info : engine.getExclusions()){
 				Reference ref = info.getReference();
 				if(ref.getCoreId().equals(coreId)){
-					List<StackNode> stackNodes = getPathStackNodes(engine.getCallGraph(coreId), ref, engine);
+					List<StackNode> stackNodes = getPathStackNodes(engine.getControlFlow(coreId), ref, engine);
 					if (stackNodes != null) {
 					    exclusionStackNodes.addAll(stackNodes);
 					}
@@ -59,10 +59,10 @@ public class DumpActiveExclusions extends Command {
     	}
     }
     
-    private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference, Engine engine) {
+    private List<StackNode> getPathStackNodes(ControlFlow controlFlow, Reference reference, Engine engine) {
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 		try {
-			return prm.matchReference(callGraph, reference, engine);
+			return prm.matchReference(controlFlow, reference, engine);
 
 		} catch (AbortedException e) {
 			return null;

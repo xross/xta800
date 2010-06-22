@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.controlflow;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.Map;
 import java.util.Set;
@@ -17,9 +17,9 @@ import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.utils.CoreId;
 
-public class FunctionConstructor {
+class FunctionConstructor {
 
-	private InstructionDecoder m_instDecoder;
+	private InstructionDecoder m_instructionDecoder;
 	private Notifier m_notifier;
 	private CoreId m_coreId;
 	private CommandSource m_src;
@@ -31,9 +31,9 @@ public class FunctionConstructor {
 
 	private static final int RAMBASE = 0x10000;
 
-	public FunctionConstructor(InstructionDecoder instDecoder, Notifier notifier, Sections sections,
+	public FunctionConstructor(InstructionDecoder instructionDecoder, Notifier notifier, Sections sections,
 			CoreId coreId, CommandSource src, InstructionMnemonics mnenonics, SymbolTable symbolTable) {
-		m_instDecoder = instDecoder;
+		m_instructionDecoder = instructionDecoder;
 		m_notifier = notifier;
 		m_functionStarts = new IteratableSet<InstructionNode>();
 		m_functionEnds = new NonIteratableSet<InstructionNode>();
@@ -60,12 +60,11 @@ public class FunctionConstructor {
 		return ensureAtLeastOneStartExists();
 	}
 
-	private void addUnreachableFunctionStarts() {
-		
-		for(String functionName : m_symbolTable.getFunctionNames()){
+	private void addUnreachableFunctionStarts() {		
+		for (String functionName : m_symbolTable.getFunctionNames()){
 			
 			long functionPc = m_symbolTable.symbolAddress(functionName);
-			InstructionNode threadNode = m_instDecoder.getNode(functionPc);
+			InstructionNode threadNode = m_instructionDecoder.getNode(functionPc);
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
 			} else {
@@ -84,10 +83,10 @@ public class FunctionConstructor {
 	}
 
 	private boolean ensureAtLeastOneStartExists() {
-		if(m_functionStarts.isEmpty()){
+		if (m_functionStarts.isEmpty()){
 			m_notifier.notify(m_src, Notifier.NOTIFY_WARNING,
 						"failed to find any timable code defaulting to ram base at PC 0x" + Long.toHexString(RAMBASE));
-			InstructionNode threadNode = m_instDecoder.getNode(RAMBASE);
+			InstructionNode threadNode = m_instructionDecoder.getNode(RAMBASE);
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
 			} else {
@@ -99,12 +98,12 @@ public class FunctionConstructor {
 	}
 
 	private void addBranchTargetsToFunctionStarts(){
-		for(InstructionNode i : m_instDecoder.getInstructions()){
-			if(i.getXtaInstruction().getBranchLink()){
+		for (InstructionNode i : m_instructionDecoder.getInstructions()){
+			if (i.getXtaInstruction().getBranchLink()){
 				
-				if(i.getXtaInstruction().getBranchPcRelative()){
+				if (i.getXtaInstruction().getBranchPcRelative()){
 					long pc = i.getXtaInstruction().getBranchPcRelativeTargetPc();
-					InstructionNode threadNode = m_instDecoder.getNode(pc);
+					InstructionNode threadNode = m_instructionDecoder.getNode(pc);
 					if (threadNode != null) {
 						m_functionStarts.add(threadNode);
 					} else {
@@ -121,14 +120,14 @@ public class FunctionConstructor {
 	
 	private void addUserBranchTargetsToFunctionStarts(){
 		Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_coreId);	
-		for(InstructionNode instruction : m_instDecoder.getInstructions()){
+		for(InstructionNode instruction : m_instructionDecoder.getInstructions()){
 			XtaInstruction inst = instruction.getXtaInstruction();
 			if(inst.isLink()){
 				for (Reference ref : branchMap.keySet()) {
 					if (ref.matches(inst.getPc())) {
 						for (BranchInfo target : branchMap.get(ref)) {
 							for (long pc : target.getRef().getPcs()) {
-								m_functionStarts.add(m_instDecoder.getNode(pc)); 
+								m_functionStarts.add(m_instructionDecoder.getNode(pc)); 
 							}
 						}	
 					}
@@ -140,7 +139,7 @@ public class FunctionConstructor {
 	private void addThreadStartsToFunctionStarts(){
 		
 		for (long pc : m_sections.getThreadStartPoints(m_coreId)) {
-			InstructionNode threadNode = m_instDecoder.getNode(pc);
+			InstructionNode threadNode = m_instructionDecoder.getNode(pc);
 			
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
@@ -154,7 +153,7 @@ public class FunctionConstructor {
 
 	private void addThreadStopsToFunctionEnds(){
 		for (long pc : m_sections.getThreadStopPoints(m_coreId)) {
-			InstructionNode threadNode = m_instDecoder.getNode(pc);
+			InstructionNode threadNode = m_instructionDecoder.getNode(pc);
 			if (threadNode != null) {
 				m_functionEnds.add(threadNode);
 				threadNode.setUnresolved(true);
@@ -167,7 +166,7 @@ public class FunctionConstructor {
 	}
 
 	private void addRetspsToFunctionEnds(){
-		for(InstructionNode i : m_instDecoder.getInstructions()){
+		for(InstructionNode i : m_instructionDecoder.getInstructions()){
 			if(i.getXtaInstruction().getReturn()){
 				m_functionEnds.add(i);
 			}
@@ -176,7 +175,7 @@ public class FunctionConstructor {
 
 	private void addHaltsToFunctionEnds(){
 		boolean previousInstructionWasClre = true;
-		for(InstructionNode i : m_instDecoder.getInstructions()){
+		for(InstructionNode i : m_instructionDecoder.getInstructions()){
 			if( m_mnenonics.isFreet(i.getXtaInstruction())){
 				m_functionEnds.add(i);
 			}

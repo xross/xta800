@@ -83,24 +83,18 @@ public class Status extends Command {
 			}
 		}
 
-    	if (engine.isBusy()) {
-    		console.display("Currently busy...\n");
-
+   		List<Route> routes = engine.getRoutes();
+    	if (engine.getRoutes().size() > 0) {
+    		for (Route route : routes) {
+	    		console.display(String.format("Loaded Route(%d): %s %s\n",
+	    				route.getRouteId(),
+	    				route.getRouteCoreContainer().getRouteContainer().getDescription(),
+	    				route.getEndpointsPcsString()));
+    		}
     	} else {
-    		List<Route> routes = engine.getRoutes();
-	    	if (engine.getRoutes().size() > 0) {
-	    		for (Route route : routes) {
-		    		console.display(String.format("Loaded Route(%d): %s %s\n",
-		    				route.getRouteId(),
-		    				route.getRouteCoreContainer().getRouteContainer().getDescription(),
-		    				route.getEndpointsPcsString()));
-	    		}
-
-	    	} else {
-	    		console.display(String.format("No routes analyzed\n"));
-	    	}
+    		console.display(String.format("No routes analyzed\n"));
     	}
-
+ 
     	String fromEndPointName = engine.getPathPoints().getFromName();
     	if (!fromEndPointName.equals("")) {
    		    console.display(String.format("From endpoint '%s'\n", fromEndPointName));  

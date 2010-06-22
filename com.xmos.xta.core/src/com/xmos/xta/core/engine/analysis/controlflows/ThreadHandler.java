@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.controlflow;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.Collection;
 import java.util.Map;
@@ -14,7 +14,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 
-public class ThreadHandler {
+class ThreadHandler {
 	private InstructionDecoder m_instDecoder;
 	private Notifier m_notifier;
 

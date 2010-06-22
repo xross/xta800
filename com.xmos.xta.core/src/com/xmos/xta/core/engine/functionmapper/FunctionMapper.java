@@ -10,26 +10,22 @@ import java.util.Set;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.CommandSource;
-import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class FunctionMapper {
     private List<Function> m_functions;
 	private Map<Long, Function> m_pcToFunction;
 	
-    public FunctionMapper(CommandSource src, Engine engine, XeLoader xeLoader,
-			Map<InstructionNode, InstructionNode> functionInstuctionToOriginal, 
+    public FunctionMapper(Map<InstructionNode, InstructionNode> functionInstuctionToOriginal, 
 			InstructionDecoder instructionDecoder, Set<FunctionContainer> functionContainers, 
-			Map<String, Set<Long>> labels, CoreId coreId) throws AbortedException {
-        
+			Map<String, Set<Long>> labels) throws AbortedException {
+
         m_pcToFunction = new NonIteratableMap<Long, Function>();
-        m_functions = createFunctions(instructionDecoder, labels, functionContainers, functionInstuctionToOriginal);
+        m_functions = createFunctions(instructionDecoder, labels, 
+        		functionContainers, functionInstuctionToOriginal);
 	}
 
     public List<Function> getFunctions() {

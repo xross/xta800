@@ -11,8 +11,8 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
@@ -33,10 +33,8 @@ public class Debugger {
 		boolean hit = false;		
 		for (CoreId activeCore : m_engine.getActiveCores()) {
 			
-			CallGraph callGraph = m_engine.getCallGraph(activeCore);
-			assert(callGraph != null);
-		
-		    for (FunctionContainer functionContainer : callGraph.getFunctionContainers()) {
+			ControlFlow controlFlow = m_engine.getControlFlow(activeCore);
+		    for (FunctionContainer functionContainer : controlFlow.getFunctionContainers()) {
 			    if (functionContainer.getFunctionName().equals(functionName)) {
 				    functionContainer.dumpGraph(console);
 				    hit = true;
@@ -72,7 +70,7 @@ public class Debugger {
 			if (reference.resolve(m_engine)) {
 			    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 			    try {
-					for (StackNode stackNode : prm.matchReference(m_engine.getCallGraph(activeCore), reference, m_engine)) {
+					for (StackNode stackNode : prm.matchReference(m_engine.getControlFlow(activeCore), reference, m_engine)) {
 						matchingReferences.addAll(stackNode.getBackTrails());
 					}
 				} catch (AbortedException e) {

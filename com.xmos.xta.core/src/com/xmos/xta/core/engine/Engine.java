@@ -27,19 +27,14 @@ import com.xmos.libs.xnloader.XmlHandler;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.analysis.Analyzer;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.controlflow.CallGraph;
-import com.xmos.xta.core.engine.analysis.controlflow.FnopAdder;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionConstructor;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.controlflow.FunctionReferenceNodeAdder;
-import com.xmos.xta.core.engine.analysis.controlflow.SuccessorAdder;
-import com.xmos.xta.core.engine.analysis.controlflow.UnresolvedSetter;
+import com.xmos.xta.core.engine.analysis.controlflows.ControlFlows;
+import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
@@ -83,6 +78,7 @@ public class Engine extends Notifier implements Aborter {
 
 	private XeLoader m_xeLoader;
 	private SourceMapper m_sourceMapper;
+	private ControlFlows m_controlFlows;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
 	private Route m_selectedRoute;
@@ -99,10 +95,7 @@ public class Engine extends Notifier implements Aborter {
 	private long m_loadStartTime;
 	private Map<String, Integer> m_nodeHz;
 	private CoreCollection<Integer> m_coreThreads;
-	private CoreCollection<Boolean> m_structuralGraphUpToDate;
-	private CoreCollection<FunctionMapper> m_functionMappers;
-	private CoreCollection<InstructionDecoder> m_instructionDecoders;
-	private CoreCollection<CallGraph> m_callGraphs;
+	private CoreCollection<InstructionDecoder> m_instructionDecoders;	
 	private Scripter m_scripter;
 	private Collection<CoreId> m_activeCores;
 	private PathPoints m_pathPoints;
@@ -111,14 +104,12 @@ public class Engine extends Notifier implements Aborter {
 
 	public Engine(Config config) {
 		super(config);
-		m_functionMappers = new CoreCollection<FunctionMapper>();
-		m_instructionDecoders = new CoreCollection<InstructionDecoder>();
-		m_callGraphs = new CoreCollection<CallGraph>();
-		m_structuralGraphUpToDate = new CoreCollection<Boolean>();
 		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
+		m_instructionDecoders = new CoreCollection<InstructionDecoder>();
 		m_xeLoader = new XeLoader();
 		m_sourceMapper = null;
+		m_controlFlows = new ControlFlows();
 		m_routes = new LinkedList<Route>();
 		m_routeContainers = new LinkedList<RouteContainer>();
 		m_activeCores = new ArrayList<CoreId>();
@@ -181,14 +172,18 @@ public class Engine extends Notifier implements Aborter {
 		return m_xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber());
 	}
 
-	public FunctionMapper getFunctionMapper(CoreId coreId) {
-		return m_functionMappers.get(coreId);
+	public ControlFlow getControlFlow(CoreId coreId) {
+		return m_controlFlows.getControlFlow(coreId);
 	}
 	
-	public CallGraph getCallGraph(CoreId coreId) {
-		return m_callGraphs.get(coreId);
+	public FunctionMapper getFunctionMapper(CoreId coreId) {
+		return m_controlFlows.getControlFlow(coreId).getFunctionMapper();
 	}
-
+	
+	public InstructionDecoder getInstructionDecoder(CoreId coreId) {
+		return m_instructionDecoders.get(coreId);
+	}
+	
 	public PathPoints getPathPoints() {
 		return m_pathPoints;
 	}
@@ -200,11 +195,7 @@ public class Engine extends Notifier implements Aborter {
 	public MemoryMonitor getMemoryMonitor() {
 		return m_memoryMonitor;
 	}
-	
-	public InstructionDecoder getInstructionDecoder(CoreId coreId) {
-		return m_instructionDecoders.get(coreId);
-	}
-	
+		
 	public String getSrcPaths() {
 		if (m_srcPaths != null) {
 			return m_srcPaths;
@@ -219,7 +210,9 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {		
-		notify(src, Notifier.CLEAR_LOG, "");
+    	m_loadStartTime = System.currentTimeMillis();
+
+    	notify(src, Notifier.CLEAR_LOG, "");
 
 		try {
     		executableFile = executableFile.getCanonicalFile();
@@ -228,16 +221,21 @@ public class Engine extends Notifier implements Aborter {
 			return false;
 		}
 
-		setAnalysisName("Loading XE");
+		setAnalysisName("Loading Executable");
 		XeLoader xeLoader = new XeLoader();
 		if (!xeLoader.loadExecutable(executableFile)) {
 			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' could not be loaded.");
 			return false;
 		}
 
-		setAnalysisName("Loading sections");
+		setAnalysisName("Loading Sections");
 		Sections sections = new Sections();
 		if (!sections.load(src, xeLoader, this)) {
+			return false;
+		}
+		
+		setAnalysisName("Decoding Instructions");
+		if (!initialiseInstructionDecoders(src, xeLoader)) {
 			return false;
 		}
 
@@ -245,10 +243,12 @@ public class Engine extends Notifier implements Aborter {
 			SourceMapper.clearUserSpecifedFileLocations();
 		}
 
-		boolean successfulInit = initControlFlowGraphs(src, xeLoader, sections);
-		if (successfulInit){
-		    try {		    	
-		    	m_sourceMapper = new SourceMapper(src, this, xeLoader, m_instructionDecoders, sections);
+		setAnalysisName("Analysing Control Flow");		
+		if (m_controlFlows.initialise(src, this, xeLoader, sections, m_instructionDecoders)) {
+			
+			setAnalysisName("Determining Source To Assembly Mapping");					
+		    try {
+		    	m_sourceMapper = new SourceMapper(src, this, xeLoader, sections, m_instructionDecoders);
 			} catch (AbortedException e) {
 				return false;
 			}
@@ -271,8 +271,9 @@ public class Engine extends Notifier implements Aborter {
 
 			m_scripter.setEngineLoadAndRunDone();
 			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
+			return true;
 		}		
-		return successfulInit;
+		return false;
 	}
 
 	public boolean analyzeFunction(CommandSource src, String functionName) {
@@ -449,10 +450,6 @@ public class Engine extends Notifier implements Aborter {
 		}
 	}
 
-	public boolean isBusy() {
-		return m_progressMonitor != null;
-	}
-
 	public void setAnalysisTimeOut(int time) {
 		m_timeOut = time;
 	}
@@ -460,7 +457,7 @@ public class Engine extends Notifier implements Aborter {
 	public int getNumErrors() {
 		return m_numErrors;
 	}
-
+	
 	// ===================================================================== //
 	// Get/Set Frequency.
 	// ===================================================================== //			
@@ -518,13 +515,12 @@ public class Engine extends Notifier implements Aborter {
 	// Function Names/Pcs
 	// ===================================================================== //
 	public Set<String> getFunctionNames(CoreId coreId) {
-		Set<FunctionContainer> functionContainers = m_callGraphs.get(coreId).getFunctionContainers();
+		Set<FunctionContainer> functionContainers = m_controlFlows.getControlFlow(coreId).getFunctionContainers();
 		if (functionContainers != null) {
 			Set<String> functionNames = new IteratableSet<String>();
 			for(FunctionContainer fc : functionContainers){
 				functionNames.add(fc.getFunctionName());
-			}
-			
+			}			
 		    return functionNames;
 	    }
 		return new NonIteratableSet<String>();
@@ -561,8 +557,8 @@ public class Engine extends Notifier implements Aborter {
 	
 	public List<Long> getFunctionStartPcs(String functionName, CoreId coreId) {
 		List<Long> pcs = new LinkedList<Long>();
-		for(FunctionContainer fc : m_callGraphs.get(coreId).getFunctionContainers()){
-			if(functionName.equals(fc.getFunctionName())){
+		for (FunctionContainer fc : m_controlFlows.getControlFlow(coreId).getFunctionContainers()){
+			if (functionName.equals(fc.getFunctionName())){
 				pcs.add(fc.getStartInstruction().getPC());
 			}
 		}		
@@ -1259,13 +1255,12 @@ public class Engine extends Notifier implements Aborter {
 					toResolved = false;
 				}
 			}
-			
+
 			try {
-				List<StackNode> stackNodes = getPathStackNodes(m_callGraphs.get(activeCore), fromRef);
+				List<StackNode> stackNodes = getPathStackNodes(m_controlFlows.getControlFlow(activeCore), fromRef);
 				if(!stackNodes.isEmpty()) {
 					if (fromResolved && toResolved) {
 						if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
-							m_structuralGraphUpToDate.add(activeCore, false);
 							hit = true;
 						}				
 					}
@@ -1278,7 +1273,7 @@ public class Engine extends Notifier implements Aborter {
 		if (!hit) {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		} else {
-			initControlFlowGraphs(src, m_xeLoader, m_sections);
+			m_controlFlows.initialise(src, this, m_xeLoader, m_sections, m_instructionDecoders);
 		}		
 		return hit;
 	}
@@ -1309,7 +1304,6 @@ public class Engine extends Notifier implements Aborter {
 			
 			if (fromResolved && toResolved) {
 				if (m_sections.removeFromBranches(src, activeCore, fromRef, toRefs)) {
-					m_structuralGraphUpToDate.add(activeCore, false);
 					hit = true;
 				}				
 			}			
@@ -1317,7 +1311,9 @@ public class Engine extends Notifier implements Aborter {
 
 		if (!hit) {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
-		}
+		} else {
+			m_controlFlows.initialise(src, this, m_xeLoader, m_sections, m_instructionDecoders);
+		}		
 		return hit;
 	}
 	
@@ -1416,158 +1412,6 @@ public class Engine extends Notifier implements Aborter {
     	return new CoreId(xnLoader, nodeChainIndex, coreNumber);
     }
 
-	public boolean updateControlFlowGraphs(CommandSource src, CoreId coreId) {
-		assert(m_xeLoader.isLoaded(coreId.getNodeChainIndex(), coreId.getCoreNumber()));
-	    if (!m_structuralGraphUpToDate.get(coreId)) {
-			CoreCollection<CallGraph> callGraphs = new CoreCollection<CallGraph>(m_callGraphs);
-			CoreCollection<FunctionMapper> functionMappers = new CoreCollection<FunctionMapper>(m_functionMappers);
-			CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>(m_instructionDecoders);
-			
-			if (buildNodeCore(callGraphs, instructionDecoders, functionMappers, m_xeLoader, m_sections, src, coreId)) {
-				m_callGraphs = callGraphs;
-				m_functionMappers = functionMappers;
-				m_instructionDecoders = instructionDecoders;
-			} else {
-				return false;
-			}
-		}
-	    return true;
-	}
-
-	private boolean initControlFlowGraphs(CommandSource src, XeLoader xeLoader, Sections sections){
-		m_loadStartTime = System.currentTimeMillis();
-		
-		notify(src, Notifier.HOLD_MESSAGES, "");
-		
-		CoreCollection<CallGraph> callGraphs = new CoreCollection<CallGraph>();
-		CoreCollection<FunctionMapper> functionMappers = new CoreCollection<FunctionMapper>();		
-		CoreCollection<Boolean> structuralGraphUpToDate = new CoreCollection<Boolean>();
-		CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>();
-		
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				boolean success = buildNodeCore(callGraphs, instructionDecoders, functionMappers, xeLoader, sections, src, coreId);
-				if (success){
-					structuralGraphUpToDate.add(coreId, true);
-				} else {
-					return false;
-				}
-			}
-		}
-
-		m_callGraphs = callGraphs;
-		m_functionMappers = functionMappers;
-		m_instructionDecoders = instructionDecoders;
-		m_structuralGraphUpToDate = structuralGraphUpToDate;
-		
-		notify(src, Notifier.RELEASE_MESSAGES, "");
-		return true;
-	}
-	
-	private boolean buildNodeCore(CoreCollection<CallGraph> callGraphs,
-			CoreCollection<InstructionDecoder> instructionDecoders,
-			CoreCollection<FunctionMapper> functionMappers, 
-			XeLoader xeLoader, Sections sections, CommandSource src, 
-			CoreId coreId) {
-		
-		setAnalysisName(String.format("Processing %s", coreId.toString()));
-		InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-		
-		//Binary Stage
-		InstructionDecoder instructionDecoder = new InstructionDecoder(coreId, xeLoader);
-		try {
-			instructionDecoder.decode();
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
-			return false;
-		}
-		instructionDecoders.add(coreId, instructionDecoder);
-		
-		//Control Flow Stage
-		FunctionConstructor fc = new FunctionConstructor(instructionDecoder, this, sections, coreId, src, 
-				mnenonics, xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber()));
-
-		try {
-			fc.process();
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
-			return false;
-		}
-
-		Set<InstructionNode> functionStartNodes = fc.getFunctionStarts();
-		
-		Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
-		
-		//add all the successors
-		SuccessorAdder sa = new SuccessorAdder(coreId, instructionDecoder, sections, functionEndNodes, this, src, mnenonics);
-		sa.process();
-
-		UnresolvedSetter us = new UnresolvedSetter(functionStartNodes);
-		us.process();
-		
-		//add function reference nodes
-		FunctionReferenceNodeAdder frna = new FunctionReferenceNodeAdder(instructionDecoder, m_notifier, src, xeLoader, coreId, sections);
-		frna.process(functionStartNodes);
-
-		Set<FunctionContainer> functionContainers = frna.getFunctionContainers();
-		
-		FnopAdder fa = new FnopAdder(functionContainers);
-		fa.process();
-		
-		ensureAllFunctionsAreNamed(xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber()),
-				functionContainers, sections.getLabels(coreId));
-
-		setBranchTargets(instructionDecoder, functionContainers);
-
-		linkFunctions(functionContainers);
-
-		CallGraph cg = new CallGraph(functionContainers, coreId);
-		callGraphs.add(coreId, cg);
-		FunctionMapper functionMapper;
-		try {
-			functionMapper = new FunctionMapper(src, this, xeLoader, 
-					frna.getFunctionInstuctionToOriginal(),
-					instructionDecoder, functionContainers, 
-					sections.getLabels(coreId), coreId);
-
-		} catch (AbortedException e) {
-			return false;
-		}
-		functionMappers.add(coreId, functionMapper);		
-		return true;
-	}
-	
-	private void linkFunctions(Set<FunctionContainer> functionContainers) {
-		Map<Long, FunctionContainer> pcToFunctionStartNode = new NonIteratableMap<Long, FunctionContainer>();
-		for(FunctionContainer fc : functionContainers){
-			pcToFunctionStartNode.put(fc.getStartInstruction().getPC(), fc);
-		}
-		for(FunctionContainer fc : functionContainers){
-			for (FunctionReferenceNode g : fc.getFunctionReferenceNodes()){
-				if(g.isKnownFunction()){
-					FunctionContainer link = pcToFunctionStartNode.get(g.getFunctionStartPc());
-					g.setFunction(link);
-				}
-			}
-		}
-	}
-
-	private void setBranchTargets(InstructionDecoder id, Set<FunctionContainer> functionContainers) {
-		for (InstructionNode inst : id.getInstructions()) {
-			if (inst.getXtaInstruction().getBranchPcRelative()) {
-				long branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
-				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Long.toHexString(branchTarget));
-				for(FunctionContainer fc : functionContainers){
-					if(branchTarget == fc.getStartInstruction().getPC()){
-						inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fc.getFunctionName());
-						break;
-					}
-				}
-			}
-		}
-	}
-
 	private boolean isSystemFunction(Collection<String> systems, String functionName) {
 		if (functionName.length() == 0) {
 			return false;
@@ -1577,30 +1421,6 @@ public class Engine extends Notifier implements Aborter {
 			return true;
 		}
 		return false;
-	}
-
-	private void ensureAllFunctionsAreNamed( SymbolTable symbolTable, 
-			Set<FunctionContainer> functionContainers, Map<String, Set<Long>> labelToPc) {
-
-		Map<Long, String> pcToLabel = new NonIteratableMap<Long, String>();
-		for (String label : labelToPc.keySet()) {
-			for (Long pc : labelToPc.get(label)) {
-				pcToLabel.put(pc, label);
-			}
-		}
-		Set<String> seen = new NonIteratableSet<String>();
-		for(FunctionContainer fc : functionContainers){
-			InstructionNode inst = fc.getStartInstruction();
-			String functionName = symbolTable.functionName(inst.getStartPc());
-			if (seen.contains(functionName)) {
-				String label = pcToLabel.get(inst.getXtaInstruction().getPc());
-				if(label != null){
-					functionName = label;
-				}
-			}			
-			fc.setFunctionName(functionName);
-			seen.add(functionName);
-		}
 	}
 
 	private boolean resolveReference(Reference ref) {
@@ -1669,6 +1489,28 @@ public class Engine extends Notifier implements Aborter {
 		}
 	}
 
+	private boolean initialiseInstructionDecoders(CommandSource src, XeLoader xeLoader) {
+		CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>();
+		
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+								
+				InstructionDecoder instructionDecoder = new InstructionDecoder(coreId, xeLoader);
+				try {
+					instructionDecoder.decode();
+					
+				} catch (Exception e) {
+					notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
+					return false;
+				}
+				instructionDecoders.add(coreId, instructionDecoder);
+			}
+		}
+		m_instructionDecoders = instructionDecoders;
+		return true;
+	}
+
 	private void initialiseCoreStates(XeLoader xeLoader) {
 		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
@@ -1701,6 +1543,15 @@ public class Engine extends Notifier implements Aborter {
 		}		
 	}
 
+	private void initialiseActiveCores(XeLoader xeLoader) {
+		m_activeCores.clear();
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				m_activeCores.add(new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
+			}
+		}
+	}
+	
 	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeChainIndex, int coreNumber) {
 		int nodeRoutingId = xnLoader.getNodeRoutingId(nodeChainIndex);
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
@@ -1746,25 +1597,16 @@ public class Engine extends Notifier implements Aborter {
 		}
 		return m_routeContainers.get(m_routeContainers.size() -1).getNumExistingRoutes();
 	}
-	
-	private void initialiseActiveCores(XeLoader xeLoader) {
-		m_activeCores.clear();
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				m_activeCores.add(new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
-			}
-		}
-	}
-	
+		
 	private boolean validateRouteCount(){
 		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
 	
-	private List<StackNode> getPathStackNodes(CallGraph callGraph, Reference reference) 
+	private List<StackNode> getPathStackNodes(ControlFlow controlFlow, Reference reference) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(callGraph, reference, this);
+		return prm.matchReference(controlFlow, reference, this);
 	}
 	
 	private void checkInstructionIsBranch(CommandSource src, Reference ref, CoreId activeCore) {
