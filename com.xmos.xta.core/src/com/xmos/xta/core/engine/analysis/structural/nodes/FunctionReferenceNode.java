@@ -180,4 +180,8 @@ public class FunctionReferenceNode extends Node {
 		return m_appliesForReferences;
 	}
 
+	public Node getSuccessor(Node child) {
+        assert(false);
+        return null;
+	}		
 }

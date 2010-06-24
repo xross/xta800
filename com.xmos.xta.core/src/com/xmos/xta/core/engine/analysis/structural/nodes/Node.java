@@ -48,7 +48,7 @@ public abstract class Node implements Comparable<Node> {
 	public abstract List<Node> iChildren();
 	public abstract void buildListUp(List<Node> nodeList, Node start);
 	public abstract void buildListDown(List<Node> nodeList);
-	
+		
 	public Node() {
 		m_id = s_numNodes++;
 		m_edges = new Edges();
@@ -295,6 +295,23 @@ public abstract class Node implements Comparable<Node> {
 			m_branchReturnNodes = new IteratableSet<Node>();
 		}
 		return m_branchReturnNodes;
+	}
+
+	public Node getSuccessor(Node child) {
+		boolean found = false;
+		for (Node node : iChildren()) {
+			if (found) {
+				return node;
+			}
+			if (node == child) {
+				found = true;
+			}
+		}
+        return m_parent.getSuccessor(this);			
+	}
+	
+	public Node getSuccessor() {
+		return m_parent.getSuccessor(this);
 	}
 }
 

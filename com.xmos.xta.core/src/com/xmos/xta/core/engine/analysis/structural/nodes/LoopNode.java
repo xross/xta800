@@ -177,10 +177,10 @@ public class LoopNode extends Node {
 		if(m_parent!= null){
 			m_parent.buildListUp(nodeList, this);
 		}
+		
 		if(m_loops.contains(start)){
 			m_loopHeader.buildListDown(nodeList);
 		}
-
 	}
 
 	public void buildListDown(List<Node> nodeList) {

@@ -1,5 +1,8 @@
 package com.xmos.xta.core.engine.references;
 
+import java.util.Set;
+
+import com.xmos.xta.core.engine.references.types.EndpointPcReference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -30,5 +33,15 @@ public class ReferenceFactory {
 			reference.addToBackTrail(bt);
 		}
 		return reference;
+	}
+	
+	public static Reference createReference(Reference reference, Set<Long> pcs) {
+		ReferenceType baseType = new EndpointPcReference("INTERNAL", pcs, reference.getCoreId());
+		
+        Reference newReference = new Reference(null, baseType);        
+		for (ReferenceType referenceType : reference.getBackTrail()) {
+			newReference.addToBackTrail(referenceType);
+		}
+		return newReference;		
 	}
 }

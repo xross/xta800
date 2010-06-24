@@ -47,6 +47,26 @@ public class Debugger {
 		}
 	}
 	
+	public Node getCachedFunction(CommandSource src, String functionName, CoreId coreId) {
+		ControlFlow controlFlow = m_engine.getControlFlow(coreId);
+	    for (FunctionContainer functionContainer : controlFlow.getFunctionContainers()) {
+		    if (functionContainer.getFunctionName().equals(functionName)) {
+			    try {				    	
+					return functionContainer.getCachedFunction(m_engine);
+												
+				} catch (AbortedException e) {
+					break;
+					
+				} catch (MemoryMonitorException e) {
+					break;
+				}
+		    }
+		}
+	    m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format(
+	    		"Cached function: %s not found", functionName));
+	    return null;
+	}
+	
 	public boolean validateReference(String refString) {
 		boolean hit = false;
 		for (CoreId activeCore : m_engine.getActiveCores()) {

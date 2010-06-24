@@ -1,6 +1,7 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
+import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -108,7 +110,7 @@ public class RouteConstructor {
 			break;
 
 		case ENDPOINTS:
-			routeError = analyzePath(src, branchStackNodes, 
+			routeError = analyzeEndpoints(src, branchStackNodes, 
 					branchToNext, exclusionStackNodes);
 			break;
 			
@@ -129,8 +131,7 @@ public class RouteConstructor {
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 				
-		List<StackNode> startStackNodes = getPathStackNodes(
-				m_controlFlow, m_coreContainer.getFromReference());
+		List<StackNode> startStackNodes = getPathStackNodes(m_coreContainer.getFromReference());
 		
 		for (StackNode startStackNode : startStackNodes) {
 			for (Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
@@ -148,71 +149,54 @@ public class RouteConstructor {
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 		
-		// Gets the start point from the cached structure...
-		
-		// Sets the end point to the same as the start point
-		
-		// Finds the next point after the loop ends.
-		
-		// Create a temporary exclusion at this point. 
-		
-/*
-		Collection<Reference> endRefs = m_coreContainer.getToReferences();
-		List<StackNode> endStackNodes = new LinkedList<StackNode>();
-		for (Reference end : endRefs) {			
-			endStackNodes.addAll(getPathStackNodes(m_controlFlow, end));
-		}
-		
-		boolean foundAtLeastOneStartPoint = false;
-		for (StackNode startStackNode : startStackNodes) {
-			for (Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
-				foundAtLeastOneStartPoint = true;
-				
-				Node newPath = makePath(stack, startStackNode.getInstruction(), 
-						endStackNodes, exclusionStackNodes, branchStackNodes, branchToNext);
+		Reference endpoint = getLoopStartReference();				
+		List<StackNode> startStackNodes = getPathStackNodes(endpoint);
+		List<StackNode> endStackNodes   = getPathStackNodes(endpoint);
 
-				updateRoutes(src, newPath, stack);
-			}
-		}
-
-		if (!foundAtLeastOneStartPoint){
-			return RouteError.COULD_NOT_FIND_STARTPOINT;
-		}
-		*/
+		Reference exclusion = getLoopExclusionReference();
+		exclusionStackNodes.addAll(getPathStackNodes(exclusion));
 		
-		// Remove the temporary exclusion..
-		
-		return RouteError.SUCCESS;
+		return analyzePath(src, branchToNext, branchStackNodes, 
+			    exclusionStackNodes, startStackNodes, endStackNodes);
 	}
 	
-	private RouteError analyzePath(CommandSource src, List<StackNode> branchStackNodes, 
+	private RouteError analyzeEndpoints(CommandSource src, List<StackNode> branchStackNodes, 
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 						
-		List<StackNode> startStackNodes = getPathStackNodes(
-				m_controlFlow, m_coreContainer.getFromReference());
-		
+		List<StackNode> startStackNodes = getPathStackNodes(m_coreContainer.getFromReference());		
 		List<StackNode> endStackNodes = new LinkedList<StackNode>();
 		for (Reference end : m_coreContainer.getToReferences()) {			
-			endStackNodes.addAll(getPathStackNodes(m_controlFlow, end));
+			endStackNodes.addAll(getPathStackNodes(end));
 		}
+		
+		return analyzePath(src, branchToNext, branchStackNodes, 
+		    exclusionStackNodes, startStackNodes, endStackNodes);
+	}
+	
+	private RouteError analyzePath(CommandSource src, 
+			Map<StackNode, Set<Node>> branchToNext, 
+			List<StackNode> branchStackNodes, 
+			List<StackNode> exclusionStackNodes,
+			List<StackNode> startStackNodes,
+			List<StackNode> endStackNodes) throws AbortedException, MemoryMonitorException {
 		
 		boolean foundAtLeastOneStartPoint = false;
 		for (StackNode startStackNode : startStackNodes) {
 			for (Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
 				foundAtLeastOneStartPoint = true;
 				
-				Node newPath = makePath(stack, startStackNode.getInstruction(), 
+				Node node = makeEndpoints(stack, startStackNode.getInstruction(), 
 						endStackNodes, exclusionStackNodes, branchStackNodes, branchToNext);
 
-				updateRoutes(src, newPath, stack);
+				updateRoutes(src, node, stack);
 			}
 		}
 
 		if (!foundAtLeastOneStartPoint){
 			return RouteError.COULD_NOT_FIND_STARTPOINT;
 		}
-		return RouteError.SUCCESS;
+		return RouteError.SUCCESS;		
 	}
 	
 	private void updateRoutes(CommandSource src, Node node, Stack<FunctionReferenceNode> stack) {
@@ -230,12 +214,12 @@ public class RouteConstructor {
 	    throws AbortedException, MemoryMonitorException {
 		
 		for(Reference ref : m_engine.getUserBranches().keySet()){
-			List<StackNode> stackNodes = getPathStackNodes(m_controlFlow, ref);
+			List<StackNode> stackNodes = getPathStackNodes(ref);
 			branchStackNodes.addAll(stackNodes);
 			for(StackNode sn : stackNodes){
 				branchToNext.put(sn, new IteratableSet<Node>());
 				for(Reference next : m_engine.getUserBranches().get(ref)){
-					for(StackNode nextStackNode : getPathStackNodes(m_controlFlow, next)){
+					for(StackNode nextStackNode : getPathStackNodes(next)){
 						if(sn.getInstruction().getXtaInstruction().isLink()){
 							for(Node nextFrn : sn.getInstruction().getNextNodes()){
 								if(nextFrn instanceof FunctionReferenceNode){
@@ -257,17 +241,17 @@ public class RouteConstructor {
 	private void buildExclusionStackNodes(List<StackNode> exclusionStackNodes) throws AbortedException, MemoryMonitorException {
 		for (ExclusionInfo info : m_engine.getExclusions()) {
 			Reference ref = info.getReference();
-			if(ref.getCoreId().equals(m_core)){
-				exclusionStackNodes.addAll(getPathStackNodes(m_controlFlow, ref));
+			if (ref.getCoreId().equals(m_core)) {
+				exclusionStackNodes.addAll(getPathStackNodes(ref));
 			}
 		}
 	}
 	
-	private List<StackNode> getPathStackNodes(ControlFlow controlFlow, Reference reference) 
+	private List<StackNode> getPathStackNodes(Reference reference) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(controlFlow, reference, m_engine);
+		return prm.matchReference(m_controlFlow, reference, m_engine);
 	}
 	
 	private Pair<FunctionNode, Boolean> makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
@@ -320,7 +304,7 @@ public class RouteConstructor {
 		return new Pair<FunctionNode, Boolean>(new FunctionNode(node, fnRef), continueAfterFunction);
 	}
 	
-	private Node makePath(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
+	private Node makeEndpoints(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
 			List<StackNode> exclusionStackNodes, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext) 
 	    throws AbortedException, MemoryMonitorException {
 
@@ -1001,5 +985,57 @@ public class RouteConstructor {
 		}
 	}
 
+    private Reference getLoopStartReference() 
+        throws AbortedException, MemoryMonitorException {
+    	
+    	Reference fromReference = m_coreContainer.getFromReference();
+    	Set<Long> loopStartPcs = new IteratableSet<Long>();
+		for (Node node : getReferencedNodesFromCache(fromReference)) {
+			addToLoopStartPcs(loopStartPcs, node.getEnclosingLoopNode());
+			addToLoopStartPcs(loopStartPcs, node.getEnclosingInfiniteLoopNode());
+    	}
+    	return ReferenceFactory.createReference(fromReference, loopStartPcs);    	
+    }
+        
+    private Reference getLoopExclusionReference() 
+        throws AbortedException, MemoryMonitorException {
+    	
+    	Reference fromReference = m_coreContainer.getFromReference();    	
+    	Set<Long> loopExclusionPcs = new IteratableSet<Long>();
+		for (Node node : getReferencedNodesFromCache(fromReference)) {
+			addToLoopExclusionPcs(loopExclusionPcs, node.getEnclosingLoopNode());
+			addToLoopExclusionPcs(loopExclusionPcs, node.getEnclosingInfiniteLoopNode());
+		}
+    	return ReferenceFactory.createReference(fromReference, loopExclusionPcs);
+    }
+    
+    private void addToLoopStartPcs(Set<Long> pcs, Node node) {
+		if (node != null) {
+			pcs.add(node.getStartPc());
+		}
+    }
+    
+    private void addToLoopExclusionPcs(Set<Long> pcs, Node node) {
+		if (node != null) {
+			Node successor = node.getSuccessor();
+			if (successor != null) {
+			    pcs.add(successor.getStartPc());
+			}
+		}
+    } 
 
+    private Collection<Node> getReferencedNodesFromCache(Reference reference) 
+        throws AbortedException, MemoryMonitorException {
+    	
+    	Collection<Node> loopNodes = new IteratableSet<Node>();
+    	for (long pc : reference.getPcs()) {
+    		for (FunctionContainer functionContainer : m_controlFlow.getFunctionContaining(pc)) {
+    		    Node cachedFunction = functionContainer.getCachedFunction(m_engine);    		    
+    			RouteReferenceMatcher routeReferenceMatcher = new RouteReferenceMatcher();
+    			Set<Node> nodes = routeReferenceMatcher.matchReference(cachedFunction, reference);
+    			loopNodes.addAll(nodes);
+    		}		
+    	} 
+    	return loopNodes;
+    }
 }

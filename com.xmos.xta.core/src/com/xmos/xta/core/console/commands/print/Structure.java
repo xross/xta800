@@ -79,34 +79,9 @@ public class Structure extends Command {
 	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
 		    return;
 
-		//if (m_routeId == Engine.ROUTE_ID_GLOBAL) {
-		//	displayGlobalTree(engine, console);
-		//	
-		//} else {
-			displayRouteTree(engine, console);
-		//}
+		displayRouteTree(engine, console);
     }
-/*
-    private void displayGlobalTree(final Engine engine, final Console console) {
-		final StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
-
-		for (NodeCorePair activeCore : engine.getActiveCores()) {			
-			console.display(String.format("Node: %d, Core: %d\n", activeCore.getNode(), activeCore.getCore()));
-
-			Collection<Node> nodes = null;
-    		if (m_nodeIdSet) {
-    			nodes = getCollection(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getNode(m_nodeId));
-    		} else {
-    			nodes = new NonIteratableSet<Node>();
-    			
-    			nodes.addAll(engine.getStructureGraph(activeCore.getNode(), activeCore.getCore()).getFunctions());
-    		}
-    		
-    		displayer.display(nodes);
-
-		}				
-    }
- */   
+    
     private void displayRouteTree(final Engine engine, final Console console) {
 		StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
 		

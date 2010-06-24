@@ -24,7 +24,6 @@ public class BlockNode extends Node {
         m_attributes = new BlockNodeAttributes(this);
 	}
 
-	//this is for empty basic blocks for conditionals
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<InstructionNode>();
@@ -41,9 +40,7 @@ public class BlockNode extends Node {
 	
 	public List<InstructionNode> getInstructionList(){
 		return m_insts;
-	}
-
-	
+	}	
 
     public String getTypeName() {
         return "block";
@@ -133,11 +130,10 @@ public class BlockNode extends Node {
 			inst.buildListDown(nodeList);
 		}
 	}
+	
 	public void buildListDown(List<Node> nodeList) {
 		for(InstructionNode inst : m_insts){
 			inst.buildListDown(nodeList);
 		}
-
-	}
-
+	}	
 }

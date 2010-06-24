@@ -8,6 +8,7 @@ public class Debug extends CommandContainer {
 
 	static private Command[] m_options = {
 		new DumpActiveExclusions(),
+		new DumpCachedFunction(),
 		new DumpControlFlow(),
 		new DumpManual(),
 		new VerifyReference(),

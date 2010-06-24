@@ -217,9 +217,11 @@ public class TimeUnit {
        		return 1000.0 / m_mhz;
 
        	case CYCLES:
-    		assert(m_coreConfig != null);
-       		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
-       	    return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
+    		if (m_coreConfig != null) {
+           		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+           	    return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
+    		}
+    		return 0;
        	}
        	assert(false);
        	return 0;

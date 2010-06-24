@@ -212,14 +212,12 @@ public class ConditionalNode extends Node {
 		return tdb;
 	}	
 	
-	//below here the methods have been verified useful
-
 	public List<Node> iChildren() {
 		return new LinkedList<Node>(getAliveOptions());
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {
-		if(m_parent!= null){
+		if (m_parent!= null) {
 			m_parent.buildListUp(nodeList, this);
 		}
 	}
@@ -232,4 +230,8 @@ public class ConditionalNode extends Node {
 		assert(m_alive.containsKey(currentNode));
 		m_alive.put(currentNode, b);
 	}
+
+	public Node getSuccessor(Node child) {
+        return m_parent.getSuccessor(this);			
+	}	
 }
