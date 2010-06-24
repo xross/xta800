@@ -1,19 +1,19 @@
 # load ".*test\.xe"
 
 #
-# Route: x1 => x2
+# Route: endpoints: x1 to x2
 #
 analyze endpoints x1 x2
 set required - 100.0 ns
 
 #
-# Route: x1 => x2
+# Route: endpoints: x1 to x2
 #
 analyze endpoints x1 x2
 set required - 200 cycles
 
 #
-# Route: x1 => x2
+# Route: endpoints: x1 to x2
 #
 analyze endpoints x1 x2
 set required - 0.5 MHz

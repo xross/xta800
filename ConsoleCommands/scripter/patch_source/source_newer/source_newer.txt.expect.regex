@@ -13,7 +13,7 @@ true       true       .+/bar.xc:9 ->       stop
 # load ".+test.xe"
 
 #
-# Route: foo.xc:15 => foo.xc:15
+# Route: endpoints: foo.xc:15 to foo.xc:15
 #
 add exclusion out_of_bounds
 # Warning: 'foo.xc:15' is a non-portable reference.
@@ -21,12 +21,12 @@ add exclusion out_of_bounds
 analyze endpoints foo.xc:15 foo.xc:15
 
 #
-# Route: start => stop
+# Route: endpoints: start to stop
 #
 analyze endpoints start stop
 
 #
-# Route: start => start
+# Route: endpoints: start to start
 #
 analyze endpoints start start
 

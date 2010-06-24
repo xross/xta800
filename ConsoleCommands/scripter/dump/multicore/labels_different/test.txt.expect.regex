@@ -1,7 +1,7 @@
 # load ".*test\.xe"
 
 #
-# Route: f
+# Route: function: f
 #
 remove core \*
 add core stdcore\[0\]

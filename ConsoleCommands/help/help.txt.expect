@@ -30,6 +30,7 @@
   [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
       option: endpoints <from ENDPOINT> <to ENDPOINT>: Analyze between the specified endpoints
       option: function <FUNCTION>: Analyze the given function
+      option: loop <ANY>: Analyze the given loop
   [-]clear: Clears the screen (Gui mode only)
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <best/worst>: Sets the case (currently: worst)

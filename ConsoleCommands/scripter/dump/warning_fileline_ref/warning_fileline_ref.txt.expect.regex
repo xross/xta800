@@ -1,7 +1,7 @@
 # load ".*test\.xe"
 
 #
-# Route: main
+# Route: function: main
 #
 analyze function main
 # Warning: 'test.xc:12' is a non-portable reference.

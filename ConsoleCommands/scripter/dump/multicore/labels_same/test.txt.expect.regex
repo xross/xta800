@@ -1,7 +1,7 @@
 # load ".*test\.xe"
 
 #
-# Route: f
+# Route: function: f
 #
 add branch Lbranch Ltarget1 Ltarget2 Ltarget3 Ltarget4
 add functiontime g 1.0 us

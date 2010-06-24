@@ -1,20 +1,20 @@
 # load ".*uart-loopback.xe"
 
 #
-# Route: tx_start => tx_loop
+# Route: endpoints: tx_start to tx_loop
 #
 analyze endpoints tx_start tx_loop
 set required - 8.68 us
 
 #
-# Route: tx_loop => tx_loop
+# Route: endpoints: tx_loop to tx_loop
 #
 add exclusion tx_stop
 analyze endpoints tx_loop tx_loop
 set required - 8.68 us
 
 #
-# Route: tx_loop => tx_stop
+# Route: endpoints: tx_loop to tx_stop
 #
 remove exclusion \*
 add exclusion tx_loop_exclusion
@@ -22,7 +22,7 @@ analyze endpoints tx_loop tx_stop
 set required - 8.68 us
 
 #
-# Route: tx_stop => tx_start
+# Route: endpoints: tx_stop to tx_start
 #
 remove exclusion \*
 add exclusion tx_loop_exclusion

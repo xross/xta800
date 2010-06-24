@@ -13,7 +13,7 @@ true       true       .+/bar.xc:11 ->    label_0
 # load ".+test.xe"
 
 #
-# Route: startCall,x => stopCall,x
+# Route: endpoints: startCall,x to stopCall,x
 #
 add exclusion call_2,label_0
 analyze endpoints startCall,x stopCall,x

@@ -2,7 +2,7 @@ Time taken for function \(node id: \d+\) is set to 999.0 [mun]s, pc: 0x[0-9a-z]+
 # load ".*test\.xe"
 
 #
-# Route: main
+# Route: function: main
 #
 analyze function main
 set functiontime - f 999.0 [mun]s

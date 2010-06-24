@@ -9,7 +9,7 @@ true       true       test.xc:25 ->    label_0
 # load ".+test.xe"
 
 #
-# Route: call_0 => test.xc:24
+# Route: endpoints: call_0 to test.xc:24
 #
 add exclusion label_0
 # Warning: 'test.xc:24' is a non-portable reference.

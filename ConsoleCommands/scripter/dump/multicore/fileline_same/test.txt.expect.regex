@@ -1,7 +1,7 @@
 # load ".*test\.xe"
 
 #
-# Route: f
+# Route: function: f
 #
 # Warning: 'test.xc:31' is a non-portable reference.
 add instructiontime test.xc:31 2.0 us

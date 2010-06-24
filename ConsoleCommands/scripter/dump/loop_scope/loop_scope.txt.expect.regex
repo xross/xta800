@@ -23,7 +23,7 @@ false      true       f2         ->         f2
 # load ".+test.xe"
 
 #
-# Route: main
+# Route: function: main
 #
 analyze function main
 set loop - f1,outer 10
