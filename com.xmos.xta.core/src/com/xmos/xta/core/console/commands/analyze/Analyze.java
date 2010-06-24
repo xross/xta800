@@ -9,6 +9,7 @@ public class Analyze extends CommandContainer {
 	static private Command[] m_options = {
 		new Endpoints(),
 		new Function(),
+		new Loop(),
 	};
 
 	public Analyze() { super(COMMAND_NAMES); }

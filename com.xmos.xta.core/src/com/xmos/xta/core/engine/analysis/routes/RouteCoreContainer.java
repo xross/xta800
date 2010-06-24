@@ -11,7 +11,7 @@ import com.xmos.xta.core.engine.utils.CoreConfig;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class RouteCoreContainer {
-	private Reference m_function;
+	private Reference m_reference;
 	private Reference m_from;
 	private Set<Reference> m_to;
 	private RouteContainer m_routeContainer;
@@ -30,14 +30,12 @@ public class RouteCoreContainer {
     	m_to.add(to);    	
     }
     
-    public RouteCoreContainer(Reference function, RouteContainer routeContainer,  Engine engine, CoreId coreId) {
+    public RouteCoreContainer(Reference reference, RouteContainer routeContainer,  Engine engine, CoreId coreId) {
     	initialise(routeContainer, engine, coreId);    	
 
-    	m_function = function;
-    	m_from = function;
+    	m_reference = reference;
+    	m_from = reference;
 		m_to = new IteratableSet<Reference>();
-        for (Reference to : m_to)
-        	to.resolve(engine);		
     }
     
 	public Reference getFromReference() {
@@ -48,8 +46,8 @@ public class RouteCoreContainer {
 		return m_to;
 	}
 	
-	public Reference getFunctionReference() {
-		return m_function;
+	public Reference getReference() {
+		return m_reference;
 	}
 	
 	public RouteContainer getRouteContainer() {

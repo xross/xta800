@@ -15,12 +15,12 @@ import com.xmos.xta.core.engine.utils.CoreId;
 public class RouteContainer {
 
 	public enum RouteMode {
-		PATH, FUNCTION
+		ENDPOINTS, FUNCTION, LOOP
 	};
 
 	private RouteMode m_mode;
-	private String m_functionName;
 	private String m_description;
+	private String m_refName;
 	private CommandSource m_src;
     private Collection<RouteCoreContainer> m_routeCoreContainers;
     private Collection<CoreId> m_activeCores;
@@ -30,15 +30,18 @@ public class RouteContainer {
 	private Defines m_defines;
 	
     public RouteContainer(String fromName, String toName, Engine engine, CommandSource src) {    	
-		m_mode = RouteMode.PATH;
+		m_mode = RouteMode.ENDPOINTS;
 		m_description = String.format("endpoints: %s to %s", fromName, toName);
 		initialise(engine, src);
     }
 
-    public RouteContainer(String functionName, Engine engine, CommandSource src) {
-		m_mode = RouteMode.FUNCTION;
-		m_functionName = functionName;
-		m_description = String.format("function: %s", functionName);
+    public RouteContainer(RouteMode mode, String refName, Engine engine, CommandSource src) {
+		m_mode = mode;
+		m_refName = refName;
+    	switch (mode) {
+    	case FUNCTION: m_description = String.format("function: %s", refName); break;     	
+    	case LOOP:     m_description = String.format("loop: %s", refName); break; 
+    	}
 		initialise(engine, src);
     }
 
@@ -46,14 +49,14 @@ public class RouteContainer {
 		return m_mode;
 	}
 
-	public String getFunctionName() {
-		return m_functionName;
-	}
-    
 	public String getDescription() {
 		return m_description;
 	}
     
+	public String getRefName() {
+		return m_refName;
+	}
+	
     public CommandSource getCommandSrc() {
     	return m_src;
     }

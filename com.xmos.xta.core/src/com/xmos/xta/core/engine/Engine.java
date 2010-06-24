@@ -286,6 +286,11 @@ public class Engine extends Notifier implements Aborter {
 		return analyzer.analyzeEndpoints(src, m_pathPoints);
 	}
 
+	public boolean analyzeLoop(CommandSource src, String loopRef) {
+		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
+		return analyzer.analyzeLoop(src, loopRef);
+	}
+	
 	public Notifier getNotifier() {
 		return m_notifier;
 	}

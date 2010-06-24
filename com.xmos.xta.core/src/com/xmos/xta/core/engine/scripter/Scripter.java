@@ -254,11 +254,11 @@ public class Scripter {
 
        		for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
        			
-	       		if (routeContainer.getMode() == RouteMode.PATH) {
+	       		if (routeContainer.getMode() == RouteMode.ENDPOINTS) {
 	       			addReference(routeCoreContainer.getFromReference());
 	       			addReferences(routeCoreContainer.getToReferences());
 	       		} else {
-	       			addReference(routeCoreContainer.getFunctionReference());
+	       			addReference(routeCoreContainer.getReference());
 	       		}
 	
 	       		for (Route route : routeCoreContainer.getRoutes()) {
@@ -381,12 +381,16 @@ public class Scripter {
     	script.append(commentString() + "\n");
     	switch (routeContainer.getMode()) {
     	case FUNCTION:
-    		script.append(String.format(commentString() + " Route: %s\n", routeContainer.getFunctionName()));
+    		script.append(String.format(commentString() + " Route: function: %s\n", routeContainer.getRefName()));
+    		break;
+    		
+    	case LOOP:    		
+    		script.append(String.format(commentString() + " Route: loop: %s\n", routeContainer.getRefName()));
     		break;
 
-    	case PATH:
+    	case ENDPOINTS:
         	RouteCoreContainer routeCoreContainer = routeContainer.getRouteCoreContainers().iterator().next();
-    		script.append(String.format(commentString() + " Route: %s => %s\n",
+    		script.append(String.format(commentString() + " Route: endpoints: %s to %s\n",
 		    		getReferenceString(routeCoreContainer.getFromReference()),
 		    		getReferenceString(routeCoreContainer.getToReferences().iterator().next())));
     		break;
@@ -465,13 +469,18 @@ public class Scripter {
     	
     	switch (routeContainer.getMode()) {
     	case FUNCTION:
-		    outputPortableWarnings(script, routeCoreContainer.getFunctionReference());
-
+		    outputPortableWarnings(script, routeCoreContainer.getReference());
 		    addScriptCommand(script, String.format("analyze function %s",
-		    		getReferenceString(routeCoreContainer.getFunctionReference())));
+		    		getReferenceString(routeCoreContainer.getReference())));
     		break;
 
-    	case PATH:
+    	case LOOP:
+		    outputPortableWarnings(script, routeCoreContainer.getReference());
+		    addScriptCommand(script, String.format("analyze loop %s",
+		    		getReferenceString(routeCoreContainer.getReference())));
+    		break;
+    		
+    	case ENDPOINTS:
 		    outputPortableWarnings(script, routeCoreContainer.getFromReference());
 		    outputPortableWarnings(script, routeCoreContainer.getToReferences().iterator().next());
 		    addScriptCommand(script, String.format("analyze endpoints %s %s",

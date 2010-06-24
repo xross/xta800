@@ -13,6 +13,7 @@ import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
+import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -33,7 +34,8 @@ public class Analyzer {
 	}
 
 	public boolean analyzeFunction(CommandSource src, String functionName) {
-        RouteContainer routeContainer = new RouteContainer(functionName, m_engine, src);		
+        RouteContainer routeContainer = new RouteContainer(
+        		RouteMode.FUNCTION, functionName, m_engine, src);		
 
         boolean routeFound = false;
 		for (CoreId activeCore : m_engine.getActiveCores()) {			
@@ -94,6 +96,33 @@ public class Analyzer {
 	    return true;
 	}
 
+	public boolean analyzeLoop(CommandSource src, String loopRefStr) {
+        RouteContainer routeContainer = new RouteContainer(
+        		RouteMode.LOOP, loopRefStr, m_engine, src);		
+
+        boolean routeFound = false;
+		for (CoreId activeCore : m_engine.getActiveCores()) {			
+			Reference loopRef = ReferenceFactory.createReference(loopRefStr, 
+					ReferenceClass.ANY, activeCore);
+
+			if (loopRef.resolve(m_engine)) {
+				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(loopRef, 
+						routeContainer, m_engine, activeCore);
+
+				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
+					return false;
+				}
+				routeFound = true;
+			}
+		}
+		update(src, routeContainer);
+		if (!routeFound) {
+	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", loopRefStr));
+		    return false;						
+		}
+		return true;
+	}
+	
 	private boolean analyzeRoute(CommandSource src, RouteContainer routeContainer,
 			RouteCoreContainer routeCoreContainer, CoreId core) {
 		
@@ -140,14 +169,6 @@ public class Analyzer {
 
 		} else if (error == RouteError.COULD_NOT_FIND_STARTPOINT ) {
 			m_engine.notify(src, Notifier.NOTIFY_ERROR,"could not find any start points");
-			return false;
-
-		} else if (error == RouteError.ENDPOINTS_MISSING ) {
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, "could not determine the endpoint(s)");
-			return false;
-
-		} else if (error == RouteError.STARTPOINT_MISSING ) {
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, "could not determine the startpoint");
 			return false;
 
 		} else {
