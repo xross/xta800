@@ -125,6 +125,7 @@
     CallFileLine: Call specified in the format: 'file name:line number'
     Call: Call specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section
+    CallLabel: Any source or assembly level symbol defined with respect to an executable section
   Any of the following types are permitted in this reference class:
     EndpointPc: Raw program counter specified in the format: 0x*
     FunctionPc: Raw program counter specified in the format: 0x*
@@ -138,6 +139,7 @@
     CallFileLine: Call specified in the format: 'file name:line number'
     Call: Call specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section
+    CallLabel: Any source or assembly level symbol defined with respect to an executable section
   Any of the following types are permitted in this reference class:
     SrcLabelPc: Raw program counter specified in the format: 0x*
     EndpointPc: Raw program counter specified in the format: 0x*
@@ -149,3 +151,4 @@
     SrcLabelFileLine: Source label specified in the format: 'file name:line number'
     SrcLabel: Source label specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section
+    CallLabel: Any source or assembly level symbol defined with respect to an executable section

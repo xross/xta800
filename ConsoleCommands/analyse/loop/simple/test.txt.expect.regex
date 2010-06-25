@@ -1,0 +1,6 @@
+block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+
+Route\(0\) loop: l
+    No Timing Specified
+
+Fail, Timing Unspecified
