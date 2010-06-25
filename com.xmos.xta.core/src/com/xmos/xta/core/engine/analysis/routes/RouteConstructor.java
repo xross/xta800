@@ -218,6 +218,7 @@ public class RouteConstructor {
 			branchStackNodes.addAll(stackNodes);
 			for(StackNode sn : stackNodes){
 				branchToNext.put(sn, new IteratableSet<Node>());
+				
 				for(Reference next : m_engine.getUserBranches().get(ref)){
 					for(StackNode nextStackNode : getPathStackNodes(next)){
 						if(sn.getInstruction().getXtaInstruction().isLink()){
@@ -338,7 +339,9 @@ public class RouteConstructor {
 			List<StackNode> endStackNodes,
 			Map<NodeDescriptor, Node> nodeToWorkingSet, 
 			Set<Node> loopFormingEndNodes,
-			boolean firstInstruction, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext)
+			boolean firstInstruction, 
+			List<StackNode> branchStackNodes, 
+			Map<StackNode, Set<Node>> branchToNext)
 	throws AbortedException, MemoryMonitorException {
 		
 		boolean repeat = true;
@@ -357,7 +360,6 @@ public class RouteConstructor {
 			
 			if(node instanceof FunctionReferenceNode){
 				FunctionReferenceNode frn = ((FunctionReferenceNode)node);
-				
 				
 				List<InstructionNode> functionCallInstructions = new LinkedList<InstructionNode>();
 				for(FunctionReferenceNode f : currentStack){
@@ -425,6 +427,7 @@ public class RouteConstructor {
 			} else if(currentNode.isUnresolved()){
 				addToWorkingSet(previous, currentNode, workingSet);
 				return;
+				
 			} else if(stackNodesContainNode(endStackNodes, currentStack, node)){
 				switch (routeMode) {
 				case FUNCTION:
@@ -437,15 +440,23 @@ public class RouteConstructor {
 						return;
 					}
 				}
-	
-			} 
+			}
 				
 			addToWorkingSet(previous, currentNode, workingSet);
 			
 			Set<Node> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
-			//System.out.println("nexts: " + nextNodes);
+			//System.out.println("currentNode: " + currentNode + " nexts: " + nextNodes);
 			
-			if(nextNodes.size() == 0){
+			if (nextNodes.size() == 0) {
+				if (isNodeContainedInBranchStackNodes(currentNode, branchStackNodes)) {
+					// Here we have no next nodes (i.e. it is unresolved), but isn't marked
+					// as unresolved because there is at least one way we can get to this node
+					// where there is a next node.					
+					addToWorkingSet(previous, currentNode, workingSet);
+					currentNode.setUnresolved(true);
+					return;					
+				}				
+								
 				FunctionReferenceNode callingFnRef = currentStack.peek();
 				for(Node followingFunction : callingFnRef.getNextNodes()){
 					Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
@@ -522,17 +533,18 @@ public class RouteConstructor {
 	}
 
 	private Set<Node> getValidBranches(List<StackNode> branchStackNodes,
-			Stack<FunctionReferenceNode> currentStack, Node node, Map<StackNode, Set<Node>> branchToNext) {
+			Stack<FunctionReferenceNode> currentStack, Node node, 
+			Map<StackNode, Set<Node>> branchToNext) {
+
 		Set<Node> validNextNodes = new IteratableSet<Node>();
 		
 		validNextNodes.addAll(node.getNextNodes());
 		
-		for(StackNode sn : branchStackNodes){
-			if(!sn.getNodeStacks().contains(currentStack)){
+		for (StackNode sn : branchStackNodes){
+			if (!sn.getNodeStacks().contains(currentStack)){
 				validNextNodes.removeAll(branchToNext.get(sn));
 			}
-		}
-		
+		}		
 		return validNextNodes;
 	}
 
@@ -1037,5 +1049,17 @@ public class RouteConstructor {
     		}		
     	} 
     	return loopNodes;
+    }
+    
+    private boolean isNodeContainedInBranchStackNodes(Node node, List<StackNode> branchStackNodes) {
+    	if (node instanceof InstructionNode) {
+    		InstructionNode instructionNode = (InstructionNode)node;
+    		for (StackNode stackNode : branchStackNodes) {
+    			if (stackNode.getInstruction().getPC() == instructionNode.getPC()) {
+    				return true;
+    			}
+    		}				
+    	}
+    	return false;
     }
 }

@@ -38,7 +38,8 @@ public class ReferenceTypeFactory {
 					new CallPcReference(null, m_coreId),
 					new CallFileLineReference(null, m_coreId),
 					new CallReference(null, m_coreId),
-					new LabelReference(null, m_coreId)}));
+					new LabelReference(null, m_coreId),
+					new CallLabelReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.INSTRUCTION,
 				new ReferenceClassType(true, new ReferenceType[] {
@@ -55,7 +56,8 @@ public class ReferenceTypeFactory {
 					new CallPcReference(null, m_coreId),
 					new CallFileLineReference(null, m_coreId),
 					new CallReference(null, m_coreId),
-					new LabelReference(null, m_coreId)}));
+					new LabelReference(null, m_coreId),
+					new CallLabelReference(null, m_coreId)}));					
 
 		m_referenceClasses.put(ReferenceClass.ANY,
 				new ReferenceClassType(true, new ReferenceType[] {
@@ -68,8 +70,8 @@ public class ReferenceTypeFactory {
 					new CallReference(null, m_coreId),
 					new SrcLabelFileLineReference(null, m_coreId),
 					new SrcLabelReference(null, m_coreId),
-					new LabelReference(null, m_coreId)}));
-		
+					new LabelReference(null, m_coreId),
+					new CallLabelReference(null, m_coreId)}));		
 
 		m_referenceClasses.put(ReferenceClass.FUNCTION_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
@@ -84,7 +86,8 @@ public class ReferenceTypeFactory {
 					new CallPcReference(null, m_coreId),
 					new CallFileLineReference(null, m_coreId),
 					new CallReference(null, m_coreId),
-					new LabelReference(null, m_coreId)}));
+					new LabelReference(null, m_coreId),
+              		new CallLabelReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.INSTRUCTION_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
@@ -103,7 +106,8 @@ public class ReferenceTypeFactory {
 					new CallPcReference(null, m_coreId),
 					new CallFileLineReference(null, m_coreId),
 					new CallReference(null, m_coreId),
-					new LabelReference(null, m_coreId)}));
+					new LabelReference(null, m_coreId),
+					new CallLabelReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.ANY_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
@@ -117,7 +121,8 @@ public class ReferenceTypeFactory {
 					new CallReference(null, m_coreId),
 					new SrcLabelFileLineReference(null, m_coreId),
 					new SrcLabelReference(null, m_coreId),
-					new LabelReference(null, m_coreId)}));
+					new LabelReference(null, m_coreId),
+					new CallLabelReference(null, m_coreId)}));
 	}
 	private static Engine m_engine;
 
