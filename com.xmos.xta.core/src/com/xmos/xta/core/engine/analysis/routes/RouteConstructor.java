@@ -1003,8 +1003,7 @@ public class RouteConstructor {
     	Reference fromReference = m_coreContainer.getFromReference();
     	Set<Long> loopStartPcs = new IteratableSet<Long>();
 		for (Node node : getReferencedNodesFromCache(fromReference)) {
-			addToLoopStartPcs(loopStartPcs, node.getEnclosingLoopNode());
-			addToLoopStartPcs(loopStartPcs, node.getEnclosingInfiniteLoopNode());
+			addToLoopStartPcs(loopStartPcs, node);
     	}
     	return ReferenceFactory.createReference(fromReference, loopStartPcs);    	
     }
@@ -1015,26 +1014,40 @@ public class RouteConstructor {
     	Reference fromReference = m_coreContainer.getFromReference();    	
     	Set<Long> loopExclusionPcs = new IteratableSet<Long>();
 		for (Node node : getReferencedNodesFromCache(fromReference)) {
-			addToLoopExclusionPcs(loopExclusionPcs, node.getEnclosingLoopNode());
-			addToLoopExclusionPcs(loopExclusionPcs, node.getEnclosingInfiniteLoopNode());
+			addToLoopExclusionPcs(loopExclusionPcs, node);
 		}
     	return ReferenceFactory.createReference(fromReference, loopExclusionPcs);
     }
     
     private void addToLoopStartPcs(Set<Long> pcs, Node node) {
-		if (node != null) {
-			pcs.add(node.getStartPc());
+    	if (node == null)
+    		return;
+    	
+		Node loopNode = node.getEnclosingLoopNode();
+		if (loopNode != null) {
+			pcs.add(loopNode.getStartPc());
+			return;
 		}
+			
+		Node infiniteLoopNode = node.getEnclosingInfiniteLoopNode();
+		if (infiniteLoopNode != null) {
+			pcs.add(infiniteLoopNode.getStartPc());
+			return;
+		}				
     }
     
     private void addToLoopExclusionPcs(Set<Long> pcs, Node node) {
-		if (node != null) {
-			Node successor = node.getSuccessor();
+		if (node == null)
+			return;
+		
+		Node loopNode = node.getEnclosingLoopNode();
+		if (loopNode != null) {		
+			Node successor = loopNode.getSuccessor();
 			if (successor != null) {
 			    pcs.add(successor.getStartPc());
 			}
 		}
-    } 
+    }
 
     private Collection<Node> getReferencedNodesFromCache(Reference reference) 
         throws AbortedException, MemoryMonitorException {
