@@ -1,0 +1,4 @@
+analyze loop inner
+print structure -
+print summary
+

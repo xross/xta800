@@ -1,16 +1,16 @@
-Route\(\d+\) endpoints: sendRawSample to sendRawSample
+Route\(\d+\) loop: sendRawSample
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) endpoints: interS1ThreadInput to interS1ThreadInput
+Route\(\d+\) loop: interS1ThreadInput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) endpoints: interS1ThreadOutput to interS1ThreadOutput
+Route\(\d+\) loop: interS1ThreadOutput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) endpoints: interS2ThreadInput to interS2ThreadInput
+Route\(\d+\) loop: interS2ThreadInput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 6.2 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) endpoints: interS2ThreadOutput to interS2ThreadOutput
+Route\(\d+\) loop: interS2ThreadOutput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) endpoints: pwmThreadLow1 to pwmThreadHigh

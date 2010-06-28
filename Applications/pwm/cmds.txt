@@ -2,22 +2,19 @@
 # Raw Sample Input 
 # =========================================================================== #
 
-analyse path sendRawSample sendRawSample
+analyse loop sendRawSample
 set required - 0.048 mhz
 
 # =========================================================================== #
 # Interpolate S1 Stage
 # =========================================================================== #
 
-analyse path interS1ThreadInput interS1ThreadInput
-# set loop - interS1ThreadOuterLoop 4 
+analyse loop interS1ThreadInput
 set loop - interS1ThreadInnerLoop 95
 set loopscope - interS1ThreadInnerLoop a
 set required - 0.048 mhz
 
-remove exclusion *
-add exclusion interS1ThreadInput
-analyse path interS1ThreadOutput interS1ThreadOutput
+analyse loop interS1ThreadOutput
 set loop - interS1ThreadInnerLoop 24
 set required - 0.048 mhz
 
@@ -25,16 +22,12 @@ set required - 0.048 mhz
 # Interpolate S2 Stage
 # =========================================================================== #
 
-remove exclusion *
-analyse path interS2ThreadInput interS2ThreadInput
-# set loop - interS2ThreadOuterLoop 5
+analyse loop interS2ThreadInput
 set loop - interS2ThreadInnerLoop 26
 set loopscope - interS2ThreadInnerLoop a
 set required - 0.162 mhz
 
-remove exclusion *
-add exclusion interS2ThreadInput
-analyse path interS2ThreadOutput interS2ThreadOutput
+analyse loop interS2ThreadOutput
 set loop - interS2ThreadInnerLoop 5
 set required - 0.96 mhz
 
