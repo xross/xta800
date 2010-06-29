@@ -17,11 +17,10 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
-public class PreanalysisReferenceMatcher extends ReferenceMatcher {
-
+class PreanalysisReferenceMatcher extends ReferenceMatcher {
 	private static final boolean debug = false;
 	
-	public List<StackNode> matchReference(ControlFlow controlFlow, Reference ref, Engine engine) 
+	List<StackNode> matchReference(ControlFlow controlFlow, Reference ref, Engine engine) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		if (debug) System.out.println("####### begin reference match " + ref + " ###########");

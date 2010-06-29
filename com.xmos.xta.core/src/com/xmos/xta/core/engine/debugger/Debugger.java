@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.debugger;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -11,10 +10,10 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
+import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.routes.Route;
+import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
@@ -88,9 +87,10 @@ public class Debugger {
 					ReferenceClass.ANY, activeCore);
 
 			if (reference.resolve(m_engine)) {
-			    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 			    try {
-					for (StackNode stackNode : prm.matchReference(m_engine.getControlFlow(activeCore), reference, m_engine)) {
+					for (StackNode stackNode : RouteConstructor.getPathStackNodes(
+							m_engine, m_engine.getControlFlow(activeCore), reference)) {
+						
 						matchingReferences.addAll(stackNode.getBackTrails());
 					}
 				} catch (AbortedException e) {

@@ -10,7 +10,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
+import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
@@ -60,9 +60,8 @@ public class DumpActiveExclusions extends Command {
     }
     
     private List<StackNode> getPathStackNodes(ControlFlow controlFlow, Reference reference, Engine engine) {
-		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
 		try {
-			return prm.matchReference(controlFlow, reference, engine);
+			return RouteConstructor.getPathStackNodes(engine, controlFlow, reference); 
 
 		} catch (AbortedException e) {
 			return null;

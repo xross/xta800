@@ -76,8 +76,10 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		return null;
 	}
 
-	public Node getCachedFunction(Engine engine) throws AbortedException, MemoryMonitorException {
-		if(m_cachedFunction == null){
+	public Node getCachedFunction(Engine engine) 
+	    throws AbortedException, MemoryMonitorException {
+		
+		if (m_cachedFunction == null){
 			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 			m_cachedFunction = sae.makeFnContainerIntoStructure(this, engine);
 		}

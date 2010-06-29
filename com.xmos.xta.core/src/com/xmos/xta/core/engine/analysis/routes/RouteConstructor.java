@@ -1,7 +1,6 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
@@ -74,6 +72,14 @@ public class RouteConstructor {
 	private RouteCoreContainer m_coreContainer;
 	private CoreId m_core;
 	
+	public static List<StackNode> getPathStackNodes(Engine engine, 
+			ControlFlow controlFlow, Reference reference) 
+            throws AbortedException, MemoryMonitorException {
+		
+	    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
+	    return prm.matchReference(controlFlow, reference, engine);
+    }
+	
 	public RouteConstructor(Engine engine, ControlFlow controlFlow,
 			RouteCoreContainer routeCoreContainer, CoreId core) throws AbortedException {
 		m_controlFlow = controlFlow;
@@ -126,21 +132,6 @@ public class RouteConstructor {
 		m_engine.provideFeedback("Analysis complete");
 		return routeError;
 	}
-
-	public static Collection<Node> getReferencedNodesFromCache(ControlFlow controlFlow, Engine engine, Reference reference) 
-        throws AbortedException, MemoryMonitorException {
-		
-		Collection<Node> loopNodes = new IteratableSet<Node>();
-		for (long pc : reference.getPcs()) {
-			for (FunctionContainer functionContainer : controlFlow.getFunctionContaining(pc)) {
-			    Node cachedFunction = functionContainer.getCachedFunction(engine);    		    
-				RouteReferenceMatcher routeReferenceMatcher = new RouteReferenceMatcher();
-				Set<Node> nodes = routeReferenceMatcher.matchReference(cachedFunction, reference);
-				loopNodes.addAll(nodes);
-			}		
-		} 
-		return loopNodes;
-	}
 	
 	static void setParent(Node node) {
 		for (Node child : node.iChildren()){
@@ -153,7 +144,8 @@ public class RouteConstructor {
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 				
-		List<StackNode> startStackNodes = getPathStackNodes(m_coreContainer.getFromReference());
+		List<StackNode> startStackNodes = getPathStackNodes(
+				m_engine, m_controlFlow, m_coreContainer.getFromReference());
 		
 		for (StackNode startStackNode : startStackNodes) {
 			for (Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
@@ -171,25 +163,25 @@ public class RouteConstructor {
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 		
-		Reference endpoint = getLoopStartReference();				
-		List<StackNode> startStackNodes = getPathStackNodes(endpoint);
-		List<StackNode> endStackNodes   = getPathStackNodes(endpoint);
-
-		Reference exclusion = getLoopExclusionReference();
-		exclusionStackNodes.addAll(getPathStackNodes(exclusion));
+		List<StackNode> loopStartStackNodes = new ArrayList<StackNode>();
+		
+		RouteLoopConversion converter = new RouteLoopConversion(m_engine, m_controlFlow);
+		converter.updateLoopStackNodes(m_coreContainer.getFromReference(), loopStartStackNodes, exclusionStackNodes);
 		
 		return analyzePath(src, branchToNext, branchStackNodes, 
-			    exclusionStackNodes, startStackNodes, endStackNodes);
+			    exclusionStackNodes, loopStartStackNodes, loopStartStackNodes);
 	}
 	
 	private RouteError analyzeEndpoints(CommandSource src, List<StackNode> branchStackNodes, 
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 						
-		List<StackNode> startStackNodes = getPathStackNodes(m_coreContainer.getFromReference());		
+		List<StackNode> startStackNodes = getPathStackNodes(
+				m_engine, m_controlFlow, m_coreContainer.getFromReference());
+		
 		List<StackNode> endStackNodes = new LinkedList<StackNode>();
 		for (Reference end : m_coreContainer.getToReferences()) {			
-			endStackNodes.addAll(getPathStackNodes(end));
+			endStackNodes.addAll(getPathStackNodes(m_engine, m_controlFlow, end));
 		}
 		
 		return analyzePath(src, branchToNext, branchStackNodes, 
@@ -236,13 +228,13 @@ public class RouteConstructor {
 	    throws AbortedException, MemoryMonitorException {
 		
 		for(Reference ref : m_engine.getUserBranches().keySet()){
-			List<StackNode> stackNodes = getPathStackNodes(ref);
+			List<StackNode> stackNodes = getPathStackNodes(m_engine, m_controlFlow, ref);
 			branchStackNodes.addAll(stackNodes);
 			for(StackNode sn : stackNodes){
 				branchToNext.put(sn, new IteratableSet<Node>());
 				
 				for(Reference next : m_engine.getUserBranches().get(ref)){
-					for(StackNode nextStackNode : getPathStackNodes(next)){
+					for(StackNode nextStackNode : getPathStackNodes(m_engine, m_controlFlow, next)){
 						if(sn.getInstruction().getXtaInstruction().isLink()){
 							for(Node nextFrn : sn.getInstruction().getNextNodes()){
 								if(nextFrn instanceof FunctionReferenceNode){
@@ -265,18 +257,11 @@ public class RouteConstructor {
 		for (ExclusionInfo info : m_engine.getExclusions()) {
 			Reference ref = info.getReference();
 			if (ref.getCoreId().equals(m_core)) {
-				exclusionStackNodes.addAll(getPathStackNodes(ref));
+				exclusionStackNodes.addAll(getPathStackNodes(m_engine, m_controlFlow, ref));
 			}
 		}
 	}
-	
-	private List<StackNode> getPathStackNodes(Reference reference) 
-	    throws AbortedException, MemoryMonitorException {
 		
-		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(m_controlFlow, reference, m_engine);
-	}
-	
 	private Pair<FunctionNode, Boolean> makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
 			List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) 
 		throws AbortedException, MemoryMonitorException {
@@ -983,58 +968,6 @@ public class RouteConstructor {
 			parent = parent.getParent();
 		}
 	}
-
-    private Reference getLoopStartReference() 
-        throws AbortedException, MemoryMonitorException {
-    	
-    	Reference fromReference = m_coreContainer.getFromReference();
-    	Set<Long> loopStartPcs = new IteratableSet<Long>();
-		for (Node node : getReferencedNodesFromCache(m_controlFlow, m_engine, fromReference)) {
-			addToLoopStartPcs(loopStartPcs, node);
-    	}
-    	return ReferenceFactory.createReference(fromReference, loopStartPcs);    	
-    }
-        
-    private Reference getLoopExclusionReference() 
-        throws AbortedException, MemoryMonitorException {
-    	
-    	Reference fromReference = m_coreContainer.getFromReference();    	
-    	Set<Long> loopExclusionPcs = new IteratableSet<Long>();
-		for (Node node : getReferencedNodesFromCache(m_controlFlow, m_engine, fromReference)) {
-			addToLoopExclusionPcs(loopExclusionPcs, node);
-		}
-    	return ReferenceFactory.createReference(fromReference, loopExclusionPcs);
-    }
-    
-    private void addToLoopStartPcs(Set<Long> pcs, Node node) {
-    	if (node == null)
-    		return;
-    	
-		Node loopNode = node.getEnclosingLoopNode();
-		if (loopNode != null) {
-			pcs.add(loopNode.getStartPc());
-			return;
-		}
-			
-		Node infiniteLoopNode = node.getEnclosingInfiniteLoopNode();
-		if (infiniteLoopNode != null) {
-			pcs.add(infiniteLoopNode.getStartPc());
-			return;
-		}				
-    }
-    
-    private void addToLoopExclusionPcs(Set<Long> pcs, Node node) {
-		if (node == null)
-			return;
-		
-		Node loopNode = node.getEnclosingLoopNode();
-		if (loopNode != null) {		
-			Node successor = loopNode.getSuccessor();
-			if (successor != null) {
-			    pcs.add(successor.getStartPc());
-			}
-		}
-    }
     
     private boolean isNodeContainedInBranchStackNodes(Node node, List<StackNode> branchStackNodes) {
     	if (node instanceof InstructionNode) {

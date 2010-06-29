@@ -27,14 +27,14 @@ import com.xmos.libs.xnloader.XmlHandler;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.analysis.Analyzer;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
+import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlows;
 import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
+import com.xmos.xta.core.engine.analysis.routes.RouteLoopConversion;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -1276,8 +1276,10 @@ public class Engine extends Notifier implements Aborter {
 			}
 
 			try {
-				List<StackNode> stackNodes = getPathStackNodes(m_controlFlows.getControlFlow(activeCore), fromRef);
-				if(!stackNodes.isEmpty()) {
+				List<StackNode> stackNodes = RouteConstructor.getPathStackNodes(
+						this, m_controlFlows.getControlFlow(activeCore), fromRef);
+				
+				if (!stackNodes.isEmpty()) {
 					if (fromResolved && toResolved) {
 						if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
 							hit = true;
@@ -1432,25 +1434,20 @@ public class Engine extends Notifier implements Aborter {
     }
 
     public boolean isWithinLoop(String ref) { 
-    	try {
-    		for (CoreId activeCore : m_activeCores) {
+   		for (CoreId activeCore : m_activeCores) {
 
-    			Reference loopRef = ReferenceFactory.createReference(ref, 
-    					ReferenceClass.ANY, activeCore);
+   			Reference loopRef = ReferenceFactory.createReference(ref, 
+   					ReferenceClass.ANY, activeCore);    			
 
-    			if (resolveReference(loopRef)) {
-    				for (Node node : RouteConstructor.getReferencedNodesFromCache(
-    						m_controlFlows.getControlFlow(activeCore), this, loopRef)) {
-    					
-    					if (node.getEnclosingLoopNode() != null)
-    						return true;
+   			if (resolveReference(loopRef)) {
+   				RouteLoopConversion converter = new RouteLoopConversion(
+   						this, m_controlFlows.getControlFlow(activeCore)); 
 
-    					if (node.getEnclosingInfiniteLoopNode() != null)
-    						return true;					
-    				}
-    			}			
+   				if (converter.isWithinLoop(loopRef)) {
+   					return true;
+   				}
     		}    		
-    	} catch (Exception e) {}
+    	}
     	return false;
     }
     
@@ -1645,14 +1642,7 @@ public class Engine extends Notifier implements Aborter {
 	private boolean validateRouteCount(){
 		return m_routes.size() >= getNumLastRoutesAnalyzed();
 	}
-	
-	private List<StackNode> getPathStackNodes(ControlFlow controlFlow, Reference reference) 
-	    throws AbortedException, MemoryMonitorException {
 		
-		PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-		return prm.matchReference(controlFlow, reference, this);
-	}
-	
 	private void checkInstructionIsBranch(CommandSource src, Reference ref, CoreId activeCore) {
 		for (long pc : ref.getPcs()) {
 			InstructionNode node = m_instructionDecoders.get(activeCore).getNode(pc);
