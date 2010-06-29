@@ -21,7 +21,11 @@ public class Loop extends Command {
 	}
 
     public int numArgs() {
-    	return 1;
+    	if (hasLoopPoint()) {
+    		return 1;
+    	} else {
+    		return 0;
+    	}
     }
 
 	public ArgType[] getArgTypes() {
@@ -29,7 +33,11 @@ public class Loop extends Command {
 	}
 
     public String commandLine() {
-    	return name() + " " + m_loopRef;
+    	if (hasLoopPoint()) {
+    	    return name() + " " + m_loopRef;
+    	} else {
+    		return name();    		
+    	}
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -37,17 +45,30 @@ public class Loop extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+		if (areArgsDone(args, index + 1)) {
+			return new Loop();
+			
+		} else {    	
+		    if ((index + 1) >= args.length)
+			    return null;
 
-    	String loopRef = args[index + 1];
-        return new Loop(loopRef);
+    	    String loopRef = args[index + 1];
+            return new Loop(loopRef);
+		}
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-        engine.analyzeLoop(getSrc(), m_loopRef);
+		if (hasLoopPoint()) {
+		    if (!engine.getLoopPoints().setLoop(getSrc(), m_loopRef))
+			    return;
+		}		
+        engine.analyzeLoop(getSrc());
     }
+    
+	private boolean hasLoopPoint() {
+    	return (m_loopRef.length() > 0);
+	}    
 }

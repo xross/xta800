@@ -104,5 +104,10 @@ public class Status extends Command {
     	if (!toEndPointName.equals("")) {
     		console.display(String.format("To endpoint '%s'\n", toEndPointName));
     	}
+
+    	String loopPointName = engine.getLoopPoints().getRefString();
+    	if (!loopPointName.equals("")) {
+    		console.display(String.format("Loop point '%s'\n", loopPointName));
+    	}
     }
 }

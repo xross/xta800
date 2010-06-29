@@ -8,8 +8,8 @@ import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
+import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -27,7 +27,6 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		if (debug) System.out.println("####### begin reference match " + ref + " ###########");
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
 		for(FunctionContainer matchingContainer : getBaseContianers(ref, controlFlow)){
-			
 			stackNodes.add(new StackNode(getInstructionFromContainer(matchingContainer,ref), controlFlow.getStacks(matchingContainer)));
 		}
 		
@@ -35,7 +34,7 @@ public class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		if (debug) System.out.println("####### end reference match " + ref + " ###########");
 		return s;
 	}
-	
+		
 	private InstructionNode getInstructionFromContainer(FunctionContainer fc, Reference ref){
 		for(InstructionNode inst : fc.getFunctionInstructionNodes()){
 			if(ref.getPcs().contains(inst.getPC()) && ! inst.getXtaInstruction().isFnop()){

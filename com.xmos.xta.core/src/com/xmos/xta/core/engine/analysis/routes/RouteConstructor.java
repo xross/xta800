@@ -127,6 +127,28 @@ public class RouteConstructor {
 		return routeError;
 	}
 
+	public static Collection<Node> getReferencedNodesFromCache(ControlFlow controlFlow, Engine engine, Reference reference) 
+        throws AbortedException, MemoryMonitorException {
+		
+		Collection<Node> loopNodes = new IteratableSet<Node>();
+		for (long pc : reference.getPcs()) {
+			for (FunctionContainer functionContainer : controlFlow.getFunctionContaining(pc)) {
+			    Node cachedFunction = functionContainer.getCachedFunction(engine);    		    
+				RouteReferenceMatcher routeReferenceMatcher = new RouteReferenceMatcher();
+				Set<Node> nodes = routeReferenceMatcher.matchReference(cachedFunction, reference);
+				loopNodes.addAll(nodes);
+			}		
+		} 
+		return loopNodes;
+	}
+	
+	static void setParent(Node node) {
+		for (Node child : node.iChildren()){
+			child.setParent(node);
+			setParent(child);
+		}
+	}
+	
 	private RouteError analyzeFunction(CommandSource src, List<StackNode> branchStackNodes, 
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
@@ -677,34 +699,6 @@ public class RouteConstructor {
 		return nodeToWorkingSet.get(nd);
 	}
 
-	
-	static class NodeDescriptor implements Comparable<NodeDescriptor>{
-		private Node m_node;
-		private Stack<FunctionReferenceNode> m_stack;
-
-		private int m_id;
-		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
-			m_node = node;
-			m_stack = stack;
-			m_id = node.getId();
-		}
-
-		public boolean equals(Object obj) {
-			if(obj instanceof NodeDescriptor){
-				NodeDescriptor comp = (NodeDescriptor)obj;
-				if(comp.m_node == m_node && comp.m_stack.equals(m_stack)){
-					return true;
-				}
-
-			}
-			return false;
-		}
-
-		public int compareTo(NodeDescriptor o) {
-			return m_id - o.m_id;
-		}
-	}
-
 	private Node getCurrentNode(Stack<FunctionReferenceNode> currentStack,
 			Node node, Map<NodeDescriptor, Node> nodeToWorkingSet) throws AbortedException {
 		NodeDescriptor nd = new NodeDescriptor(node, currentStack);
@@ -741,13 +735,6 @@ public class RouteConstructor {
 		}
 		
 		workingSet.add(currentNode);
-	}
-
-	static void setParent(Node node) {
-		for (Node child : node.iChildren()){
-			child.setParent(node);
-			setParent(child);
-		}
 	}
 
 	private void dumpGraph(Set<Node> workingSet) {
@@ -1002,7 +989,7 @@ public class RouteConstructor {
     	
     	Reference fromReference = m_coreContainer.getFromReference();
     	Set<Long> loopStartPcs = new IteratableSet<Long>();
-		for (Node node : getReferencedNodesFromCache(fromReference)) {
+		for (Node node : getReferencedNodesFromCache(m_controlFlow, m_engine, fromReference)) {
 			addToLoopStartPcs(loopStartPcs, node);
     	}
     	return ReferenceFactory.createReference(fromReference, loopStartPcs);    	
@@ -1013,7 +1000,7 @@ public class RouteConstructor {
     	
     	Reference fromReference = m_coreContainer.getFromReference();    	
     	Set<Long> loopExclusionPcs = new IteratableSet<Long>();
-		for (Node node : getReferencedNodesFromCache(fromReference)) {
+		for (Node node : getReferencedNodesFromCache(m_controlFlow, m_engine, fromReference)) {
 			addToLoopExclusionPcs(loopExclusionPcs, node);
 		}
     	return ReferenceFactory.createReference(fromReference, loopExclusionPcs);
@@ -1048,21 +1035,6 @@ public class RouteConstructor {
 			}
 		}
     }
-
-    private Collection<Node> getReferencedNodesFromCache(Reference reference) 
-        throws AbortedException, MemoryMonitorException {
-    	
-    	Collection<Node> loopNodes = new IteratableSet<Node>();
-    	for (long pc : reference.getPcs()) {
-    		for (FunctionContainer functionContainer : m_controlFlow.getFunctionContaining(pc)) {
-    		    Node cachedFunction = functionContainer.getCachedFunction(m_engine);    		    
-    			RouteReferenceMatcher routeReferenceMatcher = new RouteReferenceMatcher();
-    			Set<Node> nodes = routeReferenceMatcher.matchReference(cachedFunction, reference);
-    			loopNodes.addAll(nodes);
-    		}		
-    	} 
-    	return loopNodes;
-    }
     
     private boolean isNodeContainedInBranchStackNodes(Node node, List<StackNode> branchStackNodes) {
     	if (node instanceof InstructionNode) {
@@ -1075,4 +1047,31 @@ public class RouteConstructor {
     	}
     	return false;
     }
+    
+	private static class NodeDescriptor implements Comparable<NodeDescriptor>{
+		private Node m_node;
+		private Stack<FunctionReferenceNode> m_stack;
+
+		private int m_id;
+		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
+			m_node = node;
+			m_stack = stack;
+			m_id = node.getId();
+		}
+
+		public boolean equals(Object obj) {
+			if(obj instanceof NodeDescriptor){
+				NodeDescriptor comp = (NodeDescriptor)obj;
+				if(comp.m_node == m_node && comp.m_stack.equals(m_stack)){
+					return true;
+				}
+
+			}
+			return false;
+		}
+
+		public int compareTo(NodeDescriptor o) {
+			return m_id - o.m_id;
+		}
+	}    
 }

@@ -32,6 +32,7 @@ import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.routes.PreanalysisReferenceMatcher;
 import com.xmos.xta.core.engine.analysis.routes.Route;
+import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
@@ -52,6 +53,8 @@ import com.xmos.xta.core.engine.defines.PathTimeInfo;
 import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
+import com.xmos.xta.core.engine.points.LoopPoints;
+import com.xmos.xta.core.engine.points.PathPoints;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
@@ -99,6 +102,7 @@ public class Engine extends Notifier implements Aborter {
 	private Scripter m_scripter;
 	private Collection<CoreId> m_activeCores;
 	private PathPoints m_pathPoints;
+	private LoopPoints m_loopPoints;
 	private Debugger m_debugger;
 	private MemoryMonitor m_memoryMonitor;
 
@@ -124,6 +128,7 @@ public class Engine extends Notifier implements Aborter {
 		m_numErrors = 0;
 		m_scripter = new Scripter(this);
 		m_pathPoints = new PathPoints(this);
+		m_loopPoints = new LoopPoints(this);
 		m_debugger = new Debugger(this);
 		m_memoryMonitor = new MemoryMonitor();
 		ReferenceTypeFactory.setEngine(this);
@@ -186,6 +191,10 @@ public class Engine extends Notifier implements Aborter {
 	
 	public PathPoints getPathPoints() {
 		return m_pathPoints;
+	}
+
+	public LoopPoints getLoopPoints() {
+		return m_loopPoints;
 	}
 	
 	public Debugger getDebugger() {
@@ -265,6 +274,7 @@ public class Engine extends Notifier implements Aborter {
 			m_selectedRoute = null;
 			m_defines.clear();
 			m_pathPoints.clear();
+			m_loopPoints.clear();
 			Route.resetRouteCount();
 	
 			runSrcLevelCommands(src, commandRunner);
@@ -286,9 +296,9 @@ public class Engine extends Notifier implements Aborter {
 		return analyzer.analyzeEndpoints(src, m_pathPoints);
 	}
 
-	public boolean analyzeLoop(CommandSource src, String loopRef) {
+	public boolean analyzeLoop(CommandSource src) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		return analyzer.analyzeLoop(src, loopRef);
+		return analyzer.analyzeLoop(src, m_loopPoints);
 	}
 	
 	public Notifier getNotifier() {
@@ -583,6 +593,7 @@ public class Engine extends Notifier implements Aborter {
 			}
 		}
 		m_pathPoints.refresh();
+		m_loopPoints.refresh();
 		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}	
 
@@ -592,6 +603,7 @@ public class Engine extends Notifier implements Aborter {
 				m_activeCores.add(activeCore);
 			}						
 			m_pathPoints.refresh();
+			m_loopPoints.refresh();
 			notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 			
 		} else {
@@ -604,12 +616,14 @@ public class Engine extends Notifier implements Aborter {
 	public void removeActiveCores(CommandSource src) {
 		m_activeCores.clear();
 		m_pathPoints.refresh();
+		m_loopPoints.refresh();
 		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}
 
 	public void removeActiveCore(CommandSource src, CoreId activeCore) {
 		m_activeCores.remove(activeCore);
 		m_pathPoints.refresh();
+		m_loopPoints.refresh();
 		notify(src, Notifier.NOTIFY_UPDATE_ACTIVE_CORES, "");
 	}
 
@@ -1417,11 +1431,36 @@ public class Engine extends Notifier implements Aborter {
     	return new CoreId(xnLoader, nodeChainIndex, coreNumber);
     }
 
+    public boolean isWithinLoop(String ref) { 
+    	try {
+    		for (CoreId activeCore : m_activeCores) {
+
+    			Reference loopRef = ReferenceFactory.createReference(ref, 
+    					ReferenceClass.ANY, activeCore);
+
+    			if (resolveReference(loopRef)) {
+    				for (Node node : RouteConstructor.getReferencedNodesFromCache(
+    						m_controlFlows.getControlFlow(activeCore), this, loopRef)) {
+    					
+    					if (node.getEnclosingLoopNode() != null)
+    						return true;
+
+    					if (node.getEnclosingInfiniteLoopNode() != null)
+    						return true;					
+    				}
+    			}			
+    		}    		
+    	} catch (Exception e) {}
+    	return false;
+    }
+    
 	private boolean isSystemFunction(Collection<String> systems, String functionName) {
 		if (functionName.length() == 0) {
 			return false;
+			
 		} else if (functionName.charAt(0) == '_') {
 			return true;
+			
 		} else if (systems.contains(functionName)) {
 			return true;
 		}

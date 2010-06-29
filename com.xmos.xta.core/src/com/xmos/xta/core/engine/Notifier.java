@@ -10,13 +10,13 @@ public abstract class Notifier {
 
 	public static final String NOTIFY_FROM_END_POINT_SET = "FromEndPointSet";
 	public static final String NOTIFY_TO_END_POINT_SET   = "ToEndPointSet";
-
+	public static final String NOTIFY_LOOP_POINT_SET     = "LoopPointSet";	
+	
 	public static final String NOTIFY_SELECT_ROUTE  = "SelectRoute";
 	public static final String NOTIFY_REMOVE_ROUTE  = "RemoveRoute";
 	public static final String NOTIFY_ROUTE_CHANGED = "RouteChanged";
 
 	public static final String NOTIFY_UPDATE_STATE        = "UpdateState";
-	public static final String NOTIFY_UPDATE_EXCLUSIONS   = "UpdateExclusions";
 	public static final String NOTIFY_UPDATE_UNKNOWNS     = "UpdateUnknowns";
 	public static final String NOTIFY_UPDATE_ACTIVE_CORES = "UpdateActiveCores";	
 

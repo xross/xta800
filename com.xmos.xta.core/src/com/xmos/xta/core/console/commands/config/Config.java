@@ -11,6 +11,7 @@ public class Config extends CommandContainer {
 		new ErrorAsWarn(),
 		new Freq(),
 		new From(),		
+		new LoopPoint(),		
 		new Scale(),
 		new SrcPaths(),
 		new Threads(),

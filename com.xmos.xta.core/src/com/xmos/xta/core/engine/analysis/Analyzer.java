@@ -7,13 +7,14 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.PathPoints;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor.RouteError;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
+import com.xmos.xta.core.engine.points.LoopPoints;
+import com.xmos.xta.core.engine.points.PathPoints;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -90,39 +91,40 @@ public class Analyzer {
 		}
 		update(src, routeContainer);
 		if (!routeFound) {
-	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
+	    			"References not resolved on any active core");
 	    	return false;
 	    }
 	    return true;
 	}
 
-	public boolean analyzeLoop(CommandSource src, String loopRefStr) {
+	public boolean analyzeLoop(CommandSource src, LoopPoints loopPoints) {
         RouteContainer routeContainer = new RouteContainer(
-        		RouteMode.LOOP, loopRefStr, m_engine, src);		
+        		RouteMode.LOOP, loopPoints.getRefString(), m_engine, src);		
 
         boolean routeFound = false;
-		for (CoreId activeCore : m_engine.getActiveCores()) {			
-			Reference loopRef = ReferenceFactory.createReference(loopRefStr, 
-					ReferenceClass.ANY, activeCore);
-
-			if (loopRef.resolve(m_engine)) {
+		for (CoreId activeCore : m_engine.getActiveCores()) {
+			
+			Reference loopRef = loopPoints.getLoop(activeCore);
+		    if ((loopRef != null) && !loopRef.getRef().equals("")) {
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(loopRef, 
 						routeContainer, m_engine, activeCore);
-
+				
 				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
 					return false;
 				}
 				routeFound = true;
-			}
+			}		    
 		}
 		update(src, routeContainer);
 		if (!routeFound) {
-	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", loopRefStr));
+	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format(
+	    			"Reference: %s not resolved on any active core", loopPoints.getRefString()));
 		    return false;						
 		}
 		return true;
 	}
-	
+
 	private boolean analyzeRoute(CommandSource src, RouteContainer routeContainer,
 			RouteCoreContainer routeCoreContainer, CoreId core) {
 		

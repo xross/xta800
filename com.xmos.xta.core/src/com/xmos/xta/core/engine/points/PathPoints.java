@@ -1,22 +1,23 @@
-package com.xmos.xta.core.engine;
+package com.xmos.xta.core.engine.points;
 
 import java.util.Map;
 
 import com.xmos.libs.util.IteratableMap;
+import com.xmos.xta.core.engine.CommandSource;
+import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.utils.CoreId;
 
-public class PathPoints {
-	private Engine m_engine;
+public class PathPoints extends Points {
 	private String m_fromName;
 	private String m_toName;	
 	private Map<CoreId, Reference> m_froms;
 	private Map<CoreId, Reference> m_tos;
 
-	PathPoints(Engine engine) {
-		m_engine = engine;
+	public PathPoints(Engine engine) {
+		super(engine, ReferenceClass.ENDPOINT);
 		m_fromName = "";
 		m_toName = "";
 		m_froms = new IteratableMap<CoreId, Reference>();
@@ -26,20 +27,20 @@ public class PathPoints {
 	public boolean setFrom(CommandSource src, String ref) {
 		m_fromName = ref;				
 		if (!update(ref, m_froms) && !ref.equals("")) {
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
+			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
 			return false;
 		}
-		m_engine.notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
+		getEngine().notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
 		return true;
 	}
 
 	public boolean setTo(CommandSource src, String ref) {
 		m_toName = ref;
 		if (!update(ref, m_tos) && !ref.equals("")) {
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
+			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
 			return false;
 		}
-		m_engine.notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
+		getEngine().notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
 		return true;		
 	}
 
@@ -77,20 +78,5 @@ public class PathPoints {
 	public void refresh() {
 		update(m_fromName, m_froms);
 		update(m_toName, m_tos);		
-	}
-
-	private boolean update(String refStr, Map<CoreId, Reference> endpoints) {
-		endpoints.clear();
-
-		boolean hit = false;		
-		for (CoreId activeCore : m_engine.getActiveCores()) {
-			Reference reference = ReferenceFactory.createReference(refStr, ReferenceClass.ENDPOINT, activeCore);
-
-			if (reference.resolve(m_engine)) {
-				endpoints.put(activeCore, reference);
-				hit = true;
-			}
-		}
-		return hit;
 	}
 }
