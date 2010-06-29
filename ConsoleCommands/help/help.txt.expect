@@ -37,6 +37,7 @@
       option: Ewarning <on/off>: treat errors as warnings or not (currently: off)
       option: freq <node id> <core frequency>: Sets the operating frequency in MHz for the given node
       option: from <ENDPOINT>: Sets the from endpoint
+      option: looppoint <ANY>: Sets the loop point
       option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
       option: threads <core id> <num threads>: Sets number of threads currently executing for the given core

@@ -1,0 +1,5 @@
+config looppoint loop
+status
+analyze loop
+print structure -
+print summary
