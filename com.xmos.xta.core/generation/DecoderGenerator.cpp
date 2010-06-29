@@ -210,38 +210,35 @@ void DecoderGenerator::decIndent()
 
 void DecoderGenerator::calculateBranchTargetInfo(FILE *outFp, DbFormat *fmt, DbInstruction *inst)
 {
-  if (inst->isPcRel())
+  DbOperand *branchTargetOperand = NULL;
+  for (int operIndex = 0; operIndex < fmt->numOperands(); ++operIndex)
   {
-    DbOperand *branchTargetOperand = NULL;
-    for (int operIndex = 0; operIndex < fmt->numOperands(); ++operIndex)
+    DbOperand *operand = fmt->getOperand(operIndex);
+    if (operand->isPcRelative() && *operand->getRelocationType() != "R_XCORE1_NONE")
     {
-      DbOperand *operand = fmt->getOperand(operIndex);
-      if (*operand->getRelocationType() != "R_XCORE1_NONE")
-      {
-        branchTargetOperand = operand;
-        break;
-      }
+      branchTargetOperand = operand;
+      break;
     }
-    if (branchTargetOperand != NULL)
+  }
+  if (branchTargetOperand != NULL)
+  {
+    ASSERT(branchTargetOperand->isImm());
+    const string *scale = preProcess(branchTargetOperand->getScale());
+
+    printIndent(outFp);
+    fprintf(outFp, "  instruction.setBranchPcRelative(true);\n");
+    printIndent(outFp);
+
+   string *branchDecodeString = preProcess(branchTargetOperand->getField()->getDecode());
+    if (branchTargetOperand->isInverted())
     {
-      ASSERT(branchTargetOperand->isImm());
-      const string *scale = preProcess(branchTargetOperand->getScale());
-
-      printIndent(outFp);
-      fprintf(outFp, "  instruction.setBranchPcRelative(true);\n");
-      printIndent(outFp);
-
-     string *branchDecodeString = preProcess(branchTargetOperand->getField()->getDecode());
-      if (branchTargetOperand->isInverted())
-      {
-        fprintf(outFp, "  instruction.setBranchPcRelativeTargetPc(pc + %d - (%s << %s));\n", 
-          fmt->numBytes(), branchDecodeString->c_str(), scale->c_str());
-      }
-      else
-      {
-        fprintf(outFp, "  instruction.setBranchPcRelativeTargetPc(pc + %d + (%s << %s));\n", 
-          fmt->numBytes(), branchDecodeString->c_str(), scale->c_str());
-      }
+      fprintf(outFp, "  instruction.setBranchPcRelativeTargetPc(pc + %d - (%s << %s));\n", 
+        fmt->numBytes(), branchDecodeString->c_str(), scale->c_str());
+    }
+    else
+    {
+      fprintf(outFp, "  instruction.setBranchPcRelativeTargetPc(pc + %d + (%s << %s));\n", 
+        fmt->numBytes(), branchDecodeString->c_str(), scale->c_str());
     }
   }
 }
