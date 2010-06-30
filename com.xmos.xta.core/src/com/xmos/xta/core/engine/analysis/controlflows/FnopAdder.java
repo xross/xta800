@@ -5,14 +5,12 @@ import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.xta.core.engine.analysis.structural.BasicBlockMatcher;
-import com.xmos.xta.core.engine.analysis.structural.FnopAnalyzer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
-public class FnopAdder {
+class FnopAdder {
 	
 	private Set<FunctionContainer> m_functionContainers;
 

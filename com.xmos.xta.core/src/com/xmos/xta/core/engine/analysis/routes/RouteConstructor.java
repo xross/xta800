@@ -595,16 +595,11 @@ public class RouteConstructor {
 			}
 		}
 		assert(originalStartNode != null);
-		StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
 		
 		dumpGraph(workingSet);
-		Node startNode = sae.basicBlock(workingSet, originalStartNode, m_engine, "route");
 		
-		dumpGraph(workingSet);
-		Node structuralNode = sae.createStructure(workingSet, startNode, m_engine, "Converting CFG to structure");
-		assert(workingSet.size() == 1);
-		sae.normaliseGraph(structuralNode);
-		return structuralNode;
+		StructuralAnalysisEngine sae = new StructuralAnalysisEngine(m_engine);
+		return sae.createStructure(workingSet, originalStartNode, "route");
 	}
 
 	//TODO clean up the next two functions

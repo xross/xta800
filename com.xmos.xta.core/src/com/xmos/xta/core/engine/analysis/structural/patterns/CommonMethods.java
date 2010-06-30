@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -97,7 +96,7 @@ public class CommonMethods {
 	}
 
 	public static Set<Node> getAllContainedNodes(Node node) {
-		Set<Node> seen = new NonIteratableSet<Node>();
+		Set<Node> seen = new IteratableSet<Node>();
 		seen.add(node);
 		for(Node child : node.iChildren()){
 			seen.addAll(getAllContainedNodes(child));

@@ -1,6 +1,6 @@
-package com.xmos.xta.core.engine.analysis.structural;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
-public class InstructionBuffer {
+class InstructionBuffer {
 
     static final int IBUFFER_NUM_BYTES = 8;
     static final int BYTES_PER_WORD = 4;

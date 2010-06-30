@@ -16,7 +16,6 @@ import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
@@ -37,13 +36,17 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatcher;
 
 public class StructuralAnalysisEngine {
-
+	
 	private static boolean debug_structure = false;
 	private static boolean sanity_debug = false;
+	private static boolean debug_working_set = false;
 
+	private Engine m_engine;
 	private List<PatternMatcher> m_patternMatchers;
 
-	public StructuralAnalysisEngine() {
+	public StructuralAnalysisEngine(Engine engine) {
+		m_engine = engine;
+		
 		//never ever change the order of this
 		m_patternMatchers = new ArrayList<PatternMatcher>();
 		m_patternMatchers.add(new SelfLoopPattern());
@@ -55,8 +58,119 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new PanicTransformer());			//uses dominators
 	}
 
-	public Node createStructure(Collection<Node> workingSet, Node treeStart,
-			Engine engine, String jobPrefix) throws AbortedException, MemoryMonitorException {
+	public Node createStructure(Set<Node> workingSet, Node startNode, String name) 
+	    throws AbortedException, MemoryMonitorException {
+		
+		assert(workingSet.contains(startNode));
+		Node newStartNode = basicBlock(workingSet, startNode, name);		
+		Node structuralNode = buildStructure(workingSet, newStartNode, "Converting CFG to structure");
+		assert(workingSet.size() == 1);
+		normaliseGraph(structuralNode);
+		return structuralNode;		
+	}
+	
+  	private Node basicBlock(Set<Node> workingSet, Node originalStartNode, String string) {  	
+  		dumpWorkingSet(workingSet);  		
+		dumpTree("before_basicBlock_"+ string, workingSet, false);
+		Set<Node> toDo = new IteratableSet<Node>();
+		toDo.add(originalStartNode);
+		Node firstNode = null;
+		Set<Node> seenNodes = new NonIteratableSet<Node>();
+		Set<Node> newWorkingSet = new IteratableSet<Node>();
+		assert(!toDo.isEmpty());
+		Map<Node, Set<Node>> nexts = new IteratableMap<Node, Set<Node>>();
+		Map<Node, Node> instToBlock = new NonIteratableMap<Node, Node>();
+		while(!toDo.isEmpty()){
+	
+			Node current = toDo.iterator().next();
+			toDo.remove(current);
+	
+			List<InstructionNode> insts = new LinkedList<InstructionNode>();
+			insts.add((InstructionNode)current);
+			
+			seenNodes.add(current);
+			while(nextIsInSameBlock(current, workingSet, seenNodes, insts) ){
+				Node next = getNextNodes(current, workingSet).iterator().next();
+				insts.add((InstructionNode)next);
+				current = next;
+			}
+			
+			seenNodes.addAll(insts);
+	
+			BlockNode basicBlock = new BlockNode(insts);
+	
+			InstructionNode startOfBlock = basicBlock.getInstructionList().get(0);
+			instToBlock.put(startOfBlock, basicBlock);
+			nexts.put(basicBlock, current.getNextNodes());
+			if(newWorkingSet.isEmpty()){
+				firstNode = basicBlock;
+			}
+			newWorkingSet.add(basicBlock);
+	
+			for(Node next : current.getNextNodes()){
+				if(next instanceof FunctionReferenceNode){
+					FunctionNode fnNode= new FunctionNode();
+					
+					newWorkingSet.add(fnNode);
+					seenNodes.add(fnNode);
+					instToBlock.put(next, fnNode);
+					nexts.put(fnNode, new IteratableSet<Node>(next.getNextNodes()));
+					for(Node nextNext : next.getNextNodes()){
+						if(!seenNodes.contains(nextNext)){
+							toDo.add(nextNext);
+						}
+					}
+				} else if(next instanceof FunctionNode){
+					next.getPrevNodes().clear();
+					newWorkingSet.add(next);
+					seenNodes.add(next);
+					instToBlock.put(next, next);
+					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
+					for(Node nextNext : next.getNextNodes()){
+						if(!seenNodes.contains(nextNext)){
+							toDo.add(nextNext);
+						}
+					}
+					next.getNextNodes().clear();
+				} else if(next instanceof NullNode){
+					next.getPrevNodes().clear();
+					newWorkingSet.add(next);
+					seenNodes.add(next);
+					instToBlock.put(next, next);
+					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
+					next.getNextNodes().clear();
+				} else if(!seenNodes.contains(next)){
+					toDo.add(next);
+				}
+			}
+		}
+		for(Node node : nexts.keySet()){
+			for(Node next : nexts.get(node)){
+				CommonMethods.connect(instToBlock.get(next), node);
+			}
+		}
+		
+		Set<Node> seen = new NonIteratableSet<Node>();
+		Set<Node> terminals = new IteratableSet<Node>();
+		findEndPoints(firstNode, seen, terminals);
+		
+		NullNode n = new NullNode();
+			
+		if(terminals.size() > 1){	
+			for(Node node : terminals){
+				CommonMethods.connect(n, node);
+			}
+			newWorkingSet.add(n);
+		}
+		
+		workingSet.clear();
+		workingSet.addAll(newWorkingSet);
+		dumpTree("after_basicBlock_"+ string, workingSet, false);
+		return firstNode;
+	}
+	
+	private Node buildStructure(Collection<Node> workingSet, Node treeStart, String jobPrefix) 
+	    throws AbortedException, MemoryMonitorException {
 		
 		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) {
 			return workingSet.iterator().next();
@@ -70,13 +184,13 @@ public class StructuralAnalysisEngine {
 		while (working) {
 			
 			String feedback = jobPrefix + " - nodes left: " + workingSet.size();
-			if (engine.getVerbosity() >= Config.VERBOSITY_DISPLAY_MEMORY_USAGE) {
+			if (m_engine.getVerbosity() >= Config.VERBOSITY_DISPLAY_MEMORY_USAGE) {
 				feedback += String.format("\nMemory Usage [max/total/free]: %d/%d/%d",
 					Runtime.getRuntime().maxMemory(),
 					Runtime.getRuntime().totalMemory(),
 					Runtime.getRuntime().freeMemory());
 			}
-			engine.provideFeedback(feedback);
+			m_engine.provideFeedback(feedback);
 						
 			List<Node> postOrder = new LinkedList<Node>();
 			DFSPostOrder(postOrder, treeStart, new NonIteratableSet<Node>());
@@ -91,12 +205,12 @@ public class StructuralAnalysisEngine {
 				}
 				for (Node node : postOrder) {
 					
-					engine.getAbort();
-					if (engine.getMemoryMonitor().outOfMemoryAbort()) {
+					m_engine.getAbort();
+					if (m_engine.getMemoryMonitor().outOfMemoryAbort()) {
 						throw new MemoryMonitorException();
 					}
 					
-					if (pm.isMatch(node, workingSet, treeStart, engine)) {
+					if (pm.isMatch(node, workingSet, treeStart, m_engine)) {
 						assert(sanityCheckGraph(workingSet));
 						treeStart = pm.getTreeStart();
 						assert (workingSet.contains(treeStart));
@@ -112,7 +226,52 @@ public class StructuralAnalysisEngine {
 		}
 		return workingSet.iterator().next();
 	}
-	
+		
+	private boolean done;
+	private void normaliseGraph(Node fn) {
+		setParent(fn);
+		done = false;
+		while(!done){
+			done =true;
+			fn.traverse(new DefaultNodeTraverser() {
+				public TraverseStatus foundSequenceNode(Node node) {
+
+					for(Node child : node.iChildren()){
+						if(child instanceof SequenceNode){
+							SequenceNode sn = (SequenceNode)child;
+							int insertPathAt =node.iChildren().indexOf(child);
+							node.iChildren().remove(insertPathAt);
+							for(Node pathChild : sn.getPath()){
+								node.iChildren().add(insertPathAt++, pathChild);
+							}
+							done = false;
+							return TraverseStatus.NO_CHILDREN;
+						}
+					}
+					return TraverseStatus.CONTINUE;
+				}
+
+				public TraverseStatus foundFunctionNode(Node node) {
+					for(Node child : node.iChildren()){
+						if(child instanceof SequenceNode){
+							SequenceNode sn = (SequenceNode)child;
+							int insertPathAt = node.iChildren().indexOf(child);
+							node.iChildren().remove(insertPathAt);
+							for(Node pathChild : sn.getPath()){
+								node.iChildren().add(insertPathAt++, pathChild);
+							}
+							done = false;
+							return TraverseStatus.NO_CHILDREN;
+						}
+					}
+					return TraverseStatus.CONTINUE;
+				}
+		    });
+			setParent(fn);
+		}
+		setParent(fn);
+	}
+  	
 	private boolean sanityCheckGraph(Collection<Node> workingSet){
 		if(sanity_debug){
 			Set<Node> seen = new NonIteratableSet<Node>();
@@ -184,53 +343,6 @@ public class StructuralAnalysisEngine {
 		}
 	}
 
-	
-	
-	private boolean done;
-	public void normaliseGraph(Node fn) {
-		setParent(fn);
-		done = false;
-		while(!done){
-			done =true;
-			fn.traverse(new DefaultNodeTraverser() {
-				public TraverseStatus foundSequenceNode(Node node) {
-
-					for(Node child : node.iChildren()){
-						if(child instanceof SequenceNode){
-							SequenceNode sn = (SequenceNode)child;
-							int insertPathAt =node.iChildren().indexOf(child);
-							node.iChildren().remove(insertPathAt);
-							for(Node pathChild : sn.getPath()){
-								node.iChildren().add(insertPathAt++, pathChild);
-							}
-							done = false;
-							return TraverseStatus.NO_CHILDREN;
-						}
-					}
-					return TraverseStatus.CONTINUE;
-				}
-
-				public TraverseStatus foundFunctionNode(Node node) {
-					for(Node child : node.iChildren()){
-						if(child instanceof SequenceNode){
-							SequenceNode sn = (SequenceNode)child;
-							int insertPathAt = node.iChildren().indexOf(child);
-							node.iChildren().remove(insertPathAt);
-							for(Node pathChild : sn.getPath()){
-								node.iChildren().add(insertPathAt++, pathChild);
-							}
-							done = false;
-							return TraverseStatus.NO_CHILDREN;
-						}
-					}
-					return TraverseStatus.CONTINUE;
-				}
-		    });
-			setParent(fn);
-		}
-		setParent(fn);
-	}
-
 	private void DFSPostOrder(List<Node> nodes, Node entry, Set<Node> visited) {
 		nodes.add(entry);
 
@@ -261,149 +373,7 @@ public class StructuralAnalysisEngine {
 		}
 		return true;
 	}
-	
-	private void dumpTree(String text, Collection<Node> workingSet, boolean override) {
-		if(debug_structure || override){
-			StringBuffer sb = new StringBuffer();
-			if (workingSet.size() > 1) {
-				sb.append("digraph "+ text + "{");
-				for (Node node : workingSet) {
-					sb.append("node" + node.getId() + " [label=\"" + node + "\"];");
-					for (Node next : node.getNextNodes()) {
-						sb.append("node" + node.getId() + " -> node" + next.getId()+ ";");
-					}
-				}
-				sb.append("}\n");
-
-			} else {
-				sb.append("# graph has only " + workingSet.size() + " nodes - " + text + "\n");
-			}
-			System.out.println( sb.toString());
-		}
-		return;
-	}
-
-	public Node makeFnContainerIntoStructure(FunctionContainer functionContainer, Engine engine) 
-	    throws AbortedException, MemoryMonitorException {
 		
-		Set<Node> workingSet = new IteratableSet<Node>();
-		workingSet.addAll(functionContainer.getFunctionContents());
-		assert(workingSet.contains(functionContainer.getStartInstruction()));
-		dumpTree("started_"+ functionContainer.getFunctionName(), workingSet, false);
-		
-		Node startNode = basicBlock(workingSet, functionContainer.getStartInstruction(), engine, functionContainer.getFunctionName());
-		Node structureNode = null;
-		structureNode = createStructure(workingSet, startNode, engine, "Converting CFG to structure");
-		assert(workingSet.size() == 1);
-		dumpTree("finished_"+ functionContainer.getFunctionName(), workingSet, false);
-		Node structuralNode = workingSet.iterator().next();
-		normaliseGraph(structuralNode);
-		return structureNode;
-	}
-	
-	
-	public Node basicBlock(Set<Node> workingSet, Node originalStartNode, Engine engine, String string) {
-		
-		dumpTree("start_"+ string, workingSet, false);
-		Set<Node> toDo = new IteratableSet<Node>();
-		toDo.add(originalStartNode);
-		Node firstNode = null;
-		Set<Node> seenNodes = new NonIteratableSet<Node>();
-		Set<Node> newWorkingSet = new IteratableSet<Node>();
-		assert(!toDo.isEmpty());
-		Map<Node, Set<Node>> nexts = new IteratableMap<Node, Set<Node>>();
-		Map<Node, Node> instToBlock = new NonIteratableMap<Node, Node>();
-		while(!toDo.isEmpty()){
-
-			Node current = toDo.iterator().next();
-			toDo.remove(current);
-
-			List<InstructionNode> insts = new LinkedList<InstructionNode>();
-			insts.add((InstructionNode)current);
-			
-			seenNodes.add(current);
-			while(nextIsInSameBlock(current, workingSet, seenNodes, insts) ){
-				Node next = getNextNodes(current, workingSet).iterator().next();
-				insts.add((InstructionNode)next);
-				current = next;
-			}
-			
-			seenNodes.addAll(insts);
-
-			BlockNode basicBlock = new BlockNode(insts);
-
-			InstructionNode startOfBlock = basicBlock.getInstructionList().get(0);
-			instToBlock.put(startOfBlock, basicBlock);
-			nexts.put(basicBlock, current.getNextNodes());
-			if(newWorkingSet.isEmpty()){
-				firstNode = basicBlock;
-			}
-			newWorkingSet.add(basicBlock);
-
-			for(Node next : current.getNextNodes()){
-				if(next instanceof FunctionReferenceNode){
-					//FunctionReferenceNode fnRef = (FunctionReferenceNode) next;
-					//FunctionNode fnNode= new FunctionNode(fnRef.getFunctionContainer().getCachedFunction(engine), fnRef);
-					FunctionNode fnNode= new FunctionNode();
-					
-					newWorkingSet.add(fnNode);
-					seenNodes.add(fnNode);
-					instToBlock.put(next, fnNode);
-					nexts.put(fnNode, new IteratableSet<Node>(next.getNextNodes()));
-					for(Node nextNext : next.getNextNodes()){
-						if(!seenNodes.contains(nextNext)){
-							toDo.add(nextNext);
-						}
-					}
-				} else if(next instanceof FunctionNode){
-					next.getPrevNodes().clear();
-					newWorkingSet.add(next);
-					seenNodes.add(next);
-					instToBlock.put(next, next);
-					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
-					for(Node nextNext : next.getNextNodes()){
-						if(!seenNodes.contains(nextNext)){
-							toDo.add(nextNext);
-						}
-					}
-					next.getNextNodes().clear();
-				} else if(next instanceof NullNode){
-					next.getPrevNodes().clear();
-					newWorkingSet.add(next);
-					seenNodes.add(next);
-					instToBlock.put(next, next);
-					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
-					next.getNextNodes().clear();
-				} else if(!seenNodes.contains(next)){
-					toDo.add(next);
-				}
-			}
-		}
-		for(Node node : nexts.keySet()){
-			for(Node next : nexts.get(node)){
-				CommonMethods.connect(instToBlock.get(next), node);
-			}
-		}
-		
-		Set<Node> seen = new NonIteratableSet<Node>();
-		Set<Node> terminals = new IteratableSet<Node>();
-		findEndPoints(firstNode, seen, terminals);
-		
-		NullNode n = new NullNode();
-			
-		if(terminals.size() > 1){	
-			for(Node node : terminals){
-				CommonMethods.connect(n, node);
-			}
-			newWorkingSet.add(n);
-		}
-		
-		workingSet.clear();
-		workingSet.addAll(newWorkingSet);
-		dumpTree("after_BB_"+ string, workingSet, false);
-		return firstNode;
-	}
-	
 	private void findEndPoints(Node inst, Set<Node> seen, Set<Node> terminals) {
 		Set<Node> following = new IteratableSet<Node>();
 		following.add(inst);
@@ -469,4 +439,37 @@ public class StructuralAnalysisEngine {
 		prev.retainAll(workingSet);
 		return prev;
 	}
+	
+	private void dumpTree(String text, Collection<Node> workingSet, boolean override) {
+		if(debug_structure || override){
+			StringBuffer sb = new StringBuffer();
+			if (workingSet.size() > 1) {
+				sb.append("digraph "+ text + "{");
+				for (Node node : workingSet) {
+					sb.append("node" + node.getId() + " [label=\"" + node + "\"];");
+					for (Node next : node.getNextNodes()) {
+						sb.append("node" + node.getId() + " -> node" + next.getId()+ ";");
+					}
+				}
+				sb.append("}\n");
+
+			} else {
+				sb.append("# graph has only " + workingSet.size() + " nodes - " + text + "\n");
+			}
+			System.out.println( sb.toString());
+		}
+	}
+	
+	private void dumpWorkingSet(Collection<Node> workingSet) {
+		if (debug_working_set) {
+			StringBuffer sb = new StringBuffer();
+			for (Node node : workingSet) {
+				sb.append("+ node" + node.getId() + "[" + node + "]\n");
+				for (Node next : node.getNextNodes()) {
+					sb.append("node" + node.getId() + " -> node" + next.getId()+ "\n");
+				}
+			}
+			System.out.printf("%s", sb.toString());			
+		}
+	}	
 }

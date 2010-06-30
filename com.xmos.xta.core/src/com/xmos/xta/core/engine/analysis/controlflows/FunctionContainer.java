@@ -20,14 +20,13 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 	private InstructionNode m_startInstruction;
 	private Set<InstructionNode> m_functionInstructions;
 	private Set<FunctionReferenceNode> m_functionRefNodes;
-	private Node m_cachedFunction;
-	
+	private Node m_cachedFunction;	
 	private Set<Long> m_containedPcs;
 	
-	public FunctionContainer(InstructionNode startOfFunction, 
+	public FunctionContainer(InstructionNode startInstruction, 
 			Set<InstructionNode> functionInstructions,
 			Set<FunctionReferenceNode> functionRefNodes) {
-		m_startInstruction = startOfFunction;
+		m_startInstruction = startInstruction;
 		m_functionRefNodes = functionRefNodes;
 		m_functionInstructions = functionInstructions;
 		m_cachedFunction = null;
@@ -49,7 +48,7 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		contents.addAll(m_functionRefNodes);
 		return contents;
 	}
-	
+
 	public Set<FunctionReferenceNode> getFunctionReferenceNodes() {
 		return m_functionRefNodes;
 	}
@@ -80,8 +79,9 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 	    throws AbortedException, MemoryMonitorException {
 		
 		if (m_cachedFunction == null){
-			StructuralAnalysisEngine sae = new StructuralAnalysisEngine();
-			m_cachedFunction = sae.makeFnContainerIntoStructure(this, engine);
+			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(engine);			
+			m_cachedFunction = sae.createStructure(getControlFlow(), 
+					m_startInstruction, m_functionName); 
 		}
 		return m_cachedFunction;
 	}
@@ -94,7 +94,7 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		return m_containedPcs.contains(pc);
 	}
 	
-	public void dumpGraph(Console console) {
+	public void dumpControlFlow(Console console) {
 		Set<Node> seen = new NonIteratableSet<Node>();
 		Set<Node> todo = new IteratableSet<Node>();
 		
@@ -133,4 +133,22 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		}
 		console.display("}\n");
 	}	
+	
+	private Set<Node> getControlFlow() {
+		Set<Node> seen = new IteratableSet<Node>();
+		Set<Node> todo = new IteratableSet<Node>();
+		
+		todo.add(m_startInstruction);
+		while (!todo.isEmpty()) {
+			Node currentNode = todo.iterator().next();
+			seen.add(currentNode);
+			for (Node next : currentNode.getNextNodes()) {
+				if (!seen.contains(next)) {
+					todo.add(next);
+				}
+			}
+			todo.remove(currentNode);
+		}
+		return seen;
+	}
 }

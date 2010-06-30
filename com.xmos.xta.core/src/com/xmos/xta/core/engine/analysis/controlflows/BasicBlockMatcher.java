@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.structural;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 
-public class BasicBlockMatcher {
+class BasicBlockMatcher {
 	private BlockNode m_block;
 	private Node m_treeStart;
 

@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.analysis.structural;
+package com.xmos.xta.core.engine.analysis.controlflows;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -12,11 +12,7 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.instructions.NullInstruction;
 import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
-public class FnopAnalyzer {
-
-	public FnopAnalyzer() {
-
-	}
+class FnopAnalyzer {
 
 	public void analyze(Collection<Node> workingSet) {
 		for(Node node : workingSet){
@@ -54,19 +50,16 @@ public class FnopAnalyzer {
 			}
 		}
 
-
 		List<InstructionNode> instCopy = new LinkedList<InstructionNode>(block.getInstructionList());
 		for(InstructionNode inst : instCopy){
 			update(ib, block.getInstructionList(), inst);
 		}
-
 	}
 	
 	private int getPrevNodeSize(BlockNode block){
 		InstructionNode firstInst = block.getInstructionList().get(0);
 		return firstInst.getPrevNodes().size();
 	}
-	
 
 	private void update(InstructionBuffer ib, List<InstructionNode> blockInstructions, InstructionNode instNode) {
 		XtaInstruction inst = instNode.getXtaInstruction();
@@ -113,5 +106,4 @@ public class FnopAnalyzer {
 		} 
 		return false;
 	}
-
 }

@@ -35,7 +35,7 @@ public class Debugger {
 			ControlFlow controlFlow = m_engine.getControlFlow(activeCore);
 		    for (FunctionContainer functionContainer : controlFlow.getFunctionContainers()) {
 			    if (functionContainer.getFunctionName().equals(functionName)) {
-				    functionContainer.dumpGraph(console);
+				    functionContainer.dumpControlFlow(console);
 				    hit = true;
 			    }
 		    }
