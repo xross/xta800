@@ -1,0 +1,12 @@
+add exclusion tmrC
+analyze loop tmrF
+print structure -
+
+remove exclusion *
+
+add exclusion tmrF
+analyze loop tmrC
+print structure -
+
+print summary
+
