@@ -286,19 +286,19 @@ public class Engine extends Notifier implements Aborter {
 		return false;
 	}
 
-	public boolean analyzeFunction(CommandSource src, String functionName) {
+	public void analyzeFunction(CommandSource src, String functionName) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		return analyzer.analyzeFunction(src, functionName);
+		analyzer.analyzeFunction(src, functionName);
 	}
 
-	public boolean analyzeEndpoints(CommandSource src) {
+	public void analyzeEndpoints(CommandSource src) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		return analyzer.analyzeEndpoints(src, m_pathPoints);
+		analyzer.analyzeEndpoints(src, m_pathPoints);
 	}
 
-	public boolean analyzeLoop(CommandSource src) {
+	public void analyzeLoop(CommandSource src) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		return analyzer.analyzeLoop(src, m_loopPoints);
+		analyzer.analyzeLoop(src, m_loopPoints);
 	}
 	
 	public Notifier getNotifier() {

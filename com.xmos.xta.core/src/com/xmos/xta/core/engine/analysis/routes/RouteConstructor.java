@@ -57,15 +57,6 @@ public class RouteConstructor {
 		COMPLETED, ABORTED, ERROR
 	}
 
-	public enum RouteError {
-		NO_ENDPOINTS_FOUND,
-		ENDPOINTS_MISSING,
-		STARTPOINT_MISSING,
-		COULD_NOT_FIND_STARTPOINT,
-		COULD_NOT_FIND_ENDPOINT,
-		SUCCESS,
-	}
-
 	private ControlFlow m_controlFlow;
 	private List<Route> m_routes;
 	private Engine m_engine;
@@ -93,7 +84,7 @@ public class RouteConstructor {
 		return m_routes;
 	}
 
-	public RouteError analyze(CommandSource src) throws Exception {
+	public void analyze(CommandSource src) throws Exception {
 		m_engine.provideFeedback("Starting analysis...");
 		
 		List<StackNode> branchStackNodes = new LinkedList<StackNode>();
@@ -103,21 +94,17 @@ public class RouteConstructor {
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
         buildExclusionStackNodes(exclusionStackNodes);
         
-        RouteError routeError = RouteError.SUCCESS;
 		switch (m_coreContainer.getRouteContainer().getMode()) {
 		case FUNCTION:
-			routeError = analyzeFunction(src, branchStackNodes, 
-					branchToNext, exclusionStackNodes);
+			analyzeFunction(src, branchStackNodes, branchToNext, exclusionStackNodes);
 			break;
 
 		case LOOP:
-			routeError = analyzeLoop(src, branchStackNodes, 
-					branchToNext, exclusionStackNodes);
+			analyzeLoop(src, branchStackNodes, branchToNext, exclusionStackNodes);
 			break;
 
 		case ENDPOINTS:
-			routeError = analyzeEndpoints(src, branchStackNodes, 
-					branchToNext, exclusionStackNodes);
+		    analyzeEndpoints(src, branchStackNodes, branchToNext, exclusionStackNodes);
 			break;
 			
 		default:
@@ -130,7 +117,6 @@ public class RouteConstructor {
 		applyDefines(src);
 		
 		m_engine.provideFeedback("Analysis complete");
-		return routeError;
 	}
 	
 	static void setParent(Node node) {
@@ -140,7 +126,7 @@ public class RouteConstructor {
 		}
 	}
 	
-	private RouteError analyzeFunction(CommandSource src, List<StackNode> branchStackNodes, 
+	private void analyzeFunction(CommandSource src, List<StackNode> branchStackNodes, 
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 				
@@ -156,10 +142,9 @@ public class RouteConstructor {
 				updateRoutes(src, newFunction, stack);
 			}
 		}
-		return RouteError.SUCCESS;
 	}
 	
-	private RouteError analyzeLoop(CommandSource src, List<StackNode> branchStackNodes, 
+	private void analyzeLoop(CommandSource src, List<StackNode> branchStackNodes, 
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 		
@@ -168,11 +153,11 @@ public class RouteConstructor {
 		RouteLoopConversion converter = new RouteLoopConversion(m_engine, m_controlFlow);
 		converter.updateLoopStackNodes(m_coreContainer.getFromReference(), loopStartStackNodes, exclusionStackNodes);
 		
-		return analyzePath(src, branchToNext, branchStackNodes, 
+		analyzePath(src, branchToNext, branchStackNodes, 
 			    exclusionStackNodes, loopStartStackNodes, loopStartStackNodes);
 	}
 	
-	private RouteError analyzeEndpoints(CommandSource src, List<StackNode> branchStackNodes, 
+	private void analyzeEndpoints(CommandSource src, List<StackNode> branchStackNodes, 
 			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 						
@@ -184,21 +169,19 @@ public class RouteConstructor {
 			endStackNodes.addAll(getPathStackNodes(m_engine, m_controlFlow, end));
 		}
 		
-		return analyzePath(src, branchToNext, branchStackNodes, 
+		analyzePath(src, branchToNext, branchStackNodes, 
 		    exclusionStackNodes, startStackNodes, endStackNodes);
 	}
 	
-	private RouteError analyzePath(CommandSource src, 
+	private void analyzePath(CommandSource src, 
 			Map<StackNode, Set<Node>> branchToNext, 
 			List<StackNode> branchStackNodes, 
 			List<StackNode> exclusionStackNodes,
 			List<StackNode> startStackNodes,
 			List<StackNode> endStackNodes) throws AbortedException, MemoryMonitorException {
 		
-		boolean foundAtLeastOneStartPoint = false;
 		for (StackNode startStackNode : startStackNodes) {
 			for (Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
-				foundAtLeastOneStartPoint = true;
 				
 				Node node = makeEndpoints(stack, startStackNode.getInstruction(), 
 						endStackNodes, exclusionStackNodes, branchStackNodes, branchToNext);
@@ -206,11 +189,6 @@ public class RouteConstructor {
 				updateRoutes(src, node, stack);
 			}
 		}
-
-		if (!foundAtLeastOneStartPoint){
-			return RouteError.COULD_NOT_FIND_STARTPOINT;
-		}
-		return RouteError.SUCCESS;		
 	}
 	
 	private void updateRoutes(CommandSource src, Node node, Stack<FunctionReferenceNode> stack) {
