@@ -3,8 +3,8 @@ package com.xmos.xta.core.engine.functionmapper;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 public class AssemblyLine {
 

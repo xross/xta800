@@ -36,7 +36,7 @@ DecoderGenerator::DecoderGenerator(const char *fileName, DbInterface &dbInterfac
 
   generateHeader(outFp);
 
-  fprintf(outFp, "package com.xmos.xta.core.engine.instructions;\n");
+  fprintf(outFp, "package com.xmos.xta.core.engine.analysis.binary;\n");
   fprintf(outFp, "\n");
   fprintf(outFp, "import com.xmos.libs.isa.Instruction;\n");
   fprintf(outFp, "\n");

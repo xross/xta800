@@ -13,11 +13,11 @@ import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.binary.Disassembler;
+import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.functionmapper.Function;
 import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
-import com.xmos.xta.core.engine.instructions.Disassembler;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class AsmDisplayer {

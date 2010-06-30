@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.xmos.xta.core.engine.analysis.binary.NullInstruction;
+import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
-import com.xmos.xta.core.engine.instructions.NullInstruction;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 class FnopAnalyzer {
 

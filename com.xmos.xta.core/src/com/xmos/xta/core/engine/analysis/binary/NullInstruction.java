@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.instructions;
+package com.xmos.xta.core.engine.analysis.binary;
 
 public class NullInstruction extends XtaInstruction {
     public NullInstruction(String nmenonic, int opcode, long pc, int numBytes, boolean isFNop) {

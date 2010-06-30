@@ -1,11 +1,11 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.unknowns;
 
 import com.xmos.libs.util.Conversion;
+import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class InstructionTimeUnknown extends Unknown {

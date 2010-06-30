@@ -1,12 +1,12 @@
 package com.xmos.xta.core.console.commands.print;
 
 import com.xmos.xta.core.console.Console;
+import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 
 @SuppressWarnings("serial")
 class EscapedDetctedException extends Exception {}

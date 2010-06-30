@@ -46,7 +46,7 @@ void InstructionClassGenerator::generateHeader()
   m_outFile << " *" << endl;
   m_outFile << " */" << endl;
   m_outFile << endl;
-  m_outFile << "package com.xmos.xta.core.engine.instructions;" << endl;
+  m_outFile << "package com.xmos.xta.core.engine.analysis.binary;" << endl;
   m_outFile << endl;
   m_outFile << "// Dummy class required to optimise the ant builds.." << endl;
   m_outFile << "public class " << string(m_version) << "XtaInstructions {" << endl;

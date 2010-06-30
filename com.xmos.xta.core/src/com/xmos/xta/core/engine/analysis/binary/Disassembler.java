@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.instructions;
+package com.xmos.xta.core.engine.analysis.binary;
 
 import java.util.Vector;
 

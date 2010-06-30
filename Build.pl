@@ -254,9 +254,9 @@ sub CreateXtaFiles
   system("$TOOLS_XTA${SLASH}${BIN}${SLASH}XtaGeneration.exe XSystemDb${SLASH}XS1-040.xml $version");
 
   print(" + Installing $version generated xta files\n");
-  rename("XtaInstructionDecoder.java", "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}instructions${SLASH}${version}XtaInstructionDecoder.java") 
+  rename("XtaInstructionDecoder.java", "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}analysis${SLASH}binary${SLASH}${version}XtaInstructionDecoder.java") 
     or die("Failed to move XtaInstructionDecoder.java\n");
-  rename("XtaInstructions.java",       "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}instructions${SLASH}${version}XtaInstructions.java") 
+  rename("XtaInstructions.java",       "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}analysis${SLASH}binary${SLASH}${version}XtaInstructions.java") 
     or die("Failed to move XtaInstructions.java\n");
 }
 

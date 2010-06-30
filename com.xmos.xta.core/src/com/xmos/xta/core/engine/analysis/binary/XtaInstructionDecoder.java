@@ -1,14 +1,14 @@
-package com.xmos.xta.core.engine.instructions;
+package com.xmos.xta.core.engine.analysis.binary;
 
 import com.xmos.libs.xeloader.XeLoader;
 
-public abstract class XtaInstructionDecoder {
-    public abstract XtaInstruction decode(int opcode, long pc);
+abstract class XtaInstructionDecoder {
+    abstract XtaInstruction decode(int opcode, long pc);
 
     private static XtaInstructionDecoder m_revB = null;
     private static XtaInstructionDecoder m_revC = null;
 
-    public static XtaInstructionDecoder createInstructionDecoder(
+    static XtaInstructionDecoder createInstructionDecoder(
     		XeLoader.Architecture architecture) {
 
 		XtaInstructionDecoder instructionDecoder = null;

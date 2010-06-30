@@ -1,12 +1,12 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
+import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
+import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;
-import com.xmos.xta.core.engine.instructions.InstructionMnemonics;
-import com.xmos.xta.core.engine.instructions.XtaInstruction;
 import com.xmos.xta.core.engine.utils.CoreConfig;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 import com.xmos.xta.core.engine.utils.TimeUnit.Units;

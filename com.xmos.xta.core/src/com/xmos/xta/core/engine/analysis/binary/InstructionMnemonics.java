@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.instructions;
+package com.xmos.xta.core.engine.analysis.binary;
 
 import com.xmos.libs.isa.Instruction;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
