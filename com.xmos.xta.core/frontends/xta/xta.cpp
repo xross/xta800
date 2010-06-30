@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     const char *jvmArgs = getenv("JVM_ARGS");
     if (jvmArgs != NULL) 
         jvmArgString = jvmArgs;
-    
+
     string args;
     getArgString(args, argc, argv);
 
@@ -174,6 +174,11 @@ void checkJavaVersion(int major, int minor)
 
   // Truncate, mainly for the benefit of squish which wraps the JVM
   size_t start = output.find("java version \"");
+  if (start == string::npos) {
+    fprintf(stderr, "xta: error: java version could not be determined\n");
+    exit(1);
+  }
+
   output = output.substr(start);
 
   int javaMajorVersion = 0;
