@@ -111,6 +111,14 @@ public class TimeUnit {
    	   	    m_mhz = value;
 	   		m_units = Units.MHZ;
 
+   	   	} else if (units.equals("KHz") || units.equals("khz")) {
+   	   	    m_mhz = value / 1000.0;
+	   		m_units = Units.MHZ;
+
+   	   	} else if (units.equals("Hz") || units.equals("hz")) {
+   	   	    m_mhz = value / 1000000.0;
+	   		m_units = Units.MHZ;
+	   		
    	   	} else {
 			throw new Exception("Invalid units");   	   		
    	   	}
@@ -257,6 +265,12 @@ public class TimeUnit {
    	   	} else if (units.equals("MHz") || units.equals("mhz")) {
 	   		return getMhz();
 
+   	   	} else if (units.equals("KHz") || units.equals("khz")) {
+     	   	return getMhz() / 1000.0;
+
+   	   	} else if (units.equals("Hz") || units.equals("hz")) {
+   	    	return getMhz() / 1000000.0;
+	   		
    	   	} else {
 			throw new Exception("Invalid units");
    	   	}		
