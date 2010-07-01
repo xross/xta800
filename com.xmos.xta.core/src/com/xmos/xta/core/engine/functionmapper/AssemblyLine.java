@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 public class AssemblyLine {
 
 	private Map<String, Set<Long>> m_labels;
-	private static final int WIDTH = 20;
+	private static final int WIDTH = 10;
 
 	public static String getLeadingWhiteSpace() {
 		StringBuffer sb = new StringBuffer();
