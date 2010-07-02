@@ -20,6 +20,8 @@ public class RouteContainer {
 
 	private RouteMode m_mode;
 	private String m_description;
+	private String m_fromName;
+	private String m_toName;
 	private String m_refName;
 	private CommandSource m_src;
     private Collection<RouteCoreContainer> m_routeCoreContainers;
@@ -31,6 +33,8 @@ public class RouteContainer {
 	
     public RouteContainer(String fromName, String toName, Engine engine, CommandSource src) {    	
 		m_mode = RouteMode.ENDPOINTS;
+		m_fromName = fromName;
+		m_toName = toName;
 		m_description = String.format("endpoints: %s to %s", fromName, toName);
 		initialise(engine, src);
     }
@@ -52,7 +56,15 @@ public class RouteContainer {
 	public String getDescription() {
 		return m_description;
 	}
-    
+
+	public String getFromName() {
+		return m_fromName;
+	}
+
+	public String getToName() {
+		return m_toName;
+	}
+	
 	public String getRefName() {
 		return m_refName;
 	}
