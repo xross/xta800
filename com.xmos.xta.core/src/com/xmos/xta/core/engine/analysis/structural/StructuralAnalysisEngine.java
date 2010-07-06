@@ -16,16 +16,17 @@ import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
-import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalPatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.LoopPatternMatcher;
@@ -38,8 +39,7 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatc
 public class StructuralAnalysisEngine {
 	
 	private static boolean debug_structure = false;
-	private static boolean sanity_debug = false;
-	private static boolean debug_working_set = false;
+	private static boolean sanity_debug    = false;
 
 	private Engine m_engine;
 	private List<PatternMatcher> m_patternMatchers;
@@ -58,107 +58,115 @@ public class StructuralAnalysisEngine {
 		m_patternMatchers.add(new PanicTransformer());			//uses dominators
 	}
 
-	public Node createStructure(Set<Node> workingSet, Node startNode, String name) 
+	public Node createStructure(Set<CfgNode> workingSet, CfgNode startNode, String name) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		assert(workingSet.contains(startNode));
-		Node newStartNode = basicBlock(workingSet, startNode, name);		
+		CfgNode newStartNode = basicBlock(workingSet, startNode, name);		
 		Node structuralNode = buildStructure(workingSet, newStartNode, "Converting CFG to structure");
 		assert(workingSet.size() == 1);
 		normaliseGraph(structuralNode);
-		return structuralNode;		
+		return structuralNode;
 	}
-	
-  	private Node basicBlock(Set<Node> workingSet, Node originalStartNode, String string) {  	
-  		dumpWorkingSet(workingSet);  		
+
+  	private CfgNode basicBlock(Set<CfgNode> workingSet, CfgNode originalStartNode, String string) {  	
 		dumpTree("before_basicBlock_"+ string, workingSet, false);
-		Set<Node> toDo = new IteratableSet<Node>();
+
+		Set<CfgNode> toDo = new IteratableSet<CfgNode>();
 		toDo.add(originalStartNode);
-		Node firstNode = null;
-		Set<Node> seenNodes = new NonIteratableSet<Node>();
-		Set<Node> newWorkingSet = new IteratableSet<Node>();
-		assert(!toDo.isEmpty());
-		Map<Node, Set<Node>> nexts = new IteratableMap<Node, Set<Node>>();
-		Map<Node, Node> instToBlock = new NonIteratableMap<Node, Node>();
-		while(!toDo.isEmpty()){
+		
+		CfgNode firstNode = null;
+		Set<CfgNode> seenNodes = new NonIteratableSet<CfgNode>();
+		Set<CfgNode> newWorkingSet = new IteratableSet<CfgNode>();
+		
+		Map<CfgNode, Set<CfgNode>> nexts = new IteratableMap<CfgNode, Set<CfgNode>>();
+		Map<CfgNode, CfgNode> instToBlock = new NonIteratableMap<CfgNode, CfgNode>();
+
+		while (!toDo.isEmpty()) {
 	
-			Node current = toDo.iterator().next();
+			CfgNode current = toDo.iterator().next();
 			toDo.remove(current);
 	
 			List<InstructionNode> insts = new LinkedList<InstructionNode>();
-			insts.add((InstructionNode)current);
+			insts.add(new InstructionNode((CfgInstructionNode)current));
 			
 			seenNodes.add(current);
-			while(nextIsInSameBlock(current, workingSet, seenNodes, insts) ){
-				Node next = getNextNodes(current, workingSet).iterator().next();
-				insts.add((InstructionNode)next);
-				current = next;
-			}
 			
-			seenNodes.addAll(insts);
+			CfgNode startOfBlock = current;
+			
+			boolean firstInBlock = true;
+			while (nextIsInSameBlock(current, workingSet, seenNodes, firstInBlock)) {
+				CfgNode next = getNextNodes(current, workingSet).iterator().next();
+				insts.add(new InstructionNode((CfgInstructionNode)next));
+				current = next;
+				seenNodes.add(current);
+				firstInBlock = false;
+			}
+
+			BlockNode strBasicBlock = new BlockNode(insts);
+			CfgNode basicBlock = new CfgContainerNode(strBasicBlock);
 	
-			BlockNode basicBlock = new BlockNode(insts);
-	
-			InstructionNode startOfBlock = basicBlock.getInstructionList().get(0);
 			instToBlock.put(startOfBlock, basicBlock);
 			nexts.put(basicBlock, current.getNextNodes());
-			if(newWorkingSet.isEmpty()){
+			if (newWorkingSet.isEmpty()) {
 				firstNode = basicBlock;
 			}
 			newWorkingSet.add(basicBlock);
 	
-			for(Node next : current.getNextNodes()){
-				if(next instanceof FunctionReferenceNode){
-					FunctionNode fnNode= new FunctionNode();
+			for (CfgNode next : current.getNextNodes()) {
+				if (next instanceof CfgFunctionReferenceNode) {
+					FunctionNode fnNode = new FunctionNode();
+					CfgContainerNode cnNode = new CfgContainerNode(fnNode);					
+					newWorkingSet.add(cnNode);
+					seenNodes.add(cnNode);
+					instToBlock.put(next, cnNode);
+					nexts.put(cnNode, new IteratableSet<CfgNode>(next.getNextNodes()));
+					for (CfgNode nextNext : next.getNextNodes()) {
+						if (!seenNodes.contains(nextNext)) {
+							toDo.add(nextNext);
+						}
+					}
 					
-					newWorkingSet.add(fnNode);
-					seenNodes.add(fnNode);
-					instToBlock.put(next, fnNode);
-					nexts.put(fnNode, new IteratableSet<Node>(next.getNextNodes()));
-					for(Node nextNext : next.getNextNodes()){
-						if(!seenNodes.contains(nextNext)){
-							toDo.add(nextNext);
-						}
-					}
-				} else if(next instanceof FunctionNode){
+				} else if (next instanceof CfgContainerNode) {
 					next.getPrevNodes().clear();
 					newWorkingSet.add(next);
 					seenNodes.add(next);
 					instToBlock.put(next, next);
-					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
-					for(Node nextNext : next.getNextNodes()){
-						if(!seenNodes.contains(nextNext)){
+					nexts.put(next, new IteratableSet<CfgNode>(next.getNextNodes()));
+					for (CfgNode nextNext : next.getNextNodes()){
+						if (!seenNodes.contains(nextNext)){
 							toDo.add(nextNext);
 						}
 					}
 					next.getNextNodes().clear();
-				} else if(next instanceof NullNode){
+					
+				} else if (next instanceof CfgNullNode) {
 					next.getPrevNodes().clear();
 					newWorkingSet.add(next);
 					seenNodes.add(next);
 					instToBlock.put(next, next);
-					nexts.put(next, new IteratableSet<Node>(next.getNextNodes()));
+					nexts.put(next, new IteratableSet<CfgNode>(next.getNextNodes()));
 					next.getNextNodes().clear();
-				} else if(!seenNodes.contains(next)){
+					
+				} else if (!seenNodes.contains(next)) {
+					assert(next instanceof CfgInstructionNode);
 					toDo.add(next);
 				}
 			}
 		}
-		for(Node node : nexts.keySet()){
-			for(Node next : nexts.get(node)){
-				CommonMethods.connect(instToBlock.get(next), node);
+		
+		for (CfgNode node : nexts.keySet()) {
+			for (CfgNode next : nexts.get(node)) {
+				CfgNode.connect(instToBlock.get(next), node);
 			}
 		}
 		
-		Set<Node> seen = new NonIteratableSet<Node>();
-		Set<Node> terminals = new IteratableSet<Node>();
-		findEndPoints(firstNode, seen, terminals);
+		Set<CfgNode> terminals = findEndPoints(firstNode);
 		
-		NullNode n = new NullNode();
-			
-		if(terminals.size() > 1){	
-			for(Node node : terminals){
-				CommonMethods.connect(n, node);
+		CfgNullNode n = new CfgNullNode();			
+		if (terminals.size() > 1) {	
+			for (CfgNode node : terminals){
+				CfgNode.connect(n, node);
 			}
 			newWorkingSet.add(n);
 		}
@@ -169,11 +177,13 @@ public class StructuralAnalysisEngine {
 		return firstNode;
 	}
 	
-	private Node buildStructure(Collection<Node> workingSet, Node treeStart, String jobPrefix) 
+	private Node buildStructure(Collection<CfgNode> workingSet, CfgNode treeStart, String jobPrefix) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) {
-			return workingSet.iterator().next();
+			CfgNode node = workingSet.iterator().next();
+			assert(node instanceof CfgContainerNode);			
+			return ((CfgContainerNode)node).getNode();
 		}
 
 		buildDominatorTree(workingSet, treeStart);
@@ -192,8 +202,9 @@ public class StructuralAnalysisEngine {
 			}
 			m_engine.provideFeedback(feedback);
 						
-			List<Node> postOrder = new LinkedList<Node>();
-			DFSPostOrder(postOrder, treeStart, new NonIteratableSet<Node>());
+			List<CfgNode> postOrder = new LinkedList<CfgNode>();
+			DFSPostOrder(postOrder, treeStart, new NonIteratableSet<CfgNode>());
+
 			working = false;
 			for (PatternMatcher pm : m_patternMatchers) {
 				if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
@@ -203,18 +214,17 @@ public class StructuralAnalysisEngine {
 				if (pm instanceof ConditionalTransformer) {
 					Collections.reverse(postOrder);
 				}
-				for (Node node : postOrder) {
+				for (CfgNode node : postOrder) {
 					
 					m_engine.getAbort();
 					if (m_engine.getMemoryMonitor().outOfMemoryAbort()) {
 						throw new MemoryMonitorException();
 					}
 					
-					if (pm.isMatch(node, workingSet, treeStart, m_engine)) {
-						assert(sanityCheckGraph(workingSet));
+					if (pm.isMatch(node, workingSet, treeStart)) {
 						treeStart = pm.getTreeStart();
-						assert (workingSet.contains(treeStart));
-						assert (connectivitySanityCheck(workingSet));
+						assert(workingSet.contains(treeStart));
+						assert(connectivitySanityCheck(workingSet));
 						dominatorTreeUpToDate = false;
 						working = true;
 						break;
@@ -224,7 +234,10 @@ public class StructuralAnalysisEngine {
 					break;
 			}
 		}
-		return workingSet.iterator().next();
+		
+		CfgNode node = workingSet.iterator().next();
+		assert(node instanceof CfgContainerNode);			
+		return ((CfgContainerNode)node).getNode();		
 	}
 		
 	private boolean done;
@@ -272,31 +285,9 @@ public class StructuralAnalysisEngine {
 		setParent(fn);
 	}
   	
-	private boolean sanityCheckGraph(Collection<Node> workingSet){
-		if(sanity_debug){
-			Set<Node> seen = new NonIteratableSet<Node>();
-			for(Node node : workingSet){
-				Set<Node> containedNodes = CommonMethods.getAllContainedNodes(node);
-				for(Node contained : containedNodes){
-					if(seen.contains(contained) && !(contained instanceof InstructionNode)){
-						for(Node n :  CommonMethods.getAllContainedNodes(node)){
-							if(!(n instanceof InstructionNode)){
-								System.err.println("\t" + n);
-							}
-						}
-						return false;
-					} else {
-						seen.add(contained);
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	private void buildDominatorTree(Collection<Node> reachableNodes, Node treeStart) {
+	private void buildDominatorTree(Collection<CfgNode> reachableNodes, CfgNode treeStart) {
 		//try to remove tree sets from this
-		for (Node node : reachableNodes) {
+		for (CfgNode node : reachableNodes) {
 			node.clearDominators();
 			if (treeStart == node) {
 				node.setDominatorSetComplete(false);
@@ -306,12 +297,12 @@ public class StructuralAnalysisEngine {
 			}
 		}
 
-		Set<Node> intersection = new IteratableSet<Node>();
+		Set<CfgNode> intersection = new IteratableSet<CfgNode>();
 		boolean stillChanging = true;
 
 		while (stillChanging) {
 			stillChanging = false;
-			for (Node node : reachableNodes) {
+			for (CfgNode node : reachableNodes) {
 				boolean intersectionIsCompleteSet = true;
 
 				if (treeStart == node)
@@ -319,7 +310,7 @@ public class StructuralAnalysisEngine {
 
 				intersection.clear();
 
-				for (Node pred : node.getPrevNodes()) {
+				for (CfgNode pred : node.getPrevNodes()) {
 					if (!pred.isDominatorSetComplete()) {
 						if (intersectionIsCompleteSet) {
 							intersection.addAll(pred.getDominators());
@@ -338,17 +329,16 @@ public class StructuralAnalysisEngine {
 					node.setDominatorSetComplete(intersectionIsCompleteSet);
 					stillChanging = true;
 				}
-
 			}
 		}
 	}
 
-	private void DFSPostOrder(List<Node> nodes, Node entry, Set<Node> visited) {
+	private void DFSPostOrder(List<CfgNode> nodes, CfgNode entry, Set<CfgNode> visited) {
 		nodes.add(entry);
 
-		List<Node> next = new LinkedList<Node>(entry.getNextNodes());
+		List<CfgNode> next = new LinkedList<CfgNode>(entry.getNextNodes());
 		Collections.sort(next);
-		for (Node x : next) {
+		for (CfgNode x : next) {
 			if (!visited.contains(x)) {
 				visited.add(x);
 				DFSPostOrder(nodes, x, visited);
@@ -362,93 +352,98 @@ public class StructuralAnalysisEngine {
 			setParent(child);
 		}
 	}
-	
-	private boolean connectivitySanityCheck(Collection<Node> workingSet) {
-		if(sanity_debug){
-			int total = 0;
-			for (Node node : workingSet) {
-				total += node.getPrevNodes().size() - node.getNextNodes().size();
-			}
-			return (total == 0);
-		}
-		return true;
-	}
+			
+	private Set<CfgNode> findEndPoints(CfgNode inst) {
+		Set<CfgNode> terminals = new IteratableSet<CfgNode>();		
+		Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
 		
-	private void findEndPoints(Node inst, Set<Node> seen, Set<Node> terminals) {
-		Set<Node> following = new IteratableSet<Node>();
+		Set<CfgNode> following = new IteratableSet<CfgNode>();
 		following.add(inst);
-		while(!following.isEmpty()){
-			Node current = following.iterator().next();
+		
+		while (!following.isEmpty()) {
+			CfgNode current = following.iterator().next();
 			seen.add(current);
-			if(current.getNextNodesSize() == 0){
+			if (current.getNextNodesSize() == 0) {
 				terminals.add(current);
 			} else {
-				for(Node next : current.getNextNodes()){
-					if(!seen.contains(next)){
+				for (CfgNode next : current.getNextNodes()) {
+					if (!seen.contains(next)) {
 						following.add(next);
 					}
 				}
 			}
 			following.remove(current);
 		}
+		return terminals;
 	}
 
-	private boolean nextIsInSameBlock(Node current, Set<Node> workingSet, Set<Node> seenNodes, List<InstructionNode> insts) {
-		if(getNextNodes(current, workingSet).size() != 1){
-			return false;
-		}
-		Node next = getNextNodes(current, workingSet).iterator().next();
+	private boolean nextIsInSameBlock(CfgNode current, Set<CfgNode> workingSet, 
+			Set<CfgNode> seenNodes, boolean firstInblock) {
 		
-		if(seenNodes.contains(next)){
+		if (getNextNodes(current, workingSet).size() != 1){
 			return false;
 		}
+		CfgNode next = getNextNodes(current, workingSet).iterator().next();
 		
-		if(next instanceof NullNode) {
+		if (seenNodes.contains(next)) {
+			return false;
+		}		
+		if (next instanceof CfgNullNode) {
+			return false;
+		}		
+		if (!(next instanceof CfgInstructionNode)) {
 			return false;
 		}
-		
-		if(!(next instanceof InstructionNode)) {
+		if (getPrevNodes(next, workingSet).size() > 1){
 			return false;
 		}
-		if(getPrevNodes(next, workingSet).size() > 1){
-			return false;
-		}
-		if( getPrevNodes(current, workingSet).size() > 1 && insts.get(0) != current){
+		if (getPrevNodes(current, workingSet).size() > 1 && !firstInblock){
 			return false;
 		}
 
-		if(current instanceof InstructionNode){
-			if(((InstructionNode)current).getXtaInstruction().getReturn()){
+		if (current instanceof CfgInstructionNode) {
+			if (((CfgInstructionNode)current).getXtaInstruction().getReturn()) {
 				return false;
 			}
-			if(((InstructionNode)current).getXtaInstruction().isLink()){
+			if (((CfgInstructionNode)current).getXtaInstruction().isLink()) {
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	private Set<Node> getNextNodes(Node node, Set<Node> workingSet){
-		Set<Node> next = new IteratableSet<Node>(node.getNextNodes());
+	private Set<CfgNode> getNextNodes(CfgNode node, Set<CfgNode> workingSet){
+		Set<CfgNode> next = new IteratableSet<CfgNode>(node.getNextNodes());
 		next.retainAll(workingSet);
 		return next;
 	}
 
-	private Set<Node> getPrevNodes(Node node, Set<Node> workingSet){
-		Set<Node> prev = new IteratableSet<Node>(node.getPrevNodes());
+	private Set<CfgNode> getPrevNodes(CfgNode node, Set<CfgNode> workingSet){
+		Set<CfgNode> prev = new IteratableSet<CfgNode>(node.getPrevNodes());
 		prev.retainAll(workingSet);
 		return prev;
 	}
+
+	private boolean connectivitySanityCheck(Collection<CfgNode> workingSet) {
+		if (sanity_debug) {
+			int total = 0;
+			for (CfgNode node : workingSet) {
+				total += node.getPrevNodes().size() - node.getNextNodes().size();
+			}
+			return (total == 0);
+		}
+		return true;
+	}
 	
-	private void dumpTree(String text, Collection<Node> workingSet, boolean override) {
-		if(debug_structure || override){
+	private void dumpTree(String text, Collection<CfgNode> workingSet, boolean override) {
+		if (debug_structure || override) {
 			StringBuffer sb = new StringBuffer();
 			if (workingSet.size() > 1) {
-				sb.append("digraph "+ text + "{");
-				for (Node node : workingSet) {
-					sb.append("node" + node.getId() + " [label=\"" + node + "\"];");
-					for (Node next : node.getNextNodes()) {
-						sb.append("node" + node.getId() + " -> node" + next.getId()+ ";");
+				sb.append("digraph "+ text + "{\n");
+				for (CfgNode node : workingSet) {
+					sb.append("node" + node.getId() + " [label=\"" + node + "\"];\n");
+					for (CfgNode next : node.getNextNodes()) {
+						sb.append("node" + node.getId() + " -> node" + next.getId()+ ";\n");
 					}
 				}
 				sb.append("}\n");
@@ -457,19 +452,6 @@ public class StructuralAnalysisEngine {
 				sb.append("# graph has only " + workingSet.size() + " nodes - " + text + "\n");
 			}
 			System.out.println( sb.toString());
-		}
-	}
-	
-	private void dumpWorkingSet(Collection<Node> workingSet) {
-		if (debug_working_set) {
-			StringBuffer sb = new StringBuffer();
-			for (Node node : workingSet) {
-				sb.append("+ node" + node.getId() + "[" + node + "]\n");
-				for (Node next : node.getNextNodes()) {
-					sb.append("node" + node.getId() + " -> node" + next.getId()+ "\n");
-				}
-			}
-			System.out.printf("%s", sb.toString());			
 		}
 	}	
 }

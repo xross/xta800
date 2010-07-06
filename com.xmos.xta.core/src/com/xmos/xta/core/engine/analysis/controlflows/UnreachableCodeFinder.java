@@ -7,15 +7,15 @@ import java.util.Set;
 
 import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 
 class UnreachableCodeFinder {
 
-	private Set<Node> m_unreachable;
+	private Set<CfgNode> m_unreachable;
 
-	public UnreachableCodeFinder() {
-		m_unreachable = new NonIteratableSet<Node>();
+	UnreachableCodeFinder() {
+		m_unreachable = new NonIteratableSet<CfgNode>();
 	}
 
 	/**
@@ -23,19 +23,19 @@ class UnreachableCodeFinder {
 	 * It needs removing from the graph so that functions
 	 * and threads don't have invalid predecessors.
 	 */
-	public void analyzeReachable(InstructionDecoder id, Set<InstructionNode> functionStarts) {
+	void analyzeReachable(InstructionDecoder id, Set<CfgInstructionNode> functionStarts) {
 		m_unreachable.clear();
 		m_unreachable.addAll(id.getInstructions());
-		Set<Node> reachable = new NonIteratableSet<Node>();
-		for (Node node : functionStarts){
-			Set<Node> seen = new NonIteratableSet<Node>();
+		Set<CfgNode> reachable = new NonIteratableSet<CfgNode>();
+		for (CfgNode node : functionStarts){
+			Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
 			explore(node, seen);
 			reachable.addAll(seen);
 		}
 		m_unreachable.removeAll(reachable);
 
-		for (Node unreachable : m_unreachable) {
-			for (Node next : unreachable.getNextNodes()) {
+		for (CfgNode unreachable : m_unreachable) {
+			for (CfgNode next : unreachable.getNextNodes()) {
 				next.removePrevNode(unreachable);
 			}
 
@@ -43,15 +43,15 @@ class UnreachableCodeFinder {
 		}
 	}
 
-	private void explore(Node node, Collection<Node> seen) {
-		List<Node> toDo = new ArrayList<Node>();
+	private void explore(CfgNode node, Collection<CfgNode> seen) {
+		List<CfgNode> toDo = new ArrayList<CfgNode>();
 		toDo.add(node);
 
 		while (!toDo.isEmpty()) {
-			Node currentNode = toDo.get(0);
+			CfgNode currentNode = toDo.get(0);
 			if (!seen.contains(currentNode)) {
 				seen.add(currentNode);
-				for (Node next : currentNode.getNextNodes()) {
+				for (CfgNode next : currentNode.getNextNodes()) {
 					if (!seen.contains(next)) {
 						toDo.add(next);
 					}

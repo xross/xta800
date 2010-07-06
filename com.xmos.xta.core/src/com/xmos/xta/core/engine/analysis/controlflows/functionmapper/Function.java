@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.functionmapper;
+package com.xmos.xta.core.engine.analysis.controlflows.functionmapper;
 
 import java.util.List;
 

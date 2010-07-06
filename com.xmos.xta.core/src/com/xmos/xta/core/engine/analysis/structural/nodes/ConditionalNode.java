@@ -9,8 +9,6 @@ import java.util.Stack;
 
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.ConditionalNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -44,10 +42,10 @@ public class ConditionalNode extends Node {
 		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		ConditionalNode sn = new ConditionalNode();
 		for (Node option : m_options) {
-			Node clone = option.copyRouteStructure(aborter);
+			Node clone = option.copyRouteStructure();
 			sn.m_options.add(clone);
 			sn.m_alive.put(clone, m_alive.get(option));
 		}

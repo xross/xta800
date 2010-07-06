@@ -3,57 +3,51 @@ package com.xmos.xta.core.engine.analysis.controlflows;
 import java.util.Collection;
 import java.util.Set;
 
-import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.console.Console;
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 
 public class FunctionContainer implements Comparable<FunctionContainer> {
 
 	private String m_functionName;
-	private InstructionNode m_startInstruction;
-	private Set<InstructionNode> m_functionInstructions;
-	private Set<FunctionReferenceNode> m_functionRefNodes;
-	private Node m_cachedFunction;	
+	private CfgInstructionNode m_startInstruction;
+	private Set<CfgInstructionNode> m_functionInstructions;
+	private Set<CfgFunctionReferenceNode> m_functionRefNodes;
 	private Set<Long> m_containedPcs;
 	
-	public FunctionContainer(InstructionNode startInstruction, 
-			Set<InstructionNode> functionInstructions,
-			Set<FunctionReferenceNode> functionRefNodes) {
+	FunctionContainer(CfgInstructionNode startInstruction, 
+			Set<CfgInstructionNode> functionInstructions,
+			Set<CfgFunctionReferenceNode> functionRefNodes) {
 		m_startInstruction = startInstruction;
 		m_functionRefNodes = functionRefNodes;
 		m_functionInstructions = functionInstructions;
-		m_cachedFunction = null;
 		m_functionName = "unnamed_function";
 		m_containedPcs = new NonIteratableSet<Long>();
 		
-		for(InstructionNode inst: m_functionInstructions){
-			m_containedPcs.add(inst.getPC());
+		for (CfgInstructionNode inst: m_functionInstructions) {
+			m_containedPcs.add(inst.getPc());
 		}
 	}
 
-	public InstructionNode getStartInstruction() {
+	public CfgInstructionNode getStartInstruction() {
 		return m_startInstruction;
 	}
 	
-	public Collection<Node> getFunctionContents() {
-		Collection<Node> contents = new IteratableSet<Node>();
+	public Collection<CfgNode> getFunctionContents() {
+		Collection<CfgNode> contents = new IteratableSet<CfgNode>();
 		contents.addAll(m_functionInstructions);
 		contents.addAll(m_functionRefNodes);
 		return contents;
 	}
 
-	public Set<FunctionReferenceNode> getFunctionReferenceNodes() {
+	public Set<CfgFunctionReferenceNode> getFunctionReferenceNodes() {
 		return m_functionRefNodes;
 	}
 	
-	public Set<InstructionNode> getFunctionInstructionNodes() {
+	public Set<CfgInstructionNode> getFunctionInstructionNodes() {
 		return m_functionInstructions;
 	}
 	
@@ -65,9 +59,9 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		return m_functionName;
 	}
 
-	public InstructionNode getInstruction(long pc) {
-		for(InstructionNode inst : m_functionInstructions){
-			if(inst.getPC() == pc){
+	public CfgInstructionNode getInstruction(long pc) {
+		for (CfgInstructionNode inst : m_functionInstructions) {
+			if (inst.getPc() == pc) {
 				return inst;
 			}
 		}
@@ -75,19 +69,8 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		return null;
 	}
 
-	public Node getCachedFunction(Engine engine) 
-	    throws AbortedException, MemoryMonitorException {
-		
-		if (m_cachedFunction == null){
-			StructuralAnalysisEngine sae = new StructuralAnalysisEngine(engine);			
-			m_cachedFunction = sae.createStructure(getControlFlow(), 
-					m_startInstruction, m_functionName); 
-		}
-		return m_cachedFunction;
-	}
-
 	public int compareTo(FunctionContainer o) {
-		return (int)Math.signum(this.getStartInstruction().getPC() - o.getStartInstruction().getPC());
+		return (int)Math.signum(this.getStartInstruction().getPc() - o.getStartInstruction().getPc());
 	}
 
 	public boolean containsPc(long pc) {
@@ -95,24 +78,24 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 	}
 	
 	public void dumpControlFlow(Console console) {
-		Set<Node> seen = new NonIteratableSet<Node>();
-		Set<Node> todo = new IteratableSet<Node>();
+		Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
+		Set<CfgNode> todo = new IteratableSet<CfgNode>();
 		
 		console.display("#from node " + m_startInstruction + "\n");
 		todo.add(m_startInstruction);
 		console.display("digraph g {\n");
 		
 		while (!todo.isEmpty()) {
-			Node currentNode = todo.iterator().next();
+			CfgNode currentNode = todo.iterator().next();
 			seen.add(currentNode);
-			if (currentNode instanceof FunctionReferenceNode) {
+			if (currentNode instanceof CfgFunctionReferenceNode) {
 				console.display("node" + currentNode.getId() + " [label=\""
 						+ currentNode
 						+ "\", fillcolor=red, style=filled, shape=box];\n");
 				
-			} else if (currentNode instanceof InstructionNode){				
+			} else if (currentNode instanceof CfgInstructionNode){				
 				console.display("node" + currentNode.getId() + " [label=\""
-						+ ((InstructionNode)currentNode).getXtaInstruction()
+						+ ((CfgInstructionNode)currentNode).getXtaInstruction()
 						+ "\", fillcolor=lightblue, style=filled, shape=box];\n");
 				
 			} else {
@@ -121,7 +104,7 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 						+ "\", style=filled, shape=box];\n");
 				
 			}
-			for (Node next : currentNode.getNextNodes()) {
+			for (CfgNode next : currentNode.getNextNodes()) {
 				console.display("node" + currentNode.getId() + " -> node"
 						+ next.getId() + "\n");
 				
@@ -134,15 +117,15 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 		console.display("}\n");
 	}	
 	
-	private Set<Node> getControlFlow() {
-		Set<Node> seen = new IteratableSet<Node>();
-		Set<Node> todo = new IteratableSet<Node>();
+	public Set<CfgNode> getControlFlow() {
+		Set<CfgNode> seen = new IteratableSet<CfgNode>();
+		Set<CfgNode> todo = new IteratableSet<CfgNode>();
 		
 		todo.add(m_startInstruction);
 		while (!todo.isEmpty()) {
-			Node currentNode = todo.iterator().next();
-			seen.add(currentNode);
-			for (Node next : currentNode.getNextNodes()) {
+			CfgNode currentNode = todo.iterator().next();
+			seen.add(currentNode);						
+			for (CfgNode next : currentNode.getNextNodes()) {
 				if (!seen.contains(next)) {
 					todo.add(next);
 				}
@@ -150,5 +133,5 @@ public class FunctionContainer implements Comparable<FunctionContainer> {
 			todo.remove(currentNode);
 		}
 		return seen;
-	}
+	}	
 }

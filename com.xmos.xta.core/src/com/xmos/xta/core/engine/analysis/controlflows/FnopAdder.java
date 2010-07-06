@@ -5,41 +5,42 @@ import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgBlockNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 
-class FnopAdder {
-	
+class FnopAdder {	
 	private Set<FunctionContainer> m_functionContainers;
 
-	public FnopAdder(Set<FunctionContainer> functionContainers) {
+	FnopAdder(Set<FunctionContainer> functionContainers) {
 		m_functionContainers = functionContainers;
 	}
 
-	public void process() {
+	void process() {
 		for(FunctionContainer fc : m_functionContainers){
-			Collection<Node> basicBlocks = new IteratableSet<Node>();
+			Collection<CfgNode> basicBlocks = new IteratableSet<CfgNode>();
 			reduceGraphToBasicBlocks(fc.getStartInstruction(), fc.getFunctionContents(), basicBlocks);
 			FnopAnalyzer fa = new FnopAnalyzer();
 			fa.analyze(basicBlocks);
 		}
 	}
 
-	private void reduceGraphToBasicBlocks(Node treeStart, Collection<Node> currentGraph, Collection<Node> basicBlocks) {
-		Set<Node> seen = new NonIteratableSet<Node>();
-		for (Node node : currentGraph) {
+	private void reduceGraphToBasicBlocks(CfgNode treeStart, 
+			Collection<CfgNode> currentGraph, Collection<CfgNode> basicBlocks) {
+		
+		Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
+		for (CfgNode node : currentGraph) {
 			if (!seen.contains(node)) {
-				if (node instanceof InstructionNode) {
+				if (node instanceof CfgInstructionNode) {
 					BasicBlockMatcher bbpm = new BasicBlockMatcher();
 					if (bbpm.match(node, treeStart, currentGraph)) {
-						BlockNode basicBlock = bbpm.getBlock();
+						CfgBlockNode basicBlock = bbpm.getBlock();
 						seen.addAll(basicBlock.getInstructionList());
 						basicBlocks.add(basicBlock);
 						treeStart = bbpm.getTreeStart();
 					}
-				} else if(node instanceof FunctionReferenceNode){
+				} else if (node instanceof CfgFunctionReferenceNode){
 					seen.add(node);
 					basicBlocks.add(node);
 				} 

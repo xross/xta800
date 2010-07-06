@@ -11,7 +11,7 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
@@ -23,20 +23,20 @@ class FunctionConstructor {
 	private Notifier m_notifier;
 	private CoreId m_coreId;
 	private CommandSource m_src;
-	private Set<InstructionNode> m_functionStarts;
-	private Set<InstructionNode> m_functionEnds;
+	private Set<CfgInstructionNode> m_functionStarts;
+	private Set<CfgInstructionNode> m_functionEnds;
 	private Sections m_sections;
 	private InstructionMnemonics m_mnenonics;
 	private SymbolTable m_symbolTable;
 
 	private static final int RAMBASE = 0x10000;
 
-	public FunctionConstructor(InstructionDecoder instructionDecoder, Notifier notifier, Sections sections,
+	FunctionConstructor(InstructionDecoder instructionDecoder, Notifier notifier, Sections sections,
 			CoreId coreId, CommandSource src, InstructionMnemonics mnenonics, SymbolTable symbolTable) {
 		m_instructionDecoder = instructionDecoder;
 		m_notifier = notifier;
-		m_functionStarts = new IteratableSet<InstructionNode>();
-		m_functionEnds = new NonIteratableSet<InstructionNode>();
+		m_functionStarts = new IteratableSet<CfgInstructionNode>();
+		m_functionEnds = new NonIteratableSet<CfgInstructionNode>();
 		m_sections = sections;
 		m_mnenonics = mnenonics;
 		m_coreId = coreId;
@@ -44,7 +44,7 @@ class FunctionConstructor {
 		m_symbolTable = symbolTable;
 	}
 
-	public boolean process() {
+	boolean process() {
 
 		addBranchTargetsToFunctionStarts();
 		addThreadStartsToFunctionStarts();
@@ -60,11 +60,19 @@ class FunctionConstructor {
 		return ensureAtLeastOneStartExists();
 	}
 
+	Set<CfgInstructionNode> getFunctionStarts() {
+		return m_functionStarts;
+	}
+
+	Set<CfgInstructionNode> getFunctionEnds() {
+		return m_functionEnds;
+	}
+	
 	private void addUnreachableFunctionStarts() {		
 		for (String functionName : m_symbolTable.getFunctionNames()){
 			
 			long functionPc = m_symbolTable.symbolAddress(functionName);
-			InstructionNode threadNode = m_instructionDecoder.getNode(functionPc);
+			CfgInstructionNode threadNode = m_instructionDecoder.getNode(functionPc);
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
 			} else {
@@ -74,19 +82,11 @@ class FunctionConstructor {
 		}
 	}
 
-	public Set<InstructionNode> getFunctionStarts(){
-		return m_functionStarts;
-	}
-
-	public Set<InstructionNode> getFunctionEnds(){
-		return m_functionEnds;
-	}
-
 	private boolean ensureAtLeastOneStartExists() {
 		if (m_functionStarts.isEmpty()){
 			m_notifier.notify(m_src, Notifier.NOTIFY_WARNING,
 						"failed to find any timable code defaulting to ram base at PC 0x" + Long.toHexString(RAMBASE));
-			InstructionNode threadNode = m_instructionDecoder.getNode(RAMBASE);
+			CfgInstructionNode threadNode = m_instructionDecoder.getNode(RAMBASE);
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
 			} else {
@@ -98,12 +98,12 @@ class FunctionConstructor {
 	}
 
 	private void addBranchTargetsToFunctionStarts(){
-		for (InstructionNode i : m_instructionDecoder.getInstructions()){
+		for (CfgInstructionNode i : m_instructionDecoder.getInstructions()){
 			if (i.getXtaInstruction().getBranchLink()){
 				
 				if (i.getXtaInstruction().getBranchPcRelative()){
 					long pc = i.getXtaInstruction().getBranchPcRelativeTargetPc();
-					InstructionNode threadNode = m_instructionDecoder.getNode(pc);
+					CfgInstructionNode threadNode = m_instructionDecoder.getNode(pc);
 					if (threadNode != null) {
 						m_functionStarts.add(threadNode);
 					} else {
@@ -120,7 +120,7 @@ class FunctionConstructor {
 	
 	private void addUserBranchTargetsToFunctionStarts(){
 		Map<Reference, Set<BranchInfo>> branchMap = m_sections.getBranches(m_coreId);	
-		for(InstructionNode instruction : m_instructionDecoder.getInstructions()){
+		for(CfgInstructionNode instruction : m_instructionDecoder.getInstructions()){
 			XtaInstruction inst = instruction.getXtaInstruction();
 			if(inst.isLink()){
 				for (Reference ref : branchMap.keySet()) {
@@ -136,10 +136,9 @@ class FunctionConstructor {
 		}
 	}
 
-	private void addThreadStartsToFunctionStarts(){
-		
+	private void addThreadStartsToFunctionStarts() {	
 		for (long pc : m_sections.getThreadStartPoints(m_coreId)) {
-			InstructionNode threadNode = m_instructionDecoder.getNode(pc);
+			CfgInstructionNode threadNode = m_instructionDecoder.getNode(pc);
 			
 			if (threadNode != null) {
 				m_functionStarts.add(threadNode);
@@ -151,9 +150,9 @@ class FunctionConstructor {
 		return;
 	}
 
-	private void addThreadStopsToFunctionEnds(){
+	private void addThreadStopsToFunctionEnds() {
 		for (long pc : m_sections.getThreadStopPoints(m_coreId)) {
-			InstructionNode threadNode = m_instructionDecoder.getNode(pc);
+			CfgInstructionNode threadNode = m_instructionDecoder.getNode(pc);
 			if (threadNode != null) {
 				m_functionEnds.add(threadNode);
 				threadNode.setUnresolved(true);
@@ -165,17 +164,17 @@ class FunctionConstructor {
 		return;
 	}
 
-	private void addRetspsToFunctionEnds(){
-		for(InstructionNode i : m_instructionDecoder.getInstructions()){
+	private void addRetspsToFunctionEnds() {
+		for(CfgInstructionNode i : m_instructionDecoder.getInstructions()){
 			if(i.getXtaInstruction().getReturn()){
 				m_functionEnds.add(i);
 			}
 		}
 	}
 
-	private void addHaltsToFunctionEnds(){
+	private void addHaltsToFunctionEnds() {
 		boolean previousInstructionWasClre = true;
-		for(InstructionNode i : m_instructionDecoder.getInstructions()){
+		for(CfgInstructionNode i : m_instructionDecoder.getInstructions()){
 			if( m_mnenonics.isFreet(i.getXtaInstruction())){
 				m_functionEnds.add(i);
 			}
@@ -185,5 +184,4 @@ class FunctionConstructor {
 			previousInstructionWasClre = m_mnenonics.isClre(i.getXtaInstruction());
 		}
 	}
-
 }

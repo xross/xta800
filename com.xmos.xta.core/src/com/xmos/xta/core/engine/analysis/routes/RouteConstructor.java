@@ -20,20 +20,23 @@ import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
+import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
+import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
-import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.defines.FunctionTimeInfo;
 import com.xmos.xta.core.engine.defines.InstructionTimeInfo;
@@ -58,22 +61,26 @@ public class RouteConstructor {
 	}
 
 	private ControlFlow m_controlFlow;
+	private CachedFunctionMap m_cachedFunctionMap;
 	private List<Route> m_routes;
 	private Engine m_engine;
 	private RouteCoreContainer m_coreContainer;
 	private CoreId m_core;
 	
-	public static List<StackNode> getPathStackNodes(Engine engine, 
-			ControlFlow controlFlow, Reference reference) 
-            throws AbortedException, MemoryMonitorException {
+	public static List<StackNode> getPathStackNodes(ControlFlow controlFlow, 
+			CachedFunctionMap cachedFunctionMap, Reference reference) 
+			throws AbortedException, MemoryMonitorException {
 		
-	    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher();
-	    return prm.matchReference(controlFlow, reference, engine);
+	    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher(controlFlow, cachedFunctionMap);
+	    return prm.matchReference(reference);
     }
 	
-	public RouteConstructor(Engine engine, ControlFlow controlFlow,
-			RouteCoreContainer routeCoreContainer, CoreId core) throws AbortedException {
+	public RouteConstructor(Engine engine, ControlFlow controlFlow, 
+			CachedFunctionMap cachedFunctionMap, RouteCoreContainer routeCoreContainer, 
+			CoreId core) throws AbortedException {
+		
 		m_controlFlow = controlFlow;
+		m_cachedFunctionMap = cachedFunctionMap;
 		m_routes = new ArrayList<Route>();
 		m_engine = engine;
 		m_coreContainer = routeCoreContainer;	
@@ -88,7 +95,7 @@ public class RouteConstructor {
 		m_engine.provideFeedback("Starting analysis...");
 		
 		List<StackNode> branchStackNodes = new LinkedList<StackNode>();
-		Map<StackNode, Set<Node>> branchToNext = new IteratableMap<StackNode, Set<Node>>();
+		Map<StackNode, Set<CfgNode>> branchToNext = new IteratableMap<StackNode, Set<CfgNode>>();
 		buildBranchStackNodes(branchStackNodes, branchToNext);
 
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
@@ -127,30 +134,30 @@ public class RouteConstructor {
 	}
 	
 	private void analyzeFunction(CommandSource src, List<StackNode> branchStackNodes, 
-			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
+			Map<StackNode, Set<CfgNode>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 				
 		List<StackNode> startStackNodes = getPathStackNodes(
-				m_engine, m_controlFlow, m_coreContainer.getFromReference());
+				m_controlFlow, m_cachedFunctionMap, m_coreContainer.getFromReference());
 		
 		for (StackNode startStackNode : startStackNodes) {
-			for (Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
+			for (Stack<CfgFunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
 
 				FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, 
 						branchStackNodes, true, branchToNext).first;
 
-				updateRoutes(src, newFunction, stack);
+				updateRoutes(src, newFunction);
 			}
 		}
 	}
 	
 	private void analyzeLoop(CommandSource src, List<StackNode> branchStackNodes, 
-			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
+			Map<StackNode, Set<CfgNode>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		List<StackNode> loopStartStackNodes = new ArrayList<StackNode>();
 		
-		RouteLoopConversion converter = new RouteLoopConversion(m_engine, m_controlFlow);
+		RouteLoopConversion converter = new RouteLoopConversion(m_controlFlow, m_cachedFunctionMap);
 		converter.updateLoopStackNodes(m_coreContainer.getFromReference(), loopStartStackNodes, exclusionStackNodes);
 		
 		analyzePath(src, branchToNext, branchStackNodes, 
@@ -158,15 +165,15 @@ public class RouteConstructor {
 	}
 	
 	private void analyzeEndpoints(CommandSource src, List<StackNode> branchStackNodes, 
-			Map<StackNode, Set<Node>> branchToNext, List<StackNode> exclusionStackNodes) 
+			Map<StackNode, Set<CfgNode>> branchToNext, List<StackNode> exclusionStackNodes) 
 	    throws AbortedException, MemoryMonitorException {
 						
 		List<StackNode> startStackNodes = getPathStackNodes(
-				m_engine, m_controlFlow, m_coreContainer.getFromReference());
-		
+				m_controlFlow, m_cachedFunctionMap, m_coreContainer.getFromReference());
+
 		List<StackNode> endStackNodes = new LinkedList<StackNode>();
 		for (Reference end : m_coreContainer.getToReferences()) {			
-			endStackNodes.addAll(getPathStackNodes(m_engine, m_controlFlow, end));
+			endStackNodes.addAll(getPathStackNodes(m_controlFlow, m_cachedFunctionMap, end));
 		}
 		
 		analyzePath(src, branchToNext, branchStackNodes, 
@@ -174,49 +181,49 @@ public class RouteConstructor {
 	}
 	
 	private void analyzePath(CommandSource src, 
-			Map<StackNode, Set<Node>> branchToNext, 
+			Map<StackNode, Set<CfgNode>> branchToNext, 
 			List<StackNode> branchStackNodes, 
 			List<StackNode> exclusionStackNodes,
 			List<StackNode> startStackNodes,
 			List<StackNode> endStackNodes) throws AbortedException, MemoryMonitorException {
 		
 		for (StackNode startStackNode : startStackNodes) {
-			for (Stack<FunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
+			for (Stack<CfgFunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
 				
 				Node node = makeEndpoints(stack, startStackNode.getInstruction(), 
 						endStackNodes, exclusionStackNodes, branchStackNodes, branchToNext);
 
-				updateRoutes(src, node, stack);
+				updateRoutes(src, node);
 			}
 		}
 	}
 	
-	private void updateRoutes(CommandSource src, Node node, Stack<FunctionReferenceNode> stack) {
+	private void updateRoutes(CommandSource src, Node node) {
 		if (node != null) {
 			setParent(node);
 			if (!alreadyContainRoute(node)) {
-				Route route = new Route(src, m_engine, stack, node, m_coreContainer);
+				Route route = new Route(src, m_engine, node, m_coreContainer);
 				m_routes.add(route);
 			}
 		}		
 	}
 	
 	private void buildBranchStackNodes(List<StackNode> branchStackNodes,
-			Map<StackNode, Set<Node>> branchToNext) 
+			Map<StackNode, Set<CfgNode>> branchToNext) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		for(Reference ref : m_engine.getUserBranches().keySet()){
-			List<StackNode> stackNodes = getPathStackNodes(m_engine, m_controlFlow, ref);
+			List<StackNode> stackNodes = getPathStackNodes(m_controlFlow, m_cachedFunctionMap, ref);
 			branchStackNodes.addAll(stackNodes);
 			for(StackNode sn : stackNodes){
-				branchToNext.put(sn, new IteratableSet<Node>());
-				
+				branchToNext.put(sn, new IteratableSet<CfgNode>());
+
 				for(Reference next : m_engine.getUserBranches().get(ref)){
-					for(StackNode nextStackNode : getPathStackNodes(m_engine, m_controlFlow, next)){
+					for(StackNode nextStackNode : getPathStackNodes(m_controlFlow, m_cachedFunctionMap, next)){
 						if(sn.getInstruction().getXtaInstruction().isLink()){
-							for(Node nextFrn : sn.getInstruction().getNextNodes()){
-								if(nextFrn instanceof FunctionReferenceNode){
-									FunctionReferenceNode frn = (FunctionReferenceNode)nextFrn;
+							for(CfgNode nextFrn : sn.getInstruction().getNextNodes()){
+								if(nextFrn instanceof CfgFunctionReferenceNode){
+									CfgFunctionReferenceNode frn = (CfgFunctionReferenceNode)nextFrn;
 									if(frn.getFunctionStartInstruction() == nextStackNode.getInstruction()){
 										branchToNext.get(sn).add(frn);	
 									}
@@ -235,31 +242,33 @@ public class RouteConstructor {
 		for (ExclusionInfo info : m_engine.getExclusions()) {
 			Reference ref = info.getReference();
 			if (ref.getCoreId().equals(m_core)) {
-				exclusionStackNodes.addAll(getPathStackNodes(m_engine, m_controlFlow, ref));
+				exclusionStackNodes.addAll(getPathStackNodes(m_controlFlow, m_cachedFunctionMap, ref));
 			}
 		}
 	}
 		
-	private Pair<FunctionNode, Boolean> makeFunction(Stack<FunctionReferenceNode> currentStack, List<StackNode> exclusionStackNodes, 
-			List<StackNode> branchStackNodes, boolean start, Map<StackNode, Set<Node>> branchToNext) 
+	private Pair<FunctionNode, Boolean> makeFunction(
+			Stack<CfgFunctionReferenceNode> currentStack, 
+			List<StackNode> exclusionStackNodes, 
+			List<StackNode> branchStackNodes, boolean start, 
+			Map<StackNode, Set<CfgNode>> branchToNext) 
 		throws AbortedException, MemoryMonitorException {
 		
 		List<StackNode> endStackNodes = getFunctionEndStackNodes(currentStack);
 		
-		//find unresolved instructions
-		FunctionReferenceNode fnRef = currentStack.peek();
+		CfgFunctionReferenceNode fnRef = currentStack.peek();
 		
-		if(!fnRef.isKnownFunction()){
+		if (!fnRef.isKnownFunction()) {
 			return new Pair<FunctionNode, Boolean>(new FunctionNode(), false);
 		}
-		InstructionNode startInst = fnRef.getStartInstruction();
+		CfgInstructionNode startInst = fnRef.getFunctionStartInstruction();
 
-		Set<Node> workingSet = new IteratableSet<Node>();
-		Set<Node> currentExclusionsFound = new IteratableSet<Node>();
-		Map<NodeDescriptor, Node> nodeToWorkingSet = new IteratableMap<NodeDescriptor, Node>();
+		Set<CfgNode> workingSet = new IteratableSet<CfgNode>();
+		Set<CfgNode> currentExclusionsFound = new IteratableSet<CfgNode>();
+		Map<NodeDescriptor, CfgNode> nodeToWorkingSet = new IteratableMap<NodeDescriptor, CfgNode>();
 		
 		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
-		Set<Node> loopFormingEndNodes = new NonIteratableSet<Node>();
+		Set<CfgNode> loopFormingEndNodes = new NonIteratableSet<CfgNode>();
 		
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound, RouteMode.FUNCTION,
@@ -267,39 +276,47 @@ public class RouteConstructor {
 
 		removeExclusionBranches(workingSet, currentExclusionsFound, loopFormingEndNodes);
 
-		if(workingSet.isEmpty()){
+		if (workingSet.isEmpty()) {
 			return new Pair<FunctionNode, Boolean>(null, false);
 		}
 		
 		//if working set contains an end node then we will continue else we wont
 		boolean continueAfterFunction = true;
 		
-		for(StackNode sn : endStackNodes){
-			for(Node node : workingSet){
-				if(node instanceof InstructionNode){
-					if(((InstructionNode)node).getXtaInstruction() == sn.getInstruction().getXtaInstruction()){
+		for (StackNode sn : endStackNodes) {
+			for (CfgNode node : workingSet) {
+				if (node instanceof CfgInstructionNode) {
+					if (((CfgInstructionNode)node).getXtaInstruction() == sn.getInstruction().getXtaInstruction()) {
 						continueAfterFunction = true;
 						break;
 					}
 				}
 			}
 		}
-		
+
 		Node node = convertGraphToStructure(workingSet, startNodeDescriptor, nodeToWorkingSet);
 
-		return new Pair<FunctionNode, Boolean>(new FunctionNode(node, fnRef), continueAfterFunction);
+		return new Pair<FunctionNode, Boolean>(
+				new FunctionNode(node, 
+				    fnRef.getFunctionName(), 
+				    fnRef.getFunctionCallPc()), 
+				    continueAfterFunction);
 	}
-	
-	private Node makeEndpoints(Stack<FunctionReferenceNode> currentStack, InstructionNode startInst, List<StackNode> endStackNodes,
-			List<StackNode> exclusionStackNodes, List<StackNode> branchStackNodes, Map<StackNode, Set<Node>> branchToNext) 
+
+	private Node makeEndpoints(Stack<CfgFunctionReferenceNode> currentStack, 
+			CfgInstructionNode startInst, 
+			List<StackNode> endStackNodes,
+			List<StackNode> exclusionStackNodes, 
+			List<StackNode> branchStackNodes, 
+			Map<StackNode, Set<CfgNode>> branchToNext) 
 	    throws AbortedException, MemoryMonitorException {
 
-		Set<Node> workingSet = new IteratableSet<Node>();
-		Set<Node> currentExclusionsFound = new IteratableSet<Node>();
+		Set<CfgNode> workingSet = new IteratableSet<CfgNode>();
+		Set<CfgNode> currentExclusionsFound = new IteratableSet<CfgNode>();
 
-		Map<NodeDescriptor, Node> nodeToWorkingSet = new IteratableMap<NodeDescriptor, Node>();
+		Map<NodeDescriptor, CfgNode> nodeToWorkingSet = new IteratableMap<NodeDescriptor, CfgNode>();
 		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
-		Set<Node> loopFormingEndNodes = new NonIteratableSet<Node>();
+		Set<CfgNode> loopFormingEndNodes = new NonIteratableSet<CfgNode>();
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound,
 				RouteMode.ENDPOINTS, endStackNodes, nodeToWorkingSet, loopFormingEndNodes, true, branchStackNodes, branchToNext);
@@ -314,19 +331,19 @@ public class RouteConstructor {
 	}
 
 	private void findReachableGraph(
-			Node previous,
-			Stack<FunctionReferenceNode> currentStack, 
-			Node node,
-			Set<Node> workingSet,
+			CfgNode previous,
+			Stack<CfgFunctionReferenceNode> currentStack, 
+			CfgNode node,
+			Set<CfgNode> workingSet,
 			List<StackNode> exclusionStackNodes,
-			Set<Node> currentExclusionsFound,
+			Set<CfgNode> currentExclusionsFound,
 			RouteMode routeMode,
 			List<StackNode> endStackNodes,
-			Map<NodeDescriptor, Node> nodeToWorkingSet, 
-			Set<Node> loopFormingEndNodes,
+			Map<NodeDescriptor, CfgNode> nodeToWorkingSet, 
+			Set<CfgNode> loopFormingEndNodes,
 			boolean firstInstruction, 
 			List<StackNode> branchStackNodes, 
-			Map<StackNode, Set<Node>> branchToNext)
+			Map<StackNode, Set<CfgNode>> branchToNext)
 	throws AbortedException, MemoryMonitorException {
 		
 		boolean repeat = true;
@@ -334,69 +351,75 @@ public class RouteConstructor {
 			
 			repeat = false;
 			
-			Node currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
+			CfgNode currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
 			//System.out.println("on node " + currentNode);
 			
-			if(stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
+			if (stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
 				currentExclusionsFound.add(currentNode);
 				addToWorkingSet(previous, currentNode, workingSet);
 				return;
 			}
 			
-			if(node instanceof FunctionReferenceNode){
-				FunctionReferenceNode frn = ((FunctionReferenceNode)node);
+			if (node instanceof CfgFunctionReferenceNode) {
+				CfgFunctionReferenceNode frn = ((CfgFunctionReferenceNode)node);
 				
-				List<InstructionNode> functionCallInstructions = new LinkedList<InstructionNode>();
-				for(FunctionReferenceNode f : currentStack){
+				List<CfgInstructionNode> functionCallInstructions = new LinkedList<CfgInstructionNode>();
+				for (CfgFunctionReferenceNode f : currentStack) {
 					functionCallInstructions.add(f.getFunctionStartInstruction());
 				}
-				
-				if(functionCallInstructions.contains(frn.getFunctionStartInstruction())){
+
+				if (functionCallInstructions.contains(frn.getFunctionStartInstruction())) {
 					//recursion detected
 					FunctionNode fn = new FunctionNode(frn.getFunctionName());
-					currentNode = fn;
-					previous.setFormsRecursion(true);
+					CfgContainerNode cn = new CfgContainerNode(fn);
+					currentNode = cn;
+					previous.setRecursive(true);
 					loopFormingEndNodes.add(previous);
 					return;
 
 				} else {
 					boolean endPointsWithin = false; 
 					for(StackNode endStackNode : endStackNodes){
-						for(Stack<FunctionReferenceNode> stack : endStackNode.getNodeStacks()){
+						for(Stack<CfgFunctionReferenceNode> stack : endStackNode.getNodeStacks()){
 							if(stack.contains(node)){
 								endPointsWithin = true;
 							}
 						}
 					}
 					
-					Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
+					Stack<CfgFunctionReferenceNode> newStack = new Stack<CfgFunctionReferenceNode>();
 					newStack.addAll(currentStack);
 					newStack.add(frn);
 					
-					if(endPointsWithin){
-						InstructionNode inst = frn.getFunctionStartInstruction();
+					if (endPointsWithin) {
+						CfgInstructionNode inst = frn.getFunctionStartInstruction();
 						
 						findReachableGraph(previous, newStack, inst, workingSet,
 								exclusionStackNodes, currentExclusionsFound, routeMode,
 								endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
 						return;
+						
 					} else {
 						FunctionNode fn = null;
+						CfgContainerNode cn = null;
 						boolean continueAnalysis = false;
-						if(frn.isKnownFunction()){
+						if (frn.isKnownFunction()){
 							Pair<FunctionNode, Boolean> fnReturn = makeFunction(newStack, exclusionStackNodes, branchStackNodes, false, branchToNext);
 							continueAnalysis = fnReturn.second;
 							fn = fnReturn.first;
-						} else {
-							fn = new FunctionNode();
-						}
-						
-						if(fn != null ){
-							if(continueAnalysis){
-								currentNode = fn;
+							cn = new CfgContainerNode(fn);
 							
 						} else {
-								currentNode = fn;
+							fn = new FunctionNode();
+							cn =  new CfgContainerNode(fn);
+						}
+						
+						if (fn != null) {
+							if (continueAnalysis) {
+								currentNode = cn;
+							
+						} else {
+								currentNode = cn;
 								addToWorkingSet(previous, currentNode, workingSet);
 								loopFormingEndNodes.add(currentNode);
 								return;
@@ -409,7 +432,7 @@ public class RouteConstructor {
 						}
 					}
 				}
-			} else if(currentNode.isUnresolved()){
+			} else if (currentNode.getUnresolved()){
 				addToWorkingSet(previous, currentNode, workingSet);
 				return;
 				
@@ -429,7 +452,7 @@ public class RouteConstructor {
 				
 			addToWorkingSet(previous, currentNode, workingSet);
 			
-			Set<Node> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
+			Set<CfgNode> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
 			//System.out.println("currentNode: " + currentNode + " nexts: " + nextNodes);
 			
 			if (nextNodes.size() == 0) {
@@ -442,9 +465,9 @@ public class RouteConstructor {
 					return;					
 				}				
 								
-				FunctionReferenceNode callingFnRef = currentStack.peek();
-				for(Node followingFunction : callingFnRef.getNextNodes()){
-					Stack<FunctionReferenceNode> newStack = new Stack<FunctionReferenceNode>();
+				CfgFunctionReferenceNode callingFnRef = currentStack.peek();
+				for(CfgNode followingFunction : callingFnRef.getNextNodes()){
+					Stack<CfgFunctionReferenceNode> newStack = new Stack<CfgFunctionReferenceNode>();
 					newStack.addAll(currentStack);
 					newStack.pop();
 					findReachableGraph(currentNode, newStack, followingFunction, workingSet,
@@ -453,8 +476,8 @@ public class RouteConstructor {
 					 
 				}
 			} else if(nextNodes.size() == 1){
-				Node next = nextNodes.iterator().next();
-				Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
+				CfgNode next = nextNodes.iterator().next();
+				CfgNode nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
 				if(nextWorkingSetNode == null){
 					previous = currentNode;
 					node = next;
@@ -462,13 +485,10 @@ public class RouteConstructor {
 					repeat = true;
 				} else {
 					boolean connected = false;
-					if(routeMode == RouteMode.FUNCTION || 
-							(!stackNodesContainNode(endStackNodes, currentStack, next) &&
-									
-									!stackNodesContainNode(exclusionStackNodes, currentStack, next)
-							//true		
-							)){
-						CommonMethods.connect(nextWorkingSetNode, currentNode);
+					if (routeMode == RouteMode.FUNCTION || 
+						(!stackNodesContainNode(endStackNodes, currentStack, next) &&									
+						 !stackNodesContainNode(exclusionStackNodes, currentStack, next))){
+						CfgNode.connect(nextWorkingSetNode, currentNode);
 						connected = true;
 					}
 					if(stackNodesContainNode(endStackNodes, currentStack, next) && ! connected){
@@ -477,8 +497,8 @@ public class RouteConstructor {
 					} 
 				}
 			} else if(nextNodes.size() > 1){
-				for(Node next : nextNodes){
-					Node nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
+				for(CfgNode next : nextNodes){
+					CfgNode nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
 					if(nextWorkingSetNode == null){
 						findReachableGraph(currentNode, currentStack, next, workingSet,
 								exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
@@ -486,7 +506,7 @@ public class RouteConstructor {
 					} else {
 						boolean connected = false;
 						if(routeMode == RouteMode.FUNCTION || !stackNodesContainNode(endStackNodes, currentStack, next)){
-							CommonMethods.connect(nextWorkingSetNode, currentNode);
+							CfgNode.connect(nextWorkingSetNode, currentNode);
 							connected = true;
 						}
 						if(stackNodesContainNode(endStackNodes, currentStack, next) && ! connected){
@@ -499,29 +519,28 @@ public class RouteConstructor {
 		}
 	}
 	
-	private void connectToNullNode(Node currentNode,
-			Set<Node> workingSet) {
+	private void connectToNullNode(CfgNode currentNode,
+			Set<CfgNode> workingSet) {
 		//search the working set for a null node
-		NullNode nullNode = null;
+		CfgNullNode nullNode = null;
 		
-		for(Node node : workingSet){
-			if(node instanceof NullNode){
-				nullNode = (NullNode) node;
+		for(CfgNode node : workingSet){
+			if(node instanceof CfgNullNode){
+				nullNode = (CfgNullNode)node;
 				break;
 			}
 		}
-		if(nullNode == null){
-			nullNode = new NullNode();
-		}
-		
+		if (nullNode == null) {
+			nullNode = new CfgNullNode();
+		}		
 		addToWorkingSet(currentNode, nullNode, workingSet);
 	}
 
-	private Set<Node> getValidBranches(List<StackNode> branchStackNodes,
-			Stack<FunctionReferenceNode> currentStack, Node node, 
-			Map<StackNode, Set<Node>> branchToNext) {
+	private Set<CfgNode> getValidBranches(List<StackNode> branchStackNodes,
+			Stack<CfgFunctionReferenceNode> currentStack, CfgNode node, 
+			Map<StackNode, Set<CfgNode>> branchToNext) {
 
-		Set<Node> validNextNodes = new IteratableSet<Node>();
+		Set<CfgNode> validNextNodes = new IteratableSet<CfgNode>();
 		
 		validNextNodes.addAll(node.getNextNodes());
 		
@@ -561,13 +580,13 @@ public class RouteConstructor {
 		return nodeList;
 	}
 
-	private Node convertGraphToStructure(Set<Node> workingSet, NodeDescriptor startNodeDescriptor,
-			Map<NodeDescriptor, Node> nodeToWorkingSet) 
+	private Node convertGraphToStructure(Set<CfgNode> workingSet, NodeDescriptor startNodeDescriptor,
+			Map<NodeDescriptor, CfgNode> nodeToWorkingSet) 
 	    throws AbortedException, MemoryMonitorException {
 		
-		Node originalStartNode = null;
-		for(NodeDescriptor nd : nodeToWorkingSet.keySet()){
-			if(startNodeDescriptor.equals(nd) && workingSet.contains(nodeToWorkingSet.get(nd))){
+		CfgNode originalStartNode = null;
+		for (NodeDescriptor nd : nodeToWorkingSet.keySet()) {
+			if (startNodeDescriptor.equals(nd) && workingSet.contains(nodeToWorkingSet.get(nd))) {
 				originalStartNode = nodeToWorkingSet.get(nd);
 				break;
 			}
@@ -581,23 +600,23 @@ public class RouteConstructor {
 	}
 
 	//TODO clean up the next two functions
-	private List<StackNode> getFunctionEndStackNodes(Stack<FunctionReferenceNode> stack) {
+	private List<StackNode> getFunctionEndStackNodes(Stack<CfgFunctionReferenceNode> stack) {
 		List<StackNode> endStacks = new LinkedList<StackNode>();
-		Set<Node> seen = new NonIteratableSet<Node>();
-		Set<InstructionNode> endNodes = new IteratableSet<InstructionNode>();
-		Set<Node> following = new IteratableSet<Node>();
+		Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
+		Set<CfgInstructionNode> endNodes = new IteratableSet<CfgInstructionNode>();
+		Set<CfgNode> following = new IteratableSet<CfgNode>();
 		following.add(stack.peek().getFunctionStartInstruction());
 		while(!following.isEmpty()){
-			Node current = following.iterator().next();
+			CfgNode current = following.iterator().next();
 			seen.add(current);
 			if(current.getNextNodesSize() == 0){
-				if(current instanceof InstructionNode){
-					endNodes.add((InstructionNode)current);
+				if(current instanceof CfgInstructionNode){
+					endNodes.add((CfgInstructionNode)current);
 				} else {
 					assert(false);
 				}
 			} else {
-				for(Node next : current.getNextNodes()){
+				for(CfgNode next : current.getNextNodes()){
 					if(!seen.contains(next)){
 						following.add(next);
 					}
@@ -605,8 +624,8 @@ public class RouteConstructor {
 			}
 			following.remove(current);
 		}
-		for(InstructionNode endInst : endNodes){
-			List<Stack<FunctionReferenceNode>> stacks = new LinkedList<Stack<FunctionReferenceNode>>();
+		for(CfgInstructionNode endInst : endNodes){
+			List<Stack<CfgFunctionReferenceNode>> stacks = new LinkedList<Stack<CfgFunctionReferenceNode>>();
 			stacks.add(stack);
 			StackNode end = new StackNode(endInst, stacks);
 			endStacks.add(end);
@@ -614,27 +633,31 @@ public class RouteConstructor {
 		return endStacks;
 	}
 
-	private void removeExclusionBranches(Set<Node> workingSet,
-			Set<Node> currentExclusions, Set<Node> endNodes) {
+	private void removeExclusionBranches(
+			Set<CfgNode> workingSet,
+			Set<CfgNode> currentExclusions, 
+			Set<CfgNode> endNodes) {
+		
 		while(!currentExclusions.isEmpty()){
-			Node current = currentExclusions.iterator().next();
+			CfgNode current = currentExclusions.iterator().next();
 
 			while(true){
 
-				if(endNodes.contains(current)){
+				if (endNodes.contains(current)) {
 					break;
-				} else if(current.getPrevNodes().size() == 1){
-					Node prev = current.getPrevNodes().iterator().next();
-					CommonMethods.disconnect(current, prev);
+					
+				} else if (current.getPrevNodes().size() == 1) {
+					CfgNode prev = current.getPrevNodes().iterator().next();
+					CfgNode.disconnect(current, prev);
 					workingSet.remove(current);
-					if(prev.getNextNodes().size() == 0){
+					if (prev.getNextNodes().size() == 0){
 						current = prev;
 					} else {
 						break;
 					}
 
 				} else if(current.getPrevNodes().size() > 1){
-					for(Node prev : current.getPrevNodes()){
+					for(CfgNode prev : current.getPrevNodes()){
 						prev.removeNextNode(current);
 
 						if(prev.getNextNodes().size() == 0){
@@ -643,6 +666,7 @@ public class RouteConstructor {
 					}
 					workingSet.remove(current);
 					break;
+					
 				} else {
 					workingSet.remove(current);
 					break;
@@ -652,33 +676,41 @@ public class RouteConstructor {
 		}
 	}
 
-	private Node containsNode(Node next, Stack<FunctionReferenceNode> currentStack, Map<NodeDescriptor, Node> nodeToWorkingSet){
+	private CfgNode containsNode(CfgNode next, Stack<CfgFunctionReferenceNode> currentStack, 
+			Map<NodeDescriptor, CfgNode> nodeToWorkingSet){
+		
 		NodeDescriptor nd = new NodeDescriptor(next, currentStack);
 		return nodeToWorkingSet.get(nd);
 	}
 
-	private Node getCurrentNode(Stack<FunctionReferenceNode> currentStack,
-			Node node, Map<NodeDescriptor, Node> nodeToWorkingSet) throws AbortedException {
+	private CfgNode getCurrentNode(Stack<CfgFunctionReferenceNode> currentStack,
+			CfgNode node, Map<NodeDescriptor, CfgNode> nodeToWorkingSet) 
+	    throws AbortedException {
+		
 		NodeDescriptor nd = new NodeDescriptor(node, currentStack);
-		if(nodeToWorkingSet.containsKey(nd)){
+		if (nodeToWorkingSet.containsKey(nd)){
 			return nodeToWorkingSet.get(nd);
+
 		} else {
-			Node copy = node.copyRouteStructure(m_engine);
-			nodeToWorkingSet.put(nd, copy);
-			return copy;
+			assert((node instanceof CfgInstructionNode) || 
+				   (node instanceof CfgFunctionReferenceNode));
+			
+			CfgNode clone = node.clone();
+			nodeToWorkingSet.put(nd, clone);
+			return clone;
 		}
 	}
 
-	private boolean stackNodesContainNode(List<StackNode> stackNodes, Stack<FunctionReferenceNode> currentStack, Node currentNode){
-		if(!(currentNode instanceof InstructionNode)){
+	private boolean stackNodesContainNode(List<StackNode> stackNodes, 
+			Stack<CfgFunctionReferenceNode> currentStack, CfgNode currentNode){
+		
+		if (!(currentNode instanceof CfgInstructionNode)) {
 			return false;
 		}
-		for(StackNode stackNode : stackNodes){
-			if(stackNode.getInstruction().equals(currentNode)){
-			//if(stackNode.getInstruction().getPC() == ((InstructionNode)currentNode).getPC()){
-				for(Stack<FunctionReferenceNode> nodeStack : stackNode.getNodeStacks()){
-					if(nodeStack.equals(currentStack)){
-						
+		for (StackNode stackNode : stackNodes) {
+			if (stackNode.getInstruction().equals(currentNode)) {
+				for (Stack<CfgFunctionReferenceNode> nodeStack : stackNode.getNodeStacks()) {
+					if (nodeStack.equals(currentStack)) {						
 						return true;
 					}
 				}
@@ -687,30 +719,29 @@ public class RouteConstructor {
 		return false;
 	}
 
-	private void addToWorkingSet(Node parent, Node currentNode, Set<Node> workingSet) {
-		if(parent!= null){
-			CommonMethods.connect(currentNode, parent);
-		}
-		
+	private void addToWorkingSet(CfgNode parent, CfgNode currentNode, Set<CfgNode> workingSet) {
+		if (parent!= null) {
+			CfgNode.connect(currentNode, parent);
+		}		
 		workingSet.add(currentNode);
 	}
 
-	private void dumpGraph(Set<Node> workingSet) {
-		if(!debug_route) return;
+	private void dumpGraph(Set<CfgNode> workingSet) {
+		if (!debug_route) return;
 		System.out.print("digraph g {");
-		for(Node node : workingSet){
-			if(node instanceof InstructionNode){
-				System.out.print("node" +node.getId() + " [label=\"" + ((InstructionNode)node).getXtaInstruction() + "\"];");
+		for (CfgNode node : workingSet) {
+			if (node instanceof CfgInstructionNode){
+				System.out.print("node" +node.getId() + " [label=\"" + ((CfgInstructionNode)node).getXtaInstruction() + "\"];");
 			} else {
 				System.out.print("node" +node.getId() + " [label=\"" + node + "\"];");
 			}
-			for(Node next : node.getNextNodes()){
+			for(CfgNode next : node.getNextNodes()){
 				System.out.print("node" +node.getId() + " -> node" + next.getId() + ";");
 				if(!workingSet.contains(next)){
 					System.out.print("node" +next.getId() + " [label=\"" + next + "\", style=filled, color=blue];");
 				}
 			}
-			for(Node prev : node.getPrevNodes()){
+			for(CfgNode prev : node.getPrevNodes()){
 				System.out.print("node" +prev.getId() + " -> node" + node.getId() + "[style=dotted];");
 				if(!workingSet.contains(prev)){
 					System.out.print("node" +prev.getId() + " [label=\"" + prev + "\", style=filled, color=red];");
@@ -942,24 +973,24 @@ public class RouteConstructor {
 		}
 	}
     
-    private boolean isNodeContainedInBranchStackNodes(Node node, List<StackNode> branchStackNodes) {
-    	if (node instanceof InstructionNode) {
-    		InstructionNode instructionNode = (InstructionNode)node;
+    private boolean isNodeContainedInBranchStackNodes(CfgNode node, List<StackNode> branchStackNodes) {
+    	if (node instanceof CfgInstructionNode) {
+    		CfgInstructionNode instructionNode = (CfgInstructionNode)node;
     		for (StackNode stackNode : branchStackNodes) {
-    			if (stackNode.getInstruction().getPC() == instructionNode.getPC()) {
+    			if (stackNode.getInstruction().getPc() == instructionNode.getPc()) {
     				return true;
     			}
     		}				
     	}
     	return false;
     }
-    
-	private static class NodeDescriptor implements Comparable<NodeDescriptor>{
-		private Node m_node;
-		private Stack<FunctionReferenceNode> m_stack;
 
+	private static class NodeDescriptor implements Comparable<NodeDescriptor>{
+		private CfgNode m_node;
+		private Stack<CfgFunctionReferenceNode> m_stack;
 		private int m_id;
-		public NodeDescriptor(Node node, Stack<FunctionReferenceNode> stack){
+		
+		public NodeDescriptor(CfgNode node, Stack<CfgFunctionReferenceNode> stack){
 			m_node = node;
 			m_stack = stack;
 			m_id = node.getId();

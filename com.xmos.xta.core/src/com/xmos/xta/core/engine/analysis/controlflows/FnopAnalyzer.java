@@ -6,31 +6,30 @@ import java.util.List;
 
 import com.xmos.xta.core.engine.analysis.binary.NullInstruction;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgBlockNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 
 class FnopAnalyzer {
 
-	public void analyze(Collection<Node> workingSet) {
-		for(Node node : workingSet){
-			if(node instanceof BlockNode){
-				BlockNode block = (BlockNode)node;
+	void analyze(Collection<CfgNode> workingSet) {
+		for (CfgNode node : workingSet) {
+			if (node instanceof CfgBlockNode) {
+				CfgBlockNode block = (CfgBlockNode)node;
 				updateBlock(block);
 			}
 		}
 	}
 
-	private void updateBlock(BlockNode block){
-		InstructionBuffer ib =null;
-		long startPc = block.getInstructionList().get(0).getStartPc();
+	private void updateBlock(CfgBlockNode block){
+		InstructionBuffer ib = null;
+		long startPc = block.getInstructionList().get(0).getPc();
 
 		//TODO -- refactor this to not be such a mess!
-		if(isWordAligned(startPc)){
-			if(getPrevNodeSize(block) == 1){
-				if(returningFromAFunction(block)){
+		if (isWordAligned(startPc)) {
+			if (getPrevNodeSize(block) == 1) {
+				if (returningFromAFunction(block)) {
 					ib = new InstructionBuffer(startPc, 0);
 				} else {
 					ib = new InstructionBuffer(startPc, 4);
@@ -39,8 +38,8 @@ class FnopAnalyzer {
 				ib = new InstructionBuffer(startPc, 4);
 			}
 		} else {
-			if(getPrevNodeSize(block) == 1){
-				if(returningFromAFunction(block)){
+			if (getPrevNodeSize(block) == 1) {
+				if (returningFromAFunction(block)) {
 					ib = new InstructionBuffer(startPc, 0);
 				} else {
 					ib = new InstructionBuffer(startPc, 2);
@@ -50,32 +49,32 @@ class FnopAnalyzer {
 			}
 		}
 
-		List<InstructionNode> instCopy = new LinkedList<InstructionNode>(block.getInstructionList());
-		for(InstructionNode inst : instCopy){
+		List<CfgInstructionNode> instCopy = new LinkedList<CfgInstructionNode>(block.getInstructionList());
+		for(CfgInstructionNode inst : instCopy){
 			update(ib, block.getInstructionList(), inst);
 		}
 	}
 	
-	private int getPrevNodeSize(BlockNode block){
-		InstructionNode firstInst = block.getInstructionList().get(0);
+	private int getPrevNodeSize(CfgBlockNode block){
+		CfgInstructionNode firstInst = block.getInstructionList().get(0);
 		return firstInst.getPrevNodes().size();
 	}
 
-	private void update(InstructionBuffer ib, List<InstructionNode> blockInstructions, InstructionNode instNode) {
+	private void update(InstructionBuffer ib, List<CfgInstructionNode> blockInstructions, CfgInstructionNode instNode) {
 		XtaInstruction inst = instNode.getXtaInstruction();
 		while (!ib.canIssue(inst.getNumBytes())) {
 			ib.fetch();
 			int index = blockInstructions.indexOf(instNode);
 			XtaInstruction fnop = new NullInstruction("--FNOP--", 0, inst.getPc(), 0, true);
-			InstructionNode fnopNode = new InstructionNode(fnop);
+			CfgInstructionNode fnopNode = new CfgInstructionNode(fnop);
 
-			for(Node prev : instNode.getPrevNodes()){
+			for (CfgNode prev : instNode.getPrevNodes()){
 				prev.removeNextNode(instNode);
-				CommonMethods.connect(fnopNode, prev);
+				CfgNode.connect(fnopNode, prev);
 
 			}
 			instNode.getPrevNodes().clear();
-			CommonMethods.connect(instNode, fnopNode);
+			CfgNode.connect(instNode, fnopNode);
 			blockInstructions.add(index  , fnopNode);
 		}
 		if (!inst.isLoadStore()) {
@@ -97,10 +96,10 @@ class FnopAnalyzer {
             return false;
     }
 
-	private boolean returningFromAFunction(BlockNode block){
-		InstructionNode firstInst = block.getInstructionList().get(0);
-		for(Node prev : firstInst.getPrevNodes()){
-			if(prev instanceof FunctionReferenceNode){
+	private boolean returningFromAFunction(CfgBlockNode block){
+		CfgInstructionNode firstInst = block.getInstructionList().get(0);
+		for (CfgNode prev : firstInst.getPrevNodes()){
+			if (prev instanceof CfgFunctionReferenceNode){
 				return true;
 			} 
 		} 

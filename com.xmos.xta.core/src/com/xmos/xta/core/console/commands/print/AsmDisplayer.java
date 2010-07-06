@@ -15,9 +15,9 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.binary.Disassembler;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
+import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.Function;
+import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.functionmapper.Function;
-import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class AsmDisplayer {

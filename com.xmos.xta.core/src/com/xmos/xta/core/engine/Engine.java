@@ -32,13 +32,15 @@ import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlows;
 import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
+import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.routes.RouteLoopConversion;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
@@ -52,7 +54,6 @@ import com.xmos.xta.core.engine.defines.LoopInfo;
 import com.xmos.xta.core.engine.defines.LoopPathInfo;
 import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 import com.xmos.xta.core.engine.defines.PathTimeInfo;
-import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.points.LoopPoints;
 import com.xmos.xta.core.engine.points.PathPoints;
 import com.xmos.xta.core.engine.references.Reference;
@@ -99,6 +100,7 @@ public class Engine extends Notifier implements Aborter {
 	private Map<String, Integer> m_nodeHz;
 	private CoreCollection<Integer> m_coreThreads;
 	private CoreCollection<InstructionDecoder> m_instructionDecoders;	
+	private CoreCollection<CachedFunctionMap> m_cachedFunctions;	
 	private Scripter m_scripter;
 	private Collection<CoreId> m_activeCores;
 	private PathPoints m_pathPoints;
@@ -111,6 +113,7 @@ public class Engine extends Notifier implements Aborter {
 		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
 		m_instructionDecoders = new CoreCollection<InstructionDecoder>();
+		m_cachedFunctions = new CoreCollection<CachedFunctionMap>();
 		m_xeLoader = new XeLoader();
 		m_sourceMapper = null;
 		m_controlFlows = new ControlFlows();
@@ -188,7 +191,11 @@ public class Engine extends Notifier implements Aborter {
 	public InstructionDecoder getInstructionDecoder(CoreId coreId) {
 		return m_instructionDecoders.get(coreId);
 	}
-	
+
+	public CachedFunctionMap getCachedFunctionMap(CoreId coreId) {
+		return m_cachedFunctions.get(coreId);
+	}
+
 	public PathPoints getPathPoints() {
 		return m_pathPoints;
 	}
@@ -264,6 +271,7 @@ public class Engine extends Notifier implements Aborter {
 			
 			initialiseCoreStates(xeLoader);
 		    initialiseActiveCores(xeLoader);
+		    initialiseCachedFunctions(xeLoader);
 		    		   	
 			m_executableFile = executableFile;
 			m_loadedFileLastModifiedTime = executableFile.lastModified();
@@ -281,6 +289,7 @@ public class Engine extends Notifier implements Aborter {
 
 			m_scripter.setEngineLoadAndRunDone();
 			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
+						
 			return true;
 		}		
 		return false;
@@ -574,7 +583,7 @@ public class Engine extends Notifier implements Aborter {
 		List<Long> pcs = new LinkedList<Long>();
 		for (FunctionContainer fc : m_controlFlows.getControlFlow(coreId).getFunctionContainers()){
 			if (functionName.equals(fc.getFunctionName())){
-				pcs.add(fc.getStartInstruction().getPC());
+				pcs.add(fc.getStartInstruction().getPc());
 			}
 		}		
 		return pcs;
@@ -1277,7 +1286,8 @@ public class Engine extends Notifier implements Aborter {
 
 			try {
 				List<StackNode> stackNodes = RouteConstructor.getPathStackNodes(
-						this, m_controlFlows.getControlFlow(activeCore), fromRef);
+						m_controlFlows.getControlFlow(activeCore), 
+						m_cachedFunctions.get(activeCore), fromRef);
 				
 				if (!stackNodes.isEmpty()) {
 					if (fromResolved && toResolved) {
@@ -1295,6 +1305,7 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		} else {
 			m_controlFlows.initialise(src, this, m_xeLoader, m_sections, m_instructionDecoders);
+		    initialiseCachedFunctions(m_xeLoader);			
 		}		
 		return hit;
 	}
@@ -1334,6 +1345,7 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		} else {
 			m_controlFlows.initialise(src, this, m_xeLoader, m_sections, m_instructionDecoders);
+		    initialiseCachedFunctions(m_xeLoader);			
 		}		
 		return hit;
 	}
@@ -1441,7 +1453,8 @@ public class Engine extends Notifier implements Aborter {
 
    			if (resolveReference(loopRef)) {
    				RouteLoopConversion converter = new RouteLoopConversion(
-   						this, m_controlFlows.getControlFlow(activeCore)); 
+   						m_controlFlows.getControlFlow(activeCore),
+   						getCachedFunctionMap(activeCore)); 
 
    				if (converter.isWithinLoop(loopRef)) {
    					return true;
@@ -1593,6 +1606,17 @@ public class Engine extends Notifier implements Aborter {
 		}
 	}
 	
+	private void initialiseCachedFunctions(XeLoader xeLoader) {
+		CoreCollection<CachedFunctionMap> cachedFunctions = new CoreCollection<CachedFunctionMap>();
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				cachedFunctions.add(coreId, new CachedFunctionMap(this));
+			}
+		}	
+		m_cachedFunctions = cachedFunctions;
+	}
+	
 	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeChainIndex, int coreNumber) {
 		int nodeRoutingId = xnLoader.getNodeRoutingId(nodeChainIndex);
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
@@ -1645,7 +1669,7 @@ public class Engine extends Notifier implements Aborter {
 		
 	private void checkInstructionIsBranch(CommandSource src, Reference ref, CoreId activeCore) {
 		for (long pc : ref.getPcs()) {
-			InstructionNode node = m_instructionDecoders.get(activeCore).getNode(pc);
+			CfgInstructionNode node = m_instructionDecoders.get(activeCore).getNode(pc);
 			if (node == null) {
 				notify(src, Notifier.NOTIFY_WARNING,
 						String.format("adding branch from non-existant instruction at %s",

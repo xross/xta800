@@ -3,7 +3,6 @@ package com.xmos.xta.core.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
-import java.util.Stack;
 
 import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
@@ -28,24 +27,23 @@ public class Route {
 	private int m_routeId;
 	private RouteCoreContainer m_coreContainer;
 	private RouteTiming m_timing;
-	private RouteUnknowns m_unknowns;
-	
-	//private Stack<FunctionReferenceNode> m_stack;
-	private Node m_baseOfRouteNode;
-	
+	private RouteUnknowns m_unknowns;	
+	private Node m_baseOfRouteNode;	
 	private Node m_searchNode;
+	
 	public static void resetRouteCount() {
 		s_routeCount = 0;
 	}
 
-	public Route(CommandSource src, Engine engine, Stack<FunctionReferenceNode> stack, Node node, RouteCoreContainer routeCoreContainer) {
+	public Route(CommandSource src, Engine engine, Node node, RouteCoreContainer routeCoreContainer) {
 		m_coreContainer = routeCoreContainer;
 		m_routeId = s_routeCount++;
-		//m_stack = stack;
 		m_baseOfRouteNode = node;
 		Architecture architecture = engine.getXeLoader().getArchitecture();
 		
-		m_timing = new RouteTiming(src, this,  m_coreContainer.getCoreConfig(), m_coreContainer.getCoreId());
+		m_timing = new RouteTiming(src, this,  
+				m_coreContainer.getCoreConfig(), 
+				m_coreContainer.getCoreId());
 		
 		m_unknowns = new RouteUnknowns(this);
 		

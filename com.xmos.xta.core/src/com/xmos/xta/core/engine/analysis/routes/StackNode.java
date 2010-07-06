@@ -5,29 +5,29 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 
 public class StackNode implements Comparable<StackNode>{
-	private List<Stack<FunctionReferenceNode>> m_nodeStacks;
-	private InstructionNode m_instruction;
+	private List<Stack<CfgFunctionReferenceNode>> m_nodeStacks;
+	private CfgInstructionNode m_instruction;
 	
-	public StackNode(InstructionNode instruction, List<Stack<FunctionReferenceNode>> stacks){
+	public StackNode(CfgInstructionNode instruction, List<Stack<CfgFunctionReferenceNode>> stacks){
 		m_nodeStacks = stacks;
 		m_instruction = instruction;
 	}
 
-	public List<Stack<FunctionReferenceNode>> getNodeStacks(){
+	public List<Stack<CfgFunctionReferenceNode>> getNodeStacks(){
 		return m_nodeStacks;
 	}
 
-	public InstructionNode getInstruction(){
+	public CfgInstructionNode getInstruction(){
 		return m_instruction;
 	}
 
 	public String toString(){
 		StringBuffer stacks = new StringBuffer();
-		for(Stack<FunctionReferenceNode> stack : m_nodeStacks){
+		for(Stack<CfgFunctionReferenceNode> stack : m_nodeStacks){
 			stacks.append("\t");
 			stacks.append(stack);
 			stacks.append("\n");
@@ -42,16 +42,16 @@ public class StackNode implements Comparable<StackNode>{
 	public Collection<String> getBackTrails() {
 		Collection<String> backTrails = new ArrayList<String>();
 
-		for (Stack<FunctionReferenceNode> stack : m_nodeStacks) {
+		for (Stack<CfgFunctionReferenceNode> stack : m_nodeStacks) {
 			String backTrail = "";			
-			for (FunctionReferenceNode node : stack) {
+			for (CfgFunctionReferenceNode node : stack) {
 				
 				long callPc = node.getFunctionCallPc();
 				if (callPc != 0) {
 					backTrail += String.format("CALL:0x%x,", callPc);					
 				}
 			}
-			backTrail += String.format("0x%x", m_instruction.getPC());
+			backTrail += String.format("0x%x", m_instruction.getPc());
 			backTrails.add(backTrail);
 		}
 		return backTrails;

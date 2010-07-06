@@ -3,19 +3,19 @@ package com.xmos.xta.core.engine.analysis.controlflows;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgBlockNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 
 class BasicBlockMatcher {
-	private BlockNode m_block;
-	private Node m_treeStart;
+	private CfgBlockNode m_block;
+	private CfgNode m_treeStart;
 
-	public boolean match(Node node, Node treeStart, Collection<Node> currentGraph) {
+	boolean match(CfgNode node, CfgNode treeStart, Collection<CfgNode> currentGraph) {
 		m_treeStart = treeStart;
-		LinkedList<Node> nodes = new LinkedList<Node>();
+		LinkedList<CfgNode> nodes = new LinkedList<CfgNode>();
 		boolean isStart = isStart(node);
 		nodes.add(node);
 		if (isStart(node)) {
@@ -25,12 +25,12 @@ class BasicBlockMatcher {
 			}
 		}
 		if (isStart) {
-			LinkedList<InstructionNode> insts = new LinkedList<InstructionNode>();
-			for(Node n : nodes){
-				insts.add((InstructionNode)n);
+			LinkedList<CfgInstructionNode> insts = new LinkedList<CfgInstructionNode>();
+			for (CfgNode n : nodes) {
+				insts.add((CfgInstructionNode)n);
 			}
 
-			m_block = new BlockNode(insts);
+			m_block = new CfgBlockNode(insts);
 		}
 		if (isStart && nodes.contains(treeStart)) {
 			m_treeStart = m_block;
@@ -40,51 +40,54 @@ class BasicBlockMatcher {
 		return isStart;
 	}
 
-	public BlockNode getBlock() {
+	CfgBlockNode getBlock() {
 		return m_block;
 	}
 
-	public Node getTreeStart() {
+	CfgNode getTreeStart() {
 		return m_treeStart;
 	}
 
-	private boolean isStart(Node node) {
-		if(node == m_treeStart){
+	private boolean isStart(CfgNode node) {
+		if (node == m_treeStart) {
 			return true;
-		} else
-			if (node.getPrevNodes().size() == 0) {
+			
+		} else if (node.getPrevNodes().size() == 0) {
 			return true;
+			
 		} else if (node.getPrevNodes().size() == 1) {
-			Node prev = node.getPrevNode();
-			if (prev instanceof FunctionReferenceNode) {
+			CfgNode prev = node.getPrevNode();
+			if (prev instanceof CfgFunctionReferenceNode) {
 				return true;
 			}
 			if (prev.getNextNodesSize() > 1) {
 				return true;
+				
 			} else {
 				return false;
 			}
 		} else if (node.getPrevNodes().size() > 1) {
 			return true;
+			
 		} else {
 			return false;
 		}
 	}
 
-	private boolean isEnd(Node node) {
+	private boolean isEnd(CfgNode node) {
 
 		if (node.getNextNodes().size() == 0) {
 			return true;
 		} else if (node.getNextNodes().size() == 1) {
-			Node next = node.getNextNode();
+			CfgNode next = node.getNextNode();
 			if(next == m_treeStart){
 				return true;
 			}
-			if(next instanceof NullNode ){
+			if(next instanceof CfgNullNode ){
 				return true;
 			}
 
-			if (next instanceof FunctionReferenceNode) {
+			if (next instanceof CfgFunctionReferenceNode) {
 				return true;
 			}
 			if (next.getPrevNodes().size() > 1) {
@@ -99,13 +102,14 @@ class BasicBlockMatcher {
 		}
 	}
 
-	private boolean continueDown(Node node) {
-		if (node.getNextNodesSize() == 1 && !isEnd(node)
-				&& !node.dominatorsContain(node.getNextNode())) {
+	private boolean continueDown(CfgNode node) {
+		if (node.getNextNodesSize() == 1 && 
+			!isEnd(node) && 
+			!node.dominatorsContain(node.getNextNode())) {
 			return true;
+			
 		} else {
 			return false;
 		}
 	}
-
 }

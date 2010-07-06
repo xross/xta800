@@ -1,10 +1,10 @@
-package com.xmos.xta.core.engine.functionmapper;
+package com.xmos.xta.core.engine.analysis.controlflows.functionmapper;
 
 import java.util.Map;
 import java.util.Set;
 
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 
 public class AssemblyLine {
 
@@ -35,9 +35,9 @@ public class AssemblyLine {
 		"INVALID", "INVALID", "INVALID",
 	};
 
-	private InstructionNode m_instructionNode;
+	private CfgInstructionNode m_instructionNode;
 
-	public AssemblyLine(InstructionNode instructionNode, Map<String, Set<Long>> labels) {
+	public AssemblyLine(CfgInstructionNode instructionNode, Map<String, Set<Long>> labels) {
 		m_instructionNode = instructionNode;
 		m_labels = labels;
 	}

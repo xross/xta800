@@ -15,10 +15,9 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
@@ -33,12 +32,9 @@ class FunctionReferenceNodeAdder {
 	private long m_cpPointer;
 	private Map<Reference, Set<BranchInfo>> m_branchMap;
 	private Set<FunctionContainer> m_functionContainer;
-	private Map<InstructionNode, InstructionNode> m_functionInstuctionToOriginal;
+	private Map<CfgInstructionNode, CfgInstructionNode> m_functionInstuctionToOriginal;
 
-	//private int m_executableBytes;
-	//private int m_unreachableBytes;
-	
-	public FunctionReferenceNodeAdder(InstructionDecoder instDecoder, Notifier notifier, CommandSource src,
+	FunctionReferenceNodeAdder(InstructionDecoder instDecoder, Notifier notifier, CommandSource src,
 			XeLoader xeLoader, CoreId coreId, Sections sections){
 		m_instDecoder = instDecoder;
 		m_notifier = notifier;
@@ -48,56 +44,56 @@ class FunctionReferenceNodeAdder {
 		m_cpPointer = xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber()).symbolAddress("_cp");
 		m_mnenonics = new InstructionMnemonics(xeLoader.getArchitecture());
 		m_functionContainer = new IteratableSet<FunctionContainer>();
-		m_functionInstuctionToOriginal = new NonIteratableMap<InstructionNode, InstructionNode>();
+		m_functionInstuctionToOriginal = new NonIteratableMap<CfgInstructionNode, CfgInstructionNode>();
 	}
 
-
-	public void process(Set<InstructionNode> functionStartNodes) {
+	void process(Set<CfgInstructionNode> functionStartNodes) {
 		
-		List<InstructionNode> remainingInsts = new LinkedList<InstructionNode>(m_instDecoder.getInstructions());
+		List<CfgInstructionNode> remainingInsts = new LinkedList<CfgInstructionNode>(m_instDecoder.getInstructions());
 		
-		for(InstructionNode startOfFunction : functionStartNodes){
-			Map<Node, Node> seen = new NonIteratableMap<Node, Node>();
+		for (CfgInstructionNode startOfFunction : functionStartNodes){
 			
-			Set<InstructionNode> toDo = new IteratableSet<InstructionNode>();
+			Map<CfgNode, CfgNode> seen = new NonIteratableMap<CfgNode, CfgNode>();
+			
+			Set<CfgInstructionNode> toDo = new IteratableSet<CfgInstructionNode>();
 			
 			toDo.add(startOfFunction);
 			
-			Set<InstructionNode> functionInstructions = new IteratableSet<InstructionNode>();
-			Set<FunctionReferenceNode> functionRefNodes = new IteratableSet<FunctionReferenceNode>();
-			InstructionNode copyStart = (InstructionNode) getInstruction(startOfFunction, seen, functionInstructions);
+			Set<CfgInstructionNode> functionInstructions = new IteratableSet<CfgInstructionNode>();
+			Set<CfgFunctionReferenceNode> functionRefNodes = new IteratableSet<CfgFunctionReferenceNode>();
+			CfgInstructionNode copyStart = (CfgInstructionNode) getInstruction(startOfFunction, seen, functionInstructions);
 			
 			while(!toDo.isEmpty()){
 				
-				InstructionNode inst = toDo.iterator().next();
+				CfgInstructionNode inst = toDo.iterator().next();
 				remainingInsts.remove(inst);
-				Node copyInst = getInstruction(inst, seen, functionInstructions);
-				for(Node next : inst.getNextNodes()){
-					if(!seen.containsKey(next)){
-						toDo.add((InstructionNode)next);		
+				CfgNode copyInst = getInstruction(inst, seen, functionInstructions);
+				for (CfgNode next : inst.getNextNodes()) {
+					if (!seen.containsKey(next)) {
+						toDo.add((CfgInstructionNode)next);		
 					}
-					Node copyNext = getInstruction(next, seen, functionInstructions);
-					CommonMethods.connect(copyNext, copyInst);
+					CfgNode copyNext = getInstruction(next, seen, functionInstructions);
+					CfgNode.connect(copyNext, copyInst);
 					seen.put(next, copyNext);
 				}
 
 				XtaInstruction xtaInst = inst.getXtaInstruction();
-				
+								
 				if(xtaInst.isLink()){
 					boolean foundATarget = false;
 					long returnPc = xtaInst.getPc() + xtaInst.getNumBytes();
-					InstructionNode originalBLReturn = m_instDecoder.getNode(returnPc);
+					CfgInstructionNode originalBLReturn = m_instDecoder.getNode(returnPc);
 					boolean found = seen.containsKey(originalBLReturn);
-					InstructionNode branchLinkReturn = (InstructionNode) getInstruction(originalBLReturn, seen, functionInstructions);
+					CfgInstructionNode branchLinkReturn = (CfgInstructionNode)getInstruction(originalBLReturn, seen, functionInstructions);
 					//add a function reference node into the graph
 					if(m_mnenonics.isImplicitBranchAndLinkLocation(xtaInst)){
 						long targetPc = getBranchAndLinkTargetPC(inst);
-						InstructionNode target = m_instDecoder.getNode(targetPc);
-						FunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, target, functionRefNodes);
+						CfgInstructionNode target = m_instDecoder.getNode(targetPc);
+						CfgFunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, target, functionRefNodes);
 						foundATarget = true;
-						CommonMethods.connect(fr, copyInst);
+						CfgNode.connect(fr, copyInst);
 						if (branchLinkReturn != null) {	
-							CommonMethods.connect(branchLinkReturn, fr);
+							CfgNode.connect(branchLinkReturn, fr);
 							if(!found){
 								toDo.add(originalBLReturn);		
 							}
@@ -105,12 +101,12 @@ class FunctionReferenceNodeAdder {
 					} 
 					//see if the user has told us where the branch goes 
 					for (Reference ref : m_branchMap.keySet()) {
-						if (ref.matches(inst.getPC())) {
+						if (ref.matches(inst.getPc())) {
 							for (BranchInfo refTarget : m_branchMap.get(ref)) {
 								for (long targetPc : refTarget.getRef().getPcs()) {
-									InstructionNode target = (InstructionNode) getInstruction(m_instDecoder.getNode(targetPc), seen, functionInstructions);
-									FunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, target, functionRefNodes);
-									CommonMethods.connect(fr, copyInst);	
+									CfgInstructionNode target = (CfgInstructionNode)getInstruction(m_instDecoder.getNode(targetPc), seen, functionInstructions);
+									CfgFunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, target, functionRefNodes);
+									CfgNode.connect(fr, copyInst);	
 									if(target != null) {
 										foundATarget = true;
 									}
@@ -118,7 +114,7 @@ class FunctionReferenceNodeAdder {
 										fr.setBackTrail(ref);
 									}
 									if (branchLinkReturn != null) {	
-										CommonMethods.connect(branchLinkReturn, fr);
+										CfgNode.connect(branchLinkReturn, fr);
 										if(!found){
 											toDo.add(originalBLReturn);		
 										}
@@ -130,11 +126,11 @@ class FunctionReferenceNodeAdder {
 					if(!foundATarget){
 						copyInst.setUnresolved(true);
 						//TODO remove this as the following code should be unreachable
-						FunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, null, functionRefNodes);
+						CfgFunctionReferenceNode fr = addFunctionReferenceNode(inst, copyInst, null, functionRefNodes);
 						fr.setUnresolved(true);
 						if (branchLinkReturn != null) {	
-							CommonMethods.connect(fr, copyInst);
-							CommonMethods.connect(branchLinkReturn, fr);
+							CfgNode.connect(fr, copyInst);
+							CfgNode.connect(branchLinkReturn, fr);
 							if(!found){
 								toDo.add(originalBLReturn);		
 							}
@@ -149,18 +145,18 @@ class FunctionReferenceNodeAdder {
 		}
 	}
 
-	public Map<InstructionNode, InstructionNode> getFunctionInstuctionToOriginal(){
+	Map<CfgInstructionNode, CfgInstructionNode> getFunctionInstuctionToOriginal(){
 		return m_functionInstuctionToOriginal;
 	}
 	
-	private Node getInstruction(Node next, Map<Node, Node> seen, Set<InstructionNode> functionInstructions) {
-		assert(next instanceof InstructionNode);
+	private CfgNode getInstruction(CfgNode next, Map<CfgNode, CfgNode> seen, Set<CfgInstructionNode> functionInstructions) {
+		assert(next instanceof CfgInstructionNode);
 		if(seen.containsKey(next)){
 			return seen.get(next);
 		} else {
-			Node copy = new InstructionNode((InstructionNode)next);
+			CfgNode copy = new CfgInstructionNode((CfgInstructionNode)next);
 			seen.put(next, copy);
-			functionInstructions.add((InstructionNode) copy);
+			functionInstructions.add((CfgInstructionNode)copy);
 			return copy;
 		}
 	}
@@ -169,21 +165,21 @@ class FunctionReferenceNodeAdder {
 		return m_functionContainer;
 	}
 
-	private FunctionReferenceNode addFunctionReferenceNode(
-			InstructionNode inst, Node parent, InstructionNode target, Set<FunctionReferenceNode> functionRefNodes) {
-		FunctionReferenceNode fr;
+	private CfgFunctionReferenceNode addFunctionReferenceNode(
+			CfgInstructionNode inst, CfgNode parent, CfgInstructionNode target, Set<CfgFunctionReferenceNode> functionRefNodes) {
+		CfgFunctionReferenceNode fr;
 		if(target!= null){
-			fr = new FunctionReferenceNode(inst, target);
+			fr = new CfgFunctionReferenceNode(inst, target);
 		} else {
-			fr = new FunctionReferenceNode(inst);
+			fr = new CfgFunctionReferenceNode(inst);
 		}
 		assert(fr != null);
-		CommonMethods.connect(fr, parent);
+		CfgNode.connect(fr, parent);
 		functionRefNodes.add(fr);
 		return fr;
 	}
 
-	private long getBranchAndLinkTargetPC(InstructionNode inst) {
+	private long getBranchAndLinkTargetPC(CfgInstructionNode inst) {
 		long targetPc;
 		if (m_mnenonics.isBlacpShort(inst.getXtaInstruction())) {
 			long imm = XtaInstruction.getBits(16, 10, inst.getXtaInstruction().getOpcode()) << Instruction.NUM_BYTES_PER_WORD_LOG2;

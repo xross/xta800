@@ -3,7 +3,7 @@ package com.xmos.xta.core.engine.references.types;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
+import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class CallPcReference extends ReferenceType {

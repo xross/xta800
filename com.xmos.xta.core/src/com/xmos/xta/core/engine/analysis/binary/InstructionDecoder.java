@@ -8,23 +8,22 @@ import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class InstructionDecoder {
 	private CoreId m_coreId;
 	private long m_endPc;
-	private NonIteratableMap<Long, InstructionNode> m_decodedInstructions;
-	private List<InstructionNode> m_orderedInstructions;
+	private NonIteratableMap<Long, CfgInstructionNode> m_decodedInstructions;
+	private List<CfgInstructionNode> m_orderedInstructions;
 	private XeLoader m_xeLoader;
 
 	public InstructionDecoder(CoreId coreId, XeLoader xeLoader) {
 		m_coreId = coreId;
 		m_xeLoader = xeLoader;
 		m_endPc = Long.MIN_VALUE;
-		m_decodedInstructions = new NonIteratableMap<Long, InstructionNode>();
-		m_orderedInstructions = new LinkedList<InstructionNode>();
+		m_decodedInstructions = new NonIteratableMap<Long, CfgInstructionNode>();
+		m_orderedInstructions = new LinkedList<CfgInstructionNode>();
 	}
 
 	public void decode() throws Exception {
@@ -52,11 +51,11 @@ public class InstructionDecoder {
 		            inst.setFunctionName(symbolTable.functionName(pc));
 		            inst.setFunctionOffset(symbolTable.functionOffset(pc));
 
-		            InstructionNode instNode = new InstructionNode(inst);
+		            CfgInstructionNode instNode = new CfgInstructionNode(inst);
 
-		            Node prev  = m_decodedInstructions.put(pc, instNode);
+		            m_decodedInstructions.put(pc, instNode);
 		            m_orderedInstructions.add(instNode);
-		            assert(prev == null);
+
 		            pc += inst.getNumBytes();
 				}
 
@@ -67,11 +66,11 @@ public class InstructionDecoder {
 		}
 	}
 
-	public List<InstructionNode> getInstructions(){
+	public List<CfgInstructionNode> getInstructions(){
 		return m_orderedInstructions;
 	}
 
-	public InstructionNode getNode(long pc){
+	public CfgInstructionNode getNode(long pc){
 		return m_decodedInstructions.get(pc);
 	}
 

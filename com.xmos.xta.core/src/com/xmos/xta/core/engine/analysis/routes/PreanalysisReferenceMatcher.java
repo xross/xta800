@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -7,36 +8,64 @@ import java.util.Stack;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 class PreanalysisReferenceMatcher extends ReferenceMatcher {
-	private static final boolean debug = false;
+	private ControlFlow m_controlFlow;
+	private CachedFunctionMap m_cachedFunctionMap;
 	
-	List<StackNode> matchReference(ControlFlow controlFlow, Reference ref, Engine engine) 
+	PreanalysisReferenceMatcher(ControlFlow controlFlow, CachedFunctionMap cachedFunctionMap) {
+		m_controlFlow = controlFlow;
+		m_cachedFunctionMap = cachedFunctionMap;
+	}
+	
+	List<StackNode> matchReference(Reference ref) 
 	    throws AbortedException, MemoryMonitorException {
 		
-		if (debug) System.out.println("####### begin reference match " + ref + " ###########");
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
-		for(FunctionContainer matchingContainer : getBaseContianers(ref, controlFlow)){
-			stackNodes.add(new StackNode(getInstructionFromContainer(matchingContainer,ref), controlFlow.getStacks(matchingContainer)));
+		for (FunctionContainer container : getBaseContianers(ref)) {			
+			CfgInstructionNode instruction = getInstructionFromContainer(container, ref);
+			List<Stack<CfgFunctionReferenceNode>> nodeStacks = m_controlFlow.getStacks(container);
+	
+			stackNodes.add(new StackNode(instruction, nodeStacks)); 
 		}
-		
-		List<StackNode> s = refineStackNodes(stackNodes, ref, controlFlow, engine);
-		if (debug) System.out.println("####### end reference match " + ref + " ###########");
-		return s;
+		return refineStackNodes(stackNodes, ref);
 	}
-		
-	private InstructionNode getInstructionFromContainer(FunctionContainer fc, Reference ref){
-		for(InstructionNode inst : fc.getFunctionInstructionNodes()){
-			if(ref.getPcs().contains(inst.getPC()) && ! inst.getXtaInstruction().isFnop()){
+
+	private List<FunctionContainer> getBaseContianers(Reference ref) {
+		List<FunctionContainer> fnContainers = new LinkedList<FunctionContainer>();
+		for (FunctionContainer fc : m_controlFlow.getFunctionContainers()) {
+			
+			if (ref.getBase().getType() == Type.FUNCTION) {
+				if (ref.getPcs().contains(fc.getStartInstruction().getPc())) {
+					fnContainers.add(fc);
+				}
+			} else {
+				for (long pc : ref.getPcs()) {
+					if (fc.containsPc(pc)) {
+						fnContainers.add(fc);
+						break;
+					}
+				}
+			}
+		}
+		return fnContainers;
+	}
+
+	private CfgInstructionNode getInstructionFromContainer(FunctionContainer fc, Reference ref){
+		for (CfgInstructionNode inst : fc.getFunctionInstructionNodes()) {
+			if (ref.getPcs().contains(inst.getPc()) && ! inst.getXtaInstruction().isFnop()) {
 				return inst;
 			}
 		}
@@ -44,97 +73,44 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return null;
 	}
 	
-	private List<FunctionContainer> getBaseContianers(Reference ref, ControlFlow controlFlow){
-		List<FunctionContainer> fnContainers = new LinkedList<FunctionContainer>();
-		for(FunctionContainer fc : controlFlow.getFunctionContainers()){
-			
-			if(ref.getBase().getType() == Type.FUNCTION){
-				if(ref.getPcs().contains(fc.getStartInstruction().getPC())){
-					fnContainers.add(fc);
-				}
-			} else {
-				for(long pc : ref.getPcs()){
-					if(fc.containsPc(pc)){
-						fnContainers.add(fc);
-						break;
-					}
-				}
-			}
-		}
-		
-		return fnContainers;
-	}
-
-	public List<StackNode> refineStackNodes(List<StackNode> stackNodes, Reference reference, ControlFlow controlFlow, Engine engine) 
+	public List<StackNode> refineStackNodes(List<StackNode> stackNodes, Reference reference) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		List<StackNode> refinedStackNodes = new LinkedList<StackNode>();
-		if (debug) System.out.println("\nMatching reference: " + reference);
-
 	
 		for(long pc : reference.getPcs()){
 			List<ReferenceType> refList = new LinkedList<ReferenceType>();
 			
-			if (debug) System.out.println("Matching PC: 0x" + Long.toHexString(pc));
-			
 			matchLabel(reference, pc, refList);
 			
-			//Collections.reverse(refList);
-			
-			
-			if (debug) {
-				System.out.print("The refList contains: ");
-				for(ReferenceType r : refList){
-					System.out.print( r.getType() + "(" + r.getRef() );
-					for(long refPc : r.getPcs()){
-						System.out.print(", 0x" + Long.toHexString(refPc));
-					}
-					System.out.print(") ");
-				}
-				System.out.println();
-			}
-
-			List<Stack<FunctionReferenceNode>> stacks = new LinkedList<Stack<FunctionReferenceNode>>();
-
-			List<FunctionContainer> containedInFunction = controlFlow.getFunctionContaining(pc);
+			List<Stack<CfgFunctionReferenceNode>> stacks = new LinkedList<Stack<CfgFunctionReferenceNode>>();
+			List<FunctionContainer> containedInFunction = m_controlFlow.getFunctionContaining(pc);
 
 			for(FunctionContainer fn : containedInFunction){
-				InstructionNode inst = fn.getInstruction(pc);
+				CfgInstructionNode inst = fn.getInstruction(pc);
 				
 				if(reference.getBase().getType() == Type.FUNCTION && fn.getStartInstruction() != inst){
 					continue;
 				}
 				
-				List<Stack<FunctionReferenceNode>> callStacks = controlFlow.getStacks(fn);
+				List<Stack<CfgFunctionReferenceNode>> callStacks = m_controlFlow.getStacks(fn);
 				
-				for(Stack<FunctionReferenceNode> stack : callStacks){
-					if (debug) {
-						System.out.println("want to find out if stack " + stack +" matches the reference ");
-					}
-					Stack<FunctionReferenceNode> copy = new Stack<FunctionReferenceNode>();
+				for(Stack<CfgFunctionReferenceNode> stack : callStacks){
+					Stack<CfgFunctionReferenceNode> copy = new Stack<CfgFunctionReferenceNode>();
 					copy.addAll(stack);
 					List<ReferenceType> matchingList = new LinkedList<ReferenceType>(refList);
 					
 					long currentPc = pc;
-					FunctionReferenceNode frn = copy.pop();
+					CfgFunctionReferenceNode frn = copy.pop();
 					while(!matchingList.isEmpty()){
-						if (debug) System.out.println("checking function " + frn.getFunctionName() + " from pc 0x" + Long.toHexString(currentPc));
-						Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, engine, stack);
+						Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, stack);
 						while(res.first){
 							ReferenceType r = matchingList.get(matchingList.size() -1);
 							
-							if (debug) {
-								System.out.print("found ");
-								System.out.print( r.getType() + "(" + r.getRef() );
-								for(long refPc : r.getPcs()){
-									System.out.print(", 0x" + Long.toHexString(refPc));
-								}
-								System.out.print(") in the function " + frn.getFunctionName() + "\n");
-							}
 							currentPc = res.second;
 							matchingList.remove(r);
 							
-							res = fnRefContainsReference(frn, currentPc, matchingList, engine, stack);
+							res = fnRefContainsReference(frn, currentPc, matchingList, stack);
 						} 
 						currentPc = frn.getFunctionCallPc();
 						if(copy.isEmpty())
@@ -143,78 +119,76 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 						
 					}
 					
-					if(matchingList.isEmpty()){
-						if (debug) System.out.println("success ");
+					if (matchingList.isEmpty()){
 						stacks.add(stack);
-					} else {
-						if (debug) System.out.println("fail ");
 					}
 				}
-				if(!stacks.isEmpty()){
+				if (!stacks.isEmpty()){
 					refinedStackNodes.add(new StackNode(inst, stacks));
 				}
 			}
 		}
-
 		return refinedStackNodes;
 	}
 	
-	private Pair<Boolean, Long> fnRefContainsReference(FunctionReferenceNode frn, Long currentPc, 
-			List<ReferenceType> refList, Engine engine, Stack<FunctionReferenceNode> stack ) 
+	private Pair<Boolean, Long> fnRefContainsReference(CfgFunctionReferenceNode frn, Long currentPc, 
+			List<ReferenceType> refList, Stack<CfgFunctionReferenceNode> stack) 
 		throws AbortedException, MemoryMonitorException {
-		
-		if(refList.isEmpty()) return new Pair<Boolean, Long>(false, (long)0);
+
+		if (refList.isEmpty()) 
+			return new Pair<Boolean, Long>(false, (long)0);
 		
 		ReferenceType r = refList.get(refList.size() -1);
 		
-		if(r.getType() == ReferenceType.Type.CALL){
-			if(r.getPcs().contains(frn.getFunctionCallPc())){
+		if (r.getType() == ReferenceType.Type.CALL) {
+			if (r.getPcs().contains(frn.getFunctionCallPc())) {
 				return new Pair<Boolean, Long>(true, (long)0);
 			}
-		} else if(r.getType() == ReferenceType.Type.ENDPOINT){
-			return matchRefPc(frn, engine, currentPc, r, stack);
-		} else if(r.getType() == ReferenceType.Type.ERROR){
+		} else if (r.getType() == ReferenceType.Type.ENDPOINT) {
+			return matchRefPc(frn, currentPc, r, stack);
+			
+		} else if (r.getType() == ReferenceType.Type.ERROR) {
 			return new Pair<Boolean, Long>(false, (long)0);
-		} else if(r.getType() == ReferenceType.Type.EVERYTHING){
+			
+		} else if (r.getType() == ReferenceType.Type.EVERYTHING) {
 			return new Pair<Boolean, Long>(true, currentPc);
-		} else if(r.getType() == ReferenceType.Type.FUNCTION){
-			if(r.getPcs().contains(frn.getFunctionStartPc())){
+			
+		} else if (r.getType() == ReferenceType.Type.FUNCTION) {
+			if (r.getPcs().contains(frn.getFunctionStartPc())) {
 				return new Pair<Boolean, Long>(true, frn.getFunctionStartPc());
 			}
-		} else if(r.getType() == ReferenceType.Type.LABEL){
-			return matchRefPc(frn, engine, currentPc, r, stack);
-		} else if(r.getType() == ReferenceType.Type.SRCLABEL){
-			return matchRefPc(frn, engine, currentPc, r, stack);
-		} else assert(false); 
-		
-		
+		} else if (r.getType() == ReferenceType.Type.LABEL) {
+			return matchRefPc(frn, currentPc, r, stack);
+			
+		} else if (r.getType() == ReferenceType.Type.SRCLABEL) {
+			return matchRefPc(frn, currentPc, r, stack);
+			
+		} else {
+			assert(false); 
+		}
 		return new Pair<Boolean, Long>(false, (long)0);
 	}
 
-	//this matches references that resolve to a set of pcs
-	private Pair<Boolean, Long> matchRefPc(FunctionReferenceNode frn, Engine engine, Long latestPc, 
-			ReferenceType r, Stack<FunctionReferenceNode> stack) 
+	private Pair<Boolean, Long> matchRefPc(CfgFunctionReferenceNode frn, Long latestPc, 
+			ReferenceType r, Stack<CfgFunctionReferenceNode> stack) 
 		throws AbortedException, MemoryMonitorException {
-		
-		FunctionContainer fc = frn.getFunctionContainer();
-		Node node = fc.getCachedFunction(engine);
-		setParent(node);
+
 		boolean found = false;
-		
-		if(latestPc == 0x0){
-			for(long pc : r.getPcs()){
+
+		if (latestPc == 0x0) {
+			for (long pc : r.getPcs()) {
 				latestPc = pc;
 				found = true;
 			}
-		} else {
-		
-			InstructionNode inst = fc.getInstruction(latestPc);
+		} else {		
+			Node functionNode =  m_cachedFunctionMap.getCachedFunction(frn.getFunctionContainer());
+			InstructionNode inst = getInstructionNode(functionNode, latestPc);						
 			List<Node> nodeList = new LinkedList<Node>();
 			inst.buildListUp(nodeList, null);
-			
-			for(long pc : r.getPcs()){
+
+			for (long pc : r.getPcs()) {
 				int index = getIndexOfInst(nodeList, pc);
-				if(index != -1){
+				if (index != -1) {
 					nodeList = nodeList.subList(0, index);
 					latestPc = pc;
 					found = true;
@@ -225,10 +199,10 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 	}
 	
 	private int getIndexOfInst(List<Node> nodeList, long pc) {
-		for(int i=nodeList.size()-2; i >= 0;i--){
-			if(nodeList.get(i) instanceof InstructionNode){
+		for (int i = nodeList.size()-2; i >= 0;i--) {
+			if (nodeList.get(i) instanceof InstructionNode){
 				InstructionNode inst = (InstructionNode)nodeList.get(i);
-				if(inst.getPC() == pc){
+				if (inst.getPC() == pc){
 					return i;
 				}
 			}
@@ -236,12 +210,20 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return -1;
 	}
 
-	
-
-	private void setParent(Node node) {
-		for (Node child : node.iChildren()){
-			child.setParent(node);
-			setParent(child);
-		}
+	private InstructionNode getInstructionNode(Node node, final long pc) {
+		final List<InstructionNode> instructionNodes = new ArrayList<InstructionNode>();
+		node.traverse(new DefaultNodeTraverser() {
+			public TraverseStatus foundInstructionNode(Node node) {
+				InstructionNode instructionNode = (InstructionNode)node;
+				
+				if (instructionNode.getPC() == pc) {
+					instructionNodes.add((InstructionNode)node); 
+					return TraverseStatus.ABORT;					
+				}
+				return TraverseStatus.CONTINUE;
+			}
+		});
+		assert(instructionNodes.size() == 1);
+		return instructionNodes.iterator().next();
 	}
 }

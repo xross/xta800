@@ -12,6 +12,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
+import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.CoreId;
@@ -46,7 +47,9 @@ public class DumpActiveExclusions extends Command {
 			for(ExclusionInfo info : engine.getExclusions()){
 				Reference ref = info.getReference();
 				if(ref.getCoreId().equals(coreId)){
-					List<StackNode> stackNodes = getPathStackNodes(engine.getControlFlow(coreId), ref, engine);
+					List<StackNode> stackNodes = getPathStackNodes(
+							engine.getControlFlow(coreId), 
+							engine.getCachedFunctionMap(coreId), ref);
 					if (stackNodes != null) {
 					    exclusionStackNodes.addAll(stackNodes);
 					}
@@ -59,9 +62,11 @@ public class DumpActiveExclusions extends Command {
     	}
     }
     
-    private List<StackNode> getPathStackNodes(ControlFlow controlFlow, Reference reference, Engine engine) {
+    private List<StackNode> getPathStackNodes(ControlFlow controlFlow, 
+    		CachedFunctionMap cachedFunctionMap, Reference reference) {
+    	
 		try {
-			return RouteConstructor.getPathStackNodes(engine, controlFlow, reference); 
+			return RouteConstructor.getPathStackNodes(controlFlow, cachedFunctionMap, reference); 
 
 		} catch (AbortedException e) {
 			return null;

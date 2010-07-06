@@ -33,10 +33,10 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 
 	public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getNode().isUnresolved()) {
+		if (getNode().getUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
-		if (getNode().getFormsRecursion()) {
+		if (getNode().getRecursion()) {
 			status.mergeStatus(S.RECURSION);			
 		}
 		if (m_instruction.getIsIllegal()) {
@@ -46,14 +46,14 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 
 	public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getNode().isUnresolved()) {
+		if (getNode().getUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
 		return m_numCycles;
 	}
 
 	public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getNode().isUnresolved()) {
+		if (getNode().getUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
 		if (!m_instruction.isFnop()) {
@@ -63,7 +63,7 @@ public class InstructionNodeAttributes extends NodeAttributes {
 	}
 
 	public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
-		if (getNode().isUnresolved()) {
+		if (getNode().getUnresolved()) {
 			status.mergeStatus(S.UNRESOLVED);
 		}
 		if (m_instruction.isFnop()) {

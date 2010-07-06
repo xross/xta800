@@ -4,29 +4,29 @@ import java.util.Set;
 
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 
 class UnresolvedSetter {
-	private Set<InstructionNode> m_functionStartNodes;
+	private Set<CfgInstructionNode> m_functionStartNodes;
 
-	public UnresolvedSetter(Set<InstructionNode> functionStartNodes) {
+	UnresolvedSetter(Set<CfgInstructionNode> functionStartNodes) {
 		m_functionStartNodes = functionStartNodes;
 	}
 
-	public void process() {
-		for(InstructionNode inst : m_functionStartNodes){
-			Set<Node> seen = new NonIteratableSet<Node>();
+	void process() {
+		for(CfgInstructionNode inst : m_functionStartNodes){
+			Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
 			findUnresolved(inst, seen);
 		}
 	}
 
-	private void findUnresolved(Node inst, Set<Node> seen) {
-		Set<Node> following = new IteratableSet<Node>();
+	private void findUnresolved(CfgNode inst, Set<CfgNode> seen) {
+		Set<CfgNode> following = new IteratableSet<CfgNode>();
 		following.add(inst);
 		while (!following.isEmpty()) {
-			Node current = following.iterator().next();
+			CfgNode current = following.iterator().next();
 			
 			seen.add(current);
 			boolean isBranch = isBranch(current);
@@ -37,14 +37,14 @@ class UnresolvedSetter {
 			} else {				
 				current.setUnresolved(false);
 				
-				if (current instanceof InstructionNode) {
-					InstructionNode i = (InstructionNode)current;
+				if (current instanceof CfgInstructionNode) {
+					CfgInstructionNode i = (CfgInstructionNode)current;
 					if (i.getXtaInstruction().isLink()) {
 						following.addAll(i.getBranchReturnNodes());
 					}
 				}
 				
-				for (Node next : current.getNextNodes()) {
+				for (CfgNode next : current.getNextNodes()) {
 					if (!seen.contains(next)) {
 						following.add(next);
 					}
@@ -54,15 +54,15 @@ class UnresolvedSetter {
 		}
 	}
 
-	private int countNext(Node current) {
+	private int countNext(CfgNode current) {
 		int count = 0;
-		for(Node next : current.getNextNodes()){
-			if(!(next instanceof NullNode)){
+		for (CfgNode next : current.getNextNodes()) {
+			if (!(next instanceof CfgNullNode)) {
 				count++;
 			} else {
-				if(current instanceof InstructionNode){
-					InstructionNode inst = (InstructionNode)current;
-					if(inst.getXtaInstruction().getReturn()){
+				if (current instanceof CfgInstructionNode) {
+					CfgInstructionNode inst = (CfgInstructionNode)current;
+					if (inst.getXtaInstruction().getReturn()) {
 						count++;
 					}
 				}
@@ -71,9 +71,9 @@ class UnresolvedSetter {
 		return count;
 	}
 
-	private boolean isBranch(Node current) {
-		if(current instanceof InstructionNode){
-			InstructionNode inst = (InstructionNode)current;
+	private boolean isBranch(CfgNode current) {
+		if(current instanceof CfgInstructionNode){
+			CfgInstructionNode inst = (CfgInstructionNode)current;
 			return inst.getXtaInstruction().isBranch() && !inst.getXtaInstruction().isLink() && !inst.getXtaInstruction().getReturn();
 		}
 		return false;

@@ -3,7 +3,7 @@ package com.xmos.xta.core.engine.references.types;
 import java.util.Set;
 
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
+import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.utils.CoreId;
 
 public class EndpointPcReference extends ReferenceType {

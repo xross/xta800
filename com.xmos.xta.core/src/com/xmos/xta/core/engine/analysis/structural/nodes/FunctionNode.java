@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -17,7 +15,7 @@ public class FunctionNode extends Node {
 	private NodeAttributes m_attributes;
 	private String m_functionName;
 	private List<Node> m_functionSequence;
-	private FunctionReferenceNode m_callingFnRef;
+	private long m_callingPc;
 	
 	public FunctionNode() {
 		super();
@@ -34,12 +32,11 @@ public class FunctionNode extends Node {
 		m_functionName = functionName + "(Recursive)";
 		m_functionSequence = new LinkedList<Node>();
 		setUnresolved(true);
+		m_callingPc = 0;
 	}
 	
-	
-	public FunctionNode(Node function, FunctionReferenceNode fnRef) {
+	public FunctionNode(Node function, String functionName, long callingPc) {
 		super();
-		m_callingFnRef = fnRef;
 		if (function.isSequenceNode()){
 			SequenceNode sn = (SequenceNode)function;
 
@@ -49,36 +46,35 @@ public class FunctionNode extends Node {
 			m_functionSequence.add(function);
 		}
 
-		if (fnRef == null){
+		if (functionName == null){
 			m_functionName = "(Call to unknown function)";
 		} else {
-			m_functionName = m_callingFnRef.getFunctionName();
+			m_functionName = functionName;
 		}
+		m_callingPc = callingPc;
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public FunctionReferenceNode getCallingFunctionRef(){
-		return m_callingFnRef;
+	public long getCallingPc(){
+		return m_callingPc;
 	}
 	
 	public void getBackTrail(StringBuffer refStr) {
 		super.getBackTrail(refStr);
 		if(m_parent != null){
-			refStr.append(String.format("CALL:0x%x,", m_callingFnRef.getFunctionCallPc()));
+			refStr.append(String.format("CALL:0x%x,", m_callingPc));
 		}
 	}
 
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
-		//aborter.getAbort();
-
+	public Node copyRouteStructure() {
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
 		fn.m_attributes = new NodeAttributes(fn);
-		fn.setUnresolved(isUnresolved());
+		fn.setUnresolved(getUnresolved());
 		if (m_functionSequence != null) {
 			List<Node> nodes = new LinkedList<Node>();
 			for (Node node : m_functionSequence){
-				nodes.add(node.copyRouteStructure(aborter));
+				nodes.add(node.copyRouteStructure());
 			}
 			fn.m_functionSequence = nodes;
 		}

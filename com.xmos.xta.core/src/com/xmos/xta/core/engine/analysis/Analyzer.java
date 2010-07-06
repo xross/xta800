@@ -123,7 +123,9 @@ public class Analyzer {
 			RouteCoreContainer routeCoreContainer, CoreId core) {
 		
 		try {
-			RouteConstructor routeConstructor = new RouteConstructor(m_engine, m_engine.getControlFlow(core), routeCoreContainer, core);
+			RouteConstructor routeConstructor = new RouteConstructor(m_engine, 					
+					m_engine.getControlFlow(core), m_engine.getCachedFunctionMap(core),
+					routeCoreContainer, core);			
 			routeConstructor.analyze(src);
 
 			if (!routeConstructor.getRoutes().isEmpty()) {

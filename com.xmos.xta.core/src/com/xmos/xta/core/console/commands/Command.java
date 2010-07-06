@@ -117,12 +117,11 @@ public abstract class Command {
     		return false;
     	}
 
-    	boolean found = false;
+    	boolean found = true;
     	for (Route route : routes) {
         	Node node = route.getNode(nodeId);
-        	if (node != null) {
-        		found = true;
-        		break;
+        	if (node == null) {
+        		found = false;
         	}
     	}
     	if (!found) {

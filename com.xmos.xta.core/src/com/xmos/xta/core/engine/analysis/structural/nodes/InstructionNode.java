@@ -4,9 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -17,9 +16,9 @@ public class InstructionNode extends Node {
 	private InstructionNodeAttributes m_attributes;
 	private XtaInstruction m_inst;
 
-	public InstructionNode(XtaInstruction inst){
-		super();
-		m_inst = inst;
+	public InstructionNode(CfgInstructionNode node) {
+		super(node);
+		m_inst = node.getXtaInstruction();
 		m_attributes = new InstructionNodeAttributes(this);
 	}
 
@@ -28,12 +27,12 @@ public class InstructionNode extends Node {
 		m_inst = node.m_inst;
 		m_attributes = new InstructionNodeAttributes(this);
 	}
-
+	
 	public String toString(){
 		return this.getXtaInstruction().toString();
 	}
 	
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		InstructionNode in = new InstructionNode(this);
 		in.m_attributes = new InstructionNodeAttributes(in);
 		return in;

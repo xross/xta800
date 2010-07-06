@@ -51,7 +51,7 @@ public class Debugger {
 	    for (FunctionContainer functionContainer : controlFlow.getFunctionContainers()) {
 		    if (functionContainer.getFunctionName().equals(functionName)) {
 			    try {				    	
-					return functionContainer.getCachedFunction(m_engine);
+					return m_engine.getCachedFunctionMap(coreId).getCachedFunction(functionContainer);
 												
 				} catch (AbortedException e) {
 					break;
@@ -89,7 +89,9 @@ public class Debugger {
 			if (reference.resolve(m_engine)) {
 			    try {
 					for (StackNode stackNode : RouteConstructor.getPathStackNodes(
-							m_engine, m_engine.getControlFlow(activeCore), reference)) {
+							m_engine.getControlFlow(activeCore), 
+							m_engine.getCachedFunctionMap(activeCore),
+							reference)) {
 						
 						matchingReferences.addAll(stackNode.getBackTrails());
 					}

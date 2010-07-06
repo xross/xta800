@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -17,7 +15,7 @@ public class NullNode extends Node {
 		super();
 	}
 
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		return new NullNode();
 	}
 

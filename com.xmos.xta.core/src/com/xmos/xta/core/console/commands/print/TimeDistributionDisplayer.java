@@ -12,7 +12,7 @@ public class TimeDistributionDisplayer {
 		m_console = console;
 	}
 
-	public void display(Node node, Console console) {
+	public void display(Node node, Console console) {		
 		m_console.display("time distribution\n");
 		TimeDistributionBuckets tdb = node.getTimeSpread();
 		tdb.print(console);

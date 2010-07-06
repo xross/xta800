@@ -1,4 +1,4 @@
-package com.xmos.xta.core.engine.functionmapper;
+package com.xmos.xta.core.engine.analysis.controlflows.functionmapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,13 +13,13 @@ import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 
 public class FunctionMapper {
     private List<Function> m_functions;
 	private Map<Long, Function> m_pcToFunction;
 	
-    public FunctionMapper(Map<InstructionNode, InstructionNode> functionInstuctionToOriginal, 
+    public FunctionMapper(Map<CfgInstructionNode, CfgInstructionNode> functionInstuctionToOriginal, 
 			InstructionDecoder instructionDecoder, Set<FunctionContainer> functionContainers, 
 			Map<String, Set<Long>> labels) throws AbortedException {
 
@@ -54,20 +54,20 @@ public class FunctionMapper {
 
     private List<Function> createFunctions(InstructionDecoder instructionDecoder, 
     		Map<String, Set<Long>> labels, Set<FunctionContainer> functionContainers,
-    		Map<InstructionNode, InstructionNode> functionInstuctionToOriginal) {
+    		Map<CfgInstructionNode, CfgInstructionNode> functionInstuctionToOriginal) {
     	
     	List<AssemblyLine> assemblyLines = createAssemblyLines(labels, instructionDecoder);
     	
-    	List<InstructionNode> instList = instructionDecoder.getInstructions();
+    	List<CfgInstructionNode> instList = instructionDecoder.getInstructions();
     	Map<Long, Function> pcToFunction = new IteratableMap<Long, Function>();
     	
-    	Set<InstructionNode> starts = new NonIteratableSet<InstructionNode>();
+    	Set<CfgInstructionNode> starts = new NonIteratableSet<CfgInstructionNode>();
     	for (FunctionContainer fc : functionContainers){
     		starts.add(functionInstuctionToOriginal.get(fc.getStartInstruction()));
     	}
     	
     	for (FunctionContainer fc : functionContainers){	    		
-    		InstructionNode inst = functionInstuctionToOriginal.get(fc.getStartInstruction());
+    		CfgInstructionNode inst = functionInstuctionToOriginal.get(fc.getStartInstruction());
     		
     		int startIndex = instList.indexOf(inst);
     		List<AssemblyLine> functionAssembly = new ArrayList<AssemblyLine>();
@@ -85,7 +85,7 @@ public class FunctionMapper {
     			m_pcToFunction.put(assembly.getLineNumber(), function);
     		}
 
-    		pcToFunction.put(inst.getPC(), function);
+    		pcToFunction.put(inst.getPc(), function);
     	}
 
     	// Sort the functions into ascending pc order
@@ -104,7 +104,7 @@ public class FunctionMapper {
 			InstructionDecoder instructionDecoder) {
 		
 		List<AssemblyLine> asmLines = new ArrayList<AssemblyLine>();
-		for (InstructionNode instNode : instructionDecoder.getInstructions()){
+		for (CfgInstructionNode instNode : instructionDecoder.getInstructions()){
 			AssemblyLine assLine = new AssemblyLine(instNode, labels);
 			asmLines.add(assLine);
 		}

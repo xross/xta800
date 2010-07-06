@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteSelfLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -29,9 +27,9 @@ public class InfiniteSelfLoopNode extends Node{
 		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		InfiniteSelfLoopNode ln = new InfiniteSelfLoopNode();
-		ln.m_loop = m_loop.copyRouteStructure(aborter);
+		ln.m_loop = m_loop.copyRouteStructure();
 		ln.m_attributes = new InfiniteSelfLoopNodeAttributes(ln);
 		return ln;
 	}

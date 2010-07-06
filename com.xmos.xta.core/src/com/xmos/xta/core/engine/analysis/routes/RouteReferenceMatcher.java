@@ -116,7 +116,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 		if(ref.getType() == Type.CALL){
 			if(endOfList instanceof FunctionNode){
 				FunctionNode fn = (FunctionNode) endOfList;
-				if(ref.getPcs().contains(fn.getCallingFunctionRef().getFunctionCallPc())){
+				if(ref.getPcs().contains(fn.getCallingPc())){
 					return true;
 				}
 			}
@@ -130,5 +130,4 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 		}
 		return false;
 	}
-	
 }

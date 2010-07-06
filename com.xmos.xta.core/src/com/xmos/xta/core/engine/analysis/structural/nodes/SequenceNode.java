@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -29,10 +27,10 @@ public class SequenceNode extends Node {
 		m_attributes = new NodeAttributes(this);
 	}
 
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		SequenceNode pn = new SequenceNode();
 		for (Node path : m_nodes) {
-			Node clone = path.copyRouteStructure(aborter);
+			Node clone = path.copyRouteStructure();
 			pn.m_nodes.add(clone);
 		}
 		pn.m_attributes = new NodeAttributes(pn);

@@ -6,10 +6,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
@@ -26,17 +23,11 @@ public class FunctionReferenceNode extends Node {
 	
 	private String m_functionName;
 	private boolean m_isKnownFunctionTarget;
-	
-	//private FunctionNode m_cachedFunctionNode;
-
 	private Set<Reference> m_appliesForReferences;
-
-	private FunctionContainer m_functionContainer;
 	
 	public FunctionReferenceNode(FunctionReferenceNode old){
 		m_functionCallInstruction =old.m_functionCallInstruction;
 		m_functionName = old.m_functionName;
-		m_functionContainer = old.m_functionContainer;
 		m_functionStartInstruction = old.m_functionStartInstruction;
 		m_isKnownFunctionTarget = old.m_isKnownFunctionTarget;
 		m_appliesForReferences = old.m_appliesForReferences;
@@ -102,19 +93,7 @@ public class FunctionReferenceNode extends Node {
 		return m_functionName;
 	}
 
-	public FunctionContainer getFunctionContainer(){
-		return m_functionContainer;
-	}
-	
-	public void setFunction(FunctionContainer fc) {
-		m_functionName = fc.getFunctionName();
-		m_functionContainer = fc;
-		m_isKnownFunctionTarget = true;
-		m_functionStartInstruction = fc.getStartInstruction();
-		assert(m_functionName != null);
-	}
-
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		FunctionReferenceNode newFrn = new FunctionReferenceNode(this);
 		return newFrn;
 	}

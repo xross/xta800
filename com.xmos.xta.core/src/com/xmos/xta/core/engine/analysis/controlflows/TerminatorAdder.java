@@ -3,48 +3,47 @@ package com.xmos.xta.core.engine.analysis.controlflows;
 import java.util.Set;
 
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
-import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 
 class TerminatorAdder {
-	private Set<InstructionNode> m_functionStartNodes;
+	private Set<CfgInstructionNode> m_functionStartNodes;
 
-	public TerminatorAdder(Set<InstructionNode> functionStartNodes){
+	TerminatorAdder(Set<CfgInstructionNode> functionStartNodes){
 		m_functionStartNodes = functionStartNodes;
 	}
 
-	public void process() {
-		for(InstructionNode inst : m_functionStartNodes){
-			Set<Node> terminals = new NonIteratableSet<Node>();
-			Set<Node> seen = new NonIteratableSet<Node>();
+	void process() {
+		for(CfgInstructionNode inst : m_functionStartNodes){
+			Set<CfgNode> terminals = new NonIteratableSet<CfgNode>();
+			Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
 			findEndPoints(inst, seen, terminals);
-			NullNode nullNode = null;
-			for(Node node : terminals){
-				if(node instanceof NullNode){
-					nullNode = (NullNode) node;
+			CfgNullNode nullNode = null;
+			for(CfgNode node : terminals){
+				if(node instanceof CfgNullNode){
+					nullNode = (CfgNullNode) node;
 					terminals.remove(node);
 					break;
 				}
 			}
-			if(nullNode == null) nullNode = new NullNode();
-			for(Node terminal : terminals){
-				CommonMethods.connect(nullNode, terminal);
+			if(nullNode == null) nullNode = new CfgNullNode();
+			for(CfgNode terminal : terminals){
+				CfgNode.connect(nullNode, terminal);
 			}
 		}
 	}
 
-	private void findEndPoints(Node inst, Set<Node> seen, Set<Node> terminals) {
-		Set<Node> following = new NonIteratableSet<Node>();
+	private void findEndPoints(CfgNode inst, Set<CfgNode> seen, Set<CfgNode> terminals) {
+		Set<CfgNode> following = new NonIteratableSet<CfgNode>();
 		following.add(inst);
 		while(!following.isEmpty()){
-			Node current = following.iterator().next();
+			CfgNode current = following.iterator().next();
 			seen.add(current);
 			if(current.getNextNodesSize() == 0){
 				terminals.add(current);
 			} else {
-				for(Node next : current.getNextNodes()){
+				for(CfgNode next : current.getNextNodes()){
 					if(!seen.contains(next)){
 						following.add(next);
 					}

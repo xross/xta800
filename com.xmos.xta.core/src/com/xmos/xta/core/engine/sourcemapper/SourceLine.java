@@ -8,7 +8,7 @@ import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 import com.xmos.xta.core.engine.utils.CoreCollection;
 import com.xmos.xta.core.engine.utils.CoreId;
 
@@ -83,7 +83,7 @@ public class SourceLine {
 		for (Pair<Long, Long> range : addressRanges) {
 			long endPc = instructionDecoder.getEndPc();
 			for (long pc = range.first; (pc < range.second) && (pc <= endPc); pc += 2) {
-				InstructionNode node = instructionDecoder.getNode(pc);
+				CfgInstructionNode node = instructionDecoder.getNode(pc);
 				if (node != null) {
 					addresses.add(pc);
 				}

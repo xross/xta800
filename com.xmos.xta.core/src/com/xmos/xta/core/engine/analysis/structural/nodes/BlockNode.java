@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -30,10 +28,10 @@ public class BlockNode extends Node {
 		m_attributes = new BlockNodeAttributes(this);
 	}
 	
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		List<InstructionNode> insts = new LinkedList<InstructionNode>();
 		for (InstructionNode inst : m_insts){
-			insts.add((InstructionNode) inst.copyRouteStructure(aborter));
+			insts.add((InstructionNode) inst.copyRouteStructure());
 		}
 		return new BlockNode(insts);
 	}

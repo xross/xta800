@@ -8,23 +8,23 @@ class InstructionBuffer {
     long m_pc;
     int m_numBytes;
 
-    public InstructionBuffer(long startPc, int numBytes) {
+    InstructionBuffer(long startPc, int numBytes) {
     	m_pc = startPc;
         m_numBytes = numBytes;
 	}
     
-    public void setPc(long pc) {
+    void setPc(long pc) {
         m_pc = pc;
     }
 
-    public boolean canIssue(int numBytes) {
+    boolean canIssue(int numBytes) {
         if (m_numBytes < numBytes)
             return false;
         else
             return true;
     }
 
-    public int fetch() {
+    int fetch() {
         // Need room for a word before fetching
         if (m_numBytes <= (IBUFFER_NUM_BYTES - BYTES_PER_WORD))
         {
@@ -40,12 +40,12 @@ class InstructionBuffer {
         return 0;
     }
 
-    public void issue(int numBytes) {
+    void issue(int numBytes) {
         assert(m_numBytes >= numBytes);
         m_numBytes -= numBytes;
     }
 
-    public int branchTo(long targetAddress, boolean isLoadStore) {
+    int branchTo(long targetAddress, boolean isLoadStore) {
         m_pc = targetAddress;
 
         if (isLoadStore) {
@@ -62,11 +62,10 @@ class InstructionBuffer {
         return m_numBytes;
 	}
 
-    private boolean isWordAligned(long address) {
+    boolean isWordAligned(long address) {
         if ((address & 0x3) == 0)
             return true;
         else
             return false;
     }
-
 }

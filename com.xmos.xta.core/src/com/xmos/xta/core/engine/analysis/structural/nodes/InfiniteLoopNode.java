@@ -1,13 +1,11 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -27,7 +25,7 @@ public class InfiniteLoopNode extends Node {
 		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
-	public InfiniteLoopNode(Set<Node> loops, Node base) {
+	public InfiniteLoopNode(Collection<Node> loops, Node base) {
 		super();
 		m_loopHeader = base;
 		m_loopHeader.getAttributes().setIsLoopHeader(true);
@@ -38,13 +36,13 @@ public class InfiniteLoopNode extends Node {
 		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
-	public Node copyRouteStructure(Aborter aborter) throws AbortedException {
+	public Node copyRouteStructure() {
 		InfiniteLoopNode ln = new InfiniteLoopNode();
 		for (Node loop : m_loops) {
-			Node clone = loop.copyRouteStructure(aborter);
+			Node clone = loop.copyRouteStructure();
 			ln.m_loops.add(clone);
 		}
-		ln.m_loopHeader = m_loopHeader.copyRouteStructure(aborter);
+		ln.m_loopHeader = m_loopHeader.copyRouteStructure();
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
 		ln.m_attributes = new InfiniteLoopNodeAttributes(ln);
 		return ln;

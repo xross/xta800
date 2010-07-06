@@ -2,25 +2,24 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
 
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 
 public class NullRemover  extends PatternMatcher {
 
-	public boolean isMatch(Node currentNode, Collection<Node> workingSet, Node treeStart, Aborter aborter ) throws AbortedException {
+	public boolean isMatch(CfgNode currentNode, Collection<CfgNode> workingSet, CfgNode treeStart) {
 		m_treeStart = treeStart;
 		
-		if(!currentNode.isNullNode()){
+		if (!(currentNode instanceof CfgNullNode)) {
 			return false;
 		}
 		
 		assert(currentNode.getNextNodes().size() < 2);
 		
-		for(Node next : currentNode.getNextNodes()){
-			if(next.isNullNode()){
+		for (CfgNode next : currentNode.getNextNodes()) {
+			if (next instanceof CfgNullNode) {
 				workingSet.remove(currentNode);
-				for(Node prev : currentNode.getPrevNodes()){
+				for (CfgNode prev : currentNode.getPrevNodes()) {
 					prev.removeNextNode(currentNode);
 					prev.addNextNode(next);
 					next.addPrevNode(prev);
@@ -32,9 +31,7 @@ public class NullRemover  extends PatternMatcher {
 		return false;
 	}
 
-
 	public boolean usesDominatorTree() {
 		return false;
 	}
-
 }

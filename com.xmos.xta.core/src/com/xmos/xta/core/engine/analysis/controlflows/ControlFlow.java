@@ -18,9 +18,10 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.functionmapper.FunctionMapper;
+import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 import com.xmos.xta.core.engine.sections.Sections;
 import com.xmos.xta.core.engine.utils.CoreId;
 
@@ -28,13 +29,13 @@ public class ControlFlow {
 	private static final boolean DEBUG = false;
 
 	private Set<FunctionContainer> m_functionContainers;
-	private Map<FunctionReferenceNode, FunctionContainer> m_containingFunction;
-	private Map<FunctionContainer, Set<FunctionReferenceNode>> m_fnRefToCallees;
+	private Map<CfgFunctionReferenceNode, FunctionContainer> m_containingFunction;
+	private Map<FunctionContainer, Set<CfgFunctionReferenceNode>> m_fnRefToCallees;
 	private FunctionMapper m_functionMapper;
 	
-	public ControlFlow() {
-		m_containingFunction = new NonIteratableMap<FunctionReferenceNode, FunctionContainer>();		
-		m_fnRefToCallees = new IteratableMap<FunctionContainer, Set<FunctionReferenceNode>>();
+	ControlFlow() {
+		m_containingFunction = new NonIteratableMap<CfgFunctionReferenceNode, FunctionContainer>();		
+		m_fnRefToCallees = new IteratableMap<FunctionContainer, Set<CfgFunctionReferenceNode>>();
 		m_functionMapper = null;
 	}	
 
@@ -48,13 +49,23 @@ public class ControlFlow {
 		return m_functionMapper;
 	}
 	
-	public List<Stack<FunctionReferenceNode>> getStacks(FunctionContainer fc){
-		Stack<FunctionReferenceNode> stack = new Stack<FunctionReferenceNode>();
-		List<Stack<FunctionReferenceNode>> foundStacks = new LinkedList<Stack<FunctionReferenceNode>>();
+	public List<Stack<CfgFunctionReferenceNode>> getStacks(FunctionContainer fc){
+		Stack<CfgFunctionReferenceNode> stack = new Stack<CfgFunctionReferenceNode>();
+		List<Stack<CfgFunctionReferenceNode>> foundStacks = new LinkedList<Stack<CfgFunctionReferenceNode>>();
 		climb(fc, stack, foundStacks);
 		return foundStacks;
 	}
 
+	public FunctionContainer getFunctionContainer(CfgNode node) {
+		for (FunctionContainer fc : m_functionContainers) {
+			if (fc.getFunctionContents().contains(node)) {
+				return fc;
+			}
+		}
+		assert(false);
+		return null;
+	}
+	
 	public List<FunctionContainer> getFunctionContaining(long pc) {
 		List<FunctionContainer> found = new LinkedList<FunctionContainer>();
 		for (FunctionContainer fc : m_functionContainers) {
@@ -82,8 +93,8 @@ public class ControlFlow {
 			return false;
 		}
 
-		Set<InstructionNode> functionStartNodes = fc.getFunctionStarts();		
-		Set<InstructionNode> functionEndNodes = fc.getFunctionEnds();
+		Set<CfgInstructionNode> functionStartNodes = fc.getFunctionStarts();		
+		Set<CfgInstructionNode> functionEndNodes = fc.getFunctionEnds();
 		
 		SuccessorAdder sa = new SuccessorAdder(coreId, instructionDecoder, 
 				sections, functionEndNodes, notifier, src, mnenonics);
@@ -132,11 +143,11 @@ public class ControlFlow {
 	private void makeCalleeGraph(Set<FunctionContainer> functionContainers) {
 
 		for (FunctionContainer fc: functionContainers){			
-			m_fnRefToCallees.put(fc, new IteratableSet<FunctionReferenceNode>());
+			m_fnRefToCallees.put(fc, new IteratableSet<CfgFunctionReferenceNode>());
 		}
 
 		for (FunctionContainer fc: functionContainers) {
-			for (FunctionReferenceNode containedRef : fc.getFunctionReferenceNodes()){			
+			for (CfgFunctionReferenceNode containedRef : fc.getFunctionReferenceNodes()){			
 				m_containingFunction.put(containedRef, fc);
 				
 				FunctionContainer containedFnCont = containedRef.getFunctionContainer();
@@ -148,20 +159,20 @@ public class ControlFlow {
 		
 		for (FunctionContainer fc : m_fnRefToCallees.keySet()) {
 			if (m_fnRefToCallees.get(fc).isEmpty()) {
-				FunctionReferenceNode uncalledFunctionRef = new FunctionReferenceNode();
-				uncalledFunctionRef.setFunction(fc);
-				m_fnRefToCallees.put(fc, new IteratableSet<FunctionReferenceNode>());
+				CfgFunctionReferenceNode uncalledFunctionRef = new CfgFunctionReferenceNode();
+				uncalledFunctionRef.setFunctionContainer(fc);
+				m_fnRefToCallees.put(fc, new IteratableSet<CfgFunctionReferenceNode>());
 				m_fnRefToCallees.get(fc).add(uncalledFunctionRef);
 			}
 		}
 	}
 	
 	private void climb(FunctionContainer fc,
-			Stack<FunctionReferenceNode> stack,
-			List<Stack<FunctionReferenceNode>> foundStacks) {
+			Stack<CfgFunctionReferenceNode> stack,
+			List<Stack<CfgFunctionReferenceNode>> foundStacks) {
 		
 		if (fc != null && m_fnRefToCallees.containsKey(fc)) {
-			for(FunctionReferenceNode previous : m_fnRefToCallees.get(fc)) {
+			for (CfgFunctionReferenceNode previous : m_fnRefToCallees.get(fc)) {
 				
 				if (!stack.contains(previous)) {
 					stack.push(previous);
@@ -171,7 +182,7 @@ public class ControlFlow {
 				}
 			}
 		} else {
-			Stack<FunctionReferenceNode> copy = new Stack<FunctionReferenceNode>();
+			Stack<CfgFunctionReferenceNode> copy = new Stack<CfgFunctionReferenceNode>();
 			copy.addAll(stack);
 			Collections.reverse(copy);
 			foundStacks.add(copy);
@@ -182,7 +193,7 @@ public class ControlFlow {
 		System.out.println("digraph {");
 		for (FunctionContainer fc : m_functionContainers) {
 			
-			for (FunctionReferenceNode frn : fc.getFunctionReferenceNodes()) {
+			for (CfgFunctionReferenceNode frn : fc.getFunctionReferenceNodes()) {
 				if (frn.isKnownFunction()){
 					System.out.println(fc.getFunctionName() + " -> " + frn.getFunctionName() + ";");
 				}
@@ -194,25 +205,25 @@ public class ControlFlow {
 	private void linkFunctions(Set<FunctionContainer> functionContainers) {
 		Map<Long, FunctionContainer> pcToFunctionStartNode = new NonIteratableMap<Long, FunctionContainer>();
 		for(FunctionContainer fc : functionContainers){
-			pcToFunctionStartNode.put(fc.getStartInstruction().getPC(), fc);
+			pcToFunctionStartNode.put(fc.getStartInstruction().getPc(), fc);
 		}
 		for (FunctionContainer fc : functionContainers){
-			for (FunctionReferenceNode g : fc.getFunctionReferenceNodes()){
+			for (CfgFunctionReferenceNode g : fc.getFunctionReferenceNodes()){
 				if(g.isKnownFunction()){
 					FunctionContainer link = pcToFunctionStartNode.get(g.getFunctionStartPc());
-					g.setFunction(link);
+					g.setFunctionContainer(link);
 				}
 			}
 		}
 	}
 
 	private void setBranchTargets(InstructionDecoder id, Set<FunctionContainer> functionContainers) {
-		for (InstructionNode inst : id.getInstructions()) {
+		for (CfgInstructionNode inst : id.getInstructions()) {
 			if (inst.getXtaInstruction().getBranchPcRelative()) {
 				long branchTarget = inst.getXtaInstruction().getBranchPcRelativeTargetPc();
 				inst.getXtaInstruction().setBranchPcRelativeTargetFunction("0x" + Long.toHexString(branchTarget));
-				for(FunctionContainer fc : functionContainers){
-					if(branchTarget == fc.getStartInstruction().getPC()){
+				for (FunctionContainer fc : functionContainers) {
+					if (branchTarget == fc.getStartInstruction().getPc()) {
 						inst.getXtaInstruction().setBranchPcRelativeTargetFunction(fc.getFunctionName());
 						break;
 					}
@@ -232,8 +243,8 @@ public class ControlFlow {
 		}
 		Set<String> seen = new NonIteratableSet<String>();
 		for(FunctionContainer fc : functionContainers){
-			InstructionNode inst = fc.getStartInstruction();
-			String functionName = symbolTable.functionName(inst.getStartPc());
+			CfgInstructionNode inst = fc.getStartInstruction();
+			String functionName = symbolTable.functionName(inst.getPc());
 			if (seen.contains(functionName)) {
 				String label = pcToLabel.get(inst.getXtaInstruction().getPc());
 				if(label != null){

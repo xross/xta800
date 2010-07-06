@@ -56,8 +56,9 @@ public class TraceDisplayer {
 		return false;
 	}
 
-	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, 
-	RecursionDetctedException, UnresolvedDetctedException, IllegalException {
+	private void displayInstructions(Node node, Case c, long totalIterations, long iteration) 
+	    throws EscapedDetctedException, RecursionDetctedException, 
+	           UnresolvedDetctedException, IllegalException {
 
 		if (node == null || node.isNullNode())
 			return;
@@ -136,8 +137,8 @@ public class TraceDisplayer {
 	private void displayInstruction(InstructionNode instruction) throws EscapedDetctedException, 
 	IllegalException, UnresolvedDetctedException, RecursionDetctedException {
 		String isUnknown = instruction.getAttributes().getDisplayAsUnknown() ? "*" : " ";
-		String isUnresolved = instruction.isUnresolved() ? " [UNRESOLVED]" : "";
-		String formsRecursion = instruction.getFormsRecursion() ? " [RECURSION]" : "";
+		String isUnresolved = instruction.getUnresolved() ? " [UNRESOLVED]" : "";
+		String formsRecursion = instruction.getRecursion() ? " [RECURSION]" : "";
 
      	XtaInstruction xtaInstruction = instruction.getXtaInstruction();
 		String functionName = xtaInstruction.getFunctionName();		
@@ -166,10 +167,10 @@ public class TraceDisplayer {
      	m_currentTime += instruction.getAttributes().getFixedTime().getNs();
       	m_console.display("\n");
 
-      	if(instruction.getFormsRecursion()){
+      	if(instruction.getRecursion()){
       		throw new RecursionDetctedException();
       	}
-      	if(instruction.isUnresolved()){
+      	if(instruction.getUnresolved()){
       		throw new UnresolvedDetctedException();
       	}
       	if (m_console.hasEscaped()) {

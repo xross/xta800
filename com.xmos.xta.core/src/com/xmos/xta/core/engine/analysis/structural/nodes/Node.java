@@ -1,17 +1,14 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.libs.util.IteratableSet;
-import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.Aborter;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
-import com.xmos.xta.core.engine.analysis.structural.nodes.edges.Edges;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
@@ -21,10 +18,8 @@ public abstract class Node implements Comparable<Node> {
 
 	private int m_id;
 	protected Node m_parent;
-	private boolean m_dominatorSetIsCompleteSet;
-	private Edges m_edges;
 	private boolean m_unresolved;
-	private boolean m_formsRecursion;
+	private boolean m_recursion;
 	private boolean m_isFolded;
 	
 	public enum Case {
@@ -34,9 +29,7 @@ public abstract class Node implements Comparable<Node> {
 
 	public abstract String getTypeName();
 	public abstract NodeAttributes getAttributes();
-
-	public abstract Node copyRouteStructure(Aborter abort) throws AbortedException;
-
+	public abstract Node copyRouteStructure();
 	public abstract TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser);
 	public abstract TraverseStatus traverse(NodeTraverser nodeTraverser);
 	public abstract LinkedList<XtaInstruction> getInstructions();
@@ -51,18 +44,23 @@ public abstract class Node implements Comparable<Node> {
 		
 	public Node() {
 		m_id = s_numNodes++;
-		m_edges = new Edges();
 		m_isFolded = false;
 		m_unresolved = false;
-		m_formsRecursion = false;
+		m_recursion = false;
 	}
 
 	public Node(Node node) {
-		m_edges = new Edges();
 		m_id = s_numNodes++;
 		m_isFolded = false;
 		m_unresolved = node.m_unresolved;
-		m_formsRecursion = node.m_formsRecursion;
+		m_recursion = node.m_recursion;
+	}
+
+	public Node(CfgNode node) {
+		m_id = s_numNodes++;
+		m_isFolded = false;
+		m_unresolved = node.getUnresolved();
+		m_recursion = node.getRecursive();
 	}
 
 	public boolean isCondNode()             { return false; }
@@ -84,16 +82,16 @@ public abstract class Node implements Comparable<Node> {
 		m_unresolved = unresolved;
 	}
 
-	public boolean isUnresolved() {
+	public boolean getUnresolved() {
 		return m_unresolved;
 	}
 
-	public void setFormsRecursion(boolean formsRecursion) {
-		m_formsRecursion = formsRecursion;
+	public void setRecursion(boolean recursion) {
+		m_recursion = recursion;
 	}
 
-	public boolean getFormsRecursion() {
-		return m_formsRecursion;
+	public boolean getRecursion() {
+		return m_recursion;
 	}	
 	
 	public int getId() {
@@ -101,72 +99,7 @@ public abstract class Node implements Comparable<Node> {
 	}
 
 	public int compareTo(Node node) {
-		//return Integer.signum(m_id - node.m_id);
 		return m_id - node.m_id;
-	}
-
-	public Set<Node> getDominators() {
-		return m_edges.getDominators();
-	}
-
-	public boolean dominatorsContain(Node node){
-		return m_edges.dominatorsContain(node);
-	}
-
-	public void clearDominators(){
-		m_edges.clearDominators();
-	}
-
-	public void addDominator(Node node){
-		m_edges.addDominator(node);
-	}
-
-	public void addAllDominators(Collection<Node> nodes){
-		m_edges.addAllDominators(nodes);
-	}
-
-	public Set<Node> getNextNodes(){
-		return m_edges.getNextNodes();
-	}
-
-	public Set<Node> getPrevNodes(){
-		return m_edges.getPrevNodes();
-	}
-
-	public Node getNextNode(){
-		return m_edges.getNextNode();
-	}
-
-	public Node getPrevNode(){
-		return m_edges.getPrevNode();
-	}
-	
-	public int getNextNodesSize(){
-		return m_edges.getNextNodes().size();
-	}
-
-	public void addNextNode(Node node){
-		m_edges.addNextNode(node);
-	}
-
-	public void addPrevNode(Node node){
-		m_edges.addPrevNode(node);
-	}
-
-	public void removePrevNode(Node node){
-		m_edges.removePrevNode(node);
-	}
-
-	public void removeNextNode(Node node){
-		m_edges.removeNextNode(node);
-	}
-
-	public void setDominatorSetComplete(boolean b) {
-		m_dominatorSetIsCompleteSet = b;
-	}
-
-	public boolean isDominatorSetComplete(){
-		return m_dominatorSetIsCompleteSet;
 	}
 
 	public Node getParent(){
@@ -283,7 +216,7 @@ public abstract class Node implements Comparable<Node> {
 	
 	private Set<Node> m_branchReturnNodes;
 	public void addBranchReturnNode(InstructionNode node) {
-		if(m_branchReturnNodes == null){
+		if (m_branchReturnNodes == null){
 			m_branchReturnNodes = new IteratableSet<Node>();
 		}
 		m_branchReturnNodes.add(node);

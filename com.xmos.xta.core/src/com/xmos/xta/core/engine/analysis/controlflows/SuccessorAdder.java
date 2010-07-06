@@ -8,9 +8,8 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
 import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.patterns.CommonMethods;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.sections.BranchInfo;
 import com.xmos.xta.core.engine.sections.Sections;
@@ -20,13 +19,13 @@ class SuccessorAdder {
 
 	private InstructionDecoder m_instDecoder;
 	private Map<Reference, Set<BranchInfo>> m_branchMap;
-	private Set<InstructionNode> m_functionEnds;
+	private Set<CfgInstructionNode> m_functionEnds;
 	private InstructionMnemonics m_mnenonics;
 	private Notifier m_notifier;
 	private CommandSource m_src;
 
-	public SuccessorAdder(CoreId coreId, InstructionDecoder instDecoder, Sections sections,
-			Set<InstructionNode> threadEnds, Notifier notifier, CommandSource src, InstructionMnemonics mnenonics) {
+	SuccessorAdder(CoreId coreId, InstructionDecoder instDecoder, Sections sections,
+			Set<CfgInstructionNode> threadEnds, Notifier notifier, CommandSource src, InstructionMnemonics mnenonics) {
 		m_functionEnds = threadEnds;
 		m_branchMap = sections.getBranches(coreId);
 		m_instDecoder = instDecoder;
@@ -35,17 +34,17 @@ class SuccessorAdder {
 		m_mnenonics = mnenonics;
 	}
 
-	public void process() {
-		for (InstructionNode node : m_instDecoder.getInstructions()) {
+	void process() {
+		for (CfgInstructionNode node : m_instDecoder.getInstructions()) {
 			XtaInstruction inst = node.getXtaInstruction();
-
+						
 			addTargetsToAllBranchInstructions(node, inst);
 			addTargetsToAllNonBranchingInstructions(node, inst);
 			addUserSuccessors(node, inst);
 		}
 	}
 	
-	private void addUserSuccessors(Node instruction, XtaInstruction inst) {
+	private void addUserSuccessors(CfgNode instruction, XtaInstruction inst) {
 		if(!inst.isLink()){
 			for (Reference ref : m_branchMap.keySet()) {
 				if (ref.matches(inst.getPc())) {
@@ -59,7 +58,7 @@ class SuccessorAdder {
 		}
 	}
 
-	private void addTargetsToAllNonBranchingInstructions(Node instruction, XtaInstruction inst) {
+	private void addTargetsToAllNonBranchingInstructions(CfgNode instruction, XtaInstruction inst) {
 		if (!(inst.isBranch() || inst.isLink() || m_mnenonics.isWait(inst) || m_functionEnds.contains(instruction))) {
 			long nextPc = inst.getPc() + inst.getNumBytes();
 			if(m_instDecoder.getNode(nextPc) != null){
@@ -68,15 +67,15 @@ class SuccessorAdder {
 		}
 	}
 
-	private void addTargetsToAllBranchInstructions(Node instruction, XtaInstruction inst) {
+	private void addTargetsToAllBranchInstructions(CfgNode instruction, XtaInstruction inst) {
 
-		if(inst.isLink()) {
+		if (inst.isLink()) {
 			long target = inst.getPc() + inst.getNumBytes();
-			InstructionNode blReturn = m_instDecoder.getNode(target);
-			if(blReturn != null){
+			CfgInstructionNode blReturn = m_instDecoder.getNode(target);
+			if (blReturn != null) {
 				instruction.addBranchReturnNode(blReturn);
 			}
-			return;
+			return;			
 		}
 
 		if (inst.getBranchPcRelative() && inst.isBranch()) {
@@ -89,14 +88,14 @@ class SuccessorAdder {
 		}
 	}
 
-	private void connect(Node instruction, long pc, boolean branching) {
-		Node target = m_instDecoder.getNode(pc);
+	private void connect(CfgNode instruction, long pc, boolean branching) {
+		CfgNode target = m_instDecoder.getNode(pc);
 		if (target != null) {
-			CommonMethods.connect(target, instruction);
+			CfgNode.connect(target, instruction);
 		} else {
-			if(!m_mnenonics.isLdap(((InstructionNode)instruction).getXtaInstruction())){
+			if(!m_mnenonics.isLdap(((CfgInstructionNode)instruction).getXtaInstruction())){
 				m_notifier.notify(m_src, Notifier.NOTIFY_WARNING, "target ("+ String.format("0x%x", pc) +
-					") of: " + ((InstructionNode)instruction).getXtaInstruction().toString() + " not found in executable sections");
+					") of: " + ((CfgInstructionNode)instruction).getXtaInstruction().toString() + " not found in executable sections");
 			}
 		}
 	}
