@@ -1,12 +1,12 @@
-seq\(\d+\)      : \d+\.\d+ ns / \d+\.\d+ ns 
+seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
 .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-.    function\(\d+\) : \d+\.\d+ ns / \d+\.\d+ ns g
+.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns g
 .    .    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
 .    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
 
-seq\(\d+\)      : \d+\.\d+ ns / \d+\.\d+ ns 
+seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
 .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-.    function\(\d+\) : \d+\.\d+ ns / \d+\.\d+ ns g
+.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns g
 .    .    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
 .    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
 

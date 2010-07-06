@@ -673,7 +673,7 @@ void audioManager(
 #pragma xta command "analyse path audio_48_left_o3 audio_48_left_o5"
 #pragma xta command "set required - 1300 ns"
 #pragma xta command "analyse path audio_48_left_o4 audio_48_left_o6"
-#pragma xta command "set required - 1300 ns"
+#pragma xta command "set required - 1400 ns"
 #pragma xta command "analyse path audio_48_left_o5 audio_48_left_o7"
 #pragma xta command "set required - 1300 ns"
 #pragma xta command "add exclusion audio_48_right_o0"
