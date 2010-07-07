@@ -11,29 +11,35 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import com.xmos.libs.controlflow.Branch;
+import com.xmos.libs.controlflow.ControlFlow;
+import com.xmos.libs.controlflow.ControlFlows;
+import com.xmos.libs.controlflow.FunctionControlFlow;
+import com.xmos.libs.controlflow.Label;
+import com.xmos.libs.controlflow.functionmapper.FunctionMapper;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.instructiondecoder.InstructionDecoder;
+import com.xmos.libs.instructiondecoder.InstructionDecoders;
+import com.xmos.libs.instructiondecoder.InstructionMnemonics;
 import com.xmos.libs.memorymonitor.MemoryMonitor;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.proginfoloader.ProgInfoEntry;
 import com.xmos.libs.proginfoloader.ProgInfoLoader;
+import com.xmos.libs.util.CoreCollection;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.libs.util.Pair;
+import com.xmos.libs.util.WarningNotifier;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XmlHandler;
 import com.xmos.libs.xnloader.XnLoader;
 import com.xmos.xta.core.engine.analysis.Analyzer;
-import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlows;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
@@ -69,9 +75,7 @@ import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 import com.xmos.xta.core.engine.sections.SrcStringInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
-import com.xmos.xta.core.engine.utils.CoreCollection;
 import com.xmos.xta.core.engine.utils.CoreConfig;
-import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class Engine extends Notifier implements Aborter {
@@ -82,6 +86,7 @@ public class Engine extends Notifier implements Aborter {
 
 	private XeLoader m_xeLoader;
 	private SourceMapper m_sourceMapper;
+	private InstructionDecoders m_instructionDecoders;
 	private ControlFlows m_controlFlows;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
@@ -99,7 +104,6 @@ public class Engine extends Notifier implements Aborter {
 	private long m_loadStartTime;
 	private Map<String, Integer> m_nodeHz;
 	private CoreCollection<Integer> m_coreThreads;
-	private CoreCollection<InstructionDecoder> m_instructionDecoders;	
 	private CoreCollection<CachedFunctionMap> m_cachedFunctions;	
 	private Scripter m_scripter;
 	private Collection<CoreId> m_activeCores;
@@ -112,10 +116,10 @@ public class Engine extends Notifier implements Aborter {
 		super(config);
 		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
-		m_instructionDecoders = new CoreCollection<InstructionDecoder>();
 		m_cachedFunctions = new CoreCollection<CachedFunctionMap>();
 		m_xeLoader = new XeLoader();
 		m_sourceMapper = null;
+		m_instructionDecoders = new InstructionDecoders();
 		m_controlFlows = new ControlFlows();
 		m_routes = new LinkedList<Route>();
 		m_routeContainers = new LinkedList<RouteContainer>();
@@ -189,7 +193,7 @@ public class Engine extends Notifier implements Aborter {
 	}
 	
 	public InstructionDecoder getInstructionDecoder(CoreId coreId) {
-		return m_instructionDecoders.get(coreId);
+		return m_instructionDecoders.getInstructionDecoder(coreId);
 	}
 
 	public CachedFunctionMap getCachedFunctionMap(CoreId coreId) {
@@ -251,7 +255,11 @@ public class Engine extends Notifier implements Aborter {
 		}
 		
 		setAnalysisName("Decoding Instructions");
-		if (!initialiseInstructionDecoders(src, xeLoader)) {
+		try {
+			m_instructionDecoders.initialise(xeLoader);
+			
+		} catch (Exception e) {
+			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
 			return false;
 		}
 
@@ -259,40 +267,37 @@ public class Engine extends Notifier implements Aborter {
 			SourceMapper.clearUserSpecifedFileLocations();
 		}
 
-		setAnalysisName("Analysing Control Flow");		
-		if (m_controlFlows.initialise(src, this, xeLoader, sections, m_instructionDecoders)) {
+		setAnalysisName("Analysing Control Flow");
+		initialiseControlFlows(xeLoader, sections, src);
 			
-			setAnalysisName("Determining Source To Assembly Mapping");					
-		    try {
-		    	m_sourceMapper = new SourceMapper(src, this, xeLoader, sections, m_instructionDecoders);
-			} catch (AbortedException e) {
-				return false;
-			}
+		setAnalysisName("Determining Source To Assembly Mapping");					
+		try {
+		   	m_sourceMapper = new SourceMapper(src, this, xeLoader, sections, m_instructionDecoders);
+		} catch (AbortedException e) {
+			return false;
+		}
 			
-			initialiseCoreStates(xeLoader);
-		    initialiseActiveCores(xeLoader);
-		    initialiseCachedFunctions(xeLoader);
+		initialiseCoreStates(xeLoader);
+		initialiseActiveCores(xeLoader);
+		initialiseCachedFunctions(xeLoader);
 		    		   	
-			m_executableFile = executableFile;
-			m_loadedFileLastModifiedTime = executableFile.lastModified();
-			m_xeLoader = xeLoader;
-			m_sections = sections;
-			m_routes.clear();
-			m_routeContainers.clear();
-			m_selectedRoute = null;
-			m_defines.clear();
-			m_pathPoints.clear();
-			m_loopPoints.clear();
-			Route.resetRouteCount();
+		m_executableFile = executableFile;
+		m_loadedFileLastModifiedTime = executableFile.lastModified();
+		m_xeLoader = xeLoader;
+		m_sections = sections;
+		m_routes.clear();
+		m_routeContainers.clear();
+		m_selectedRoute = null;
+		m_defines.clear();
+		m_pathPoints.clear();
+		m_loopPoints.clear();
+		Route.resetRouteCount();
 	
-			runSrcLevelCommands(src, commandRunner);
+		runSrcLevelCommands(src, commandRunner);
 
-			m_scripter.setEngineLoadAndRunDone();
-			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");
-						
-			return true;
-		}		
-		return false;
+		m_scripter.setEngineLoadAndRunDone();
+		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");						
+		return true;
 	}
 
 	public void analyzeFunction(CommandSource src, String functionName) {
@@ -539,10 +544,10 @@ public class Engine extends Notifier implements Aborter {
 	// Function Names/Pcs
 	// ===================================================================== //
 	public Set<String> getFunctionNames(CoreId coreId) {
-		Set<FunctionContainer> functionContainers = m_controlFlows.getControlFlow(coreId).getFunctionContainers();
-		if (functionContainers != null) {
+		Set<FunctionControlFlow> functionControlFlows = m_controlFlows.getControlFlow(coreId).getFunctionControlFlows();
+		if (functionControlFlows != null) {
 			Set<String> functionNames = new IteratableSet<String>();
-			for(FunctionContainer fc : functionContainers){
+			for(FunctionControlFlow fc : functionControlFlows){
 				functionNames.add(fc.getFunctionName());
 			}			
 		    return functionNames;
@@ -581,9 +586,9 @@ public class Engine extends Notifier implements Aborter {
 	
 	public List<Long> getFunctionStartPcs(String functionName, CoreId coreId) {
 		List<Long> pcs = new LinkedList<Long>();
-		for (FunctionContainer fc : m_controlFlows.getControlFlow(coreId).getFunctionContainers()){
+		for (FunctionControlFlow fc : m_controlFlows.getControlFlow(coreId).getFunctionControlFlows()){
 			if (functionName.equals(fc.getFunctionName())){
-				pcs.add(fc.getStartInstruction().getPc());
+				pcs.add(fc.getStartInstructionNode().getPc());
 			}
 		}		
 		return pcs;
@@ -1304,7 +1309,7 @@ public class Engine extends Notifier implements Aborter {
 		if (!hit) {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		} else {
-			m_controlFlows.initialise(src, this, m_xeLoader, m_sections, m_instructionDecoders);
+			initialiseControlFlows(m_xeLoader, m_sections, src);			
 		    initialiseCachedFunctions(m_xeLoader);			
 		}		
 		return hit;
@@ -1344,7 +1349,7 @@ public class Engine extends Notifier implements Aborter {
 		if (!hit) {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		} else {
-			m_controlFlows.initialise(src, this, m_xeLoader, m_sections, m_instructionDecoders);
+			initialiseControlFlows(m_xeLoader, m_sections, src);			
 		    initialiseCachedFunctions(m_xeLoader);			
 		}		
 		return hit;
@@ -1543,28 +1548,6 @@ public class Engine extends Notifier implements Aborter {
 		}
 	}
 
-	private boolean initialiseInstructionDecoders(CommandSource src, XeLoader xeLoader) {
-		CoreCollection<InstructionDecoder> instructionDecoders = new CoreCollection<InstructionDecoder>();
-		
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-								
-				InstructionDecoder instructionDecoder = new InstructionDecoder(coreId, xeLoader);
-				try {
-					instructionDecoder.decode();
-					
-				} catch (Exception e) {
-					notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
-					return false;
-				}
-				instructionDecoders.add(coreId, instructionDecoder);
-			}
-		}
-		m_instructionDecoders = instructionDecoders;
-		return true;
-	}
-
 	private void initialiseCoreStates(XeLoader xeLoader) {
 		m_nodeHz = new IteratableMap<String, Integer>();
 		m_coreThreads = new CoreCollection<Integer>();
@@ -1615,6 +1598,23 @@ public class Engine extends Notifier implements Aborter {
 			}
 		}	
 		m_cachedFunctions = cachedFunctions;
+	}
+	
+	private void initialiseControlFlows(XeLoader xeLoader, Sections sections, final CommandSource src) {		
+		notify(src, Notifier.HOLD_MESSAGES, "");
+		
+        m_controlFlows.initialise(xeLoader, m_instructionDecoders, 
+        	getBranchesForControlFlow(xeLoader, sections), 
+        	getLabelsForControlFlow(xeLoader, sections), 
+        	getThreadStartsForControlFlow(xeLoader, sections), 
+        	getThreadStopsForControlFlow(xeLoader, sections), 
+        	new WarningNotifier() {			
+        		public void warn(String message) {
+        			m_notifier.notify(src, Notifier.NOTIFY_WARNING, message);
+        		}
+        	}
+        );        
+		notify(src, Notifier.RELEASE_MESSAGES, "");		
 	}
 	
 	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeChainIndex, int coreNumber) {
@@ -1669,7 +1669,7 @@ public class Engine extends Notifier implements Aborter {
 		
 	private void checkInstructionIsBranch(CommandSource src, Reference ref, CoreId activeCore) {
 		for (long pc : ref.getPcs()) {
-			CfgInstructionNode node = m_instructionDecoders.get(activeCore).getNode(pc);
+			CfgInstructionNode node = m_instructionDecoders.getInstructionDecoder(activeCore).getNode(pc);
 			if (node == null) {
 				notify(src, Notifier.NOTIFY_WARNING,
 						String.format("adding branch from non-existant instruction at %s",
@@ -1677,7 +1677,7 @@ public class Engine extends Notifier implements Aborter {
 				return;
 			}
 
-			XtaInstruction inst = node.getXtaInstruction();
+			Instruction inst = node.getInstruction();
 			InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
 			if (!inst.isBranch() && !mnenonics.isWait(inst)) {
 				notify(src, Notifier.NOTIFY_WARNING,
@@ -1687,4 +1687,80 @@ public class Engine extends Notifier implements Aborter {
 			}
 		}
 	}	
+	
+	private CoreCollection<Collection<Branch>> getBranchesForControlFlow(XeLoader xeLoader, Sections sections) {
+		CoreCollection<Collection<Branch>> branches = new CoreCollection<Collection<Branch>>();
+
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+
+				List<Branch> branchList = new ArrayList<Branch>();
+				Map<Reference, Set<BranchInfo>> branchesMap = sections.getBranches(coreId);
+				
+				for (Reference fromRef : branchesMap.keySet()) {		
+										
+					for (long fromPc : fromRef.getPcs()) {
+						List<Long> toPcs = new ArrayList<Long>();						
+					    for (BranchInfo branchInfo : branchesMap.get(fromRef)) {
+					    	for (long toPc : branchInfo.getRef().getPcs()) {
+					    		toPcs.add(toPc);
+					    	}
+					    }
+					    branchList.add(new Branch(fromPc, toPcs));						
+					}
+				}								
+				branches.add(coreId, branchList);
+			}
+		}
+		return branches;
+	}
+	
+	private CoreCollection<Collection<Label>> getLabelsForControlFlow(XeLoader xeLoader, Sections sections) {	
+		CoreCollection<Collection<Label>> labels = new CoreCollection<Collection<Label>>();
+
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+
+				List<Label> labelList = new ArrayList<Label>();
+				Map<String, Set<Long>> labelsMap = sections.getLabels(coreId);
+				
+				for (String name : labelsMap.keySet()) {		
+										
+					List<Long> toPcs = new ArrayList<Long>();						
+					for (long toPc : labelsMap.get(name)) {
+			    		toPcs.add(toPc);
+					}
+					labelList.add(new Label(name, toPcs));						
+				}								
+				labels.add(coreId, labelList);
+			}
+		}
+		return labels;
+	}
+	
+	private CoreCollection<Collection<Long>> getThreadStartsForControlFlow(XeLoader xeLoader, Sections sections) {		
+		CoreCollection<Collection<Long>> threadPoints = new CoreCollection<Collection<Long>>();
+
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				threadPoints.add(coreId, sections.getThreadStartPoints(coreId));
+			}
+		}
+		return threadPoints;
+	}
+	
+	private CoreCollection<Collection<Long>> getThreadStopsForControlFlow(XeLoader xeLoader, Sections sections) {		
+		CoreCollection<Collection<Long>> threadPoints = new CoreCollection<Collection<Long>>();
+
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
+				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
+				threadPoints.add(coreId, sections.getThreadStopPoints(coreId));
+			}
+		}
+		return threadPoints;
+	}
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
@@ -39,7 +40,6 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
-import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
 
 public class Scripter {

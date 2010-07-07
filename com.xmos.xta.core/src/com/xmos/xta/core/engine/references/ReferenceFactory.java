@@ -2,11 +2,11 @@ package com.xmos.xta.core.engine.references;
 
 import java.util.Set;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.references.types.EndpointPcReference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ReferenceFactory {
 	public static final String CORE_ID_SEPARATOR = "::";

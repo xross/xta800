@@ -6,10 +6,10 @@ import java.util.List;
 
 import jline.Completor;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class CodeReferenceCompletor implements Completor {
 	private Engine m_engine;

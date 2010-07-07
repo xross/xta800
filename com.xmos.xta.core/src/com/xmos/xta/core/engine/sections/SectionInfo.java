@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.sections;
 
-import com.xmos.xta.core.engine.utils.CoreId;
+import com.xmos.libs.util.CoreId;
 
 public class SectionInfo {
 	private Section m_section;

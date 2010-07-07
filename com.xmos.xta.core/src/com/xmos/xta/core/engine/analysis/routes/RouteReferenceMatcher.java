@@ -27,7 +27,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 		baseOfRouteNode.traverse(new DefaultNodeTraverser() {
 			public TraverseStatus foundInstructionNode(Node node) {
 				InstructionNode inst = (InstructionNode)node;
-				if(ref.getPcs().contains(inst.getPC()) && !inst.getXtaInstruction().isFnop()){
+				if(ref.getPcs().contains(inst.getPC()) && !inst.getInstruction().isFnop()){
 					matchingNodes.add(node);
 				}
 				return TraverseStatus.CONTINUE;

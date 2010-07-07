@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.xmos.libs.controlflow.nodes.CfgNode;
+import com.xmos.libs.controlflow.nodes.CfgNullNode;
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;

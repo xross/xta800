@@ -2,9 +2,9 @@ package com.xmos.xta.core.engine.references.types;
 
 import java.util.Map;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ReferenceTypeFactory {
 	public enum ReferenceClass {

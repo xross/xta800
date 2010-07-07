@@ -4,17 +4,17 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Branches extends Section {
 	private Map<Reference, Set<BranchInfo>> m_branches;
@@ -101,9 +101,9 @@ public class Branches extends Section {
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {
-	        	long fromPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
+	        	long fromPc = Instruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
-	        	long toPc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
+	        	long toPc = Instruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
 
 	        	Collection<Reference> toRefs = new IteratableSet<Reference>();

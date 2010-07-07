@@ -1,8 +1,8 @@
 package com.xmos.xta.core.engine.references.types;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
-import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
 
 public class CallFileLineReference extends ReferenceType {

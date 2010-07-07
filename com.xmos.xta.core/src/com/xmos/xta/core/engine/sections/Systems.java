@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Systems extends Section {
 	private Collection<String> m_functions;

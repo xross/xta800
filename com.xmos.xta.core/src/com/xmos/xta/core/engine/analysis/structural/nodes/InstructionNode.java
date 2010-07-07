@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -14,11 +14,11 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseSta
 
 public class InstructionNode extends Node {
 	private InstructionNodeAttributes m_attributes;
-	private XtaInstruction m_inst;
+	private Instruction m_inst;
 
 	public InstructionNode(CfgInstructionNode node) {
 		super(node);
-		m_inst = node.getXtaInstruction();
+		m_inst = node.getInstruction();
 		m_attributes = new InstructionNodeAttributes(this);
 	}
 
@@ -29,7 +29,7 @@ public class InstructionNode extends Node {
 	}
 	
 	public String toString(){
-		return this.getXtaInstruction().toString();
+		return this.getInstruction().toString();
 	}
 	
 	public Node copyRouteStructure() {
@@ -46,8 +46,8 @@ public class InstructionNode extends Node {
     	return m_attributes;
     }
 
-	public LinkedList<XtaInstruction> getInstructions() {
-		LinkedList<XtaInstruction> inst = new LinkedList<XtaInstruction>();
+	public LinkedList<Instruction> getInstructions() {
+		LinkedList<Instruction> inst = new LinkedList<Instruction>();
 		inst.add(m_inst);
 		return inst;
 	}
@@ -82,7 +82,7 @@ public class InstructionNode extends Node {
 				m_inst.getOperandString());
 	}
 
-	public XtaInstruction getXtaInstruction() {
+	public Instruction getInstruction() {
 		return m_inst;
 	}
 
@@ -90,16 +90,9 @@ public class InstructionNode extends Node {
 		return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
 	}
 
-	//below here the methods have been verified useful
-
 	public List<Node> iChildren() {
 		List<Node> children = new LinkedList<Node>();
 		return children;
-	}
-
-	public void buildList(List<Node> nodeList,
-			Stack<FunctionReferenceNode> stack, Node start) {
-		assert(false);
 	}
 
 	public void buildListDown(List<Node> nodeList) {

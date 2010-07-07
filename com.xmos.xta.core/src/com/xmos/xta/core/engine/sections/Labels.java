@@ -5,13 +5,13 @@ import java.util.Set;
 
 import com.xmos.libs.elfhandler.ElfHandler;
 import com.xmos.libs.elfhandler.Symbol;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.SymbolTable;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Labels extends Section  {
 	private Map<String, Set<Long>> m_labels;

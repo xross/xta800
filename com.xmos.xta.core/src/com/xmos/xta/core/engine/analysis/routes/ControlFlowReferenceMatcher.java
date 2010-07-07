@@ -5,13 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import com.xmos.libs.controlflow.ControlFlow;
+import com.xmos.libs.controlflow.FunctionControlFlow;
+import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.Pair;
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -21,11 +21,11 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
-class PreanalysisReferenceMatcher extends ReferenceMatcher {
+class ControlFlowReferenceMatcher extends ReferenceMatcher {
 	private ControlFlow m_controlFlow;
 	private CachedFunctionMap m_cachedFunctionMap;
 	
-	PreanalysisReferenceMatcher(ControlFlow controlFlow, CachedFunctionMap cachedFunctionMap) {
+	ControlFlowReferenceMatcher(ControlFlow controlFlow, CachedFunctionMap cachedFunctionMap) {
 		m_controlFlow = controlFlow;
 		m_cachedFunctionMap = cachedFunctionMap;
 	}
@@ -34,7 +34,7 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 	    throws AbortedException, MemoryMonitorException {
 		
 		List<StackNode> stackNodes = new LinkedList<StackNode>();
-		for (FunctionContainer container : getBaseContianers(ref)) {			
+		for (FunctionControlFlow container : getBaseContianers(ref)) {			
 			CfgInstructionNode instruction = getInstructionFromContainer(container, ref);
 			List<Stack<CfgFunctionReferenceNode>> nodeStacks = m_controlFlow.getStacks(container);
 	
@@ -43,12 +43,12 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return refineStackNodes(stackNodes, ref);
 	}
 
-	private List<FunctionContainer> getBaseContianers(Reference ref) {
-		List<FunctionContainer> fnContainers = new LinkedList<FunctionContainer>();
-		for (FunctionContainer fc : m_controlFlow.getFunctionContainers()) {
+	private List<FunctionControlFlow> getBaseContianers(Reference ref) {
+		List<FunctionControlFlow> fnContainers = new LinkedList<FunctionControlFlow>();
+		for (FunctionControlFlow fc : m_controlFlow.getFunctionControlFlows()) {
 			
 			if (ref.getBase().getType() == Type.FUNCTION) {
-				if (ref.getPcs().contains(fc.getStartInstruction().getPc())) {
+				if (ref.getPcs().contains(fc.getStartInstructionNode().getPc())) {
 					fnContainers.add(fc);
 				}
 			} else {
@@ -63,9 +63,9 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 		return fnContainers;
 	}
 
-	private CfgInstructionNode getInstructionFromContainer(FunctionContainer fc, Reference ref){
-		for (CfgInstructionNode inst : fc.getFunctionInstructionNodes()) {
-			if (ref.getPcs().contains(inst.getPc()) && ! inst.getXtaInstruction().isFnop()) {
+	private CfgInstructionNode getInstructionFromContainer(FunctionControlFlow fc, Reference ref){
+		for (CfgInstructionNode inst : fc.getInstructionNodes()) {
+			if (ref.getPcs().contains(inst.getPc()) && ! inst.getInstruction().isFnop()) {
 				return inst;
 			}
 		}
@@ -84,15 +84,15 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 			matchLabel(reference, pc, refList);
 			
 			List<Stack<CfgFunctionReferenceNode>> stacks = new LinkedList<Stack<CfgFunctionReferenceNode>>();
-			List<FunctionContainer> containedInFunction = m_controlFlow.getFunctionContaining(pc);
+			List<FunctionControlFlow> containedInFunction = m_controlFlow.getFunctionContaining(pc);
 
-			for(FunctionContainer fn : containedInFunction){
-				CfgInstructionNode inst = fn.getInstruction(pc);
+			for (FunctionControlFlow fn : containedInFunction) {
+				CfgInstructionNode inst = fn.getInstructionNode(pc);
 				
-				if(reference.getBase().getType() == Type.FUNCTION && fn.getStartInstruction() != inst){
+				if (reference.getBase().getType() == Type.FUNCTION && fn.getStartInstructionNode() != inst) {
 					continue;
 				}
-				
+
 				List<Stack<CfgFunctionReferenceNode>> callStacks = m_controlFlow.getStacks(fn);
 				
 				for(Stack<CfgFunctionReferenceNode> stack : callStacks){
@@ -181,7 +181,7 @@ class PreanalysisReferenceMatcher extends ReferenceMatcher {
 				found = true;
 			}
 		} else {		
-			Node functionNode =  m_cachedFunctionMap.getCachedFunction(frn.getFunctionContainer());
+			Node functionNode =  m_cachedFunctionMap.getCachedFunction(frn.getFunctionControlFlow());
 			InstructionNode inst = getInstructionNode(functionNode, latestPc);						
 			List<Node> nodeList = new LinkedList<Node>();
 			inst.buildListUp(nodeList, null);

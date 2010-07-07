@@ -1,8 +1,8 @@
 package com.xmos.xta.core.engine.references.types;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLabelReference extends ReferenceType {
 	SrcLabelReference(String ref, CoreId coreId) {

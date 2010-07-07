@@ -7,7 +7,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.libs.controlflow.ControlFlow;
+import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.controlflow.nodes.CfgNode;
+import com.xmos.libs.controlflow.nodes.CfgNullNode;
+import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.instructiondecoder.InstructionMnemonics;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
@@ -17,13 +25,6 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
-import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
@@ -48,7 +49,6 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class RouteConstructor {
 
@@ -71,8 +71,8 @@ public class RouteConstructor {
 			CachedFunctionMap cachedFunctionMap, Reference reference) 
 			throws AbortedException, MemoryMonitorException {
 		
-	    PreanalysisReferenceMatcher prm = new PreanalysisReferenceMatcher(controlFlow, cachedFunctionMap);
-	    return prm.matchReference(reference);
+	    ControlFlowReferenceMatcher cfrm = new ControlFlowReferenceMatcher(controlFlow, cachedFunctionMap);
+	    return cfrm.matchReference(reference);
     }
 	
 	public RouteConstructor(Engine engine, ControlFlow controlFlow, 
@@ -220,7 +220,7 @@ public class RouteConstructor {
 
 				for(Reference next : m_engine.getUserBranches().get(ref)){
 					for(StackNode nextStackNode : getPathStackNodes(m_controlFlow, m_cachedFunctionMap, next)){
-						if(sn.getInstruction().getXtaInstruction().isLink()){
+						if(sn.getInstruction().getInstruction().isLink()){
 							for(CfgNode nextFrn : sn.getInstruction().getNextNodes()){
 								if(nextFrn instanceof CfgFunctionReferenceNode){
 									CfgFunctionReferenceNode frn = (CfgFunctionReferenceNode)nextFrn;
@@ -286,7 +286,7 @@ public class RouteConstructor {
 		for (StackNode sn : endStackNodes) {
 			for (CfgNode node : workingSet) {
 				if (node instanceof CfgInstructionNode) {
-					if (((CfgInstructionNode)node).getXtaInstruction() == sn.getInstruction().getXtaInstruction()) {
+					if (((CfgInstructionNode)node).getInstruction() == sn.getInstruction().getInstruction()) {
 						continueAfterFunction = true;
 						break;
 					}
@@ -731,7 +731,7 @@ public class RouteConstructor {
 		System.out.print("digraph g {");
 		for (CfgNode node : workingSet) {
 			if (node instanceof CfgInstructionNode){
-				System.out.print("node" +node.getId() + " [label=\"" + ((CfgInstructionNode)node).getXtaInstruction() + "\"];");
+				System.out.print("node" +node.getId() + " [label=\"" + ((CfgInstructionNode)node).getInstruction() + "\"];");
 			} else {
 				System.out.print("node" +node.getId() + " [label=\"" + node + "\"];");
 			}
@@ -760,7 +760,7 @@ public class RouteConstructor {
 			node.traverse( new DefaultNodeTraverser() {
 				// Sets all the pausing instructions to unknown.
 				public TraverseStatus foundInstructionNode(Node node) {
-					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+					Instruction instruction = ((InstructionNode)node).getInstruction();
 					if (instruction.canPause()) {
 						NodeAttributes nodeAttributes = node.getAttributes();
 						nodeAttributes.addUnknown(route, UnknownFactory.Type.INSTRUCTION_TIME);
@@ -820,7 +820,7 @@ public class RouteConstructor {
     			Node node = route.getNode();				
     			node.traverse(new DefaultNodeTraverser() {
     				public TraverseStatus foundInstructionNode(Node node) {
-    					XtaInstruction instruction = ((InstructionNode)node).getXtaInstruction();
+    					Instruction instruction = ((InstructionNode)node).getInstruction();
 
     					// Checks for threading instructions...
     					if (mnenonics.isSsync(instruction))

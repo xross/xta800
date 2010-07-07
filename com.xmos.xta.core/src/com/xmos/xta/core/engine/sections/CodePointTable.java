@@ -3,11 +3,11 @@ package com.xmos.xta.core.engine.sections;
 import java.util.Map;
 
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class CodePointTable extends Section {
 	private String m_sectionName;

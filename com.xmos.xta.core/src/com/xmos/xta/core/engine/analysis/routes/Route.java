@@ -8,7 +8,6 @@ import com.xmos.libs.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionReferenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -124,9 +123,6 @@ public class Route {
 		    	return null;
 
 			node = node.iChildren().get(index);
-			if(node instanceof FunctionReferenceNode){
-				node = node.iChildren().get(0);
-			}
 		}
 		return node;
 	}

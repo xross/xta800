@@ -1,8 +1,8 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
+import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.instructiondecoder.InstructionMnemonics;
 import com.xmos.libs.xeloader.XeLoader.Architecture;
-import com.xmos.xta.core.engine.analysis.binary.InstructionMnemonics;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
@@ -13,14 +13,14 @@ import com.xmos.xta.core.engine.utils.TimeUnit.Units;
 
 public class InstructionNodeAttributes extends NodeAttributes {
 	private long m_numCycles;
-	private XtaInstruction m_instruction;
+	private Instruction m_instruction;
 	private CoreConfig m_coreConfig;
 	private Architecture m_architecture;
 	private String m_instructionTimeString;
 
 	public InstructionNodeAttributes(InstructionNode node) {
 		super(node);
-		m_instruction = node.getXtaInstruction();
+		m_instruction = node.getInstruction();
 		m_numCycles = m_instruction.getNumCycles();
 		m_coreConfig = null;
 		m_architecture = Architecture.UNKNOWN;

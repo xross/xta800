@@ -9,21 +9,21 @@ import java.util.List;
 import java.util.Map;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.libs.instructiondecoder.InstructionDecoders;
+import com.xmos.libs.util.CoreCollection;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
-import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.utils.CoreCollection;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SourceFile implements Comparable<SourceFile> {
 	private DebugFile m_debugFile;
 	private XeLoader m_xeLoader;
-	private CoreCollection<InstructionDecoder> m_instructionDecoders;
+	private InstructionDecoders m_instructionDecoders;
 	private ArrayList<SourceLine> m_sourceLines;
 	private CoreCollection<Map<Long, SourceLine>> m_pcToLine;
 
 	public SourceFile(DebugFile debugFile, XeLoader xeLoader, 
-			CoreCollection<InstructionDecoder> instructionDecoders) {
+			InstructionDecoders instructionDecoders) {
 		
 		m_debugFile = debugFile;
 		m_xeLoader = xeLoader;

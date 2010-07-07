@@ -1,8 +1,8 @@
 package com.xmos.xta.core.engine.references.types;
 
+import com.xmos.libs.controlflow.functionmapper.FunctionMapper;
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLabelPcReference extends ReferenceType {
 	SrcLabelPcReference(String ref, CoreId coreId) {

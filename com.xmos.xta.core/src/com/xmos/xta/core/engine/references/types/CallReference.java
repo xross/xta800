@@ -2,10 +2,10 @@ package com.xmos.xta.core.engine.references.types;
 
 import java.util.Map;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class CallReference extends ReferenceType {
 	CallReference(String ref, CoreId coreId) {

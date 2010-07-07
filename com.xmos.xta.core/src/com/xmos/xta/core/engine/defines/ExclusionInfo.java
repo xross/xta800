@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.defines;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ExclusionInfo implements DefineInfo {
 	private Reference m_reference;

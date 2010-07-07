@@ -2,12 +2,12 @@ package com.xmos.xta.core.console.commands.debug;
 
 import java.util.Map;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class FromPoints extends Command {
 	private static final String[] COMMAND_NAMES = { "frompoints" };

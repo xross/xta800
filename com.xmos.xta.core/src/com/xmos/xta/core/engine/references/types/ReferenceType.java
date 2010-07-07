@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.Engine;
@@ -13,7 +14,6 @@ import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public abstract class ReferenceType {
 	private String m_ref;

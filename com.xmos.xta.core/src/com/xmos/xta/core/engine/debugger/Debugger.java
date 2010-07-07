@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import com.xmos.libs.controlflow.ControlFlow;
+import com.xmos.libs.controlflow.FunctionControlFlow;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
@@ -19,7 +20,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Debugger {
 	private Engine m_engine; 
@@ -33,9 +33,9 @@ public class Debugger {
 		for (CoreId activeCore : m_engine.getActiveCores()) {
 			
 			ControlFlow controlFlow = m_engine.getControlFlow(activeCore);
-		    for (FunctionContainer functionContainer : controlFlow.getFunctionContainers()) {
-			    if (functionContainer.getFunctionName().equals(functionName)) {
-				    functionContainer.dumpControlFlow(console);
+		    for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
+			    if (functionControlFlow.getFunctionName().equals(functionName)) {
+				    console.display(functionControlFlow.dumpControlFlow());
 				    hit = true;
 			    }
 		    }
@@ -48,10 +48,10 @@ public class Debugger {
 	
 	public Node getCachedFunction(CommandSource src, String functionName, CoreId coreId) {
 		ControlFlow controlFlow = m_engine.getControlFlow(coreId);
-	    for (FunctionContainer functionContainer : controlFlow.getFunctionContainers()) {
-		    if (functionContainer.getFunctionName().equals(functionName)) {
+	    for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
+		    if (functionControlFlow.getFunctionName().equals(functionName)) {
 			    try {				    	
-					return m_engine.getCachedFunctionMap(coreId).getCachedFunction(functionContainer);
+					return m_engine.getCachedFunctionMap(coreId).getCachedFunction(functionControlFlow);
 												
 				} catch (AbortedException e) {
 					break;

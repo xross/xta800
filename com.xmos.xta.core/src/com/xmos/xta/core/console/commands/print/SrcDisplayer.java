@@ -3,16 +3,16 @@ package com.xmos.xta.core.console.commands.print;
 import java.util.List;
 import java.util.Set;
 
+import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceLine;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcDisplayer {
 	private Engine m_engine;
@@ -24,7 +24,7 @@ public class SrcDisplayer {
 	}
 
 	public void display(Node node, CoreId coreId) {
-  	    List<XtaInstruction> instructions = node.getInstructions();
+  	    List<Instruction> instructions = node.getInstructions();
 		SourceMapper sourceMapper = m_engine.getSourceMapper();
         NonIteratableMap<String, Set<Long>> linesCovered =
         	createSrcLinesCovered(instructions, sourceMapper, coreId);
@@ -51,11 +51,11 @@ public class SrcDisplayer {
 		}
     }
 
-	private NonIteratableMap<String, Set<Long>> createSrcLinesCovered(List<XtaInstruction> instructions,
+	private NonIteratableMap<String, Set<Long>> createSrcLinesCovered(List<Instruction> instructions,
 			SourceMapper sourceMapper, CoreId coreId) {
 
 		NonIteratableMap<String, Set<Long>> linesCovered = new NonIteratableMap<String, Set<Long>>();
-		for (XtaInstruction inst : instructions) {
+		for (Instruction inst : instructions) {
 			for (SourceFile sourceFile : sourceMapper.getSourceFiles()) {
 
 				String compilationName = sourceFile.getFullFileName();

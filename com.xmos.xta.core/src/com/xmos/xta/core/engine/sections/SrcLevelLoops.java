@@ -3,12 +3,12 @@ package com.xmos.xta.core.engine.sections;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SrcLevelLoops extends Section {
 	private Collection<SrcLevelLoopInfo> m_loops;
@@ -27,7 +27,7 @@ public class SrcLevelLoops extends Section {
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {
-	        	long pc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
+	        	long pc = Instruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
 
 	        	int numIterations = ByteArrayManipulation.readInt(data, byteIndex);

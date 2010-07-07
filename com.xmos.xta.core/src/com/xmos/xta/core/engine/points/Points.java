@@ -2,11 +2,11 @@ package com.xmos.xta.core.engine.points;
 
 import java.util.Map;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 class Points {
 	private Engine m_engine;

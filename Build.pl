@@ -158,18 +158,6 @@ sub DoRealClean
 
 sub DoPreBuild
 {
-  print(" + Building Generation Tools\n");
-  chdir("$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}generation") 
-    or confess("Build failed to find $TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}generation\n");
-
-  system("$MAKE $MAKE_FLAGS");
-  confess() if ($? != 0);
-
-  print(" + Generating files from Databases\n");
-
-  CreateXtaFiles("xs1b", "xs1b");
-
-  chdir("$BUILDPATH") or die("oops");
 }
 
 sub DoBuild
@@ -243,21 +231,6 @@ sub DoLint
   else {
     print "Error: Lint unsupported on this platform.\n";
   }
-}
-
-sub CreateXtaFiles
-{
-  my $versionDir = shift;
-  my $version = shift;
-   
-  chdir("$ARCH_DBS_XML${SLASH}$versionDir") or die("Generation failed to find $version databases\n");
-  system("$TOOLS_XTA${SLASH}${BIN}${SLASH}XtaGeneration.exe XSystemDb${SLASH}XS1-040.xml $version");
-
-  print(" + Installing $version generated xta files\n");
-  rename("XtaInstructionDecoder.java", "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}analysis${SLASH}binary${SLASH}${version}XtaInstructionDecoder.java") 
-    or die("Failed to move XtaInstructionDecoder.java\n");
-  rename("XtaInstructions.java",       "$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core${SLASH}engine${SLASH}analysis${SLASH}binary${SLASH}${version}XtaInstructions.java") 
-    or die("Failed to move XtaInstructions.java\n");
 }
 
 sub UpdateBuildNumber

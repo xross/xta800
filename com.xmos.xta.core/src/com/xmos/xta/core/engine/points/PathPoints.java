@@ -2,13 +2,13 @@ package com.xmos.xta.core.engine.points;
 
 import java.util.Map;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class PathPoints extends Points {
 	private String m_fromName;

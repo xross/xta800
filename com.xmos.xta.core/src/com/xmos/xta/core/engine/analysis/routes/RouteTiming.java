@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.xmos.libs.util.Conversion;
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
@@ -11,7 +12,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 import com.xmos.xta.core.engine.utils.CoreConfig;
-import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 import com.xmos.xta.core.engine.utils.TimeUnit.Units;
 

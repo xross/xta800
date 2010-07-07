@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.SelfLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -41,8 +41,8 @@ public class SelfLoopNode extends Node{
     	return m_attributes;
     }
 
-	public LinkedList<XtaInstruction> getInstructions() {
-    	LinkedList<XtaInstruction> insts = new LinkedList<XtaInstruction>(m_loop.getInstructions());
+	public LinkedList<Instruction> getInstructions() {
+    	LinkedList<Instruction> insts = new LinkedList<Instruction>(m_loop.getInstructions());
 		return insts;
 	}
 

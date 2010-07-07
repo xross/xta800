@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.ConditionalNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
@@ -81,8 +81,8 @@ public class ConditionalNode extends Node {
     	return excludedOptions;
     }
 
-	public LinkedList<XtaInstruction> getInstructions() {
-		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
+	public LinkedList<Instruction> getInstructions() {
+		LinkedList<Instruction> list = new LinkedList<Instruction>();
 		for (Node node : getAliveOptions()){
 			list.addAll(node.getInstructions());
 		}

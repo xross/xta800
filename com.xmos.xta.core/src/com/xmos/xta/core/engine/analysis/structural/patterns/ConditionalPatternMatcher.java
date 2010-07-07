@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.controlflow.nodes.CfgNode;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

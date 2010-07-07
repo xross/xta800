@@ -3,8 +3,8 @@ package com.xmos.xta.core.engine.references.types;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class LabelReference extends ReferenceType {
 	LabelReference(String ref, CoreId coreId) {

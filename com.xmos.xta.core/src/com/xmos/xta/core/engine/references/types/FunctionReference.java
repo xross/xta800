@@ -2,8 +2,8 @@ package com.xmos.xta.core.engine.references.types;
 
 import java.util.Collection;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class FunctionReference extends ReferenceType {
 	FunctionReference(String ref, CoreId coreId) {

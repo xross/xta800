@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
@@ -47,8 +47,8 @@ public class SequenceNode extends Node {
     	return m_attributes;
     }
 
-	public LinkedList<XtaInstruction> getInstructions() {
-		LinkedList<XtaInstruction> list = new LinkedList<XtaInstruction>();
+	public LinkedList<Instruction> getInstructions() {
+		LinkedList<Instruction> list = new LinkedList<Instruction>();
 		for (Node node : m_nodes) {
 			list.addAll(node.getInstructions());
 		}

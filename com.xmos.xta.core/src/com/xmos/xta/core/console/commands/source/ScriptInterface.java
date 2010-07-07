@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.ConsoleCommandRunner;
 import com.xmos.xta.core.console.Shell;
@@ -17,7 +18,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.CoreId;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class ScriptInterface {

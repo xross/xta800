@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.CoreConfig;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class RouteCoreContainer {
 	private Reference m_reference;

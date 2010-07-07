@@ -3,26 +3,27 @@ package com.xmos.xta.core.engine.sourcemapper;
 import java.util.Collection;
 import java.util.Set;
 
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.instructiondecoder.InstructionDecoder;
+import com.xmos.libs.instructiondecoder.InstructionDecoders;
+import com.xmos.libs.util.CoreCollection;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.Pair;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
-import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
-import com.xmos.xta.core.engine.utils.CoreCollection;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SourceLine {
 	private String     m_text;
 	private long       m_lineNumber;
 	private SourceFile m_sourceFile;
 	private XeLoader   m_xeLoader;
-	private CoreCollection<InstructionDecoder> m_instructionDecoders;
+	private InstructionDecoders m_instructionDecoders;
 	private CoreCollection<Collection<Long>> m_pcs;
 	private CoreCollection<Collection<Long>> m_statementPcs;
 	
 	public SourceLine(String text, long lineNumber, SourceFile sourceFile, 
-			XeLoader xeLoader, CoreCollection<InstructionDecoder> instructionDecoders) {
+			XeLoader xeLoader, InstructionDecoders instructionDecoders) {
 		m_text = text;
 		m_lineNumber = lineNumber;
 		m_sourceFile = sourceFile;
@@ -76,7 +77,7 @@ public class SourceLine {
     }
 
     private Collection<Long> rangesToAddresses(CoreId coreId, Collection<Pair<Long, Long>> addressRanges) {
-    	InstructionDecoder instructionDecoder = m_instructionDecoders.get(coreId);
+    	InstructionDecoder instructionDecoder = m_instructionDecoders.getInstructionDecoder(coreId);
     	assert(instructionDecoder != null);
     	
 		Set<Long> addresses = new IteratableSet<Long>();

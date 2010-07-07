@@ -44,9 +44,10 @@
          <zipfileset src="../../infr_libs_java/export/jars/xnloader.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/configloader.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/proginfoloader.jar"/>
-         <zipfileset src="../../infr_libs_java/export/jars/isa.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/util.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/memorymonitor.jar"/>
+         <zipfileset src="../../infr_libs_java/export/jars/controlflow.jar"/>
+         <zipfileset src="../../infr_libs_java/export/jars/instructiondecoder.jar"/>
     </jar>
   </target>
 

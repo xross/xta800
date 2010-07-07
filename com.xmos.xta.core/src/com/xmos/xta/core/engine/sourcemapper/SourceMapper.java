@@ -8,16 +8,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.xmos.libs.dwarfhandler.DebugFile;
+import com.xmos.libs.instructiondecoder.InstructionDecoders;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
 import com.xmos.xta.core.engine.sections.Sections;
-import com.xmos.xta.core.engine.utils.CoreCollection;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class SourceMapper {
 	private long m_xeLastModified;
@@ -30,7 +29,7 @@ public class SourceMapper {
 	}
 	
     public SourceMapper(CommandSource src, Engine engine, XeLoader xeLoader, Sections sections, 
-    		CoreCollection<InstructionDecoder> instructionDecoders) throws AbortedException {
+    		InstructionDecoders instructionDecoders) throws AbortedException {
 
         m_xeLastModified = xeLoader.getFile().lastModified();    	
         m_sourceFiles = createSourceFiles(src, engine, xeLoader, instructionDecoders);
@@ -134,7 +133,7 @@ public class SourceMapper {
     }
 
     private List<SourceFile> createSourceFiles(CommandSource src, Engine engine, XeLoader xeLoader,
-    		CoreCollection<InstructionDecoder> instructionDecoders) throws AbortedException {
+    		InstructionDecoders instructionDecoders) throws AbortedException {
 
     	List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
     	    	
@@ -183,7 +182,7 @@ public class SourceMapper {
 	private void addSourceFile(CommandSource src, Notifier notifier,
 			XeLoader xeLoader, DebugFile debugFile,
 			File file, List<SourceFile> sourceFiles,
-			CoreCollection<InstructionDecoder> instructionDecoders) {
+			InstructionDecoders instructionDecoders) {
 
     	SourceFile sourceFile = getSourceFile(debugFile, sourceFiles);
     	if (sourceFile == null) {

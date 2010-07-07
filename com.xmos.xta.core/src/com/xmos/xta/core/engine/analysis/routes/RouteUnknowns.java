@@ -312,7 +312,7 @@ public class RouteUnknowns {
 		boolean canPause = false;
 		
         for (Node node : m_route.getReferencedNodes(reference)) {
-        	if (((InstructionNode)node).getXtaInstruction().canPause()) {
+        	if (((InstructionNode)node).getInstruction().canPause()) {
         		canPause = true;
         	}
 		}

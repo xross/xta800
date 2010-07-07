@@ -1,10 +1,10 @@
 package com.xmos.xta.core.engine.references.types;
 
+import com.xmos.libs.controlflow.functionmapper.FunctionMapper;
+import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.instructiondecoder.InstructionDecoder;
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.binary.InstructionDecoder;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class CallPcReference extends ReferenceType {
 	CallPcReference(String ref, CoreId coreId) {
@@ -29,7 +29,7 @@ public class CallPcReference extends ReferenceType {
 
 		InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());
 		for (Long pc : getPcs()) {
-			XtaInstruction inst = instructionDecoder.getNode(pc).getXtaInstruction();
+			Instruction inst = instructionDecoder.getNode(pc).getInstruction();
 			if (!inst.isLink()) {
 				return false;
 			}

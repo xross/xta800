@@ -6,19 +6,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import com.xmos.libs.isa.Instruction;
+import com.xmos.libs.controlflow.functionmapper.Function;
+import com.xmos.libs.controlflow.functionmapper.FunctionMapper;
+import com.xmos.libs.instructiondecoder.Decoder;
+import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.xeloader.MemoryImage;
 import com.xmos.libs.xeloader.SymbolTable;
+import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.console.Console;
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.binary.Disassembler;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.Function;
-import com.xmos.xta.core.engine.analysis.controlflows.functionmapper.FunctionMapper;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class AsmDisplayer {
 	private Engine m_engine;
@@ -30,7 +31,7 @@ public class AsmDisplayer {
 	}
 
     public void display(Node node, CoreId coreId) {
-  	    List<XtaInstruction> instructions = node.getInstructions();
+  	    List<Instruction> instructions = node.getInstructions();
 
     	MemoryImage memoryImage = m_engine.getMemoryImage(coreId);
     	SymbolTable symbolTable = m_engine.getSymbolTable(coreId);
@@ -61,11 +62,11 @@ public class AsmDisplayer {
 	            }
 
 	            m_console.display(String.format("<%s>:\n", functionName));
-	            Vector<Instruction> disassemblyVector = Disassembler.disassemble(
+	            Vector<Instruction> disassemblyVector = disassemble(
 	            		memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
 	            		m_engine.getConfig());
 
-	            NonIteratableMap<Long, String> branchTargetMap = Disassembler.createBranchTargetMap(
+	            NonIteratableMap<Long, String> branchTargetMap = createBranchTargetMap(
 	            		symbolTable, disassemblyVector);
 
 	            for (Instruction instruction : disassemblyVector) {
@@ -89,10 +90,10 @@ public class AsmDisplayer {
     }
 
     private Map<String, Set<Long>> createAsmPcsCovered(
-    		List<XtaInstruction> instructions, FunctionMapper functionMapper) {
+    		List<Instruction> instructions, FunctionMapper functionMapper) {
 
         Map<String, Set<Long>> asmLinesCovered = new NonIteratableMap<String, Set<Long>>();
-        for (XtaInstruction inst : instructions){
+        for (Instruction inst : instructions){
             Function function = functionMapper.getFunction(inst.getPc());
             if (function != null) {
 	            String instString = function.getName();
@@ -137,7 +138,7 @@ public class AsmDisplayer {
 	    return branchTarget;
     }
 
-    private long getLowestAddress(List<XtaInstruction> instructions) {
+    private long getLowestAddress(List<Instruction> instructions) {
     	long address = Long.MAX_VALUE;
 		for (Instruction instruction : instructions) {
 			if (instruction.getPc() < address) {
@@ -147,7 +148,7 @@ public class AsmDisplayer {
         return address;
     }
 
-    private long getHighestAddress(List<XtaInstruction> instructions) {
+    private long getHighestAddress(List<Instruction> instructions) {
     	long address = Long.MIN_VALUE;
 		for (Instruction instruction : instructions) {
 			if (instruction.getPc() > address) {
@@ -156,4 +157,45 @@ public class AsmDisplayer {
 		}
         return address;
     }
+    
+	public Vector<Instruction> disassemble(
+			MemoryImage memoryImage, long address, long size, XeLoader.Architecture architecture, Config config) {
+
+		Decoder decoder = Decoder.createInstructionDecoder(architecture);
+
+        Vector<Instruction> disassemblyVector = new Vector<Instruction>();
+
+        int numBytesRead = 0;
+        while (numBytesRead < size) {
+        	long pc = address + numBytesRead;
+        	int opcode = 0;
+        	try {
+        	    opcode = memoryImage.readInstructionWord(pc);
+        	} catch (Exception e) {
+        	    return null;
+        	}
+        	Instruction instruction = decoder.decode(opcode, pc);
+            disassemblyVector.add(instruction);
+        	int instNumBytes = instruction.getNumBytes();
+        	numBytesRead += instNumBytes;
+        }
+        return disassemblyVector;
+	}
+
+	public NonIteratableMap<Long, String> createBranchTargetMap(
+			SymbolTable symbolTable, Vector<Instruction> instructions) {
+
+		NonIteratableMap<Long, String> branchTargetMap = new NonIteratableMap<Long, String>();
+		for (Instruction instruction : instructions) {
+		    if (instruction.getBranchPcRelative() && !symbolTable.functionExists(instruction.getPc())) {
+		    	long branchTargetPc = instruction.getBranchPcRelativeTargetPc();
+
+		    	if (!branchTargetMap.containsKey(branchTargetPc)) {
+		    		String branchTargetName = ".bt" + branchTargetMap.size();
+		    		branchTargetMap.put(branchTargetPc, branchTargetName);
+		    	}
+		    }
+		}
+		return branchTargetMap;
+	}    
 }

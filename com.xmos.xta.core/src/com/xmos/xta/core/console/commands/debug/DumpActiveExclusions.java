@@ -3,19 +3,19 @@ package com.xmos.xta.core.console.commands.debug;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.xmos.libs.controlflow.ControlFlow;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class DumpActiveExclusions extends Command {
 	private static final String[] COMMAND_NAMES = { "dumpactiveexclusions" };

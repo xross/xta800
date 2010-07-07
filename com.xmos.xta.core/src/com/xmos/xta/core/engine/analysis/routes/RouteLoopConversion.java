@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.libs.controlflow.ControlFlow;
+import com.xmos.libs.controlflow.FunctionControlFlow;
+import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.controlflow.nodes.CfgNode;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.analysis.controlflows.ControlFlow;
-import com.xmos.xta.core.engine.analysis.controlflows.FunctionContainer;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -62,15 +62,15 @@ public class RouteLoopConversion {
 		for (StackNode fromStackNode : fromStackNodes) {						
 			
 			// First we look for a loop in the function that contained the original reference..
-			FunctionContainer functionContainer = 
-				m_controlFlow.getFunctionContainer(fromStackNode.getInstruction());								
+			FunctionControlFlow functionControlFlow = 
+				m_controlFlow.getFunctionControlFlow(fromStackNode.getInstruction());								
 			InstructionNode instructionNode = getCachedInstructionNode(
-					functionContainer, fromStackNode.getInstruction());
+					functionControlFlow, fromStackNode.getInstruction());
 
 			Node loopNode = findLoopNode(instructionNode);
 			if (loopNode != null) {
 			    addLoopStackNodes(loopNode, fromStackNode.getNodeStacks(), 
-			    	functionContainer, loopStartStackNodes, exclusionStackNodes);
+			    		functionControlFlow, loopStartStackNodes, exclusionStackNodes);
 				
 			    withinLoop = true;
 			    break;
@@ -92,8 +92,8 @@ public class RouteLoopConversion {
 					assert(callNode instanceof CfgInstructionNode);
 					CfgInstructionNode instructionCallNode = (CfgInstructionNode)callNode;
 						
-					functionContainer = m_controlFlow.getFunctionContainer(instructionCallNode);	
-					instructionNode = getCachedInstructionNode(functionContainer, instructionCallNode);
+					functionControlFlow = m_controlFlow.getFunctionControlFlow(instructionCallNode);	
+					instructionNode = getCachedInstructionNode(functionControlFlow, instructionCallNode);
 						
 					loopNode = findLoopNode(instructionNode);
 					if (loopNode != null) {
@@ -101,7 +101,7 @@ public class RouteLoopConversion {
 							new ArrayList<Stack<CfgFunctionReferenceNode>>();
 						nodeStacks.add(nodeStack);
 							
-						addLoopStackNodes(loopNode, nodeStacks, functionContainer,
+						addLoopStackNodes(loopNode, nodeStacks, functionControlFlow,
 								loopStartStackNodes, exclusionStackNodes);	
 							
 						withinLoop = true;
@@ -128,7 +128,7 @@ public class RouteLoopConversion {
 	
 	private void addLoopStackNodes(Node loopNode,
 			List<Stack<CfgFunctionReferenceNode>> nodeStacks,
-			FunctionContainer functionContainer,
+			FunctionControlFlow functionControlFlow,
 			List<StackNode> loopStartStackNodes,
 			List<StackNode> exclusionStackNodes) {
 		
@@ -141,7 +141,7 @@ public class RouteLoopConversion {
 		
 		// Now find the control flow instruction node 
 		// corresponding to the above structural instruction node.
-		CfgInstructionNode cfgInstructionNode = functionContainer.getInstruction(instructionNode.getPC());
+		CfgInstructionNode cfgInstructionNode = functionControlFlow.getInstructionNode(instructionNode.getPC());
 		
 		loopStartStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
 
@@ -149,7 +149,7 @@ public class RouteLoopConversion {
 			Node successor = loopNode.getSuccessor();
 			if (successor != null) {				
 				instructionNode = getFirstInstructionNode(successor);
-				cfgInstructionNode = functionContainer.getInstruction(instructionNode.getPC());				
+				cfgInstructionNode = functionControlFlow.getInstructionNode(instructionNode.getPC());				
 				
 				exclusionStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
 			}			
@@ -157,11 +157,11 @@ public class RouteLoopConversion {
 	}
 
 	private InstructionNode getCachedInstructionNode(
-			FunctionContainer functionContainer,
+			FunctionControlFlow functionControlFlow,
 			CfgInstructionNode cfgInstructionNode) 
 	    throws AbortedException, MemoryMonitorException {
 				
-		Node functionNode = m_cachedFunctionMap.getCachedFunction(functionContainer);
+		Node functionNode = m_cachedFunctionMap.getCachedFunction(functionControlFlow);
 		return getInstructionNodeMatchingPc(functionNode, cfgInstructionNode.getPc());						
 	}
 	

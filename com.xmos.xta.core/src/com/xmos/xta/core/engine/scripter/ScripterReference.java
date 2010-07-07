@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -20,7 +21,6 @@ import com.xmos.xta.core.engine.sections.ScriptableInfo;
 import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ScripterReference {
 	private Engine m_engine;

@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.controlflow.nodes.CfgNode;
+import com.xmos.libs.controlflow.nodes.CfgNullNode;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
@@ -16,10 +20,6 @@ import com.xmos.libs.util.NonIteratableSet;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
@@ -402,10 +402,10 @@ public class StructuralAnalysisEngine {
 		}
 
 		if (current instanceof CfgInstructionNode) {
-			if (((CfgInstructionNode)current).getXtaInstruction().getReturn()) {
+			if (((CfgInstructionNode)current).getInstruction().getReturn()) {
 				return false;
 			}
-			if (((CfgInstructionNode)current).getXtaInstruction().isLink()) {
+			if (((CfgInstructionNode)current).getInstruction().isLink()) {
 				return false;
 			}
 		}

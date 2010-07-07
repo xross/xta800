@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.xmos.libs.controlflow.nodes.CfgNode;
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.libs.util.IteratableSet;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
@@ -32,7 +32,7 @@ public abstract class Node implements Comparable<Node> {
 	public abstract Node copyRouteStructure();
 	public abstract TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser);
 	public abstract TraverseStatus traverse(NodeTraverser nodeTraverser);
-	public abstract LinkedList<XtaInstruction> getInstructions();
+	public abstract LinkedList<Instruction> getInstructions();
 	public abstract TimeDistributionBuckets getTimeSpread();
 
 	//need to take a look at this one

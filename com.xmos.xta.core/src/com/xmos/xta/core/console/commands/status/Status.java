@@ -3,6 +3,7 @@ package com.xmos.xta.core.console.commands.status;
 import java.io.File;
 import java.util.List;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.DebugInfo;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.libs.xnloader.XnLoader;
@@ -11,7 +12,6 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Status extends Command {
 	private static final String[] COMMAND_NAMES = { "status" };

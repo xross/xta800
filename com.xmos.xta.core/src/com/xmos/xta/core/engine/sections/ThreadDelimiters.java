@@ -2,13 +2,13 @@ package com.xmos.xta.core.engine.sections;
 
 import java.util.Collection;
 
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.libs.util.ByteArrayManipulation;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.analysis.binary.XtaInstruction;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class ThreadDelimiters extends Section {
 	private String m_sectionName;
@@ -19,7 +19,6 @@ public class ThreadDelimiters extends Section {
 		m_sectionName = sectionName;
 		m_pcs = new IteratableSet<Long>();
 	}
-
 
 	boolean add(CommandSource src, long pc) {
 		if (m_pcs.add(pc)) {
@@ -57,7 +56,7 @@ public class ThreadDelimiters extends Section {
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {
-	        	long pc = XtaInstruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
+	        	long pc = Instruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
 
 	    		m_pcs.add(pc);

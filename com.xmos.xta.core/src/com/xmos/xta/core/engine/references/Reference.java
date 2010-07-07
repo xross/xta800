@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Set;
 
 import com.xmos.libs.util.Conversion;
+import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class Reference implements Comparable<Reference>  {
 	private String m_coreIdString;

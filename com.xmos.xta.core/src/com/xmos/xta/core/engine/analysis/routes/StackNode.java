@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgFunctionReferenceNode;
-import com.xmos.xta.core.engine.analysis.controlflows.nodes.CfgInstructionNode;
+import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
 
 public class StackNode implements Comparable<StackNode>{
 	private List<Stack<CfgFunctionReferenceNode>> m_nodeStacks;

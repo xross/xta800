@@ -3,13 +3,13 @@ package com.xmos.xta.core.console.commands.debug;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.print.StructureDisplayer;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.utils.CoreId;
 
 public class DumpCachedFunction extends Command {
 	private static final String[] COMMAND_NAMES = { "dumpcachedfunction" };
