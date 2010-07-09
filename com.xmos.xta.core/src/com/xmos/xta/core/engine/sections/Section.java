@@ -20,14 +20,6 @@ public abstract class Section {
 		return m_coreId;
 	}
 
-	public int getNodeChainIndex() {
-		return m_coreId.getNodeChainIndex();
-	}
-
-	public int getCoreNumber() {
-		return m_coreId.getCoreNumber();
-	}
-
 	Notifier getNotifier() {
 		return m_notifier;
 	}

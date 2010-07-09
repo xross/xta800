@@ -195,18 +195,14 @@ public class SourceMapper {
 	private Collection<DebugFile> getDebugFiles(XeLoader xeLoader) {
         List<DebugFile> sources = new ArrayList<DebugFile>();
 		
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {		
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				
-		    	DebugInfo debugInfo = xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
-				Collection<DebugFile> debugFiles = debugInfo.getDebugEngine().getDebugFiles();
+        for (CoreId coreId : xeLoader.getCoreIds()) {        
+		    DebugInfo debugInfo = xeLoader.getDebugInfo(coreId);
+			Collection<DebugFile> debugFiles = debugInfo.getDebugEngine().getDebugFiles();
 
-		      	for (DebugFile debugFile : debugFiles) {
-		      		if (!sources.contains(debugFile)) {
-					    sources.add(debugFile);
-		      		}
-		      	}				
+	      	for (DebugFile debugFile : debugFiles) {
+	      		if (!sources.contains(debugFile)) {
+				    sources.add(debugFile);
+	      		}
 			}
 		}
 		return sources;

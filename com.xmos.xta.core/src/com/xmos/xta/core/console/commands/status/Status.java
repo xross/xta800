@@ -68,19 +68,16 @@ public class Status extends Command {
     				nodeId, nodeChainIndex, routingId, mhz));
     	}
 
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-	    		CoreId coreId = new CoreId(xnLoader, nodeChainIndex, coreNumber);
-	    		int threads = engine.getNumThreads(coreId);
-	    		console.display(String.format("%s, Threads: %d ", coreId.getCoreReference(), threads));
+		for (CoreId coreId : xeLoader.getCoreIds()) {
+    		int threads = engine.getNumThreads(coreId);
+    		console.display(String.format("%s, Threads: %d ", coreId.getCoreReference(), threads));
 
-	    		DebugInfo debugInfo = xeLoader.getDebugInfo(nodeChainIndex, coreNumber);
-	    		if (debugInfo.getDebugEngine().hasDebugInfo()) {
-	    			console.display(String.format("(Debug information avaliable)\n"));
-	    		} else {
-	        		console.display(String.format("(No debug information found)\n"));
-	    		}
-			}
+    		DebugInfo debugInfo = xeLoader.getDebugInfo(coreId);
+    		if (debugInfo.getDebugEngine().hasDebugInfo()) {
+    			console.display(String.format("(Debug information avaliable)\n"));
+    		} else {
+        		console.display(String.format("(No debug information found)\n"));
+    		}			
 		}
 
    		List<Route> routes = engine.getRoutes();

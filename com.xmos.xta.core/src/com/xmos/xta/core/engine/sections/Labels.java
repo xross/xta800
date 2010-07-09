@@ -36,7 +36,7 @@ public class Labels extends Section  {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-        SymbolTable symbolTable = xeLoader.getSymbolTable(getNodeChainIndex(), getCoreNumber());
+        SymbolTable symbolTable = xeLoader.getSymbolTable(getCoreId());
         ElfHandler elfHandler = symbolTable.getElfHandler();
 
         for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {

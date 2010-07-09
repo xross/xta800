@@ -22,7 +22,7 @@ public class Systems extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtasystem", getNodeChainIndex(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(".xtasystem", getCoreId());
 
 		try {
 			int byteIndex = 0;

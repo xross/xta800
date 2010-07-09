@@ -23,7 +23,7 @@ public class SrcLevelLoops extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtaloop", getNodeChainIndex(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(".xtaloop", getCoreId());
 		try {
 			int byteIndex = 0;
 	        while (byteIndex < data.length) {

@@ -19,7 +19,6 @@ import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.libs.util.NonIteratableSet;
-import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
@@ -153,15 +152,11 @@ public class Scripter {
 			return true;
 		}
 		
-		XeLoader xeLoader = m_engine.getXeLoader();
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY, coreId);
-				if (ref.resolve(m_engine)) {
-					return true;
-				}
-			}
+		for (CoreId coreId : m_engine.getXeLoader().getCoreIds()) {	    	
+			Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY, coreId);
+			if (ref.resolve(m_engine)) {
+				return true;
+			}			
 		}
 		return false;
 	}

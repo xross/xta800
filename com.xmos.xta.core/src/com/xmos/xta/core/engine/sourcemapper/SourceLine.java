@@ -56,7 +56,7 @@ public class SourceLine {
 	}
     
     private void initialisePcsMap(CoreId coreId) {
-    	DebugInfo debugInfo = m_xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+    	DebugInfo debugInfo = m_xeLoader.getDebugInfo(coreId);
     	assert(debugInfo != null);
     	
 		Collection<Pair<Long,Long>> addressRanges = debugInfo.getDebugEngine().getAddressRangesMatchingPath(
@@ -67,7 +67,7 @@ public class SourceLine {
     }
 
     private void initialiseStatementPcsMap(CoreId coreId) {
-    	DebugInfo debugInfo = m_xeLoader.getDebugInfo(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+    	DebugInfo debugInfo = m_xeLoader.getDebugInfo(coreId);
     	assert(debugInfo != null);
     	
     	Collection<Long> statementPcs = debugInfo.getDebugEngine().getStatementPcsMatchingPath(

@@ -27,7 +27,7 @@ public class SrcLabelTable extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getNodeChainIndex(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(m_sectionName, getCoreId());
 
 		try {
 			int byteIndex = 0;

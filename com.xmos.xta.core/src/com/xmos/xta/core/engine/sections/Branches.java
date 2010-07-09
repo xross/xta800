@@ -91,7 +91,7 @@ public class Branches extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtabranch", getNodeChainIndex(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(".xtabranch", getCoreId());
 
 		if ((data.length % 8) != 0) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, "invalid size for .xtabranch section");

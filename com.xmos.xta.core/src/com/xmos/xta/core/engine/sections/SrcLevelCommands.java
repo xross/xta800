@@ -22,7 +22,7 @@ public class SrcLevelCommands extends Section {
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(".xtacommand", getNodeChainIndex(), getCoreNumber());
+		byte[] data = xeLoader.getSectionData(".xtacommand", getCoreId());
 
 		try {
 			int byteIndex = 0;

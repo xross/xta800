@@ -177,11 +177,11 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	public MemoryImage getMemoryImage(CoreId coreId) {
-		return m_xeLoader.getMemoryImage(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+		return m_xeLoader.getMemoryImage(coreId);
 	}
 
 	public SymbolTable getSymbolTable(CoreId coreId) {
-		return m_xeLoader.getSymbolTable(coreId.getNodeChainIndex(), coreId.getCoreNumber());
+		return m_xeLoader.getSymbolTable(coreId);
 	}
 
 	public ControlFlow getControlFlow(CoreId coreId) {
@@ -559,7 +559,7 @@ public class Engine extends Notifier implements Aborter {
 		List<String> functionNames = new LinkedList<String>();
 
 		for (CoreId coreId : getActiveCores()) {
-			if (!m_xeLoader.isLoaded(coreId.getNodeChainIndex(), coreId.getCoreNumber()))
+			if (!m_xeLoader.isLoaded(coreId))
 				continue;
 
 			List<String> coreFunctions = new LinkedList<String>();
@@ -599,11 +599,9 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	public void addActiveCores(CommandSource src) {
 		m_activeCores.clear();
-		if (m_xeLoader.isLoaded()) {
-			for (int nodeChainIndex : m_xeLoader.getNodeChainIndexes()) {
-				for (int coreNumber : m_xeLoader.getCoreNumbers(nodeChainIndex)) {
-					m_activeCores.add(new CoreId(m_xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
-				}
+		if (m_xeLoader.isLoaded()) {			
+			for (CoreId coreId : m_xeLoader.getCoreIds()) {
+				m_activeCores.add(new CoreId(coreId));
 			}
 		}
 		m_pathPoints.refresh();
@@ -612,7 +610,7 @@ public class Engine extends Notifier implements Aborter {
 	}	
 
 	public void addActiveCore(CommandSource src, CoreId activeCore) {		
-		if (m_xeLoader.isLoaded(activeCore.getNodeChainIndex(), activeCore.getCoreNumber())) {
+		if (m_xeLoader.isLoaded(activeCore)) {
 			if (!m_activeCores.contains(activeCore)) {
 				m_activeCores.add(activeCore);
 			}						
@@ -1358,23 +1356,19 @@ public class Engine extends Notifier implements Aborter {
 	public Map<Reference, List<Reference>> getUserBranches() {
 		Map<Reference, List<Reference>> branches = new IteratableMap<Reference, List<Reference>>();
 		
-        for (int nodeChainIndex : m_xeLoader.getNodeChainIndexes()) {
-            for (int coreNumber : m_xeLoader.getCoreNumbers(nodeChainIndex)) {
-            	
-        		Map<Reference, Set<BranchInfo>> currentBranches = getBranches(
-        				new CoreId(m_xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
-        		
-        		for (Reference from : currentBranches.keySet()) {
-        			Set<BranchInfo> to = currentBranches.get(from);
-        			List<Reference> toRefs = new ArrayList<Reference>();
-        			for (BranchInfo info : to) {
-        				if (info.isUser()) {
-        					toRefs.add(info.getRef());
-        				}
+		for (CoreId coreId : m_xeLoader.getCoreIds()) {		            	
+            Map<Reference, Set<BranchInfo>> currentBranches = getBranches(coreId);
+
+        	for (Reference from : currentBranches.keySet()) {
+        		Set<BranchInfo> to = currentBranches.get(from);
+        		List<Reference> toRefs = new ArrayList<Reference>();
+        		for (BranchInfo info : to) {
+        			if (info.isUser()) {
+        				toRefs.add(info.getRef());
         			}
-        			if (toRefs.size() > 0) {
-        				branches.put(from, toRefs);
-        			}
+        		}
+        		if (toRefs.size() > 0) {
+        			branches.put(from, toRefs);
         		}
             }
         }		
@@ -1441,13 +1435,14 @@ public class Engine extends Notifier implements Aborter {
     		return null;
 		}
 		int nodeChainIndex = nodeCore.first;
-		int coreNumber = nodeCore.second;
+		int coreNumber = nodeCore.second;		
+		CoreId coreId = new CoreId(xnLoader, nodeChainIndex, coreNumber);
 		
-    	if (m_xeLoader.getMemoryImage(nodeChainIndex, coreNumber) == null) {
+    	if (!m_xeLoader.isLoaded(coreId)) {
     		notify(src, Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
     		return null;
-    	}		
-    	return new CoreId(xnLoader, nodeChainIndex, coreNumber);
+    	}	
+    	return coreId;
     }
 
     public boolean isWithinLoop(String ref) { 
@@ -1558,20 +1553,17 @@ public class Engine extends Notifier implements Aborter {
 			return;
 		}
 		
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {				
-				int coreThreads = getCoreThreads(xnLoader, progInfoLoader, nodeChainIndex, coreNumber);
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				m_coreThreads.add(coreId, coreThreads);
-			}
+		for (CoreId coreId : xeLoader.getCoreIds()) {
+			int coreThreads = getCoreThreads(xnLoader, progInfoLoader, coreId);
+			m_coreThreads.add(coreId, coreThreads);			
 		}
-
+		
 		// Initialise the frequencies with the default for each node..
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
+		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {		
 		    String nodeId = xnLoader.getNodeId(nodeChainIndex);			
-		    m_nodeHz.put(nodeId, (int)XmlHandler.DEFAULT_FREQUENCY_HZ);
+		    m_nodeHz.put(nodeId, (int)XmlHandler.DEFAULT_FREQUENCY_HZ);				
 		}
-
+		
 		// Sets the frequencies with the ones actually used (from the proginfo sector)..
 		for (Integer nodeRoutingId : progInfoLoader.getNodeFrequencies().keySet()) {			
 			int nodeChainIndex = xnLoader.getNodeChainIndex(nodeRoutingId);			
@@ -1581,21 +1573,16 @@ public class Engine extends Notifier implements Aborter {
 	}
 
 	private void initialiseActiveCores(XeLoader xeLoader) {
-		m_activeCores.clear();
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				m_activeCores.add(new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber));
-			}
+		m_activeCores.clear();		
+		for (CoreId coreId : xeLoader.getCoreIds()) {
+			m_activeCores.add(coreId);
 		}
 	}
 	
 	private void initialiseCachedFunctions(XeLoader xeLoader) {
 		CoreCollection<CachedFunctionMap> cachedFunctions = new CoreCollection<CachedFunctionMap>();
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				cachedFunctions.add(coreId, new CachedFunctionMap(this));
-			}
+		for (CoreId coreId : xeLoader.getCoreIds()) {
+			cachedFunctions.add(coreId, new CachedFunctionMap(this));
 		}	
 		m_cachedFunctions = cachedFunctions;
 	}
@@ -1617,11 +1604,11 @@ public class Engine extends Notifier implements Aborter {
 		notify(src, Notifier.RELEASE_MESSAGES, "");		
 	}
 	
-	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, int nodeChainIndex, int coreNumber) {
-		int nodeRoutingId = xnLoader.getNodeRoutingId(nodeChainIndex);
+	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, CoreId coreId) {
+		int nodeRoutingId = xnLoader.getNodeRoutingId(coreId.getNodeChainIndex());
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
 			if ((entry.getNodeRoutingId() == nodeRoutingId) &&
-				(entry.getCoreNumber() == coreNumber) &&
+				(entry.getCoreNumber() == coreId.getCoreNumber()) &&
 				entry.getType().getCategory().equals(ProgInfoLoader.PI_CATEGORY_THREADS) &&
 				entry.getType().getLabel().equals(ProgInfoLoader.PI_LABEL_USED)) {
 
@@ -1691,27 +1678,22 @@ public class Engine extends Notifier implements Aborter {
 	private CoreCollection<Collection<Branch>> getBranchesForControlFlow(XeLoader xeLoader, Sections sections) {
 		CoreCollection<Collection<Branch>> branches = new CoreCollection<Collection<Branch>>();
 
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-
-				List<Branch> branchList = new ArrayList<Branch>();
-				Map<Reference, Set<BranchInfo>> branchesMap = sections.getBranches(coreId);
+		for (CoreId coreId : xeLoader.getCoreIds()) {
+			List<Branch> branchList = new ArrayList<Branch>();
+			Map<Reference, Set<BranchInfo>> branchesMap = sections.getBranches(coreId);
 				
-				for (Reference fromRef : branchesMap.keySet()) {		
-										
-					for (long fromPc : fromRef.getPcs()) {
-						List<Long> toPcs = new ArrayList<Long>();						
-					    for (BranchInfo branchInfo : branchesMap.get(fromRef)) {
-					    	for (long toPc : branchInfo.getRef().getPcs()) {
-					    		toPcs.add(toPc);
-					    	}
-					    }
-					    branchList.add(new Branch(fromPc, toPcs));						
-					}
-				}								
-				branches.add(coreId, branchList);
-			}
+			for (Reference fromRef : branchesMap.keySet()) {												
+				for (long fromPc : fromRef.getPcs()) {
+					List<Long> toPcs = new ArrayList<Long>();						
+				    for (BranchInfo branchInfo : branchesMap.get(fromRef)) {
+				    	for (long toPc : branchInfo.getRef().getPcs()) {
+				    		toPcs.add(toPc);
+				    	}
+				    }
+				    branchList.add(new Branch(fromPc, toPcs));						
+				}
+			}								
+			branches.add(coreId, branchList);
 		}
 		return branches;
 	}
@@ -1719,47 +1701,34 @@ public class Engine extends Notifier implements Aborter {
 	private CoreCollection<Collection<Label>> getLabelsForControlFlow(XeLoader xeLoader, Sections sections) {	
 		CoreCollection<Collection<Label>> labels = new CoreCollection<Collection<Label>>();
 
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-
-				List<Label> labelList = new ArrayList<Label>();
-				Map<String, Set<Long>> labelsMap = sections.getLabels(coreId);
+		for (CoreId coreId : xeLoader.getCoreIds()) {		
+			List<Label> labelList = new ArrayList<Label>();
+			Map<String, Set<Long>> labelsMap = sections.getLabels(coreId);
 				
-				for (String name : labelsMap.keySet()) {		
-										
-					List<Long> toPcs = new ArrayList<Long>();						
-					for (long toPc : labelsMap.get(name)) {
-			    		toPcs.add(toPc);
-					}
-					labelList.add(new Label(name, toPcs));						
-				}								
-				labels.add(coreId, labelList);
-			}
+			for (String name : labelsMap.keySet()) {												
+				List<Long> toPcs = new ArrayList<Long>();						
+				for (long toPc : labelsMap.get(name)) {
+		    		toPcs.add(toPc);
+				}
+				labelList.add(new Label(name, toPcs));						
+			}								
+			labels.add(coreId, labelList);
 		}
 		return labels;
 	}
 	
 	private CoreCollection<Collection<Long>> getThreadStartsForControlFlow(XeLoader xeLoader, Sections sections) {		
 		CoreCollection<Collection<Long>> threadPoints = new CoreCollection<Collection<Long>>();
-
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				threadPoints.add(coreId, sections.getThreadStartPoints(coreId));
-			}
+		for (CoreId coreId : xeLoader.getCoreIds()) {		
+			threadPoints.add(coreId, sections.getThreadStartPoints(coreId));
 		}
 		return threadPoints;
 	}
 	
 	private CoreCollection<Collection<Long>> getThreadStopsForControlFlow(XeLoader xeLoader, Sections sections) {		
 		CoreCollection<Collection<Long>> threadPoints = new CoreCollection<Collection<Long>>();
-
-		for (int nodeChainIndex : xeLoader.getNodeChainIndexes()) {
-			for (int coreNumber : xeLoader.getCoreNumbers(nodeChainIndex)) {								
-				CoreId coreId = new CoreId(xeLoader.getXnLoader(), nodeChainIndex, coreNumber);
-				threadPoints.add(coreId, sections.getThreadStopPoints(coreId));
-			}
+		for (CoreId coreId : xeLoader.getCoreIds()) {		
+			threadPoints.add(coreId, sections.getThreadStopPoints(coreId));
 		}
 		return threadPoints;
 	}
