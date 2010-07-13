@@ -17,7 +17,7 @@ my $suite = basename($cwd);
 
 if (!$noBuild) {
     system("xcc -target=$target -march=$arch test.xc -O1 -o $genDir/test.xe >  $genDir/$suite.log 2>&1");
-    system("xsim -t --enable-fnop-tracing $genDir/test.xe >  $suite.trace ");
+    system("xsim --max-cycles 10000 -t --enable-fnop-tracing $genDir/test.xe >  $suite.trace ");
 }
 
 system("@ARGV load $genDir/test.xe " .

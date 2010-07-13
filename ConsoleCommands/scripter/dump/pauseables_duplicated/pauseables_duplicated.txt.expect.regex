@@ -1,7 +1,7 @@
 # load ".*test\.xe"
 
 #
-# Route: main
+# Route: function: main
 #
 analyze function main
 set instructiontime - f1,inst 100.0 [mun]s

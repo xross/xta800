@@ -11,18 +11,18 @@ true       true       .+/bar.xc:9 ->       stop
 # load ".+test.xe"
 
 #
-# Route: x => x
+# Route: endpoints: x to x
 #
 add exclusion out_of_bounds
 analyze endpoints x x
 
 #
-# Route: start => stop
+# Route: endpoints: start to stop
 #
 analyze endpoints start stop
 
 #
-# Route: start => start
+# Route: endpoints: start to start
 #
 analyze endpoints start start
 

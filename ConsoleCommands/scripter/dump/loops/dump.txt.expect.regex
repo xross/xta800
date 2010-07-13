@@ -1,7 +1,7 @@
 # load ".*test.xe"
 
 #
-# Route: main
+# Route: function: main
 #
 analyze function main
 set loop - loop 10

@@ -1,0 +1,3 @@
+analyze loop loop
+print structure -
+print summary

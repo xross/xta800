@@ -1,12 +1,12 @@
 # load ".*test\.xe"
 
 #
-# Route: g
+# Route: function: g
 #
 analyze function g
 
 #
-# Route: g
+# Route: function: g
 #
 remove exclusion \*
 add exclusion y

@@ -1,14 +1,14 @@
 # load ".*test\.xe"
 
 #
-# Route: g
+# Route: function: g
 #
 add functiontime f 999.01 ns
 add functiontime a 111.01 ns
 analyze function g
 
 #
-# Route: h
+# Route: function: h
 #
 remove functiontime \*
 add functiontime f 888.01 ns

@@ -1,10 +1,8 @@
 # load ".*test\.xe"
 
 #
-# Route: f
+# Route: function: f
 #
-# Warning: 'test.xc:25' is a non-portable reference.
-add exclusion test.xc:25
 # Warning: 'test.xc:31' is a non-portable reference.
 add instructiontime test.xc:31 2.0 us
 # Warning: 'test.xc:40' is a non-portable reference.
@@ -15,6 +13,8 @@ add loop test.xc:37 5
 add looppath test.xc:41 8
 # Warning: 'test.xc:37' is a non-portable reference.
 add loopscope test.xc:37 true
+# Warning: 'test.xc:25' is a non-portable reference.
+add exclusion test.xc:25
 analyze function f
 # Warning: 'test.xc:49' is a non-portable reference.
 set instructiontime - test.xc:49 2.0 us

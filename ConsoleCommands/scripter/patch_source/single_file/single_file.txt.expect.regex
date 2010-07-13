@@ -7,7 +7,7 @@ true       true       .+/test.xc:25 -> out_of_bounds
 # load ".+test.xe"
 
 #
-# Route: x => x
+# Route: endpoints: x to x
 #
 add exclusion out_of_bounds
 analyze endpoints x x

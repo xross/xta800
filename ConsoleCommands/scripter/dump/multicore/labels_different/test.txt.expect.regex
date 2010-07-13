@@ -1,7 +1,7 @@
 # load ".*test\.xe"
 
 #
-# Route: f
+# Route: function: f
 #
 remove core \*
 add core stdcore\[0\]
@@ -15,18 +15,6 @@ add branch Lbranch Ltarget3
 remove core \*
 add core stdcore\[3\]
 add branch Lbranch Ltarget4
-remove core \*
-add core stdcore\[0\]
-add exclusion then0
-remove core \*
-add core stdcore\[1\]
-add exclusion then1
-remove core \*
-add core stdcore\[2\]
-add exclusion then2
-remove core \*
-add core stdcore\[3\]
-add exclusion then3
 remove core \*
 add core stdcore\[0\]
 add functiontime g 10.0 us
@@ -99,6 +87,18 @@ add loopscope loop1_inner true
 remove core \*
 add core stdcore\[3\]
 add loopscope loop1_inner false
+remove core \*
+add core stdcore\[0\]
+add exclusion then0
+remove core \*
+add core stdcore\[1\]
+add exclusion then1
+remove core \*
+add core stdcore\[2\]
+add exclusion then2
+remove core \*
+add core stdcore\[3\]
+add exclusion then3
 analyze function f
 set instructiontime 0 timer2 20.0 us
 set loop 0 loop2 10

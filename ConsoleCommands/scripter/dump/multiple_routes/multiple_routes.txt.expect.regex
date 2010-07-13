@@ -1,7 +1,7 @@
 # load ".*test\.xe"
 
 #
-# Route: x => x
+# Route: endpoints: x to x
 #
 add exclusion the_great_outdoors
 analyze endpoints x x
@@ -9,7 +9,7 @@ remove route 1
 remove route 3
 
 #
-# Route: x => x
+# Route: endpoints: x to x
 #
 analyze endpoints x x
 remove route 6

@@ -1,0 +1,11 @@
+seq\(\d+\) +: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  \* loop\(\d+\) +: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    block\(\d+\) +: \d+\.\d+ [mun]s \(x 0\) / \d+\.\d+ [mun]s \(x 0\) 
+.    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+
+Route\(0\) loop: outer
+    No Timing Specified
+
+Fail, Timing Unspecified

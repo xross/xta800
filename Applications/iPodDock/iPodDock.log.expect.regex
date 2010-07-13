@@ -13,7 +13,7 @@ Route\(\d+\) endpoints: audio_48_left_o3 to audio_48_left_o5
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) endpoints: audio_48_left_o4 to audio_48_left_o6
-    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.4 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) endpoints: audio_48_left_o5 to audio_48_left_o7
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
