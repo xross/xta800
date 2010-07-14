@@ -160,23 +160,43 @@ public class StructuralAnalysisEngine {
 				CfgNode.connect(instToBlock.get(next), node);
 			}
 		}
-		
-		Set<CfgNode> terminals = findEndPoints(firstNode);
-		
-		CfgNullNode n = new CfgNullNode();			
-		if (terminals.size() > 1) {	
-			for (CfgNode node : terminals){
-				CfgNode.connect(n, node);
-			}
-			newWorkingSet.add(n);
-		}
-		
+
+        collateTerminals(firstNode, newWorkingSet);
+
 		workingSet.clear();
 		workingSet.addAll(newWorkingSet);
 		dumpTree("after_basicBlock_"+ string, workingSet, false);
 		return firstNode;
 	}
 	
+  	private void collateTerminals(CfgNode firstNode, Set<CfgNode> newWorkingSet) {
+  		
+		Set<CfgNode> terminals = findEndPoints(firstNode);
+		if (terminals.size() < 2)
+			return;
+		
+		// Creates a new null node which all the terminals will connect to..
+		CfgNullNode newNullNode = new CfgNullNode();	
+
+		for (CfgNode node : terminals){
+			if (node instanceof CfgNullNode) {
+				// This is already a null node, so we need to connect this 
+				// node predecessors to the new null node...
+				for (CfgNode previousNode : node.getPrevNodes()) {
+					previousNode.removeNextNode(node);
+					CfgNode.connect(newNullNode, previousNode);
+				}				
+				node.getPrevNodes().clear();
+				newWorkingSet.remove(node);
+				
+			} else {
+				// Connects the terminal to the new null node.
+			    CfgNode.connect(newNullNode, node);
+			}
+		}
+		newWorkingSet.add(newNullNode);
+  	}
+  	
 	private Node buildStructure(Collection<CfgNode> workingSet, CfgNode treeStart, String jobPrefix) 
 	    throws AbortedException, MemoryMonitorException {
 		
