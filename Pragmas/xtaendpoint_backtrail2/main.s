@@ -2,6 +2,14 @@
 .text
 
 .align 2
+.globl _start.nstackwords
+.globl _start.maxthreads
+.globl _start.maxtimers
+.globl _start.maxchanends
+.linkset _start.nstackwords, main.nstackwords
+.linkset _start.maxthreads, main.maxthreads
+.linkset _start.maxtimers, main.maxtimers
+.linkset _start.maxchanends, main.maxchanends
 .globl _start
 _start:
 .xtathreadstart
