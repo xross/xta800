@@ -20,34 +20,34 @@ int test (int x){
         y=55;
         break;
     case 6:
-        y=66;
+        y=6;
         break;
     case 7:
-        y=77;
+        y=7;
         break;
     case 8:
-        y=88;
+        y=8;
         break;
     case 9:
-        y=99;
+        y=9;
         break;
     case 10:
-        y=1010;
+        y=10;
         break;
     case 11:
-        y=1111;
+        y=11;
         break;
     case 12:
-        y=1212;
+        y=12;
         break;
     case 13:
-        y=1313;
+        y=13;
         break;
     case 14:
-        y=1414;
+        y=1;
         break;
     case 15:
-        y=1515;
+        y=4;
         break;
     }
     return y;

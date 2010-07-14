@@ -32,58 +32,58 @@ int test (int x){
         y=99;
         break;
     case 10:
-        y=1010;
+        y=10;
         break;
     case 11:
-        y=1111;
+        y=11;
         break;
     case 12:
-        y=1212;
+        y=12;
         break;
     case 13:
-        y=1313;
+        y=13;
         break;
     case 14:
-        y=1414;
+        y=14;
         break;
     case 15:
-        y=1515;
+        y=15;
         break;
     case 16:
-        y=1616;
+        y=16;
         break;
     case 17:
-        y=1717;
+        y=17;
         break;
     case 18:
-        y=1818;
+        y=18;
         break;
     case 19:
-        y=1919;
+        y=19;
         break;
     case 20:
-        y=2020;
+        y=20;
         break;
     case 21:
-        y=2121;
+        y=21;
         break;
     case 22:
-        y=2222;
+        y=22;
         break;
     case 23:
-        y=2323;
+        y=23;
         break;
     case 24:
-        y=2424;
+        y=24;
         break;
     case 25:
-        y=2525;
+        y=25;
         break;
     case 26:
-        y=2626;
+        y=26;
         break;
     case 27:
-        y=2727;
+        y=27;
         break;
     }
     return y;
