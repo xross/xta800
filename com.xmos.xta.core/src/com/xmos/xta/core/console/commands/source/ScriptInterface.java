@@ -52,9 +52,11 @@ public class ScriptInterface {
     // Route Creation/Deletion Methods
 	// ===================================================================== //
     public List<Integer> analyzeFunction(String functionName) throws Exception {
+        int previousNumRoutes = m_engine.getRoutes().size();        
     	m_engine.analyzeFunction(m_src, functionName);
         checkForErrors("analyzeFunction");
-    	return getLastRouteIds();
+        
+    	return getLastRouteIds(previousNumRoutes);
     }
 
     public List<Integer> analyzeEndpoints(String fromRef, String toRef) throws Exception {
@@ -64,12 +66,24 @@ public class ScriptInterface {
 		m_engine.getPathPoints().setTo(m_src, toRef);
         checkForErrors("analyzeEndpoints");
 				    	
+        int previousNumRoutes = m_engine.getRoutes().size();        
     	m_engine.analyzeEndpoints(m_src);
         checkForErrors("analyzeEndpoints");
-        
-    	return getLastRouteIds();
+
+    	return getLastRouteIds(previousNumRoutes);
     }
 
+    public List<Integer> analyzeLoop(String loopRef) throws Exception {
+		m_engine.getLoopPoints().setLoop(m_src, loopRef);
+        checkForErrors("analyzeLoop");
+
+        int previousNumRoutes = m_engine.getRoutes().size();        
+    	m_engine.analyzeLoop(m_src);
+        checkForErrors("analyzeLoop");
+        
+    	return getLastRouteIds(previousNumRoutes);
+    }
+    
     public void removeRoute(int routeId) throws Exception {
     	if (!m_engine.removeRoute(m_src, routeId)) {    	       	   
     		throw new Exception("removeRoute: Unable to remove route: " + routeId);
@@ -358,7 +372,11 @@ public class ScriptInterface {
 		throw new Exception("Invalid route id");    	
     }
     
-    private List<Integer> getLastRouteIds() {
+    private List<Integer> getLastRouteIds(int previousNumRoutes) {
+        boolean noRoutesCreated = m_engine.getRoutes().size() - previousNumRoutes == 0;
+        if (noRoutesCreated) {
+        	return new ArrayList<Integer>();
+        }
     	List<Integer> routeIds = new ArrayList<Integer>(); 
     	for (Route route : m_engine.getRoute(Engine.ROUTE_ID_LAST)) {
     		routeIds.add(route.getRouteId());
