@@ -22,6 +22,8 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 
 class ControlFlowReferenceMatcher extends ReferenceMatcher {
+	private static final boolean DEBUG = false;
+	
 	private ControlFlow m_controlFlow;
 	private CachedFunctionMap m_cachedFunctionMap;
 	
@@ -29,64 +31,33 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
 		m_controlFlow = controlFlow;
 		m_cachedFunctionMap = cachedFunctionMap;
 	}
-	
+
 	List<StackNode> matchReference(Reference ref) 
 	    throws AbortedException, MemoryMonitorException {
 		
-		List<StackNode> stackNodes = new LinkedList<StackNode>();
-		for (FunctionControlFlow container : getBaseContianers(ref)) {			
-			CfgInstructionNode instruction = getInstructionFromContainer(container, ref);
-			List<Stack<CfgFunctionReferenceNode>> nodeStacks = m_controlFlow.getStacks(container);
-	
-			stackNodes.add(new StackNode(instruction, nodeStacks)); 
-		}
-		return refineStackNodes(stackNodes, ref);
-	}
-
-	private List<FunctionControlFlow> getBaseContianers(Reference ref) {
-		List<FunctionControlFlow> fnContainers = new LinkedList<FunctionControlFlow>();
-		for (FunctionControlFlow fc : m_controlFlow.getFunctionControlFlows()) {
-			
-			if (ref.getBase().getType() == Type.FUNCTION) {
-				if (ref.getPcs().contains(fc.getStartInstructionNode().getPc())) {
-					fnContainers.add(fc);
-				}
-			} else {
-				for (long pc : ref.getPcs()) {
-					if (fc.containsPc(pc)) {
-						fnContainers.add(fc);
-						break;
-					}
-				}
-			}
-		}
-		return fnContainers;
-	}
-
-	private CfgInstructionNode getInstructionFromContainer(FunctionControlFlow fc, Reference ref){
-		for (CfgInstructionNode inst : fc.getInstructionNodes()) {
-			if (ref.getPcs().contains(inst.getPc()) && ! inst.getInstruction().isFnop()) {
-				return inst;
-			}
-		}
-		assert(false);
-		return null;
+		if (DEBUG) System.out.printf("========== Matching Ref: %s =============\n", ref);		
+		List<StackNode> stackNodes = createStackNodes(ref);
+		if (DEBUG) System.out.printf("%s\n", stackNodes);
+		return stackNodes;
 	}
 	
-	public List<StackNode> refineStackNodes(List<StackNode> stackNodes, Reference reference) 
+	private List<StackNode> createStackNodes(Reference reference) 
 	    throws AbortedException, MemoryMonitorException {
 		
 		List<StackNode> refinedStackNodes = new LinkedList<StackNode>();
 	
 		for(long pc : reference.getPcs()){
-			List<ReferenceType> refList = new LinkedList<ReferenceType>();
+			if (DEBUG) System.out.printf("Starting on pc: 0x%x\n", pc);
 			
+			List<ReferenceType> refList = new LinkedList<ReferenceType>();			
 			matchLabel(reference, pc, refList);
 			
-			List<Stack<CfgFunctionReferenceNode>> stacks = new LinkedList<Stack<CfgFunctionReferenceNode>>();
 			List<FunctionControlFlow> containedInFunction = m_controlFlow.getFunctionContaining(pc);
 
 			for (FunctionControlFlow fn : containedInFunction) {
+				if (DEBUG) System.out.printf("Function: %s\n", fn.getFunctionName());
+				
+				List<Stack<CfgFunctionReferenceNode>> stacks = new LinkedList<Stack<CfgFunctionReferenceNode>>();
 				CfgInstructionNode inst = fn.getInstructionNode(pc);
 				
 				if (reference.getBase().getType() == Type.FUNCTION && fn.getStartInstructionNode() != inst) {
@@ -128,6 +99,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
 				}
 			}
 		}
+		if (DEBUG) System.out.printf("Refining stack nodes (End: size: %d)...\n", refinedStackNodes.size());		
 		return refinedStackNodes;
 	}
 	
