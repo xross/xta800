@@ -2,34 +2,34 @@ int test (int x){
     int y = 0;
     switch (x){
     case 0:
-        y=00;
+        y=1000;
         break;
     case 1:
-        y=11;
+        y=1100;
         break;
     case 2:
-        y=22;
+        y=2200;
         break;
     case 3:
-        y=33;
+        y=3300;
         break;
     case 4:
-        y=44;
+        y=4400;
         break;
     case 5:
-        y=55;
+        y=5500;
         break;
     case 6:
-        y=66;
+        y=6600;
         break;
     case 7:
-        y=77;
+        y=7700;
         break;
     case 8:
-        y=88;
+        y=8008;
         break;
     case 9:
-        y=99;
+        y=9900;
         break;
     case 10:
         y=1010;

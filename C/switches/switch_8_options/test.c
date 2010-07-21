@@ -20,10 +20,10 @@ int test (int x){
         y=55;
         break;
     case 6:
-        y=66;
+        y=56;
         break;
     case 7:
-        y=77;
+        y=57;
         break;
     }
     return y;

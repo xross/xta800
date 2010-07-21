@@ -15,6 +15,6 @@ system("@ARGV load $genDir/test.xe " .
        "-add exclusion foo " .
        "-add exclusion end " .
        "-analyse path foo bar " .
-       "-print trace - " .
+       "-print structure - " .
        "-exit > $genDir/a_to_b_not_through_a.txt 2>&1");
 
