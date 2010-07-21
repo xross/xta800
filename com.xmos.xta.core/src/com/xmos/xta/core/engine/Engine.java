@@ -18,6 +18,7 @@ import com.xmos.libs.controlflow.FunctionControlFlow;
 import com.xmos.libs.controlflow.Label;
 import com.xmos.libs.controlflow.functionmapper.FunctionMapper;
 import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.instructiondecoder.BinaryInformation;
 import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.libs.instructiondecoder.InstructionDecoder;
 import com.xmos.libs.instructiondecoder.InstructionDecoders;
@@ -111,7 +112,8 @@ public class Engine extends Notifier implements Aborter {
 	private LoopPoints m_loopPoints;
 	private Debugger m_debugger;
 	private MemoryMonitor m_memoryMonitor;
-
+	private BinaryInformation m_binaryInformation;
+	
 	public Engine(Config config) {
 		super(config);
 		m_nodeHz = new IteratableMap<String, Integer>();
@@ -138,6 +140,7 @@ public class Engine extends Notifier implements Aborter {
 		m_loopPoints = new LoopPoints(this);
 		m_debugger = new Debugger(this);
 		m_memoryMonitor = new MemoryMonitor();
+		m_binaryInformation = new BinaryInformation(new InstructionMnemonics(m_xeLoader.getArchitecture()));
 		ReferenceTypeFactory.setEngine(this);
 	}
 
@@ -151,7 +154,11 @@ public class Engine extends Notifier implements Aborter {
 			m_numErrors++;
 		}
 	}
-
+	
+	public StringBuffer printBinaryInformation(){
+		return m_binaryInformation.reportStats();
+	}
+	
 	public Config getConfig() {
 		return m_config;
 	}
