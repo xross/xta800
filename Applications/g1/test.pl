@@ -7,14 +7,10 @@ my $genDir  = shift(@ARGV);
 my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
-my $directory = "g1";
 
 if (!$noBuild) {
-    system("xcc -save-temps -target=$target -march=$arch -g -O3 link.S top.xc -o $genDir/test.xe >  $genDir/$directory.log 2>&1");
+    system("xcc -target=$target -march=$arch -g -O3 link.S top.xc -o $genDir/test.xe >  $genDir/test.log 2>&1");
 }
-
-my $filename = "trace";
-my $compareFnnops = 0;
 
 system("@ARGV load $genDir/test.xe " .
         "remove core stdcore[0] " .
@@ -58,6 +54,6 @@ system("@ARGV load $genDir/test.xe " .
         "set required - 333 ns " .
 
         "print summary " .
-        "-exit > $genDir/$directory.txt 2>&1");
+        "-exit > $genDir/test.txt 2>&1");
 
 
