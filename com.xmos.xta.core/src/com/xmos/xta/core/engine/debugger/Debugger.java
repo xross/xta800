@@ -128,4 +128,24 @@ public class Debugger {
 		}
 		return matchingReferences;
 	}	
+	
+	public void dumpStackNodes(CommandSource src, String refString, Console console) {
+		for (CoreId activeCore : m_engine.getActiveCores()) {
+			Reference reference = ReferenceFactory.createReference(refString, 
+					ReferenceClass.ANY, activeCore);
+
+			if (reference.resolve(m_engine)) {
+			    try {
+					for (StackNode stackNode : RouteConstructor.getPathStackNodes(
+							m_engine.getControlFlow(activeCore), 
+							m_engine.getCachedFunctionMap(activeCore),
+							reference)) {
+						console.display(stackNode.toString());					
+					}
+				} catch (AbortedException e) {
+				} catch (MemoryMonitorException e) {					
+				}
+			}
+		}				
+	}
 }

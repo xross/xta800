@@ -11,6 +11,7 @@ public class Debug extends CommandContainer {
 		new DumpCachedFunction(),
 		new DumpControlFlow(),
 		new DumpManual(),
+		new DumpStackNodes(),
 		new VerifyReference(),
 		new FromPoints(),
 		new ToPoints(),
