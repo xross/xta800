@@ -1,4 +1,6 @@
 function: main \d+\.\d+ \d+\.\d+
 endpoints: callf to callg \d+\.\d+ \d+\.\d+
+loop: loop \d+\.\d+ \d+\.\d+
 xta.analyzeFunction: Reference: Invalid not resolved on any active core
 xta.analyzeEndpoints: 'Invalid' is not a valid endpoint on any active core
+xta.analyzeLoop: 'Invalid' is not a valid loop point on any active core
