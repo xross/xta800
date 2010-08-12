@@ -28,7 +28,7 @@ public class DumpControlFlow {
 			ControlFlow controlFlow = m_engine.getControlFlow(coreId);
 		    for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
 			    if (functionControlFlow.getFunctionName().equals(functionName)) {
-				    console.display(getControlFlow(functionControlFlow));
+				    console.display(getControlFlow(coreId, functionControlFlow));
 				    hit = true;
 			    }
 		    }
@@ -39,7 +39,7 @@ public class DumpControlFlow {
 		}
 	}
 	
-	private String getControlFlow(FunctionControlFlow functionControlFlow) {
+	private String getControlFlow(CoreId coreId, FunctionControlFlow functionControlFlow) {
 		StringBuffer stringBuffer = new StringBuffer();
 		
 		Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
@@ -47,7 +47,10 @@ public class DumpControlFlow {
 		
 		CfgInstructionNode startInstructionNode = functionControlFlow.getStartInstructionNode();
 		
-		stringBuffer.append("#from node " + startInstructionNode + "\n");
+		stringBuffer.append("############################################\n");
+		stringBuffer.append("# " + coreId.getCoreReference() + "\n");
+		stringBuffer.append("############################################\n");
+		
 		todo.add(startInstructionNode);
 		stringBuffer.append("digraph g {\n");
 		
