@@ -37,22 +37,25 @@ public class Analyzer {
         RouteContainer routeContainer = new RouteContainer(
         		RouteMode.FUNCTION, functionName, m_engine, src);		
 
+        boolean isResolved = false;
         boolean routeFound = false;
 		for (CoreId activeCore : m_engine.getActiveCores()) {			
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
 					ReferenceClass.FUNCTION, activeCore);
 
 			if (functionRef.resolve(m_engine)) {
+				isResolved = true;
+				
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 
 						routeContainer, m_engine, activeCore);
-
+				
 				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
 					return;
 				}
 				routeFound = true;
 			}
 		}
-		update(src, routeContainer);
+		update(src, routeContainer, isResolved);
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
 	    			String.format("Reference: %s not resolved on any active core", functionName));
@@ -62,9 +65,11 @@ public class Analyzer {
 	public void analyzeEndpoints(CommandSource src, PathPoints pathPoints) {
         RouteContainer routeContainer = new RouteContainer(pathPoints.getFromName(), pathPoints.getToName(), m_engine, src);
 
+        boolean isResolved = false;
         boolean routeFound = false;
 		for (CoreId activeCore : m_engine.getActiveCores()) {
-
+			isResolved = true;
+			
 			boolean fromFound = true;
 			Reference fromEndpoint = pathPoints.getFrom(activeCore);
 		    if ((fromEndpoint == null) || fromEndpoint.getRef().equals("")) {
@@ -87,7 +92,7 @@ public class Analyzer {
 				routeFound = true;
     		}			
 		}
-		update(src, routeContainer);
+		update(src, routeContainer, isResolved);
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
 	    			"References not resolved on any active core");
@@ -98,8 +103,10 @@ public class Analyzer {
         RouteContainer routeContainer = new RouteContainer(
         		RouteMode.LOOP, loopPoints.getRefString(), m_engine, src);		
 
+        boolean isResolved = false;
         boolean routeFound = false;
 		for (CoreId activeCore : m_engine.getActiveCores()) {
+			isResolved = true;
 			
 			Reference loopRef = loopPoints.getLoop(activeCore);
 		    if ((loopRef != null) && !loopRef.getRef().equals("")) {
@@ -112,7 +119,7 @@ public class Analyzer {
 				routeFound = true;
 			}		    
 		}
-		update(src, routeContainer);
+		update(src, routeContainer, isResolved);
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format(
 	    			"Reference: %s not resolved on any active core", loopPoints.getRefString()));
@@ -131,10 +138,7 @@ public class Analyzer {
 			if (!routeConstructor.getRoutes().isEmpty()) {
 				routeCoreContainer.add(routeConstructor.getRoutes());
 				routeContainer.addRouteCoreContainer(routeCoreContainer);
-
-			} else {
-			    m_engine.notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
-		    }			
+			}			
 			
 		} catch (final java.lang.OutOfMemoryError e) {
 			if (development_mode) e.printStackTrace();
@@ -162,7 +166,7 @@ public class Analyzer {
 		return true;
 	}
 	
-	private void update(CommandSource src, RouteContainer routeContainer) {
+	private void update(CommandSource src, RouteContainer routeContainer, boolean isResolved) {
 		if (routeContainer.getNumExistingRoutes() > 0) {
 			m_routeContainers.add(routeContainer);
 
@@ -175,6 +179,12 @@ public class Analyzer {
 			m_engine.setSelectedRoute(src, m_routes.get(currentSize));
 			m_engine.notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, 
 				Integer.toString(m_routes.get(currentSize).getRouteId()));
-		} 
+		} else {
+			if (isResolved) {
+				// All the references for this analysis were resolved, 
+				// but no routes were created..
+		        m_engine.notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
+			}
+		}
 	}
 }
