@@ -2,10 +2,14 @@ package com.xmos.xta.core.engine.debugger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import com.xmos.libs.controlflow.ControlFlow;
 import com.xmos.libs.controlflow.FunctionControlFlow;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.instructiondecoder.Instruction;
 import com.xmos.libs.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
@@ -17,6 +21,7 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
+import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
@@ -28,24 +33,6 @@ public class Debugger {
 		m_engine = engine;
 	}
 
-	public void dumpControlFlow(CommandSource src, String functionName, Console console) {
-		boolean hit = false;		
-		for (CoreId activeCore : m_engine.getActiveCores()) {
-			
-			ControlFlow controlFlow = m_engine.getControlFlow(activeCore);
-		    for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
-			    if (functionControlFlow.getFunctionName().equals(functionName)) {
-				    console.display(functionControlFlow.dumpControlFlow());
-				    hit = true;
-			    }
-		    }
-		}
-		
-		if (!hit) { 
-		    m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("Function: %s not found on any active core", functionName));
-		}
-	}
-	
 	public Node getCachedFunction(CommandSource src, String functionName, CoreId coreId) {
 		ControlFlow controlFlow = m_engine.getControlFlow(coreId);
 	    for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
@@ -148,4 +135,65 @@ public class Debugger {
 			}
 		}				
 	}
+	
+	public void dumpUnresolvedInstructions(CommandSource src, Console console) {
+		for (CoreId coreId : m_engine.getXeLoader().getCoreIds()) {
+			
+			Collection<Instruction> unresolvedInstructions = new ArrayList<Instruction>();
+			for (CfgInstructionNode inst : m_engine.getInstructionDecoder(coreId).getInstructions()) {
+				if (inst.getUnresolved()) {
+					unresolvedInstructions.add(inst.getInstruction());
+				}
+			}
+			
+			if (!unresolvedInstructions.isEmpty()) {
+				System.out.printf("%s:\n", coreId.getCoreReference());			
+				for (Instruction instruction : unresolvedInstructions) {
+					System.out.println(instruction);
+				}
+				System.out.println("");
+			}
+		}		
+	}
+	
+	public void dumpActiveExclusions(CommandSource src, Console console) {
+    	for (CoreId coreId : m_engine.getActiveCores()){
+    		
+    		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
+			for (ExclusionInfo info : m_engine.getExclusions()) {
+				Reference ref = info.getReference();
+				if (ref.getCoreId().equals(coreId)) {
+					
+					try {					
+					    List<StackNode> stackNodes = RouteConstructor.getPathStackNodes(
+						    	m_engine.getControlFlow(coreId), 
+							    m_engine.getCachedFunctionMap(coreId), ref);
+
+					    exclusionStackNodes.addAll(stackNodes);					    
+					    
+					} catch (AbortedException e) {
+					} catch (MemoryMonitorException e) {
+					}
+				}
+			}
+			
+			if (!exclusionStackNodes.isEmpty()) {			
+			    System.out.println(coreId + ":");
+			    for (StackNode exclusionStack : exclusionStackNodes){
+				    System.out.println(exclusionStack.getInstruction());
+			    }
+			    System.out.println("");
+			}
+    	}		
+	}	
+	
+	public void dumpControlFlow(CommandSource src, String functionName, Console console) {
+		DumpControlFlow dumper = new DumpControlFlow(m_engine);
+		dumper.dump(src, functionName, console);
+	}
+		
+	public void dumpCallGraph(CommandSource src, Console console) {
+		DumpCallGraph dumper = new DumpCallGraph(m_engine);
+		dumper.dump(src, console);
+	}	
 }

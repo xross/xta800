@@ -39,7 +39,6 @@ public class Exclusion extends Command {
 		if ((index + numArgs()) >= args.length) {
 			return null;
 		}
-
     	return new Exclusion(args[index + 1]);
     }
 
@@ -47,7 +46,6 @@ public class Exclusion extends Command {
 		if (!isExecutableLoaded(engine, console)) {
 			return;
 		}
-
 		engine.addExclusion(getSrc(), m_reference);
     }
 }

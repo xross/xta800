@@ -9,9 +9,11 @@ public class Debug extends CommandContainer {
 	static private Command[] m_options = {
 		new DumpActiveExclusions(),
 		new DumpCachedFunction(),
+		new DumpCallGraph(),
 		new DumpControlFlow(),
 		new DumpManual(),
 		new DumpStackNodes(),
+		new DumpUnresolvedInstructions(),
 		new VerifyReference(),
 		new FromPoints(),
 		new ToPoints(),
