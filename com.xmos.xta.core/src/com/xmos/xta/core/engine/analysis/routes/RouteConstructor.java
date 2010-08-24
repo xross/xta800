@@ -330,6 +330,69 @@ public class RouteConstructor {
 		return node;
 	}
 
+	
+	/**
+	 * Return true if the current node is a valid exclusion. The current node is a valid exclusion if
+	 * it is in the set of excluded stack nodes and is not the first instruction to be expolred.
+	 * @param firstInstruction 
+	 */
+	private boolean isCurrentNodeAnExcludedNode(
+			List<StackNode> exclusionStackNodes,
+			Stack<CfgFunctionReferenceNode> currentStack, 
+			CfgNode node, boolean firstInstruction) {
+		
+		return (stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction);
+	}
+	
+	private boolean isCurrentNodeUnresolved(CfgNode currentNode) {
+		return currentNode.getUnresolved();
+	}
+	
+	private boolean isFunctionReferenceNode(CfgNode node) {
+		return (node instanceof CfgFunctionReferenceNode);
+	}
+	
+	private boolean isCurrentNodeAnEndNode(
+			List<StackNode> endStackNodes, 
+			Stack<CfgFunctionReferenceNode> currentStack, 
+			CfgNode node, 
+			RouteMode routeMode, 
+			CfgNode previous, 
+			CfgNode currentNode, 
+			Set<CfgNode> workingSet, 
+			Set<CfgNode> loopFormingEndNodes) {
+		
+		if(stackNodesContainNode(endStackNodes, currentStack, node)){
+			switch (routeMode) {
+			case FUNCTION:
+				addToWorkingSet(previous, currentNode, workingSet);
+				return true;
+			case ENDPOINTS:
+				if(!workingSet.isEmpty()){
+					loopFormingEndNodes.add(previous);
+					connectToNullNode(previous, workingSet);
+					return true;
+				} 
+			}
+		} 
+		return false;
+	}
+	
+	private boolean isFormingRecursion(Stack<CfgFunctionReferenceNode> currentStack, CfgNode previous, CfgFunctionReferenceNode frn, Set<CfgNode> loopFormingEndNodes) {
+		List<CfgInstructionNode> functionCallInstructions = new LinkedList<CfgInstructionNode>();
+		for (CfgFunctionReferenceNode f : currentStack) {
+			functionCallInstructions.add(f.getFunctionStartInstruction());
+		}
+		if (functionCallInstructions.contains(frn.getFunctionStartInstruction())) {
+			//recursion detected
+			previous.setRecursive(true);
+			loopFormingEndNodes.add(previous);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private void findReachableGraph(
 			CfgNode previous,
 			Stack<CfgFunctionReferenceNode> currentStack, 
@@ -347,176 +410,195 @@ public class RouteConstructor {
 	throws AbortedException, MemoryMonitorException {
 		
 		boolean repeat = true;
+		
 		while(repeat){
 			
 			repeat = false;
 			
 			CfgNode currentNode = getCurrentNode(currentStack, node, nodeToWorkingSet);
-			//System.out.println("on node " + currentNode);
+			
+			
+			if(isFunctionReferenceNode(node)){
+
+				CfgFunctionReferenceNode frn = ((CfgFunctionReferenceNode)node);
+
+				if(isFormingRecursion(currentStack, previous, frn, loopFormingEndNodes)){
+					return;
+				}
+				
+				Stack<CfgFunctionReferenceNode> newStack = new Stack<CfgFunctionReferenceNode>();
+				newStack.addAll(currentStack);
+				newStack.add(frn);
+				
+				if (containsEndPoint(node, endStackNodes)) {
+					CfgInstructionNode inst = frn.getFunctionStartInstruction();
+					findReachableGraph(previous, newStack, inst, workingSet,
+							exclusionStackNodes, currentExclusionsFound, routeMode,
+							endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
+					return;
+				} else {
+					
+					if (frn.isKnownFunction()){
+						Pair<FunctionNode, Boolean> fnReturn = makeFunction(newStack, exclusionStackNodes, branchStackNodes, false, branchToNext);
+						boolean continueAnalysis = fnReturn.second;
+						FunctionNode fn = fnReturn.first;
+						currentNode = new CfgContainerNode(fn);
 						
-			if (stackNodesContainNode(exclusionStackNodes, currentStack, node)&& !firstInstruction){
+						if (fn != null) {
+							if (!continueAnalysis) {
+								addToWorkingSet(previous, currentNode, workingSet);
+								return;
+							} else {
+								//this is the case where the exclusions didn't stop the control flow reaching the end of a function the continues
+							}
+						} else {
+							currentExclusionsFound.add(previous);
+							return;
+						}
+					} else {
+						CfgNode fnNode = new CfgContainerNode(new FunctionNode());
+						addToWorkingSet(previous, fnNode, workingSet);
+						return;
+					}
+					
+				}
+			}
+			
+			if(isCurrentNodeAnExcludedNode(exclusionStackNodes, currentStack, node, firstInstruction)){
 				currentExclusionsFound.add(currentNode);
 				addToWorkingSet(previous, currentNode, workingSet);
 				return;
 			}
 			
-			if (node instanceof CfgFunctionReferenceNode) {
-				CfgFunctionReferenceNode frn = ((CfgFunctionReferenceNode)node);
-				
-				List<CfgInstructionNode> functionCallInstructions = new LinkedList<CfgInstructionNode>();
-				for (CfgFunctionReferenceNode f : currentStack) {
-					functionCallInstructions.add(f.getFunctionStartInstruction());
-				}
-
-				if (functionCallInstructions.contains(frn.getFunctionStartInstruction())) {
-					//recursion detected
-					FunctionNode fn = new FunctionNode(frn.getFunctionName());
-					CfgContainerNode cn = new CfgContainerNode(fn);
-					currentNode = cn;
-					previous.setRecursive(true);
-					loopFormingEndNodes.add(previous);
-					return;
-
-				} else {
-					boolean endPointsWithin = false; 
-					for(StackNode endStackNode : endStackNodes){
-						for(Stack<CfgFunctionReferenceNode> stack : endStackNode.getNodeStacks()){
-							if(stack.contains(node)){
-								endPointsWithin = true;
-							}
-						}
-					}
-					
-					Stack<CfgFunctionReferenceNode> newStack = new Stack<CfgFunctionReferenceNode>();
-					newStack.addAll(currentStack);
-					newStack.add(frn);
-					
-					if (endPointsWithin) {
-						CfgInstructionNode inst = frn.getFunctionStartInstruction();
-						
-						findReachableGraph(previous, newStack, inst, workingSet,
-								exclusionStackNodes, currentExclusionsFound, routeMode,
-								endStackNodes, nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
-						return;
-						
-					} else {
-						FunctionNode fn = null;
-						CfgContainerNode cn = null;
-						boolean continueAnalysis = false;
-						if (frn.isKnownFunction()){
-							Pair<FunctionNode, Boolean> fnReturn = makeFunction(newStack, exclusionStackNodes, branchStackNodes, false, branchToNext);
-							continueAnalysis = fnReturn.second;
-							fn = fnReturn.first;
-							cn = new CfgContainerNode(fn);
-							
-						} else {
-							fn = new FunctionNode();
-							cn =  new CfgContainerNode(fn);
-						}
-						
-						if (fn != null) {
-							if (continueAnalysis) {
-								currentNode = cn;
-							
-						} else {
-								currentNode = cn;
-								addToWorkingSet(previous, currentNode, workingSet);
-								loopFormingEndNodes.add(currentNode);
-								return;
-							}
-							
-						} else {
-							
-							currentExclusionsFound.add(previous);
-								return;
-						}
-					}
-				}
-			} else if (currentNode.getUnresolved()){
+			firstInstruction = false;
+			
+			if(isCurrentNodeUnresolved(currentNode)){
 				addToWorkingSet(previous, currentNode, workingSet);
-				return;
-				
-			} else if (stackNodesContainNode(endStackNodes, currentStack, node)){
-				switch (routeMode) {
-				case FUNCTION:
-					addToWorkingSet(previous, currentNode, workingSet);
-					return;
-				case ENDPOINTS:
-					if(!workingSet.isEmpty()){
-						loopFormingEndNodes.add(previous);
-						connectToNullNode(previous, workingSet);
-						return;
-					}
-				}
+				return; 
 			}
+			if(isCurrentNodeAnEndNode(endStackNodes, currentStack, node, routeMode, previous, currentNode, 
+					workingSet, loopFormingEndNodes)){
 				
+				assert(!(node instanceof CfgFunctionReferenceNode));
+				return;
+			}
+
 			addToWorkingSet(previous, currentNode, workingSet);
 			
+			//nextNodes is the set of nodes that follow this currentNode, it should include any user added next nodes.
 			Set<CfgNode> nextNodes = getValidBranches(branchStackNodes, currentStack, node, branchToNext);
-			//System.out.println("currentNode: " + currentNode + " nexts: " + nextNodes);
+			
+			
+			//assert(workingSet.size() == nodeToWorkingSet.size());
+			
+			//System.out.println("ws: " + workingSet.size() + " n: "+ nodeToWorkingSet.size());
 			
 			if (nextNodes.size() == 0) {
-				
-				if (isNodeContainedInBranchStackNodes(currentNode, branchStackNodes)) {
-					// Here we have no next nodes (i.e. it is unresolved), but isn't marked
-					// as unresolved because there is at least one way we can get to this node
-					// where there is a next node.					
-					addToWorkingSet(previous, currentNode, workingSet);
-					currentNode.setUnresolved(true);
-					return;					
-				}				
-								
-				CfgFunctionReferenceNode callingFnRef = currentStack.peek();
-				for (CfgNode followingFunction : callingFnRef.getNextNodes()) {
-					Stack<CfgFunctionReferenceNode> newStack = new Stack<CfgFunctionReferenceNode>();
-					newStack.addAll(currentStack);
-					newStack.pop();
-					findReachableGraph(currentNode, newStack, followingFunction, workingSet,
-							exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
-							nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
-					 
-				}
+				handelEndOfFunction(previous, currentStack, workingSet,
+						exclusionStackNodes, currentExclusionsFound, routeMode,
+						endStackNodes, nodeToWorkingSet, loopFormingEndNodes,
+						branchStackNodes, branchToNext, currentNode);
 			} else if (nextNodes.size() == 1) {
 				
 				CfgNode next = nextNodes.iterator().next();
+				node = next;
+				previous = currentNode;
+				
+				
 				CfgNode nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);				
 				if (nextWorkingSetNode == null) {
-					previous = currentNode;
-					node = next;
-					firstInstruction = false;
 					repeat = true;
-					
 				} else {
 					handleNodeAlreadyInWorkingSet(routeMode, exclusionStackNodes, 
 							endStackNodes, currentStack, workingSet, currentNode, 
-							next, nextWorkingSetNode, loopFormingEndNodes);					
+							next, nextWorkingSetNode);					
 
 					if (stackNodesContainNode(exclusionStackNodes, currentStack, next)) {
-						// This is for the case where the next node is excluded, 
-						// but we have seen it already (i.e. it's the start node),
-						// so because it is the only successor to the currentNode, we can
-						// mark the currentNode as excluded...
 						currentExclusionsFound.add(currentNode);						
-					}
+					}			
+					
 				}
 			} else if (nextNodes.size() > 1) {
-				
-				for (CfgNode next : nextNodes) {
-					CfgNode nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
-					if (nextWorkingSetNode == null) {
-						findReachableGraph(currentNode, currentStack, next, workingSet,
-								exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
-								nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
-					} else {						
-						handleNodeAlreadyInWorkingSet(routeMode, exclusionStackNodes, 
-								endStackNodes, currentStack, workingSet, currentNode, 
-								next, nextWorkingSetNode, loopFormingEndNodes);
-					}
-				}
+				handleBranch(currentStack, workingSet, exclusionStackNodes,
+						currentExclusionsFound, routeMode, endStackNodes,
+						nodeToWorkingSet, loopFormingEndNodes,
+						branchStackNodes, branchToNext, currentNode, nextNodes);
 			} 
+			
 		}
 	}
-	
+
+	private boolean containsEndPoint(CfgNode node, List<StackNode> endStackNodes) {
+		for(StackNode endStackNode : endStackNodes){
+			for(Stack<CfgFunctionReferenceNode> stack : endStackNode.getNodeStacks()){
+				if(stack.contains(node)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
+
+	private void handleBranch(Stack<CfgFunctionReferenceNode> currentStack,Set<CfgNode> workingSet, 
+			List<StackNode> exclusionStackNodes,Set<CfgNode> currentExclusionsFound, RouteMode routeMode,
+			List<StackNode> endStackNodes,Map<NodeDescriptor, CfgNode> nodeToWorkingSet,
+			Set<CfgNode> loopFormingEndNodes, List<StackNode> branchStackNodes,
+			Map<StackNode, Set<CfgNode>> branchToNext, CfgNode currentNode,
+			Set<CfgNode> nextNodes) throws AbortedException,
+			MemoryMonitorException {
+		
+		for (CfgNode next : nextNodes) {
+			CfgNode nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
+			if (nextWorkingSetNode == null) {
+				findReachableGraph(currentNode, currentStack, next, workingSet,
+						exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
+						nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext);
+			} else {						
+				handleNodeAlreadyInWorkingSet(routeMode, exclusionStackNodes, 
+						endStackNodes, currentStack, workingSet, currentNode, 
+						next, nextWorkingSetNode);
+			}
+		}
+	}
+
+	private void handelEndOfFunction(CfgNode previous,
+			Stack<CfgFunctionReferenceNode> currentStack,
+			Set<CfgNode> workingSet, List<StackNode> exclusionStackNodes,
+			Set<CfgNode> currentExclusionsFound, RouteMode routeMode,
+			List<StackNode> endStackNodes,
+			Map<NodeDescriptor, CfgNode> nodeToWorkingSet,
+			Set<CfgNode> loopFormingEndNodes, List<StackNode> branchStackNodes,
+			Map<StackNode, Set<CfgNode>> branchToNext, CfgNode currentNode)
+			throws AbortedException, MemoryMonitorException {
+		
+		
+		
+		if (isNodeContainedInBranchStackNodes(currentNode, branchStackNodes)) {
+			// Here we have no next nodes (i.e. it is unresolved), but isn't marked
+			// as unresolved because there is at least one way we can get to this node
+			// where there is a next node.					
+			addToWorkingSet(previous, currentNode, workingSet);
+			currentNode.setUnresolved(true);
+		} else {				
+			CfgFunctionReferenceNode callingFnRef = currentStack.peek();
+			for (CfgNode followingFunction : callingFnRef.getNextNodes()) {
+				Stack<CfgFunctionReferenceNode> newStack = decreaseStack(currentStack);
+				findReachableGraph(currentNode, newStack, followingFunction, workingSet,
+						exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
+						nodeToWorkingSet, loopFormingEndNodes, false, branchStackNodes, branchToNext); 
+			}
+		}
+	}
+
+	private Stack<CfgFunctionReferenceNode> decreaseStack(Stack<CfgFunctionReferenceNode> currentStack) {
+		Stack<CfgFunctionReferenceNode> decreasedStack = new Stack<CfgFunctionReferenceNode>();
+		decreasedStack.addAll(currentStack);
+		decreasedStack.pop();
+		return decreasedStack;
+	}
+
 	private void handleNodeAlreadyInWorkingSet(
 			RouteMode routeMode,
 			List<StackNode> exclusionStackNodes,
@@ -525,27 +607,27 @@ public class RouteConstructor {
 			Set<CfgNode> workingSet,
 			CfgNode currentNode,
 			CfgNode nextNode,
-			CfgNode nextNodeFromWorkingSet,
-			Set<CfgNode> loopFormingEndNodes) {
+			CfgNode nextNodeFromWorkingSet) {
 		
-		boolean isEndNode = stackNodesContainNode(endStackNodes, currentStack, nextNode);
-		boolean isExcluded = stackNodesContainNode(exclusionStackNodes, currentStack, nextNode);
-		boolean connected = false;
-
-		if (routeMode == RouteMode.FUNCTION || (!isEndNode && !isExcluded)) {
-			// We've formed a loop, so connect the current to 
-			// the target thats already in the working set..
+		if (routeMode == RouteMode.FUNCTION){
 			CfgNode.connect(nextNodeFromWorkingSet, currentNode);
-			connected = true;
+			return;
 		}
-		if (isEndNode && !connected) {
-			loopFormingEndNodes.add(currentNode);
+		
+		boolean nextNodeIsAnEndNode = stackNodesContainNode(endStackNodes, currentStack, nextNode);
+		if (nextNodeIsAnEndNode) {
 			connectToNullNode(currentNode, workingSet);
-		} 		
+			return;
+		}
+		
+		boolean nextNodeIsAnExcludedNode = stackNodesContainNode(exclusionStackNodes, currentStack, nextNode);
+		if ( !nextNodeIsAnExcludedNode) {
+			// We've formed a loop, so connect the current to the target thats already in the working set..
+			CfgNode.connect(nextNodeFromWorkingSet, currentNode);
+		} 
 	}
 	
-	private void connectToNullNode(CfgNode currentNode,
-			Set<CfgNode> workingSet) {
+	private void connectToNullNode(CfgNode currentNode, Set<CfgNode> workingSet) {
 		//search the working set for a null node
 		CfgNullNode nullNode = null;
 		
