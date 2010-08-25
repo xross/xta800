@@ -99,8 +99,8 @@ public class RouteConstructor {
 		buildBranchStackNodes(branchStackNodes, branchToNext);
 
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
-        buildExclusionStackNodes(exclusionStackNodes);
-        
+       
+		buildExclusionStackNodes(exclusionStackNodes);
 		switch (m_coreContainer.getRouteContainer().getMode()) {
 		case FUNCTION:
 			analyzeFunction(src, branchStackNodes, branchToNext, exclusionStackNodes);
@@ -142,7 +142,7 @@ public class RouteConstructor {
 		
 		for (StackNode startStackNode : startStackNodes) {
 			for (Stack<CfgFunctionReferenceNode> stack : startStackNode.getNodeStacks()) {
-
+				
 				FunctionNode newFunction = makeFunction(stack, exclusionStackNodes, 
 						branchStackNodes, true, branchToNext).first;
 
@@ -268,6 +268,7 @@ public class RouteConstructor {
 		Map<NodeDescriptor, CfgNode> nodeToWorkingSet = new IteratableMap<NodeDescriptor, CfgNode>();
 		
 		NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentStack);
+		
 		
 		findReachableGraph(null, currentStack, startInst, workingSet,
 				exclusionStackNodes, currentExclusionsFound, RouteMode.FUNCTION,
@@ -409,9 +410,6 @@ public class RouteConstructor {
 			
 			repeat = false;
 			
-			//System.out.println(firstInstruction + "\t" + workingSet.size() + "\t" + nodeToWorkingSet.size() + "\t" + 
-			//		(firstInstruction == workingSet.isEmpty()) + "\t"  + node);
-			
 			CfgNode currentNode ;
 			
 			if(isFunctionReferenceNode(node)){
@@ -465,9 +463,8 @@ public class RouteConstructor {
 			}
 			
 			
-			
-			
 			if(isCurrentNodeAnExcludedNode(exclusionStackNodes, currentStack, node, firstInstruction)){
+				
 				currentExclusionsFound.add(currentNode);
 				addToWorkingSet(previous, currentNode, workingSet);
 				return;
@@ -558,6 +555,7 @@ public class RouteConstructor {
 		
 		for (CfgNode next : nextNodes) {
 			CfgNode nextWorkingSetNode = containsNode(next, currentStack, nodeToWorkingSet);
+			
 			if (nextWorkingSetNode == null) {
 				findReachableGraph(currentNode, currentStack, next, workingSet,
 						exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,

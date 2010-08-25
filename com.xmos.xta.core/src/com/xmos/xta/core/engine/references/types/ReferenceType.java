@@ -56,6 +56,15 @@ public abstract class ReferenceType {
 		return m_ref;
 	}
 
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append(m_ref + " ");
+		for(long pc : m_pcs){
+			sb.append("0x" + Long.toHexString(pc) + " ");
+		}
+		return sb.toString();
+	}
+	
 	public String getScripterRef() {
 		if (!isPortable() && (m_lineNum > 0)) {
 			return String.format("%s:%d", m_fileName, m_lineNum);

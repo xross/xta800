@@ -21,6 +21,20 @@ public class Reference implements Comparable<Reference>  {
 		m_backTrail = new ArrayList<ReferenceType>();
 	}
 
+	public String toVerboseString(){
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("Core Id String: " + getCoreId().toString() + "::" + getRef() + "\n");
+		sb.append("Base: " + m_base.toString() + "\n");
+		
+		for(ReferenceType trail : m_backTrail){
+			sb.append("BackTrail: " + trail.toString() + "\n");
+		}
+		
+		return sb.toString();
+	}
+	
+	
 	public String getRef() {
     	StringBuffer str = new StringBuffer();
     	
@@ -113,6 +127,8 @@ public class Reference implements Comparable<Reference>  {
     	Reference reference = (Reference)obj;
 
 		assert(m_base != null);
+		
+		
 		if (reference.checkPcsMatch()) {
 			if (!match(reference.getPcs(), m_base.getPcs())) {
 				return false;
@@ -120,12 +136,12 @@ public class Reference implements Comparable<Reference>  {
 		}
 
         if (reference.checkBackTrailMatches()) {
-	        if (m_backTrail.size() != reference.getBackTrail().size()) {
+	        if (getBackTrail().size() != reference.getBackTrail().size()) {
 	    	    return false;
 	        }
 
 	        for (int i = 0; i < m_backTrail.size(); ++i) {
-	    	    if (!match(m_backTrail.get(i).getPcs(), getBackTrail().get(i).getPcs())) {
+	    	    if (!match(getBackTrail().get(i).getPcs(), reference.getBackTrail().get(i).getPcs())) {
 	    	        return false;
 	    	    }
 	        }
