@@ -97,7 +97,7 @@ public class RouteConstructor {
 		List<StackNode> branchStackNodes = new LinkedList<StackNode>();
 		Map<StackNode, Set<CfgNode>> branchToNext = new IteratableMap<StackNode, Set<CfgNode>>();
 		buildBranchStackNodes(branchStackNodes, branchToNext);
-
+		
 		List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
        
 		buildExclusionStackNodes(exclusionStackNodes);
@@ -211,6 +211,54 @@ public class RouteConstructor {
 	private void buildBranchStackNodes(List<StackNode> branchStackNodes,
 			Map<StackNode, Set<CfgNode>> branchToNext) 
 	    throws AbortedException, MemoryMonitorException {
+		/*
+		Map<CfgNode, List<Pair<StackNode, CfgNode>>> cfgNodeBranchMap = new IteratableMap<CfgNode, List<Pair<StackNode, CfgNode>>>();
+		
+		for(Reference fromRef : m_engine.getUserBranches().keySet()){
+			List<StackNode> fromStackNodes = getPathStackNodes(m_controlFlow, m_cachedFunctionMap, fromRef);
+			for(StackNode fromStackNode : fromStackNodes){
+				
+				for(Reference nextRef : m_engine.getUserBranches().get(fromRef)){
+					List<StackNode> nextStackNodes = getPathStackNodes(m_controlFlow, m_cachedFunctionMap, nextRef);
+					
+					for(StackNode nextStackNode : nextStackNodes){
+						
+						boolean isABranchInstruction = fromStackNode.getInstruction().getInstruction().isLink();
+						
+						if(isABranchInstruction){
+							
+							
+							
+					//		for(CfgNode nextFrn : sn.getInstruction().getNextNodes()){
+					//			if(nextFrn instanceof CfgFunctionReferenceNode){
+					//				CfgFunctionReferenceNode frn = (CfgFunctionReferenceNode)nextFrn;
+					//				if(frn.getFunctionStartInstruction() == nextStackNode.getInstruction()){
+					//					branchToNext.get(sn).add(frn);	
+					//				}
+					//			}
+					//		}
+							
+							
+							
+						} else {
+							Pair<StackNode,CfgNode> stackNodeToNextNode = new Pair<StackNode, CfgNode>();
+							stackNodeToNextNode.first = fromStackNode;
+							stackNodeToNextNode.second = nextStackNode.getInstruction();
+							CfgNode f = fromStackNode.getInstruction();
+							List<Pair<StackNode, CfgNode>> list = cfgNodeBranchMap.get(f);
+							if(list == null){
+								list = new LinkedList<Pair<StackNode,CfgNode>>();
+							}
+							list.add(stackNodeToNextNode);
+							cfgNodeBranchMap.put(f, list);
+						}
+					}
+				}
+			}
+		}
+		*/
+		
+		
 		
 		for(Reference ref : m_engine.getUserBranches().keySet()){
 			List<StackNode> stackNodes = getPathStackNodes(m_controlFlow, m_cachedFunctionMap, ref);
@@ -220,6 +268,9 @@ public class RouteConstructor {
 
 				for(Reference next : m_engine.getUserBranches().get(ref)){
 					for(StackNode nextStackNode : getPathStackNodes(m_controlFlow, m_cachedFunctionMap, next)){
+						
+						
+						
 						if(sn.getInstruction().getInstruction().isLink()){
 							for(CfgNode nextFrn : sn.getInstruction().getNextNodes()){
 								if(nextFrn instanceof CfgFunctionReferenceNode){
@@ -231,11 +282,14 @@ public class RouteConstructor {
 							}
 						} else {
 							branchToNext.get(sn).add(nextStackNode.getInstruction());	
-						}						
+						}	
+						
+						
 					}
 				}
 			}
 		}
+		
 	}
 
 	private void buildExclusionStackNodes(List<StackNode> exclusionStackNodes) throws AbortedException, MemoryMonitorException {
