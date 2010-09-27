@@ -48,15 +48,17 @@ public class DumpManual extends Command {
     		console.display(String.format("\\section{%s}\n", command.name()));    		
     		console.display(String.format("\\label{section:%s}\n\n", command.name()));    		
     		
+    		console.display("\\begin{option}\n");    		
     		if (command instanceof CommandContainer) {
                	for (Command subCommand : command.getSubCommands()) {
-               		console.display("\\command{" + command.name() + " " + getCommandLine(engine, subCommand) + "}\n");           		
+               		console.display("\\itemx{" + command.name() + " " + getCommandLine(engine, subCommand) + "}\n");           		
                		console.display(getCommandDesc(engine, subCommand) + "\n\n");
                	}    			
     		} else {
-           		console.display("\\command{" + getCommandLine(engine, command) + "}\n");           		
+           		console.display("\\itemx{" + getCommandLine(engine, command) + "}\n");           		
            		console.display(getCommandDesc(engine, command) + "\n\n");    			
     		}    		
+    		console.display("\\end{option}\n");    		
     	}    	
     }
     
@@ -65,20 +67,24 @@ public class DumpManual extends Command {
     	console.display("\\label{section:TimingModes}\n\n");
     	console.display("The avaliable timing modes are:\n");
     	int length = TimeUnit.getUnits().length;
+		console.display("\\begin{option}\n");    		
     	for (int i = 0; i < length; ++i) {
-    		console.display(String.format("\\command{%s}\n", TimeUnit.getUnits()[i]));
+    		console.display(String.format("\\itemx{%s}\n", TimeUnit.getUnits()[i]));
     		console.display(String.format("%s\n\n", TimeUnit.getUnitsDesc()[i]));
     	}
+		console.display("\\end{option}\n");    		
     }
     
     private void dumpLoopScopesSection(Engine engine, Console console) {    	
     	console.display("\\section{Loop Scopes}\n");
     	console.display("\\label{section:LoopScopes}\n\n");
     	console.display("Supported values for scope are:\n");
-    	console.display("\\command{relative/r}\n\n");
+		console.display("\\begin{option}\n");    		
+    	console.display("\\itemx{relative/r}\n\n");
     	console.display("Iteration number propagates to the enclosing path (Default)\n");
-    	console.display("\\command{absolute/a}\n");
+    	console.display("\\itemx{absolute/a}\n");
     	console.display("Absolute number of iterations\n\n");
+		console.display("\\end{option}\n");    		
     }
 
     private void dumpReferenceClassesSection(Engine engine, Console console) {    	
@@ -91,15 +97,20 @@ public class DumpManual extends Command {
 			console.display(String.format("\\subsection{%s}\n\n", refClassName));
 			ReferenceClassType classType = ReferenceTypeFactory.getReferenceClass(referenceClass);
 			ReferenceType[] referenceTypes = classType.getReferenceTypes();
+			console.display("\\begin{option}\n");    		
 			for (ReferenceType referenceType : referenceTypes) {
-		    	console.display(String.format("\\command{%s}\n", referenceType.name()));
+		    	console.display(String.format("\\itemx{%s}\n", referenceType.name()));
 		    	console.display(String.format("%s\n\n", referenceType.description()));
 			}
+			console.display("\\end{option}\n");    		
 		}
     }
     
     private String getCommandLine(Engine engine, Command command) {
-		return getCommandStrSectionAtIndex(engine, command, 0);
+   		String commandLine = getCommandStrSectionAtIndex(engine, command, 0);	
+   		commandLine = commandLine.toString().replaceAll("\\[", "{\\[}");
+   		commandLine = commandLine.toString().replaceAll("\\]", "{\\]}");
+		return commandLine;
     }
 
     private String getCommandDesc(Engine engine, Command command) {
