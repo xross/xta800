@@ -139,7 +139,7 @@ sub DoClean
   
   chdir("com.xmos.xta.core") 
     or die("Failed to find com.xmos.xta.core\n");
-  system("ant clean"); 
+  system("ant -f ant.xml clean"); 
     die() if ($? != 0);
   chdir("../");
 
@@ -173,10 +173,10 @@ sub DoBuild
     or die("Failed to find com.xmos.xta.core\n");
 
   if ($MAKE_FLAGS =~ m/CONFIG=Debug/) {
-    system("ant -Ddebug=\"true\""); 
+    system("ant -f ant.xml -Ddebug=\"true\""); 
     die() if ($? != 0);
   } else {
-    system("ant -Ddebug=\"false\""); 
+    system("ant -f ant.xml -Ddebug=\"false\""); 
     die() if ($? != 0);
   }
 

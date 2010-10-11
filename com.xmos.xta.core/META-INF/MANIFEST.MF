@@ -1,26 +1,22 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
 Bundle-Name: com.xmos.xta.core plugin
-Bundle-SymbolicName: com.xmos.xta.core
-Bundle-Version: 1.0.0
-Bundle-Vendor: XMOS
 Import-Package: jline
-Require-Bundle: com.xmos.libs
-Export-Package: com.xmos.xta.core.console,
- com.xmos.xta.core.console.commands,
- com.xmos.xta.core.console.completors,
- com.xmos.xta.core.engine,
- com.xmos.xta.core.engine.analysis.routes,
- com.xmos.xta.core.engine.analysis.structural.nodes,
- com.xmos.xta.core.engine.analysis.structural.nodes.attributes,
- com.xmos.xta.core.engine.analysis.structural.nodes.traversers,
- com.xmos.xta.core.engine.analysis.structural.nodes.unknowns,
- com.xmos.xta.core.engine.defines,
- com.xmos.xta.core.engine.points,
- com.xmos.xta.core.engine.references,
- com.xmos.xta.core.engine.references.types,
- com.xmos.xta.core.engine.scripter,
- com.xmos.xta.core.engine.sections,
- com.xmos.xta.core.engine.sourcemapper,
- com.xmos.xta.core.engine.utils
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: XMOS
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.xmos.xta.core
+Export-Package: com.xmos.xta.core.console,com.xmos.xta.core.console.co
+ mmands,com.xmos.xta.core.console.completors,com.xmos.xta.core.engine,
+ com.xmos.xta.core.engine.analysis.routes,com.xmos.xta.core.engine.ana
+ lysis.structural.nodes,com.xmos.xta.core.engine.analysis.structural.n
+ odes.attributes,com.xmos.xta.core.engine.analysis.structural.nodes.tr
+ aversers,com.xmos.xta.core.engine.analysis.structural.nodes.unknowns,
+ com.xmos.xta.core.engine.defines,com.xmos.xta.core.engine.points,com.
+ xmos.xta.core.engine.references,com.xmos.xta.core.engine.references.t
+ ypes,com.xmos.xta.core.engine.scripter,com.xmos.xta.core.engine.secti
+ ons,com.xmos.xta.core.engine.sourcemapper,com.xmos.xta.core.engine.ut
+ ils
+Require-Bundle: com.xmos.libs
+Bundle-Version: 1.0.0
+
+
