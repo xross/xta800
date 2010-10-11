@@ -2,7 +2,7 @@
 <XSystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:noNamespaceSchemaLocation="XSystem.xsd">
   <AddNodes>
-    <ExpectedResult failstage="Postbuild" reason="Compiler bug (9140)"/>
+    <ExpectedResult failstage="PostBuild" reason="Compiler bug (9140)"/>
   </AddNodes>
 </XSystem>
 
