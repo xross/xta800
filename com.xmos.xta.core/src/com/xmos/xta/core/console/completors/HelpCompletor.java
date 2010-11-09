@@ -12,7 +12,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class HelpCompletor implements Completor {
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public int complete(String buffer, int cursor, List candidates) {
         String start = (buffer == null) ? "" : buffer;
 

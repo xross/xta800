@@ -16,7 +16,7 @@ public class XtaArgumentCompletor implements Completor {
         m_delim = new WhitespaceArgumentDelimiter();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	public int complete(final String buffer, final int cursor,
                         final List candidates) {
         jline.ArgumentCompletor.ArgumentList list = m_delim.delimit(buffer, cursor);

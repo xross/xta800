@@ -16,7 +16,7 @@ public class HelpCommandCompletor implements Completor {
 		m_parent = null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public int complete(String buffer, int cursor, List candidates) {
         String start = (buffer == null) ? "" : buffer;
                 

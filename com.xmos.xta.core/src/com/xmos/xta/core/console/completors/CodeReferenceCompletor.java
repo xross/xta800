@@ -20,7 +20,7 @@ public class CodeReferenceCompletor implements Completor {
 		m_type = type;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public int complete(String buffer, int cursor, final List candidates) {
         if (m_engine.getExecutable() != null) {
             final String start = (buffer == null) ? "" : buffer;

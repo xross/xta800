@@ -30,7 +30,7 @@ public class XtaCompletor implements Completor {
 		if (DEBUG) displayCommandCompletors();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public int complete(String buffer, int cursor, List candidates) {
 		List<String> tokens = tokeniseBuffer(buffer);
 		if (tokens.size() > 1) {

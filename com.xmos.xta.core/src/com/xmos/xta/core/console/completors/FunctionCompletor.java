@@ -15,7 +15,7 @@ public class FunctionCompletor implements Completor {
 		m_engine = engine;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public int complete(String buffer, int cursor, final List candidates) {
         if (m_engine.getExecutable() != null) {
             final String start = (buffer == null) ? "" : buffer;
