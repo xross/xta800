@@ -21,7 +21,7 @@ my $BIN;
 
 my %ALIASES =
   (
-    'all' => ['realclean', 'prebuild', 'build', 'install'],
+    'all' => ['realclean', 'depend', 'build', 'install'],
   );
 
 my %TARGETS =
@@ -29,7 +29,7 @@ my %TARGETS =
     'preclean' => [\&DoPreClean, "Delete generated source code\n"],
     'clean' => [\&DoClean, "Clean java tools"],
     'realclean' => [\&DoRealClean, "Delete installed java tools from installs"],
-    'prebuild' => [\&DoPreBuild, "Create generated files."],
+    'depend' => [\&DoDepend, "Updates the dependency files. Can only be run in Linux/Cygwin."],
     'build' => [\&DoBuild, "Build java tools"],
     'install' => [\&DoInstall, "Install java tools"],
     'lint' => [\&DoLint, "Run Lint"]
@@ -156,9 +156,16 @@ sub DoRealClean
   DoClean();
 }
 
-sub DoPreBuild
-{
-}
+sub DoDepend
+  { 
+  chdir("$TOOLS_XTA") or die("Build failed to find Tools\n");
+  system("$MAKE $MAKE_FLAGS depend");
+  if ($? != 0) {
+      die();
+  }
+  chdir("$BUILDPATH") or die("oops");
+  }
+
 
 sub DoBuild
 {
