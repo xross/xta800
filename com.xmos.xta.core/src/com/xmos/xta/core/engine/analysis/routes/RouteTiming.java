@@ -58,12 +58,7 @@ public class RouteTiming {
 	}
 
 	public boolean passed() {
-		for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
-			if (unknown.getLevel() == Unknown.Level.ERROR) {
-				return false;
-			}
-		}
-		return passedTiming();
+		return passedUnknowns() && passedTiming();
 	}
 
 	public List<String> getWarnings() {
@@ -119,7 +114,13 @@ public class RouteTiming {
 			if (passed()) {
 				description += "Pass";
 			} else {
-				description += "Fail";
+			
+				if (!passedTiming()) {
+					description += "Fail (timing violation)";
+
+				} else {
+					description += "Fail (missing loop iterations)";					
+				}				
 			}
 			
 			int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
@@ -127,7 +128,7 @@ public class RouteTiming {
 				description += " with " + numWarnings + " unknown";
 			if (numWarnings > 1)
 				description += "s";
-
+			
 			description += ", Num Paths: " + m_route.getNode().getAttributes().getNumPathsStr();
 
 			if (level == Level.DETAILED) {
@@ -245,6 +246,15 @@ public class RouteTiming {
 	public double getTime(Status status, Case c) {
 		Node worstCaseSubRoute = m_route.getNode();
 		return worstCaseSubRoute.getAttributes().getTimeTaken(c, status, null);
+	}
+	
+	private boolean passedUnknowns() {
+		for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
+			if (unknown.getLevel() == Unknown.Level.ERROR) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	private boolean passedTiming() {
