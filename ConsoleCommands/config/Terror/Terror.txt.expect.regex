@@ -23,7 +23,7 @@ Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400\.0 MHz
 stdcore\[0\], Threads: 1 \(No debug information found\)
 No routes analyzed
 Route\(\d+\) function: main
-    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 6800 MHz
+    Fail \(timing violation\) with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 6800 MHz
 
 Fail, 1/1, Max Violation: \d+\.\d+ ns
 RETURN CODE OK
@@ -52,7 +52,7 @@ Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400\.0 MHz
 stdcore\[0\], Threads: 1 \(No debug information found\)
 No routes analyzed
 Route\(\d+\) function: main
-    Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 6800 MHz
+    Fail \(timing violation\) with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 6800 MHz
 
 Fail, 1/1, Max Violation: \d+\.\d+ ns
 RETURN CODE OK

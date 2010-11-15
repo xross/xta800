@@ -6,6 +6,6 @@ function\(\d+\) +: Unresolved / Unresolved main
 \* \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ main \+ \d+ +waiteu \(0r\) +\[UNRESOLVED\] \(P\)
 
 Route\(0\) function: main
-    Fail with 1 unknown, Num Paths: 1, Violation: Unresolved, Required: 100.0 ms, Worst: Unresolved, Min Core Frequency: Unresolved
+    Fail \(timing violation\) with 1 unknown, Num Paths: 1, Violation: Unresolved, Required: 100.0 ms, Worst: Unresolved, Min Core Frequency: Unresolved
 
 Fail, 1/1, Max Violation: Unresolved

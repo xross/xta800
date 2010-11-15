@@ -1,1 +1,1 @@
-xta: test.xc:26: error: route(0)     Fail with 1 unknown, Num Paths: 1, Violation: 17.9 us, Required: 100.0 ns, Worst: 18.0 us, Min Core Frequency: 72080 MHz
+xta: test.xc:26: error: route(0)     Fail \(timing violation\) with 1 unknown, Num Paths: 1, Violation: 17.9 us, Required: 100.0 ns, Worst: 18.0 us, Min Core Frequency: 72080 MHz

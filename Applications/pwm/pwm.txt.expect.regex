@@ -14,15 +14,15 @@ Route\(\d+\) loop: interS2ThreadOutput
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) endpoints: pwmThreadLow1 to pwmThreadHigh
-    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\) with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) endpoints: pwmThreadLow2 to pwmThreadHigh
-    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\) with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) endpoints: pwmThreadHigh to pwmThreadLow1
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) endpoints: pwmThreadHigh to pwmThreadLow2
-    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\) with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Fail, 3/9, Max Violation: \d+\.\d+ [mun]s

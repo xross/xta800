@@ -2,6 +2,6 @@ Route\(0\) endpoints: core0\.xc:26 to core0\.xc:26
     Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(2\) endpoints: core1\.xc:85 to core1\.xc:85
-    Fail with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\) with \d+ unknowns, Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Fail, \d+/2, Max Violation: \d+\.\d [mun]s

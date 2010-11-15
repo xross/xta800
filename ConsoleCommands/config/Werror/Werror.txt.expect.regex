@@ -28,6 +28,6 @@ Loaded executable: test\.xe
 Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400\.0 MHz
 stdcore\[0\], Threads: 1 \(No debug information found\)
 No routes analyzed
-xta: error: route\(\d+\)     Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 680 MHz
-xta: warning: route\(\d+\)     Fail with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 680 MHz
+xta: error: route\(\d+\)     Fail \(timing violation\) with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 680 MHz
+xta: warning: route\(\d+\)     Fail \(timing violation\) with 2 unknowns, Num Paths: 1, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: 680 MHz
 RETURN CODE OK

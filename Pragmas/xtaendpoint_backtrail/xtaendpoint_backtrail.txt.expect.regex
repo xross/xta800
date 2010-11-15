@@ -41,6 +41,6 @@ Route\(9\) endpoints: func1,read1,start to func2,read2,stop
     Pass with 4 unknowns, Num Paths: 1, Slack: 40.0 ns, Required: 100.0 ns, Worst: 60.0 ns, Min Core Frequency: 240 MHz
 
 Route\(10\) endpoints: func1,read1,start to read3,stop
-    Fail with 7 unknowns, Num Paths: 1, Violation: 10.0 ns, Required: 100.0 ns, Worst: 110.0 ns, Min Core Frequency: 440 MHz
+    Fail \(timing violation\) with 7 unknowns, Num Paths: 1, Violation: 10.0 ns, Required: 100.0 ns, Worst: 110.0 ns, Min Core Frequency: 440 MHz
 
 Fail, 1/11, Max Violation: 10.0 ns

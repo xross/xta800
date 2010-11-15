@@ -23,10 +23,10 @@ Route\(7\) function: sendPacket
     Pass with 14 unknowns, Num Paths: \d+, Slack: \d+\.\d+ ns, Required: 1.0 us, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
 
 Route\(8\) endpoints: startRx to sendError
-    Fail with 1 unknown, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: 320.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\) with 1 unknown, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: 320.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
 
 Route\(9\) endpoints: startRx to sendError
-    Fail with 1 unknown, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: 320.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\) with 1 unknown, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: 320.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
 
 Route\(10\) endpoints: txCheckBit to sendError
     Pass with 1 unknown, Num Paths: \d+, Slack: \d+\.\d+ ns, Required: 320.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
