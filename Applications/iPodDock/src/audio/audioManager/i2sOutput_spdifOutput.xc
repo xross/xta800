@@ -87,10 +87,12 @@ void audioManager_48kHz(
       // BCLK0
 #pragma xta endpoint "audio_48_left_o0"
       audioports.p_bclk <: 0xCCCCCCCC;
-      audioports.pSPDIF :8 <: encoded_preamble;
+      partout(audioports.pSPDIF, 8, encoded_preamble);
+      //audioports.pSPDIF :8 <: encoded_preamble;
       encoded_preamble = preamble_words_48[(word & 0xF)*2] ^ xor;
 #pragma xta endpoint "audio_48_left_o1"
-      audioports.pSPDIF :8 <: encoded_preamble;
+      partout(audioports.pSPDIF, 8, encoded_preamble);
+      //audioports.pSPDIF :8 <: encoded_preamble;
       xor = mysext(encoded_preamble, 8) >> 8;  
       word = word >> 4;
       controlLeft >>=1;
@@ -98,11 +100,13 @@ void audioManager_48kHz(
       sample = (audiodata[rptr+1] << 12) & 0x0FFFFFF0 ;
       encoded_byte = data_words_48[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_48_left_o2"
-      audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;
+      partout(audioports.pSPDIF, 8, data_words_48[(word & 0xF)*2+1] ^ xor);
+      //audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;
       parity = parity32(sample | control | ((!audiorunning) << 24));
       control = bitrev(parity | control) | ((!audiorunning) << 24);
 #pragma xta endpoint "audio_48_left_o3"
-      audioports.pSPDIF :8 <: encoded_byte;
+      partout(audioports.pSPDIF, 8, encoded_byte);
+      //audioports.pSPDIF :8 <: encoded_byte;
       
       audioSOFLoop(cSOFGen, count, freqcount);
       xor = mysext(encoded_byte, 8) >> 8;        
@@ -113,19 +117,23 @@ void audioManager_48kHz(
         encoded_byte = data_words_48[(word & 0xF)*2+1] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_48_left_o4"
         audioports.p_bclk <: 0xCCCCCCCC;
-        audioports.pSPDIF :8 <: encoded_byte;
+        partout(audioports.pSPDIF, 8, encoded_byte);
+        //audioports.pSPDIF :8 <: encoded_byte;
         encoded_byte = data_words_48[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
         xor = mysext(encoded_byte, 8) >> 8;  
         word = word >> 4;
 #pragma xta endpoint "audio_48_left_o5"
-        audioports.pSPDIF :8 <: encoded_byte;
+        partout(audioports.pSPDIF,8,encoded_byte);
+        //audioports.pSPDIF :8 <: encoded_byte;
         checkForData(cAudioStreaming, cSOFGen, audiodata, wptr, audiorunning, nelements, audiovolume);
         sample = sample | control | 1;
 #pragma xta endpoint "audio_48_left_o6"
-        audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;        
+        partout(audioports.pSPDIF, 8, data_words_48[(word & 0xF)*2+1] ^ xor);
+        //audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;        
         encoded_byte = data_words_48[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_48_left_o7"
-        audioports.pSPDIF :8 <: encoded_byte;        
+        partout(audioports.pSPDIF, 8, encoded_byte);
+        //audioports.pSPDIF :8 <: encoded_byte;        
         xor = mysext(encoded_byte, 8) >> 8;        
       }
 
@@ -141,14 +149,16 @@ void audioManager_48kHz(
       encoded_preamble = preamble_words_48[(word & 0xF)*2+1] ^ xor;
 #pragma xta endpoint "audio_48_right_o0"
       audioports.p_bclk <: 0xCCCCCCCC;
-      audioports.pSPDIF :8 <: encoded_preamble;
+      partout(audioports.pSPDIF, 8, encoded_preamble);
+      //audioports.pSPDIF :8 <: encoded_preamble;
       encoded_preamble = preamble_words_48[(word & 0xF)*2] ^ xor;
       xor = mysext(encoded_preamble, 8) >> 8;  
       word = word >> 4;
       moveDataOn(nelements, rptr, audiorunning);
 
       #pragma xta endpoint "audio_48_right_o1"
-      audioports.pSPDIF :8 <: encoded_preamble;      
+      partout(audioports.pSPDIF, 8, encoded_preamble);
+      //audioports.pSPDIF :8 <: encoded_preamble;      
       loopcount--;
       if (loopcount == 0)
       {
@@ -164,11 +174,13 @@ void audioManager_48kHz(
       sample = (audiodata[rptr] << 12) & 0x0FFFFFF0 ;
 
 #pragma xta endpoint "audio_48_right_o2"
-      audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;
+      partout(audioports.pSPDIF, 8, data_words_48[(word & 0xF)*2+1] ^ xor);
+      //audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;
       control = (controlLeft & 2);
       encoded_byte = data_words_48[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_48_right_o3"
-      audioports.pSPDIF :8 <: encoded_byte;
+      partout(audioports.pSPDIF, 8, encoded_byte);
+      //audioports.pSPDIF :8 <: encoded_byte;
       parity = parity32(sample | control | ((!audiorunning) << 24));
       control = bitrev(control | parity) | ((!audiorunning) << 24)| newblock | sample;
       xor = mysext(encoded_byte, 8) >> 8;        
@@ -180,18 +192,22 @@ void audioManager_48kHz(
         checkForMixer(cAudioMixer, freqcount, audiodata, running, cSOFGen, audiovolume);
         audioports.p_bclk <: 0xCCCCCCCC;
 #pragma xta endpoint "audio_48_right_o4"
-        audioports.pSPDIF :8 <: encoded_byte;
+        partout(audioports.pSPDIF, 8, encoded_byte);
+        //audioports.pSPDIF :8 <: encoded_byte;
         encoded_byte = data_words_48[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
         xor = mysext(encoded_byte, 8) >> 8;  
         word = word >> 4;
 #pragma xta endpoint "audio_48_right_o5"
-        audioports.pSPDIF :8 <: encoded_byte;
+        partout(audioports.pSPDIF, 8, encoded_byte);
+        //audioports.pSPDIF :8 <: encoded_byte;
         checkForData(cAudioStreaming, cSOFGen, audiodata, wptr, audiorunning, nelements, audiovolume);
 #pragma xta endpoint "audio_48_right_o6"
-        audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;        
+        partout(audioports.pSPDIF, 8, data_words_48[(word & 0xF)*2+1] ^ xor);
+        //audioports.pSPDIF :8 <: data_words_48[(word & 0xF)*2+1] ^ xor;        
         encoded_byte = data_words_48[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_48_right_o7"
-        audioports.pSPDIF :8 <: encoded_byte;
+        partout(audioports.pSPDIF, 8, encoded_byte);
+        //audioports.pSPDIF :8 <: encoded_byte;
         xor = mysext(encoded_byte, 8) >> 8;        
       }
     }
@@ -272,11 +288,13 @@ void audioManager_32kHz(
       
       // BCLK0
 #pragma xta endpoint "audio_32_left_o0"
-      audioports.pSPDIF :12 <: encoded_preamble;
+      partout(audioports.pSPDIF, 12, encoded_preamble);
+      //audioports.pSPDIF :12 <: encoded_preamble;
       audioports.p_bclk <: 0xC71C71C7;
       encoded_preamble = preamble_words_32[(word & 0xF)*2] ^ xor;
 #pragma xta endpoint "audio_32_left_o1"
-      audioports.pSPDIF :12 <: encoded_preamble;
+      partout(audioports.pSPDIF, 12, encoded_preamble);
+      //audioports.pSPDIF :12 <: encoded_preamble;
       xor = mysext(encoded_preamble, 12) >> 12;  
       word = word >> 4;
       controlLeft >>=1;
@@ -284,12 +302,15 @@ void audioManager_32kHz(
       sample = (audiodata[rptr+1] << 12) & 0x0FFFFFF0 ;
       encoded_byte = data_words_32[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_32_left_o2"
-      audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;
-      audioports.p_bclk :16 <: 0x1C71;
+      partout(audioports.pSPDIF, 12, data_words_32[(word & 0xF)*2+1] ^ xor);
+      //audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;
+      partout(audioports.p_bclk, 16, 0x1C71);
+      //audioports.p_bclk :16 <: 0x1C71;
       parity = parity32(sample | control | ((!audiorunning) << 24));
       control = bitrev(parity | control) | ((!audiorunning) << 24);
 #pragma xta endpoint "audio_32_left_o3"
-      audioports.pSPDIF :12 <: encoded_byte;
+      partout(audioports.pSPDIF, 12, encoded_byte);
+      //audioports.pSPDIF :12 <: encoded_byte;
       audioSOFLoop(cSOFGen, count, freqcount);
       xor = mysext(encoded_byte, 12) >> 12;        
 
@@ -298,21 +319,26 @@ void audioManager_32kHz(
         word = word >> 4;
         encoded_byte = data_words_32[(word & 0xF)*2+1] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_32_left_o4"
-        audioports.pSPDIF :12 <: encoded_byte;
+        partout(audioports.pSPDIF, 12, encoded_byte);
+        //audioports.pSPDIF :12 <: encoded_byte;
         audioports.p_bclk <: 0xC71C71C7;
         encoded_byte = data_words_32[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
         xor = mysext(encoded_byte, 12) >> 12;  
         word = word >> 4;
 #pragma xta endpoint "audio_32_left_o5"
-        audioports.pSPDIF :12 <: encoded_byte;
+        partout(audioports.pSPDIF, 12, encoded_byte);
+        //audioports.pSPDIF :12 <: encoded_byte;
         checkForData(cAudioStreaming, cSOFGen, audiodata, wptr, audiorunning, nelements, audiovolume);
         sample = sample | control | 1;
 #pragma xta endpoint "audio_32_left_o6"
-        audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;        
-        audioports.p_bclk :16 <: 0x1C71;
+        partout(audioports.pSPDIF, 12, data_words_32[(word & 0xF)*2+1] ^ xor);
+        //audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;        
+        partout(audioports.p_bclk, 16, 0x1C71);
+        //audioports.p_bclk :16 <: 0x1C71;
         encoded_byte = data_words_32[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_32_left_o7"
-        audioports.pSPDIF :12 <: encoded_byte;        
+        partout(audioports.pSPDIF, 12, encoded_byte);
+        //audioports.pSPDIF :12 <: encoded_byte;        
         xor = mysext(encoded_byte, 12) >> 12;        
       }
 
@@ -327,7 +353,8 @@ void audioManager_32kHz(
       // BCLK0
       encoded_preamble = preamble_words_32[(word & 0xF)*2+1] ^ xor;
 #pragma xta endpoint "audio_32_right_o0"
-      audioports.pSPDIF :12 <: encoded_preamble;
+      partout(audioports.pSPDIF, 12, encoded_preamble);
+      //audioports.pSPDIF :12 <: encoded_preamble;
       audioports.p_bclk <: 0xC71C71C7;
       encoded_preamble = preamble_words_32[(word & 0xF)*2] ^ xor;
       xor = mysext(encoded_preamble, 12) >> 12;  
@@ -335,7 +362,8 @@ void audioManager_32kHz(
       moveDataOn(nelements, rptr, audiorunning);
       
 #pragma xta endpoint "audio_32_right_o1"
-      audioports.pSPDIF :12 <: encoded_preamble;      
+      partout(audioports.pSPDIF, 12, encoded_preamble);
+      //audioports.pSPDIF :12 <: encoded_preamble;      
       loopcount--;
       if (loopcount == 0)
       {
@@ -351,12 +379,15 @@ void audioManager_32kHz(
       sample = (audiodata[rptr] << 12) & 0x0FFFFFF0 ;
 
 #pragma xta endpoint "audio_32_right_o2"
-      audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;
-      audioports.p_bclk :16 <: 0x1C71;
+      partout(audioports.pSPDIF, 12, data_words_32[(word & 0xF)*2+1] ^ xor);
+      //audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;
+      partout(audioports.p_bclk, 16, 0x1C71);
+      //audioports.p_bclk :16 <: 0x1C71;
       control = (controlLeft & 2);
       encoded_byte = data_words_32[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_32_right_o3"
-      audioports.pSPDIF :12 <: encoded_byte;
+      partout(audioports.pSPDIF, 12, encoded_byte);
+      //audioports.pSPDIF :12 <: encoded_byte;
       parity = parity32(sample | control | ((!audiorunning) << 24));
       control = bitrev(control | parity) | ((!audiorunning) << 24)| newblock | sample;
       xor = mysext(encoded_byte, 12) >> 12;        
@@ -368,19 +399,24 @@ void audioManager_32kHz(
         checkForMixer(cAudioMixer, freqcount, audiodata, running, cSOFGen, audiovolume);
         audioports.p_bclk <: 0xC71C71C7;
 #pragma xta endpoint "audio_32_right_o4"
-        audioports.pSPDIF :12 <: encoded_byte;
+        partout(audioports.pSPDIF, 12, encoded_byte);
+        //audioports.pSPDIF :12 <: encoded_byte;
         encoded_byte = data_words_32[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
         xor = mysext(encoded_byte, 12) >> 12;  
         word = word >> 4;
 #pragma xta endpoint "audio_32_right_o5"
-        audioports.pSPDIF :12 <: encoded_byte;
+        partout(audioports.pSPDIF, 12, encoded_byte);
+        //audioports.pSPDIF :12 <: encoded_byte;
         checkForData(cAudioStreaming, cSOFGen, audiodata, wptr, audiorunning, nelements, audiovolume);
 #pragma xta endpoint "audio_32_right_o6"
-        audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;        
-        audioports.p_bclk :16 <: 0x1C71;
+        partout(audioports.pSPDIF, 12, data_words_32[(word & 0xF)*2+1] ^ xor);
+        //audioports.pSPDIF :12 <: data_words_32[(word & 0xF)*2+1] ^ xor;        
+        partout(audioports.p_bclk, 16, 0x1C71);
+        //audioports.p_bclk :16 <: 0x1C71;
         encoded_byte = data_words_32[(word & 0xF) * 2] ^ xor;  // Xor to invert data if lsab of last data was a 1
 #pragma xta endpoint "audio_32_right_o7"
-        audioports.pSPDIF :12 <: encoded_byte;
+        partout(audioports.pSPDIF, 12, encoded_byte);
+        //audioports.pSPDIF :12 <: encoded_byte;
         xor = mysext(encoded_byte, 12) >> 12;        
       }
     }
@@ -465,7 +501,8 @@ void audioManager(
     // Stop bclk for a mS
     {
       int running = 1;
-      audioports.p_bclk :1 <: 0x0;
+      partout(audioports.p_bclk, 1, 0x0);
+      //audioports.p_bclk :1 <: 0x0;
       audiotimer :> time;
       while (running)
       {
