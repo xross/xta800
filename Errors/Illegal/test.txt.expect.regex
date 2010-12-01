@@ -6,6 +6,6 @@ function\(\d+\) +: Illegal / Illegal main
 .*\.\.\..*\[ILLEGAL\]
 
 Route\(0\) function: main
-    Fail, Num Paths: 1, Violation: Illegal, Required: 100.0 ms, Worst: Illegal, Min Core Frequency: Illegal
+    Fail \(timing violation\), Num Paths: 1, Violation: Illegal, Required: 100.0 ms, Worst: Illegal, Min Core Frequency: Illegal
 
 Fail, 1/1, Max Violation: Illegal

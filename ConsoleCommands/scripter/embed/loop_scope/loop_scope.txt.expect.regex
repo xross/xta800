@@ -13,6 +13,6 @@ false      true       CALL:0x[0-9a-fA-F]{5} ->         f2
 TWO
 Modifiable Enabled    Reference  ->     MapsTo
 Route\(0\) function: main
-    Fail, Num Paths: 1, Violation: \d+.\d+ us, Required: 1.0 us, Worst: \d+.\d+ us, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\), Num Paths: 1, Violation: \d+.\d+ us, Required: 1.0 us, Worst: \d+.\d+ us, Min Core Frequency: \d+ MHz
 
 Fail, 1/1, Max Violation: \d+.\d+ us

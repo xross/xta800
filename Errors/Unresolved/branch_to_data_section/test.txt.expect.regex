@@ -7,6 +7,6 @@ function\(\d+\) +: Unresolved / Unresolved main
   \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ main \+ \d+ +bu \(lu6\) +-0x8009 \[UNRESOLVED\]
 
 Route\(0\) function: main
-    Fail, Num Paths: 1, Violation: Unresolved, Required: 100.0 ms, Worst: Unresolved, Min Core Frequency: Unresolved
+    Fail \(timing violation\), Num Paths: 1, Violation: Unresolved, Required: 100.0 ms, Worst: Unresolved, Min Core Frequency: Unresolved
 
 Fail, 1/1, Max Violation: Unresolved

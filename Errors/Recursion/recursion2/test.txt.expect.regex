@@ -12,6 +12,6 @@ function\(\d+\) +: Recursion / \d+.0 ns main
 .*bl.* \[RECURSION\]
 
 Route\(0\) function: main
-    Fail, Num Paths: 2, Violation: Recursion, Required: 100.0 ms, Worst: Recursion, Min Core Frequency: Recursion
+    Fail \(timing violation\), Num Paths: 2, Violation: Recursion, Required: 100.0 ms, Worst: Recursion, Min Core Frequency: Recursion
 
 Fail, 1/1, Max Violation: Recursion

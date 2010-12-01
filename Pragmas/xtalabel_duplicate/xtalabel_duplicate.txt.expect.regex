@@ -1,4 +1,4 @@
-stdcore\[0\], label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_duplicate, filename: test.xc, line number: 4
 stdcore\[0\], label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_duplicate, filename: test.xc, line number: 6
+stdcore\[0\], label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_duplicate, filename: test.xc, line number: 4
 stdcore\[0\], label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_duplicate, filename: test.xc, line number: 9
 stdcore\[0\], label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_duplicate, filename: test.xc, line number: 12
