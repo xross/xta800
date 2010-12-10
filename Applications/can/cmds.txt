@@ -32,7 +32,7 @@ set required - 980 ns
 #
 # TX check to send
 #
-add exclusion txLoop
+add exclusion unexpected
 analyze endpoints txCheckBit sendBit
 set required - 300 ns
 

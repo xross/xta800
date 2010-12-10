@@ -5,7 +5,7 @@ Route\(1\) endpoints: startRx to startRx
     Pass with 4 unknowns, Num Paths: \d+, Slack: \d+\.\d+ ns, Required: 840.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
 
 Route\(2\) endpoints: txCheckBit to txCheckBit
-    Pass with 4 unknowns, Num Paths: \d+, Slack: \d+\.\d+ ns, Required: 980.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
+    Fail \(timing violation\) with 4 unknowns, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: 980.0 ns, Worst: \d+\.\d+ us, Min Core Frequency: \d+ MHz
 
 Route\(3\) endpoints: txCheckBit to sendBit
     Pass with 2 unknowns, Num Paths: \d+, Slack: \d+\.\d+ ns, Required: 300.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
@@ -31,4 +31,4 @@ Route\(9\) endpoints: startRx to sendError
 Route\(10\) endpoints: txCheckBit to sendError
     Pass with 1 unknown, Num Paths: \d+, Slack: \d+\.\d+ ns, Required: 320.0 ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
 
-Fail, 2/11, Max Violation: 170.0 ns
+Fail, 3/11, Max Violation: \d+\.\d+ ns

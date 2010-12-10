@@ -741,6 +741,7 @@ inline void txStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPac
 		} else {
 			// When the bit driven is not the bit received there is either
 			// an error or arbitration has been lost.
+	        #pragma xta label "unexpected"
 			done = 1;
 
 			switch (phyState.state) {
