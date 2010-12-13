@@ -179,8 +179,8 @@ public class TimeUnit {
 
 	public String getValueStr() {
        	switch (m_units) {
-       	case NS:     return Conversion.getValueString(false, m_ns);
-       	case MHZ:    return String.format("%.1f", m_mhz);
+       	case NS:     return Conversion.getValueString(true, m_ns);
+       	case MHZ:    return Conversion.stripTrailingZeros(String.format("%f", m_mhz));
        	case CYCLES: return String.format("%d", m_cycles);
        	}
        	assert(false);
