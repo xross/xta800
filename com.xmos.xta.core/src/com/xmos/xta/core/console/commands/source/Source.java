@@ -119,12 +119,23 @@ public class Source extends Command {
     
     private void sourceJythonScript(Shell shell, Engine engine, Console console) {
     	Properties postProperties = new Properties();
-    	Properties systemProperties = System.getProperties();
+    	Properties systemProperties = System.getProperties();    	
+
+    	String pythonHome = System.getenv("PYTHON_HOME");
+    	if (pythonHome == null) {
+    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "PYTHON_HOME environment variable not set");
+    		return;    		
+    	}
     	
-    	if (systemProperties.getProperty("python.home") == null) {
-    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "python.home property not set");
-    		return;
-    	}    	
+    	String pythonVerbose = System.getenv("PYTHON_VERBOSE");  
+    	if (pythonVerbose == null) {
+    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "PYTHON_VERBOSE environment variable not set");
+    		return;    		
+    	}
+
+    	systemProperties.setProperty("python.home", pythonHome);
+    	systemProperties.setProperty("python.verbose", pythonVerbose);
+
 	    PythonInterpreter.initialize(systemProperties, postProperties, new String[] {""});        
         PythonInterpreter interp = getPythonInterpreter(m_args);
 
