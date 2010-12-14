@@ -15,6 +15,7 @@ public class CallFileLineReference extends ReferenceType {
 		    isSourceReference(reference) &&
 			inCodePointTable(reference, 
 					engine.getCallTable(coreId), 
+					engine.getWorkspacePath(),
 					engine.getSourceMapper())) {
 	    	return new CallFileLineReference(reference, coreId);
 		}
@@ -28,8 +29,9 @@ public class CallFileLineReference extends ReferenceType {
 
         boolean found = false;
 		for (CodePointTableInfo info : engine.getCallTable(getCoreId()).values()) {
-			if ((info.getLineNumber() == lineNumber) && FileNameMatcher.isMatch(info.getCompilationDir(), 
-				 info.getFileName(), fileName, engine.getSourceMapper())) {
+			if ((info.getLineNumber() == lineNumber) && 
+				FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
+						fileName, engine.getWorkspacePath(), engine.getSourceMapper())) {
 				
 				addPc(info.getPc());
 				setFileName(fileName);

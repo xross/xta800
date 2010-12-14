@@ -128,28 +128,33 @@ public abstract class ReferenceType {
 		return m_type;
 	}
 
-	boolean inSrcLabelTable(String ref, Map<Long, SrcLabelTableInfo> srcLabelTable, SourceMapper sourceMapper) {
+	boolean inSrcLabelTable(String ref, Map<Long, SrcLabelTableInfo> srcLabelTable, 
+			String workspacePath, SourceMapper sourceMapper) {
+		
 		String fileName = getFileName(ref);
         long lineNumber  = getLineNumber(ref);
 
 		for (SrcLabelTableInfo info : srcLabelTable.values()) {
-            if (((lineNumber >= info.getLineNumberStart()) &&
-            	 (lineNumber <= info.getLineNumberEnd()))  &&
-            		
-            		FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper))
-            	{
+            if ((lineNumber >= info.getLineNumberStart()) &&
+            	(lineNumber <= info.getLineNumberEnd())  &&            		
+            	FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
+            			fileName, workspacePath, sourceMapper)) {
             	return true;
             }
 		}
 		return false;
 	}
 
-	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable, SourceMapper sourceMapper) {
+	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable, 
+			String workspacePath, SourceMapper sourceMapper) {
+		
 		String fileName = getFileName(ref);
         long lineNumber  = getLineNumber(ref);
         
 		for (CodePointTableInfo info : codePointTable.values()) {
-            if (info.getLineNumber() == lineNumber && FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), fileName, sourceMapper)) {
+            if ((lineNumber == info.getLineNumber()) && 
+            	FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
+            			fileName, workspacePath, sourceMapper)) {
             	return true;
             }
 		}
@@ -310,7 +315,8 @@ public abstract class ReferenceType {
         	return false;
         }
 
-        if (FileNameMatcher.isMatch(fileName, getFileName(), engine.getSourceMapper())) {
+        if (FileNameMatcher.isMatch(getFileName(), fileName, 
+        		engine.getWorkspacePath(), engine.getSourceMapper())) {
         	return true;
         }
 
@@ -326,8 +332,11 @@ public abstract class ReferenceType {
 		return m_coreId;
 	}
 
-	public void sourceLineInserted(String sourceFileName, long lineNumber, SourceMapper sourceMapper) {
-		if ((m_lineNum >= lineNumber) && FileNameMatcher.isMatch(sourceFileName, m_fileName, sourceMapper)) {
+	public void sourceLineInserted(String sourceFileName, long lineNumber, 
+			String workspacePath, SourceMapper sourceMapper) {
+		
+		if ((m_lineNum >= lineNumber) && 
+			FileNameMatcher.isMatch(m_fileName, sourceFileName, workspacePath, sourceMapper)) {
 			m_lineNum += 1;
 		}
 	}

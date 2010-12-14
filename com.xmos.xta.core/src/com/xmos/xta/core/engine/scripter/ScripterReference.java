@@ -127,9 +127,12 @@ public class ScripterReference {
 
 	public void sourceLineInserted(SourceFile sourceFile, long lineNumber, SourceMapper sourceMapper) {
 		String sourceFileName = sourceFile.getFullFileName();
-		m_baseRef.sourceLineInserted(sourceFileName, lineNumber, sourceMapper);
+		m_baseRef.sourceLineInserted(sourceFileName, lineNumber, 
+				m_engine.getWorkspacePath(), sourceMapper);
+		
 		if (m_mapsTo != null) {
-			m_mapsTo.getBase().sourceLineInserted(sourceFileName, lineNumber, sourceMapper);
+			m_mapsTo.getBase().sourceLineInserted(sourceFileName, lineNumber, 
+					m_engine.getWorkspacePath(), sourceMapper);
 		}
 	}
 

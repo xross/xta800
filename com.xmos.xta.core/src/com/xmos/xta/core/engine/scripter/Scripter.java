@@ -615,7 +615,9 @@ public class Scripter {
 	public void disableRefsForFile(String fileName) {
 		for (ScripterReference scripterReference : m_uniqueReferences) {
 			String refFileName = scripterReference.getFileName();
-			if (FileNameMatcher.isMatch(fileName, refFileName, getSourceMapper())) {
+			if (FileNameMatcher.isMatch(refFileName, fileName, 
+					m_engine.getWorkspacePath(), getSourceMapper())) {
+				
 				setEnable(scripterReference, false);
 				scripterReference.setModifiable(false);
 			}
@@ -728,9 +730,9 @@ public class Scripter {
 		String sourceFileName = sourceFile.getFullFileName();
 
 		for (ScripterReference scripterReference : m_uniqueReferences) {
-			if (FileNameMatcher.isMatch(sourceFileName, scripterReference.getFileName(), sourceMapper) && 
-				(scripterReference.getLineNum() == lineNumber)) {
-				
+			if (FileNameMatcher.isMatch(scripterReference.getFileName(), sourceFileName, 
+					m_engine.getWorkspacePath(), sourceMapper) && 
+				(scripterReference.getLineNum() == lineNumber)) {				
 				return scripterReference;
 			}
 		}

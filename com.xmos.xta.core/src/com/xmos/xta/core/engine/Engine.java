@@ -113,6 +113,7 @@ public class Engine extends Notifier implements Aborter {
 	private Debugger m_debugger;
 	private MemoryMonitor m_memoryMonitor;
 	private BinaryInformation m_binaryInformation;
+	private String m_workspacePath;
 	
 	public Engine(Config config) {
 		super(config);
@@ -1471,6 +1472,14 @@ public class Engine extends Notifier implements Aborter {
     	return false;
     }
     
+    public void setWorkspacePath(String workspacePath) {
+    	m_workspacePath = workspacePath;
+    }
+    
+    public String getWorkspacePath() {
+    	return m_workspacePath;
+    }
+
 	private boolean isSystemFunction(Collection<String> systems, String functionName) {
 		if (functionName.length() == 0) {
 			return false;
