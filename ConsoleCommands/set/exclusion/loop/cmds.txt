@@ -1,0 +1,16 @@
+analyse function main
+set required - 1.0 us
+set exclusion - loop
+list unknowns -
+list knowns -
+print structure -
+
+analyse function main
+set required - 1.0 us
+set exclusion - ~1~1~
+list unknowns -
+list knowns -
+print structure -
+
+print summary
+exit
