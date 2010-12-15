@@ -36,7 +36,7 @@ public class ConditionalNode extends Node {
 		if (isOptional){
 			m_options.add(new BlockNode());
 		}
-		for(Node option : m_options){
+		for (Node option : m_options){
 			m_alive.put(option, true);
 		}	
 		m_attributes = new ConditionalNodeAttributes(this);
@@ -61,20 +61,10 @@ public class ConditionalNode extends Node {
     	return m_attributes;
     }
 
-    private Collection<Node> getAliveOptions(){
-    	Collection<Node> aliveOptions = new IteratableSet<Node>();
-    	for(Node option : m_options){
-    		if(m_alive.get(option)){
-    			aliveOptions.add(option);
-    		}
-    	}
-    	return aliveOptions;
-    }
-
     public Collection<Node> getExcludedOptions() {
     	Collection<Node> excludedOptions = new IteratableSet<Node>();
-    	for (Node option : m_options){
-    		if (!m_alive.get(option)){
+    	for (Node option : m_options) {
+    		if (!m_alive.get(option)) {
     			excludedOptions.add(option);
     		}
     	}
@@ -106,7 +96,6 @@ public class ConditionalNode extends Node {
 			}
 			ancestors.pop();
 		}
-
 		if (status == TraverseStatus.ABORT) {
 			return status;
 		}
@@ -123,12 +112,12 @@ public class ConditionalNode extends Node {
 				}
 			}
 		}
-
 		if (status == TraverseStatus.ABORT) {
 			return status;
 		}
 		return TraverseStatus.CONTINUE;
 	}
+	
 	public Node getOption(Case c, Node ignoreIterationsAboveCond) {
 		// Returns the best/worst case option of this conditional.
 		Node option = getOption(c, ignoreIterationsAboveCond, m_options);
@@ -160,6 +149,49 @@ public class ConditionalNode extends Node {
 		return unsetOptions;
 	}
 
+	public TimeDistributionBuckets getTimeSpread() {
+		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
+		Collection<TimeDistributionBuckets> tdbs = new LinkedList<TimeDistributionBuckets>();
+		for(Node node : getAliveOptions()){
+			tdbs.add(node.getTimeSpread());
+		}
+		tdb.merge(tdbs);
+		return tdb;
+	}	
+	
+	public List<Node> iChildren() {
+		return new LinkedList<Node>(getAliveOptions());
+	}
+
+	public void buildListUp(List<Node> nodeList, Node start) {
+		if (m_parent!= null) {
+			m_parent.buildListUp(nodeList, this);
+		}
+	}
+
+	public void buildListDown(List<Node> nodeList) {
+		return;
+	}
+
+	public void setAlive(Node currentNode, boolean b) {
+		assert(m_alive.containsKey(currentNode));
+		m_alive.put(currentNode, b);
+	}
+
+	public Node getSuccessor(Node child) {
+        return m_parent.getSuccessor(this);			
+	}	
+	
+    private Collection<Node> getAliveOptions() {
+    	Collection<Node> aliveOptions = new IteratableSet<Node>();
+    	for (Node option : m_options) {
+    		if (m_alive.get(option)) {
+    			aliveOptions.add(option);
+    		}
+    	}
+    	return aliveOptions;
+    }
+	
 	private Node getOption(Case c, Node ignoreIterationsAboveCond, Collection<Node> nodes) {
 		// Finds the best/worst case of the real options..
 		Iterator<Node> iter = nodes.iterator();
@@ -195,41 +227,6 @@ public class ConditionalNode extends Node {
 			}
 			assert(time >= 0);
 		}
-
-
 		return caseNode;
-	}
-
-	public TimeDistributionBuckets getTimeSpread() {
-		TimeDistributionBuckets tdb = new TimeDistributionBuckets();
-		Collection<TimeDistributionBuckets> tdbs = new LinkedList<TimeDistributionBuckets>();
-		for(Node node : getAliveOptions()){
-			tdbs.add(node.getTimeSpread());
-		}
-		tdb.merge(tdbs);
-		return tdb;
-	}	
-	
-	public List<Node> iChildren() {
-		return new LinkedList<Node>(getAliveOptions());
-	}
-
-	public void buildListUp(List<Node> nodeList, Node start) {
-		if (m_parent!= null) {
-			m_parent.buildListUp(nodeList, this);
-		}
-	}
-
-	public void buildListDown(List<Node> nodeList) {
-		return;
-	}
-
-	public void setAlive(Node currentNode, boolean b) {
-		assert(m_alive.containsKey(currentNode));
-		m_alive.put(currentNode, b);
-	}
-
-	public Node getSuccessor(Node child) {
-        return m_parent.getSuccessor(this);			
 	}	
 }

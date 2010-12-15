@@ -61,6 +61,7 @@ public abstract class Unknown  {
 		case INSTRUCTION_TIME:
 		case PATH_TIME:
 		case FUNCTION_TIME:
+		case EXCLUSION:
 			return Level.WARNING;
 		}
 		assert(false);

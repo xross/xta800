@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.util.NonIteratableMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.LoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
@@ -17,11 +20,13 @@ public class LoopNode extends Node {
 	private LoopNodeAttributes m_attributes;
 	private Node m_loopHeader;
 	private List<Node> m_loops;
-
+	private Map<Node, Boolean> m_alive;
+	
 	public LoopNode() {
 		super();
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
+		m_alive = new NonIteratableMap<Node, Boolean>();
 		m_attributes = new LoopNodeAttributes(this);
 	}
 
@@ -29,9 +34,11 @@ public class LoopNode extends Node {
 		super();
 		m_loopHeader = base;
 		m_loopHeader.getAttributes().setIsLoopHeader(true);
+		m_alive = new NonIteratableMap<Node, Boolean>();
 		m_loops = new ArrayList<Node>();
 		for (Node loop : loops) {
 			m_loops.add(loop);
+			m_alive.put(loop, true);
 		}
 		m_attributes = new LoopNodeAttributes(this);
 	}
@@ -41,6 +48,7 @@ public class LoopNode extends Node {
 		for (Node loop : m_loops) {
 			Node clone = loop.copyRouteStructure();
 			ln.m_loops.add(clone);
+			ln.m_alive.put(clone, m_alive.get(loop));
 		}
 		ln.m_loopHeader = m_loopHeader.copyRouteStructure();
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
@@ -59,10 +67,20 @@ public class LoopNode extends Node {
 	public Node getLoopHeader() {
 		return m_loopHeader;
 	}
+	
+    public Collection<Node> getExcludedLoops() {
+    	Collection<Node> excludedLoops = new IteratableSet<Node>();
+    	for (Node loop : m_loops) {
+    		if (!m_alive.get(loop)) {
+    			excludedLoops.add(loop);
+    		}
+    	}
+    	return excludedLoops;
+    }	
 
 	public LinkedList<Instruction> getInstructions() {
 		LinkedList<Instruction> insts = new LinkedList<Instruction>(m_loopHeader.getInstructions());
-		for (Node al : m_loops) {
+		for (Node al : getAliveLoops()) {
 			insts.addAll(al.getInstructions());
 		}
 		return insts;
@@ -78,7 +96,7 @@ public class LoopNode extends Node {
 			ancestors.push(this);
 			status = m_loopHeader.traverse(ancestors, nodeTraverser);
 			if (status == TraverseStatus.CONTINUE) {
-				for (Node node : m_loops) {
+				for (Node node : getAliveLoops()) {
 					status = node.traverse(ancestors, nodeTraverser);
 					if (status != TraverseStatus.CONTINUE) {
 						break;
@@ -87,7 +105,6 @@ public class LoopNode extends Node {
 			}
 			ancestors.pop();
 		}
-
 		if (status == TraverseStatus.ABORT) {
 			return status;
 		}
@@ -97,10 +114,9 @@ public class LoopNode extends Node {
 	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
 		TraverseStatus status = nodeTraverser.foundLoopNode(this);
 		if (status == TraverseStatus.CONTINUE) {
-
 			status = m_loopHeader.traverse( nodeTraverser);
 			if (status == TraverseStatus.CONTINUE) {
-				for (Node node : m_loops) {
+				for (Node node : getAliveLoops()) {
 					status = node.traverse( nodeTraverser);
 					if (status != TraverseStatus.CONTINUE) {
 						break;
@@ -108,7 +124,6 @@ public class LoopNode extends Node {
 				}
 			}
 		}
-
 		if (status == TraverseStatus.ABORT) {
 			return status;
 		}
@@ -125,8 +140,8 @@ public class LoopNode extends Node {
 		TimeDistributionBuckets loopHeaderBucket = m_loopHeader.getTimeSpread();
 		loopHeaderBucket.repeat(m_attributes.getLoopIterations()+1);
 		loopList.add(loopHeaderBucket);
-		for(Node loop : m_loops){
-			if(m_attributes.getLoopIterations() > 0){
+		for (Node loop : getAliveLoops()){
+			if (m_attributes.getLoopIterations() > 0) {
 				TimeDistributionBuckets b = loop.getTimeSpread();
 				b.repeat(m_attributes.getLoopIterations());
 				loopList.add(b);
@@ -160,31 +175,44 @@ public class LoopNode extends Node {
 		}
 	}
 
-	//below here the methods have been verified useful
-
 	public List<Node> iChildren() {
 		List<Node> children = new LinkedList<Node>();
 		children.add(m_loopHeader);
-		for (Node node : m_loops) {
+		for (Node node : getAliveLoops()) {
 			children.add(node);
 		}
 		return children;
 	}
 
 	public void buildListUp(List<Node> nodeList, Node start) {
-		if(m_parent!= null){
+		if (m_parent!= null){
 			m_parent.buildListUp(nodeList, this);
 		}
 		
-		if(m_loops.contains(start)){
+		if (m_loops.contains(start)){
 			m_loopHeader.buildListDown(nodeList);
 		}
 	}
 
 	public void buildListDown(List<Node> nodeList) {
 		m_loopHeader.buildListDown(nodeList);
-		for(Node node : m_loops){
+		for (Node node : m_loops){
 			node.buildListDown(nodeList);
 		}
 	}
+	
+	public void setAlive(Node currentNode, boolean alive) {
+		assert(m_alive.containsKey(currentNode));
+		m_alive.put(currentNode, alive);
+	}
+	
+    private Collection<Node> getAliveLoops() {
+    	Collection<Node> aliveLoops = new IteratableSet<Node>();
+    	for (Node loop : m_loops) {
+    		if (m_alive.get(loop)) {
+    			aliveLoops.add(loop);
+    		}
+    	}
+    	return aliveLoops;
+    }	
 }

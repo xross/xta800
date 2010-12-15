@@ -9,6 +9,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
@@ -42,6 +43,14 @@ public class RouteUnknowns {
 	        	}	        	
 	        	return foundNode(node);
 	        }
+
+	        public TraverseStatus foundLoopNode(Node node) {
+	        	LoopNode loopNode = (LoopNode)node;
+	        	for (Node excludedNode : loopNode.getExcludedLoops()) {
+	        		addToList(excludedNode);
+	        	}	        	
+	        	return foundNode(node);
+	        }
 	        
 	        private void addToList(Node node) {
 	    		for (Unknown unknown : node.getAttributes().getUnknowns()) {
@@ -58,7 +67,9 @@ public class RouteUnknowns {
 	// Setting Loop Iterations
 	// ===================================================================== //
 	public void setLoopIterations(CommandSource src, Engine engine,
-			Reference reference, long iterations, boolean sourceLevelIterations, Source source) throws AbortedException {
+			Reference reference, long iterations, 
+			boolean sourceLevelIterations, Source source) throws AbortedException {
+		
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopIterationsNoCheck(src, engine, node, iterations, sourceLevelIterations, reference, source);
 		}
@@ -77,7 +88,6 @@ public class RouteUnknowns {
 		} else {
 			throw new Exception("Reference not found on given route");
 		}
-
 	}
 
 	public void setLoopIterations(CommandSource src, Engine engine, Node node, long iterations, Source source) throws Exception {
@@ -125,7 +135,9 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Loop Path Iterations
 	// ===================================================================== //
-	public void setLoopPathIterations(Reference reference, long iterations, Source source) throws AbortedException {
+	public void setLoopPathIterations(Reference reference, 
+			long iterations, Source source) throws AbortedException {
+		
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopPathIterationsNoCheck(node, iterations, reference, source);
 		}
@@ -144,7 +156,6 @@ public class RouteUnknowns {
 		} else {
 			throw new Exception("Reference not found on given route");
 		}
-
 	}
 
 	public void setLoopPathIterations(Node node, long iterations, Source source) throws Exception {
@@ -195,7 +206,9 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Loop Scope
 	// ===================================================================== //
-	public void setLoopScope(Reference reference, boolean isAbsolute, Source source) throws AbortedException {
+	public void setLoopScope(Reference reference, boolean isAbsolute, 
+			Source source) throws AbortedException {
+		
 		for (Node node : m_route.getReferencedNodes(reference)) {
 			setLoopScopeNoCheck(node, isAbsolute, reference, source);
 		}
@@ -237,53 +250,76 @@ public class RouteUnknowns {
 	// ===================================================================== //
 	// Setting Exclusions
 	// ===================================================================== //
-	public boolean setExclusion(Reference reference, Type type, Source source) throws AbortedException {
+	public boolean setExclusion(CommandSource src, Engine engine, Reference reference, 
+			Type type, Source source) throws AbortedException {
+		
 		Set<Node> nodes = m_route.getReferencedNodes(reference);
 		for (Node node : nodes) {
-	    	setExclusion(node, reference, type, source);
+	    	setExclusion(src, engine, node, reference, type, source);
 		}
 		return true;
 	}
 
+	public void setExclusion(CommandSource src, Engine engine, 
+			Node node, Type type, Source source) {
+		
+		setExclusion(src, engine, node, null, type, source);
+	}
+		
 	public boolean checkExclusionWillLeaveAPath(Node node) throws Exception {
 		Node currentNode = node;
-		while(currentNode.getParent()!= null){
+		while (currentNode.getParent()!= null) {
 			Node parent = currentNode.getParent();
-			if(parent instanceof ConditionalNode){
-				if(parent.iChildren().size() > 1){
+			
+			if (parent instanceof ConditionalNode) {
+				if (parent.iChildren().size() > 1) {
 					return true;
 				} 
-			}
+			} else if (parent instanceof LoopNode) {
+				if (!currentNode.getAttributes().getIsLoopHeader()) {
+					return true;
+				}
+			}			
 			currentNode = parent;
 		}
 		throw new Exception("No paths will remain if exclusion is applied");
 	}
-
-	public void setExclusion(Node node, Type type, Source source) {
-		setExclusion(node, null, type, source);
-	}
 	
-	private void setExclusion(Node node, Reference reference, Type type, Source source) {
+	private void setExclusion(CommandSource src, Engine engine, Node node, 
+			Reference reference, Type type, Source source) {
+		
 		invalidateCachedStats();
 		Node currentNode = node;
-		while (currentNode.getParent()!= null) {
-			if (currentNode.getParent() instanceof ConditionalNode) {
-				ConditionalNode condNode = (ConditionalNode)currentNode.getParent();
+		while (currentNode.getParent() != null) {
+			Node parent = currentNode.getParent();
+			
+			if (parent instanceof ConditionalNode) {
+				ConditionalNode condNode = (ConditionalNode)parent;
 				condNode.setAlive(currentNode, false);
 				if (!condNode.iChildren().isEmpty()) {
 					currentNode.getAttributes().addKnown(m_route, Type.EXCLUSION, source, new Reference[] {reference});
+					break;
+				}
+			} else if (parent instanceof LoopNode) {
+				LoopNode loopNode = (LoopNode)parent;
+				if (!currentNode.getAttributes().getIsLoopHeader()) {				
+				    loopNode.setAlive(currentNode, false);				    
+					currentNode.getAttributes().addKnown(m_route, Type.EXCLUSION, source, new Reference[] {reference});
+				    setLoopIterationsNoCheck(src, engine, currentNode, 0, false, reference, source);				    
 					break;
 				}
 			}
 			currentNode = currentNode.getParent();
 		}
 		refreshDisplayedUnknowns();
-	}	
-	
+	}
+
 	// ===================================================================== //
 	// Fixed Time Methods
 	// ===================================================================== //
-	public boolean setFixedTime(Reference reference, TimeUnit timeUnit, Type type, Source source) throws AbortedException {
+	public boolean setFixedTime(Reference reference, TimeUnit timeUnit, 
+			Type type, Source source) throws AbortedException {
+		
 		boolean found = false;
 	    for (Node node : m_route.getReferencedNodes(reference)) {
 	    	setFixedTime(node, timeUnit, reference, type, source);
@@ -371,6 +407,4 @@ public class RouteUnknowns {
 	    	}
 	    });
 	}
-
-
 }

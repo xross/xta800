@@ -1231,7 +1231,7 @@ public class Engine extends Notifier implements Aborter {
 						okToSetExclusion &= canSetExclusion(node);
 					}
 					if (okToSetExclusion && !nodes.isEmpty()) {
-						hit = route.getRouteUnknowns().setExclusion(reference, Type.EXCLUSION, Source.SET);	
+						hit = route.getRouteUnknowns().setExclusion(src, this, reference, Type.EXCLUSION, Source.SET);	
 					}
 				}
 			}
@@ -1242,6 +1242,8 @@ public class Engine extends Notifier implements Aborter {
 
 	    if (hit) {
 	    	notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
+	    	notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Unable to set exclusion for reference: %s", refString));
 		}
@@ -1250,8 +1252,9 @@ public class Engine extends Notifier implements Aborter {
 
 	public void setExclusion(CommandSource src, Node node) {
 		if (canSetExclusion(node)) {
-			m_selectedRoute.getRouteUnknowns().setExclusion(node, Type.EXCLUSION, Source.SET);		
+			m_selectedRoute.getRouteUnknowns().setExclusion(src, this, node, Type.EXCLUSION, Source.SET);		
 			notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", getSelectedRouteId()));
+			notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 			
 		} else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Cannot remove all paths from route"));
