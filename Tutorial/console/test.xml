@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<XSystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:noNamespaceSchemaLocation="XSystem.xsd">
-  <AddNodes>
-    <ExpectedResult failstage="PostBuild" reason="Compiler bug (9140)"/>
-  </AddNodes>
-</XSystem>
-
