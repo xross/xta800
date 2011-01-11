@@ -121,8 +121,8 @@ sub PrintUsage
 
 sub DoPreClean
 {
-  chdir("$TOOLS_XTA/com.xmos.xta.core/src/com/xmos/xta/core")
-    or die("Failed to move to $TOOLS_XTA/src/com/xmos/xta");
+  chdir("$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core") 
+    or die("Failed to move to $TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta");
 
   unlink("instructions/xs1bInstructionDecoder.java");
   unlink("instructions/xs1bInstructions.java");
@@ -221,12 +221,11 @@ sub d {
 
 sub DoInstall
 {
-  chmod 0755, $BIN;
-  XmosBuildLib::InstallFile($DOMAIN, $BIN, "xta.exe");
-  XmosBuildLib::InstallReleaseFile($DOMAIN, $BIN, "xta.exe", "bin");
+  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
 
-  XmosBuildLib::InstallFile($DOMAIN, "export${SLASH}jars", "xta.jar");
-  XmosBuildLib::InstallReleaseFile($DOMAIN, "export${SLASH}jars", "xta.jar", "bin");
+  XmosBuildLib::InstallFile("$DOMAIN", "export${SLASH}jars", "xta.jar");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "export${SLASH}jars", "xta.jar", "bin");
 }
 
 sub DoLint
