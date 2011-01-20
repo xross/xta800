@@ -15,18 +15,18 @@
 FASTER:
   getd r4,res[r3]
   shr  r4, r4, 1
-  BRFT r4, setClock
-  BLRF parseSpDif
+  bt r4, setClock
+  bl parseSpDif
 SLOWER:
   getd r4,res[r3]
   shl  r4, r4, 1
   ldc r6, 32
   lsu  r10, r4, r6
-  BRFF r10, parseSpDif
+  bf r10, parseSpDif
 setClock:
-  SETC res[r3], 7
+  setc res[r3], 7
   setd res[r3], r4
-  SETC res[r3], 15
+  setc res[r3], 15
 parseSpDif:
 parseSpDifc:
   ldc r5, 0x5555
@@ -60,7 +60,7 @@ parseSpDifE:
   BLRF_u10 L1111
 
 L_11:
-  LMUL r4,r5,r5,r10,r8,r11
+  lmul r4,r5,r5,r10,r8,r11
 L:
   in   r4,res[r0]
   bru  r4
@@ -189,9 +189,9 @@ L11000:
 
 L1110_0:
   shl  r5,r5,1
-  BRFU L1110
+  bu L1110
 L1110_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L1110:
   in   r4,res[r0]
   bru  r4
@@ -213,8 +213,8 @@ L1110:
   BLRF_u10 L1111_1
 
 L1100_1:
-  LMUL r4,r5,r5,r7,r5,r7
-  BRFU L1100
+  lmul r4,r5,r5,r7,r5,r7
+  bu L1100
 L1100_0:
   shl  r5,r5,1
 L1100:
@@ -239,9 +239,9 @@ L1100:
 
 L110_0:
   shl  r5,r5,1
-  BRFU L110
+  bu L110
 L110_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L110:
   in   r4,res[r0]
   bru  r4
@@ -264,9 +264,9 @@ L110:
 
 L011_0:
   shl  r5,r5,1
-  BRFU L011
+  bu L011
 L011_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L011:
   in   r4,res[r0]
   bru  r4
@@ -289,9 +289,9 @@ L011:
 
 L0000_0:
   shl  r5,r5,1
-  BRFU L0000
+  bu L0000
 L0000_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L0000:
   in   r4,res[r0]
   bru  r4
@@ -313,8 +313,8 @@ L0000:
   BLRF_u10 L1111_0
 
 L0011_1:
-  LMUL r4,r5,r5,r7,r5,r7
-  BRFU L0011
+  lmul r4,r5,r5,r7,r5,r7
+  bu L0011
 L0011_0:
   shl  r5,r5,1
 L0011:
@@ -338,8 +338,8 @@ L0011:
   BLRF_u10 ERROR
 
 L0001_1:
-  LMUL r4,r5,r5,r7,r5,r7
-  BRFU L0001
+  lmul r4,r5,r5,r7,r5,r7
+  bu L0001
 L0001_0:
   shl  r5,r5,1
 L0001:
@@ -364,9 +364,9 @@ L0001:
 
 L111_0:
   shl  r5,r5,1
-  BRFU L111
+  bu L111
 L111_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L111:
   in   r4,res[r0]
   bru  r4
@@ -389,9 +389,9 @@ L111:
 
 L1111_0:
   shl  r5,r5,1
-  BRFU L1111
+  bu L1111
 L1111_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L1111:
   in   r4,res[r0]
   bru  r4
@@ -413,8 +413,8 @@ L1111:
   BLRF_u10 ERROR
 
 L0111_1:
-  LMUL r4,r5,r5,r7,r5,r7
-  BRFU L0111
+  lmul r4,r5,r5,r7,r5,r7
+  bu L0111
 L0111_0:
   shl  r5,r5,1
 L0111:
@@ -565,12 +565,12 @@ L111111:
 
 L0_00:
   shl  r5,r5,2
-  BRFU L0
+  bu L0
 L0_0:
   shl  r5,r5,1
-  BRFU L0
+  bu L0
 L0_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L0:
   in   r4,res[r0]
   bru  r4
@@ -592,11 +592,11 @@ L0:
   BLRF_u10 ERROR
 
 L1_01:
-  LMUL r4,r5,r5,r10,r7,r11
-  BRFU L1
+  lmul r4,r5,r5,r10,r7,r11
+  bu L1
 L1_1:
-  LMUL r4,r5,r5,r7,r5,r7
-  BRFU L1
+  lmul r4,r5,r5,r7,r5,r7
+  bu L1
 L1_0:
   shl  r5,r5,1
 L1:
@@ -621,9 +621,9 @@ L1:
 
 L01_0:
   shl  r5,r5,1
-  BRFU L01
+  bu L01
 L01_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L01:
   in   r4,res[r0]
   bru  r4
@@ -646,12 +646,12 @@ L01:
 
 L11_0:
   shl  r5,r5,1
-  BRFU L11
+  bu L11
 L11_01:
-  LMUL r4,r5,r5,r10,r7,r11
-  BRFU L11
+  lmul r4,r5,r5,r10,r7,r11
+  bu L11
 L11_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L11:
   in   r4,res[r0]
   bru  r4
@@ -674,9 +674,9 @@ L11:
 
 L001_0:
   shl  r5,r5,1
-  BRFU L001
+  bu L001
 L001_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L001:
   in   r4,res[r0]
   bru  r4
@@ -698,8 +698,8 @@ L001:
   BLRF_u10 ERROR
 
 L00_1:
-  LMUL r4,r5,r5,r7,r5,r7
-  BRFU L00
+  lmul r4,r5,r5,r7,r5,r7
+  bu L00
 L00_0:
   shl  r5,r5,1
 L00:
@@ -724,9 +724,9 @@ L00:
 
 L000_0:
   shl  r5,r5,1
-  BRFU L000
+  bu L000
 L000_1:
-  LMUL r4,r5,r5,r7,r5,r7
+  lmul r4,r5,r5,r7,r5,r7
 L000:
   in   r4,res[r0]
   bru  r4
@@ -748,7 +748,7 @@ L000:
   BLRB_u10 L1111_0
 
 ERROR:
-  BLRB parseSpDifE
+  bl parseSpDifE
 L0_S:
   in   r4,res[r0]
   bru  r4
@@ -1033,12 +1033,12 @@ L0_UX:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x9
-  BRFU L0_U
+  bu L0_U
 L0_UZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L0_U
+  bu L0_U
 L0_UY:
   bitrev r5, r5
   out  res[r1], r5
@@ -1067,12 +1067,12 @@ L1_UY:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x5
-  BRFU L1_U
+  bu L1_U
 L1_UX:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x9
-  BRFU L1_U
+  bu L1_U
 L1_UZ:
   bitrev r5, r5
   out  res[r1], r5
@@ -1101,12 +1101,12 @@ L00_UZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L00_U
+  bu L00_U
 L00_UX:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x9
-  BRFU L00_U
+  bu L00_U
 L00_UY:
   bitrev r5, r5
   out  res[r1], r5
@@ -1235,12 +1235,12 @@ L11_UX:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x9
-  BRFU L11_U
+  bu L11_U
 L11_UY:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x5
-  BRFU L11_U
+  bu L11_U
 L11_UZ:
   bitrev r5, r5
   out  res[r1], r5
@@ -1369,12 +1369,12 @@ L0_TZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L0_T
+  bu L0_T
 L0_TY:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x5
-  BRFU L0_T
+  bu L0_T
 L0_TX:
   bitrev r5, r5
   out  res[r1], r5
@@ -1403,12 +1403,12 @@ L1_TZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L1_T
+  bu L1_T
 L1_TX:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x9
-  BRFU L1_T
+  bu L1_T
 L1_TY:
   bitrev r5, r5
   out  res[r1], r5
@@ -1437,12 +1437,12 @@ L00_TY:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x5
-  BRFU L00_T
+  bu L00_T
 L00_TZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L00_T
+  bu L00_T
 L00_TX:
   bitrev r5, r5
   out  res[r1], r5
@@ -1471,12 +1471,12 @@ L11_TY:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x5
-  BRFU L11_T
+  bu L11_T
 L11_TZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L11_T
+  bu L11_T
 L11_TX:
   bitrev r5, r5
   out  res[r1], r5
@@ -1505,12 +1505,12 @@ L000_TY:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x5
-  BRFU L000_T
+  bu L000_T
 L000_TZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L000_T
+  bu L000_T
 L000_TX:
   bitrev r5, r5
   out  res[r1], r5
@@ -1539,12 +1539,12 @@ L111_TY:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x5
-  BRFU L111_T
+  bu L111_T
 L111_TZ:
   bitrev r5, r5
   out  res[r1], r5
   ldc  r5, 0x3
-  BRFU L111_T
+  bu L111_T
 L111_TX:
   bitrev r5, r5
   out  res[r1], r5
@@ -1570,7 +1570,7 @@ L111_T:
   BLRB_u10 ERROR
 
 L110z:
-  BRBU L110
+  bu L110
 L111z:
-  BRBU L111
+  bu L111
 .cc_bottom   parseSpDif.func

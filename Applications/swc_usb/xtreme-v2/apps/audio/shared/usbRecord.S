@@ -38,13 +38,13 @@ RegSave:
     
     ldw   r11, dp[recordState]
     bt    r11, recordStateInitialised
-    LDAPF r11, linkedList
+    ldap r11, linkedList
     stw   r11, dp[recordState]
     ldc   r11, 2
     stw   r11, dp[recordBufferNumber]
-    LDAPF r11, bufferRecord2
+    ldap r11, bufferRecord2
     stw   r11, dp[recordPointer]
-    LDAPF r11, recordVector
+    ldap r11, recordVector
     setv  res[r4], r11
 recordStateInitialised: 
 

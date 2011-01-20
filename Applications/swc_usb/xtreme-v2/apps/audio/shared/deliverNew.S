@@ -485,7 +485,7 @@ setMixerMultiplier:
     .cc_top channelContainsControlToken.func,  channelContainsControlToken
 
 channelContainsControlToken:    
-    LDAPF r11, checkControlToken
+//    LDAPF r11, checkControlToken
     setv res[r0], r11
     clre
     eeu   res[r0]
