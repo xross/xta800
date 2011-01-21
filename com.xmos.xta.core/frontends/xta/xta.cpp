@@ -47,7 +47,7 @@ int main(int argc, char **argv)
           consoleStr = "-DConsole=Basic";
       }
  
-      string command = "java " + jvmArgString + " " + consoleStr + " -jar \"" + jar + "\"" + args;
+      string command = "java -Xmx256m " + jvmArgString + " " + consoleStr + " -jar \"" + jar + "\"" + args;
       int returnCode = run(command.c_str());
       return returnCode;
     } else {

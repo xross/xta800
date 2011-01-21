@@ -237,74 +237,83 @@ public class Engine extends Notifier implements Aborter {
 		m_srcPaths += ";.";
 	}
 
-	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {		
-    	m_loadStartTime = System.currentTimeMillis();
-
-    	notify(src, Notifier.CLEAR_LOG, "");
-
+	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {			
 		try {
-    		executableFile = executableFile.getCanonicalFile();
-		} catch (IOException e) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("failed to resolve executable path: %s", executableFile.getName()));
-			return false;
-		}
+	    	m_loadStartTime = System.currentTimeMillis();
 
-		setAnalysisName("Loading Executable");
-		XeLoader xeLoader = new XeLoader();
-		if (!xeLoader.loadExecutable(executableFile)) {
-			notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' could not be loaded.");
-			return false;
-		}
+	    	notify(src, Notifier.CLEAR_LOG, "");
+			try {
+	    		executableFile = executableFile.getCanonicalFile();
+			} catch (IOException e) {
+				notify(src, Notifier.NOTIFY_ERROR, String.format("failed to resolve executable path: %s", executableFile.getName()));
+				return false;
+			}
 
-		setAnalysisName("Loading Sections");
-		Sections sections = new Sections();
-		if (!sections.load(src, xeLoader, this)) {
-			return false;
-		}
+			setAnalysisName("Loading Executable");
+			XeLoader xeLoader = new XeLoader();
+			if (!xeLoader.loadExecutable(executableFile)) {
+				notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' could not be loaded.");
+				return false;
+			}
+
+			setAnalysisName("Loading Sections");
+			Sections sections = new Sections();
+			if (!sections.load(src, xeLoader, this)) {
+				return false;
+			}
+			
+			setAnalysisName("Decoding Instructions");
+			try {
+				m_instructionDecoders.initialise(xeLoader);
+				
+			} catch (Exception e) {
+				notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
+				return false;
+			}
+
+			if (!isReloaded(executableFile)) {
+				SourceMapper.clearUserSpecifedFileLocations();
+			}
+
+			setAnalysisName("Analysing Control Flow");
+			initialiseControlFlows(xeLoader, sections, src);
+				
+			setAnalysisName("Determining Source To Assembly Mapping");					
+			try {
+			   	m_sourceMapper = new SourceMapper(src, this, xeLoader, sections, m_instructionDecoders);
+			} catch (AbortedException e) {
+				return false;
+			}
+				
+			initialiseCoreStates(xeLoader);
+			initialiseActiveCores(xeLoader);
+			initialiseCachedFunctions(xeLoader);
+			    		   	
+			m_executableFile = executableFile;
+			m_loadedFileLastModifiedTime = executableFile.lastModified();
+			m_xeLoader = xeLoader;
+			m_sections = sections;
+			m_routes.clear();
+			m_routeContainers.clear();
+			m_selectedRoute = null;
+			m_defines.clear();
+			m_pathPoints.clear();
+			m_loopPoints.clear();
+			Route.resetRouteCount();
 		
-		setAnalysisName("Decoding Instructions");
-		try {
-			m_instructionDecoders.initialise(xeLoader);
-			
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
-			return false;
-		}
+			runSrcLevelCommands(src, commandRunner);
 
-		if (!isReloaded(executableFile)) {
-			SourceMapper.clearUserSpecifedFileLocations();
-		}
-
-		setAnalysisName("Analysing Control Flow");
-		initialiseControlFlows(xeLoader, sections, src);
-			
-		setAnalysisName("Determining Source To Assembly Mapping");					
-		try {
-		   	m_sourceMapper = new SourceMapper(src, this, xeLoader, sections, m_instructionDecoders);
-		} catch (AbortedException e) {
-			return false;
-		}
-			
-		initialiseCoreStates(xeLoader);
-		initialiseActiveCores(xeLoader);
-		initialiseCachedFunctions(xeLoader);
-		    		   	
-		m_executableFile = executableFile;
-		m_loadedFileLastModifiedTime = executableFile.lastModified();
-		m_xeLoader = xeLoader;
-		m_sections = sections;
-		m_routes.clear();
-		m_routeContainers.clear();
-		m_selectedRoute = null;
-		m_defines.clear();
-		m_pathPoints.clear();
-		m_loopPoints.clear();
-		Route.resetRouteCount();
-	
-		runSrcLevelCommands(src, commandRunner);
-
-		m_scripter.setEngineLoadAndRunDone();
-		notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");						
+			m_scripter.setEngineLoadAndRunDone();
+			notify(src, Notifier.NOTIFY_LOAD_EXECUTABLE, "");			
+		
+	    } catch (final java.lang.OutOfMemoryError e) {
+    		notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
+		    return false;
+		
+     	} catch (final java.lang.StackOverflowError e) {
+		    notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
+		    return false;
+     	}
 		return true;
 	}
 
