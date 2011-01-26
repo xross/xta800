@@ -37,7 +37,7 @@ while (<INFILE>) {
     }    
    if($foundFunction == 1){
         if($line =~ m/FNOP/){
-            $line =~ s/0(.)+F/F/;
+            $line =~ s/(.)+F/F/;
             $line =~ s/ \@(.)+//;
             print OUTFILE "$line";
         } else {
