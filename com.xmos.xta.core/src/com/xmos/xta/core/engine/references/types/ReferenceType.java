@@ -336,7 +336,7 @@ public abstract class ReferenceType {
 			String workspacePath, SourceMapper sourceMapper) {
 		
 		if ((m_lineNum >= lineNumber) && 
-			FileNameMatcher.isMatch(m_fileName, sourceFileName, workspacePath, sourceMapper)) {
+			FileNameMatcher.isMatch(sourceFileName, m_fileName, workspacePath, sourceMapper)) {
 			m_lineNum += 1;
 		}
 	}

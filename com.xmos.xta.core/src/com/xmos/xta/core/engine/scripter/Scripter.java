@@ -729,8 +729,8 @@ public class Scripter {
 		SourceMapper sourceMapper = getSourceMapper();
 		String sourceFileName = sourceFile.getFullFileName();
 
-		for (ScripterReference scripterReference : m_uniqueReferences) {
-			if (FileNameMatcher.isMatch(scripterReference.getFileName(), sourceFileName, 
+		for (ScripterReference scripterReference : m_uniqueReferences) {				
+			if (FileNameMatcher.isMatch(sourceFileName, scripterReference.getFileName(),  
 					m_engine.getWorkspacePath(), sourceMapper) && 
 				(scripterReference.getLineNum() == lineNumber)) {				
 				return scripterReference;
@@ -810,9 +810,21 @@ public class Scripter {
 	}
 
     private SourceFile getSourceFile(String fileName) {
-		SourceFile sourceFile = m_engine.getSourceMapper().getSourceFile(fileName);
+    	SourceMapper sourceMapper = m_engine.getSourceMapper();
+    	
+    	// Attempts to find a match for this filename..
+		SourceFile sourceFile = sourceMapper.getSourceFile(fileName);
 		if (sourceFile != null) {
 			return sourceFile;
+		}
+		
+		// Check to see if the file name is workspace relative..
+		String workspacePath = m_engine.getWorkspacePath();
+		if (workspacePath != null) {
+			sourceFile = sourceMapper.getSourceFile(workspacePath + File.separator + fileName);
+			if (sourceFile != null) {
+				return sourceFile;
+			}			
 		}
 		return null;
 	}
