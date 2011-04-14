@@ -10,10 +10,7 @@ my $noBuild = shift(@ARGV);
 my $directory = "xtreme-v2";
 
 if (!$noBuild) {
-    system(" xmake -f ./xud/build/Makefile                   > $genDir/$directory.log 2>&1");
-    system(" xmake -f ./apps/audio/xtreme-v2/build/Makefile >> $genDir/$directory.log 2>&1");
-    system(" xmake -f ./xud/build/Makefile  cleantemps      >> $genDir/$directory.log 2>&1");
-    system(" cp ./apps/audio/xtreme-v2/bin/xtreme-v2.xe $genDir/test.xe");
+    system(" xmake TARGETDIR=$genDir > $genDir/$directory.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .
