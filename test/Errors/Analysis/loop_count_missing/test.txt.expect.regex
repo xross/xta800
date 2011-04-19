@@ -1,0 +1,4 @@
+Route\(0\) function: loop
+    Fail \(missing loop iterations\) with 1 unknown, Num Paths: 1, Slack: \d+.0 ns, Required: 1.0 us, Worst: \d+.0 ns, Min Core Frequency: \d+ MHz
+
+Fail, 1/1, Max Violation: 0.0 ns

@@ -1,0 +1,32 @@
+
+
+add exclusion the_great_outdoors
+analyze path x x
+
+analyze path test.xc:21 test.xc:22
+scripter listrefs
+scripter rename test.xc:21 "a space"
+scripter rename test.xc:21 start
+scripter listrefs
+scripter rename test.xc:22 stop
+scripter listrefs
+
+scripter disable stop
+scripter listrefs
+
+scripter disable test.xc:21
+scripter listrefs
+
+scripter enable SOURCE:21
+scripter listrefs
+
+analyze path SOURCE:21 SOURCE:22
+
+scripter disable test.xc:21
+scripter disable test.xc:22
+scripter listrefs
+
+scripter rename x y
+
+scripter dump
+exit

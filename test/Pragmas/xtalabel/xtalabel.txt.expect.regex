@@ -1,0 +1,12 @@
+stdcore\[0\], label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
+stdcore\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 2 - 2
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 3 - 3
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 6 - 6
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 7 - 7
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 10 - 10
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 11 - 11
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 13 - 13
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 17 - 17
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 19 - 19
+stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line numbers: 20 - 20

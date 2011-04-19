@@ -1,0 +1,5 @@
+add functiontime f 999.0 ns 
+analyze function main
+print structure -
+list knowns -
+

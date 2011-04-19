@@ -1,0 +1,24 @@
+function\(\d+\) +: Infinity / \d+\.\d [mun]s test
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    cond\(\d+\) +: Infinity / \d+\.\d [mun]s 
+.    .    seq\(\d+\) +: Infinity / Infinity 
+.    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    cond\(\d+\) +: Infinity / Infinity 
+.    .    .    .    seq\(\d+\) +: Infinity / Infinity 
+.    .    .    .    .    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    infiniteselfloop\(\d+\) +: Infinity / Infinity 
+.    .    .    .    .    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
+.    .    .    .    seq\(\d+\) +: Infinity / Infinity 
+.    .    .    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    infiniteselfloop\(\d+\) +: Infinity / Infinity 
+.    .    .    .    .    .    block\(\d+\) +: Infinity \(x -\) / Infinity \(x -\) 
+.    .    seq\(\d+\) +: 0.0 [mun]s / \d+\.\d [mun]s 
+.    .    .    cond\(\d+\) +: 0.0 [mun]s / 0.0 [mun]s 
+.    .    .    .    seq\(\d+\) +: 0.0 [mun]s / 0.0 [mun]s 
+.    .    .    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    cond\(\d+\) +: 0.0 [mun]s / 0.0 [mun]s 
+.    .    .    .    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) / 0.0 [mun]s \(x 0\) 
+.    .    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) / 0.0 [mun]s \(x 1\) 
+.    .    .    block\(\d+\) +: 0.0 [mun]s \(x 0\) / \d+\.\d [mun]s \(x 1\) 
+

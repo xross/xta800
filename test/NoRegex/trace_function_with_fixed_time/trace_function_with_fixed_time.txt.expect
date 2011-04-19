@@ -1,0 +1,10 @@
+  0.0: (20.0ns) 0x10008 main + 0               entsp (u6)   0x1
+  20.0: (20.0ns) 0x1000a main + 2               bl (u10)     0x1
+  40.0: (20.0ns) 0x1000e f + 0                  add (2rus)   r0, r0, 0x0
+  60.0: (20.0ns) 0x10010 f + 2                  add (2rus)   r0, r0, 0x0
+  80.0: (20.0ns) 0x10012 f + 4                  add (2rus)   r0, r0, 0x0
+  100.0: (20.0ns) 0x10014 f + 6                  retsp (u6)   0x0
+  120.0: (-70.0ns) fixed function time
+  50.0: (20.0ns) 0x1000c                        --FNOP--     
+  70.0: (20.0ns) 0x1000c main + 4               retsp (u6)   0x1
+

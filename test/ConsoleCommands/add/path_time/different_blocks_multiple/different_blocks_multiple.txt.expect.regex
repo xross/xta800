@@ -1,0 +1,21 @@
+function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  F seq\(\d+\)\s+: 1.999 us / 1.999 us 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s f
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  F seq\(\d+\)\s+: 2.999 us / 2.999 us 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s f
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  F seq\(\d+\)\s+: 3.999 us / 3.999 us 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s f
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+

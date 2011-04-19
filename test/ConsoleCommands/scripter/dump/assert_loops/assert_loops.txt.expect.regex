@@ -1,0 +1,23 @@
+# load ".*test\.xe"
+
+#
+# Route: function: f
+#
+add loop outer1 10
+add loop inner1 20
+add looppath inner1 15
+add loopscope inner1 true
+analyze function f
+
+#
+# Route: function: g
+#
+remove loop \*
+add loop outer2 10
+add loop inner2 20
+remove looppath \*
+add looppath inner2 15
+remove loopscope \*
+add loopscope inner2 true
+analyze function g
+

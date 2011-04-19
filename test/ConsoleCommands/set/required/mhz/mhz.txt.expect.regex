@@ -1,0 +1,21 @@
+Route\(0\) function: test0
+    Fail \(timing violation\), Num Paths: 1, Violation: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(1\) function: test1
+    Fail \(timing violation\), Num Paths: 1, Violation: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Fail, 2/2, Max Violation: \d+\.\d [mun]s
+Route\(0\) function: test0
+    Pass, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(1\) function: test1
+    Fail \(timing violation\), Num Paths: 1, Violation: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Fail, 1/2, Max Violation: \d+\.\d [mun]s
+Route\(0\) function: test0
+    Pass, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(1\) function: test1
+    Pass, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: \d+\.\d [mun]s, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz

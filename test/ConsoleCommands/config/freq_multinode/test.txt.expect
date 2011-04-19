@@ -1,0 +1,28 @@
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 110.9 MHz
+ NodeId 1 (JTAG chain index 1, routing id 64), 210.9 MHz
+ NodeId 2 (JTAG chain index 2, routing id 192), 310.4 MHz
+ NodeId 3 (JTAG chain index 3, routing id 128), 410.4 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
+stdcore[1], Threads: 1 (Debug information avaliable)
+stdcore[2], Threads: 1 (Debug information avaliable)
+stdcore[3], Threads: 1 (Debug information avaliable)
+stdcore[4], Threads: 1 (Debug information avaliable)
+stdcore[5], Threads: 1 (Debug information avaliable)
+stdcore[6], Threads: 1 (Debug information avaliable)
+stdcore[7], Threads: 1 (Debug information avaliable)
+stdcore[8], Threads: 1 (Debug information avaliable)
+stdcore[9], Threads: 1 (Debug information avaliable)
+stdcore[10], Threads: 1 (Debug information avaliable)
+stdcore[11], Threads: 1 (Debug information avaliable)
+stdcore[12], Threads: 1 (Debug information avaliable)
+stdcore[13], Threads: 1 (Debug information avaliable)
+stdcore[14], Threads: 1 (Debug information avaliable)
+stdcore[15], Threads: 1 (Debug information avaliable)
+No routes analyzed

@@ -1,0 +1,17 @@
+analyze function foo
+remove route -
+
+analyze function foo
+remove route -
+
+add exclusion the_great_outdoors
+analyze path x x
+remove route 1
+remove route 3
+
+analyze path x x
+remove route 6
+remove route 7
+
+scripter dump
+exit

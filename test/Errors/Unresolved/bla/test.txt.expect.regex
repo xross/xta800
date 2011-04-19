@@ -1,0 +1,11 @@
+function\(\d+\) +: Unresolved / Unresolved main
+.    block\(\d+\) +: Unresolved \(x 1\) / Unresolved \(x 1\) 
+
+  \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ .*
+[^^^]
+.* +bla.* +\[UNRESOLVED\]
+
+Route\(0\) function: main
+    Fail \(timing violation\), Num Paths: 1, Violation: Unresolved, Required: 100.0 ms, Worst: Unresolved, Min Core Frequency: Unresolved
+
+Fail, 1/1, Max Violation: Unresolved

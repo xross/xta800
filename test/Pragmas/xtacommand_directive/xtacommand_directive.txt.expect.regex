@@ -1,0 +1,3 @@
+function\(\d+\) +: 60.0 ns / 60.0 ns main
+.    block\(\d+\) +: 60.0 ns \(x 1\) / 60.0 ns \(x 1\) 
+

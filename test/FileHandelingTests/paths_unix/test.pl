@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use File::Copy;
+use Cwd;
+
+my $genDir  = shift(@ARGV);
+my $arch    = shift(@ARGV);
+my $target  = shift(@ARGV);
+my $noBuild = shift(@ARGV);
+
+my $pwd = getcwd();
+
+if (!$noBuild) {
+  open(LOG, ">$genDir/paths_unix.log");
+  copy("test.xe", "$genDir/test.xe") or print(LOG "Failed to copy\n");
+  close(LOG);
+}
+
+system("@ARGV " .
+       "config srcpaths $pwd " .
+       "load $genDir/test.xe " .
+       "list sources " .
+       "analyse function main " .
+       "print src - " .
+       "-exit  > $genDir/paths_unix.txt 2>&1");
+

@@ -1,0 +1,4 @@
+xta: uart-loopback.xc:115: warning: route\(0\)     Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz
+xta: uart-loopback.xc:122: warning: route\(1\)     Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz
+xta: uart-loopback.xc:130: warning: route\(2\)     Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz
+xta: uart-loopback.xc:139: warning: route\(3\)     Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz

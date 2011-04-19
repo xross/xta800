@@ -1,0 +1,155 @@
+  [-]add <option> <arg0> <arg1>...: Add item to given list
+  [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
+  [-]config <option> <arg0> <arg1>...: Configures the given option
+  [-]clear: Clears the screen (Gui mode only)
+  [-]debug <option> <arg0> <arg1>...: Internal debug commands
+  [-]echo "text": Prints the text to the console
+  [-]exit: Quits the application
+  [-]help [command|command subcommand|option]: Displays help message for the given arguments
+  [-]history: Displays the command history
+  [-]load <xe file>: Loads the given xmos executable file
+  [-]list <option> <arg0> <arg1>...: Lists the given set of items
+  [-]print <option> <arg0> <arg1>...: Display analysis information
+  [-]pwd: Displays the current working directory
+  [-]remove <option> <arg0> <arg1>...: Remove item from given list
+  [-]scripter <option> <arg0> <arg1>...: Work with the script generator
+  [-]set <option> <arg0> <arg1>...: Set path information
+  [-]source <file name> [args]: Sources the given script file
+  [-]status: Display current status
+  [-]version: Displays the version information
+  [-]add <option> <arg0> <arg1>...: Add item to given list
+      option: branch <from BRANCH> [<to INSTRUCTION>]+: Adds the given from/to references to the branches list
+      option: core <core id|*>: Add core to active set
+      option: exclusion <ANY>: Adds the given reference to the list of exclusions
+      option: functiontime <FUNCTION> <value> <MODE>: Adds the given function time to the list of defines
+      option: instructiontime <ENDPOINT> <value> <MODE>: Adds the given instruction time to the list of defines
+      option: loop <ANY> <iterations>: Adds the given loop count define to the list of defines
+      option: looppath <ANY> <iterations>: Adds the given loop path count define to the list of defines
+      option: loopscope <ANY> <SCOPE>: Adds the given loop scope define to the list of defines
+      option: pathtime <from ENDPOINT> <to ENDPOINT> <value> <MODE>: Adds the given path time to the list of defines
+  [-]analyze <option> <arg0> <arg1>...: Perform timing analysis
+      option: endpoints <from ENDPOINT> <to ENDPOINT>: Analyze between the specified endpoints
+      option: function <FUNCTION>: Analyze the given function
+      option: loop <ANY>: Analyze the given loop
+  [-]clear: Clears the screen (Gui mode only)
+  [-]config <option> <arg0> <arg1>...: Configures the given option
+      option: case <best/worst>: Sets the case (currently: worst)
+      option: Ewarning <on/off>: treat errors as warnings or not (currently: off)
+      option: freq <node id> <core frequency>: Sets the operating frequency in MHz for the given node
+      option: from <ENDPOINT>: Sets the from endpoint
+      option: looppoint <ANY>: Sets the loop point
+      option: scale <true/false>: Configures whether results are scales (currently: true)
+      option: srcpaths <paths>: Sets the (semicolon separated) source search path
+      option: threads <core id> <num threads>: Sets number of threads currently executing for the given core
+      option: timeout <seconds>: Sets the tools timeout on load
+      option: Terror <on/off>: treat timing failures as errors or not (currently: on)
+      option: to <ENDPOINT>: Sets the to endpoint
+      option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
+      option: Werror <on/off>: treat warnings as errors or not (currently: off)
+  [-]echo "text": Prints the text to the console
+  [-]exit: Quits the application
+  [-]help [command|command subcommand|option]: Displays help message for the given arguments
+      options: FUNCTION, BRANCH, INSTRUCTION, ENDPOINT, ANY, MODE, SCOPE
+  [-]history: Displays the command history
+  [-]list <option> <arg0> <arg1>...: Lists the given set of items
+      option: allcalls: Lists all the possible locations for calls
+      option: allendpoints: Lists all the possible locations for endpoints
+      option: branches [route id]: Lists the branches - optionally for the specified route
+      option: calls: Lists the calls
+      option: cores: Lists the active cores
+      option: endpoints: Lists the endpoints
+      option: exclusions [route id]: Displays the exclusions - optionally for the specified route
+      option: functions: Lists the functions in the loaded application
+      option: functiontimes: Displays the function time defines
+      option: instructiontimes: Displays the instruction time defines
+      option: knowns <route id>: Displays the list of knowns set for the given route
+      option: labels: Lists the labels
+      option: loops: Displays the loop defines
+      option: looppaths: Displays the loop path defines
+      option: loopscopes: Displays the loop scope defines
+      option: pathtimes: Displays the path time defines
+      option: sources: Lists the source files
+      option: srccommands: Displays the command list embedded in the loaded executable
+      option: srcloops: Displays the loop counts embedded in the loaded executable
+      option: srclabels: Lists the source labels
+      option: allsrclabels: Lists all the possible locations for source labels
+      option: threadstartpoints: Lists the thread start points
+      option: threadstoppoints: Lists the thread stop points
+      option: unknowns <route id>: Displays the list of unknowns for the given route
+  [-]load <xe file>: Loads the given xmos executable file
+  [-]print <option> <arg0> <arg1>...: Display analysis information
+      option: summary: Show routes summary (verbosity -2|-1|0)
+      option: structure <route id> [node id]: Display the structure for given route/node (verbosity 0|1)
+      option: asm <route id> [node id]: Display annotated assembly for the given route/node
+      option: src <route id> [node id]: Display annotated source file(s) for given route/node
+      option: trace <route id> [node id]: Display instruction trace for the worst case path of the given route/node
+      option: routeinfo <route id>: Show detailed information for the given route
+      option: nodeinfo <route id> <node id>: Show detailed information for the given node in the given route
+      option: warnings: Print all timing warnings
+      option: distribution <route id> [node id]: Display time distribution for the given route/node
+  [-]pwd: Displays the current working directory
+  [-]remove <option> <arg0> <arg1>...: Remove item from given list
+      option: branch <from BRANCH|*> [<to INSTRUCTION|*>]+: Removes the given from/to references from the branches list
+      option: core <core id|*>: Remove core from active set
+      option: exclusion <ANY|*>: Removes the given reference (or all if '*') from the list of exclusions
+      option: functiontime <FUNCTION|*>: Removes the given functon time from the list of defines
+      option: instructiontime <ENDPOINT|*>: Removes the given instruction time from the list of defines
+      option: loop <ANY|*>: Removes the given loop count define to the list of defines
+      option: looppath <ANY|*>: Removes the given loop path count define to the list of defines
+      option: loopscope <ANY|*>: Removes the given loop scope define to the list of defines
+      option: pathtime <from ENDPOINT|*> <to ENDPOINT|*>: Removes the given path time from the list of defines
+      option: route <route id>: Removes the route with the given id from the current analysis
+  [-]scripter <option> <arg0> <arg1>...: Work with the script generator
+      option: disable <ANY>: Disable a mapping
+      option: dump: Dump script which represents the current state - also embeds active pragmas into source
+      option: embed <filename>: Embed the script into the designated file - also embed active pragmas into source
+      option: enable <ANY>: Enable a mapping
+      option: listrefs: List all references which will be used in the script
+      option: rename <ANY> <TO_NAME>: Rename a mapping
+  [-]set <option> <arg0> <arg1>...: Set path information
+      option: exclusion <route id> <ANY>: Sets an exclusion on the given reference
+      option: functiontime <route id> <FUNCTION> <value> <MODE>: Set timing requirement for the given function on the given route
+      option: instructiontime <route id> <ENDPOINT> <value> <MODE>: Sets the time taken for the instruction at the given pc
+      option: loop <route id> <ANY> <iterations>: Sets the number of iterations for the loop identified
+      option: looppath <route id> <ANY> <iterations>: Sets the number of iterations for the path identified
+      option: loopscope <route id> <ANY> <SCOPE>: Sets the scope of the referenced loop
+      option: pathtime <route id> <from ENDPOINT> <to ENDPOINT> <value> <MODE>: Set timing requirement for the given path on the given route
+      option: required <route id> <value> <MODE>: Sets the maximum allowed time taken for the given route
+  [-]source <file name> [args]: Sources the given script file
+  [-]status: Display current status
+  Any of the following types are permitted in this reference class:
+    FunctionPc: Raw program counter specified in the format: 0x*
+    Function: Any function
+  Any of the following types are permitted in this reference class:
+    EndpointPc: Raw program counter specified in the format: 0x*
+    CallPc: Call specified in the format: 0x*
+    CallFileLine: Call specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
+    Label: Any source or assembly level symbol defined with respect to an executable section
+    CallLabel: Any source or assembly level symbol defined with respect to an executable section
+  Any of the following types are permitted in this reference class:
+    EndpointPc: Raw program counter specified in the format: 0x*
+    FunctionPc: Raw program counter specified in the format: 0x*
+    Function: Any function
+    Label: Any source or assembly level symbol defined with respect to an executable section
+  Any of the following types are permitted in this reference class:
+    EndpointPc: Raw program counter specified in the format: 0x*
+    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
+    Endpoint: Endpoint specified using the source level pragma mechanism
+    CallPc: Call specified in the format: 0x*
+    CallFileLine: Call specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
+    Label: Any source or assembly level symbol defined with respect to an executable section
+    CallLabel: Any source or assembly level symbol defined with respect to an executable section
+  Any of the following types are permitted in this reference class:
+    SrcLabelPc: Raw program counter specified in the format: 0x*
+    EndpointPc: Raw program counter specified in the format: 0x*
+    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
+    Endpoint: Endpoint specified using the source level pragma mechanism
+    CallPc: Call specified in the format: 0x*
+    CallFileLine: Call specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
+    SrcLabelFileLine: Source label specified in the format: 'file name:line number'
+    SrcLabel: Source label specified using the source level pragma mechanism
+    Label: Any source or assembly level symbol defined with respect to an executable section
+    CallLabel: Any source or assembly level symbol defined with respect to an executable section

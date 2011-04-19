@@ -1,0 +1,5 @@
+add branch callg,callptr g
+add branch callh,callptr h
+analyse function main
+print structure -
+exit

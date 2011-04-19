@@ -1,0 +1,15 @@
+# This is the data receive loop path
+add exclusion packet_start
+add exclusion eop_detected
+analyse path receive_loop receive_loop
+set required - 320 ns
+
+# This is the inter-frame gap path
+remove exclusion *
+add exclusion receive_loop
+analyse path eop_detected packet_start
+set required - 1520 ns
+set loop - eop_detected 0
+set loop - end_frame 0
+print summary
+exit

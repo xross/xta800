@@ -1,0 +1,7 @@
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+No executable loaded

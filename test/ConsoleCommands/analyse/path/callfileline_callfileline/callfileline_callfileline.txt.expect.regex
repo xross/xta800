@@ -1,0 +1,11 @@
+xta: cmds.txt:4: error: 'test.xc:19' is not a valid endpoint on any active core
+xta: cmds.txt:4: error: 'test.xc:20' is not a valid endpoint on any active core
+xta: cmds.txt:9: error: 'test.xc:13' is not a valid endpoint on any active core
+xta: cmds.txt:9: error: 'test.xc:14' is not a valid endpoint on any active core
+Route\(0\) endpoints: test.xc:13 to test.xc:14
+    No Timing Specified
+
+Route\(1\) endpoints: test.xc:19 to test.xc:20
+    No Timing Specified
+
+Fail, Timing Unspecified

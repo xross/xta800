@@ -1,0 +1,18 @@
+config threads stdcore[0] 1
+config freq 0 100
+analyze function a
+
+config threads stdcore[1] 2
+config freq 0 200
+analyze function b
+
+config threads stdcore[2] 3
+config freq 0 300
+analyze function c
+
+config threads stdcore[3] 4
+config freq 0 400
+analyze function d
+
+scripter dump
+exit

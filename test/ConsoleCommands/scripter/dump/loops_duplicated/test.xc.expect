@@ -1,0 +1,42 @@
+void f() {
+    int res = 0;
+
+    for (int i = 0; i < 10; ++i) {
+        #pragma xta label "loop"
+        res += 1;
+    }
+
+    for (int i = 0; i < 10; ++i) {
+        if (i & 0x1) {
+            #pragma xta label "loop_path"
+            res += 1;
+        }
+    }
+
+    for (int i = 0; i < 10; ++i) {
+        #pragma xta label "loop_iterations_0"
+        res += 1;
+    }
+
+    for (int i = 0; i < 10; ++i) {
+        #pragma xta label "loop_iterations_1"
+        if (i & 0x1) {
+            #pragma xta label "loop_path_iterations_0"
+            res += 1;
+        }
+    }
+}
+
+void g() {
+    #pragma xta call "f1" 
+    f();
+    #pragma xta call "f2" 
+    f();
+}
+    
+int main() {
+    #pragma xta call "call_0"
+    g();
+    return 0;
+}
+

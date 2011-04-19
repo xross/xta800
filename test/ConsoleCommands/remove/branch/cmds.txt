@@ -1,0 +1,17 @@
+-echo start
+-list branches
+-add branch source1 source2 target2 target3 target4
+-echo add1
+-list branches
+-remove branch source1 *
+-echo remove1
+-list branches
+-add branch source1 source2 target3 target4
+-echo add1again
+-list branches
+-remove branch * target2 target3
+-echo removetargets
+-list branches
+-echo removeall
+-remove branch * *
+-list branches

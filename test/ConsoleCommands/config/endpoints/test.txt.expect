@@ -1,0 +1,31 @@
+============= list cores
+stdcore[0] (NodeId 0)
+stdcore[1] (NodeId 0)
+stdcore[2] (NodeId 0)
+stdcore[3] (NodeId 0)
+============= set invalid endopints
+xta: cmds.txt:5: error: 'crap.xc:25' is not a valid endpoint on any active core
+xta: cmds.txt:6: error: 'crap.xc:26' is not a valid endpoint on any active core
+============= set valid endopints
+============= display endopints
+stdcore[0]::test.xc:25
+stdcore[1]::test.xc:25
+stdcore[2]::test.xc:25
+stdcore[3]::test.xc:25
+stdcore[0]::test.xc:26
+stdcore[1]::test.xc:26
+stdcore[2]::test.xc:26
+stdcore[3]::test.xc:26
+============= change active cores
+============= display endopints
+============= analyze path
+xta: cmds.txt:24: error: References not resolved on any active core
+============= change active cores
+============= display endopints
+stdcore[0]::test.xc:25
+stdcore[0]::test.xc:26
+============= analyze path
+Route(0) endpoints: test.xc:25 to test.xc:26
+    No Timing Specified
+
+Fail, Timing Unspecified

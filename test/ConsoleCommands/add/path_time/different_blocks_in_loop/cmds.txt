@@ -1,0 +1,4 @@
+add loop loop 10
+add pathtime start stop 4999.0 ns 
+analyze function main
+print structure -

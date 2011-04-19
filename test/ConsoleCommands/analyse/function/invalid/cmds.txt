@@ -1,0 +1,25 @@
+remove core *
+add core stdcore[3]
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
+remove core *
+add core stdcore[2]
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
+remove core *
+add core stdcore[1]
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
+remove core *
+add core stdcore[0]
+-analyze function test0
+analyze function test1
+analyze function test2
+analyze function test3
+print summary

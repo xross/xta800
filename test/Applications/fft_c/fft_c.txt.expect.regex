@@ -1,0 +1,3 @@
+function\(\d+\) +: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s fix_fft_64
+.*
+[^^^]

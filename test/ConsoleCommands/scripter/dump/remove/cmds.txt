@@ -1,0 +1,11 @@
+analyze function main
+remove route -
+analyze function main
+remove route -
+analyze function main
+remove route -
+
+scripter dump
+
+exit
+

@@ -1,0 +1,11 @@
+add pathtime start stop 999.0 ns 
+add pathtime start1 stop1 999.0 ns 
+analyze function a
+remove pathtime * *
+
+add pathtime start stop 888.0 ns 
+add pathtime start2 stop2 888.0 ns 
+analyze function b
+remove pathtime * *
+
+scripter dump

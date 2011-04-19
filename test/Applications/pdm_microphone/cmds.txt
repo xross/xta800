@@ -1,0 +1,6 @@
+analyse path mic_sample mic_sample
+set required - 20640 ns
+
+print summary
+exit
+

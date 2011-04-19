@@ -1,0 +1,51 @@
+# =========================================================================== #
+# Time Function: ledreformat_process_mbi5026
+# =========================================================================== #
+
+analyse function ledreformat_process_mbi5026
+
+# =========================================================================== #
+# Times each of the cases inside the select in 
+# the while(1) loop inside function: ethSwitch
+# =========================================================================== #
+
+remove exclusion *
+add exclusion recieve_external_0 
+add exclusion recieve_external_1 
+add exclusion recieve_local_node
+analyse path watchdog watchdog
+set required - 10000.0 ns
+
+remove exclusion *
+add exclusion recieve_external_0 
+add exclusion recieve_external_1 
+add exclusion watchdog 
+analyse path recieve_local_node recieve_local_node
+set loop - recieve_local_node_loop 8
+set loop - ethTx_loop 4
+set required - 10000.0 ns
+
+remove exclusion *
+add exclusion watchdog 
+add exclusion recieve_external_1 
+add exclusion recieve_local_node 
+analyse path recieve_external_0 recieve_external_0
+set loop - ethPhyRx_loop 4
+set loop - localTx_loop 4
+# set loop - adjustTTL_loop 4
+set loop - ethTx_loop 4
+set required - 10000.0 ns
+
+remove exclusion *
+add exclusion recieve_external_0 
+add exclusion watchdog 
+add exclusion recieve_local_node 
+analyse path recieve_external_1 recieve_external_1
+set loop - ethPhyRx_loop 4
+set loop - localTx_loop 4
+# set loop - adjustTTL_loop 4
+set loop - ethTx_loop 4
+set required - 10000.0 ns
+
+print summary
+exit

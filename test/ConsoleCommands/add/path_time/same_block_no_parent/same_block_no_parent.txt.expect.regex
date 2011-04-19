@@ -1,0 +1,5 @@
+seq\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.  F block\(\d+\)\s+: 4.999 us \(x 1\) / 4.999 us \(x 1\) 
+.  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+

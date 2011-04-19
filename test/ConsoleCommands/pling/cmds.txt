@@ -1,0 +1,7 @@
+# This should work, and display the status
+!1
+
+# Check that the source of this script is reported in the history
+history
+
+exit

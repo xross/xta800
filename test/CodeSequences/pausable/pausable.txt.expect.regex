@@ -1,0 +1,9 @@
+function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s main
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.  \* function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s inP
+.    .  \* block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.  \* function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s outP
+.    .  \* block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.  \* block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+

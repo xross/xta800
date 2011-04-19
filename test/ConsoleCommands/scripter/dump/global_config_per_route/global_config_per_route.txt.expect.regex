@@ -1,0 +1,29 @@
+# load ".*test\.xe"
+
+#
+# Route: function: a
+#
+config freq 0 100.000000
+analyze function a
+
+#
+# Route: function: b
+#
+config freq 0 200.000000
+config threads stdcore\[1\] 2
+analyze function b
+
+#
+# Route: function: c
+#
+config freq 0 300.000000
+config threads stdcore\[2\] 3
+analyze function c
+
+#
+# Route: function: d
+#
+config freq 0 400.000000
+config threads stdcore\[3\] 4
+analyze function d
+

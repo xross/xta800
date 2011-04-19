@@ -1,0 +1,27 @@
+function\(\d+\) +: \d+.0 ns / \d+.0 ns main
+.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    function\(\d+\) +: \d+.0 ns / \d+.0 ns f
+.    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    .    cond\(\d+\) +: \d+.0 ns / \d+.0 ns 
+.    .    .    function\(\d+\) +: \d+.0 ns / \d+.0 ns j
+.    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    .    .    function\(\d+\) +: \d+.0 ns / \d+.0 ns g
+.    .    .    .    block\(\d+\) +: \d+.0 ns \(x 0\) / \d+.0 ns \(x 0\) 
+.    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    function\(\d+\) +: \d+.0 ns / \d+.0 ns f
+.    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    .    cond\(\d+\) +: \d+.0 ns / \d+.0 ns 
+.    .    .    function\(\d+\) +: \d+.0 ns / \d+.0 ns j
+.    .    .    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    .    .    function\(\d+\) +: \d+.0 ns / \d+.0 ns h
+.    .    .    .    block\(\d+\) +: \d+.0 ns \(x 0\) / \d+.0 ns \(x 0\) 
+.    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    function\(\d+\) +: \d+.0 ns / \d+.0 ns g
+.    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    function\(\d+\) +: \d+.0 ns / \d+.0 ns h
+.    .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+.    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
+

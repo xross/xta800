@@ -1,0 +1,19 @@
+function_a...
+function_b...
+xta: test.xc:5: error: invalid command in source file 'I am an invalid command string'
+xta: test.xc:6: warning: exit ignored in source level commands
+function_c...
+function_d...
+Route(0) function: function_a
+    No Timing Specified
+
+Route(1) function: function_b
+    No Timing Specified
+
+Route(2) function: function_c
+    No Timing Specified
+
+Route(3) function: function_d
+    No Timing Specified
+
+Fail, Timing Unspecified

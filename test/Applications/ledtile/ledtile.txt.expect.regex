@@ -1,0 +1,16 @@
+Route\(\d+\) function: ledreformat_process_mbi5026
+    No Timing Specified
+
+Route\(\d+\) endpoints: watchdog to watchdog
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) endpoints: recieve_local_node to recieve_local_node
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) endpoints: recieve_external_0 to recieve_external_0
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) endpoints: recieve_external_1 to recieve_external_1
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 10.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Fail, Timing Unspecified

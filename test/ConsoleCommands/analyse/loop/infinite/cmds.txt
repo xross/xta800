@@ -1,0 +1,4 @@
+analyze loop infinite
+print structure -
+print summary
+

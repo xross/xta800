@@ -1,0 +1,4 @@
+seq\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+

@@ -1,0 +1,4 @@
+function\(\d+\) +: \d+\.\d [mun]s / \d+\.\d [mun]s main
+.    block\(\d+\) +: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+
+xta: test.xc:1: warning: route\(0\)     No Timing Specified

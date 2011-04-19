@@ -1,0 +1,25 @@
+analyse function main
+set exclusion - foo_if
+set exclusion - bar_if
+set exclusion - foo_else
+print structure -
+
+analyse function main
+set exclusion - ~1~0~1~1~0~
+set exclusion - ~1~1~1~1~0~
+set exclusion - ~1~0~1~1~0~
+print structure -
+
+analyse function main
+set exclusion - foo_if
+set exclusion - foo_else
+set exclusion - bar_if
+print structure -
+
+analyse function main
+set exclusion - ~1~0~1~1~0~
+set exclusion - ~1~0~1~1~0~
+set exclusion - ~1~0~1~1~0~
+print structure -
+
+exit

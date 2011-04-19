@@ -1,0 +1,35 @@
+add functiontime f 1000.0 ns
+add functiontime g 2000.0 ns
+list functiontimes
+remove functiontime *
+list functiontimes
+
+add pathtime start1 stop1 1000.0 ns
+add pathtime start2 stop2 2000.0 ns
+list pathtimes
+remove pathtime * *
+list pathtimes
+
+add instructiontime inst1 1000.0 ns
+add instructiontime inst2 2000.0 ns
+list instructiontimes
+remove instructiontime *
+list instructiontimes
+
+add loop l1 10
+add loop l2 20
+list loops
+remove loop *
+list loops
+
+add looppath lp1 22
+add looppath lp2 23
+list looppaths
+remove looppath *
+list looppaths
+
+add loopscope l1 r
+add loopscope l2 r
+list loopscopes
+remove loopscope *
+list loopscopes

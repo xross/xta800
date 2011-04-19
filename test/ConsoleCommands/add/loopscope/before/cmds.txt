@@ -1,0 +1,6 @@
+add loop outer 5
+add loop inner 10
+add loopscope inner a
+analyze function main
+print structure -
+list knowns -

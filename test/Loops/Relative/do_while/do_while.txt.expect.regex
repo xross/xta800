@@ -1,0 +1,9 @@
+function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s test
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    selfloop\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 100\) / \d+\.\d+ [mun]s \(x 100\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+

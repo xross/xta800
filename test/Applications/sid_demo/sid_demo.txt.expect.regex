@@ -1,0 +1,4 @@
+Route\(0\) function: cpuParse
+    Fail \(timing violation\), Num Paths: \d+, Violation: \d+\.\d [mun]s, Required: 1.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Fail, 1/1, Max Violation: \d+\.\d [mun]s

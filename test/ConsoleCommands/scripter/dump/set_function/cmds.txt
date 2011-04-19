@@ -1,0 +1,4 @@
+analyze function main
+set functiontime - f 999.0 ns
+list knowns -
+scripter dump

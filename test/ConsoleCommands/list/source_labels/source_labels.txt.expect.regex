@@ -1,0 +1,4 @@
+stdcore\[0\], label: _start, pcs: 0x[0-9a-fA-F]{5}
+stdcore\[0\], label: label1, pcs: 0x[0-9a-fA-F]{5}
+stdcore\[0\], label: label2, pcs: 0x[0-9a-fA-F]{5}
+stdcore\[0\], label: main, pcs: 0x[0-9a-fA-F]{5}

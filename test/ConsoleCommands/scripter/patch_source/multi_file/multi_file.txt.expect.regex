@@ -1,0 +1,28 @@
+Modifiable Enabled    Reference  ->     MapsTo
+true       true       foo.xc:15  -> endpoint_0
+true       true       .+/bar.xc:11 ->    label_\d+
+true       true       .+/bar.xc:6 -> +call_\d+
+true       true       .+/bar.xc:9 -> +call_\d+
+Modifiable Enabled    Reference  ->     MapsTo
+true       true       foo.xc:15  ->          x
+true       true       .+/bar.xc:11 -> out_of_bounds
+true       true       .+/bar.xc:6 ->      start
+true       true       .+/bar.xc:9 ->       stop
+# load ".+test.xe"
+
+#
+# Route: endpoints: x to x
+#
+add exclusion out_of_bounds
+analyze endpoints x x
+
+#
+# Route: endpoints: start to stop
+#
+analyze endpoints start stop
+
+#
+# Route: endpoints: start to start
+#
+analyze endpoints start start
+

@@ -1,0 +1,43 @@
+Route\(0\) endpoints: iic_initialise_wait1,iic_phy_wait_start to iic_initialise_wait1,iic_phy_wait_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 25.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(1\) endpoints: iic_write_block1,master_start_call,iic_phy_master_start_wait1,iic_phy_wait_start to iic_write_block1,master_start_call,iic_phy_master_start_wait1,iic_phy_wait_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(2\) endpoints: iic_write_block1,master_start_call,iic_phy_master_start_wait2,iic_phy_wait_start to iic_write_block1,master_start_call,iic_phy_master_start_wait2,iic_phy_wait_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(3\) endpoints: iic_read_receiveByte,iic_phy_sendBit_start to iic_read_receiveByte,iic_phy_sendBit_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(4\) endpoints: iic_read_receiveByte,iic_phy_sendBit_high to iic_read_receiveByte,iic_phy_sendBit_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(5\) endpoints: iic_read_sendByte,iic_phy_receiveBit_start to iic_read_sendByte,iic_phy_receiveBit_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(6\) endpoints: iic_read_sendByte,iic_phy_receiveBit_high to iic_read_sendByte,iic_phy_receiveBit_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(7\) endpoints: iic_read_sendByte,iic_phy_sendByte_start to iic_read_sendByte,iic_phy_sendByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(8\) endpoints: iic_read_sendByte,iic_phy_sendByte_high to iic_read_sendByte,iic_phy_sendByte_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(9\) endpoints: iic_read_sendByte,iic_phy_sendByte_low to iic_read_sendByte,iic_phy_sendByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(10\) endpoints: iic_read_receiveByte,iic_phy_receiveByte_start to iic_read_receiveByte,iic_phy_receiveByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(11\) endpoints: iic_read_receiveByte,iic_phy_receiveByte_high to iic_read_receiveByte,iic_phy_receiveByte_low
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 600.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(12\) endpoints: iic_read_receiveByte,iic_phy_receiveByte_low to iic_read_receiveByte,iic_phy_receiveByte_high
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 1.3 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(13\) endpoints: iic_write_block1,iic_checkWriteComplete_start to iic_write_block1,iic_checkWriteComplete_stop
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 50.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz

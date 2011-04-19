@@ -1,0 +1,7 @@
+config threads stdcore[0] 5
+config freq 0 100
+
+analyze function main
+
+scripter dump
+exit

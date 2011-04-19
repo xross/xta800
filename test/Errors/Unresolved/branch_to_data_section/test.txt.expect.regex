@@ -1,0 +1,12 @@
+xta: warning: target \(0x0\) of: \(main\+\d+\) 0x[0-9a-z]+ bu \(lu6\) +-0x8009 not found in executable sections
+function\(\d+\) +: Unresolved / Unresolved main
+.    block\(\d+\) +: Unresolved \(x 1\) / Unresolved \(x 1\) 
+
+  \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ .*
+[^^^]
+  \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ main \+ \d+ +bu \(lu6\) +-0x8009 \[UNRESOLVED\]
+
+Route\(0\) function: main
+    Fail \(timing violation\), Num Paths: 1, Violation: Unresolved, Required: 100.0 ms, Worst: Unresolved, Min Core Frequency: Unresolved
+
+Fail, 1/1, Max Violation: Unresolved

@@ -1,0 +1,16 @@
+
+add exclusion BAR:11
+analyze path foo.xc:15 FOO:15
+
+analyze path BAR:6 BAR:9
+analyze path bar.xc:6 bar.xc:6
+
+scripter listrefs
+scripter rename foo.xc:15 x
+scripter rename BAR:11 out_of_bounds
+scripter rename BAR:6 start
+scripter rename bar.xc:9 stop
+scripter listrefs
+
+scripter dump
+exit

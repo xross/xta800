@@ -1,0 +1,11 @@
+
+add exclusion SOURCE:25
+analyze path test.xc:13 SOURCE:13
+
+scripter listrefs
+scripter rename test.xc:13 x
+scripter rename test.xc:25 out_of_bounds
+scripter listrefs
+
+scripter dump
+exit

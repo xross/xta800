@@ -1,0 +1,10 @@
+#ifndef MIDI2USBMIDIEVENT_XH
+#define MIDI2USBMIDIEVENT_XH
+
+// USB-MIDI IN
+void midi_in(unsigned cable_number, unsigned ep, chanend c_ep, chanend c_midi_in);
+
+// USB-MIDI OUT
+void midi_out(unsigned ep, chanend c_ep, chanend c_midi_out);
+
+#endif

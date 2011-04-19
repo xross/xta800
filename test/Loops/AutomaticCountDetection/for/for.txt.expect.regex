@@ -1,0 +1,6 @@
+function\(\d+\) +: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s test
+.    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    selfloop\(\d+\) +: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    block\(\d+\) +: \d+\.\d+ [mun]s \(x 500\) / \d+\.\d+ [mun]s \(x 500\) 
+.    block\(\d+\) +: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+

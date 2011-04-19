@@ -1,0 +1,16 @@
+
+analyse path core0.xc:26 core0.xc:26
+set required - 0.5 mhz
+
+analyse path core1.xc:85 core1.xc:85
+remove route -
+
+add exclusion core1.xc:71
+analyse path core1.xc:85 core1.xc:85
+#set loop - core1.xc:28 23
+set looppath - core1.xc:31 8
+set required - 0.5 mhz
+
+print summary
+
+exit

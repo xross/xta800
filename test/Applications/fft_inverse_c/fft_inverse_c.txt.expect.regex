@@ -1,0 +1,3 @@
+function\(\d+\)\s+: \d+.\d+ us / \d+.\d+ ns fix_fft_64_inverse
+.*
+[^^^]

@@ -1,0 +1,7 @@
+analyze function g
+
+remove exclusion *
+add exclusion y
+analyze function g
+
+scripter dump

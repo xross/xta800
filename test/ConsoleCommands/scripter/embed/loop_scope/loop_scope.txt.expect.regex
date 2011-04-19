@@ -1,0 +1,18 @@
+ONE
+Modifiable Enabled    Reference  ->     MapsTo
+false      true       main       ->       main
+false      true       f1         ->         f1
+false      true       outer      ->      outer
+false      true       inner      ->      inner
+true       true       CALL:0x[0-9a-fA-F]{5} ->     call_0
+false      true       CALL:0x[0-9a-fA-F]{5} ->         f1
+true       true       0x[0-9a-fA-F]{5}    -> loop_iterations_0
+true       true       0x[0-9a-fA-F]{5}    -> loop_iterations_1
+false      true       f2         ->         f2
+false      true       CALL:0x[0-9a-fA-F]{5} ->         f2
+TWO
+Modifiable Enabled    Reference  ->     MapsTo
+Route\(0\) function: main
+    Fail \(timing violation\), Num Paths: 1, Violation: \d+.\d+ us, Required: 1.0 us, Worst: \d+.\d+ us, Min Core Frequency: \d+ MHz
+
+Fail, 1/1, Max Violation: \d+.\d+ us

@@ -1,0 +1,31 @@
+Modifiable Enabled    Reference  ->     MapsTo
+false      false      foo.xc:15  -> endpoint_0
+true       true       .+/bar.xc:11 ->    label_\d+
+true       true       .+/bar.xc:6 ->     call_\d+
+true       true       .+/bar.xc:9 ->     call_\d+
+xta: .+/cmds.txt:9: error: Reference 'foo.xc:15' cannot be renamed
+Modifiable Enabled    Reference  ->     MapsTo
+false      false      foo.xc:15  -> endpoint_0
+true       true       .+/bar.xc:11 -> out_of_bounds
+true       true       .+/bar.xc:6 ->      start
+true       true       .+/bar.xc:9 ->       stop
+# load ".+test.xe"
+
+#
+# Route: endpoints: foo.xc:15 to foo.xc:15
+#
+add exclusion out_of_bounds
+# Warning: 'foo.xc:15' is a non-portable reference.
+# Warning: 'foo.xc:15' is a non-portable reference.
+analyze endpoints foo.xc:15 foo.xc:15
+
+#
+# Route: endpoints: start to stop
+#
+analyze endpoints start stop
+
+#
+# Route: endpoints: start to start
+#
+analyze endpoints start start
+

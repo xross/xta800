@@ -1,0 +1,7 @@
+# load ".*test\.xe"
+
+#
+# Route: function: main
+#
+analyze function main
+

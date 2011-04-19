@@ -1,0 +1,15 @@
+Route\(0\) function: main
+    No Timing Specified
+
+Fail, Timing Unspecified
+<main>:
+\+         0x[0-9a-fA-F]{5} ldc \(ru6\) r0, 0x0 
+\+         0x[0-9a-fA-F]{5} ldw \(lru6\) r1, dp\[0x3\] 
+\+         0x[0-9a-fA-F]{5} eq \(2rus\) r1, r1, 0x2 
+\+         0x[0-9a-fA-F]{5} bt \(ru6\) r1, 0x1 <.bt0>
+\+         0x[0-9a-fA-F]{5} bu \(u6\) 0x1 <.bt1>
+\+ .bt0    0x[0-9a-fA-F]{5} ldc \(ru6\) r0, 0x2 
+\+ .bt1    0x[0-9a-fA-F]{5} retsp \(u6\) 0x0 
+
+\.\.\.
+

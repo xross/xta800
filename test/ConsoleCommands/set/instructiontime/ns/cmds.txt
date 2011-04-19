@@ -1,0 +1,7 @@
+set instructiontime - inst 1000 ns
+analyze function main
+list knowns -
+set instructiontime - inst 1000 ns
+list knowns -
+set instructiontime - inst 5000 ns
+list knowns -

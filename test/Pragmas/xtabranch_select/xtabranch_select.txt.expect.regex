@@ -1,0 +1,5 @@
+- stdcore\[0\]::0x[0-9a-fA-F]+ => stdcore\[0\]::0x[0-9a-fA-F]+ stdcore\[0\]::0x[0-9a-fA-F]+ \(binary\)
+Route\(0\) function: main
+    No Timing Specified
+
+Fail, Timing Unspecified

@@ -1,0 +1,4 @@
+analyze function main
+set exclusion - x
+list knowns -
+scripter dump

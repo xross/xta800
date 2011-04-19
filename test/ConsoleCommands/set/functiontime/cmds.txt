@@ -1,0 +1,3 @@
+analyze function main
+set functiontime - f 999.0 ns 
+print structure -

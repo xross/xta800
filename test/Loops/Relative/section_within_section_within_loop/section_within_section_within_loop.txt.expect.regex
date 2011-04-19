@@ -1,0 +1,16 @@
+function\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s main
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    loop\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 2\) / \d+\.\d [mun]s \(x 2\) 
+.    .    seq\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    cond\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 1\) 
+.    .    .    .    seq\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 0\) 
+.    .    .    .    .    cond\(\d+\)\s+: \d+\.\d [mun]s / \d+\.\d [mun]s 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 0\) / \d+\.\d [mun]s \(x 0\) 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 0\) 
+.    .    .    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d [mun]s \(x 1\) / \d+\.\d [mun]s \(x 1\) 
+

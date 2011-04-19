@@ -1,0 +1,1011 @@
+config freq  
+add instructiontime * 0.0 csdfsefsas  
+add instructiontime 0x100e8 1 ns 
+-list allcalls 
+add loop test.xc:17 2147483647 
+help add 
+analyse path * h 
+-echo "csdfsefsas " 
+csdfsefsas 1.397751740137598E308 
+help remove 
+-add instructiontime ep3 - cycles 
+clear mhz 
+-print structure 8.481181610988958E307 2147483647 
+load test.xe 
+clear 0x12004 
+print mix  
+-add loopscope ep2 cycles 
+-echo  
+-print src mhz mhz 
+history  
+-add loopscope ep3 absolute 
+-load test.xe 
+-load test.xe 
+-status test.xc:26 
+-load  
+-clear  
+source  
+load test.xe 
+-scripter enable 
+-version 0.0 
+echo "csdfsefsas " 
+-remove instructiontime main 
+-cycles 
+echo mhz 
+scripter disable 
+remove instructiontime main 
+-load  
+-clear 
+history 
+set from  f 
+status 
+load - 
+-list allcalls 
+add looppath csdfsefsas 8.232173712661454E307 
+source 0.0 
+status csdfsefsas 
+-history csdfsefsas 
+-status csdfsefsas 
+-config case  
+print warnings 
+list instructiontime 
+-clear  
+add loopscope 0xj3e85a absolute 
+remove route 3 
+-source ep4 
+-config verbosity - - 
+-analyse function - 
+-remove functiontime 0xjd0c31 
+add looppath ep1 2 
+-set from  0x1164a 
+-list calls 
+source 0x10012 
+-clear 2147483647 
+echo  
+-history mhz 
+pwd csdfsefsas 
+scripter disable 
+config case  
+-load csdfsefsas 
+-pwd 
+-help status 
+-status  
+remove exclusion * 
+config verbosity 1.2293518457402769E308 - 
+-clear csdfsefsas 
+version 0xjc194e 
+history 
+-set to  0x11fb8 
+-analyse path - ep2 
+scripter enable 
+-version 
+-analyse function f 
+clear 
+-scripter disable 
+set csdfsefsas 
+version 
+config case 0.0 
+print nodeinfo h - 
+-version 
+-add exclusion test.xc:33 
+help help 
+-remove to - 
+echo  
+-help set 
+add branch -  6.39916705301541E307 0xj213ee f 0x121ce f 0xjd01e0 ep3 csdfsefsas csdfsefsas 
+-list endpoints 
+-history 0.0 
+-version 
+version 
+-version 2 
+remove pathtime test.xc:33 0x1396a 
+list knowns - 
+-config freq - 
+-analyse path g ep3 
+-clear csdfsefsas  
+-set to  0x11ba0 
+help remove 
+list loopscopes 
+-add instructiontime * 1346172800 ns 
+pwd 
+-help status 
+-status 
+echo  
+add loop ep2 cycles 
+-echo "- " 
+-clear 
+-print distribution 1 
+-analyse path * test.xc:40 
+status ns 
+-analyse path - ep2 
+echo " " 
+echo " " 
+-list labels 
+version 0x10b2b 
+list pathtimes 
+set to  ep1 
+-history 
+-add looppath * 2147483647 
+ 
+remove functiontime h 
+-status  
+-print mhz 
+source  
+-load - 
+-add looppath * - 
+clear csdfsefsas 
+-set pathtime 2 csdfsefsas - - 0xjd5eae 
+load  
+version 0.0 
+-source csdfsefsas mhz 
+-status 
+-add pathtime f  1.3385648536275941E308 cycles 
+-version 
+load test.xe 
+-history - 
+version csdfsefsas 
+-clear csdfsefsas 
+pwd ns 
+-history 
+-echo csdfsefsas test.xc:25 
+remove to 0xjb1db7 
+remove to * 
+help config 
+remove loop - 
+-source csdfsefsas 
+history 
+load csdfsefsas 
+source csdfsefsas 
+-help list 
+set loopscope 3 ep3 r 
+add pathtime test.xc:22 * 0 cycles 
+-config verbosity - 2147483647 
+-config verbosity 0.0 - 
+config verbosity 0.0 
+remove from csdfsefsas  
+help help 
+-analyse -820636483 
+-list instructiontime 
+-config verbosity csdfsefsas -844318477 
+-load csdfsefsas 
+source 0x13d99 
+clear 
+list pathtimes 
+source 0x11e9e 
+set loop 1 - - 
+history csdfsefsas csdfsefsas 
+-remove route 3 
+source csdfsefsas 
+-version 
+echo "csdfsefsas csdfsefsas csdfsefsas  " 
+-print distribution 1.363278346666334E308 -221729403 
+print routeinfo 9.680391336740604E307 
+version 
+-source csdfsefsas 
+-set instructiontime 0 0xj208f0 csdfsefsas mhz 
+help list 
+remove from 0xjdd3dc 
+-remove route 2 
+-pwd 
+-version - 
+-add branch * - 0xja6007 - 0x105f6 main * 0x10eec - 
+help help 
+-history - 
+-set loopscope 2 0x11be1 test.xc:46 
+-add functiontime ep4 test.xc:18 ns 
+echo csdfsefsas 
+-config verbosity 5.071195282225351E307 0.0 
+list threadstoppoints 
+clear 
+-remove pathtime 0x11f4d 0.0 
+load test.xe 
+- 
+echo "ns " 
+load ns 
+source csdfsefsas 
+pwd g 
+-pwd csdfsefsas - 
+-config verbosity 2147483647 
+print nodeinfo csdfsefsas  
+help source 
+-analyse path - * 
+-set to  test.xc:2 
+remove from ep3 
+-add loop ep2 - 
+-clear 
+-pwd 
+config freq - 
+-add loopscope 0xj7e24a csdfsefsas  
+-analyse path csdfsefsas * 
+- 
+-pwd  
+-config verbosity 1 
+-config freq csdfsefsas 
+-clear  
+pwd  
+-load ep1 
+-config verbosity - 
+help version 
+-set instructiontime 0 test.xc:16 9.49166709364554E307 csdfsefsas 
+-clear 
+list instructiontime 
+analyse path * ep4 
+status csdfsefsas 
+-list looppaths 
+-status 
+source  
+help source 
+- 
+set instructiontime 0 0xjc8b31 1.3170708346059758E308 csdfsefsas 
+-history csdfsefsas -1768023027 
+-version 
+-analyse csdfsefsas 
+set from  - 
+csdfsefsas cycles 
+-add loopscope * r 
+set pathtime 3 - test.xc:11 0.0 ns 
+source csdfsefsas 
+-scripter dump 
+-version 
+-clear -918650224 
+add instructiontime * 22885346 ns 
+print src - - 
+-analyse path ep3 test.xc:26 
+clear csdfsefsas csdfsefsas csdfsefsas  
+load  
+status csdfsefsas mhz 
+-load test.xe 
+clear 
+config case best 
+list allsrclabels 
+set functiontime 4 0x103a2 0 ns 
+status mhz 
+-version csdfsefsas  
+-config verbosity - mhz 
+-version csdfsefsas mhz 
+-history 
+source  
+load test.xe 
+add exclusion csdfsefsas ep3 
+-remove exclusion g 
+config verbosity csdfsefsas 0x11339 2 
+version  
+-status cycles 
+set loopscope 1 h 0x139b7 
+echo "csdfsefsas csdfsefsas  " 
+-source test.xc:47 
+-status 
+set required 4 - cycles 
+-status 
+-status 
+-history 
+version 
+-status 
+-add functiontime * 0.0 mhz 
+help load 
+-csdfsefsas  
+add loop ep3 0.0 
+help csdfsefsas 
+-source * 
+-load * 
+remove pathtime 0x13d92 - 
+version 
+-pwd 
+history ns 
+-pwd csdfsefsas csdfsefsas 
+-print structure mhz - 
+-set instructiontime 0 0x125a2 cycles ns 
+print mix cycles 
+-add pathtime h 0x105e2 0.0 ns 
+-add branch 0xjcdda6 csdfsefsas 0x10103 0xjf6e63 
+-analyse function test.xc:39 
+-history csdfsefsas cycles 
+-set from  0x104e6 
+help pwd 
+-scripter disable 
+analyse csdfsefsas  
+-print nodeinfo - - 
+-set from  test.xc:13 
+-analyse 5.817524123794898E307 
+ 
+-remove from - 
+-scripter dump 
+ 
+echo " " 
+-add instructiontime csdfsefsas  ns 
+-list loopscopes 
+-history  
+-help analyse 
+-version csdfsefsas 2147483647 
+help remove 
+-config freq 1.1779580819272112E308 
+-source  
+-add instructiontime csdfsefsas csdfsefsas  0.0 ns 
+status csdfsefsas 
+-remove exclusion - 
+scripter enable 
+print warnings 
+-load test.xe 
+help help 
+-pwd  
+-echo csdfsefsas csdfsefsas test.xc:15 
+-echo "ns " 
+source csdfsefsas ns 
+remove from test.xc:22 
+-print csdfsefsas 
+-remove loop mhz 
+-version 0xj2892d 
+scripter enable 
+-- 
+history 
+-analyse function ep3 
+csdfsefsas 
+-load test.xe 
+-add functiontime * 0 mhz 
+-load csdfsefsas * 
+echo 0.0 
+remove exclusion test.xc:14 
+-scripter dump 
+clear 
+-config freq - 
+-remove pathtime f csdfsefsas 
+print mix 1 - 
+-list threadstartpoints 
+version 
+clear 
+-status 
+-help source 
+-analyse function ep4 
+-pwd mhz 
+status - 
+-config verbosity -702989089 
+status  
+remove to csdfsefsas csdfsefsas 0x10b21 
+version 
+-config case worst 
+-scripter dump 
+-h 
+-status csdfsefsas csdfsefsas csdfsefsas csdfsefsas test.xc:8 
+clear 
+help version 
+echo "csdfsefsas " 
+-clear 
+csdfsefsas 
+echo "ns " 
+clear h 
+-help scripter 
+source csdfsefsas 
+-analyse path f ep3 
+-version 
+-remove functiontime  
+-scripter disable 
+-print summary 
+-analyse path 0x101d2 - 
+-csdfsefsas  
+history 
+ 
+list srclabels 
+echo csdfsefsas test.xc:7 
+-source csdfsefsas  
+pwd csdfsefsas  
+-status 
+-clear csdfsefsas  
+-clear csdfsefsas 
+-analyse path h - 
+-help help 
+help help 
+pwd ns 
+version 0.0 
+remove exclusion 0xj37426 
+-help list 
+-status 0x13554 
+source csdfsefsas csdfsefsas csdfsefsas cycles 
+history 
+-analyse path ep1 ep4 
+-set pathtime 4 0xjd92cf csdfsefsas 0.0 mhz 
+-status  
+set required 2 2147483647 h 
+-remove exclusion * 
+-add loop - 1 
+-scripter disable 
+print summary 
+print nodeinfo 1 
+add instructiontime 0xj2fd8d csdfsefsas ns 
+config verbosity - - 
+-load  
+-version ns 
+clear 
+-version mhz 
+-print nodeinfo csdfsefsas 
+help set 
+source csdfsefsas mhz 
+scripter disable 
+-config case csdfsefsas cycles 
+add looppath ep3 - 
+print distribution 1 - 
+print distribution 1.588513831684606E308 
+clear 0.0 
+-list loops 
+-clear 
+-config freq - 
+-set to  ep4 
+-history f 
+pwd 
+status csdfsefsas ns 
+source 2147483647 
+-clear 
+-status  
+help list 
+list srcloops 
+history 
+config verbosity - -2066982450 
+print nodeinfo - 
+-add exclusion * 
+-analyse path * mhz 
+-scripter dump 
+-print summary 
+-analyse test.xc:44 
+- 
+-load test.xe 
+-history 
+-source  
+-set from  cycles 
+-remove exclusion 0x13ab1 
+-echo "- " 
+-set to  f 
+config verbosity - 
+csdfsefsas 
+config case ep1 
+list srclabels 
+config verbosity 2 
+-history 0x13634 
+-add loopscope - r 
+history csdfsefsas 
+ 
+help - 
+scripter disable 
+csdfsefsas - 
+-scripter dump 
+-echo "* " 
+-history 
+source  
+source csdfsefsas csdfsefsas 
+analyse csdfsefsas 
+history csdfsefsas 
+-add loop 0xj9b4bd 0.0 
+-print distribution 5.750140917168132E307 mhz 
+help list 
+clear 
+csdfsefsas 
+-list threadstoppoints 
+ 
+-scripter dump 
+clear csdfsefsas 1.4882351625894832E308 
+-remove branch g 0xjc15de 0x11495 ep4  - 
+cycles 
+-version 
+-version 
+-set functiontime 3 * -  
+-help exit 
+version csdfsefsas 
+load cycles 
+add looppath - csdfsefsas csdfsefsas  
+list calls 
+add loop ep3 - 
+-echo "csdfsefsas " 
+history 
+remove instructiontime - 
+-add pathtime - test.xc:22 - csdfsefsas  
+-pwd  
+set required 4 1104699495 ns 
+-source csdfsefsas 
+-0 
+source csdfsefsas csdfsefsas 
+-add exclusion 0x139a5 
+-version 0x1375a 
+analyse path - test.xc:29 
+add loop -  
+-list functiontimes 
+print nodeinfo csdfsefsas csdfsefsas 1.5913183952837007E308 
+scripter dump 
+clear 
+print nodeinfo 2147483647 
+source csdfsefsas csdfsefsas csdfsefsas ep3 
+clear 
+-help clear 
+version csdfsefsas csdfsefsas - 
+-add exclusion 0x13d36 
+history 
+-1956598822 
+-set to  0x12dfa 
+-print src - 
+- 
+-analyse ns 
+-pwd mhz 
+-help clear 
+pwd 
+scripter enable 
+history 
+-remove 0x13c45 
+load test.xe 
+pwd 
+csdfsefsas 8.217556552897632E307 
+-version 
+-clear  
+help analyse 
+-pwd 
+analyse path 0x12492 g 
+config case best 
+analyse path 7.053409762365332E307 f 
+status 
+- 
+-load test.xe 
+source 0x110e9 
+help echo 
+add loopscope f absolute 
+source 0xja7211 
+-load test.xe 
+set instructiontime 0 ep3 - 9.277686870480004E307 
+-echo "- " 
+load  
+-csdfsefsas 
+-pwd main 
+-clear 
+-set from  csdfsefsas 
+list functiontimes 
+-print distribution - -1316128873 
+-status 
+-version 
+-history 
+-clear 
+print nodeinfo 2147483647 - 
+-set  
+list sources 
+set required 3 2 mhz 
+-pwd cycles 
+ 
+pwd csdfsefsas csdfsefsas 
+-analyse path test.xc:22 csdfsefsas 
+-print mix  
+list calls 
+-config case h 
+echo "csdfsefsas " 
+analyse function - 
+-add loopscope 0x11f13 relative 
+config case csdfsefsas 0xjb01a9 
+help echo 
+-help exit 
+-help  
+analyse csdfsefsas 
+-set instructiontime 3 * 0 0xj5a051 
+set instructiontime 1 test.xc:35 1 mhz 
+-history 
+-load csdfsefsas 
+add looppath - - 
+-scripter disable 
+-add loopscope 0x103f5 absolute 
+config freq 0 
+analyse function csdfsefsas csdfsefsas  
+-scripter dump 
+-csdfsefsas  
+-scripter dump 
+-0.0 
+-load test.xe 
+clear csdfsefsas 0xj36888 
+scripter enable 
+echo csdfsefsas 
+print mix csdfsefsas ns 
+-version  
+scripter disable 
+remove functiontime 0x13452 
+scripter dump 
+-1476811828 
+pwd csdfsefsas 
+help analyse 
+-help remove 
+version csdfsefsas 
+pwd 
+clear 
+-analyse path - csdfsefsas csdfsefsas  
+print warnings 
+echo csdfsefsas ep4 
+list looppaths 
+-remove to ep1 
+csdfsefsas 
+-remove pathtime test.xc:2 csdfsefsas csdfsefsas  
+-print warnings 
+set mhz 
+load csdfsefsas 
+remove looppath 0x12af2 
+set csdfsefsas csdfsefsas csdfsefsas csdfsefsas 0.0 
+-config verbosity 6.613046906161233E307 
+-set instructiontime 1 * 1 mhz 
+-clear 
+status 0 
+history 
+-scripter dump 
+pwd 
+remove exclusion ep2 
+-list srccommands 
+-history 0x138c5 
+echo "- " 
+echo "csdfsefsas * " 
+source csdfsefsas 
+-source ns 
+clear 
+scripter dump 
+-remove route 3 
+status 
+clear 
+version 1.7062306530248419E308 
+-load csdfsefsas 
+-help source 
+-clear ep3 
+add loopscope test.xc:26 absolute 
+-csdfsefsas 
+-history 
+status 0.0 
+-set loopscope 4 ep2 relative 
+clear 
+print routeinfo - 
+add instructiontime 0xj43b04 1.5955089084427155E307 csdfsefsas 
+add pathtime 0xj682cc test.xc:31 - cycles 
+source csdfsefsas 
+-clear csdfsefsas 
+clear mhz 
+-print src - 
+-load test.xe 
+-source csdfsefsas 
+-echo main 
+load csdfsefsas - 
+source  
+-version 
+-help scripter 
+help help 
+analyse function main 
+list labels 
+-scripter enable 
+scripter dump 
+config verbosity - - 
+version 
+echo 316699615 
+set loopscope 1 0x13747 csdfsefsas 
+-clear csdfsefsas - 
+- 
+-remove loop ep1 
+-remove to - 
+status csdfsefsas cycles 
+scripter enable 
+source  
+-echo csdfsefsas csdfsefsas  
+-scripter enable 
+-history 
+-remove pathtime * - 
+echo  
+-echo ns 
+-history 0x10f29 
+-echo "csdfsefsas " 
+-echo "0x13272 " 
+load test.xe 
+-add exclusion h 
+remove - 
+-scripter disable 
+-print src csdfsefsas 
+print trace 3.4296142483237894E307 
+-load test.xe 
+help add 
+-csdfsefsas 
+-remove instructiontime h 
+-set to  * 
+config freq 3.4276618227878916E307 
+add looppath  - 
+-load test.xe 
+pwd 
+help remove 
+main 
+-add exclusion * 
+-status 
+config freq 0 
+-remove instructiontime 0xjbb028 
+-load test.xe 
+load ns 
+-set loopscope 3 ep3 absolute 
+-status csdfsefsas csdfsefsas csdfsefsas csdfsefsas 
+pwd ns 
+analyse csdfsefsas  
+-list functions 
+source csdfsefsas 
+config freq 2147483647 
+echo "0 " 
+-status 
+-help load 
+load test.xe 
+set looppath 1 f 8.112946348291192E307 
+pwd 
+csdfsefsas csdfsefsas 
+-set csdfsefsas 
+-load test.xe 
+version 
+-add pathtime ep1  csdfsefsas ns 2147483647 
+scripter enable 
+-clear 
+add instructiontime h - cycles 
+list exclusions 
+history 
+-pwd 0 
+set functiontime 3 ep3   
+help echo 
+-list endpoints 
+- 
+clear - 
+-history 
+-load test.xe 
+-remove loopscope 0x10fec 
+-source 0xjb42b1 
+analyse function ep3 
+clear mhz 
+analyse path * ep2 
+-echo "csdfsefsas csdfsefsas csdfsefsas " 
+-config verbosity 0.0 
+-config case worst 
+history 
+version 
+help print 
+source  
+-2147483647 
+echo csdfsefsas 
+clear  
+-status csdfsefsas - 
+config case worst 
+-help scripter 
+help remove 
+print mix mhz 
+remove to ep3 
+-status 
+version 
+-scripter disable 
+config freq 1 
+-set to  - 
+-version  
+scripter dump 
+-config case best 
+-source h 
+remove functiontime ep3 
+analyse path - ep3 
+help version 
+-csdfsefsas 
+csdfsefsas 
+-status 0 
+config freq 6.094535377996953E307 
+status  
+-echo "test.xc:7 " 
+-load mhz 
+-version - 
+source test.xc:23 
+remove to 0x13062 
+-config freq 0.0 
+version ep2 
+-load csdfsefsas 
+version 
+-clear 
+source 0x11bd5 
+- 
+echo "ns " 
+set loop 3 * - 
+set functiontime 1 * 1 mhz 
+version csdfsefsas 527014290 
+source csdfsefsas 
+clear csdfsefsas 
+analyse path 0x127c6 * 
+-add exclusion * 
+history csdfsefsas mhz 
+echo csdfsefsas 
+-history 
+version 
+-source ep3 
+-history  
+status 2147483647 
+print nodeinfo  csdfsefsas 
+scripter dump 
+-set to  * 
+-scripter disable 
+source csdfsefsas cycles 
+-config freq -758982624 
+-version 
+history mhz 
+source test.xc:46 
+-source  
+list ep3 
+-clear 
+list endpoints 
+set instructiontime 3 - 0.0 cycles 
+-status 
+version 
+-remove exclusion 0xje55c1 
+remove branch - 0xj9e4a9 * 0xj94f06 ep1 * ep3 
+-help print 
+set from  0x128d4 
+-remove cycles 
+history 0.0 
+load csdfsefsas 
+-clear ns 
+-print warnings 
+-scripter enable 
+print nodeinfo - 0.0 
+list exclusions 
+print csdfsefsas csdfsefsas ns 
+remove loop csdfsefsas 
+analyse path test.xc:42 0x1116b 
+-status 
+csdfsefsas 
+-echo csdfsefsas 
+-pwd mhz 
+-pwd 2147483647 
+-analyse - 
+history 
+-version 
+-echo "1 " 
+set pathtime 1 h ep3 cycles cycles 
+-set instructiontime 4 ep2 1.658896815921964E308 ns 
+-history 8.605197876452767E306 
+-config verbosity mhz 0.0 
+list instructiontime 
+-config case worst 
+list allcalls 
+-pwd 
+add branch csdfsefsas csdfsefsas  0xjb7542 
+-config case worst 
+-source csdfsefsas 
+-history 
+source cycles 
+-analyse csdfsefsas f 
+load csdfsefsas 
+-analyse path 0x124fb * 
+scripter dump 
+-echo  
+clear h 
+-remove loopscope - 
+-set functiontime 4 - - csdfsefsas ns 
+-clear 
+history 
+-help echo 
+h 
+print 0.0 
+echo " " 
+source csdfsefsas 0.0 
+set instructiontime 4 * 2 cycles 
+-list instructiontime 
+load test.xe 
+help set 
+ 
+pwd 
+-print csdfsefsas 
+config verbosity 1 - 
+remove to test.xc:14 
+-scripter dump 
+-csdfsefsas  
+-remove pathtime ep2 f 
+-scripter dump 
+pwd cycles 
+-remove loop 0xjfe0ba 
+-analyse path f ep3 
+analyse path - * 
+source csdfsefsas csdfsefsas * 
+-print trace 1.580591648792116E308 
+-history 
+print distribution - - 
+version  
+analyse - 
+-remove loopscope h 
+-echo " " 
+-version 
+-echo "csdfsefsas  " 
+print routeinfo 2 
+-remove instructiontime 0x114ab 
+-echo csdfsefsas  
+-source csdfsefsas 
+config verbosity 1 
+-pwd  
+-print summary 
+history 
+-remove loopscope test.xc:9 
+clear 
+history 
+pwd cycles 
+load test.xe 
+echo "csdfsefsas " 
+-remove loop * 
+version 
+clear 
+-source csdfsefsas - 
+- 
+config verbosity  2147483647 
+-print warnings 
+-analyse csdfsefsas cycles 
+history 
+-config verbosity ns 
+add exclusion f 
+remove exclusion - 
+echo 1270853047 
+config case worst 
+-status csdfsefsas 
+source csdfsefsas 
+scripter enable 
+-set looppath 4 f 0.0 
+-config case best 
+csdfsefsas 
+help load 
+config verbosity csdfsefsas cycles 2 
+-history csdfsefsas 
+remove loop 0xjd4e58 
+print warnings 
+-remove instructiontime * 
+add exclusion h 
+config verbosity  1 
+-analyse function * 
+source csdfsefsas 0xj4f217 
+-source 0xjeb6ea 
+-remove loop h 
+pwd csdfsefsas csdfsefsas 2 
+-scripter dump 
+-clear 
+-print src 9.800479463827074E307 
+pwd 
+* 
+set pathtime 2 0x10736 0xjdaa7d  ns 
+-list labels 
+-version - 
+set loopscope 3 f a 
+-history  
+status 
+print summary 
+pwd csdfsefsas 
+-list allsrclabels 
+-set loop 1 * 0 
+history  
+-help csdfsefsas 2147483647 
+-status csdfsefsas csdfsefsas ns 
+-source  
+-config case best 
+-add looppath ep1 - 
+print summary 
+status 
+-pwd 
+- 
+-help status 
+-source csdfsefsas - 
+csdfsefsas csdfsefsas 
+history csdfsefsas mhz 
+remove pathtime csdfsefsas cycles - 
+status 
+version 
+-history csdfsefsas 
+print distribution 0.0 0.0 
+status 
+remove exclusion h 
+-status csdfsefsas 
+-set to  - 
+-load 1 
+-scripter enable 
+-scripter enable 
+analyse function 0x10f66 
+-scripter dump 
+remove loop 0x13e82 
+history mhz 
+-analyse path * * 
+-load csdfsefsas * 
+config case worst 
+-config case 0xj41f1b 
+csdfsefsas  
+-source cycles 
+exit csdfsefsas 
+exit 
+exit csdfsefsas csdfsefsas 
+exit 
+exit 
+exit 
+exit 
+exit 
+exit csdfsefsas 
+exit mhz 
+

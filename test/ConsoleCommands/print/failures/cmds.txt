@@ -1,0 +1,7 @@
+analyze function div
+analyze function test
+set required - 10 ns
+analyze function test
+set required - 2000 ns
+analyze function pausable
+set required - 1000 ns

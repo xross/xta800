@@ -1,0 +1,19 @@
+# load ".+test.xe"
+
+#
+# Route: function: main
+#
+analyze function main
+set loop - f1,loop 10
+set loop - f1,loop_path 10
+set looppath - f1,loop_path 5
+set loop - call_0,f1,loop_iterations_0 20
+set loop - call_0,f1,loop_iterations_1 20
+set looppath - call_0,f1,loop_path_iterations_0 10
+set loop - f2,loop 30
+set loop - f2,loop_path 30
+set looppath - f2,loop_path 15
+set loop - call_0,f2,loop_iterations_0 40
+set loop - call_0,f2,loop_iterations_1 40
+set looppath - call_0,f2,loop_path_iterations_0 20
+

@@ -1,0 +1,22 @@
+xta: warning: target (0x1082a) of: (main+36) 0x1002a bl (u10) 0x3ff not found in executable sections
+xta: warning: target (0x21002e) of: (main+38) 0x1002c bl (lu10) 0xfffff not found in executable sections
+xta: warning: target (0xf834) of: (main+42) 0x10030 bl (u10) -0x3ff not found in executable sections
+xta: warning: target (0xffe10038) of: (main+44) 0x10032 bl (lu10) -0xfffff not found in executable sections
+xta: warning: target (0x100b6) of: (main+48) 0x10036 bf (ru6) r0, 0x3f not found in executable sections
+xta: warning: target (0x3003a) of: (main+50) 0x10038 bf (lru6) r0, 0xffff not found in executable sections
+xta: warning: target (0xffc0) of: (main+54) 0x1003c bt (ru6) r0, -0x3f not found in executable sections
+xta: warning: target (0xffff0044) of: (main+56) 0x1003e bt (lru6) r0, -0xffff not found in executable sections
+xta: warning: target (0x30046) of: (main+62) 0x10044 bu (lu6) 0xffff not found in executable sections
+xta: warning: target (0x100c8) of: (main+66) 0x10048 bf (ru6) r0, 0x3f not found in executable sections
+xta: warning: target (0x3004c) of: (main+68) 0x1004a bf (lru6) r0, 0xffff not found in executable sections
+xta: warning: target (0x30052) of: (main+74) 0x10050 bt (lru6) r0, 0xffff not found in executable sections
+xta: warning: target (0x30058) of: (main+80) 0x10056 bu (lu6) 0xffff not found in executable sections
+  0.0: (20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
+  20.0: (20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, 0x1
+  40.0: (20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0
+  60.0: (20.0ns) 0x1000c main + 6               andnot (2r)  r0, r0
+  80.0: (20.0ns) 0x1000e main + 8               ashr (l3r)   r0, r0, r0
+  100.0: (20.0ns) 0x10012                        --FNOP--     
+  120.0: (20.0ns) 0x10012 main + 12              ashr (l2rus) r0, r0, 0x1
+  140.0: (20.0ns) 0x10016 main + 16              bau (1r)     r0 [UNRESOLVED]
+

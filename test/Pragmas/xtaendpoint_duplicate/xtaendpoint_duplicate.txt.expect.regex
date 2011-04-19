@@ -1,0 +1,4 @@
+stdcore\[0\], label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: [89]
+stdcore\[0\], label: SAME, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: [89]
+stdcore\[0\], label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 1[25]
+stdcore\[0\], label: DIFFERENT, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtaendpoint_duplicate, filename: test.xc, line number: 1[25]

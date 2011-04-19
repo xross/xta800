@@ -1,0 +1,10 @@
+add exclusion the_great_outdoors
+analyze path x x
+
+set required 0 100.0 ns
+set required 1 200.0 ns
+set required 2 300.0 ns
+set required 3 400.0 ns
+
+scripter dump
+exit

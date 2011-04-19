@@ -1,0 +1,63 @@
+------------- point 1
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
+No routes analyzed
+------------- point 2
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
+No routes analyzed
+From endpoint 'start'
+To endpoint 'stop'
+------------- point 3
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
+Loaded Route(0): endpoints: start to stop 
+From endpoint 'start'
+To endpoint 'stop'
+------------- point 4
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
+Loaded Route(0): endpoints: start to stop 
+Loaded Route(1): endpoints: test.xc:16 to test.xc:19 
+From endpoint 'test.xc:16'
+To endpoint 'test.xc:19'
+------------- point 5
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
+stdcore[0], Threads: 1 (Debug information avaliable)
+Loaded Route(0): endpoints: start to stop 
+Loaded Route(1): endpoints: test.xc:16 to test.xc:19 

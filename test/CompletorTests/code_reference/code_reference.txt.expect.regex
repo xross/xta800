@@ -1,0 +1,9 @@
+xta 1>load .*/test.xe
+xta 2>add e exclusion e e
+
+egghead     eggplant    elephants
+xta 2>add exclusion eg  egg
+
+egghead    eggplant
+xta 2>add exclusion eggh    egghead
+xta 3>exit

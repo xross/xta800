@@ -1,0 +1,20 @@
+Modifiable Enabled    Reference  ->     MapsTo
+true       true       bar.xc:7   ->     call_0
+true       true       foo.xc:15  -> endpoint_0
+true       true       .+/bar.xc:9 ->     call_1
+true       true       foo.xc:21  ->     call_2
+true       true       .+/bar.xc:11 ->    label_0
+Modifiable Enabled    Reference  ->     MapsTo
+true       true       bar.xc:7   ->  startCall
+true       true       foo.xc:15  ->          x
+true       true       .+/bar.xc:9 ->   stopCall
+true       true       foo.xc:21  ->     call_2
+true       true       .+/bar.xc:11 ->    label_0
+# load ".+test.xe"
+
+#
+# Route: endpoints: startCall,x to stopCall,x
+#
+add exclusion call_2,label_0
+analyze endpoints startCall,x stopCall,x
+

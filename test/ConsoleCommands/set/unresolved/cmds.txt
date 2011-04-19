@@ -1,0 +1,22 @@
+analyse function main
+
+echo loop
+set loop - ref 10
+
+echo looppath
+set looppath - ref 10
+
+echo loopscope
+set loopscope - ref a
+
+echo functiontime
+set functiontime - ref 100 ns
+
+echo pathtime
+set pathtime - ref ref 100 ns
+
+echo instructiontime
+set instructiontime - ref 100 ns
+
+echo exclusion
+set exclusion - ref

@@ -1,0 +1,53 @@
+# 0@0@0   A-.----ffffc000 (_cp                 +fffebfc8) : ldap    r11 0xffffc2c4 , i 0x00000160  @13
+# 0@0@0   A-.----ffffc004 (_cp                 +fffebfcc) : set     dp, r11 0xffffc2c4  @17
+# 0@0@0   A-.----ffffc006 (_cp                 +fffebfce) : ldap    r11 0xffffc280 , i 0x0000013c  @21
+# 0@0@0   A-.----ffffc008 (_cp                 +fffebfd0) : set     kep, r11 0xffffc280  @25
+# 0@0@0   A-.----ffffc00a (_cp                 +fffebfd2) : ldw     r0 0x00010000 , dp[i 0x00000009 ] L[0xffffc2e8] @29
+# 0@0@0   A-.----ffffc00e (_cp                 +fffebfd6) : ldc     r11 0x0000000b , i 0x0000000b  @33
+# 0@0@0   A-.----ffffc010 (_cp                 +fffebfd8) : set     ps[r11 0x0000000b ], r0 0x00010000  @37
+# 0@0@0   A-.----ffffc014 (_cp                 +fffebfdc) : ldc     r11 0x0000030b , i 0x0000030b  @41
+# 0@0@0   A-.----ffffc018 (_cp                 +fffebfe0) : get     r0 0x00000005 , ps[r11 0x0000030b ] @45
+# 0@0@0   A-.----ffffc01c (_cp                 +fffebfe4) : shr     r1 0x00000000 , r0 0x00000005 , i 0x00000008  @49
+# 0@0@0   A-.----ffffc01e (_cp                 +fffebfe6) : zext    r1 0x00000000 , i 0x00000001  @53
+# 0@0@0   A-.----ffffc020 (_cp                 +fffebfe8) : bt      r1 0x00000000 , i 0x0000006d  @57
+# 0@0@0   A-.----ffffc024 (_cp                 +fffebfec) : shr     r1 0x00000001 , r0 0x00000005 , i 0x00000002  @61
+# 0@0@0   A-.----ffffc026 (_cp                 +fffebfee) : zext    r1 0x00000001 , i 0x00000003  @65
+# 0@0@0   A-.----ffffc028 (_cp                 +fffebff0) : shl     r1 0x00000002 , r1 0x00000001 , i 0x00000001  @69
+# 0@0@0   A-.----ffffc02a (_cp                 +fffebff2) : bru     r1 0x00000002  @73
+# 0@0@0   A-.----ffffc030 (_cp                 +fffebff8) : bu      i 0x0000000c  @77
+# 0@0@0   A-.----ffffc04c (_cp                 +fffec014) : zext    r0 0x00000001 , i 0x00000002  @81
+# 0@0@0   A-.----ffffc04e (_cp                 +fffec016) : shl     r0 0x00000002 , r0 0x00000001 , i 0x00000001  @85
+# 0@0@0   A-.----ffffc050 (_cp                 +fffec018) : bru     r0 0x00000002  @89
+# 0@0@0   A-.----ffffc056 (_cp                 +fffec01e) : bu      i 0x000000e8  @97
+# 0@0@0   A-.----ffffc22a (_cp                 +fffec1f2) : ldc     r11 0x0000040b , i 0x0000040b  @105
+# 0@0@0   A-.----ffffc22e (_cp                 +fffec1f6) : ldc     r10 0x00000002 , i 0x00000002  @109
+# 0@0@0   A-.----ffffc230 (_cp                 +fffec1f8) : set     ps[r11 0x0000040b ], r1 0x00000002  @113
+# 0@0@0   A-.----ffffc234 (_cp                 +fffec1fc) : ldc     r11 0x00000006 , i 0x00000006  @117
+# 0@0@0   A-.----ffffc236 (_cp                 +fffec1fe) : setc    res[r11 0x00000006 ], i 0x00000000  @121
+# 0@0@0   A-.----ffffc238 (_cp                 +fffec200) : ldc     r11 0x0000040b , i 0x0000040b  @125
+# 0@0@0   A-.----ffffc23c (_cp                 +fffec204) : get     r0 0x00000002 , ps[r11 0x0000040b ] @129
+# 0@0@0   A-.----ffffc240 (_cp                 +fffec208) : ldc     r1 0x00000008 , i 0x00000008  @133
+# 0@0@0   A-.----ffffc242 (_cp                 +fffec20a) : or      r0 0x0000000a , r0 0x00000002 , r1 0x00000008  @137
+# 0@0@0   A-.----ffffc244 (_cp                 +fffec20c) : set     ps[r11 0x0000040b ], r0 0x0000000a  @141
+# 0@0@0   A-.----ffffc248 (_cp                 +fffec210) : ldw     r0 0x00010000 , dp[i 0x00000009 ] L[0xffffc2e8] @145
+# 0@0@0   A-.----ffffc24c (_cp                 +fffec214) : bla     r0 0x00010000  @153
+# 0@0@0   A-.----00010000 (_start              +  0) : ldap    r11 0x00010020 , i 0x0000000f  @157
+# 0@0@0   A-.----00010002 (_start              +  2) : set     sp, r11 0x00010020  @161
+# 0@0@0   A-.----00010004 (_start              +  4) : bl      i 0x00000001  @165
+# 0@0@0   A-.----00010008 (main                +  0) : entsp   i 0x00000001  S[0x00010020] @169
+# 0@0@0   A-.----0001000a (main                +  2) : ldaw    r1 0x0001001c , sp[i 0x00000000 ] @173
+# 0@0@0   A-.----0001000c (main                +  4) : set     cp, r1 0x0001001c  @177
+# 0@0@0   A-.----0001000e (main                +  6) : ldc     r0 0x00000001 , i 0x00000001  @181
+# 0@0@0   A-.----00010010 (main                +  8) : bu      i 0x00000001  @185
+# 0@0@0   A-.----00010014 (aligned             +  0) : bl      i 0x00000002  @189
+# 0@0@0   A-.----0001001a (test                +  0) : add     r0 0x00000002 , r0 0x00000001 , r0 0x00000001  @193
+# 0@0@0   A-.----0001001c (test                +  2) : retsp   i 0x00000000  L[0x00000000] @197
+# 0@0@0   A-.----00010016 (aligned             +  2) : ldw     r11 0x900077c0 , cp[i 0x00000000 ] L[0x0001001c] @205
+# 0@0@0   A-.----00010018 (aligned             +  4) : retsp   i 0x00000001  L[0x00010020] @213
+# 0@0@0   A-.----00010006 (_start              +  6) : bl      i 0x00000010  @221
+# 0@0@0   A-.----00010028 (_exit               +  0) : ldc     r0 0x00000007 , i 0x00000007  @225
+# 0@0@0   A-.----0001002a (_exit               +  2) : ldc     r1 0x00000000 , i 0x00000000  @229
+# 0@0@0   A-.----0001002c (_exit               +  4) : ldc     r2 0x00000000 , i 0x00000000  @233
+# 0@0@0   A-.----0001002e (_exit               +  6) : ldc     r3 0x00000000 , i 0x00000000  @237
+# 0@0@0   A-.----00010030 (_exit               +  8) : bl      i 0x00000002  @241
+# 0@0@0   A-.----00010036 (_DoSyscall          +  0) : retsp   i 0x00000000  L[0x00000000] @245

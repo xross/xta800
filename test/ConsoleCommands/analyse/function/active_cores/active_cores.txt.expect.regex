@@ -1,0 +1,90 @@
+stdcore\[0\]::then: 0x[0-9a-z]+
+stdcore\[1\]::then: 0x[0-9a-z]+
+stdcore\[2\]::then: 0x[0-9a-z]+
+stdcore\[3\]::then: 0x[0-9a-z]+
+stdcore\[0\]::loop: 10
+stdcore\[1\]::loop: 10
+stdcore\[2\]::loop: 10
+stdcore\[3\]::loop: 10
+stdcore\[0\]::g: 1.0 us
+stdcore\[1\]::g: 1.0 us
+stdcore\[2\]::g: 1.0 us
+stdcore\[3\]::g: 1.0 us
+----------------------
+All Cores
+----------------------
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz
+----------------------
+Cores 0
+----------------------
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz
+----------------------
+Cores 0 1
+----------------------
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz
+----------------------
+Core 0 1 2
+----------------------
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz
+----------------------
+Core 0 1 2 3
+----------------------
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz
+----------------------
+Core \*
+----------------------
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Route\(\d+\) function: f
+    Pass, Num Paths: \d+, Slack: \d+\.\d+ [mun]s, Required: 20.0 us, Worst: \d+\.\d+ [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz

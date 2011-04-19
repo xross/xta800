@@ -1,0 +1,28 @@
+# load ".*test\.xe"
+
+#
+# Route: function: test
+#
+add branch source1 target2 target3 target4
+analyze function test
+
+#
+# Route: function: test
+#
+analyze function test
+
+#
+# Route: function: test
+#
+remove branch \*
+add branch source1 source2 target2 target3 target4
+analyze function test
+
+#
+# Route: function: test
+#
+remove branch \*
+add branch source1 source2 target2 target3 target4
+add branch source2 target2 target3 target4
+analyze function test
+

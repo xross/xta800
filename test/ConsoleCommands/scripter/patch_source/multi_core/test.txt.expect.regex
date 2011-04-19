@@ -1,0 +1,8 @@
+# load ".*test\.xe"
+
+#
+# Route: function: f
+#
+analyze function f
+set loop - loop_iterations_0 10
+

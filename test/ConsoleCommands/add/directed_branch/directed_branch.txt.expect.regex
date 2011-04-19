@@ -1,0 +1,15 @@
+function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns main
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns test
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns foo
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns test
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns bar
+.    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+.    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
+

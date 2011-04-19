@@ -1,0 +1,35 @@
+compilation dir: .*multiple_includes, filename: add.xc
+compilation dir: .*multiple_includes, filename: sub.xc
+compilation dir: .*multiple_includes, filename: test.xc
+----------------------------------
+.*add.xc
+----------------------------------
+  1: int add\(int a, int b\) 
+  2: {
+\+ 3:   return a \+ b;
+  4: }
+  5: 
+----------------------------------
+.*sub.xc
+----------------------------------
+  1: int sub\(int a, int b\)
+  2: {
+\+ 3:   return a - b;
+  4: }
+  5: 
+----------------------------------
+.*test.xc
+----------------------------------
+  1: #include "header.h"
+  2: 
+  3: #include "add.xc"
+  4: #include "sub.xc"
+  5: 
+  6: int main\(\)
+  7: {
+\+ 8:   int result1 = add\(2, 4\);
+\+ 9:   int result2 = sub\(5, 1\);
+  10:   
+\+ 11:   return result1 \+ result2;
+  12: }
+  13: 

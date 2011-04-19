@@ -1,0 +1,19 @@
+config threads stdcore[0] 4
+
+add branch wait1 NextRxWord RxALow
+add branch wait2 NextRxWord RxALow
+add branch BranchOnTokenPid Pid_Out
+
+add exclusion RxALow
+analyse path ReadDataPidByte NextRxWord
+set required - 133 ns
+
+analyse path NextRxWord NextRxWord
+set required - 67 ns
+
+remove exclusion *
+analyse path StoreTailDataOut ReadToken_PID
+set required - 200 ns
+
+print summary 
+exit

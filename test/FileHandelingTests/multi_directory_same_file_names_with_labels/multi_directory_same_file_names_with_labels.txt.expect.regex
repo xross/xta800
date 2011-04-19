@@ -1,0 +1,23 @@
+stdcore\[0\], label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 5
+stdcore\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/test.xc, line number: 3
+----------------------------------
+.*test.xc
+----------------------------------
+  1: int add\(int a, int b\);
+  2: 
+  3: int main\(\)
+  4: {
+  5:   #pragma xta label "label1"
+\+ 6:   int a = add\(2, 4\);
+\+ 7:   return a;
+  8: }
+  9: 
+----------------------------------
+.*up/test.xc
+----------------------------------
+  1: int add\(int a, int b\)
+  2: {
+  3:   #pragma xta label "label2"
+\+ 4:   int res = a \+ b;
+\+ 5:   return res;
+  6: }

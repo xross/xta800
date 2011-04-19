@@ -1,0 +1,1 @@
+Time for instruction \(0x[0-9a-fA-F]{5}: in \(2r\)\) set to 1.0 us, pc: 0x[0-9a-fA-F]{5}, backtrace: main:

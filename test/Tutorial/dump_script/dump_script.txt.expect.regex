@@ -1,0 +1,13 @@
+Route\(0\) endpoints: tx_start to tx_loop
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz
+
+Route\(1\) endpoints: tx_loop to tx_loop
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz
+
+Route\(2\) endpoints: tx_loop to tx_stop
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz
+
+Route\(3\) endpoints: tx_stop to tx_start
+    Pass with \d+ unknowns, Num Paths: 1, Slack: \d+.\d+ us, Required: 8.7 us, Worst: \d+.\d+ ns, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz

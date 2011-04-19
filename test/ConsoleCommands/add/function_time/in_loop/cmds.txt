@@ -1,0 +1,6 @@
+add loop loop 10
+add functiontime g 1 us
+analyse function f
+set required - 10 us
+print structure -
+

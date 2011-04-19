@@ -1,0 +1,7 @@
+function main
+Time taken:       \d+\.\d [mun]s / \d+\.\d [mun]s
+Thread cycles:    \d+ / \d+
+Num I[mun]structio[mun]s: \d+ / \d+
+Num Fnops:        \d+ / \d+
+Num Paths:        1
+Node Id:          \d+

@@ -1,0 +1,16 @@
+analyze function f
+set required - 1000000.0 ns
+print summary
+set required - 1000.0 us
+print summary
+set required - 1.0 ms
+print summary
+set required - 1.0 ms
+print summary
+set required - 0.001 mhz 
+print summary
+set required - 1.0 khz
+print summary
+set required - 1000.0 hz
+print summary
+

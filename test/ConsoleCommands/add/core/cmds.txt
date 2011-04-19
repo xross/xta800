@@ -1,0 +1,15 @@
+status
+list cores
+remove core *
+status
+list cores
+add core stdcore[1]
+add core stdcore[2]
+status
+list cores
+remove core *
+echo removed
+list cores
+add core *
+echo added
+list cores

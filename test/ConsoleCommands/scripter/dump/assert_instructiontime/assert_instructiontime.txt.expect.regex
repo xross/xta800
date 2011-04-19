@@ -1,0 +1,27 @@
+# load ".*test\.xe"
+
+#
+# Route: function: a
+#
+add instructiontime t_f 111\.0 ns
+add instructiontime t_g 111\.0 ns
+analyze function a
+
+#
+# Route: function: a
+#
+analyze function a
+
+#
+# Route: function: b
+#
+remove instructiontime \*
+add instructiontime t_f 111\.0 ns
+add instructiontime t_h 111\.0 ns
+analyze function b
+
+#
+# Route: function: b
+#
+analyze function b
+

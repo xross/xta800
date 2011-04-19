@@ -1,0 +1,4 @@
+Route\(0\) endpoints: mic_sample to mic_sample
+    Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.6 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz

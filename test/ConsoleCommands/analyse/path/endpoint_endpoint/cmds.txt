@@ -1,0 +1,14 @@
+remove core *
+add core stdcore[0]
+list endpoints
+analyze path output1 input1
+analyze path output0 input0
+
+remove core *
+add core stdcore[1]
+list endpoints
+analyze path output0 input0
+analyze path output1 input1
+
+print summary
+

@@ -1,0 +1,3 @@
+analyse function main
+debug instructiontime - ~0~0~
+

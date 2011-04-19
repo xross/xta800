@@ -1,0 +1,12 @@
+remove core *
+add core stdcore[0]
+analyze path ENDPOINT:test.xc:16 ENDPOINT:test.xc:17
+analyze path ENDPOINT:test.xc:7 ENDPOINT:test.xc:8
+
+remove core *
+add core stdcore[1]
+analyze path ENDPOINT:test.xc:7 ENDPOINT:test.xc:8
+analyze path ENDPOINT:test.xc:16 ENDPOINT:test.xc:17
+
+print summary
+

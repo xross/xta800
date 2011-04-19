@@ -1,0 +1,11 @@
+xta: error: the file '.*test_2.xe' could not be loaded.
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test_1.xe
+Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
+stdcore\[0\], Threads: 8 \(No debug information found\)
+No routes analyzed

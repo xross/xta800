@@ -1,0 +1,143 @@
+# load ".*test\.xe"
+
+#
+# Route: function: f
+#
+remove core \*
+add core stdcore\[0\]
+# Warning: 'test.xc:37' is a non-portable reference.
+add instructiontime test.xc:37 20.0 us
+remove core \*
+add core stdcore\[1\]
+# Warning: 'test.xc:37' is a non-portable reference.
+add instructiontime test.xc:37 30.0 us
+remove core \*
+add core stdcore\[2\]
+# Warning: 'test.xc:37' is a non-portable reference.
+add instructiontime test.xc:37 40.0 us
+remove core \*
+add core stdcore\[3\]
+# Warning: 'test.xc:37' is a non-portable reference.
+add instructiontime test.xc:37 50.0 us
+remove core \*
+add core stdcore\[0\]
+# Warning: 'test.xc:46' is a non-portable reference.
+add loop test.xc:46 10
+remove core \*
+add core stdcore\[0\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loop test.xc:43 5
+remove core \*
+add core stdcore\[1\]
+# Warning: 'test.xc:46' is a non-portable reference.
+add loop test.xc:46 20
+remove core \*
+add core stdcore\[1\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loop test.xc:43 15
+remove core \*
+add core stdcore\[2\]
+# Warning: 'test.xc:46' is a non-portable reference.
+add loop test.xc:46 30
+remove core \*
+add core stdcore\[2\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loop test.xc:43 25
+remove core \*
+add core stdcore\[3\]
+# Warning: 'test.xc:46' is a non-portable reference.
+add loop test.xc:46 40
+remove core \*
+add core stdcore\[3\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loop test.xc:43 35
+remove core \*
+add core stdcore\[0\]
+# Warning: 'test.xc:47' is a non-portable reference.
+add looppath test.xc:47 8
+remove core \*
+add core stdcore\[1\]
+# Warning: 'test.xc:47' is a non-portable reference.
+add looppath test.xc:47 18
+remove core \*
+add core stdcore\[2\]
+# Warning: 'test.xc:47' is a non-portable reference.
+add looppath test.xc:47 28
+remove core \*
+add core stdcore\[3\]
+# Warning: 'test.xc:47' is a non-portable reference.
+add looppath test.xc:47 38
+remove core \*
+add core stdcore\[0\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loopscope test.xc:43 true
+remove core \*
+add core stdcore\[1\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loopscope test.xc:43 false
+remove core \*
+add core stdcore\[2\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loopscope test.xc:43 true
+remove core \*
+add core stdcore\[3\]
+# Warning: 'test.xc:43' is a non-portable reference.
+add loopscope test.xc:43 false
+remove core \*
+add core stdcore\[0\]
+# Warning: 'test.xc:25' is a non-portable reference.
+add exclusion test.xc:25
+remove core \*
+add core stdcore\[1\]
+# Warning: 'test.xc:27' is a non-portable reference.
+add exclusion test.xc:27
+remove core \*
+add core stdcore\[2\]
+# Warning: 'test.xc:29' is a non-portable reference.
+add exclusion test.xc:29
+remove core \*
+add core stdcore\[3\]
+# Warning: 'test.xc:31' is a non-portable reference.
+add exclusion test.xc:31
+analyze function f
+# Warning: 'test.xc:55' is a non-portable reference.
+set instructiontime 0 test.xc:55 20.0 us
+# Warning: 'test.xc:64' is a non-portable reference.
+set loop 0 test.xc:64 10
+# Warning: 'test.xc:61' is a non-portable reference.
+set loop 0 test.xc:61 5
+# Warning: 'test.xc:61' is a non-portable reference.
+set loopscope 0 test.xc:61 a
+# Warning: 'test.xc:65' is a non-portable reference.
+set looppath 0 test.xc:65 8
+# Warning: 'test.xc:55' is a non-portable reference.
+set instructiontime 1 test.xc:55 30.0 us
+# Warning: 'test.xc:64' is a non-portable reference.
+set loop 1 test.xc:64 20
+# Warning: 'test.xc:61' is a non-portable reference.
+set loop 1 test.xc:61 15
+# Warning: 'test.xc:61' is a non-portable reference.
+set loopscope 1 test.xc:61 r
+# Warning: 'test.xc:65' is a non-portable reference.
+set looppath 1 test.xc:65 18
+# Warning: 'test.xc:55' is a non-portable reference.
+set instructiontime 2 test.xc:55 40.0 us
+# Warning: 'test.xc:64' is a non-portable reference.
+set loop 2 test.xc:64 30
+# Warning: 'test.xc:61' is a non-portable reference.
+set loop 2 test.xc:61 25
+# Warning: 'test.xc:61' is a non-portable reference.
+set loopscope 2 test.xc:61 a
+# Warning: 'test.xc:65' is a non-portable reference.
+set looppath 2 test.xc:65 28
+# Warning: 'test.xc:55' is a non-portable reference.
+set instructiontime 3 test.xc:55 50.0 us
+# Warning: 'test.xc:64' is a non-portable reference.
+set loop 3 test.xc:64 40
+# Warning: 'test.xc:61' is a non-portable reference.
+set loop 3 test.xc:61 35
+# Warning: 'test.xc:61' is a non-portable reference.
+set loopscope 3 test.xc:61 r
+# Warning: 'test.xc:65' is a non-portable reference.
+set looppath 3 test.xc:65 38
+

@@ -1,0 +1,22 @@
+function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s g
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .  F function\(\d+\)\s+: 999.0 ns / 999.0 ns f
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    .    loop\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 0\) / \d+\.\d+ [mun]s \(x 0\) 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .  F function\(\d+\)\s+: 999.0 ns / 999.0 ns f
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    .    loop\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 0\) / \d+\.\d+ [mun]s \(x 0\) 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+
+Time taken for function \(node id: \d+\) is set to 999.0 ns, pc: 0x[0-9a-fA-F]{5}, backtrace: main:g:f:
+Time taken for function \(node id: \d+\) is set to 999.0 ns, pc: 0x[0-9a-fA-F]{5}, backtrace: main:g:f:

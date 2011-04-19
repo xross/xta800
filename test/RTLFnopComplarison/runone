@@ -1,0 +1,21 @@
+#!/bin/sh
+xobjdump -s test.xe
+cp ../../test.xml .
+
+export Xqsim_doAssertions=false
+export Xqsim_doCoverage=false
+export Xqsim_startTrace=0
+export Xqsim_vcd=true;
+export Xqsim_xcore_arch=xs1c;
+
+vsim +define+_DPI_VPI_ +define+_SIMULATION_ -t ps +nowarn3009  -assertdebug  -wlf vsim.wlf -voptargs="+acc +floatparameters"  +CONFIG=test.xml +CHECKERON=true +WORKDIR=/home/peter/git/xevious/arch_xcore_rtl/scripts/qsim +MODE=batch +COVER=0 +TIMEOUT=100000 +TRACE=1 +SW_REF_EQ_XCORE_CLK=0 +HANGTIMEOUT=2000 +PRDTG=0 +XML=NULL -lib /home/peter/git/xevious/arch_xcore_rtl/work_xcore -L /home/peter/git/xevious/arch_xcore_rtl/work_xcore -l basic1.xcore.logv -sv_root /home/peter/git/xevious/Installs/Linux -sv_lib dpi_vpi -do /home/peter/git/xevious/arch_xcore_rtl/scripts/qsim/runAll.do opttop_nocov -c > vsim.log 2>&1
+#Simulator -t test.xe > vsim.log 2>&1
+
+cat vsim.log | grep 0@0 > rtl.log
+~/scripts/addFnops.pl rtl.log
+cp rtl.log ../
+cp rtl.log.out ../fnop.log
+
+cd ..
+fnoplog=`ls *.txt.expect`
+mv fnop.log $fnoplog

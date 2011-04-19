@@ -1,0 +1,13 @@
+Route(0) endpoints: test1,func1,start to test1,func1,stop
+    No Timing Specified
+
+Route(1) endpoints: test1,func2,start to test1,func2,stop
+    No Timing Specified
+
+Route(2) endpoints: test2,func1,start to test2,func1,stop
+    No Timing Specified
+
+Route(3) endpoints: test2,func2,start to test2,func2,stop
+    No Timing Specified
+
+Fail, Timing Unspecified

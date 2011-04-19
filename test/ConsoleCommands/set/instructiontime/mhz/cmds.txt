@@ -1,0 +1,7 @@
+set instructiontime - inst 1 mhz
+analyze function main
+list knowns -
+set instructiontime - inst 1 mhz
+list knowns -
+set instructiontime - inst 0.2 mhz
+list knowns -

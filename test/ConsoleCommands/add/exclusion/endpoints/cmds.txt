@@ -1,0 +1,57 @@
+echo =======================
+remove exclusion *
+list exclusions
+echo =======================
+
+analyze function testA
+analyze function testB
+analyze function testAandB
+analyze function testAorB
+print summary
+remove route 0
+remove route 1
+remove route 2
+remove route 3
+
+echo =======================
+remove exclusion *
+add exclusion port_1a
+list exclusions
+echo =======================
+
+analyze function testA
+analyze function testB
+analyze function testAandB
+analyze function testAorB
+print summary
+remove route 0
+remove route 1
+
+echo =======================
+remove exclusion *
+add exclusion port_1b
+list exclusions
+echo =======================
+
+analyze function testA
+analyze function testB
+analyze function testAandB
+analyze function testAorB
+print summary
+remove route 0
+remove route 1
+
+echo =======================
+remove exclusion *
+add exclusion port_1a
+add exclusion port_1b
+list exclusions
+echo =======================
+
+analyze function testA
+analyze function testB
+analyze function testAandB
+analyze function testAorB
+print summary
+
+exit

@@ -1,0 +1,5 @@
+add functiontime f 999.0 ns 
+analyze function main
+set required - 2000.0 ns
+print summary
+

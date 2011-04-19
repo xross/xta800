@@ -1,0 +1,24 @@
+help
+help add
+help analyze
+help clear
+help config
+help echo
+help exit
+help help
+help history
+help list
+help load
+help print
+help pwd
+help remove
+help scripter
+help set
+help source
+help status
+help FUNCTION
+help BRANCH
+help INSTRUCTION
+help ENDPOINT
+help ANY
+exit

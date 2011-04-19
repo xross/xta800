@@ -1,0 +1,11 @@
+function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s f
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    .    loop\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 11\) / \d+\.\d+ [mun]s \(x 11\) 
+.    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 10\) / \d+\.\d+ [mun]s \(x 10\) 
+.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+
+Loop iteratio[mun]s \(node id: \d+\) are set to 10, pc: 0x[0-9a-fA-F]{5}, backtrace: main:f:

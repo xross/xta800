@@ -1,0 +1,1 @@
+xta: test.xc:54: warning: route\(0\)     Fail \(timing violation\), Num Paths: 1, Violation: \d+.\d+ us, Required: 1.0 us, Worst: \d+.\d+ us, Min Core Frequency: \d+ MHz

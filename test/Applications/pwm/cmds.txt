@@ -1,0 +1,59 @@
+## =========================================================================== #
+## Raw Sample Input 
+## =========================================================================== #
+
+analyse loop sendRawSample
+set required - 0.048 mhz
+
+## =========================================================================== #
+## Interpolate S1 Stage
+## =========================================================================== #
+
+analyse loop interS1ThreadInput
+set loop - interS1ThreadInnerLoop 95
+set loopscope - interS1ThreadInnerLoop a
+set required - 0.048 mhz
+
+analyse loop interS1ThreadOutput
+set loop - interS1ThreadInnerLoop 24
+set required - 0.048 mhz
+
+## =========================================================================== #
+## Interpolate S2 Stage
+## =========================================================================== #
+
+analyse loop interS2ThreadInput
+set loop - interS2ThreadInnerLoop 26
+set loopscope - interS2ThreadInnerLoop a
+set required - 0.162 mhz
+
+analyse loop interS2ThreadOutput
+set loop - interS2ThreadInnerLoop 5
+set required - 0.96 mhz
+
+### =========================================================================== #
+### Pwn Stage
+### =========================================================================== #
+remove exclusion *
+analyse path pwmThreadLow1 pwmThreadHigh
+set required - 600.0 ns
+
+remove exclusion *
+analyse path pwmThreadLow2 pwmThreadHigh
+set loop - pwmThreadLoop2 2
+set required - 600.0 ns
+
+remove exclusion *
+add exclusion pwmThreadHiDuration2
+analyse path pwmThreadHigh pwmThreadLow1
+set loop - pwmThreadLoop1 2
+set required - 600.0 ns
+
+remove exclusion *
+add exclusion pwmThreadHiDuration1
+analyse path pwmThreadHigh pwmThreadLow2
+set loop - pwmThreadLoop1 2
+set required - 600.0 ns
+
+print summary
+exit

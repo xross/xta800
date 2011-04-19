@@ -1,0 +1,20 @@
+# load ".*test\.xe"
+
+#
+# Route: function: main
+#
+analyze function main
+set instructiontime - inst 1000 cycles
+
+#
+# Route: function: main
+#
+analyze function main
+set instructiontime - inst 2.0 us
+
+#
+# Route: function: main
+#
+analyze function main
+set instructiontime - inst 0.1 MHz
+

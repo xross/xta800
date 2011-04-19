@@ -1,0 +1,9 @@
+Exclusion on node \(node id: \d+\), pc: 0x[0-9a-z]+, backtrace: main:g:
+# load ".*test\.xe"
+
+#
+# Route: function: main
+#
+analyze function main
+set exclusion - x
+

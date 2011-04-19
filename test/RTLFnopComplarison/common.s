@@ -1,0 +1,15 @@
+.text
+
+_exit:
+  ldc r0, 7
+  ldc r1, 0
+  ldc r2, 0
+  ldc r3, 0
+  bl _DoSyscall
+  clrsr 1
+stop:
+.xtabranch stop
+  waiteu
+
+_DoSyscall:
+  retsp 0

@@ -1,0 +1,15 @@
+int foo();
+
+int bar(){
+    int x;
+    for (int i = 0; i < 10; i++) {
+        #pragma xta call "start"
+        x = foo();
+        x = foo();
+        x = foo();
+        #pragma xta call "stop"
+        x = foo();
+    }
+    #pragma xta label "out_of_bounds"
+    return x;
+}
