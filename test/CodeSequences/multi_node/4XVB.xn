@@ -53,19 +53,19 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
 <Links>
     <Link Encoding="5wire" Delays="0,1">
       <LinkEndpoint NodeId="0" Link="4"/>
-      <LinkEndpoint NodeId="1" Link="7"/>
-    </Link>
-    <Link Encoding="5wire" Delays="0,1">
       <LinkEndpoint NodeId="1" Link="5"/>
-      <LinkEndpoint NodeId="2" Link="6"/>
     </Link>
     <Link Encoding="5wire" Delays="0,1">
-      <LinkEndpoint NodeId="2" Link="6"/>
+      <LinkEndpoint NodeId="1" Link="4"/>
+      <LinkEndpoint NodeId="2" Link="5"/>
+    </Link>
+    <Link Encoding="5wire" Delays="0,1">
+      <LinkEndpoint NodeId="2" Link="4"/>
       <LinkEndpoint NodeId="3" Link="5"/>
     </Link>
     <Link Encoding="5wire" Delays="0,1">
-      <LinkEndpoint NodeId="3" Link="7"/>
-      <LinkEndpoint NodeId="0" Link="4"/>
+      <LinkEndpoint NodeId="3" Link="4"/>
+      <LinkEndpoint NodeId="0" Link="5"/>
     </Link>
 
 </Links>
