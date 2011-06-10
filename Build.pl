@@ -21,7 +21,7 @@ my $BIN;
 
 my %ALIASES =
   (
-    'all' => ['realclean', 'depend', 'build', 'install'],
+    'all' => ['realclean', 'build', 'install'],
   );
 
 my %TARGETS =
@@ -29,7 +29,6 @@ my %TARGETS =
     'preclean' => [\&DoPreClean, "Delete generated source code\n"],
     'clean' => [\&DoClean, "Clean java tools"],
     'realclean' => [\&DoRealClean, "Delete installed java tools from installs"],
-    'depend' => [\&DoDepend, "Updates the dependency files. Can only be run in Linux/Cygwin."],
     'build' => [\&DoBuild, "Build java tools"],
     'install' => [\&DoInstall, "Install java tools"],
     'lint' => [\&DoLint, "Run Lint"]
@@ -135,7 +134,7 @@ sub DoClean
   chdir("$TOOLS_XTA") 
     or die("Failed to find $TOOLS_XTA\n");
 
-  system("$MAKE $MAKE_FLAGS clean");
+  XmosBuildLib::Make('clean', $CONFIG);
   
   chdir("com.xmos.xta.core") 
     or die("Failed to find com.xmos.xta.core\n");
@@ -148,7 +147,7 @@ sub DoClean
 
 sub DoRealClean
 {
-  XmosBuildLib::UnInstallFile("xta.exe");
+  XmosBuildLib::UnInstallFile("xta$EXEEXT");
   XmosBuildLib::UnInstallFile("xta.jar");
 
   chdir("$BUILDPATH") or die("oops");
@@ -156,23 +155,12 @@ sub DoRealClean
   DoClean();
 }
 
-sub DoDepend
-  { 
-  chdir("$TOOLS_XTA") or die("Build failed to find Tools\n");
-  system("$MAKE $MAKE_FLAGS depend");
-  if ($? != 0) {
-      die();
-  }
-  chdir("$BUILDPATH") or die("oops");
-  }
-
-
 sub DoBuild
 {
   chdir("$TOOLS_XTA") 
     or die("Build failed to find $TOOLS_XTA\n");
 
-  system("$MAKE $MAKE_FLAGS");
+  XmosBuildLib::Make('install', $CONFIG);
 
   UpdateBuildNumber();
 
@@ -221,8 +209,8 @@ sub d {
 
 sub DoInstall
 {
-  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta.exe");
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta.exe", "bin");
+  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta$EXEEXT");
+  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta$EXEEXT", "bin");
 
   XmosBuildLib::InstallFile("$DOMAIN", "export${SLASH}jars", "xta.jar");
   XmosBuildLib::InstallReleaseFile("$DOMAIN", "export${SLASH}jars", "xta.jar", "bin");
