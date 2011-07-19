@@ -120,29 +120,29 @@ sub PrintUsage
 
 sub DoPreClean
 {
-  chdir("$TOOLS_XTA${SLASH}com.xmos.xta.core${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta${SLASH}core") 
-    or die("Failed to move to $TOOLS_XTA${SLASH}src${SLASH}com${SLASH}xmos${SLASH}xta");
+  chdir("$TOOLS_XTA/com.xmos.xta.core/src/com/xmos/xta/core")
+    or die("Failed to move to $TOOLS_XTA/src/com/xmos/xta");
 
   unlink("instructions/xs1bInstructionDecoder.java");
   unlink("instructions/xs1bInstructions.java");
 
-  chdir("$BUILDPATH") or die("oops");
+  chdir($BUILDPATH) or die("oops");
 }
 
 sub DoClean
 {
-  chdir("$TOOLS_XTA") 
+  chdir($TOOLS_XTA)
     or die("Failed to find $TOOLS_XTA\n");
 
   XmosBuildLib::Make('clean', $CONFIG);
-  
-  chdir("com.xmos.xta.core") 
+
+  chdir("com.xmos.xta.core")
     or die("Failed to find com.xmos.xta.core\n");
-  system("ant -f ant.xml clean"); 
+  system("ant -f ant.xml clean");
     die() if ($? != 0);
   chdir("../");
 
-  chdir("$BUILDPATH") or die("oops");
+  chdir($BUILDPATH) or die("oops");
 }
 
 sub DoRealClean
@@ -150,35 +150,35 @@ sub DoRealClean
   XmosBuildLib::UnInstallFile("xta$EXEEXT");
   XmosBuildLib::UnInstallFile("xta.jar");
 
-  chdir("$BUILDPATH") or die("oops");
+  chdir($BUILDPATH) or die("oops");
   DoPreClean();
   DoClean();
 }
 
 sub DoBuild
 {
-  chdir("$TOOLS_XTA") 
+  chdir($TOOLS_XTA)
     or die("Build failed to find $TOOLS_XTA\n");
 
   XmosBuildLib::Make('install', $CONFIG);
 
   UpdateBuildNumber();
 
-  chdir("com.xmos.xta.core") 
+  chdir("com.xmos.xta.core")
     or die("Failed to find com.xmos.xta.core\n");
 
   if ($MAKE_FLAGS =~ m/CONFIG=Debug/) {
-    system("ant -f ant.xml -Ddebug=\"true\""); 
+    system("ant -f ant.xml -Ddebug=\"true\"");
     die() if ($? != 0);
   } else {
-    system("ant -f ant.xml -Ddebug=\"false\""); 
+    system("ant -f ant.xml -Ddebug=\"false\"");
     die() if ($? != 0);
   }
 
   SignOffTests();
   chdir("../");
 
-  chdir("$BUILDPATH") or die("oops");
+  chdir($BUILDPATH) or die("oops");
 }
 
 sub SignOffTests {
@@ -188,20 +188,20 @@ sub SignOffTests {
 sub d {
 
   my $file = $File::Find::name;
- 
+
   return unless -e $file;
   return unless $file =~ m/java$/;
   open(F, $file) or print "couldn't open $file\n" && return;
   while (my $line = <F>) {
-    if ($line =~ m/HashSet/ or 
-        $line =~ m/HashMap/ or 
-        $line =~ m/TreeSet/ or 
+    if ($line =~ m/HashSet/ or
+        $line =~ m/HashMap/ or
+        $line =~ m/TreeSet/ or
         $line =~ m/TreeMap/) {
 
       print "Warning: $file contains $line\n";
 
       last;
-    } 
+    }
   }
   close F;
 
@@ -209,19 +209,19 @@ sub d {
 
 sub DoInstall
 {
-  XmosBuildLib::InstallFile("$DOMAIN", "${BIN}", "xta$EXEEXT");
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", "${BIN}", "xta$EXEEXT", "bin");
+  XmosBuildLib::InstallFile($DOMAIN, $BIN, "xta$EXEEXT");
+  XmosBuildLib::InstallReleaseFile($DOMAIN, $BIN, "xta$EXEEXT", "bin");
 
-  XmosBuildLib::InstallFile("$DOMAIN", "export${SLASH}jars", "xta.jar");
-  XmosBuildLib::InstallReleaseFile("$DOMAIN", "export${SLASH}jars", "xta.jar", "bin");
+  XmosBuildLib::InstallFile($DOMAIN, "export/jars", "xta.jar");
+  XmosBuildLib::InstallReleaseFile($DOMAIN, "export/jars", "xta.jar", "bin");
 }
 
 sub DoLint
 {
   if ($HOST eq "Linux") {
-    chdir("$TOOLS_XTA") or die("Build failed to find $TOOLS_XTA\n");
+    chdir($TOOLS_XTA) or die("Build failed to find $TOOLS_XTA\n");
     system("$MAKE $MAKE_FLAGS lint");
-    chdir("$BUILDPATH") or die("oops");
+    chdir($BUILDPATH) or die("oops");
   }
   else {
     print "Error: Lint unsupported on this platform.\n";
@@ -230,9 +230,9 @@ sub DoLint
 
 sub UpdateBuildNumber
 {
-  if (defined($BUILD_NUM)) 
+  if (defined($BUILD_NUM))
   {
-    UpdateBuildNumberInFile("<com.xmos.xta.core${SLASH}version.xml");
+    UpdateBuildNumberInFile("<com.xmos.xta.core/version.xml");
   }
 }
 
@@ -241,7 +241,7 @@ sub UpdateBuildNumberInFile
   my $file = shift;
 
   # Reads in the plugin.xml and patches the build number..
-  open(my $infp, "+$file") 
+  open(my $infp, "+$file")
     or die("Cannot open file: $file for reading");
   my @lines = <$infp>;
 
