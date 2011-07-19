@@ -209,10 +209,7 @@ sub d {
 
 sub DoInstall
 {
-  XmosBuildLib::InstallFile($DOMAIN, $BIN, "xta$EXEEXT");
   XmosBuildLib::InstallReleaseFile($DOMAIN, $BIN, "xta$EXEEXT", "bin");
-
-  XmosBuildLib::InstallFile($DOMAIN, "export/jars", "xta.jar");
   XmosBuildLib::InstallReleaseFile($DOMAIN, "export/jars", "xta.jar", "bin");
 }
 
