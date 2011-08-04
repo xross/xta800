@@ -15,10 +15,12 @@ my $cmds = "source cmds.txt " .
            "history " .
            "exit > $genDir/script.txt 2>&1";
 
+my $installsDir = $ENV{'INSTALLS_DIR'};
+my $xtaJar = "$installsDir/External/Product/bin/xta.jar";
 if (join("", @ARGV) =~ m/emma\.jar/) {
   my $xmosRoot = $ENV{'XMOS_ROOT'};
-  system("java -DConsole=Basic -cp $xmosRoot/infr_libs_java/com.xmos.libs/jars/emma.jar emma run -ix -org.* -quiet -raw -outfile ./coveragedata  -jar \$INSTALLS_DIR/xta.jar $cmds");
+  system("java -DConsole=Basic -cp $xmosRoot/infr_libs_java/com.xmos.libs/jars/emma.jar emma run -ix -org.* -quiet -raw -outfile ./coveragedata  -jar $xtaJar $cmds");
 } else {
   my $installsDir = $ENV{'INSTALLS_DIR'};
-  system("java -DConsole=Basic -jar $installsDir/xta.jar $cmds");
+  system("java -DConsole=Basic -jar $xtaJar $cmds");
 }
