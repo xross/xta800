@@ -3,5 +3,5 @@ Time taken:       \d+\.\d+ [mun]s / \d+\.\d+ [mun]s
 Thread cycles:    \d+ / \d+
 Num I[mun]structio[mun]s: \d+ / \d+
 Num Fnops:        \d+ / \d+
-Num Paths:        221000
+Num Paths:        2\d\d\d\d\d
 Node Id:          \d+
