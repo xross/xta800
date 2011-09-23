@@ -217,7 +217,7 @@ sub DoLint
 {
   if ($HOST eq "Linux") {
     chdir($TOOLS_XTA) or die("Build failed to find $TOOLS_XTA\n");
-    system("$MAKE $MAKE_FLAGS lint");
+    XmosBuildLib::Lint();
     chdir($BUILDPATH) or die("oops");
   }
   else {
