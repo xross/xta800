@@ -15,6 +15,10 @@ import com.xmos.xta.core.engine.references.Reference;
 public class Sections {
 	private XeLoader m_xeLoader;
 	private Notifier m_notifier;
+	
+	private Collection<Section> m_llvmSrcLabel;
+	private Collection<Section> m_fileTables;
+	
 	private Collection<Section> m_branches;
 	private Collection<Section> m_labels;
 	private Collection<Section> m_srcLabels;
@@ -49,6 +53,9 @@ public class Sections {
 		m_systems = new ArrayList<Section>();
 		m_recursiveFunctions = new ArrayList<Section>();
 		m_unreachableFunctions = new ArrayList<Section>();
+		
+		m_llvmSrcLabel = new ArrayList<Section>(); 
+		m_fileTables = new ArrayList<Section>();
     }
 
 	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {
@@ -69,16 +76,36 @@ public class Sections {
 		m_systems.clear();
 		m_recursiveFunctions.clear();
 		m_unreachableFunctions.clear();
-
+		
+		m_llvmSrcLabel.clear();
+		m_fileTables.clear();
+		
 		for (CoreId coreId : m_xeLoader.getCoreIds()) {
+			
+			//All filenames are stored in this table and their index is used by the 
+			FileTable ft = new FileTable(coreId, ".file_table", m_notifier);
+			
+			m_fileTables.add(ft);
+			
+			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier, ft));
+			m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier, ft));
+			m_llvmSrcLabel.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletabel", m_notifier, ft));
+			
+			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpoint", m_notifier, ft));
+			m_callTables.add(new CodePointTable(coreId, ".xtacall", m_notifier, ft));
+			
+			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpointtable", m_notifier, ft));
+			m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier, ft));
+			
+			
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
 			m_srcLabels.add(new CodePoints(coreId, ".xtalabel", m_notifier));
-			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier));
-			m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier));
 			m_srcLabelTables.add(new SrcLabelTable(coreId, ".xtalabeltable", m_notifier));
-			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpointtable", m_notifier));
-			m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier));
+			
+			
+			
+
 			m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtathreadstart", m_notifier));
 			m_threadStopPoints.add(new ThreadDelimiters(coreId, ".xtathreadstop", m_notifier));
 			m_srcLevelCommands.add(new SrcLevelCommands(coreId, m_notifier));
@@ -87,8 +114,10 @@ public class Sections {
 			m_recursiveFunctions.add(new StringSection(coreId, m_notifier));
 			m_unreachableFunctions.add(new StringSection(coreId, m_notifier));
 		}
-
-		if (!loadSection(src, m_branches) ||
+		
+		if (!loadSection(src, m_fileTables) ||
+			!loadSection(src, m_llvmSrcLabel) ||
+			!loadSection(src, m_branches) ||
 			!loadSection(src, m_labels) ||
 			!loadSection(src, m_srcLabels) ||
 			!loadSection(src, m_endpoints) ||
@@ -104,6 +133,7 @@ public class Sections {
 			return false;
 		}
 		
+		//now sort the llvm src labels into the correct tables
 		return true;
 	}
 

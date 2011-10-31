@@ -53,11 +53,7 @@ public class ReferenceTypeFactory {
 					new EndpointPcReference(null, m_coreId),
 					new EndpointFileLineReference(null, m_coreId),
 					new EndpointReference(null, m_coreId),
-					new CallPcReference(null, m_coreId),
-					new CallFileLineReference(null, m_coreId),
-					new CallReference(null, m_coreId),
-					new LabelReference(null, m_coreId),
-					new CallLabelReference(null, m_coreId)}));					
+					new LabelReference(null, m_coreId)}));					
 
 		m_referenceClasses.put(ReferenceClass.ANY,
 				new ReferenceClassType(true, new ReferenceType[] {
@@ -103,11 +99,7 @@ public class ReferenceTypeFactory {
 					new EndpointPcReference(null, m_coreId),
 					new EndpointFileLineReference(null, m_coreId),
 					new EndpointReference(null, m_coreId),
-					new CallPcReference(null, m_coreId),
-					new CallFileLineReference(null, m_coreId),
-					new CallReference(null, m_coreId),
-					new LabelReference(null, m_coreId),
-					new CallLabelReference(null, m_coreId)}));
+					new LabelReference(null, m_coreId)}));
 
 		m_referenceClasses.put(ReferenceClass.ANY_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
