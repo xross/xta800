@@ -9,7 +9,8 @@ public class SrcLabelTableInfo extends SectionInfo implements Comparable<SrcLabe
     private int m_lineNumberStart;
     private int m_lineNumberEnd;
 
-    public SrcLabelTableInfo(Section section, long pc, String compilationDir, String fileName,
+    public SrcLabelTableInfo(Section section, long pc, 
+    		String compilationDir, String fileName,
     		int lineNumberStart, int lineNumberEnd) {
     	super(section);
     	

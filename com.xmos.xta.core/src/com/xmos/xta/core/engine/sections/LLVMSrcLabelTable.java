@@ -2,127 +2,167 @@ package com.xmos.xta.core.engine.sections;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
-public class LLVMSrcLabelTable extends Section {
+public class LLVMSrcLabelTable extends SrcLabelTable {
 	private String m_sectionName;
-	private Map<String, LLVMSrcLabelTableInfo> m_locations;
-	private Map<Long, File> m_fileMap;
+	private FileTable m_fileTable;
+
+	private static final boolean Debug = false;
 	
 	LLVMSrcLabelTable(CoreId coreId, String sectionName, Notifier notifier, FileTable ft) {
 		super(coreId, notifier);
 		m_sectionName = sectionName;
-		m_locations = new IteratableMap<String, LLVMSrcLabelTableInfo>();
-		m_fileMap = ft.getFileMap();
+		m_fileTable = ft;
 	}
-
-	Map<String, LLVMSrcLabelTableInfo> get() {
-		return m_locations;
+	
+	class FileLoc {
+		private File m_file;
+		private int m_fromLine, m_fromCol, m_toLine, m_toCol;
+		public FileLoc(File file, int fromLine, 
+				int fromCol, int toLine, int toCol){
+			m_fromLine = fromLine;
+			m_fromCol = fromCol;
+			m_toLine = toLine;
+			m_toCol = toCol;
+			m_file = file;
+		}
+		public File getFile() {
+			return m_file;
+		}
+		public int getFromLine() {
+			return m_fromLine;
+		}
+		public int getFromCol() {
+			return m_fromCol;
+		}
+		public int getToLine() {
+			return m_toLine;
+		}
+		public int getToCol() {
+			return m_toCol;
+		}
+		
+		
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(m_sectionName, getCoreId());
-		
-    	
+		if(Debug) System.out.println("m_sectionName " + m_sectionName);
+		if(Debug) System.out.println("data.length " + data.length);
+		if (data.length == 0) {
+			return true;
+		}
 		try {
 			int byteIndex = 0;
-			int size = ByteArrayManipulation.readInt(data, byteIndex);
-        	byteIndex += 4;
-        	int version = ByteArrayManipulation.readInt(data, byteIndex);
-        	byteIndex += 4;
-        	
-	        while (byteIndex < size) {
-
-	        	String label = ByteArrayManipulation.readString(data, byteIndex);
-	       		byteIndex += label.length() + 1;
-	       		
-	        	int count = ByteArrayManipulation.readInt(data, byteIndex);
+			while (byteIndex < data.length) {
+				int size = ByteArrayManipulation.readInt(data, byteIndex);
+				if(Debug) System.out.println(byteIndex + "\tsize " + size);
 				byteIndex += 4;
-	        	int locCount = 0;
-	           	while (locCount < count) {
-	        		long fileLbl = ByteArrayManipulation.readInt(data, byteIndex);
-		        	byteIndex += 4;
-		        	
-		        	File file = m_fileMap.get(fileLbl);
-		        	
-	        		int fromLine = ByteArrayManipulation.readInt(data, byteIndex);
-		        	byteIndex += 4;
-	        		int fromCol = ByteArrayManipulation.readInt(data, byteIndex);
-		        	byteIndex += 4;
-	        		int toLine = ByteArrayManipulation.readInt(data, byteIndex);
-		        	byteIndex += 4;
-	        		int toCol = ByteArrayManipulation.readInt(data, byteIndex);
-		        	byteIndex += 4;
-		        	LLVMSrcLabelTableInfo slti  = 
-		        		new LLVMSrcLabelTableInfo(file.getAbsolutePath(), file.getName(), 
-		        				fromLine, toLine);
-		        	
-		        	int commaIndex = label.lastIndexOf(",", 0);
-		        	String xtaLabel;
-		        	if(commaIndex == -1){
-		        		xtaLabel = label;
-		        	} else {
-		        		xtaLabel = label.substring(commaIndex+1);
-		        	}
+	
+				int version = ByteArrayManipulation.readInt(data, byteIndex);
+				if(Debug) System.out.println(byteIndex + "\tversion " + version);
+				byteIndex += 4;
+	
+				if(Debug) System.out.println("data.length " + data.length);
+				if(Debug) System.out.println("byteIndex " + byteIndex);
 
-		        	m_locations.put(xtaLabel, slti);
-		        	locCount++;
-	        	}
-	           	int locSize = ByteArrayManipulation.readInt(data, byteIndex);
-	        	byteIndex += 4;
-	        }
-	    } catch (Exception e) {
-		    getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
+				int endOfEntry = byteIndex + size - 4;
+				if(Debug) System.out.println("endOfEntry " + endOfEntry);
+				
+				while (byteIndex < endOfEntry) {
+					if(Debug) System.out.println("----------------------------");
+					
+					String lblName = ByteArrayManipulation.readString(data,byteIndex);
+					if(Debug) System.out.println(byteIndex + "\tlblName " + lblName + "|");
+					byteIndex += lblName.length() + 1;
+
+					int fileLocs = ByteArrayManipulation.readInt(data,byteIndex);
+					if(Debug) System.out.println(byteIndex + "\tfileLocs " + fileLocs);
+					byteIndex += 4;
+
+					List<FileLoc> fileLocList = new ArrayList<FileLoc>();
+					
+					for(int fl=0;fl < fileLocs;fl++){
+						long fileLbl =  ByteArrayManipulation.readInt(data,byteIndex);
+						File f = m_fileTable.getFileMap().get(fileLbl);
+						if(Debug) System.out.println(byteIndex + "\tfileLbl " + fileLbl + " "+ f.getName());
+						byteIndex += 4;
+						
+						int FromLine = ByteArrayManipulation.readInt(data,byteIndex);
+						if(Debug) System.out.println(byteIndex + "\tFromLine " + fileLocs);
+						byteIndex += 4;
+						int FromCol = ByteArrayManipulation.readInt(data,byteIndex);
+						if(Debug) System.out.println(byteIndex + "\tToLine " + fileLocs);
+						byteIndex += 4;
+						int ToLine = ByteArrayManipulation.readInt(data,byteIndex);
+						if(Debug) System.out.println(byteIndex + "\tFromCol " + fileLocs);
+						byteIndex += 4;
+						int ToCol = ByteArrayManipulation.readInt(data,byteIndex);
+						if(Debug) System.out.println(byteIndex + "\tToCol " + fileLocs);
+						byteIndex += 4;
+						
+						FileLoc fileLoc = new FileLoc(f, FromLine, FromCol, ToLine, ToCol);
+						fileLocList.add(fileLoc);
+					}
+					int subSize = ByteArrayManipulation.readInt(data, byteIndex);
+					if(Debug) System.out.println(byteIndex + "\tsubSize " + subSize);
+					byteIndex += 4;
+					
+					int entriesEnd = byteIndex + subSize;
+					
+					while (byteIndex < entriesEnd) {
+						if(Debug) System.out.println("====================================");
+						long locationLbl = ByteArrayManipulation.readInt(data,byteIndex);
+						if(Debug) System.out.println(byteIndex + "\tlocationLbl " + locationLbl);
+						byteIndex += 4;
+
+						String InlineInfo = ByteArrayManipulation.readString(data, byteIndex);
+						if(Debug) System.out.println(byteIndex + "\tInlineInfo " + InlineInfo);
+						byteIndex += InlineInfo.length() + 1;
+						
+						
+						for(FileLoc fl : fileLocList){
+							
+							String path = m_fileTable.getCompilationDir().getAbsolutePath();
+							String fileName = fl.getFile().getAbsolutePath().replace(path, "");
+							if(fileName.startsWith("/")){
+								fileName = fileName.replaceFirst("/", "");
+							}
+							
+							m_locations.put(locationLbl, 
+									new SrcLabelTableInfo(this, locationLbl, 
+											path, fileName,
+											fl.getFromLine(), fl.getToCol()));
+						}
+						if(Debug) System.out.println("====================================");
+					}
+
+					if(Debug) System.out.println("----------------------------");
+				}
+				
+			}
+		} catch (Exception e) {
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"problem reading %s section while loading executable", m_sectionName));
-	        return false;
-		}
-
-	    // BUG 6471: A compiler bug means that basic blocks overlap when they shouldn't
+	    	return false;
+	    }
+		
+		// BUG 6471: A compiler bug means that basic blocks overlap when they shouldn't
 	    // Here we ensure this overlapping is removed as the rest of the tool assumes the
 	    // blocks don't overlap.
 	    detectAndCorrectOverlap();
-
-        return true;
+	    
+		return true;
 	}
+
 	
-	
-	private void detectAndCorrectOverlap() {
-		List<LLVMSrcLabelTableInfo> entries = new ArrayList<LLVMSrcLabelTableInfo>();
-		entries.addAll(m_locations.values());
-		Collections.sort(entries);
 
-		int index = 0;
-		while (index < entries.size()) {
-			index = detectForFile(entries, index);
-    	}
-	}
-
-	private int detectForFile(List<LLVMSrcLabelTableInfo> entries, int index) {
-		LLVMSrcLabelTableInfo entry = entries.get(index);
-		String thisFile = entry.getFileName();
-
-		index++;
-		while (index < entries.size()) {
-			LLVMSrcLabelTableInfo nextEntry = entries.get(index);
-			if (!nextEntry.getFileName().equals(thisFile)) {
-				return index;
-			} else {
-				if (entry.getLineNumberEnd() > nextEntry.getLineNumberStart()) {
-					entry.setLineNumberEnd(nextEntry.getLineNumberStart() - 1);
-				}
-			}
-			entry = nextEntry;
-			index++;
-		}
-		return index;
-	}
 }

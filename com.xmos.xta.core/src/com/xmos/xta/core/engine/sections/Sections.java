@@ -87,25 +87,22 @@ public class Sections {
 			
 			m_fileTables.add(ft);
 			
-			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier, ft));
-			m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier, ft));
-			m_llvmSrcLabel.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletabel", m_notifier, ft));
+			m_endpoints.add(new LLVMCodePoints(coreId, ".xtaendpoint_locs", m_notifier, ft));
+			m_calls.add(new LLVMCodePoints(coreId, ".xtacall_locs", m_notifier, ft));
+			m_endpointTables.add(new LLVMCodePointTable(coreId, ".xtaendpoint_locs", m_notifier, ft));
+			m_callTables.add(new LLVMCodePointTable(coreId, ".xtacall_locs", m_notifier, ft));
 			
-			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpoint", m_notifier, ft));
-			m_callTables.add(new CodePointTable(coreId, ".xtacall", m_notifier, ft));
-			
-			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpointtable", m_notifier, ft));
-			m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier, ft));
-			
+			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletabel", m_notifier, ft));
+			//m_srcLabelTables.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletabel", m_notifier, ft));
 			
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
-			m_srcLabels.add(new CodePoints(coreId, ".xtalabel", m_notifier));
-			m_srcLabelTables.add(new SrcLabelTable(coreId, ".xtalabeltable", m_notifier));
-			
-			
-			
-
+			m_srcLabels.add(new NonLLVMCodePoints(coreId, ".xtalabel", m_notifier));
+			m_endpoints.add(new NonLLVMCodePoints(coreId, ".xtaendpoint", m_notifier));
+			m_calls.add(new NonLLVMCodePoints(coreId, ".xtacall", m_notifier));
+			m_srcLabelTables.add(new NonLLVMSrcLabelTable(coreId, ".xtalabeltable", m_notifier));
+			m_endpointTables.add(new NonLLVMCodePointTable(coreId, ".xtaendpointtable", m_notifier));
+			m_callTables.add(new NonLLVMCodePointTable(coreId, ".xtacalltable", m_notifier));
 			m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtathreadstart", m_notifier));
 			m_threadStopPoints.add(new ThreadDelimiters(coreId, ".xtathreadstop", m_notifier));
 			m_srcLevelCommands.add(new SrcLevelCommands(coreId, m_notifier));
@@ -113,6 +110,7 @@ public class Sections {
 			m_systems.add(new Systems(coreId, m_notifier));
 			m_recursiveFunctions.add(new StringSection(coreId, m_notifier));
 			m_unreachableFunctions.add(new StringSection(coreId, m_notifier));
+			
 		}
 		
 		if (!loadSection(src, m_fileTables) ||

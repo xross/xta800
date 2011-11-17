@@ -43,15 +43,15 @@ int alignTable[34];
 /*
  * Local functions - not designed to be used outside of this file
  */
-inline void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
+void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
 		chanend rxChan, buffered in port:32 canRx, port canTx,
 		int &counter, unsigned int &allBits, unsigned int &dataBits, unsigned int &time);
-inline void txStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket, struct CanPacket &txPacket,
+void txStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket, struct CanPacket &txPacket,
 		buffered in port:32 canRx, port canTx,
 		int &counter, unsigned int &allBits, unsigned int &dataBits, unsigned int &time);
 void handleError(struct CanPhyState &phyState, struct CanPacket &rxPacket, struct CanPacket &txPacket,
 		buffered in port:32 canRx, port canTx, unsigned int &time);
-inline void signalError(struct CanPhyState &phyState, port canTx, ERROR error, int &done);
+void signalError(struct CanPhyState &phyState, port canTx, ERROR error, int &done);
 void setupPorts(clock clk, buffered in port:32 canRx, port canTx);
 void waitForBusIdle(struct CanPhyState &phyState, buffered in port:32 canRx, port canTx);
 void manageBusOff(struct CanPhyState &phyState, buffered in port:32 canRx, port canTx);
@@ -176,7 +176,7 @@ void canPhyRxTx(chanend rxChan, chanend txChan, clock clk, buffered in port:32 c
 }
 
 #pragma unsafe arrays
-inline void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
+inline  void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
 		chanend rxChan, buffered in port:32 canRx, port canTx,
 		int &counter, unsigned int &allBits, unsigned int &dataBits, unsigned int &time) {
 
