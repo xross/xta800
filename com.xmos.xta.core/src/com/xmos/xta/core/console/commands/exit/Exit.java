@@ -25,7 +25,7 @@ public class Exit extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + ": Quits the application";
+        return name() + ": Quits the application (Command line version only)";
     }
 
     public Command clone(String[] args, int index) {

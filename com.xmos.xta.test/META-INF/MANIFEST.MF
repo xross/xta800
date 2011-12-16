@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: com.xmos.xta.test plugin
+Bundle-Name: XDE Timing Analysis Test Plugin
 Bundle-SymbolicName: com.xmos.xta.test
 Bundle-Version: 1.0.0
 Bundle-Vendor: XMOS

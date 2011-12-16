@@ -16,7 +16,7 @@ import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 
 public class Shell {
-	enum State {
+	public enum State {
 		RUNNING,
 		EXIT,
 	}
@@ -61,6 +61,10 @@ public class Shell {
     	return m_numTimingViolations;
     }
 
+    public void setState(State state) {
+        m_state = state;
+    }
+    
 	public void exit(int numTimingViolations) {
     	m_state = State.EXIT;
     	m_numTimingViolations = numTimingViolations;
