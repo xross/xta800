@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -nostartfiles -target=$target -march=$arch -g test.s -o $genDir/test.xe > $genDir/missing_target.log 2>&1");
+system("xcc -Xmapper --noinitialtidy -nostartfiles -target=$target -march=$arch -g test.s -o $genDir/test.xe > $genDir/missing_target.log 2>&1");
 }
 # Need the 'status' to force it to load
 system("@ARGV load $genDir/test.xe " .
