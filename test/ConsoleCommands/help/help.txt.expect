@@ -4,7 +4,7 @@
   [-]clear: Clears the screen (Gui mode only)
   [-]debug <option> <arg0> <arg1>...: Internal debug commands
   [-]echo "text": Prints the text to the console
-  [-]exit: Quits the application
+  [-]exit: Quits the application (Command line version only)
   [-]help [command|command subcommand|option]: Displays help message for the given arguments
   [-]history: Displays the command history
   [-]load <xe file>: Loads the given xmos executable file
@@ -47,7 +47,7 @@
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: Werror <on/off>: treat warnings as errors or not (currently: off)
   [-]echo "text": Prints the text to the console
-  [-]exit: Quits the application
+  [-]exit: Quits the application (Command line version only)
   [-]help [command|command subcommand|option]: Displays help message for the given arguments
       options: FUNCTION, BRANCH, INSTRUCTION, ENDPOINT, ANY, MODE, SCOPE
   [-]history: Displays the command history
