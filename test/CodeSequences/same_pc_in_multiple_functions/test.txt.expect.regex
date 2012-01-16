@@ -1,8 +1,8 @@
-CfgInstructionNode31 \(e\+2\) 0x10008 ldc \(ru6\) r0, 0x1 from 1 stacks
+CfgInstructionNode\d+ \(e\+2\) 0x10008 ldc \(ru6\) r0, 0x1 from 1 stacks
 	\[CfgFunctionReferenceNode\d+\[e\]\]
-CfgInstructionNode41 \(e\+2\) 0x10008 ldc \(ru6\) r0, 0x1 from 1 stacks
+CfgInstructionNode\d+ \(e\+2\) 0x10008 ldc \(ru6\) r0, 0x1 from 1 stacks
 	\[CfgFunctionReferenceNode\d+\[_start\], CfgFunctionReferenceNode\d+\[main\], CfgFunctionReferenceNode\d+\[f\]]
-CfgInstructionNode48 \(g\+2\) 0x1001c ldc \(ru6\) r0, 0x1 from 1 stacks
+CfgInstructionNode\d+ \(g\+2\) 0x1001c ldc \(ru6\) r0, 0x1 from 1 stacks
 	\[CfgFunctionReferenceNode\d+\[g\]\]
-CfgInstructionNode58 \(g\+2\) 0x1001c ldc \(ru6\) r0, 0x1 from 1 stacks
+CfgInstructionNode\d+ \(g\+2\) 0x1001c ldc \(ru6\) r0, 0x1 from 1 stacks
 	\[CfgFunctionReferenceNode\d+\[_start\], CfgFunctionReferenceNode\d+\[main\], CfgFunctionReferenceNode\d+\[h\]]
