@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -nostartfiles test.s -o $genDir/test.xe > $genDir/source_labels.log 2>&1");
+system("xcc -target=$target -march=$arch -Xmapper --noinitialtidy -nostartfiles test.s -o $genDir/test.xe > $genDir/source_labels.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "list labels " .
