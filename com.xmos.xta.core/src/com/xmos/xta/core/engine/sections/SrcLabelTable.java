@@ -12,70 +12,21 @@ import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
-public class SrcLabelTable extends Section {
-	private String m_sectionName;
-	private Map<Long, SrcLabelTableInfo> m_locations;
-
-	SrcLabelTable(CoreId coreId, String sectionName, Notifier notifier) {
+public abstract class SrcLabelTable extends Section {
+	protected Map<Long, SrcLabelTableInfo> m_locations;
+	
+	SrcLabelTable(CoreId coreId, Notifier notifier) {
 		super(coreId, notifier);
-		m_sectionName = sectionName;
 		m_locations = new IteratableMap<Long, SrcLabelTableInfo>();
 	}
 
 	Map<Long, SrcLabelTableInfo> get() {
 		return m_locations;
 	}
-
-	boolean load(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getCoreId());
-
-		try {
-			int byteIndex = 0;
-	        while (byteIndex < data.length) {
-	        	int base = byteIndex;
-
-	        	int size = ByteArrayManipulation.readInt(data, byteIndex);
-	        	byteIndex += 4;
-
-	        	// Ignores the version field.
-	       		ByteArrayManipulation.readInt(data, byteIndex);
-	       		byteIndex += 4;
-
-	       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
-	       		byteIndex += compilationDir.length() + 1;
-
-	           	while (byteIndex < (base + size)) {
-	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
-	        		byteIndex += fileName.length() + 1;
-
-	        		int lineNumberStart = ByteArrayManipulation.readInt(data, byteIndex);
-	        		byteIndex += 4;
-
-	        		int lineNumberEnd = ByteArrayManipulation.readInt(data, byteIndex);
-	        		byteIndex += 4;
-
-	        		long location = ByteArrayManipulation.readInt(data, byteIndex);
-	        		byteIndex += 4;
-
-	        		m_locations.put(location, new SrcLabelTableInfo(this, location, compilationDir,
-	        				fileName, lineNumberStart, lineNumberEnd));
-	        	}
-	        }
-	    } catch (Exception e) {
-		    getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"problem reading %s section while loading executable", m_sectionName));
-	        return false;
-		}
-
-	    // BUG 6471: A compiler bug means that basic blocks overlap when they shouldn't
-	    // Here we ensure this overlapping is removed as the rest of the tool assumes the
-	    // blocks don't overlap.
-	    detectAndCorrectOverlap();
-
-        return true;
-	}
-
-	private void detectAndCorrectOverlap() {
+	
+	abstract boolean load(CommandSource src, XeLoader xeLoader);
+	
+	protected void detectAndCorrectOverlap() {
 		List<SrcLabelTableInfo> entries = new ArrayList<SrcLabelTableInfo>();
 		entries.addAll(m_locations.values());
 		Collections.sort(entries);

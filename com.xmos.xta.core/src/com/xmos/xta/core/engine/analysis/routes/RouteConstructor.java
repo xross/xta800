@@ -575,6 +575,8 @@ public class RouteConstructor {
 			} 
 			
 		}
+		
+		//if nextNodes
 	}
 
 	private Stack<CfgFunctionReferenceNode> increaseStack(
@@ -640,13 +642,17 @@ public class RouteConstructor {
 			// where there is a next node.					
 			addToWorkingSet(previous, currentNode, workingSet);
 			currentNode.setUnresolved(true);
-		} else {				
-			CfgFunctionReferenceNode callingFnRef = currentStack.peek();
-			for (CfgNode followingFunction : callingFnRef.getNextNodes()) {
-				Stack<CfgFunctionReferenceNode> newStack = decreaseStack(currentStack);
-				findReachableGraph(currentNode, newStack, followingFunction, workingSet,
-						exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
-						nodeToWorkingSet, false, branchStackNodes, branchToNext); 
+		} else {	
+			if(currentStack.size() == 1){
+				currentNode.setUnresolved(true);
+			} else {
+				CfgFunctionReferenceNode callingFnRef = currentStack.peek();
+				for (CfgNode followingFunction : callingFnRef.getNextNodes()) {
+					Stack<CfgFunctionReferenceNode> newStack = decreaseStack(currentStack);
+					findReachableGraph(currentNode, newStack, followingFunction, workingSet,
+							exclusionStackNodes, currentExclusionsFound, routeMode, endStackNodes,
+							nodeToWorkingSet, false, branchStackNodes, branchToNext); 
+				}
 			}
 		}
 	}

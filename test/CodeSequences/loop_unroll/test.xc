@@ -13,7 +13,7 @@ int foo(int j){
   }
   return j;
 }
-
+int x;
 int main(){
-  return foo(0x67);
+  return foo(x);
 }

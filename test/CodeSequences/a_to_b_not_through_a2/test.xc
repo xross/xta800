@@ -5,10 +5,10 @@ int bar(){
 int end(){
     return 200;
 }
-
+int x ;
 int test()
 { 
-    int x = 1;
+    
     while ( x > 0) {
         #pragma xta call "call_bar"
         x -= bar();

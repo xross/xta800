@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xmos.libs.util.CoreId;
+import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
@@ -15,6 +16,10 @@ import com.xmos.xta.core.engine.references.Reference;
 public class Sections {
 	private XeLoader m_xeLoader;
 	private Notifier m_notifier;
+	
+	private Collection<Section> m_llvmSrcLabel;
+	private Collection<Section> m_fileTables;
+	
 	private Collection<Section> m_branches;
 	private Collection<Section> m_labels;
 	private Collection<Section> m_srcLabels;
@@ -49,6 +54,9 @@ public class Sections {
 		m_systems = new ArrayList<Section>();
 		m_recursiveFunctions = new ArrayList<Section>();
 		m_unreachableFunctions = new ArrayList<Section>();
+		
+		m_llvmSrcLabel = new ArrayList<Section>(); 
+		m_fileTables = new ArrayList<Section>();
     }
 
 	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {
@@ -69,16 +77,33 @@ public class Sections {
 		m_systems.clear();
 		m_recursiveFunctions.clear();
 		m_unreachableFunctions.clear();
-
+		
+		m_llvmSrcLabel.clear();
+		m_fileTables.clear();
+		
 		for (CoreId coreId : m_xeLoader.getCoreIds()) {
+			
+			//All filenames are stored in this table and their index is used by the 
+			FileTable ft = new FileTable(coreId, ".file_table", m_notifier);
+			
+			m_fileTables.add(ft);
+			
+			m_endpoints.add(new LLVMCodePoints(coreId, ".xtaendpoint_locs", m_notifier, ft));
+			m_calls.add(new LLVMCodePoints(coreId, ".xtacall_locs", m_notifier, ft));
+			m_endpointTables.add(new LLVMCodePointTable(coreId, ".xtaendpoint_locs", m_notifier, ft));
+			m_callTables.add(new LLVMCodePointTable(coreId, ".xtacall_locs", m_notifier, ft));
+			
+			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletabel", m_notifier, ft));
+			m_srcLabelTables.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletabel", m_notifier, ft));
+			
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
-			m_srcLabels.add(new CodePoints(coreId, ".xtalabel", m_notifier));
-			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier));
-			m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier));
-			m_srcLabelTables.add(new SrcLabelTable(coreId, ".xtalabeltable", m_notifier));
-			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpointtable", m_notifier));
-			m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier));
+			m_srcLabels.add(new NonLLVMCodePoints(coreId, ".xtalabel", m_notifier));
+			m_endpoints.add(new NonLLVMCodePoints(coreId, ".xtaendpoint", m_notifier));
+			m_calls.add(new NonLLVMCodePoints(coreId, ".xtacall", m_notifier));
+			m_srcLabelTables.add(new NonLLVMSrcLabelTable(coreId, ".xtalabeltable", m_notifier));
+			m_endpointTables.add(new NonLLVMCodePointTable(coreId, ".xtaendpointtable", m_notifier));
+			m_callTables.add(new NonLLVMCodePointTable(coreId, ".xtacalltable", m_notifier));
 			m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtathreadstart", m_notifier));
 			m_threadStopPoints.add(new ThreadDelimiters(coreId, ".xtathreadstop", m_notifier));
 			m_srcLevelCommands.add(new SrcLevelCommands(coreId, m_notifier));
@@ -86,9 +111,12 @@ public class Sections {
 			m_systems.add(new Systems(coreId, m_notifier));
 			m_recursiveFunctions.add(new StringSection(coreId, m_notifier));
 			m_unreachableFunctions.add(new StringSection(coreId, m_notifier));
+			
 		}
-
-		if (!loadSection(src, m_branches) ||
+		
+		if (!loadSection(src, m_fileTables) ||
+			!loadSection(src, m_llvmSrcLabel) ||
+			!loadSection(src, m_branches) ||
 			!loadSection(src, m_labels) ||
 			!loadSection(src, m_srcLabels) ||
 			!loadSection(src, m_endpoints) ||
@@ -104,6 +132,7 @@ public class Sections {
 			return false;
 		}
 		
+		//now sort the llvm src labels into the correct tables
 		return true;
 	}
 
@@ -119,70 +148,95 @@ public class Sections {
 	}
 
 	public Map<Reference, Set<BranchInfo>> getBranches(CoreId coreId) {
-		Branches branches = (Branches)getSection(m_branches, coreId);
-		return branches.get();
+		Map<Reference, Set<BranchInfo>> collections = new IteratableMap<Reference, Set<BranchInfo>>();
+		for(Section s : getSections(m_branches, coreId))
+			collections.putAll(((Branches)s).get());
+		return collections;
 	}
 
 	public Map<String, Set<Long>> getLabels(CoreId coreId) {
-	    Labels labels = (Labels)getSection(m_labels, coreId);
-	    return labels.get();
+		Map<String, Set<Long>> collections = new IteratableMap<String, Set<Long>>();
+		for(Section s : getSections(m_labels, coreId))
+			collections.putAll(((Labels)s).get());
+		return collections;
 	}
 
 	public List<CodePointInfo> getSrcLabels(CoreId coreId) {
-		CodePoints codePoints = (CodePoints)getSection(m_srcLabels, coreId);
-	    return codePoints.get();
+		List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
+		for(Section s : getSections(m_srcLabels, coreId))
+			collections.addAll(((CodePoints)s).get());
+		return collections;
 	}
 
 	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(CoreId coreId) {
-		SrcLabelTable srcLabelTable = (SrcLabelTable)getSection(m_srcLabelTables, coreId);
-		return srcLabelTable.get();
+		Map<Long, SrcLabelTableInfo> collections = new IteratableMap<Long, SrcLabelTableInfo>();
+		for(Section s : getSections(m_srcLabelTables, coreId))
+			collections.putAll(((SrcLabelTable)s).get());
+		return collections;
 	}
 
 	public List<CodePointInfo> getEndpoints(CoreId coreId) {
-		CodePoints codePoints = (CodePoints)getSection(m_endpoints, coreId);
-	    return codePoints.get();
+		List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
+		for(Section s : getSections(m_endpoints, coreId))
+			collections.addAll(((CodePoints)s).get());
+		return collections;
 	}
 
 	public Map<Long, CodePointTableInfo> getEndpointTable(CoreId coreId) {
-		CodePointTable endpointTable = (CodePointTable)getSection(m_endpointTables, coreId);
-		return endpointTable.get();
+		Map<Long, CodePointTableInfo> collections = new IteratableMap<Long, CodePointTableInfo>();
+		for(Section s : getSections(m_endpointTables, coreId))
+			collections.putAll(((CodePointTable)s).get());
+		return collections;
 	}
 
 	public List<CodePointInfo> getCalls(CoreId coreId) {
-		CodePoints codePoints = (CodePoints)getSection(m_calls, coreId);
-	    return codePoints.get();
+		List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
+		for(Section s : getSections(m_calls, coreId))
+			collections.addAll(((CodePoints)s).get());
+		return collections;
 	}
 
 	public Map<Long, CodePointTableInfo> getCallTable(CoreId coreId) {
-		CodePointTable endpointTable = (CodePointTable)getSection(m_callTables, coreId);
-		return endpointTable.get();
+		Map<Long, CodePointTableInfo> collections = new IteratableMap<Long, CodePointTableInfo>();
+		for(Section s : getSections(m_callTables, coreId))
+			collections.putAll(((CodePointTable)s).get());
+		return collections;
 	}
 
 	public Collection<Long> getThreadStartPoints(CoreId coreId) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStartPoints, coreId);
-		return threadDelimiter.get();
+		Collection<Long> collections = new ArrayList<Long>();
+		for(Section s : getSections(m_threadStartPoints, coreId))
+			collections.addAll(((ThreadDelimiters)s).get());
+		return collections;
 	}
 
 	public Collection<Long> getThreadStopPoints(CoreId coreId) {
-		ThreadDelimiters threadDelimiter = (ThreadDelimiters)getSection(m_threadStopPoints, coreId);
-		return threadDelimiter.get();
+		Collection<Long> collections = new ArrayList<Long>();
+		for(Section s : getSections(m_threadStopPoints, coreId))
+			collections.addAll(((ThreadDelimiters)s).get());
+		return collections;
 	}
 
 	public Collection<SrcStringInfo> getSrcLevelCommands(CoreId coreId) {
-		SrcLevelCommands srcLevelCommands = (SrcLevelCommands)getSection(m_srcLevelCommands, coreId);
-		return srcLevelCommands.get();
+		Collection<SrcStringInfo> collections = new ArrayList<SrcStringInfo>();
+		for(Section s : getSections(m_srcLevelCommands, coreId))
+			collections.addAll(((SrcLevelCommands)s).get());
+		return collections;
 	}
 
 	public Collection<SrcLevelLoopInfo> getSrcLevelLoops(CoreId coreId) {
-		SrcLevelLoops loops = (SrcLevelLoops)getSection(m_srcLevelLoops, coreId);
-		return loops.get();
+		Collection<SrcLevelLoopInfo> collections = new ArrayList<SrcLevelLoopInfo>();
+		for(Section s : getSections(m_srcLevelLoops, coreId))
+			collections.addAll(((SrcLevelLoops)s).get());
+		return collections;
 	}
 
 	public Collection<String> getSystems(CoreId coreId) {
-		Systems systems = (Systems)getSection(m_systems, coreId);
-		return systems.get();
+		Collection<String> collections = new ArrayList<String>();
+		for(Section s : getSections(m_systems, coreId))
+			collections.addAll(((Systems)s).get());
+		return collections;
 	}
-
 	private boolean loadSection(CommandSource src, Collection<Section> sections) {
 		for (Section section : sections) {
 			if (!section.load(src, m_xeLoader)) {
@@ -192,6 +246,8 @@ public class Sections {
 		return true;
 	}
 
+
+	
 	private Section getSection(Collection<Section> sections, CoreId coreId) {
 		for (Section section : sections) {
 			if (section.getCoreId().equals(coreId)) {
@@ -200,5 +256,15 @@ public class Sections {
 		}
 		assert(false);
 		return null;
+	}
+	
+	private Collection<Section> getSections(Collection<Section> sections, CoreId coreId) {
+		Collection<Section> matchingSections =  new ArrayList<Section>();
+		for (Section section : sections) {
+			if (section.getCoreId().equals(coreId)) {
+				matchingSections.add(section);
+			}
+		}
+		return matchingSections;
 	}
 }

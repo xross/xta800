@@ -17,9 +17,10 @@ int func(int x) {
             retval = 5;
             break;
     }
+  return retval;
 }
-
+int y;
 int main() {
-    return func(3);
+    return func(y);
 }
 
