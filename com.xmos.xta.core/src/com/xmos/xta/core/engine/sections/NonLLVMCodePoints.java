@@ -1,7 +1,5 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.util.ArrayList;
-
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.XeLoader;
@@ -11,11 +9,10 @@ import com.xmos.xta.core.engine.Notifier;
 public class NonLLVMCodePoints extends CodePoints  {
 	private String m_sectionName;
 	private static final boolean Debug = false;
-	
+
 	NonLLVMCodePoints(CoreId coreId, String sectionName, Notifier notifier) {
 		super(coreId, notifier);
 		m_sectionName = sectionName;
-		m_codePoints = new ArrayList<CodePointInfo>();
 	}
 
 	boolean load(CommandSource src, XeLoader xeLoader) {
@@ -61,7 +58,8 @@ public class NonLLVMCodePoints extends CodePoints  {
 					if(Debug) System.out.println(byteIndex + "\tlineNumber " + lineNumber);
 		    		byteIndex += 4;
 
-		    		m_codePoints.add(new CodePointInfo(this, location, codePoint, compilationDir, fileName, lineNumber));
+		    		m_codePoints.add(new CodePointInfo(this, location, codePoint, 
+		    				compilationDir, fileName, lineNumber));
 		    	}
 			}
 			

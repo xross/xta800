@@ -14,7 +14,7 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
 	private String m_sectionName;
 	private FileTable m_fileTable;
 
-	private static final boolean Debug = false;
+	private static final boolean Debug = true;
 	
 	LLVMSrcLabelCodePoints(CoreId coreId, String sectionName, Notifier notifier, FileTable ft) {
 		super(coreId, notifier);
@@ -80,7 +80,7 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
 					if(Debug) System.out.println("----------------------------");
 					
 					String lblName = ByteArrayManipulation.readString(data,byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tlblName " + lblName + "|");
+					if(Debug) System.out.println(byteIndex + "\tlblName " + lblName + "");
 					byteIndex += lblName.length() + 1;
 
 					int fileLocs = ByteArrayManipulation.readInt(data,byteIndex);
@@ -96,16 +96,16 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
 						byteIndex += 4;
 						
 						int FromLine = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tFromLine " + fileLocs);
+						if(Debug) System.out.println(byteIndex + "\tFromLine " + FromLine);
 						byteIndex += 4;
 						int FromCol = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tToLine " + fileLocs);
+						if(Debug) System.out.println(byteIndex + "\tToLine " + FromCol);
 						byteIndex += 4;
 						int ToLine = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tFromCol " + fileLocs);
+						if(Debug) System.out.println(byteIndex + "\tFromCol " + ToLine);
 						byteIndex += 4;
 						int ToCol = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tToCol " + fileLocs);
+						if(Debug) System.out.println(byteIndex + "\tToCol " + ToCol);
 						byteIndex += 4;
 						
 						FileLoc fileLoc = new FileLoc(f, FromLine, FromCol, ToLine, ToCol);
@@ -126,7 +126,6 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
 						String InlineInfo = ByteArrayManipulation.readString(data, byteIndex);
 						if(Debug) System.out.println(byteIndex + "\tInlineInfo " + InlineInfo);
 						byteIndex += InlineInfo.length() + 1;
-						
 						
 						for(FileLoc fl : fileLocList){
 							

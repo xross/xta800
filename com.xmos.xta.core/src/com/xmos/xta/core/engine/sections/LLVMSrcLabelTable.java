@@ -91,26 +91,28 @@ public class LLVMSrcLabelTable extends SrcLabelTable {
 					List<FileLoc> fileLocList = new ArrayList<FileLoc>();
 					
 					for(int fl=0;fl < fileLocs;fl++){
+						if(Debug) System.out.println("================= file ===================");
 						long fileLbl =  ByteArrayManipulation.readInt(data,byteIndex);
 						File f = m_fileTable.getFileMap().get(fileLbl);
 						if(Debug) System.out.println(byteIndex + "\tfileLbl " + fileLbl + " "+ f.getName());
 						byteIndex += 4;
 						
 						int FromLine = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tFromLine " + fileLocs);
-						byteIndex += 4;
-						int FromCol = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tToLine " + fileLocs);
+						if(Debug) System.out.println(byteIndex + "\tFromLine " + FromLine);
 						byteIndex += 4;
 						int ToLine = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tFromCol " + fileLocs);
+						if(Debug) System.out.println(byteIndex + "\tToLine " + ToLine);
+						byteIndex += 4;
+						int FromCol = ByteArrayManipulation.readInt(data,byteIndex);
+						if(Debug) System.out.println(byteIndex + "\tFromCol " + FromCol);
 						byteIndex += 4;
 						int ToCol = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tToCol " + fileLocs);
+						if(Debug) System.out.println(byteIndex + "\tToCol " + ToCol);
 						byteIndex += 4;
 						
 						FileLoc fileLoc = new FileLoc(f, FromLine, FromCol, ToLine, ToCol);
 						fileLocList.add(fileLoc);
+						if(Debug) System.out.println("================= eof  ===================");
 					}
 					int subSize = ByteArrayManipulation.readInt(data, byteIndex);
 					if(Debug) System.out.println(byteIndex + "\tsubSize " + subSize);
@@ -119,7 +121,7 @@ public class LLVMSrcLabelTable extends SrcLabelTable {
 					int entriesEnd = byteIndex + subSize;
 					
 					while (byteIndex < entriesEnd) {
-						if(Debug) System.out.println("====================================");
+						if(Debug) System.out.println("================== label ==================");
 						long locationLbl = ByteArrayManipulation.readInt(data,byteIndex);
 						if(Debug) System.out.println(byteIndex + "\tlocationLbl " + locationLbl);
 						byteIndex += 4;
@@ -140,9 +142,9 @@ public class LLVMSrcLabelTable extends SrcLabelTable {
 							m_locations.put(locationLbl, 
 									new SrcLabelTableInfo(this, locationLbl, 
 											path, fileName,
-											fl.getFromLine(), fl.getToCol()));
+											fl.getFromLine(), fl.getToLine()));
 						}
-						if(Debug) System.out.println("====================================");
+						if(Debug) System.out.println("================ eol ====================");
 					}
 
 					if(Debug) System.out.println("----------------------------");

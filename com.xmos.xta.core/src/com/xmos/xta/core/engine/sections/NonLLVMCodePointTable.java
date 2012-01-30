@@ -1,16 +1,14 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.io.File;
 import java.util.Map;
 
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
-public class NonLLVMCodePointTable extends Section {
+public class NonLLVMCodePointTable extends CodePointTable {
 	private String m_sectionName;
 	private Map<Long, CodePointTableInfo> m_locations;
 	
