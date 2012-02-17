@@ -17,7 +17,5 @@ system("@ARGV load $genDir/test.xe " .
        "-print structure - " .
        "-analyze path ENDPOINT:label1 ENDPOINT:label2 " .
        "-print structure - " .
-       "-analyze path CALL:label2 CALL:label1 " .
-       "-print structure - " .
        "-exit > $genDir/call_srclabel.txt 2>&1");
 

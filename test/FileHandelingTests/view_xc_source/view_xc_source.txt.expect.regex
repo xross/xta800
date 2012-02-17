@@ -2,7 +2,7 @@
 .*test.xc
 ----------------------------------
   1: int main\(\)
-  2: {
+.*
 \+ 3:   int result = 0;
 \+ 4:   return result;
   5: }

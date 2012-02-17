@@ -10,9 +10,11 @@ public class CodePointInfo extends SectionInfo implements FileLineInfo {
     public CodePointInfo(Section section, long pc, String label, String compilationDir,
     		String fileName, long lineNumber) {
     	super(section);
-    	
     	m_pc = pc;
     	m_label = label;
+		if(compilationDir.endsWith("/")){
+			compilationDir = compilationDir.substring(0, compilationDir.length()-1);
+		}
     	m_compilationDir = compilationDir;
     	m_fileName = fileName;
     	m_lineNumber = lineNumber;

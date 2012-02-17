@@ -13,7 +13,10 @@ public class SrcLabelTableInfo extends SectionInfo implements Comparable<SrcLabe
     		String compilationDir, String fileName,
     		int lineNumberStart, int lineNumberEnd) {
     	super(section);
-    	
+
+		if(compilationDir.endsWith("/")){
+			compilationDir = compilationDir.substring(0, compilationDir.length()-1);
+		}
     	m_pc = pc;
     	m_compilationDir = compilationDir;
     	m_fileName = fileName;

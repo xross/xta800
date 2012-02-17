@@ -1,22 +1,20 @@
-function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
-.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
-.    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s test
-.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
-.    .    loop\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.*
+[^^^]
 .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 101\) / \d+\.\d+ [mun]s \(x 101\) 
-.    .    .    seq\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.*
+[^^^]
 .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 100\) / \d+\.\d+ [mun]s \(x 100\) 
-.    .    .    .    cond\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
-.    .    .    .    .    seq\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.*
+[^^^]
 .    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 25\) / \d+\.\d+ [mun]s \(x 25\) 
 .    .    .    .    .    .    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s func2
 .    .    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 25\) / \d+\.\d+ [mun]s \(x 25\) 
-.    .    .    .    .    seq\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
+.*
+[^^^]
 .    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 75\) / \d+\.\d+ [mun]s \(x 75\) 
 .    .    .    .    .    .    function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s func1
 .    .    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 75\) / \d+\.\d+ [mun]s \(x 75\) 
 .    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 75\) / \d+\.\d+ [mun]s \(x 75\) 
-.    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 100\) / \d+\.\d+ [mun]s \(x 100\) 
-.    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
-.    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
+.*
+[^^^]
 

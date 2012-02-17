@@ -1,10 +1,10 @@
 #include <xs1.h>
 
 port p = XS1_PORT_1A;
-
+int x ;
 int test()
 {
-    int x = 0;
+    
     while (1) {
         #pragma xta endpoint "a"
         p <: 1;        
@@ -14,8 +14,8 @@ int test()
         ++x;
     } 
     #pragma xta endpoint "b"
-    p <: 1;
-    return 0;
+    p :> x;
+    return x;
 }
 
 int main(){

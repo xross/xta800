@@ -1,8 +1,9 @@
 #include <xs1.h>
 #include <platform.h>
-
+int x;
+int y;
 int test0(chanend c0, chanend c1) {
-    int x = 0;
+    
     
     #pragma xta endpoint "output0" 
     c1 <: x;
@@ -14,15 +15,14 @@ int test0(chanend c0, chanend c1) {
 }
 
 int test1(chanend c0, chanend c1) {
-    int x = 0;
     
     #pragma xta endpoint "output1" 
-    c1 <: x;
+    c1 <: y;
 
     #pragma xta endpoint "input1" 
-    c0 :> x;
+    c0 :> y;
 
-    return x;
+    return y;
 }
 
 int main()

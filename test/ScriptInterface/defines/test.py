@@ -45,11 +45,6 @@ try:
     xta.removeFunctionTime("l");
     display(xta.getFunctionTimes())
 
-    xta.addPathTime("callf", "callg", 10.0, "us")
-    display(xta.getPathTimes())
-    xta.removePathTime("callf", "callg");
-    display(xta.getPathTimes())
-
 except java.lang.Exception, e:
     print e.getMessage()
 

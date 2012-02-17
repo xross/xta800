@@ -30,40 +30,36 @@ public class NonLLVMSrcLabelTable extends SrcLabelTable {
 		}
 		try {
 			int byteIndex = 0;
-			while (byteIndex < data.length) {
-				int size = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tsize " + size);
-				byteIndex += 4;
-	
-				int version = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tversion " + version);
-				byteIndex += 4;
-	
-				String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
-		   		byteIndex += compilationDir.length() + 1;
-				if(Debug) System.out.println(byteIndex + "\tcompilationDir " + compilationDir);
+	        while (byteIndex < data.length) {
+	        	int base = byteIndex;
 
-		       	while (byteIndex < size) {
-		    		String fileName = ByteArrayManipulation.readString(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tfileName " + fileName);
-		    		byteIndex += fileName.length() + 1;
+	        	int size = ByteArrayManipulation.readInt(data, byteIndex);
+	        	byteIndex += 4;
 
-		    		int lineNumberStart = ByteArrayManipulation.readInt(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tlineNumberStart " + lineNumberStart);
-		    		byteIndex += 4;
+	        	// Ignores the version field.
+	       		ByteArrayManipulation.readInt(data, byteIndex);
+	       		byteIndex += 4;
 
-		    		int lineNumberEnd = ByteArrayManipulation.readInt(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tlineNumberEnd " + lineNumberEnd);
-		    		byteIndex += 4;
+	       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
+	       		byteIndex += compilationDir.length() + 1;
 
-		    		long location = ByteArrayManipulation.readInt(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tlocation " + location);
-		    		byteIndex += 4;
+	           	while (byteIndex < (base + size)) {
+	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
+	        		byteIndex += fileName.length() + 1;
 
-		    		m_locations.put(location, new SrcLabelTableInfo(this, location, compilationDir,
-		    				fileName, lineNumberStart, lineNumberEnd));
-		    	}
-			}
+	        		int lineNumberStart = ByteArrayManipulation.readInt(data, byteIndex);
+	        		byteIndex += 4;
+
+	        		int lineNumberEnd = ByteArrayManipulation.readInt(data, byteIndex);
+	        		byteIndex += 4;
+
+	        		long location = ByteArrayManipulation.readInt(data, byteIndex);
+	        		byteIndex += 4;
+
+	        		m_locations.put(location, new SrcLabelTableInfo(this, location, compilationDir,
+	        				fileName, lineNumberStart, lineNumberEnd));
+	        	}
+	        }
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"problem reading %s section while loading executable", m_sectionName));

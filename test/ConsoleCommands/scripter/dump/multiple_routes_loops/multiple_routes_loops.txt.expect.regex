@@ -1,36 +1,36 @@
-seq\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.  \* block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    loop\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ ns \(x 11\) / \d+\.\d+ ns \(x 11\) 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ ns \(x 10\) / \d+\.\d+ ns \(x 10\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+seq\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.  \* block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    loop\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 11\) / \d+\.\d+ [un]s \(x 11\) 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 10\) / \d+\.\d+ [un]s \(x 10\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
 
-seq\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.  \* block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    loop\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ us \(x 21\) / \d+\.\d+ us \(x 21\) 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ us \(x 20\) / \d+\.\d+ us \(x 20\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+seq\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.  \* block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    loop\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 21\) / \d+\.\d+ [un]s \(x 21\) 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 20\) / \d+\.\d+ [un]s \(x 20\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
 
-seq\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.  \* block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    loop\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ us \(x 31\) / \d+\.\d+ us \(x 31\) 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ us \(x 30\) / \d+\.\d+ us \(x 30\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+seq\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.  \* block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    loop\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 31\) / \d+\.\d+ [un]s \(x 31\) 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 30\) / \d+\.\d+ [un]s \(x 30\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
 
-seq\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.  \* block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    loop\(\d+\)\s+: \d+\.\d+ us / \d+\.\d+ us 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ us \(x 41\) / \d+\.\d+ us \(x 41\) 
-\.    \.    block\(\d+\)\s+: \d+\.\d+ us \(x 40\) / \d+\.\d+ us \(x 40\) 
-\.    block\(\d+\)\s+: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+seq\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.  \* block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
+\.    loop\(\d+\)\s+: \d+\.\d+ [un]s / \d+\.\d+ [un]s 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 41\) / \d+\.\d+ [un]s \(x 41\) 
+\.    \.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 40\) / \d+\.\d+ [un]s \(x 40\) 
+\.    block\(\d+\)\s+: \d+\.\d+ [un]s \(x 1\) / \d+\.\d+ [un]s \(x 1\) 
 

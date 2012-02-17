@@ -27,41 +27,35 @@ public class NonLLVMCodePoints extends CodePoints  {
 		
 		try {
 			int byteIndex = 0;
-			while (byteIndex < data.length) {
-				int size = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tsize " + size);
-				byteIndex += 4;
-	
-				int version = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tversion " + version);
-				byteIndex += 4;
-	
+	        while (byteIndex < data.length) {
+	        	int base = byteIndex;
 
-		   		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tcompilationDir " + compilationDir);
-		   		byteIndex += compilationDir.length() + 1;
+	        	int size = ByteArrayManipulation.readInt(data, byteIndex);
+	        	byteIndex += 4;
 
-		       	while (byteIndex < size) {
-		    		int location = ByteArrayManipulation.readInt(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tlocation " + location);
-		    		byteIndex += 4;
+	        	// Ignores the version field.
+	       		ByteArrayManipulation.readInt(data, byteIndex);
+	       		byteIndex += 4;
 
-		    		String codePoint = ByteArrayManipulation.readString(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tcodePoint " + codePoint);
-		    		byteIndex += codePoint.length() + 1;
+	       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
+	       		byteIndex += compilationDir.length() + 1;
 
-		    		String fileName = ByteArrayManipulation.readString(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tfileName " + fileName);
-		    		byteIndex += fileName.length() + 1;
+	           	while (byteIndex < (base + size)) {
+	        		int location = ByteArrayManipulation.readInt(data, byteIndex);
+	        		byteIndex += 4;
 
-		    		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
-					if(Debug) System.out.println(byteIndex + "\tlineNumber " + lineNumber);
-		    		byteIndex += 4;
+	        		String codePoint = ByteArrayManipulation.readString(data, byteIndex);
+	        		byteIndex += codePoint.length() + 1;
 
-		    		m_codePoints.add(new CodePointInfo(this, location, codePoint, 
-		    				compilationDir, fileName, lineNumber));
-		    	}
-			}
+	        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
+	        		byteIndex += fileName.length() + 1;
+
+	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
+	        		byteIndex += 4;
+
+            		m_codePoints.add(new CodePointInfo(this, location, codePoint, compilationDir, fileName, lineNumber));
+	        	}
+		    }
 			
 			
    		

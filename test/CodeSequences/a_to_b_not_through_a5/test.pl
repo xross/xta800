@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-        system("xcc -target=$target -march=$arch test.xc -g -O2 -o $genDir/test.xe > $genDir/test.log 2>&1");
+        system("xcc -target=$target -march=$arch test.xc -g -O1 -o $genDir/test.xe > $genDir/test.log 2>&1");
 }
 
 system("@ARGV load $genDir/test.xe " .

@@ -18,7 +18,6 @@ public class Sections {
 	private Notifier m_notifier;
 	
 	private Collection<Section> m_llvmSrcLabel;
-	private Collection<Section> m_fileTables;
 	
 	private Collection<Section> m_branches;
 	private Collection<Section> m_labels;
@@ -56,7 +55,6 @@ public class Sections {
 		m_unreachableFunctions = new ArrayList<Section>();
 		
 		m_llvmSrcLabel = new ArrayList<Section>(); 
-		m_fileTables = new ArrayList<Section>();
     }
 
 	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {
@@ -79,22 +77,18 @@ public class Sections {
 		m_unreachableFunctions.clear();
 		
 		m_llvmSrcLabel.clear();
-		m_fileTables.clear();
 		
 		for (CoreId coreId : m_xeLoader.getCoreIds()) {
 			
 			//All filenames are stored in this table and their index is used by the 
-			FileTable ft = new FileTable(coreId, ".file_table", m_notifier);
 			
-			m_fileTables.add(ft);
+			m_endpoints.add(new LLVMCodePoints(coreId, ".xtaendpoint_locs", m_notifier));
+			m_calls.add(new LLVMCodePoints(coreId, ".xtacall_locs", m_notifier));
+			m_endpointTables.add(new LLVMCodePointTable(coreId, ".xtaendpoint_locs", m_notifier));
+			m_callTables.add(new LLVMCodePointTable(coreId, ".xtacall_locs", m_notifier));
 			
-			m_endpoints.add(new LLVMCodePoints(coreId, ".xtaendpoint_locs", m_notifier, ft));
-			m_calls.add(new LLVMCodePoints(coreId, ".xtacall_locs", m_notifier, ft));
-			m_endpointTables.add(new LLVMCodePointTable(coreId, ".xtaendpoint_locs", m_notifier, ft));
-			m_callTables.add(new LLVMCodePointTable(coreId, ".xtacall_locs", m_notifier, ft));
-			
-			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletabel", m_notifier, ft));
-			m_srcLabelTables.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletabel", m_notifier, ft));
+			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletabel", m_notifier));
+			m_srcLabelTables.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletabel", m_notifier));
 			
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
@@ -114,8 +108,7 @@ public class Sections {
 			
 		}
 		
-		if (!loadSection(src, m_fileTables) ||
-			!loadSection(src, m_llvmSrcLabel) ||
+		if (!loadSection(src, m_llvmSrcLabel) ||
 			!loadSection(src, m_branches) ||
 			!loadSection(src, m_labels) ||
 			!loadSection(src, m_srcLabels) ||

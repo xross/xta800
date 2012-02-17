@@ -1,5 +1,13 @@
-compilation dir: .*paths_windows, filename: test.xc
 compilation dir: .*paths_windows, filename: add/test.xc
+compilation dir: .*paths_windows, filename: test.xc
+----------------------------------
+.*add/test\.xc
+----------------------------------
+  1: int add\(int a, int b\)
+  2: {
+\+ 3:   int res = a \+ b;
+\+ 4:   return res;
+  5: }
 ----------------------------------
 .*test\.xc
 ----------------------------------
@@ -12,11 +20,3 @@ compilation dir: .*paths_windows, filename: add/test.xc
 \+ 7:   return result1;
   8: }
   9: 
-----------------------------------
-.*add/test\.xc
-----------------------------------
-  1: int add\(int a, int b\)
-  2: {
-\+ 3:   int res = a \+ b;
-\+ 4:   return res;
-  5: }

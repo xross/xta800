@@ -8,7 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-system("xcc -target=$target -march=$arch -g -O3 test.xc -o $genDir/test.xe > $genDir/test.log 2>&1");
+system("xcc -target=$target -march=$arch -g -O0 test.xc -o $genDir/test.xe > $genDir/test.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "source cmds.txt " .

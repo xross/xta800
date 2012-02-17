@@ -1,7 +1,7 @@
 #include <platform.h>
 
 void test() {
-    int i = 0;
+    int i;
     while(i < 10) {
         #pragma xta label "loop"
         ++i;

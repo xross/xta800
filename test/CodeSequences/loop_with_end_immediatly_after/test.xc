@@ -2,10 +2,10 @@
 int mul(int x, int y) {
   return (x * y) / 10;
 }
-
+int x, y;
 int test() {
   timer t;
-  int x, y;
+  
   
   #pragma xta endpoint "start"
   t :> x;

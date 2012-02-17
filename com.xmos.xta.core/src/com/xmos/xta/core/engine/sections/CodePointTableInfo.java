@@ -11,7 +11,10 @@ public class CodePointTableInfo extends SectionInfo implements FileLineInfo{
     public CodePointTableInfo(Section section, long pc, String compilationDir,
     		String fileName, long lineNumber) {
     	super(section);
-    	
+
+		if(compilationDir.endsWith("/")){
+			compilationDir = compilationDir.substring(0, compilationDir.length()-1);
+		}
     	m_pc = pc;
     	m_compilationDir = compilationDir;
     	m_fileName = fileName;

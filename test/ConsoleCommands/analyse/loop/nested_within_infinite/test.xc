@@ -4,7 +4,7 @@ port p = XS1_PORT_1A;
 
 void f(int loopCount) {
     int i = 0;
-    int j = 0;
+    int j ;
 
     while (1) {
         while (j < loopCount) {

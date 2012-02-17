@@ -1,7 +1,5 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.util.Map;
-
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.XeLoader;
@@ -10,7 +8,6 @@ import com.xmos.xta.core.engine.Notifier;
 
 public class NonLLVMCodePointTable extends CodePointTable {
 	private String m_sectionName;
-	private Map<Long, CodePointTableInfo> m_locations;
 	
 	private static final boolean Debug = false;
 	
@@ -28,36 +25,41 @@ public class NonLLVMCodePointTable extends CodePointTable {
 		}
 		try {
 			int byteIndex = 0;
-			while (byteIndex < data.length) {
-				int size = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tsize " + size);
-				byteIndex += 4;
-	
-				int version = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tversion " + version);
-				byteIndex += 4;
-	String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
-		if(Debug) System.out.println(byteIndex + "\tcompilationDir " + compilationDir);
-   		byteIndex += compilationDir.length() + 1;
+        while (byteIndex < data.length) {
+        	int base = byteIndex;
 
-       	while (byteIndex < size) {
-    		String fileName = ByteArrayManipulation.readString(data, byteIndex);
-			if(Debug) System.out.println(byteIndex + "\tfileName " + fileName);
-    		byteIndex += fileName.length() + 1;
+        	int size = ByteArrayManipulation.readInt(data, byteIndex);
+			if(Debug) System.out.println(byteIndex + "\tsize " + size);
+			byteIndex += 4;
 
-    		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
-			if(Debug) System.out.println(byteIndex + "\tlineNumber " + lineNumber);
-    		byteIndex += 4;
+			int version = ByteArrayManipulation.readInt(data, byteIndex);
+			if(Debug) System.out.println(byteIndex + "\tversion " + version);
+			byteIndex += 4;
+			if(Debug) System.out.println("data.length " + data.length);
+			if(Debug) System.out.println("byteIndex " + byteIndex);
 
-    		long location = ByteArrayManipulation.readInt(data, byteIndex);
-			if(Debug) System.out.println(byteIndex + "\tlocation " + location);
-    		byteIndex += 4;
 
-    		m_locations.put(location, new CodePointTableInfo(this, location, compilationDir, fileName, lineNumber));
-    	}
+       		String compilationDir = ByteArrayManipulation.readString(data, byteIndex);
+			if(Debug) System.out.println(byteIndex + "\tcompilationDir " + compilationDir);
+       		byteIndex += compilationDir.length() + 1;
 
-			}
-		} catch (Exception e) {
+           	while (byteIndex < (base + size)) {
+        		String fileName = ByteArrayManipulation.readString(data, byteIndex);
+    			if(Debug) System.out.println(byteIndex + "\tfileName " + fileName);
+        		byteIndex += fileName.length() + 1;
+
+        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
+    			if(Debug) System.out.println(byteIndex + "\tlineNumber " + lineNumber);
+        		byteIndex += 4;
+
+        		long location = ByteArrayManipulation.readInt(data, byteIndex);
+    			if(Debug) System.out.println(byteIndex + "\tlocation " + location);
+        		byteIndex += 4;
+
+        		m_locations.put(location, new CodePointTableInfo(this, location, compilationDir, fileName, lineNumber));
+        	}
+        }
+        } catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"problem reading %s section while loading executable", m_sectionName));
 	    	return false;

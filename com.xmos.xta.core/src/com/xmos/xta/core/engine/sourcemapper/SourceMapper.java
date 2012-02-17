@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -165,6 +166,8 @@ public class SourceMapper {
 			engine.provideWorkDone(1);
 			engine.getAbort();			
 		}
+      	
+      	Collections.sort(sourceFiles);
         return sourceFiles;
     }
 

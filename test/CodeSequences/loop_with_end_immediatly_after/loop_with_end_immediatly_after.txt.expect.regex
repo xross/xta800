@@ -1,5 +1,5 @@
-seq\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
-.  \* block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 1\) 
-.    selfloop\(\d+\)\s+: \d+.\d+ us / \d+.\d+ us 
-.    .    block\(\d+\)\s+: \d+.\d+ us \(x 100\) / \d+.\d+ us \(x 100\) 
-
+.*
+[^^^]
+.* selfloop\(\d+\)\s+: \d+.\d+ [nu]s / \d+.\d+ [nu]s 
+.*
+[^^^]
