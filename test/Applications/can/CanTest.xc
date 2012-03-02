@@ -169,71 +169,6 @@ void ledManager(chanend client0, chanend client1, chanend client2,
 	}
 }
 
-#ifdef SIM_TESTING
-int main() {
-	chan rxChan_0, txChan_0;
-	chan rxChan_1, txChan_1;
-	chan controlChan_0, controlChan_1;
-	chan ledChan_0, ledChan_1;
-
-	par {
-		on stdcore[0]: canPhyRxTx(rxChan_0, txChan_0, canClk_0, canRx_0, canTx_0);
-		on stdcore[0]: canTestRxTx(controlChan_0, rxChan_0, txChan_0, ledChan_0, 0);
-
-		on stdcore[1]: canPhyRxTx(rxChan_1, txChan_1, canClk_1, canRx_1, canTx_1);
-		on stdcore[1]: canTestRxTx(controlChan_1, rxChan_1, txChan_1, ledChan_1, 1);
-
-		on stdcore[2]: canController(controlChan_0, controlChan_1);
-	}
-	return 0;
-}
-#else
-
-#ifdef TEST_SINGLE_RXTX
-#define COUNTER_MASK 0xfff
-void canNetworkRx(chanend rxChan, chanend ledChan) {
-	struct CanPacket p;
-	unsigned count = 1;
-
-	while(1) {
-		unsigned int value = inuint(rxChan);
-		receivePacket(rxChan, p);
-
-		count = (count + 1) & COUNTER_MASK;
-		outuint(ledChan, count);
-	}
-}
-
-void canNetworkTx(chanend txChan, chanend ledChan, int bitZero) {
-	struct CanPacket p;
-	int count = 0;
-
-	while (1) {
-		randomizePacket(p, bitZero);
-
-		outuint(txChan, count);
-		sendPacket(txChan, p);
-
-		count = (count + 1) & COUNTER_MASK;
-		outuint(ledChan, count);
-	}
-}
-
-int main() {
-	chan rxChan, txChan;
-	chan ledChan_0, ledChan_1;
-
-	par {
-		on stdcore[0]: canPhyRxTx(rxChan, txChan, canClk_0, canRx_0, canTx_0);
-		on stdcore[0]: canNetworkRx(rxChan, ledChan_0);
-//		on stdcore[0]: canNetworkTx(txChan, ledChan_1, 0);
-		on stdcore[0]: ledManager(ledChan_0, ledChan_1,
-				led0_0, led1_0, led2_0, ledGreen_0, ledRed_0);
-	}
-	return 0;
-}
-#endif
-
 int main() {
 	chan rxChan_0, txChan_0;
 	chan rxChan_1, txChan_1;
@@ -254,4 +189,3 @@ int main() {
 	return 0;
 }
 
-#endif

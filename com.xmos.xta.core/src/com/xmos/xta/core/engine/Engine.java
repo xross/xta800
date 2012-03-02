@@ -1407,7 +1407,7 @@ public class Engine extends Notifier implements Aborter {
 		return m_sections.getSrcLabels(coreId);
 	}
 
-	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(CoreId coreId) {
+	public IteratableSet<SrcLabelTableInfo> getSrcLabelTable(CoreId coreId) {
 		return m_sections.getSrcLabelTable(coreId);
 	}
 
@@ -1415,7 +1415,7 @@ public class Engine extends Notifier implements Aborter {
 		return m_sections.getEndpoints(coreId);
 	}
 
-	public Map<Long, CodePointTableInfo> getEndpointTable(CoreId coreId) {
+	public IteratableSet< CodePointTableInfo> getEndpointTable(CoreId coreId) {
 		return m_sections.getEndpointTable(coreId);
 	}
 
@@ -1423,7 +1423,7 @@ public class Engine extends Notifier implements Aborter {
 		return m_sections.getCalls(coreId);
 	}
 
-	public Map<Long, CodePointTableInfo> getCallTable(CoreId coreId) {
+	public IteratableSet< CodePointTableInfo> getCallTable(CoreId coreId) {
 		return m_sections.getCallTable(coreId);
 	}
 

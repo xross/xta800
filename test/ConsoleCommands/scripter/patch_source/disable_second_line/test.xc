@@ -17,10 +17,10 @@ int foo(){
 int bar(){
     int x;
     while(1){
-        x = foo();
-        x = foo();
-        x = foo();
-        x = foo();
+        p<:foo();
+        p<:foo();
+        p<:foo();
+        p<:foo();
     }
     return x;
 }

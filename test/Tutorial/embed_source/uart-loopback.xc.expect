@@ -58,7 +58,6 @@ void txByte(out port txd, int byte)
 
 	// Output data bits
 	for (int i = 0; i < 8; i++) {
-		#pragma xta label "tx_loop_exclusion"
 		time += BIT_TIME;
 		#pragma xta endpoint "tx_loop"
 		txd @ time <: >> byte;
@@ -125,7 +124,7 @@ char rxByte(in port rxd)
 // Route: endpoints: tx_loop to tx_stop
 //
 #pragma xta command "remove exclusion *"
-#pragma xta command "add exclusion tx_loop_exclusion"
+#pragma xta command "add exclusion tx_loop"
 #pragma xta command "analyze endpoints tx_loop tx_stop"
 #pragma xta command "set required - 8.68 us"
 
@@ -133,7 +132,7 @@ char rxByte(in port rxd)
 // Route: endpoints: tx_stop to tx_start
 //
 #pragma xta command "remove exclusion *"
-#pragma xta command "add exclusion tx_loop_exclusion"
+#pragma xta command "add exclusion tx_loop"
 #pragma xta command "add exclusion tx_done"
 #pragma xta command "analyze endpoints tx_stop tx_start"
 #pragma xta command "set required - 8.68 us"

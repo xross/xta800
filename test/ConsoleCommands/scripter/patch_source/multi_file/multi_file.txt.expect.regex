@@ -1,13 +1,13 @@
 Modifiable Enabled    Reference  ->     MapsTo
 true       true       foo.xc:15  -> endpoint_0
-true       true       .+/bar.xc:11 ->    label_\d+
-true       true       .+/bar.xc:6 -> +call_\d+
-true       true       .+/bar.xc:9 -> +call_\d+
+true       true       .+/bar.xc:16 ->    label_\d+
+true       true       .+/bar.xc:11 ->\s+endpoint_\d+
+true       true       .+/bar.xc:14 ->\s+endpoint_\d+
 Modifiable Enabled    Reference  ->     MapsTo
 true       true       foo.xc:15  ->          x
-true       true       .+/bar.xc:11 -> out_of_bounds
-true       true       .+/bar.xc:6 ->      start
-true       true       .+/bar.xc:9 ->       stop
+true       true       .+/bar.xc:16 -> out_of_bounds
+true       true       .+/bar.xc:11 ->      start
+true       true       .+/bar.xc:14 ->       stop
 # load ".+test.xe"
 
 #

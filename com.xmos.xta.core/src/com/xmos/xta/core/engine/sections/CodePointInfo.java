@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.sections;
 
-public class CodePointInfo extends SectionInfo implements FileLineInfo {
+public class CodePointInfo extends SectionInfo implements Comparable<CodePointInfo>, FileLineInfo {
     private long m_pc;
     private String m_label;
     private String m_compilationDir;
@@ -47,4 +47,20 @@ public class CodePointInfo extends SectionInfo implements FileLineInfo {
     public String toReferenceString() {
     	return toString();
     }
+
+    public int compareTo(CodePointInfo o) {
+		if (!m_fileName.equals(o.m_fileName)) {
+			return m_fileName.compareTo(o.m_fileName);
+		} else if (m_lineNumber < o.m_lineNumber) {
+			return -1;
+		} else if (m_lineNumber > o.m_lineNumber) {
+			return 1;
+		} else if (m_pc < o.m_pc) {
+			return -1;
+		} else if (m_pc > o.m_pc) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
 }

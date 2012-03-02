@@ -28,7 +28,7 @@ public class CallFileLineReference extends ReferenceType {
         long lineNumber = getLineNumber(ref);
 
         boolean found = false;
-		for (CodePointTableInfo info : engine.getCallTable(getCoreId()).values()) {
+		for (CodePointTableInfo info : engine.getCallTable(getCoreId())) {
 			if ((info.getLineNumber() == lineNumber) && 
 				FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
 						fileName, engine.getWorkspacePath(), engine.getSourceMapper())) {

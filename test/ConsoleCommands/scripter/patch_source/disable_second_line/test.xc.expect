@@ -17,11 +17,11 @@ int foo(){
 int bar(){
     int x;
     while(1){
-        x = foo();
-        #pragma xta call "call_0"
-        x = foo();
-        x = foo();
-        x = foo();
+        p<:foo();
+        #pragma xta endpoint "endpoint_0"
+        p<:foo();
+        p<:foo();
+        p<:foo();
     }
     #pragma xta label "label_0"
     return x;

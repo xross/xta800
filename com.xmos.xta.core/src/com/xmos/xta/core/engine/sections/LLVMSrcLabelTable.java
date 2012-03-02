@@ -1,7 +1,5 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,12 +12,11 @@ import com.xmos.xta.core.engine.Notifier;
 public class LLVMSrcLabelTable extends SrcLabelTable {
 	private String m_sectionName;
 
-	private static final boolean Debug = true;
-	LinkedList<Integer> lineCover;
+	private static final boolean Debug = false;
+
 	LLVMSrcLabelTable(CoreId coreId, String sectionName, Notifier notifier) {
 		super(coreId, notifier);
 		m_sectionName = sectionName;
-		lineCover = new LinkedList<Integer>();
 	}
 	
 	class FileLoc {
@@ -122,7 +119,7 @@ public class LLVMSrcLabelTable extends SrcLabelTable {
 							int Range_toCol = ByteArrayManipulation.readInt(data, byteIndex);
 							byteIndex += 4;
 							
-							System.out.println("\t" + Range_fileName + "\tfrom line:" +Range_fromLine + "\tto line" +Range_toLine);
+							if(Debug) System.out.println("\t" + Range_fileName + "\tfrom line:" +Range_fromLine + "\tto line" +Range_toLine);
 
 							if(Range_fileName.equals(fileName)){
 								FileLoc fl = new FileLoc(Range_fileName, Range_compDir, 
@@ -132,7 +129,6 @@ public class LLVMSrcLabelTable extends SrcLabelTable {
 										Range_toCol);
 								FileRanges.add(fl);
 							} else {
-								System.out.println("bad");
 								
 								if(lblName.length() == 0){
 									//compiler generated
@@ -161,17 +157,10 @@ public class LLVMSrcLabelTable extends SrcLabelTable {
 
 							//for each fileRange add an entry
 							for(FileLoc fl : FileRanges){
-								m_locations.put(asmLable, 
-										new SrcLabelTableInfo(this, asmLable, 
+								m_locations.add(new SrcLabelTableInfo(this, asmLable, 
 												compDir, fileName,
 												fl.getFromLine(), fl.getToLine()));
 								hasAsmEntry = true;
-								if(fileName.equals("UartReceive.xc")){
-									for(int l=fl.getFromLine(); l<=fl.getFromLine(); l++){
-										if(!lineCover.contains(l))
-											lineCover.add(l);
-									}
-								}
 							}
 							
 						}
@@ -185,10 +174,6 @@ public class LLVMSrcLabelTable extends SrcLabelTable {
 					"problem reading %s section while loading executable", m_sectionName));
 	    	return false;
 	    }
-		Collections.sort(lineCover);
-		for(int l:lineCover){
-			System.out.println(l);
-		}
 		
 		return true;
 	}

@@ -124,7 +124,7 @@ while(<INFILE>) {
 my $t = %_;
 my $fnopsWithinAcceptableBounds = "";
 
-if($xtaNumFnops >= $xsimNumFNOPs and $xtaNumFnops <= $xsimNumFNOPs*2 ){
+if($xtaNumFnops >= $xsimNumFNOPs and $xtaNumFnops <= ($xsimNumFNOPs+1)*2 ){
     $fnopsWithinAcceptableBounds = "TRUE";
 } else {
     $fnopsWithinAcceptableBounds = "FALSE xta: " . $xtaNumFnops . " xsim: " . $xsimNumFNOPs;

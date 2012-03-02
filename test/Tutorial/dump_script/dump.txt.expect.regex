@@ -17,7 +17,7 @@ set required - 8.68 us
 # Route: endpoints: tx_loop to tx_stop
 #
 remove exclusion \*
-add exclusion tx_loop_exclusion
+add exclusion tx_loop
 analyze endpoints tx_loop tx_stop
 set required - 8.68 us
 
@@ -25,7 +25,7 @@ set required - 8.68 us
 # Route: endpoints: tx_stop to tx_start
 #
 remove exclusion \*
-add exclusion tx_loop_exclusion
+add exclusion tx_loop
 add exclusion tx_done
 analyze endpoints tx_stop tx_start
 set required - 8.68 us

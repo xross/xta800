@@ -8,6 +8,10 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
+#system("xcc -target=$target -march=$arch -g -O1 -c UartTransmit.o UartTransmit.xc");
+#system("xcc -target=$target -march=$arch -g -O0 -c UartReceive.o UartReceive.xc");
+#system("xcc -target=$target -march=$arch -g -O1 -c Uart.o Uart.xc");
+#system("xcc -target=$target -march=$arch -g -O1 Uart.xc UartReceive.xc UartTransmit.xc -o $genDir/test.xe > $genDir/uart_simple.log 2>&1");
 system("xcc -target=$target -march=$arch -g -O1 Uart.xc UartReceive.xc UartTransmit.xc -o $genDir/test.xe > $genDir/uart_simple.log 2>&1");
 }
 

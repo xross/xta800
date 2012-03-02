@@ -9,9 +9,8 @@ set required - 0.048 mhz
 ## Interpolate S1 Stage
 ## =========================================================================== #
 
-analyse loop interS1ThreadInput
-set loop - interS1ThreadInnerLoop 95
-set loopscope - interS1ThreadInnerLoop a
+analyse loop interS1ThreadInputLabel
+set loop - interS1ThreadInnerLoop 24
 set required - 0.048 mhz
 
 analyse loop interS1ThreadOutput
@@ -24,7 +23,7 @@ set required - 0.048 mhz
 
 analyse loop interS2ThreadInput
 set loop - interS2ThreadInnerLoop 26
-set loopscope - interS2ThreadInnerLoop a
+set loop - interS2ThreadOutput 1
 set required - 0.162 mhz
 
 analyse loop interS2ThreadOutput

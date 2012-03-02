@@ -26,8 +26,9 @@ add exclusion startRx
 add exclusion excludeRxEof
 add exclusion excludeHandleError
 add exclusion excludeSignalError
+add exclusion exitRx
 analyze endpoints txCheckBit txCheckBit
-set required - 980 ns
+set required - 1500 ns
 
 #
 # TX check to send
@@ -35,21 +36,6 @@ set required - 980 ns
 add exclusion unexpected
 analyze endpoints txCheckBit sendBit
 set required - 300 ns
-
-#
-# Turnaround
-#
-remove exclusion *
-add exclusion phyLoop
-add exclusion excludeTx
-add exclusion txLoop
-add exclusion txCheckBit
-add exclusion excludeRxEof
-add exclusion sendBit
-add exclusion excludeHandleError
-add exclusion excludeSignalError
-analyze endpoints txCheckBit startRx
-set required - 1.0 us
 
 #
 # Packet receive
@@ -69,30 +55,5 @@ set required - 1.0 us
 remove exclusion *
 analyze function sendPacket
 set required - 1.0 us
-
-#
-# Error cases
-#
-remove exclusion *
-add exclusion phyLoop
-add exclusion excludeRxEof
-add exclusion excludeTx
-add exclusion rxLoop
-add exclusion excludeHandleError
-add exclusion excludeSignalError
-analyze endpoints startRx sendError
-set required - 320 ns
-
-remove exclusion *
-add exclusion phyLoop
-add exclusion excludeRxEof
-add exclusion excludeRx
-add exclusion excludeTx
-add exclusion txLoop
-add exclusion startRx
-add exclusion excludeHandleError
-add exclusion excludeSignalError
-analyze endpoints txCheckBit sendError
-set required - 320 ns
 
 print summary

@@ -128,13 +128,13 @@ public abstract class ReferenceType {
 		return m_type;
 	}
 
-	boolean inSrcLabelTable(String ref, Map<Long, SrcLabelTableInfo> srcLabelTable, 
+	boolean inSrcLabelTable(String ref, IteratableSet<SrcLabelTableInfo> srcLabelTable, 
 			String workspacePath, SourceMapper sourceMapper) {
 		
 		String fileName = getFileName(ref);
         long lineNumber  = getLineNumber(ref);
 
-		for (SrcLabelTableInfo info : srcLabelTable.values()) {
+		for (SrcLabelTableInfo info : srcLabelTable) {
             if ((lineNumber >= info.getLineNumberStart()) &&
             	(lineNumber <= info.getLineNumberEnd())  &&            		
             	FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
@@ -145,13 +145,13 @@ public abstract class ReferenceType {
 		return false;
 	}
 
-	boolean inCodePointTable(String ref, Map<Long, CodePointTableInfo> codePointTable, 
+	boolean inCodePointTable(String ref,IteratableSet< CodePointTableInfo> codePointTable, 
 			String workspacePath, SourceMapper sourceMapper) {
 		
 		String fileName = getFileName(ref);
         long lineNumber  = getLineNumber(ref);
         
-		for (CodePointTableInfo info : codePointTable.values()) {
+		for (CodePointTableInfo info : codePointTable) {
             if ((lineNumber == info.getLineNumber()) && 
             	FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
             			fileName, workspacePath, sourceMapper)) {

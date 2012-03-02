@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.sections;
 
 import java.io.File;
 
-public class CodePointTableInfo extends SectionInfo implements FileLineInfo{
+public class CodePointTableInfo extends SectionInfo implements Comparable<CodePointTableInfo>, FileLineInfo{
     private long m_pc;
     private String m_compilationDir;
     private String m_fileName;
@@ -44,6 +44,22 @@ public class CodePointTableInfo extends SectionInfo implements FileLineInfo{
     public String toReferenceString() {
     	return toString();
     }
+
+	public int compareTo(CodePointTableInfo o) {
+		if (!m_fileName.equals(o.m_fileName)) {
+			return m_fileName.compareTo(o.m_fileName);
+		} else if (m_lineNumber < o.m_lineNumber) {
+			return -1;
+		} else if (m_lineNumber > o.m_lineNumber) {
+			return 1;
+		} else if (m_pc < o.m_pc) {
+			return -1;
+		} else if (m_pc > o.m_pc) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
     
     
 }

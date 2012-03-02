@@ -7,7 +7,7 @@ analyze path uart-loopback.xc:60 uart-loopback.xc:60
 set required - 8680 ns
 
 remove exclusion uart-loopback.xc:65
-add exclusion uart-loopback.xc:59
+add exclusion uart-loopback.xc:60
 analyze path uart-loopback.xc:60 uart-loopback.xc:65
 set required - 8680 ns
 
@@ -19,6 +19,5 @@ scripter rename uart-loopback.xc:54 tx_start
 scripter rename uart-loopback.xc:60 tx_loop
 scripter rename uart-loopback.xc:65 tx_stop
 scripter rename uart-loopback.xc:46 tx_done
-scripter rename uart-loopback.xc:59 tx_loop_exclusion
 
 scripter embed uart-loopback.xc

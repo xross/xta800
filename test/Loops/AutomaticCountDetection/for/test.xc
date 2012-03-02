@@ -1,8 +1,11 @@
+
+extern int bar();
+
+int b;
 int test() {
-  int a=0;
-  int b=0;
+  int a;
   for(a=0;a<500;a++){
-    b+=4;
+    b+=bar();
   }
   return b;
 }

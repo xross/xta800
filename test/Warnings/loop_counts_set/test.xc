@@ -1,15 +1,12 @@
-
-int test(int i) {
-  return i*2;
-}
+extern int test();
 
 int main()
 {
   int sum = 0;
   
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 5*7*11*13*17; i++) {
     #pragma xta label "loop"
-    sum += test(i);
+    sum += test();
   }
   
   return (sum == 90) ? 0 : 1;

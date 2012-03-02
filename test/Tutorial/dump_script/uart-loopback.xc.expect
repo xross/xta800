@@ -58,7 +58,6 @@ void txByte(out port txd, int byte)
 
 	// Output data bits
 	for (int i = 0; i < 8; i++) {
-		#pragma xta label "tx_loop_exclusion"
 		time += BIT_TIME;
 		#pragma xta endpoint "tx_loop"
 		txd @ time <: >> byte;

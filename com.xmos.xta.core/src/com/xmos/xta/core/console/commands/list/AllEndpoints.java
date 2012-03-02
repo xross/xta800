@@ -1,5 +1,8 @@
 package com.xmos.xta.core.console.commands.list;
 
+import java.util.Collections;
+import java.util.LinkedList;
+
 import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -35,7 +38,10 @@ public class AllEndpoints extends Command {
 			return;
 
 		for (CoreId activeCore : engine.getActiveCores()) {			
-			for (CodePointTableInfo info : engine.getEndpointTable(activeCore).values()) {
+			LinkedList<CodePointTableInfo> list = new LinkedList<CodePointTableInfo>();
+			list.addAll(engine.getEndpointTable(activeCore));
+			Collections.sort(list);
+			for (CodePointTableInfo info : list) {
 		   	    console.display(String.format("%s, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n",
 		   	    		activeCore.toString(), 
 		   	    		info.getPc(), info.getCompilationDir(),

@@ -2,12 +2,14 @@ package com.xmos.xta.core.engine.sections;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
@@ -161,10 +163,10 @@ public class Sections {
 		return collections;
 	}
 
-	public Map<Long, SrcLabelTableInfo> getSrcLabelTable(CoreId coreId) {
-		Map<Long, SrcLabelTableInfo> collections = new IteratableMap<Long, SrcLabelTableInfo>();
+	public IteratableSet<SrcLabelTableInfo> getSrcLabelTable(CoreId coreId) {
+		IteratableSet<SrcLabelTableInfo> collections = new IteratableSet<SrcLabelTableInfo>();
 		for(Section s : getSections(m_srcLabelTables, coreId))
-			collections.putAll(((SrcLabelTable)s).get());
+			collections.addAll(((SrcLabelTable)s).get());
 		return collections;
 	}
 
@@ -175,10 +177,10 @@ public class Sections {
 		return collections;
 	}
 
-	public Map<Long, CodePointTableInfo> getEndpointTable(CoreId coreId) {
-		Map<Long, CodePointTableInfo> collections = new IteratableMap<Long, CodePointTableInfo>();
+	public IteratableSet< CodePointTableInfo> getEndpointTable(CoreId coreId) {
+		IteratableSet< CodePointTableInfo> collections = new IteratableSet< CodePointTableInfo>();
 		for(Section s : getSections(m_endpointTables, coreId))
-			collections.putAll(((CodePointTable)s).get());
+			collections.addAll(((CodePointTable)s).get());
 		return collections;
 	}
 
@@ -189,10 +191,10 @@ public class Sections {
 		return collections;
 	}
 
-	public Map<Long, CodePointTableInfo> getCallTable(CoreId coreId) {
-		Map<Long, CodePointTableInfo> collections = new IteratableMap<Long, CodePointTableInfo>();
+	public IteratableSet< CodePointTableInfo> getCallTable(CoreId coreId) {
+		IteratableSet< CodePointTableInfo> collections = new IteratableSet< CodePointTableInfo>();
 		for(Section s : getSections(m_callTables, coreId))
-			collections.putAll(((CodePointTable)s).get());
+			collections.addAll(((CodePointTable)s).get());
 		return collections;
 	}
 

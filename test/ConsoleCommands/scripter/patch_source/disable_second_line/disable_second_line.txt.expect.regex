@@ -1,17 +1,17 @@
 Modifiable Enabled    Reference  ->     MapsTo
-true       true       test.xc:21 ->     call_0
-true       true       test.xc:23 ->     call_1
+true       true       test.xc:21 ->\s+endpoint_0
+true       true       test.xc:23 ->\s+endpoint_1
 true       true       test.xc:25 ->    label_0
 Modifiable Enabled    Reference  ->     MapsTo
-true       true       test.xc:21 ->     call_0
-true       false      test.xc:23 ->     call_1
+true       true       test.xc:21 ->\s+endpoint_0
+true       false      test.xc:23 ->\s+endpoint_1
 true       true       test.xc:25 ->    label_0
 # load ".+test.xe"
 
 #
-# Route: endpoints: call_0 to test.xc:24
+# Route: endpoints: endpoint_0 to test.xc:24
 #
 add exclusion label_0
 # Warning: 'test.xc:24' is a non-portable reference.
-analyze endpoints call_0 test.xc:24
+analyze endpoints endpoint_0 test.xc:24
 

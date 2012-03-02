@@ -56,7 +56,7 @@ public class NonLLVMCodePointTable extends CodePointTable {
     			if(Debug) System.out.println(byteIndex + "\tlocation " + location);
         		byteIndex += 4;
 
-        		m_locations.put(location, new CodePointTableInfo(this, location, compilationDir, fileName, lineNumber));
+        		m_locations.add( new CodePointTableInfo(this, location, compilationDir, fileName, lineNumber));
         	}
         }
         } catch (Exception e) {

@@ -1,8 +1,7 @@
 package com.xmos.xta.core.engine.references.types;
 
-import java.util.Map;
-
 import com.xmos.libs.util.CoreId;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
@@ -30,17 +29,16 @@ public class EndpointReference extends ReferenceType {
 				long pc = info.getPc();
 				addPc(pc, info.getLabel());
 
-				Map<Long, CodePointTableInfo> endpointTable = engine.getEndpointTable(getCoreId());
-				if (!endpointTable.containsKey(pc))
-					return false;
+				IteratableSet<CodePointTableInfo> endpointTable = engine.getEndpointTable(getCoreId());
 
-				if (!found) {
-				    CodePointTableInfo endpoint = endpointTable.get(pc);
-					setFileName(endpoint.getFileName());
-		        	setLineNum(endpoint.getLineNumber());
+				for(CodePointTableInfo cpti : endpointTable){
+					if(cpti.getPc() == info.getPc()){
+						setFileName(cpti.getFileName());
+		        	    setLineNum(cpti.getLineNumber());
+						found = true;
+						break;
+					}
 				}
-
-				found = true;
 			}
 		}
 

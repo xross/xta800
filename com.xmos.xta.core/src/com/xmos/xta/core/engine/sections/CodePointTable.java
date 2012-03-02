@@ -1,20 +1,18 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.util.Map;
-
 import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Notifier;
 
 public abstract class CodePointTable extends Section {
-	protected Map<Long, CodePointTableInfo> m_locations;
+	protected IteratableSet<CodePointTableInfo> m_locations;
 
 	CodePointTable(CoreId coreId, Notifier notifier) {
 		super(coreId, notifier);
-		m_locations = new IteratableMap<Long, CodePointTableInfo>();
+		m_locations = new IteratableSet<CodePointTableInfo>();
 	}
 
-	Map<Long, CodePointTableInfo> get() {
+	IteratableSet< CodePointTableInfo> get() {
 		return m_locations;
 	}
 

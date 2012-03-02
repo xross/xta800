@@ -1,3 +1,7 @@
+extern int g(int);
+extern int h(int);
+
+
 int foo(int j){
   int i;
   #pragma loop unroll
@@ -5,10 +9,10 @@ int foo(int j){
     j+= (j ^ 0x345) * j;
     if((j & 1) == 0){
       #pragma xta label "exclusion_path"
-      j |= i ^ 55;
+      j |= g(i ^ 55);
     } else {
       #pragma xta label "retain_path"
-      j += i + 44;
+      j += h(i + 44);
     }
   }
   return j;

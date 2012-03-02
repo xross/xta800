@@ -5,8 +5,10 @@ echo ----------------------------------------
 analyse path transmit_start transmit_data
 set required - 1000.0 ns
 
-analyse loop transmit_data
+add exclusion transmit_stop1
+analyse path transmit_data transmit_data
 set required - 1000.0 ns
+remove exclusion *
 
 analyse path transmit_data transmit_stop1
 set required - 1000.0 ns
@@ -26,16 +28,17 @@ echo Recieve
 echo ----------------------------------------
 
 remove exclusion *
-add exclusion start_bit_input 
-add exclusion start_bit_error 
-add exclusion recieve_complete 
+add exclusion start_bit_input
 
 analyse path start_bit_sample recieve_data
 set loop - start_bit_sample 0
 set required - 1000.0 ns
 
-analyse loop recieve_data
+remove exclusion *
+add exclusion no
+analyse endpoint recieve_data recieve_data
 set required - 1000.0 ns
+
 
 print summary
 

@@ -1,14 +1,14 @@
 stdcore\[0\], label: func1,read1,start, pc: 0x1000c, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 7
-stdcore\[0\], label: func1,read1,stop, pc: 0x1000e, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
 stdcore\[0\], label: func2,read2,start, pc: 0x10016, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 7
-stdcore\[0\], label: func2,read2,stop, pc: 0x10018, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
 stdcore\[0\], label: read3,start, pc: 0x10020, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 7
+stdcore\[0\], label: func1,read1,stop, pc: 0x1000e, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
+stdcore\[0\], label: func2,read2,stop, pc: 0x10018, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
 stdcore\[0\], label: read3,stop, pc: 0x10022, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 10
 stdcore\[0\], pc: 0x1000c, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 8
-stdcore\[0\], pc: 0x1000e, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
 stdcore\[0\], pc: 0x10016, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 8
-stdcore\[0\], pc: 0x10018, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
 stdcore\[0\], pc: 0x10020, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 8
+stdcore\[0\], pc: 0x1000e, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
+stdcore\[0\], pc: 0x10018, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
 stdcore\[0\], pc: 0x10022, compilation dir: .*xtaendpoint_backtrail, filename: test2.xc, line number: 11
 Route\(0\) endpoints: start to stop
     Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz

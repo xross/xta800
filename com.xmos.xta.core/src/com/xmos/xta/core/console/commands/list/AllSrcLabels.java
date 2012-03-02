@@ -1,5 +1,8 @@
 package com.xmos.xta.core.console.commands.list;
 
+import java.util.Collections;
+import java.util.LinkedList;
+
 import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
@@ -34,8 +37,11 @@ public class AllSrcLabels extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
-		for (CoreId activeCore : engine.getActiveCores()) {			
-			for (SrcLabelTableInfo info : engine.getSrcLabelTable(activeCore).values()) {
+		for (CoreId activeCore : engine.getActiveCores()) {				
+			LinkedList<SrcLabelTableInfo> list = new LinkedList<SrcLabelTableInfo>();
+			list.addAll(engine.getSrcLabelTable(activeCore));
+			Collections.sort(list);	
+			for (SrcLabelTableInfo info : list) {
 	    	    console.display(String.format("%s, pc: 0x%x, compilation dir: %s, filename: %s, line numbers: %d - %d\n",
 	    	    		activeCore.toString(), 
 	    	    		info.getPc(), info.getCompilationDir(), info.getFileName(),

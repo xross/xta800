@@ -10,15 +10,16 @@
  */
 void uart_receive(in port txr, char bytes[], int numBytes)
 {
+ #pragma xta label "no"
   for (int i = 0; i < numBytes; i += 1)
   {
+
     unsigned time;             // Keeps track of the previous port event time
     unsigned startBitTime;     // The time at the beginning of the start bit
     int input_val = 0;         // The current value being inputted.
     int got_start_bit = FALSE; // Whether the start bit has been received
 
-    // Wait for start bit of the required length
-    #pragma xta label "wait_for_start_bit"
+    
     while (!got_start_bit) {
       
       #pragma xta label "start_bit_input"

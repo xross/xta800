@@ -1,15 +1,15 @@
 
-add exclusion BAR:11
-analyze path foo.xc:15 FOO:15
+add exclusion BAR:16
+analyze endpoints foo.xc:15 FOO:15
 
-analyze path BAR:6 BAR:9
-analyze path bar.xc:6 bar.xc:6
+analyze endpoints BAR:11 BAR:14
+analyze endpoints bar.xc:11 bar.xc:11
 
 scripter listrefs
 scripter rename foo.xc:15 x
-scripter rename BAR:11 out_of_bounds
-scripter rename BAR:6 start
-scripter rename bar.xc:9 stop
+scripter rename BAR:16 out_of_bounds
+scripter rename BAR:14 stop
+scripter rename bar.xc:11 start
 scripter listrefs
 
 scripter dump

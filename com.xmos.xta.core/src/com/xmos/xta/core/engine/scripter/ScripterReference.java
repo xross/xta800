@@ -146,13 +146,13 @@ public class ScripterReference {
 		if (refType == ReferenceType.Type.ENDPOINT) {
 			done = tryMatching(scripter, baseRef,
 					m_engine.getEndpoints(coreId),
-					m_engine.getEndpointTable(coreId).values(),
+					m_engine.getEndpointTable(coreId),
 					ReferenceClass.ENDPOINT, refPrefix);
 
 		} else if (refType == ReferenceType.Type.CALL) {
 			done = tryMatching(scripter, baseRef,
 					m_engine.getCalls(coreId),
-					m_engine.getCallTable(coreId).values(),
+					m_engine.getCallTable(coreId),
 					ReferenceClass.ANY, refPrefix);
 
 		} else if (refType == ReferenceType.Type.FUNCTION) {
@@ -162,7 +162,7 @@ public class ScripterReference {
 		} else {
 			done = tryMatching(scripter, baseRef,
 					m_engine.getSrcLabels(coreId),
-					m_engine.getSrcLabelTable(coreId).values(),
+					m_engine.getSrcLabelTable(coreId),
 					ReferenceClass.ANY, refPrefix);
 		}
 		
@@ -250,7 +250,7 @@ public class ScripterReference {
 	}
 
 	private Set<Reference> getSourceLinesForPcs(Set<Long> pcs, CoreId coreId) {
-		Collection<SrcLabelTableInfo> table = m_engine.getSrcLabelTable(coreId).values();
+		Collection<SrcLabelTableInfo> table = m_engine.getSrcLabelTable(coreId);
 		Set<Reference> references = new IteratableSet<Reference>();
 		
 		Set<String> names = getNames(table);

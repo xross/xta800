@@ -23,12 +23,10 @@ if (!$noBuild) {
 system("@ARGV load $genDir/test.xe " .
         "-config threads stdcore[0] 4 " .
         "-analyse function test " .
-        "-set loop - outer_loop 18 " .
-        "-set loopscope - outer_loop a " .
-        "-set loop - inner_loop 108 " .
-        "-set loopscope - inner_loop a " .
+        "-set loop - outer_outer_loop 3 " .
+        "-set loop - outer_loop 6 " .
+        "-set loop - inner_loop 6 " .
         "-print nodeinfo - - " .
         "-exit > $genDir/$suite.in 2>&1");
-
 absolutetime::createFiles($suite, $genDir);
 

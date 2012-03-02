@@ -5,18 +5,28 @@
 
 /*
  * Platform description header file.
- * Automatically generated from "/home/andrew-local/software/sandbox/Installs/Linux/configs/XS1-G4A-FB512.xn".
+ * Automatically generated from "/scratch/andrew/sandbox/llvm_hackery/Installs/Linux/External/Product/targets/XS1-G4A-FB512/XS1-G4A-FB512.xn".
  */
 
-#if !defined(__ASSEMBLER__)
+#ifdef __XC__
 /* Core array declaration. */
 extern core stdcore[4];
-
 #endif
+
+#ifdef __XC__
+/* Service prototypes. */
+/* none */
+#endif
+
 #if !defined(__ASSEMBLER__)
 #else
 #endif
 
+
+/* Reference frequency definition. */
+#define PLATFORM_REFERENCE_HZ 100000000
+#define PLATFORM_REFERENCE_KHZ 100000
+#define PLATFORM_REFERENCE_MHZ 100
 
 #endif /* HAVE_PLATFORM_H */
 

@@ -43,7 +43,7 @@ int alignTable[34];
 /*
  * Local functions - not designed to be used outside of this file
  */
-void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
+static void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
 		chanend rxChan, buffered in port:32 canRx, port canTx,
 		int &counter, unsigned int &allBits, unsigned int &dataBits, unsigned int &time);
 void txStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket, struct CanPacket &txPacket,
@@ -176,7 +176,7 @@ void canPhyRxTx(chanend rxChan, chanend txChan, clock clk, buffered in port:32 c
 }
 
 #pragma unsafe arrays
-inline  void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
+static inline  void rxStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPacket,
 		chanend rxChan, buffered in port:32 canRx, port canTx,
 		int &counter, unsigned int &allBits, unsigned int &dataBits, unsigned int &time) {
 
@@ -805,6 +805,7 @@ inline void txStateMachine(struct CanPhyState &phyState, struct CanPacket &rxPac
 
 	// Stop driving - not strictly necessary if continuing to drive 1. However
 	// it makes it easier to debug if the direction of the port changes.
+	#pragma xta endpoint "exitRx"
 	canTx :> void;
 }
 

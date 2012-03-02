@@ -3,23 +3,22 @@ package com.xmos.xta.core.engine.sections;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public abstract class SrcLabelTable extends Section {
-	protected Map<Long, SrcLabelTableInfo> m_locations;
+	protected IteratableSet<SrcLabelTableInfo> m_locations;
 	
 	SrcLabelTable(CoreId coreId, Notifier notifier) {
 		super(coreId, notifier);
-		m_locations = new IteratableMap<Long, SrcLabelTableInfo>();
+		m_locations = new IteratableSet<SrcLabelTableInfo>();
 	}
 
-	Map<Long, SrcLabelTableInfo> get() {
+	IteratableSet<SrcLabelTableInfo> get() {
 		return m_locations;
 	}
 	
@@ -27,7 +26,7 @@ public abstract class SrcLabelTable extends Section {
 	
 	protected void detectAndCorrectOverlap() {
 		List<SrcLabelTableInfo> entries = new ArrayList<SrcLabelTableInfo>();
-		entries.addAll(m_locations.values());
+		//entries.addAll(m_locations.values());
 		Collections.sort(entries);
 
 		int index = 0;

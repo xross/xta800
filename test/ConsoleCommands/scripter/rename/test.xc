@@ -2,6 +2,7 @@
 #include <platform.h>
 
 out port p = XS1_PORT_1A;
+out port q = XS1_PORT_1B;
 
 int foo(){
     int x = 0;
@@ -18,10 +19,10 @@ int foo(){
 int bar(){
     int x;
     while(1){
-        x = foo();
-        x = foo();
-        x = foo();
-        x = foo();
+        q<:foo();
+        q<:foo();
+        q<:foo();
+        q<:foo();
     }
     #pragma xta label "the_great_outdoors"
     return x;

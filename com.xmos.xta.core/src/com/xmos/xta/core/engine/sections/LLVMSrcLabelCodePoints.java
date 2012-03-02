@@ -1,10 +1,14 @@
 package com.xmos.xta.core.engine.sections;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.sections.LLVMSrcLabelTable.FileLoc;
 
 public class LLVMSrcLabelCodePoints extends CodePoints {
 	private String m_sectionName;
@@ -50,8 +54,131 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
 		
 		
 	}
-	
 	boolean load(CommandSource src, XeLoader xeLoader) {
+		byte[] data = xeLoader.getSectionData(m_sectionName, getCoreId());
+		if (data.length == 0) {
+			return true;
+		}
+		try {
+			int byteIndex = 0;
+			while (byteIndex < data.length) {
+				int size = ByteArrayManipulation.readInt(data, byteIndex);
+				byteIndex += 4;
+				ByteArrayManipulation.readInt(data, byteIndex);
+				byteIndex += 4;
+
+				int endOfEntry = byteIndex + size - 4;
+				
+					while (byteIndex < endOfEntry) {
+						if(Debug) System.out.println("----------------------------");
+						
+						String lblName = ByteArrayManipulation.readString(data,byteIndex);
+						byteIndex += lblName.length() + 1;
+
+						String fileName = ByteArrayManipulation.readString(data,byteIndex);
+						byteIndex += fileName.length() + 1;
+						
+						String compDir = ByteArrayManipulation.readString(data,byteIndex);
+						byteIndex += compDir.length() + 1;
+
+						int lineNumber = ByteArrayManipulation.readInt(data,byteIndex);
+						byteIndex += 4;
+
+						int fileCol = ByteArrayManipulation.readInt(data, byteIndex);
+						byteIndex += 4;
+
+						
+						if(Debug) {
+							if(!lblName.equals("")){
+								System.out.println(fileName + "\tline:" +lineNumber + "\tcol" +fileCol + "\t" + lblName + " ");
+							}
+						}
+						
+						
+						int fileRangeCount = ByteArrayManipulation.readInt(data, byteIndex);
+						byteIndex += 4;
+						
+						int entryIndex = 0;
+						List<FileLoc> FileRanges = new LinkedList<FileLoc>();
+						while (entryIndex < fileRangeCount) {
+							String Range_fileName = ByteArrayManipulation.readString(data,byteIndex);
+							byteIndex += Range_fileName.length() + 1;
+							
+							String Range_compDir = ByteArrayManipulation.readString(data,byteIndex);
+							byteIndex += Range_compDir.length() + 1;
+
+							int Range_fromLine = ByteArrayManipulation.readInt(data,byteIndex);
+							byteIndex += 4;
+
+							int Range_fromCol = ByteArrayManipulation.readInt(data, byteIndex);
+							byteIndex += 4;
+							
+							int Range_toLine = ByteArrayManipulation.readInt(data,byteIndex);
+							byteIndex += 4;
+
+							int Range_toCol = ByteArrayManipulation.readInt(data, byteIndex);
+							byteIndex += 4;
+
+							if(Range_fileName.equals(fileName)){
+								FileLoc fl = new FileLoc(Range_fileName, Range_compDir, 
+										Range_fromLine, 
+										Range_fromCol,
+										Range_toLine,
+										Range_toCol);
+								FileRanges.add(fl);
+							} else {
+								
+								if(lblName.length() == 0){
+									//compiler generated
+								} else {
+									//put out a warning that the file names don't match
+								}
+							}
+							
+							entryIndex++;
+						}
+						
+						
+						
+						int asmLabelSize = ByteArrayManipulation.readInt(data, byteIndex);
+						entryIndex = byteIndex;
+						byteIndex += 4;
+						
+						boolean hasAsmEntry = false;
+						while (byteIndex < asmLabelSize + entryIndex) {
+							if(Debug && !lblName.equals("")) System.out.println("====================asm entry================");
+							
+							long asmLable = (long)ByteArrayManipulation.readInt(data,byteIndex);
+							if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tasmLable " + asmLable);
+							byteIndex += 4;
+							
+							String inlineInfo = ByteArrayManipulation.readString(data,byteIndex);
+							if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tinlineInfo " + inlineInfo);
+							byteIndex += inlineInfo.length() + 1;
+							if(!lblName.equals("")){
+								hasAsmEntry = true;
+								m_codePoints.add(new CodePointInfo(this, asmLable,
+										lblName, compDir, fileName, lineNumber));
+							}
+							
+							if(Debug&& !lblName.equals("")) System.out.println("====================================");
+						}
+						if(Debug&& !lblName.equals("")) System.out.println("hasAsmEntry: " + hasAsmEntry);
+						if(Debug) System.out.println("----------------------------");
+					}
+				
+			}
+		} catch (Exception e) {
+			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
+					"problem reading %s section while loading executable", m_sectionName));
+	    	return false;
+	    }
+		
+		return true;
+	}
+	
+	
+	boolean load2(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(m_sectionName, getCoreId());
 		if(Debug) System.out.println("m_sectionName " + m_sectionName);
 		

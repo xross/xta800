@@ -81,7 +81,7 @@ public class LLVMCodePointTable extends CodePointTable {
 						if(Debug) System.out.println(byteIndex + "\tinlineInfo " + inlineInfo);
 						byteIndex += inlineInfo.length() + 1;
 						
-						m_locations.put(asmLable, new CodePointTableInfo(this, asmLable, compDir, fileName, lineNumber));
+						m_locations.add(new CodePointTableInfo(this, asmLable, compDir, fileName, lineNumber));
 						
 						if(Debug) System.out.println("====================================");
 					}

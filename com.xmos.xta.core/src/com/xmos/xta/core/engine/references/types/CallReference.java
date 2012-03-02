@@ -1,8 +1,7 @@
 package com.xmos.xta.core.engine.references.types;
 
-import java.util.Map;
-
 import com.xmos.libs.util.CoreId;
+import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
@@ -29,17 +28,16 @@ public class CallReference extends ReferenceType {
 			if (labelsMatch(info.getLabel(), label)) {
 				addPc(info.getPc(), info.getLabel());
 
-				Map<Long, CodePointTableInfo> callTable = engine.getCallTable(getCoreId());
-				if (!callTable.containsKey(info.getPc()))
-					return false;
-
-				if (!found) {
-				    CodePointTableInfo call = callTable.get(info.getPc());
-					setFileName(call.getFileName());
-		        	setLineNum(call.getLineNumber());
+				IteratableSet<CodePointTableInfo> callTable = engine.getCallTable(getCoreId());
+				
+				for(CodePointTableInfo cpti : callTable){
+					if(cpti.getPc() == info.getPc()){
+						setFileName(cpti.getFileName());
+		        	    setLineNum(cpti.getLineNumber());
+						found = true;
+						break;
+					}
 				}
-
-				found = true;
 			}
 		}
 

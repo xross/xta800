@@ -3,7 +3,8 @@ int test(int loop1, int loop2){
   int j = 0;
   int i = 0;
   int k = 0;
-  for(i=0;i<3;i++){    
+  for(i=0;i<3;i++){  
+  #pragma xta label "outer_outer_loop"
     for(j=0;j<loop1;j++){
       #pragma xta label "outer_loop"
         for(k=0;k<loop2;k++){

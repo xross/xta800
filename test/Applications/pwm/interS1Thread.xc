@@ -45,6 +45,7 @@ void interpolateStage1Thread (chanend rawSampleChan, chanend s1SampleChan) {
       s1SampleHeadPtr ++;
     }
     
+    #pragma xta label "interS1ThreadInputLabel"
     // Get new 48000 sample
     #pragma xta endpoint "interS1ThreadInput"
     rawSampleChan :> s1InputSamples[s1SampleHeadPtr];

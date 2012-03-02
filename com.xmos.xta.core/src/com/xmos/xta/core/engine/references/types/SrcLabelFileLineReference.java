@@ -27,8 +27,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
 		String fileName = getFileName(ref);
         long lineNumber = getLineNumber(ref);
 
-		for (SrcLabelTableInfo info : engine.getSrcLabelTable(getCoreId())
-				.values()) {
+		for (SrcLabelTableInfo info : engine.getSrcLabelTable(getCoreId())) {
 			if (((lineNumber >= info.getLineNumberStart()) && (lineNumber <= info.getLineNumberEnd())) &&
 					FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
 							fileName, engine.getWorkspacePath(), engine.getSourceMapper())) {

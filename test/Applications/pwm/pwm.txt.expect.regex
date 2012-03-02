@@ -1,7 +1,7 @@
 Route\(\d+\) loop: sendRawSample
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
-Route\(\d+\) loop: interS1ThreadInput
+Route\(\d+\) loop: interS1ThreadInputLabel
     Pass with \d+ unknown[s]?, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 20.8 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 
 Route\(\d+\) loop: interS1ThreadOutput

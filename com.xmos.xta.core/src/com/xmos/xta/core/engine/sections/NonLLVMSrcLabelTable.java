@@ -1,24 +1,19 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.util.Map;
-
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public class NonLLVMSrcLabelTable extends SrcLabelTable {
 	private String m_sectionName;
-	private Map<Long, SrcLabelTableInfo> m_locations;
 
 	private static final boolean Debug = false;
 	
 	NonLLVMSrcLabelTable(CoreId coreId, String sectionName, Notifier notifier) {
 		super(coreId, notifier);
 		m_sectionName = sectionName;
-		m_locations = new IteratableMap<Long, SrcLabelTableInfo>();
 	}
 	
 	boolean load(CommandSource src, XeLoader xeLoader) {
@@ -56,7 +51,7 @@ public class NonLLVMSrcLabelTable extends SrcLabelTable {
 	        		long location = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-	        		m_locations.put(location, new SrcLabelTableInfo(this, location, compilationDir,
+	        		m_locations.add(new SrcLabelTableInfo(this, location, compilationDir,
 	        				fileName, lineNumberStart, lineNumberEnd));
 	        	}
 	        }

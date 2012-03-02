@@ -1,40 +1,40 @@
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
-true       true       test.xc:21 ->     call_0
-true       true       test.xc:22 ->     call_1
+true       true       test.xc:22 ->\s+endpoint_0
+true       true       test.xc:23 ->\s+endpoint_1
 xta: cmds.txt:8: error: spaces not supported in labels
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
-true       true       test.xc:21 ->      start
-true       true       test.xc:22 ->     call_1
+true       true       test.xc:22 ->      start
+true       true       test.xc:23 ->\s+endpoint_1
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
-true       true       test.xc:21 ->      start
-true       true       test.xc:22 ->       stop
+true       true       test.xc:22 ->      start
+true       true       test.xc:23 ->       stop
 xta: cmds.txt:14: error: Reference 'stop' not used in scripter
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
-true       true       test.xc:21 ->      start
-true       true       test.xc:22 ->       stop
+true       true       test.xc:22 ->      start
+true       true       test.xc:23 ->       stop
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
-true       false      test.xc:21 ->      start
-true       true       test.xc:22 ->       stop
+true       false      test.xc:22 ->      start
+true       true       test.xc:23 ->       stop
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
-true       true       test.xc:21 ->      start
-true       true       test.xc:22 ->       stop
+true       true       test.xc:22 ->      start
+true       true       test.xc:23 ->       stop
 Modifiable Enabled    Reference  ->     MapsTo
 false      true       x          ->          x
 false      true       the_great_outdoors -> the_great_outdoors
-true       false      test.xc:21 ->      start
-true       false      test.xc:22 ->       stop
+true       false      test.xc:22 ->      start
+true       false      test.xc:23 ->       stop
 xta: cmds.txt:29: error: Reference 'x' cannot be renamed
 # load ".*test.xe"
 
@@ -45,16 +45,16 @@ add exclusion the_great_outdoors
 analyze endpoints x x
 
 #
-# Route: endpoints: test.xc:21 to test.xc:22
+# Route: endpoints: test.xc:22 to test.xc:23
 #
-# Warning: 'test.xc:21' is a non-portable reference.
 # Warning: 'test.xc:22' is a non-portable reference.
-analyze endpoints test.xc:21 test.xc:22
+# Warning: 'test.xc:23' is a non-portable reference.
+analyze endpoints test.xc:22 test.xc:23
 
 #
-# Route: endpoints: test.xc:21 to test.xc:22
+# Route: endpoints: test.xc:22 to test.xc:23
 #
-# Warning: 'test.xc:21' is a non-portable reference.
 # Warning: 'test.xc:22' is a non-portable reference.
-analyze endpoints test.xc:21 test.xc:22
+# Warning: 'test.xc:23' is a non-portable reference.
+analyze endpoints test.xc:22 test.xc:23
 
