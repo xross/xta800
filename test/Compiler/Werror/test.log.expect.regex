@@ -1,0 +1,1 @@
+xta: test.xc:26: error: route\(0\)\s+ Fail \(timing violation\) with \d+ unknown[s]?, Num Paths: [12], Violation: \d+.\d+ [un]s, Required: 100.0 ns, Worst: \d+.\d+ [un]s, Min Core Frequency: \d+ MHz

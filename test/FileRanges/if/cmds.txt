@@ -1,0 +1,26 @@
+remove exclusion *
+analyse function foo0
+set required - 100 ms
+
+remove exclusion *
+add exclusion test.xc:6
+analyse function foo0
+set required - 100 ms
+
+remove exclusion *
+add exclusion test.xc:7
+analyse function foo0
+set required - 100 ms
+
+remove exclusion *
+add exclusion test.xc:8
+analyse function foo0
+set required - 100 ms
+
+remove exclusion *
+add exclusion test.xc:9
+analyse function foo0
+set required - 100 ms
+
+print summary
+exit

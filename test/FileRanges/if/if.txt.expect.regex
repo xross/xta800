@@ -1,0 +1,50 @@
+### Testing function test0 ###
+function\(\d+\)\s+: Infinity / \d+.\d+ ns test0
+.*
+[^^^]
+
+### Testing line test.xc:5 ###
+xta: csim__xs1b__default/cmds.txt:\d+: warning: no valid paths of execution
+.*
+[^^^]
+### Testing line test.xc:6 ###
+function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns test0
+.*
+[^^^]
+
+### Testing line test.xc:7 ###
+function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns test0
+.*
+[^^^]
+
+### Testing line test.xc:8 ###
+xta: csim__xs1b__default/cmds.txt:\d+: warning: no valid paths of execution
+.*
+[^^^]
+### Testing function test1 ###
+function\(\d+\)\s+: Infinity / \d+.\d+ ns test1
+.*
+[^^^]
+
+### Testing line test.xc:13 ###
+xta: csim__xs1b__default/cmds.txt:\d+: warning: no valid paths of execution
+.*
+[^^^]
+### Testing line test.xc:14 ###
+function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns test1
+.*
+[^^^]
+
+### Testing line test.xc:15 ###
+function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns test1
+.*
+[^^^]
+
+### Testing line test.xc:16 ###
+xta: csim__xs1b__default/cmds.txt:\d+: warning: no valid paths of execution
+.*
+[^^^]
+### Testing line test.xc:17 ###
+xta: csim__xs1b__default/cmds.txt:\d+: warning: no valid paths of execution
+.*
+[^^^]

@@ -1,0 +1,17 @@
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
+stdcore\[0\], Threads: 1 \(No debug information found\)
+No routes analyzed
+Loop point 'loop'
+block\(\d+\)      : \d+.\d+ ns \(x 1\) \/ \d+.\d+ ns \(x 1\) 
+
+Route\(0\) loop: loop
+    No Timing Specified
+
+Fail, Timing Unspecified
