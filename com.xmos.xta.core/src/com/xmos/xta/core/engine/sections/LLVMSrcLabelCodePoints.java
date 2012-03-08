@@ -8,7 +8,6 @@ import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
-import com.xmos.xta.core.engine.sections.LLVMSrcLabelTable.FileLoc;
 
 public class LLVMSrcLabelCodePoints extends CodePoints {
 	private String m_sectionName;
@@ -144,27 +143,27 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
 						entryIndex = byteIndex;
 						byteIndex += 4;
 						
-						boolean hasAsmEntry = false;
+						//boolean hasAsmEntry = false;
 						while (byteIndex < asmLabelSize + entryIndex) {
-							if(Debug && !lblName.equals("")) System.out.println("====================asm entry================");
+							//if(Debug && !lblName.equals("")) System.out.println("====================asm entry================");
 							
 							long asmLable = (long)ByteArrayManipulation.readInt(data,byteIndex);
-							if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tasmLable " + asmLable);
+							//if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tasmLable " + asmLable);
 							byteIndex += 4;
 							
 							String inlineInfo = ByteArrayManipulation.readString(data,byteIndex);
-							if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tinlineInfo " + inlineInfo);
+							//if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tinlineInfo " + inlineInfo);
 							byteIndex += inlineInfo.length() + 1;
 							if(!lblName.equals("")){
-								hasAsmEntry = true;
+								//hasAsmEntry = true;
 								m_codePoints.add(new CodePointInfo(this, asmLable,
 										lblName, compDir, fileName, lineNumber));
 							}
 							
-							if(Debug&& !lblName.equals("")) System.out.println("====================================");
+							//if(Debug&& !lblName.equals("")) System.out.println("====================================");
 						}
-						if(Debug&& !lblName.equals("")) System.out.println("hasAsmEntry: " + hasAsmEntry);
-						if(Debug) System.out.println("----------------------------");
+						//if(Debug&& !lblName.equals("")) System.out.println("hasAsmEntry: " + hasAsmEntry);
+						//if(Debug) System.out.println("----------------------------");
 					}
 				
 			}
