@@ -7,6 +7,7 @@ import java.util.Set;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.LoopNode;
@@ -75,19 +76,18 @@ public class RouteUnknowns {
 		}
 	}
 
-	public void checkSetLoopIterations(Reference reference, long iterations) throws Exception {
+	public void checkSetLoopIterations(Reference reference, final long iterations, 
+	        Notifier notifier, CommandSource src) throws Exception {
+	    
 		if (iterations < 0)
 			throw new Exception("Cannot set a negative iteration count");
 
-		Set<Node> referencedNodes = m_route.getReferencedNodes(reference);
-		if (referencedNodes.size() > 0) {
-			for (Node node : referencedNodes) {
-				checkSetLoopIterations(node);
-				checkLoopIterationsValid(node, iterations);
-			}
-		} else {
-			throw new Exception("Reference not found on given route");
-		}
+		checkReferencedNodes(reference, notifier, src, new NodeChecker() {
+            public void checkNode(Node node) throws Exception {
+                checkSetLoopIterations(node);
+                checkLoopIterationsValid(node, iterations);
+            }		    
+		});
 	}
 
 	public void setLoopIterations(CommandSource src, Engine engine, Node node, long iterations, Source source) throws Exception {
@@ -126,10 +126,12 @@ public class RouteUnknowns {
 
 		invalidateCachedStats();
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
-	    enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
-        enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_ITERATIONS, source, new Reference[] {reference});
-   		clearPathIterations(enclosingLoopNode);
-		refreshDisplayedUnknowns();
+		if (enclosingLoopNode != null) {
+	        enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
+	        enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_ITERATIONS, source, new Reference[] {reference});
+	        clearPathIterations(enclosingLoopNode);
+	        refreshDisplayedUnknowns();		    
+		}
 	}
 
 	// ===================================================================== //
@@ -143,19 +145,18 @@ public class RouteUnknowns {
 		}
 	}
 
-	public void checkSetLoopPathIterations(Reference reference, long iterations) throws Exception {
+	public void checkSetLoopPathIterations(Reference reference, final long iterations, 
+	        Notifier notifier, CommandSource src) throws Exception {
+	    
 		if (iterations < 0)
 			throw new Exception("Cannot set a negative iteration count");
 
-		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
-		if (referencedNodes.size() > 0) {
-			for (Node node : referencedNodes) {
-				checkSetLoopPathIterations(node);
-				checkLoopPathIterationsValid(node, iterations);
-			}
-		} else {
-			throw new Exception("Reference not found on given route");
-		}
+        checkReferencedNodes(reference, notifier, src, new NodeChecker() {
+            public void checkNode(Node node) throws Exception {
+                checkSetLoopPathIterations(node);
+                checkLoopPathIterationsValid(node, iterations);             
+            }           
+        });
 	}
 
 	public void setLoopPathIterations(Node node, long iterations, Source source) throws Exception {
@@ -198,9 +199,11 @@ public class RouteUnknowns {
 		invalidateCachedStats();
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-	    condNode.getAttributes().setLoopPathIterations(optionNode, iterations);
-	    optionNode.getAttributes().addKnown(m_route, Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
-		refreshDisplayedUnknowns();
+		if ((condNode != null) && (optionNode != null)) {		
+	        condNode.getAttributes().setLoopPathIterations(optionNode, iterations);
+	        optionNode.getAttributes().addKnown(m_route, Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
+		    refreshDisplayedUnknowns();
+		}
 	}
 	
 	// ===================================================================== //
@@ -214,15 +217,14 @@ public class RouteUnknowns {
 		}
 	}
 
-	public void checkSetLoopScope(Reference reference, boolean isAbsolute) throws Exception {
-		Collection<Node> referencedNodes = m_route.getReferencedNodes(reference);
-		if (referencedNodes.size() > 0) {
-			for (Node node : referencedNodes) {
-				checkSetLoopScope(node);
-			}
-		} else {
-			throw new Exception("Reference not found on given route");
-		}
+	public void checkSetLoopScope(Reference reference, boolean isAbsolute, 
+	        Notifier notifier, CommandSource src) throws Exception {
+	    
+        checkReferencedNodes(reference, notifier, src, new NodeChecker() {
+            public void checkNode(Node node) throws Exception {
+                checkSetLoopScope(node);            
+            }           
+        });
 	}
 
 	public void setLoopScope(Node node, boolean isAbsolute, Source source) throws Exception {
@@ -243,8 +245,10 @@ public class RouteUnknowns {
 	private void setLoopScopeNoCheck(Node node, boolean isAbsolute, Reference reference, Source source) {
 		invalidateCachedStats();
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
-		enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-		enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_SCOPE, source, new Reference[] {reference});
+    	if (enclosingLoopNode != null) {
+            enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
+            enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_SCOPE, source, new Reference[] {reference});    	    
+    	}
 	}
 	
 	// ===================================================================== //
@@ -406,5 +410,41 @@ public class RouteUnknowns {
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
+	}
+	
+	private void checkReferencedNodes(Reference reference, Notifier notifier, 
+	        CommandSource src, NodeChecker checker) throws Exception {
+
+        Set<Node> referencedNodes = m_route.getReferencedNodes(reference);
+        if (referencedNodes.size() > 0) {
+            
+            boolean hit = false;
+            boolean missed = false;
+            String reason = "";
+            
+            for (Node node : referencedNodes) {
+                try {
+                    checker.checkNode(node);
+                    hit = true;
+
+                } catch (Exception e) {
+                    missed = true;
+                    reason = e.getMessage();
+                }
+            }
+            if (!hit) {
+                throw new Exception(reason);
+            }
+            if (missed) {
+                notifier.notify(src, Notifier.NOTIFY_WARNING, reason);
+            }
+
+        } else {
+            throw new Exception("Reference not found on given route");
+        }	    
+	}
+
+	private interface NodeChecker {
+	    void checkNode(Node node) throws Exception;	        
 	}
 }

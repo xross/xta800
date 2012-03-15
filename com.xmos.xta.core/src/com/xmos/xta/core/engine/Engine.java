@@ -1037,7 +1037,7 @@ public class Engine extends Notifier implements Aborter {
 				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
-					route.getRouteUnknowns().checkSetLoopIterations(reference, iterations);
+					route.getRouteUnknowns().checkSetLoopIterations(reference, iterations, this, src);
 					refMap.put(route, reference);
 					hit = true;
 				}								
@@ -1105,7 +1105,7 @@ public class Engine extends Notifier implements Aborter {
 				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
-					route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations);
+					route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations, this, src);
 					refMap.put(route, reference);
 					hit = true;
 				}								
@@ -1170,7 +1170,7 @@ public class Engine extends Notifier implements Aborter {
 				        route.getRouteCoreContainer().getCoreId());
 				
 				if (resolveReference(reference)) {
-					route.getRouteUnknowns().checkSetLoopScope(reference, absolute);
+					route.getRouteUnknowns().checkSetLoopScope(reference, absolute, this, src);
 					refMap.put(route, reference);
 					hit = true;
 				}								

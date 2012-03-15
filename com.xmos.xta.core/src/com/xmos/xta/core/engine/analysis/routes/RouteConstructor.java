@@ -1044,7 +1044,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
 					    route.getRouteUnknowns().checkSetLoopIterations(
-							info.getReference(), info.getIterations());
+							info.getReference(), info.getIterations(), m_engine, src);
 					}
 				}
 				for (Route route : m_routes) {
@@ -1060,7 +1060,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     					route.getRouteUnknowns().checkSetLoopPathIterations(
-							info.getReference(), info.getIterations());
+							info.getReference(), info.getIterations(), m_engine, src);
 					}
 				}
 				for (Route route : m_routes) {
@@ -1076,7 +1076,7 @@ public class RouteConstructor {
 				for (Route route : m_routes) {
 					if (coreMatch(route, info.getReference())) {
     					route.getRouteUnknowns().checkSetLoopScope(
-							info.getReference(), info.getAbsolute());
+							info.getReference(), info.getAbsolute(), m_engine, src);
 					}
 				}
 				for (Route route : m_routes) {
