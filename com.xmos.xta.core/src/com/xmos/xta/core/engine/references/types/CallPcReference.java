@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.references.types;
 
 import com.xmos.libs.controlflow.functionmapper.FunctionMapper;
-import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.instructiondecoder.InstructionDecoder;
 import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
@@ -27,10 +27,14 @@ public class CallPcReference extends ReferenceType {
 		if (functionMapper == null)
 			return false;
 
-		InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());
+		InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());		
 		for (Long pc : getPcs()) {
-			Instruction inst = instructionDecoder.getNode(pc).getInstruction();
-			if (!inst.isLink()) {
+		    
+		    CfgInstructionNode node = instructionDecoder.getNode(pc);
+		    if (node == null) {
+		        return false;
+		    }
+			if (!node.getInstruction().isLink()) {
 				return false;
 			}
 		}
