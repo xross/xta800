@@ -29,14 +29,15 @@ echo ----------------------------------------
 
 remove exclusion *
 add exclusion start_bit_input
-
 analyse path start_bit_sample recieve_data
-set loop - start_bit_sample 0
+set loop - start_bit_sample 8
 set required - 1000.0 ns
 
 remove exclusion *
 add exclusion no
-analyse endpoint recieve_data recieve_data
+add exclusion start_bit_input
+add exclusion no_out
+analyse endpoints recieve_data recieve_data
 set required - 1000.0 ns
 
 

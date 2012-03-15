@@ -17,10 +17,10 @@ scripter listrefs
 scripter disable test.xc:22
 scripter listrefs
 
-scripter enable /scratch/andrew/sandbox/llvm_hackery/tools_xta/test/ConsoleCommands/scripter/rename/test.xc:22
+scripter enable /scratch/andrew/sandbox/temp/tools_xta/test/ConsoleCommands/scripter/rename/test.xc:22
 scripter listrefs
 
-analyze path /scratch/andrew/sandbox/llvm_hackery/tools_xta/test/ConsoleCommands/scripter/rename/test.xc:22 /scratch/andrew/sandbox/llvm_hackery/tools_xta/test/ConsoleCommands/scripter/rename/test.xc:23
+analyze path /scratch/andrew/sandbox/temp/tools_xta/test/ConsoleCommands/scripter/rename/test.xc:22 /scratch/andrew/sandbox/temp/tools_xta/test/ConsoleCommands/scripter/rename/test.xc:23
 
 scripter disable test.xc:22
 scripter disable test.xc:23

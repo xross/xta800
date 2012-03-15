@@ -55,4 +55,8 @@ void uart_receive(in port txr, char bytes[], int numBytes)
     #pragma xta label "recieve_complete" 
     bytes[i] = (unsigned char) (input_val >> 24);
   }
+  #pragma xta endpoint "no_out"
+      txr :> numBytes;
+  return;
 }
+
