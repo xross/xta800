@@ -240,7 +240,7 @@ public abstract class Node implements Comparable<Node> {
 				found = true;
 			}
 		}
-        return m_parent.getSuccessor(this);			
+        return (m_parent != null) ? m_parent.getSuccessor(this) : null;			
 	}
 	
 	public Node getSuccessor() {
