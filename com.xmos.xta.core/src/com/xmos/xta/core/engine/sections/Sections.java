@@ -88,8 +88,8 @@ public class Sections {
 			m_endpointTables.add(new LLVMCodePointTable(coreId, ".xtaendpoint_locs", m_notifier));
 			m_callTables.add(new LLVMCodePointTable(coreId, ".xtacall_locs", m_notifier));
 			
-			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletabel", m_notifier));
-			m_srcLabelTables.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletabel", m_notifier));
+			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletable", m_notifier));
+			m_srcLabelTables.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletable", m_notifier));
 			
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
