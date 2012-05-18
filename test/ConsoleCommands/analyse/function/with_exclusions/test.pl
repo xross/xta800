@@ -11,8 +11,6 @@ if (!$noBuild) {
 system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/with_exclusions.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
-       "-analyze function f " .
-       "-print structure - " .
        "-add exclusion g,f,then " .
        "-add exclusion h,f,else " .
        "-analyze function f " .
