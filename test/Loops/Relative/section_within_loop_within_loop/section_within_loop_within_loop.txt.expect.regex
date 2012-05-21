@@ -9,8 +9,8 @@ function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
 .    .    .    .    seq\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
 .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 100\) / \d+\.\d+ [mun]s \(x 100\) 
 .    .    .    .    .    cond\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
-.    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 20\) / \d+\.\d+ [mun]s \(x 20\) 
 .    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 80\) / \d+\.\d+ [mun]s \(x 80\) 
+.    .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 20\) / \d+\.\d+ [mun]s \(x 20\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 100\) / \d+\.\d+ [mun]s \(x 100\) 
 .    .    .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 10\) / \d+\.\d+ [mun]s \(x 10\) 
 .    block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
