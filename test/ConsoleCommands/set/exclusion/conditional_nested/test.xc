@@ -1,10 +1,15 @@
+int fi() { return 10; }
+int fe() { return 11; }
+int bi() { return 12; }
+int be() { return 13; }
+
 int foo(int a) {
     if (a < 10) {
         #pragma xta label "foo_if"
-        a += 24;
+        a += fi();
     } else {
         #pragma xta label "foo_else"
-        a += 10;
+        a += fe();
     }
     return a;
 }
@@ -12,10 +17,10 @@ int foo(int a) {
 int bar(int a) {
     if (a < 10) {
         #pragma xta label "bar_if"
-        a += 32;
+        a += bi();
     } else {
         #pragma xta label "bar_else"
-        a += 20;
+        a += be();
     }
     return a;
 }

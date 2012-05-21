@@ -2,6 +2,7 @@
 #include <platform.h>
 
 out port p = XS1_PORT_1A;
+out port y = XS1_PORT_1B;
 
 int foo(){
     int x = 0;
@@ -9,8 +10,7 @@ int foo(){
     for (int i = 0; i < 10; ++i) {
         x += i;
     }
-
-    p <: x;
+    y <: x;
     return x;
 }
 

@@ -6,20 +6,11 @@ function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns main
 \.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns bar
 \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    \.    cond\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
-\.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-
-function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns main
-\.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    cond\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
-\.    \.    seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
-\.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns foo
-\.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
-\.    \.    \.    \.    cond\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
-\.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns be
+\.    \.    \.    \.    \.    \.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
@@ -32,7 +23,11 @@ function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns main
 \.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns bar
 \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    \.    cond\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
-\.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns bi
+\.    \.    \.    \.    \.    \.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
@@ -45,7 +40,28 @@ function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns main
 \.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns foo
 \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    \.    cond\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
-\.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns fe
+\.    \.    \.    \.    \.    \.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+
+function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns main
+\.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    cond\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+\.    \.    seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+\.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns foo
+\.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    cond\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+\.    \.    \.    \.    \.    seq\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    function\(\d+\) +: \d+\.\d+ ns / \d+\.\d+ ns fi
+\.    \.    \.    \.    \.    \.    .    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
+\.    \.    \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    \.    \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 
 \.    block\(\d+\) +: \d+\.\d+ ns \(x 1\) / \d+\.\d+ ns \(x 1\) 

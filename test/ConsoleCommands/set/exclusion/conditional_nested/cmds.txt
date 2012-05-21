@@ -1,25 +1,37 @@
+# --------------------------
+# Exclude all but 'bar_else'
+# --------------------------
+analyse function main
+set exclusion - foo_if
+set exclusion - foo_else
+set exclusion - bar_if
+print structure -
+
+# --------------------------
+# Exclude all but 'bar_if'
+# --------------------------
+analyse function main
+set exclusion - ~1~0~1~1~0~
+set exclusion - ~1~0~1~1~0~
+set exclusion - ~1~0~1~1~1~
+print structure -
+
+# --------------------------
+# Exclude all but 'foo_else'
+# --------------------------
 analyse function main
 set exclusion - foo_if
 set exclusion - bar_if
-set exclusion - foo_else
+set exclusion - bar_else
 print structure -
 
+# --------------------------
+# Exclude all but 'foo_if'
+# --------------------------
 analyse function main
-set exclusion - ~1~0~1~1~0~
 set exclusion - ~1~1~1~1~0~
-set exclusion - ~1~0~1~1~0~
-print structure -
-
-analyse function main
-set exclusion - foo_if
-set exclusion - foo_else
-set exclusion - bar_if
-print structure -
-
-analyse function main
-set exclusion - ~1~0~1~1~0~
-set exclusion - ~1~0~1~1~0~
-set exclusion - ~1~0~1~1~0~
+set exclusion - ~1~1~1~1~0~
+set exclusion - ~1~0~1~1~1~
 print structure -
 
 exit
