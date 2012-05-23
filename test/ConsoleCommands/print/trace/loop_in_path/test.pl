@@ -14,7 +14,7 @@ system("@ARGV load $genDir/test.xe " .
        "config threads stdcore[0] 1 " .
        "analyze function main " .
        "-print trace - " .
-       "-set loop - loop 5 " .
+       "-set loop - loop 10 " .
        "-print trace - " .
        "-exit > $genDir/loop_in_path.txt 2>&1");
 

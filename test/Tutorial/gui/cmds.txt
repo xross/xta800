@@ -7,7 +7,6 @@ remove route -
 
 add exclusion core1.xc:71
 analyse path core1.xc:85 core1.xc:85
-set loop - core1.xc:28 23
 set looppath - core1.xc:31 8
 set required - 0.5 mhz
 

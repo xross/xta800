@@ -231,6 +231,7 @@ public class Sections {
 			collections.addAll(((Systems)s).get());
 		return collections;
 	}
+	
 	private boolean loadSection(CommandSource src, Collection<Section> sections) {
 		for (Section section : sections) {
 			if (!section.load(src, m_xeLoader)) {
@@ -239,8 +240,6 @@ public class Sections {
 		}
 		return true;
 	}
-
-
 	
 	private Section getSection(Collection<Section> sections, CoreId coreId) {
 		for (Section section : sections) {

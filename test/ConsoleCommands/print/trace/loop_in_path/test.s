@@ -10,7 +10,7 @@ _start:
 .type main, @function
 .globl main
 main:
-  ldc r0, 5
+  ldc r0, 10
   bt r0, else
 if:
   divu r0, r1, r2

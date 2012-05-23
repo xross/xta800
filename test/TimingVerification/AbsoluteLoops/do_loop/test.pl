@@ -26,6 +26,7 @@ system("@ARGV load $genDir/test.xe " .
         "-set loop - inner_loop 15 " .
         "-set loopscope - inner_loop a " .
         "-set loop - outer_loop 3 " .
+        "-print trace - " .
         "-print nodeinfo - - " .
         "-exit > $genDir/$suite.in 2>&1");
 

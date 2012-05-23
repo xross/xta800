@@ -65,6 +65,7 @@ sub createFiles($$) {
       }    
   }
   $xsimTime = (($xsimEndCycles - $xsimStartCycles) *10 ) / 4;
+
   if ($xsimTime >= 1000000.0) {
     $xsimTime = $xsimTime / 1000000.0;
   } elsif ($xsimTime >= 1000.0) {
@@ -112,8 +113,7 @@ sub createFiles($$) {
       $fnopsWithinAcceptableBounds = "FALSE xta: " . $xtaNumFnops . " xsim: " . $xsimNumFNOPs;
   }
   
-  my $fnopAdjustedTime = $xtaTotalTimeTaken - ((($xtaNumFnops- $xsimNumFNOPs) * 10 ) / $scale);
-  
+  my $fnopAdjustedTime = (($xtaTotalTimeTaken * $scale) - (($xtaNumFnops- $xsimNumFNOPs) * 10)) / $scale;
   $t = sprintf("Time: %.1f\nInstructions: %d\nFNOPs acceptable: %s\n", $fnopAdjustedTime, $xtaNumInstructions, $fnopsWithinAcceptableBounds);
   print OUTFILE $t;
   
