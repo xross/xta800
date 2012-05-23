@@ -18,8 +18,6 @@ public class Sections {
 	private XeLoader m_xeLoader;
 	private Notifier m_notifier;
 	
-	private Collection<Section> m_llvmSrcLabel;
-	
 	private Collection<Section> m_branches;
 	private Collection<Section> m_labels;
 	private Collection<Section> m_srcLabels;
@@ -54,8 +52,6 @@ public class Sections {
 		m_systems = new ArrayList<Section>();
 		m_recursiveFunctions = new ArrayList<Section>();
 		m_unreachableFunctions = new ArrayList<Section>();
-		
-		m_llvmSrcLabel = new ArrayList<Section>(); 
     }
 
 	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {
@@ -77,20 +73,13 @@ public class Sections {
 		m_recursiveFunctions.clear();
 		m_unreachableFunctions.clear();
 		
-		m_llvmSrcLabel.clear();
-		
-		for (CoreId coreId : m_xeLoader.getCoreIds()) {
-			
-			//All filenames are stored in this table and their index is used by the 
-			
+		for (CoreId coreId : m_xeLoader.getCoreIds()) {			
 			m_endpoints.add(new LLVMCodePoints(coreId, ".xtaendpoint_locs", m_notifier));
 			m_calls.add(new LLVMCodePoints(coreId, ".xtacall_locs", m_notifier));
 			m_endpointTables.add(new LLVMCodePointTable(coreId, ".xtaendpoint_locs", m_notifier));
-			m_callTables.add(new LLVMCodePointTable(coreId, ".xtacall_locs", m_notifier));
-			
+			m_callTables.add(new LLVMCodePointTable(coreId, ".xtacall_locs", m_notifier));			
 			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletable", m_notifier));
 			m_srcLabelTables.add(new LLVMSrcLabelTable(coreId, ".xtasrclabletable", m_notifier));
-			
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
 			m_srcLabels.add(new NonLLVMCodePoints(coreId, ".xtalabel", m_notifier));
@@ -106,11 +95,9 @@ public class Sections {
 			m_systems.add(new Systems(coreId, m_notifier));
 			m_recursiveFunctions.add(new StringSection(coreId, m_notifier));
 			m_unreachableFunctions.add(new StringSection(coreId, m_notifier));
-			
 		}
 		
-		if (!loadSection(src, m_llvmSrcLabel) ||
-			!loadSection(src, m_branches) ||
+		if (!loadSection(src, m_branches) ||
 			!loadSection(src, m_labels) ||
 			!loadSection(src, m_srcLabels) ||
 			!loadSection(src, m_endpoints) ||
@@ -125,8 +112,6 @@ public class Sections {
 			!loadSection(src, m_systems)){
 			return false;
 		}
-		
-		//now sort the llvm src labels into the correct tables
 		return true;
 	}
 
@@ -136,7 +121,6 @@ public class Sections {
 	}
 
 	public boolean removeFromBranches(CommandSource src, CoreId coreId, Reference fromRef, Collection<Reference> toRefs) {
-
 		Branches branches = (Branches)getSection(m_branches, coreId);
 		return branches.remove(src, fromRef, toRefs);
 	}

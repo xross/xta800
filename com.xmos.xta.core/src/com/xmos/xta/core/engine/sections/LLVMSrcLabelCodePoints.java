@@ -1,8 +1,5 @@
 package com.xmos.xta.core.engine.sections;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.xmos.libs.util.ByteArrayManipulation;
 import com.xmos.libs.util.CoreId;
 import com.xmos.libs.xeloader.XeLoader;
@@ -12,47 +9,11 @@ import com.xmos.xta.core.engine.Notifier;
 public class LLVMSrcLabelCodePoints extends CodePoints {
 	private String m_sectionName;
 
-	private static final boolean Debug = false;
-	
 	LLVMSrcLabelCodePoints(CoreId coreId, String sectionName, Notifier notifier) {
 		super(coreId, notifier);
 		m_sectionName = sectionName;
 	}
-
-	class FileLoc {
-		private String m_file;
-		private String m_compDir;
-		private int m_fromLine, m_fromCol, m_toLine, m_toCol;
-		public FileLoc(String file, String comp, int fromLine, 
-				int fromCol, int toLine, int toCol){
-			m_fromLine = fromLine;
-			m_fromCol = fromCol;
-			m_toLine = toLine;
-			m_toCol = toCol;
-			m_file = file;
-			m_compDir = comp;
-		}
-		public String getFile() {
-			return m_file;
-		}
-		public String getCompDir() {
-			return m_compDir;
-		}
-		public int getFromLine() {
-			return m_fromLine;
-		}
-		public int getFromCol() {
-			return m_fromCol;
-		}
-		public int getToLine() {
-			return m_toLine;
-		}
-		public int getToCol() {
-			return m_toCol;
-		}
-		
-		
-	}
+	
 	boolean load(CommandSource src, XeLoader xeLoader) {
 		byte[] data = xeLoader.getSectionData(m_sectionName, getCoreId());
 		if (data.length == 0) {
@@ -61,244 +22,75 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
 		try {
 			int byteIndex = 0;
 			while (byteIndex < data.length) {
+			    
 				int size = ByteArrayManipulation.readInt(data, byteIndex);
 				byteIndex += 4;
+				
 				ByteArrayManipulation.readInt(data, byteIndex);
 				byteIndex += 4;
-
+				
 				int endOfEntry = byteIndex + size - 4;
 				
-					while (byteIndex < endOfEntry) {
-						if(Debug) System.out.println("----------------------------");
-						
-						String lblName = ByteArrayManipulation.readString(data,byteIndex);
-						byteIndex += lblName.length() + 1;
+                while (byteIndex < endOfEntry) {                    
+                    String labelName = ByteArrayManipulation.readString(data,byteIndex);
+                    byteIndex += labelName.length() + 1;
 
-						String fileName = ByteArrayManipulation.readString(data,byteIndex);
-						byteIndex += fileName.length() + 1;
-						
-						String compDir = ByteArrayManipulation.readString(data,byteIndex);
-						byteIndex += compDir.length() + 1;
+                    String fileName = ByteArrayManipulation.readString(data,byteIndex);
+                    byteIndex += fileName.length() + 1;
+                    
+                    String compDir = ByteArrayManipulation.readString(data,byteIndex);
+                    byteIndex += compDir.length() + 1;
 
-						int lineNumber = ByteArrayManipulation.readInt(data,byteIndex);
-						byteIndex += 4;
+                    System.out.printf(">>> label: %s, file: %s\n", labelName, fileName);
+                    
+                    int lineNumber = ByteArrayManipulation.readInt(data,byteIndex);
+                    byteIndex += 4;
+                    
+                    byteIndex += 4; // columnNumber
+                    
+                    int fileRangeCount = ByteArrayManipulation.readInt(data, byteIndex);
+                    byteIndex += 4;
+                    
+                    int entryIndex = 0;
+                    while (entryIndex < fileRangeCount) {
+                        String rangeFileName = ByteArrayManipulation.readString(data,byteIndex);
+                        byteIndex += rangeFileName.length() + 1;
+                        
+                        String rangeCompDir = ByteArrayManipulation.readString(data,byteIndex);
+                        byteIndex += rangeCompDir.length() + 1;
+                        
+                        byteIndex += 4; // fromLine
+                        byteIndex += 4; // fromCol
+                        byteIndex += 4; // toLine
+                        byteIndex += 4; // toCol
 
-						int fileCol = ByteArrayManipulation.readInt(data, byteIndex);
-						byteIndex += 4;
+                        entryIndex++;
+                    }
+                    
+                    int asmLabelSize = ByteArrayManipulation.readInt(data, byteIndex);
+                    entryIndex = byteIndex;
+                    byteIndex += 4;
+                    
+                    while (byteIndex < asmLabelSize + entryIndex) {     
+                            
+                        long address = (long)ByteArrayManipulation.readInt(data,byteIndex);
+                        byteIndex += 4;
+                            
+                        String inlineInfo = ByteArrayManipulation.readString(data,byteIndex);                        
+                        byteIndex += inlineInfo.length() + 1;
 
-						
-						if(Debug) {
-							if(!lblName.equals("")){
-								System.out.println(fileName + "\tline:" +lineNumber + "\tcol" +fileCol + "\t" + lblName + " ");
-							}
-						}
-						
-						
-						int fileRangeCount = ByteArrayManipulation.readInt(data, byteIndex);
-						byteIndex += 4;
-						
-						int entryIndex = 0;
-						List<FileLoc> FileRanges = new LinkedList<FileLoc>();
-						while (entryIndex < fileRangeCount) {
-							String Range_fileName = ByteArrayManipulation.readString(data,byteIndex);
-							byteIndex += Range_fileName.length() + 1;
-							
-							String Range_compDir = ByteArrayManipulation.readString(data,byteIndex);
-							byteIndex += Range_compDir.length() + 1;
-
-							int Range_fromLine = ByteArrayManipulation.readInt(data,byteIndex);
-							byteIndex += 4;
-
-							int Range_fromCol = ByteArrayManipulation.readInt(data, byteIndex);
-							byteIndex += 4;
-							
-							int Range_toLine = ByteArrayManipulation.readInt(data,byteIndex);
-							byteIndex += 4;
-
-							int Range_toCol = ByteArrayManipulation.readInt(data, byteIndex);
-							byteIndex += 4;
-
-							if(Range_fileName.equals(fileName)){
-								FileLoc fl = new FileLoc(Range_fileName, Range_compDir, 
-										Range_fromLine, 
-										Range_fromCol,
-										Range_toLine,
-										Range_toCol);
-								FileRanges.add(fl);
-							} else {
-								
-								if(lblName.length() == 0){
-									//compiler generated
-								} else {
-									//put out a warning that the file names don't match
-								}
-							}
-							
-							entryIndex++;
-						}
-						
-						
-						
-						int asmLabelSize = ByteArrayManipulation.readInt(data, byteIndex);
-						entryIndex = byteIndex;
-						byteIndex += 4;
-						
-						//boolean hasAsmEntry = false;
-						while (byteIndex < asmLabelSize + entryIndex) {
-							//if(Debug && !lblName.equals("")) System.out.println("====================asm entry================");
-							
-							long asmLable = (long)ByteArrayManipulation.readInt(data,byteIndex);
-							//if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tasmLable " + asmLable);
-							byteIndex += 4;
-							
-							String inlineInfo = ByteArrayManipulation.readString(data,byteIndex);
-							//if(Debug&& !lblName.equals("")) System.out.println(byteIndex + "\tinlineInfo " + inlineInfo);
-							byteIndex += inlineInfo.length() + 1;
-							if(!lblName.equals("")){
-								//hasAsmEntry = true;
-								m_codePoints.add(new CodePointInfo(this, asmLable,
-										lblName, compDir, fileName, lineNumber));
-							}
-							
-							//if(Debug&& !lblName.equals("")) System.out.println("====================================");
-						}
-						//if(Debug&& !lblName.equals("")) System.out.println("hasAsmEntry: " + hasAsmEntry);
-						//if(Debug) System.out.println("----------------------------");
-					}
-				
+                        if (!labelName.equals("")) {
+                            m_codePoints.add(new CodePointInfo(this, address,
+                                    labelName, compDir, fileName, lineNumber));
+                        }
+                    }
+                }
 			}
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"problem reading %s section while loading executable", m_sectionName));
 	    	return false;
-	    }
-		
+	    }		
 		return true;
 	}
-	
-	
-	boolean load2(CommandSource src, XeLoader xeLoader) {
-		byte[] data = xeLoader.getSectionData(m_sectionName, getCoreId());
-		if(Debug) System.out.println("m_sectionName " + m_sectionName);
-		
-		if(Debug) System.out.println("data.length " + data.length);
-		if (data.length == 0) {
-			return true;
-		}
-		try {
-			int byteIndex = 0;
-			while (byteIndex < data.length) {
-				int size = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tsize " + size);
-				byteIndex += 4;
-	
-				int version = ByteArrayManipulation.readInt(data, byteIndex);
-				if(Debug) System.out.println(byteIndex + "\tversion " + version);
-				byteIndex += 4;
-				if(Debug) System.out.println("data.length " + data.length);
-				if(Debug) System.out.println("byteIndex " + byteIndex);
-
-				int endOfEntry = byteIndex + size - 4;
-				if(Debug) System.out.println("endOfEntry " + endOfEntry);
-				
-					while (byteIndex < endOfEntry) {
-						if(Debug) System.out.println("----------------------------");
-						
-						String lblName = ByteArrayManipulation.readString(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tlblName " + lblName);
-						byteIndex += lblName.length() + 1;
-
-						String fileName = ByteArrayManipulation.readString(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tfileName " + fileName);
-						byteIndex += fileName.length() + 1;
-						
-						String compDir = ByteArrayManipulation.readString(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tcompDir " + compDir);
-						byteIndex += compDir.length() + 1;
-
-						int lineNumber = ByteArrayManipulation.readInt(data,byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tlineNumber " + lineNumber);
-						byteIndex += 4;
-
-						int fileCol = ByteArrayManipulation.readInt(data, byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tfileCol " + fileCol);
-						byteIndex += 4;
-
-						int fileRangeCount = ByteArrayManipulation.readInt(data, byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tfileRangeCount " + fileRangeCount);
-						byteIndex += 4;
-						
-						FileLoc fl = new FileLoc(fileName, compDir, lineNumber, fileCol, 0, 0);
-						
-						
-						int entryIndex = 0;
-						while (entryIndex < fileRangeCount) {
-							if(Debug) System.out.println("================file range entry====================");
-							String Range_fileName = ByteArrayManipulation.readString(data,byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tRange_fileName " + Range_fileName);
-							byteIndex += Range_fileName.length() + 1;
-							
-							String Range_compDir = ByteArrayManipulation.readString(data,byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tRange_compDir " + Range_compDir);
-							byteIndex += Range_compDir.length() + 1;
-
-							int Range_fromLineNumber = ByteArrayManipulation.readInt(data,byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tRange_fromLineNumber " + Range_fromLineNumber);
-							byteIndex += 4;
-
-							int Range_fromFileCol = ByteArrayManipulation.readInt(data, byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tRange_fromFileCol " + Range_fromFileCol);
-							byteIndex += 4;
-							
-							int Range_toLineNumber = ByteArrayManipulation.readInt(data,byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tRange_toLineNumber " + Range_toLineNumber);
-							byteIndex += 4;
-
-							int Range_toFileCol = ByteArrayManipulation.readInt(data, byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tRange_toFileCol " + Range_toFileCol);
-							byteIndex += 4;
-							
-							if(Debug) System.out.println("====================================");
-							entryIndex++;
-						}
-						
-						
-						
-						int asmLabelSize = ByteArrayManipulation.readInt(data, byteIndex);
-						if(Debug) System.out.println(byteIndex + "\tasmLabelSize " + asmLabelSize);
-						entryIndex = byteIndex;
-						byteIndex += 4;
-						
-						
-						while (byteIndex < asmLabelSize + entryIndex) {
-							if(Debug) System.out.println("====================asm entry================");
-							
-							long asmLable = (long)ByteArrayManipulation.readInt(data,byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tasmLable " + asmLable);
-							byteIndex += 4;
-							
-							String inlineInfo = ByteArrayManipulation.readString(data,byteIndex);
-							if(Debug) System.out.println(byteIndex + "\tinlineInfo " + inlineInfo);
-							byteIndex += inlineInfo.length() + 1;
-							if(!lblName.equals(""))
-								m_codePoints.add(new CodePointInfo(this, asmLable,
-										lblName, compDir, fileName, fl.getFromLine()));
-							
-							if(Debug) System.out.println("====================================");
-						}
-						if(Debug) System.out.println("----------------------------");
-					}
-				
-			}
-		} catch (Exception e) {
-			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
-					"problem reading %s section while loading executable", m_sectionName));
-	    	return false;
-	    }
-		return true;
-	
-	}
-
-	
-
 }

@@ -56,19 +56,12 @@ public class NonLLVMCodePoints extends CodePoints  {
             		m_codePoints.add(new CodePointInfo(this, location, codePoint, compilationDir, fileName, lineNumber));
 	        	}
 		    }
-			
-			
-   		
+
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(
 					"problem reading %s section while loading executable", m_sectionName));
 	    	return false;
 	    }
 		return true;
-
 	}
-	
-	
-	
-	
 }
