@@ -1045,56 +1045,15 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	// Set Loop Methods
 	// ===================================================================== //
-	public void setLoop(CommandSource src, int routeId, String refString, long iterations) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
-			return;
-		}
-
-		boolean hit = false;		
-		boolean removed = false;
-		try {
-			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
-			for (Route route : routes) {				
-				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY,
-				        route.getRouteCoreContainer().getCoreId());
-
-                Result result = resolveReference(reference); 
-                switch (result) {
-                case RESOLVED:
-                    route.getRouteUnknowns().checkSetLoopIterations(reference, iterations, this, src);
-                    refMap.put(route, reference);
-                    hit = true;
-                    break;
-
-                case REMOVED:                    
-                    removed = true;
-                    break;
-                }
-			}
-			for (Route route : routes) {
-				if (refMap.containsKey(route)) {
-			        route.getRouteUnknowns().setLoopIterations(src, this,
-			        	refMap.get(route), iterations, false, Source.SET);
-				}
-			}
-
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
-			return;
-		}
-		if (hit) {
-		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-
-		} else if (removed) {
-		    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
-		    
-		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
-		}		
-	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+	public void setLoop(CommandSource src, int routeId, String refString, final long iterations) {	    
+	    updateLoops(src, routeId, refString, new LoopsUpdate() {
+            public void check(Route route, Reference reference, CommandSource src) throws Exception {
+                route.getRouteUnknowns().checkSetLoopIterations(reference, iterations, Engine.this, src);
+            }
+            public void run(Route route, Reference reference, CommandSource src) throws AbortedException {
+                route.getRouteUnknowns().setLoopIterations(src, Engine.this, reference, iterations, false, Source.SET);
+            }	        
+	    });
 	}
 
 	public void setLoop(CommandSource src, Node node, long iterations) {
@@ -1125,54 +1084,15 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	// Set Loop Path Methods
 	// ===================================================================== //
-	public void setLoopPath(CommandSource src, int routeId, String refString, long iterations) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
-			return;
-		}
-		
-		boolean hit = false;	
-		boolean removed = false;
-		try {
-			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
-			for (Route route : routes) {				
-				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY,
-				        route.getRouteCoreContainer().getCoreId());
-				
-                Result result = resolveReference(reference); 
-                switch (result) {
-                case RESOLVED:
-                    route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations, this, src);
-                    refMap.put(route, reference);
-                    hit = true;
-                    break;
-
-                case REMOVED:                    
-                    removed = true;
-                    break;
-                }
-			}
-			for (Route route : routes) {
-				if (refMap.containsKey(route)) {
-			        route.getRouteUnknowns().setLoopPathIterations(refMap.get(route), iterations, Source.SET);
-				}
-			}			
-			
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
-			return;
-		}
-		if (hit) {
-		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		    
-		} else if (removed) {
-		    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
-		    
-		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
-		}		
+	public void setLoopPath(CommandSource src, int routeId, String refString, final long iterations) {
+        updateLoops(src, routeId, refString, new LoopsUpdate() {
+            public void check(Route route, Reference reference, CommandSource src) throws Exception {
+                route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations, Engine.this, src);
+            }
+            public void run(Route route, Reference reference, CommandSource src) throws AbortedException {
+                route.getRouteUnknowns().setLoopPathIterations(reference, iterations, Source.SET);
+            }           
+        });	    
 	}
 
 	public void setLoopPath(CommandSource src, Node node, long iterations) {
@@ -1202,54 +1122,15 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	// Set Loop Scope Methods
 	// ===================================================================== //
-	public void setLoopScope(CommandSource src, int routeId, String refString, boolean absolute) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.size() == 0) {
-			notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
-			return;
-		}
-		
-		boolean hit = false;	
-		boolean removed = false;
-		try {
-			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
-			for (Route route : routes) {				
-				Reference reference = ReferenceFactory.createReference(refString, 
-						ReferenceClass.ANY,
-				        route.getRouteCoreContainer().getCoreId());
-
-                Result result = resolveReference(reference);
-                switch (result) {
-                case RESOLVED:
-                    route.getRouteUnknowns().checkSetLoopScope(reference, absolute, this, src);
-                    refMap.put(route, reference);
-                    hit = true;
-                    break;
-
-                case REMOVED:                    
-                    removed = true;
-                    break;
-                }
-			}
-			for (Route route : routes) {
-				if (refMap.containsKey(route)) {
-			        route.getRouteUnknowns().setLoopScope(refMap.get(route), absolute, Source.SET);
-				}
-			}			
-			
-		} catch (Exception e) {
-			notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
-			return;
-		}
-		if (hit) {
-		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
-		    
-		} else if (removed) {
-		    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
-		    
-		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
-		}		
+	public void setLoopScope(CommandSource src, int routeId, String refString, final boolean absolute) {
+        updateLoops(src, routeId, refString, new LoopsUpdate() {
+            public void check(Route route, Reference reference, CommandSource src) throws Exception {
+                route.getRouteUnknowns().checkSetLoopScope(reference, absolute, Engine.this, src);
+            }
+            public void run(Route route, Reference reference, CommandSource src) throws AbortedException {
+                route.getRouteUnknowns().setLoopScope(reference, absolute, Source.SET);
+            }           
+        });     
 	}
 
 	public void setLoopScope(CommandSource src, Node node, boolean absolute) {
@@ -1662,7 +1543,63 @@ public class Engine extends Notifier implements Aborter {
 	private static interface DefinesUpdate {
 		void run(Reference reference);
 	}
+	
+    public void updateLoops(CommandSource src, int routeId, String refString, LoopsUpdate update) {
+        Collection<Route> routes = getRoute(routeId);
+        if (routes.size() == 0) {
+            notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
+            return;
+        }
 
+        boolean hit = false;        
+        boolean removed = false;
+        try {
+            Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
+            for (Route route : routes) {                
+                Reference reference = ReferenceFactory.createReference(refString, 
+                        ReferenceClass.ANY,
+                        route.getRouteCoreContainer().getCoreId());
+
+                Result result = resolveReference(reference); 
+                switch (result) {
+                case RESOLVED:
+                    update.check(route, reference, src);
+                    refMap.put(route, reference);
+                    hit = true;
+                    break;
+
+                case REMOVED:                    
+                    removed = true;
+                    break;
+                }
+            }
+            for (Route route : routes) {
+                if (refMap.containsKey(route)) {
+                    update.run(route, refMap.get(route), src);
+                }
+            }
+
+        } catch (Exception e) {
+            notify(src, Notifier.NOTIFY_ERROR, e.getMessage());
+            return;
+        }
+        if (hit) {
+            notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+
+        } else if (removed) {
+            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            
+        } else {
+            notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));          
+        }       
+        notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
+    }
+	
+    private static interface LoopsUpdate {
+        void check(Route route, Reference reference, CommandSource src) throws Exception;
+        void run(Route route, Reference reference, CommandSource src) throws Exception;
+    }    
+	
 	private void runSrcLevelCommands(CommandSource src, CommandRunner commandRunner) {
 		if (commandRunner != null) {
 			int commandNum = 0;
