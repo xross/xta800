@@ -82,7 +82,7 @@ public class LLVMCodePoints extends CodePoints  {
 
 						if(!lblName.equals(""))
 							m_codePoints.add(new CodePointInfo(this, asmLable,
-									inlineInfo + lblName, compDir, fileName, lineNumber));
+									inlineInfo + lblName, compDir, fileName, lineNumber, true));
 						
 						
 						if(Debug) System.out.println("====================================");

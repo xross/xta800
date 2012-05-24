@@ -18,7 +18,7 @@ public class FunctionReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
 		String ref = getRef();
 		String functionName = getLabel(ref);
 
@@ -28,9 +28,9 @@ public class FunctionReference extends ReferenceType {
         		addPc(pc);
         	}
 	        setResolved(true);
-	        return true;
+	        return Result.RESOLVED;
         }
-	    return false;
+	    return Result.UNRESOLVED;
 	}
 
 	public String name() {

@@ -13,8 +13,8 @@ public class ErrorReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
-        return false;
+	public Result resolve(Engine engine) {
+        return Result.UNRESOLVED;
 	}
 
 	public String name() {

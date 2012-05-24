@@ -22,7 +22,7 @@ public class SrcLabelFileLineReference extends ReferenceType {
 	    return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
         long lineNumber = getLineNumber(ref);
@@ -36,10 +36,10 @@ public class SrcLabelFileLineReference extends ReferenceType {
 				setFileName(fileName);
 				setLineNum(lineNumber);
 				setResolved(true);
-				return true;
+				return Result.RESOLVED;
 			}
 		}
-		return false;
+		return Result.UNRESOLVED;
 	}
 
 	public String name() {

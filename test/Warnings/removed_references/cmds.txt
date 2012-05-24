@@ -1,0 +1,34 @@
+# This test ensures that the removed reference warnings work.
+# A reference, or more specifically, a srclabel reference, can 
+# be removed by the compiler if it is located within a block of code
+# that has been optimised away for whatever reason. 
+
+# Should show the srclabel marked as being non-existent
+list srclabels
+
+analyse function main
+
+# ---------------------------------------------------
+# Defines: All the following should produce warnings.
+# ---------------------------------------------------
+
+add loop removed 10
+remove loop removed
+
+add looppath removed 10
+remove looppath removed
+
+add loopscope removed r
+remove loopscope removed
+
+add exclusion removed
+remove exclusion removed
+
+# ---------------------------------------------------
+# Sets: All the following should produce warnings.
+# ---------------------------------------------------
+
+set loop - removed 10
+set looppath - removed 10
+set loopscope - removed r
+set exclusion - removed

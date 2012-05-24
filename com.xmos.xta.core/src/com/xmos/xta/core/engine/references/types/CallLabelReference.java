@@ -19,19 +19,19 @@ public class CallLabelReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
-		boolean found = false;
+		Result result = Result.UNRESOLVED;
 	    Map<String, Set<Long>> labels = engine.getLabels(getCoreId());
 		if (labels.containsKey(label)) {
 	    	for (Long pc : labels.get(label)) {
 	    		addPc(pc);
 	    	}
 	        setResolved(true);
-	        found = true;
+	        result = Result.RESOLVED;
 	    }
-	    return found;
+	    return result;
 	}
 
 	public String name() {

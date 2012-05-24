@@ -9,6 +9,7 @@ import com.xmos.libs.util.CoreId;
 import com.xmos.libs.util.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 
 public class Reference implements Comparable<Reference>  {
 	private String m_coreIdString;
@@ -20,20 +21,6 @@ public class Reference implements Comparable<Reference>  {
 		m_base = base;
 		m_backTrail = new ArrayList<ReferenceType>();
 	}
-
-	public String toVerboseString(){
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append("Core Id String: " + getCoreId().toString() + "::" + getRef() + "\n");
-		sb.append("Base: " + m_base.toString() + "\n");
-		
-		for(ReferenceType trail : m_backTrail){
-			sb.append("BackTrail: " + trail.toString() + "\n");
-		}
-		
-		return sb.toString();
-	}
-	
 	
 	public String getRef() {
     	StringBuffer str = new StringBuffer();
@@ -84,18 +71,18 @@ public class Reference implements Comparable<Reference>  {
 		return m_backTrail;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
 		assert(m_base != null);
 
-		if (!m_base.resolve(engine))
-			return false;
-
-		// Resolve backtrail, but don't check it at the moment. The label may contain
-		// a backtrail which ignores the reference.
-		for (ReferenceType referenceType : m_backTrail) {
-			referenceType.resolve(engine);
-		}
-		return true;
+		Result result = m_base.resolve(engine);
+		if (result == Result.RESOLVED) {
+	        // Resolve backtrail, but don't check it at the moment. 
+	        // The label may contain a backtrail which ignores the reference.
+	        for (ReferenceType referenceType : m_backTrail) {
+	            referenceType.resolve(engine);
+	        }		    
+		}		    
+		return result;
 	}
 
 	public boolean isPortable() {

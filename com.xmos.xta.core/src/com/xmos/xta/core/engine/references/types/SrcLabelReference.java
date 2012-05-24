@@ -17,22 +17,24 @@ public class SrcLabelReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
 
-		boolean found = false;
+		Result result = Result.UNRESOLVED;
 		for (CodePointInfo info : engine.getSrcLabels(getCoreId())) {
 			if (labelsMatch(info.getLabel(), label)) {
-				addPc(info.getPc(), info.getLabel());
-				found = true;
+			    if (info.exists()) {
+	                addPc(info.getPc(), info.getLabel());
+	                setResolved(true);
+	                result = Result.RESOLVED;
+			        
+			    } else {
+			        result = Result.REMOVED;
+			    }
 			}
 		}
-
-		if (found) {
-			setResolved(true);
-		}
-		return found;
+		return result;
 	}
 
 	public String name() {

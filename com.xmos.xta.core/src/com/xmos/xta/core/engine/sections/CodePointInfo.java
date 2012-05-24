@@ -6,20 +6,22 @@ public class CodePointInfo extends SectionInfo implements Comparable<CodePointIn
     private String m_compilationDir;
     private String m_fileName;
     private long m_lineNumber;
+    private boolean m_exists;
 
     public CodePointInfo(Section section, long pc, String label, String compilationDir,
-    		String fileName, long lineNumber) {
+    		String fileName, long lineNumber, boolean exists) {
     	super(section);
-    	m_pc = pc;
-    	m_label = label;
-		if(compilationDir.endsWith("/")){
-			compilationDir = compilationDir.substring(0, compilationDir.length()-1);
-		}
-    	m_compilationDir = compilationDir;
-    	m_fileName = fileName;
-    	m_lineNumber = lineNumber;
+        m_pc = pc;
+        m_label = label;
+        if (compilationDir.endsWith("/")) {
+            compilationDir = compilationDir.substring(0, compilationDir.length() - 1);
+        }
+        m_compilationDir = compilationDir;
+        m_fileName = fileName;
+        m_lineNumber = lineNumber;        
+        m_exists = exists;
     }
-
+    
     public long getPc() {
     	return m_pc;
     }
@@ -40,6 +42,10 @@ public class CodePointInfo extends SectionInfo implements Comparable<CodePointIn
     	return m_lineNumber;
     }
 
+    public boolean exists() {
+        return m_exists;
+    }
+    
     public String toString() {
     	return m_label;
     }
@@ -62,5 +68,5 @@ public class CodePointInfo extends SectionInfo implements Comparable<CodePointIn
 		} else {
 			return 0;
 		}
-	}
+	}    
 }

@@ -16,8 +16,8 @@ public class EverythingReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
-		return true;
+	public Result resolve(Engine engine) {
+		return Result.RESOLVED;
 	}
 
 	public String name() {

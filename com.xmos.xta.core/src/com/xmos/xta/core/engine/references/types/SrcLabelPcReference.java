@@ -20,16 +20,16 @@ public class SrcLabelPcReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
 		FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
 		if (functionMapper == null)
-			return false;
+			return Result.UNRESOLVED;
 
 		if (functionMapper.areProfilablePcs(getPcs())) {
 	        setResolved(true);
-	        return true;
+	        return Result.RESOLVED;
 	    }
-	    return false;
+	    return Result.UNRESOLVED;
 	}
 
 	public String name() {

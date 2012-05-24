@@ -36,6 +36,7 @@ import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
@@ -154,7 +155,7 @@ public class Scripter {
 		
 		for (CoreId coreId : m_engine.getXeLoader().getCoreIds()) {	    	
 			Reference ref = ReferenceFactory.createReference(label, ReferenceClass.ANY, coreId);
-			if (ref.resolve(m_engine)) {
+			if (ref.resolve(m_engine) == Result.RESOLVED) {
 				return true;
 			}			
 		}

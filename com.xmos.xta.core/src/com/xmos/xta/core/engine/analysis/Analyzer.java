@@ -17,6 +17,7 @@ import com.xmos.xta.core.engine.points.LoopPoints;
 import com.xmos.xta.core.engine.points.PathPoints;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Analyzer {
@@ -43,7 +44,7 @@ public class Analyzer {
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
 					ReferenceClass.FUNCTION, activeCore);
 
-			if (functionRef.resolve(m_engine)) {
+			if (functionRef.resolve(m_engine) == Result.RESOLVED) {
 				isResolved = true;
 				
 				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 

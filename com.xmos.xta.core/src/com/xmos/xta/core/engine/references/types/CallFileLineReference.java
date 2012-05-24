@@ -22,12 +22,12 @@ public class CallFileLineReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
     	String ref  = getRef();
 		String fileName = getFileName(ref);
         long lineNumber = getLineNumber(ref);
 
-        boolean found = false;
+        Result result = Result.UNRESOLVED;
 		for (CodePointTableInfo info : engine.getCallTable(getCoreId())) {
 			if ((info.getLineNumber() == lineNumber) && 
 				FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
@@ -36,14 +36,11 @@ public class CallFileLineReference extends ReferenceType {
 				addPc(info.getPc());
 				setFileName(fileName);
 				setLineNum(lineNumber);
-				found = true;
+	            setResolved(true);
+				result = Result.RESOLVED;
 			}
 		}
-
-		if (found) {
-			setResolved(true);
-		}
-		return found;
+		return result;
 	}
 
 	public String name() {

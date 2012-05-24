@@ -24,6 +24,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Debugger {
@@ -59,7 +60,7 @@ public class Debugger {
 			Reference reference = ReferenceFactory.createReference(refString, 
 					ReferenceClass.ANY, activeCore);
 			
-			if (reference.resolve(m_engine)) {
+			if (reference.resolve(m_engine) == Result.RESOLVED) {
 				hit = true;
 			}
 		}
@@ -73,7 +74,7 @@ public class Debugger {
 			Reference reference = ReferenceFactory.createReference(refString, 
 					ReferenceClass.ANY, activeCore);
 
-			if (reference.resolve(m_engine)) {
+			if (reference.resolve(m_engine) == Result.RESOLVED) {
 			    try {
 					for (StackNode stackNode : RouteConstructor.getPathStackNodes(
 							m_engine.getControlFlow(activeCore), 
@@ -103,7 +104,7 @@ public class Debugger {
 						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 
-				if (reference.resolve(m_engine)) {
+				if (reference.resolve(m_engine) == Result.RESOLVED) {
 					Set<Node> nodes = route.getReferencedNodes(reference);
 					for (Node node : nodes) {
 						matchingReferences.add(node.getReferenceStr());
@@ -121,7 +122,7 @@ public class Debugger {
 			Reference reference = ReferenceFactory.createReference(refString, 
 					ReferenceClass.ANY, activeCore);
 
-			if (reference.resolve(m_engine)) {
+			if (reference.resolve(m_engine) == Result.RESOLVED) {
 			    try {
 					for (StackNode stackNode : RouteConstructor.getPathStackNodes(
 							m_engine.getControlFlow(activeCore), 

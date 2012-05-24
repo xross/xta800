@@ -41,8 +41,6 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
                     String compDir = ByteArrayManipulation.readString(data,byteIndex);
                     byteIndex += compDir.length() + 1;
 
-                    System.out.printf(">>> label: %s, file: %s\n", labelName, fileName);
-                    
                     int lineNumber = ByteArrayManipulation.readInt(data,byteIndex);
                     byteIndex += 4;
                     
@@ -71,19 +69,29 @@ public class LLVMSrcLabelCodePoints extends CodePoints {
                     entryIndex = byteIndex;
                     byteIndex += 4;
                     
-                    while (byteIndex < asmLabelSize + entryIndex) {     
+                    if (byteIndex < asmLabelSize + entryIndex) {
+                        while (byteIndex < asmLabelSize + entryIndex) {     
                             
-                        long address = (long)ByteArrayManipulation.readInt(data,byteIndex);
-                        byteIndex += 4;
+                            long address = (long)ByteArrayManipulation.readInt(data,byteIndex);
+                            byteIndex += 4;
                             
-                        String inlineInfo = ByteArrayManipulation.readString(data,byteIndex);                        
-                        byteIndex += inlineInfo.length() + 1;
+                            String inlineInfo = ByteArrayManipulation.readString(data,byteIndex);                        
+                            byteIndex += inlineInfo.length() + 1;
 
-                        if (!labelName.equals("")) {
-                            m_codePoints.add(new CodePointInfo(this, address,
-                                    labelName, compDir, fileName, lineNumber));
+                            if (!labelName.equals("")) {
+                                m_codePoints.add(new CodePointInfo(this, address,
+                                        labelName, compDir, fileName, lineNumber, true));
+                            }
                         }
-                    }
+
+                    } else {
+                        // No asm entries associated with this label. Therefore we can 
+                        // assume that the compiler has optimised this away.
+                        if (!labelName.equals("")) {
+                            m_codePoints.add(new CodePointInfo(this, 0,
+                                    labelName, compDir, fileName, lineNumber, false));
+                        }
+                    }                    
                 }
 			}
 		} catch (Exception e) {

@@ -22,28 +22,28 @@ public class CallPcReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
 		FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
 		if (functionMapper == null)
-			return false;
+			return Result.UNRESOLVED;
 
 		InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());		
 		for (Long pc : getPcs()) {
 		    
 		    CfgInstructionNode node = instructionDecoder.getNode(pc);
 		    if (node == null) {
-		        return false;
+		        return Result.UNRESOLVED;
 		    }
 			if (!node.getInstruction().isLink()) {
-				return false;
+				return Result.UNRESOLVED;
 			}
 		}
 
 		if (functionMapper.areProfilablePcs(getPcs())) {
 	        setResolved(true);
-	        return true;
+	        return Result.RESOLVED;
 	    }
-	    return false;
+	    return Result.UNRESOLVED;
 	}
 
 	public String name() {

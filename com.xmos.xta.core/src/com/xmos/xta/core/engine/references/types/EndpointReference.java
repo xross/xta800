@@ -19,11 +19,11 @@ public class EndpointReference extends ReferenceType {
 		return null;
 	}
 
-	public boolean resolve(Engine engine) {
+	public Result resolve(Engine engine) {
 		String ref = getRef();
 		String label = getLabel(ref);
 
-		boolean found = false;
+		Result result = Result.UNRESOLVED;
 		for (CodePointInfo info : engine.getEndpoints(getCoreId())) {
 	    	if (labelsMatch(info.getLabel(), label)) {
 				long pc = info.getPc();
@@ -35,17 +35,14 @@ public class EndpointReference extends ReferenceType {
 					if(cpti.getPc() == info.getPc()){
 						setFileName(cpti.getFileName());
 		        	    setLineNum(cpti.getLineNumber());
-						found = true;
+		        	    setResolved(true);
+		        	    result = Result.RESOLVED;
 						break;
 					}
 				}
 			}
 		}
-
-		if (found) {
-			setResolved(true);
-		}
-		return found;
+		return result;
 	}
 
 	public String name() {

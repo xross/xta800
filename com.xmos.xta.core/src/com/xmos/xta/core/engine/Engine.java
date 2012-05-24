@@ -65,6 +65,7 @@ import com.xmos.xta.core.engine.points.LoopPoints;
 import com.xmos.xta.core.engine.points.PathPoints;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 import com.xmos.xta.core.engine.scripter.Scripter;
@@ -390,7 +391,7 @@ public class Engine extends Notifier implements Aborter {
 				Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT, 
 						route.getRouteCoreContainer().getCoreId());
 
-				if (resolveReference(reference)) {
+				if (resolveReference(reference) == Result.RESOLVED) {
 					if (route.getRouteUnknowns().canInstructionPause(reference)) {
 					    return true;
 					}
@@ -714,10 +715,13 @@ public class Engine extends Notifier implements Aborter {
 			
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
 					ReferenceClass.FUNCTION, activeCore);
-			
-			if (resolveReference(functionRef)) {
+
+			Result result = resolveReference(functionRef); 
+			switch (result) {
+			case RESOLVED:
 				m_defines.addFunctionTime(functionRef, timeUnit);
 				hit = true;
+				break;
 			}
 		}
 		if (hit) {	
@@ -736,9 +740,12 @@ public class Engine extends Notifier implements Aborter {
 			Reference toRef = ReferenceFactory.createReference(to, 
 					ReferenceClass.ENDPOINT, activeCore);
 
-			if (resolveReference(fromRef) && resolveReference(toRef)) {
+            Result fromResult = resolveReference(fromRef); 
+            Result toResult   = resolveReference(toRef); 			
+			
+			if ((fromResult == Result.RESOLVED) && (toResult == Result.RESOLVED)) {
 			    m_defines.addPathTime(fromRef, toRef, timeUnit);
-			    hit = true;
+			    hit = true;			    
 			}
 		}
 		if (hit) {	
@@ -753,7 +760,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addInstructionTime(reference, timeUnit);
 			}
-		}, ReferenceClass.ANY);		
+		}, ReferenceClass.ENDPOINT);
 	}
 
 	public void addLoop(CommandSource src, String refString, final long iterations) {
@@ -795,10 +802,13 @@ public class Engine extends Notifier implements Aborter {
 			Reference functionRef = ReferenceFactory.createReference(functionName, 
 					ReferenceClass.FUNCTION_WITH_EVERYTHING, activeCore);
 			
-			if (resolveReference(functionRef)) {
-				m_defines.removeFunctionTime(functionRef);
-				hit = true;
-			}			
+            Result result = resolveReference(functionRef); 
+            switch (result) {
+            case RESOLVED:
+                m_defines.removeFunctionTime(functionRef);
+                hit = true;
+                break;
+            }
 		}
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
@@ -816,10 +826,14 @@ public class Engine extends Notifier implements Aborter {
 			Reference toRef = ReferenceFactory.createReference(to, 
 					ReferenceClass.ENDPOINT_WITH_EVERYTHING, activeCore);
 
-			if (resolveReference(fromRef) && resolveReference(toRef)) {
-			    m_defines.removePathTime(fromRef, toRef);
-			    hit = true;
-			}
+            Result fromResult = resolveReference(fromRef); 
+            Result toResult   = resolveReference(toRef);            
+            
+            if ((fromResult == Result.RESOLVED) && 
+                (toResult == Result.RESOLVED)) {
+                m_defines.removePathTime(fromRef, toRef);
+                hit = true;
+            }
 		}
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
@@ -833,7 +847,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeInstructionTime(reference);
 			}
-		}, ReferenceClass.ANY_WITH_EVERYTHING);
+		}, ReferenceClass.ENDPOINT_WITH_EVERYTHING);
 	}
 
 	public void removeLoop(CommandSource src, String refString) {
@@ -913,11 +927,14 @@ public class Engine extends Notifier implements Aborter {
 				Reference functionRef = ReferenceFactory.createReference(functionName, 
 						ReferenceClass.FUNCTION, route.getRouteCoreContainer().getCoreId());
 				
-				if (resolveReference(functionRef)) {
-					FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);					
-					defines.applyFunctionDefine(src, route, info, Source.SET);
-					hit = true;
-				}
+	            Result result = resolveReference(functionRef); 
+	            switch (result) {
+	            case RESOLVED:
+                    FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);                    
+                    defines.applyFunctionDefine(src, route, info, Source.SET);
+                    hit = true;
+	                break;
+	            }
 			}
 		} catch (AbortedException e) {	}
 		
@@ -950,12 +967,16 @@ public class Engine extends Notifier implements Aborter {
 						ReferenceClass.ENDPOINT, coreId);
 				Reference toRef = ReferenceFactory.createReference(to, 
 						ReferenceClass.ENDPOINT, coreId);
-
-				if (resolveReference(fromRef) && resolveReference(toRef)) {
-					PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);					
-					defines.applyPathDefine(this, src, route, info, Source.SET);
-					hit = true;
-				}
+				
+	            Result fromResult = resolveReference(fromRef); 
+	            Result toResult   = resolveReference(toRef);            
+	            
+	            if ((fromResult == Result.RESOLVED) && 
+	                (toResult == Result.RESOLVED)) {
+                    PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);                 
+                    defines.applyPathDefine(this, src, route, info, Source.SET);
+	                hit = true;
+	            }
 			}
 		} catch (AbortedException e) { }
 
@@ -982,14 +1003,17 @@ public class Engine extends Notifier implements Aborter {
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ENDPOINT,
 				        route.getRouteCoreContainer().getCoreId());
-								
-				if (resolveReference(reference)) {
-					if (!route.getRouteUnknowns().canInstructionPause(reference))
-						return false;
-					
-					refMap.put(route, reference);
-					hit = true;
-				}				
+				
+                Result result = resolveReference(reference); 
+                switch (result) {
+                case RESOLVED:
+                    if (!route.getRouteUnknowns().canInstructionPause(reference))
+                        return false;
+                    
+                    refMap.put(route, reference);
+                    hit = true;
+                    break;
+                }
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {				
@@ -999,7 +1023,7 @@ public class Engine extends Notifier implements Aborter {
 		} catch (AbortedException e) { 
 			return false;			
 		}
-				
+
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
@@ -1029,18 +1053,26 @@ public class Engine extends Notifier implements Aborter {
 		}
 
 		boolean hit = false;		
+		boolean removed = false;
 		try {
 			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
-				
-				if (resolveReference(reference)) {
-					route.getRouteUnknowns().checkSetLoopIterations(reference, iterations, this, src);
-					refMap.put(route, reference);
-					hit = true;
-				}								
+
+                Result result = resolveReference(reference); 
+                switch (result) {
+                case RESOLVED:
+                    route.getRouteUnknowns().checkSetLoopIterations(reference, iterations, this, src);
+                    refMap.put(route, reference);
+                    hit = true;
+                    break;
+
+                case REMOVED:                    
+                    removed = true;
+                    break;
+                }
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {
@@ -1055,6 +1087,10 @@ public class Engine extends Notifier implements Aborter {
 		}
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+
+		} else if (removed) {
+		    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
 		}		
@@ -1096,7 +1132,8 @@ public class Engine extends Notifier implements Aborter {
 			return;
 		}
 		
-		boolean hit = false;				
+		boolean hit = false;	
+		boolean removed = false;
 		try {
 			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
@@ -1104,11 +1141,18 @@ public class Engine extends Notifier implements Aborter {
 						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 				
-				if (resolveReference(reference)) {
-					route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations, this, src);
-					refMap.put(route, reference);
-					hit = true;
-				}								
+                Result result = resolveReference(reference); 
+                switch (result) {
+                case RESOLVED:
+                    route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations, this, src);
+                    refMap.put(route, reference);
+                    hit = true;
+                    break;
+
+                case REMOVED:                    
+                    removed = true;
+                    break;
+                }
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {
@@ -1122,6 +1166,10 @@ public class Engine extends Notifier implements Aborter {
 		}
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		    
+		} else if (removed) {
+		    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
 		}		
@@ -1161,19 +1209,27 @@ public class Engine extends Notifier implements Aborter {
 			return;
 		}
 		
-		boolean hit = false;				
+		boolean hit = false;	
+		boolean removed = false;
 		try {
 			Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {				
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
-				
-				if (resolveReference(reference)) {
-					route.getRouteUnknowns().checkSetLoopScope(reference, absolute, this, src);
-					refMap.put(route, reference);
-					hit = true;
-				}								
+
+                Result result = resolveReference(reference);
+                switch (result) {
+                case RESOLVED:
+                    route.getRouteUnknowns().checkSetLoopScope(reference, absolute, this, src);
+                    refMap.put(route, reference);
+                    hit = true;
+                    break;
+
+                case REMOVED:                    
+                    removed = true;
+                    break;
+                }
 			}
 			for (Route route : routes) {
 				if (refMap.containsKey(route)) {
@@ -1187,6 +1243,10 @@ public class Engine extends Notifier implements Aborter {
 		}
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		    
+		} else if (removed) {
+		    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
 		}		
@@ -1226,23 +1286,31 @@ public class Engine extends Notifier implements Aborter {
 		}
 		
 		boolean hit = false;
+		boolean removed = false;
 	    try {
 			for (Route route : routes) {
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
 
-				if (resolveReference(reference)) {
-					Set<Node> nodes = route.getReferencedNodes(reference);
+                Result result = resolveReference(reference);
+                switch (result) {
+                case RESOLVED:
+                    Set<Node> nodes = route.getReferencedNodes(reference);
 
-					boolean okToSetExclusion = true;
-					for (Node node : nodes) {
-						okToSetExclusion &= canSetExclusion(node);
-					}
-					if (okToSetExclusion && !nodes.isEmpty()) {
-						hit = route.getRouteUnknowns().setExclusion(src, this, reference, Type.EXCLUSION, Source.SET);	
-					}
-				}
+                    boolean okToSetExclusion = true;
+                    for (Node node : nodes) {
+                        okToSetExclusion &= canSetExclusion(node);
+                    }
+                    if (okToSetExclusion && !nodes.isEmpty()) {
+                        hit = route.getRouteUnknowns().setExclusion(src, this, reference, Type.EXCLUSION, Source.SET);  
+                    }
+                    break;
+
+                case REMOVED:                    
+                    removed = true;
+                    break;
+                }
 			}
 			
 		} catch (AbortedException e) { 
@@ -1253,7 +1321,10 @@ public class Engine extends Notifier implements Aborter {
 	    	notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
 	    	notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 
-		} else {
+	    } else if (removed) {
+	        notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+	        
+	    } else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Unable to set exclusion for reference: %s", refString));
 		}
 	    return hit;
@@ -1284,15 +1355,23 @@ public class Engine extends Notifier implements Aborter {
 	// Section Methods
 	// ===================================================================== //
 	public boolean addBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
-		boolean hit = false;
+		boolean resolved = false;
+		Collection<String> removedRefStrings = new ArrayList<String>();
+		
 		for (CoreId activeCore : m_activeCores) {
 
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
 					ReferenceClass.ANY, activeCore);
-			boolean fromResolved = resolveReference(fromRef);
-			
-			if (fromResolved)			
+			Result fromResolved = resolveReference(fromRef);			
+			switch (fromResolved) {
+			case RESOLVED:
 			    checkInstructionIsBranch(src, fromRef, activeCore);
+			    break;
+
+			case REMOVED:
+			    removedRefStrings.add(fromRefString);
+			    break;
+			}
 			
 			Collection<Reference> toRefs = new ArrayList<Reference>();
 			for (String toRefString : toRefStrings) {
@@ -1300,22 +1379,29 @@ public class Engine extends Notifier implements Aborter {
 						ReferenceClass.ANY, activeCore);				
 				toRefs.add(ref);
 			}		
-			boolean toResolved = true;
+			boolean allToRefsResolved = true;
 			for (Reference toRef : toRefs) {
-				if (!resolveReference(toRef)) {
-					toResolved = false;
-				}
+			    Result toResolved = resolveReference(toRef);  
+	            switch (toResolved) {
+	            case UNRESOLVED:
+	                allToRefsResolved = false;
+	                break;
+
+	            case REMOVED:
+	                removedRefStrings.add(toRef.getRef());
+	                break;
+	            }
 			}
 
 			try {
 				List<StackNode> stackNodes = RouteConstructor.getPathStackNodes(
 						m_controlFlows.getControlFlow(activeCore), 
 						m_cachedFunctions.get(activeCore), fromRef);
-				
+
 				if (!stackNodes.isEmpty()) {
-					if (fromResolved && toResolved) {
+					if ((fromResolved == Result.RESOLVED) && allToRefsResolved) {
 						if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
-							hit = true;
+						    resolved = true;
 						}				
 					}
 				}
@@ -1324,53 +1410,80 @@ public class Engine extends Notifier implements Aborter {
 			}			
 		}
 		
-		if (!hit) {
+		if (!resolved) {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
-		} else {
+		    
+		} else if (!removedRefStrings.isEmpty()) {
+		    for (String removedRefString : removedRefStrings) {
+	            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", removedRefString));		        
+		    }
+ 
+		} else {		   
 			initialiseControlFlows(m_xeLoader, m_sections, src);			
 		    initialiseCachedFunctions(m_xeLoader);			
 		}		
-		return hit;
+		return resolved && removedRefStrings.isEmpty();
 	}
 	
 	public boolean removeBranch(CommandSource src, String fromRefString, Collection<String> toRefStrings) {
-		boolean hit = false;
+        boolean resolved = false;
+        Collection<String> removedRefStrings = new ArrayList<String>();
+        
 		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(fromRefString, 
 					ReferenceClass.ANY_WITH_EVERYTHING, activeCore);
-			boolean fromResolved = resolveReference(fromRef);
+            Result fromResolved = resolveReference(fromRef);            
+	        switch (fromResolved) {
+	        case RESOLVED:
+	            checkInstructionIsBranch(src, fromRef, activeCore);
+	            break;
+
+	        case REMOVED:
+	            removedRefStrings.add(fromRefString);
+	            break;
+	        }
 			
-			if (fromResolved)
-			    checkInstructionIsBranch(src, fromRef, activeCore);
+            Collection<Reference> toRefs = new ArrayList<Reference>();
+            for (String toRefString : toRefStrings) {
+                Reference ref = ReferenceFactory.createReference(toRefString, 
+                        ReferenceClass.ANY_WITH_EVERYTHING, activeCore);                
+                toRefs.add(ref);
+            }       			
+            boolean allToRefsResolved = true;
+            for (Reference toRef : toRefs) {
+                Result toResolved = resolveReference(toRef);  
+                switch (toResolved) {
+                case UNRESOLVED:
+                    allToRefsResolved = false;
+                    break;
+
+                case REMOVED:
+                    removedRefStrings.add(toRef.getRef());
+                    break;
+                }
+            }
 			
-			Collection<Reference> toRefs = new ArrayList<Reference>();
-			for (String toRefString : toRefStrings) {
-				Reference ref = ReferenceFactory.createReference(toRefString, 
-						ReferenceClass.ANY_WITH_EVERYTHING, activeCore);				
-				toRefs.add(ref);
-			}		
-			boolean toResolved = true;
-			for (Reference toRef : toRefs) {
-				if (!resolveReference(toRef)) {
-					toResolved = false;
-				}
-			}
-			
-			if (fromResolved && toResolved) {
+			if ((fromResolved == Result.RESOLVED) && allToRefsResolved) {
 				if (m_sections.removeFromBranches(src, activeCore, fromRef, toRefs)) {
-					hit = true;
+				    resolved = true;
 				}				
 			}			
 		}
 
-		if (!hit) {
+		if (!resolved) {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
-		} else {
+		    
+        } else if (!removedRefStrings.isEmpty()) {
+            for (String removedRefString : removedRefStrings) {
+                notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", removedRefString));                
+            }
+ 
+		} else {		    
 			initialiseControlFlows(m_xeLoader, m_sections, src);			
 		    initialiseCachedFunctions(m_xeLoader);			
 		}		
-		return hit;
+		return resolved && removedRefStrings.isEmpty();
 	}
 	
 	public Map<Reference, List<Reference>> getUserBranches() {
@@ -1471,7 +1584,7 @@ public class Engine extends Notifier implements Aborter {
    			Reference loopRef = ReferenceFactory.createReference(ref, 
    					ReferenceClass.ANY, activeCore);    			
 
-   			if (resolveReference(loopRef)) {
+   			if (resolveReference(loopRef) == Result.RESOLVED) {
    				RouteLoopConversion converter = new RouteLoopConversion(
    						m_controlFlows.getControlFlow(activeCore),
    						getCachedFunctionMap(activeCore)); 
@@ -1505,7 +1618,7 @@ public class Engine extends Notifier implements Aborter {
 		return false;
 	}
 
-	private boolean resolveReference(Reference ref) {
+	private Result resolveReference(Reference ref) {
 		return ref.resolve(this);
 	}
 
@@ -1519,17 +1632,28 @@ public class Engine extends Notifier implements Aborter {
 
 	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass refClass) {		
 		boolean hit = false;
-		for (CoreId activeCore : m_activeCores) {
-			
+		boolean removed = false;
+		for (CoreId activeCore : m_activeCores) {			
 			Reference reference = ReferenceFactory.createReference(refString, refClass, activeCore);
-			
-			if (resolveReference(reference)) {
-				update.run(reference);
-				hit = true;
-			}
+						
+            Result result = resolveReference(reference);
+            switch (result) {
+            case RESOLVED:
+                update.run(reference);
+                hit = true;
+                break;
+
+            case REMOVED:
+                removed = true;
+                break;
+            }
 		}
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		    
+		} else if (removed) {
+            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+ 
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
 		}
@@ -1563,7 +1687,7 @@ public class Engine extends Notifier implements Aborter {
 
 		        try {
 			    	getAbort();
-			    	
+
 				} catch (AbortedException e) {
 					break;
 			    }

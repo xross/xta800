@@ -35,6 +35,12 @@ public abstract class ReferenceType {
 		ERROR
 	}
 
+	public enum Result {
+	    RESOLVED,
+	    UNRESOLVED,
+	    REMOVED	    
+	}
+	
 	ReferenceType(String ref, Type type, CoreId coreId) {
 		m_ref = ref;
 		m_pcs = new IteratableSet<Long>();
@@ -49,7 +55,7 @@ public abstract class ReferenceType {
 	public abstract ReferenceType create(Engine engine, String reference, CoreId coreId);
 	public abstract String name();
 	public abstract String description();
-	public abstract boolean resolve(Engine engine);
+	public abstract Result resolve(Engine engine);
 	public abstract boolean isPortable();
 
 	public String getRef() {

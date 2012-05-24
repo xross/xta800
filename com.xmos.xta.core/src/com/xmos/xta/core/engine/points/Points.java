@@ -6,6 +6,7 @@ import com.xmos.libs.util.CoreId;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 class Points {
@@ -28,7 +29,7 @@ class Points {
 		for (CoreId activeCore : m_engine.getActiveCores()) {
 			Reference reference = ReferenceFactory.createReference(refStr, m_refClass, activeCore);
 
-			if (reference.resolve(m_engine)) {
+			if (reference.resolve(m_engine) == Result.RESOLVED) {
 				endpoints.put(activeCore, reference);
 				hit = true;
 			}

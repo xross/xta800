@@ -48,7 +48,8 @@ public class SrcLabels extends Command {
 
     	    	console.display(", compilation dir: " + info.getCompilationDir());
     	    	console.display(", filename: " + info.getFileName());
-    	    	console.display(", line number: " + info.getLineNumber());
+    	    	console.display(", line number: " + info.getLineNumber());                
+    	    	console.display(", exists: " + info.exists());    	    	
 	    	    console.display("\n");
 	    	}			
 		}

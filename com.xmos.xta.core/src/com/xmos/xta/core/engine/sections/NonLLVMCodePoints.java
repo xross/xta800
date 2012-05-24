@@ -53,7 +53,7 @@ public class NonLLVMCodePoints extends CodePoints  {
 	        		int lineNumber = ByteArrayManipulation.readInt(data, byteIndex);
 	        		byteIndex += 4;
 
-            		m_codePoints.add(new CodePointInfo(this, location, codePoint, compilationDir, fileName, lineNumber));
+            		m_codePoints.add(new CodePointInfo(this, location, codePoint, compilationDir, fileName, lineNumber, true));
 	        	}
 		    }
 
