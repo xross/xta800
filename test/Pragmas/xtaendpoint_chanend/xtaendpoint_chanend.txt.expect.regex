@@ -1,5 +1,5 @@
-stdcore\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[26]
-stdcore\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[26]
+stdcore\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[15]
+stdcore\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[15]
 stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
 stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
 stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 20
