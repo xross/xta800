@@ -53,7 +53,10 @@ public class CodePoints extends Section  {
 	private void loadCompilationUnitVersion1(int base, int size) throws Exception {
 		int endOfEntry = base + size;
 		if(Debug) System.out.println("endOfEntry " + endOfEntry);
-		
+
+   		String compDir = ByteArrayManipulation.readString(m_data, m_byteIndex);
+   		m_byteIndex += compDir.length() + 1;
+
 		while (m_byteIndex < endOfEntry) {
 			if(Debug) System.out.println("----------------------------");
 			
@@ -64,17 +67,9 @@ public class CodePoints extends Section  {
 			String fileName = ByteArrayManipulation.readString(m_data,m_byteIndex);
 			if(Debug) System.out.println(m_byteIndex + "\tfileName " + fileName);
 			m_byteIndex += fileName.length() + 1;
-			
-			String compDir = ByteArrayManipulation.readString(m_data,m_byteIndex);
-			if(Debug) System.out.println(m_byteIndex + "\tcompDir " + compDir);
-			m_byteIndex += compDir.length() + 1;
 
 			int lineNumber = ByteArrayManipulation.readInt(m_data,m_byteIndex);
 			if(Debug) System.out.println(m_byteIndex + "\tlineNumber " + lineNumber);
-			m_byteIndex += 4;
-
-			int fileCol = ByteArrayManipulation.readInt(m_data, m_byteIndex);
-			if(Debug) System.out.println(m_byteIndex + "\tfileCol " + fileCol);
 			m_byteIndex += 4;
 
 			int asmLabelSize = ByteArrayManipulation.readInt(m_data, m_byteIndex);
