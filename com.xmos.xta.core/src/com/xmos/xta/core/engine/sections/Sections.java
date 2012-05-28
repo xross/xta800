@@ -31,8 +31,6 @@ public class Sections {
 	private Collection<Section> m_srcLevelCommands;
 	private Collection<Section> m_srcLevelLoops;
 	private Collection<Section> m_systems;
-	private Collection<Section> m_recursiveFunctions;
-	private Collection<Section> m_unreachableFunctions;
 
     public Sections() {
     	m_xeLoader = null;
@@ -50,8 +48,6 @@ public class Sections {
 		m_srcLevelCommands = new ArrayList<Section>();
 		m_srcLevelLoops = new ArrayList<Section>();
 		m_systems = new ArrayList<Section>();
-		m_recursiveFunctions = new ArrayList<Section>();
-		m_unreachableFunctions = new ArrayList<Section>();
     }
 
 	public boolean load(CommandSource src, XeLoader xeLoader, Notifier notifier) {
@@ -70,8 +66,6 @@ public class Sections {
 		m_srcLevelCommands.clear();
 		m_srcLevelLoops.clear();
 		m_systems.clear();
-		m_recursiveFunctions.clear();
-		m_unreachableFunctions.clear();
 		
 		for (CoreId coreId : m_xeLoader.getCoreIds()) {			
 			m_endpoints.add(new LLVMCodePoints(coreId, ".xtaendpoint_locs", m_notifier));
@@ -93,8 +87,6 @@ public class Sections {
 			m_srcLevelCommands.add(new SrcLevelCommands(coreId, m_notifier));
 			m_srcLevelLoops.add(new SrcLevelLoops(coreId, m_notifier));
 			m_systems.add(new Systems(coreId, m_notifier));
-			m_recursiveFunctions.add(new StringSection(coreId, m_notifier));
-			m_unreachableFunctions.add(new StringSection(coreId, m_notifier));
 		}
 		
 		if (!loadSection(src, m_branches) ||
