@@ -68,17 +68,14 @@ public class Sections {
 		m_systems.clear();
 		
 		for (CoreId coreId : m_xeLoader.getCoreIds()) {			
-			m_endpoints.add(new LLVMCodePoints(coreId, ".xtaendpoint_locs", m_notifier));
-			m_calls.add(new LLVMCodePoints(coreId, ".xtacall_locs", m_notifier));
-			m_srcLabels.add(new LLVMSrcLabelCodePoints(coreId, ".xtasrclabletable", m_notifier));
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
-			m_srcLabels.add(new NonLLVMCodePoints(coreId, ".xtalabel", m_notifier));
-			m_endpoints.add(new NonLLVMCodePoints(coreId, ".xtaendpoint", m_notifier));
-			m_calls.add(new NonLLVMCodePoints(coreId, ".xtacall", m_notifier));
-			m_srcLabelTables.add(new NonLLVMSrcLabelTable(coreId, ".xtalabeltable", m_notifier));
-			m_endpointTables.add(new NonLLVMCodePointTable(coreId, ".xtaendpointtable", m_notifier));
-			m_callTables.add(new NonLLVMCodePointTable(coreId, ".xtacalltable", m_notifier));
+			m_srcLabels.add(new CodePoints(coreId, ".xtalabel", m_notifier, true));
+			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier, false));
+			m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier, false));
+			m_srcLabelTables.add(new SrcLabelTable(coreId, ".xtalabeltable", m_notifier));
+			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpointtable", m_notifier));
+			m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier));
 			m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtathreadstart", m_notifier));
 			m_threadStopPoints.add(new ThreadDelimiters(coreId, ".xtathreadstop", m_notifier));
 			m_srcLevelCommands.add(new SrcLevelCommands(coreId, m_notifier));
