@@ -74,10 +74,10 @@ public class CodePoints extends Section  {
 
 			int asmLabelSize = ByteArrayManipulation.readInt(m_data, m_byteIndex);
 			if(Debug) System.out.println(m_byteIndex + "\tasmLabelSize " + asmLabelSize);
-			int entryIndex = m_byteIndex;
 			m_byteIndex += 4;
-			
-			if (m_byteIndex < endOfEntry) {
+
+			int entryIndex = m_byteIndex;
+			if (m_byteIndex < entryIndex + asmLabelSize) {
 				do {
 					if(Debug) System.out.println("====================asm entry================");
 					
