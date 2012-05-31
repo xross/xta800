@@ -1,4 +1,4 @@
-stdcore\[0\], label: removed, pc: 0x0, compilation dir: .*/removed_references, filename: test.xc, line number: 9, exists: false
+stdcore\[0\], label: removed, pc: 0x0, compilation dir: .*removed_references, filename: test.xc, line number: 9, exists: false
 xta: cmds.txt:15: warning: Reference: removed has been removed
 xta: cmds.txt:16: warning: Reference: removed has been removed
 xta: cmds.txt:18: warning: Reference: removed has been removed
