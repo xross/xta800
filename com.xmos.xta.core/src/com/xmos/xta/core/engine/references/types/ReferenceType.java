@@ -30,6 +30,7 @@ public abstract class ReferenceType {
 		FUNCTION,
 		ENDPOINT,
 		SRCLABEL,
+        LOOPLABEL,
 		CALL,
 		EVERYTHING,
 		ERROR

@@ -12,12 +12,14 @@ public class ReferenceTypeFactory {
 		BRANCH,
 		INSTRUCTION,
 		ENDPOINT,
+        LOOP,
 		ANY,
 
 		FUNCTION_WITH_EVERYTHING,
 		BRANCH_WITH_EVERYTHING,
 		INSTRUCTION_WITH_EVERYTHING,
 		ENDPOINT_WITH_EVERYTHING,
+        LOOP_WITH_EVERYTHING,
 		ANY_WITH_EVERYTHING
 	}
 
@@ -55,6 +57,20 @@ public class ReferenceTypeFactory {
 					new EndpointReference(null, m_coreId),
 					new LabelReference(null, m_coreId)}));					
 
+        m_referenceClasses.put(ReferenceClass.LOOP,
+                new ReferenceClassType(true, new ReferenceType[] {
+                    new LoopLabelPcReference(null, m_coreId),
+                    new LoopLabelFileLineReference(null, m_coreId),
+                    new LoopLabelReference(null, m_coreId),
+                    new EndpointPcReference(null, m_coreId),
+                    new EndpointFileLineReference(null, m_coreId),
+                    new EndpointReference(null, m_coreId),
+                    new CallPcReference(null, m_coreId),
+                    new CallFileLineReference(null, m_coreId),
+                    new CallReference(null, m_coreId),
+                    new LabelReference(null, m_coreId),
+                    new CallLabelReference(null, m_coreId)}));      
+		
 		m_referenceClasses.put(ReferenceClass.ANY,
 				new ReferenceClassType(true, new ReferenceType[] {
 					new SrcLabelPcReference(null, m_coreId),
@@ -101,6 +117,21 @@ public class ReferenceTypeFactory {
 					new EndpointReference(null, m_coreId),
 					new LabelReference(null, m_coreId)}));
 
+        m_referenceClasses.put(ReferenceClass.LOOP_WITH_EVERYTHING,
+                new ReferenceClassType(true, new ReferenceType[] {
+                    new EverythingReference(null, m_coreId),
+                    new LoopLabelPcReference(null, m_coreId),
+                    new LoopLabelFileLineReference(null, m_coreId),
+                    new LoopLabelReference(null, m_coreId),
+                    new EndpointPcReference(null, m_coreId),
+                    new EndpointFileLineReference(null, m_coreId),
+                    new EndpointReference(null, m_coreId),
+                    new CallPcReference(null, m_coreId),
+                    new CallFileLineReference(null, m_coreId),
+                    new CallReference(null, m_coreId),
+                    new LabelReference(null, m_coreId),
+                    new CallLabelReference(null, m_coreId)}));      
+		
 		m_referenceClasses.put(ReferenceClass.ANY_WITH_EVERYTHING,
 				new ReferenceClassType(false, new ReferenceType[] {
 					new EverythingReference(null, m_coreId),

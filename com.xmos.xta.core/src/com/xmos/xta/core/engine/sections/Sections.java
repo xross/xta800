@@ -21,9 +21,11 @@ public class Sections {
 	private Collection<Section> m_branches;
 	private Collection<Section> m_labels;
 	private Collection<Section> m_srcLabels;
+    private Collection<Section> m_loopLabels;
 	private Collection<Section> m_endpoints;
 	private Collection<Section> m_calls;
 	private Collection<Section> m_srcLabelTables;
+    private Collection<Section> m_loopLabelTables;
 	private Collection<Section> m_endpointTables;
 	private Collection<Section> m_callTables;
 	private Collection<Section> m_threadStartPoints;
@@ -38,9 +40,11 @@ public class Sections {
 		m_branches  = new ArrayList<Section>();
 		m_labels = new ArrayList<Section>();
 		m_srcLabels = new ArrayList<Section>();
+		m_loopLabels = new ArrayList<Section>();
 		m_endpoints = new ArrayList<Section>();
 		m_calls = new ArrayList<Section>();
 		m_srcLabelTables = new ArrayList<Section>();
+		m_loopLabelTables = new ArrayList<Section>();
 		m_endpointTables = new ArrayList<Section>();
 		m_callTables = new ArrayList<Section>();
 		m_threadStartPoints = new ArrayList<Section>();
@@ -56,9 +60,11 @@ public class Sections {
 		m_branches.clear();
 		m_labels.clear();
 		m_srcLabels.clear();
+		m_loopLabels.clear();
 		m_endpoints.clear();
 		m_calls.clear();
 		m_srcLabelTables.clear();
+		m_loopLabelTables.clear();
 		m_endpointTables.clear();
 		m_callTables.clear();
 		m_threadStartPoints.clear();
@@ -71,9 +77,11 @@ public class Sections {
 			m_branches.add(new Branches(coreId, m_notifier));
 			m_labels.add(new Labels(coreId, m_notifier));
 			m_srcLabels.add(new CodePoints(coreId, ".xtalabel", m_notifier, true));
+			m_loopLabels.add(new CodePoints(coreId, ".xtalooplabel", m_notifier, true));
 			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier, false));
 			m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier, false));
 			m_srcLabelTables.add(new SrcLabelTable(coreId, ".xtalabeltable", m_notifier));
+            m_loopLabelTables.add(new SrcLabelTable(coreId, ".xtalooplabeltable", m_notifier));
 			m_endpointTables.add(new CodePointTable(coreId, ".xtaendpointtable", m_notifier));
 			m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier));
 			m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtathreadstart", m_notifier));
@@ -86,9 +94,11 @@ public class Sections {
 		if (!loadSection(src, m_branches) ||
 			!loadSection(src, m_labels) ||
 			!loadSection(src, m_srcLabels) ||
+            !loadSection(src, m_loopLabels) ||
 			!loadSection(src, m_endpoints) ||
 			!loadSection(src, m_calls) ||
 			!loadSection(src, m_srcLabelTables) ||
+            !loadSection(src, m_loopLabelTables) ||
 			!loadSection(src, m_endpointTables) ||
 			!loadSection(src, m_callTables) ||
 			!loadSection(src, m_threadStartPoints) ||
@@ -139,6 +149,20 @@ public class Sections {
 		return collections;
 	}
 
+    public List<CodePointInfo> getLoopLabels(CoreId coreId) {
+        List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
+        for(Section s : getSections(m_loopLabels, coreId))
+            collections.addAll(((CodePoints)s).get());
+        return collections;
+    }
+
+    public IteratableSet<SrcLabelTableInfo> getLoopLabelTable(CoreId coreId) {
+        IteratableSet<SrcLabelTableInfo> collections = new IteratableSet<SrcLabelTableInfo>();
+        for(Section s : getSections(m_loopLabelTables, coreId))
+            collections.addAll(((SrcLabelTable)s).get());
+        return collections;
+    }
+	
 	public List<CodePointInfo> getEndpoints(CoreId coreId) {
 		List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
 		for(Section s : getSections(m_endpoints, coreId))

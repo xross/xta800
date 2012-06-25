@@ -768,7 +768,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoop(reference, iterations);
 			}
-		}, ReferenceClass.ANY);
+		}, ReferenceClass.LOOP);
 	}
 
 	public void addLoopPath(CommandSource src, String refString, final long iterations) {
@@ -776,7 +776,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopPath(reference, iterations);
 			}
-		}, ReferenceClass.ANY);
+		}, ReferenceClass.LOOP);
 	}
 
 	public void addLoopScope(CommandSource src, String refString, final boolean absolute) {
@@ -784,7 +784,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopScope(reference, absolute);
 			}
-		}, ReferenceClass.ANY);
+		}, ReferenceClass.LOOP);
 	}
 
 	public void addExclusion(CommandSource src, String refString) {
@@ -1405,6 +1405,14 @@ public class Engine extends Notifier implements Aborter {
 		return m_sections.getSrcLabelTable(coreId);
 	}
 
+    public List<CodePointInfo> getLoopLabels(CoreId coreId) {
+        return m_sections.getLoopLabels(coreId);
+    }
+
+    public IteratableSet<SrcLabelTableInfo> getLoopLabelTable(CoreId coreId) {
+        return m_sections.getLoopLabelTable(coreId);
+    }
+	
 	public List<CodePointInfo> getEndpoints(CoreId coreId) {
 		return m_sections.getEndpoints(coreId);
 	}
@@ -1463,7 +1471,7 @@ public class Engine extends Notifier implements Aborter {
    		for (CoreId activeCore : m_activeCores) {
 
    			Reference loopRef = ReferenceFactory.createReference(ref, 
-   					ReferenceClass.ANY, activeCore);    			
+   					ReferenceClass.LOOP, activeCore);    			
 
    			if (resolveReference(loopRef) == Result.RESOLVED) {
    				RouteLoopConversion converter = new RouteLoopConversion(
@@ -1557,7 +1565,7 @@ public class Engine extends Notifier implements Aborter {
             Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
             for (Route route : routes) {                
                 Reference reference = ReferenceFactory.createReference(refString, 
-                        ReferenceClass.ANY,
+                        ReferenceClass.LOOP,
                         route.getRouteCoreContainer().getCoreId());
 
                 Result result = resolveReference(reference); 

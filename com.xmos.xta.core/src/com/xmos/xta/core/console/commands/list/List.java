@@ -7,18 +7,23 @@ public class List extends CommandContainer {
 	private static final String[] COMMAND_NAMES = { "list" };
 
 	static private Command[] m_options = {
+        new Labels(),
+        new Calls(),
 		new AllCalls(),
+        new SrcLabels(),
+        new AllSrcLabels(),
+        new LoopLabels(),
+        new AllLoopLabels(),
+        new Endpoints(),
 		new AllEndpoints(),
 		new Branches(),
-		new Calls(),
 		new Cores(),
-		new Endpoints(),
 		new Exclusions(),
 		new Functions(),
 		new FunctionTimes(),
 		new InstructionTimes(),
 		new Knowns(),
-		new Labels(),
+        new Unknowns(),
 		new Loops(),
 		new LoopPaths(),
 		new LoopScopes(),
@@ -26,11 +31,8 @@ public class List extends CommandContainer {
 		new Sources(),
 		new SrcCommands(),
 		new SrcLoops(),
-		new SrcLabels(),
-		new AllSrcLabels(),
 		new ThreadStartPoints(),
 		new ThreadStopPoints(),
-		new Unknowns(),
 	};
 
 	public List() { super(COMMAND_NAMES); }
