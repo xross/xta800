@@ -1,4 +1,3 @@
-xta: warning: Must be within a loop to be able to set loop iterations
 Route\(\d+\) function: test
     Pass, Num Paths: \d+, Slack: \d+\.\d [mun]s, Required: 2.0 us, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 

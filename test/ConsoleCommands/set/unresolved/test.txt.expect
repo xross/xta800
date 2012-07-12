@@ -1,9 +1,9 @@
 loop
-xta: cmds.txt:4: error: Reference: ref not resolved on any active core
+xta: cmds.txt:4: error: Reference: ref not within a loop on any active core
 looppath
-xta: cmds.txt:7: error: Reference: ref not resolved on any active core
+xta: cmds.txt:7: error: Reference: ref not within a loop on any active core
 loopscope
-xta: cmds.txt:10: error: Reference: ref not resolved on any active core
+xta: cmds.txt:10: error: Reference: ref not within a loop on any active core
 functiontime
 xta: cmds.txt:13: error: Reference: ref not resolved on any active core
 pathtime

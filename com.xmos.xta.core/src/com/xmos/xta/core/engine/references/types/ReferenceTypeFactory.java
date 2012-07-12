@@ -70,7 +70,7 @@ public class ReferenceTypeFactory {
                     new CallReference(null, m_coreId),
                     new LabelReference(null, m_coreId),
                     new CallLabelReference(null, m_coreId)}));      
-		
+
 		m_referenceClasses.put(ReferenceClass.ANY,
 				new ReferenceClassType(true, new ReferenceType[] {
 					new SrcLabelPcReference(null, m_coreId),
@@ -118,7 +118,7 @@ public class ReferenceTypeFactory {
 					new LabelReference(null, m_coreId)}));
 
         m_referenceClasses.put(ReferenceClass.LOOP_WITH_EVERYTHING,
-                new ReferenceClassType(true, new ReferenceType[] {
+                new ReferenceClassType(false, new ReferenceType[] {
                     new EverythingReference(null, m_coreId),
                     new LoopLabelPcReference(null, m_coreId),
                     new LoopLabelFileLineReference(null, m_coreId),

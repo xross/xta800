@@ -20,5 +20,6 @@ help FUNCTION
 help BRANCH
 help INSTRUCTION
 help ENDPOINT
+help LOOP
 help ANY
 exit

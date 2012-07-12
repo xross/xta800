@@ -49,21 +49,26 @@
   [-]echo "text": Prints the text to the console
   [-]exit: Quits the application (Command line version only)
   [-]help [command|command subcommand|option]: Displays help message for the given arguments
-      options: FUNCTION, BRANCH, INSTRUCTION, ENDPOINT, ANY, MODE, SCOPE
+      options: FUNCTION, BRANCH, INSTRUCTION, ENDPOINT, LOOP, ANY, MODE, SCOPE
   [-]history: Displays the command history
   [-]list <option> <arg0> <arg1>...: Lists the given set of items
+      option: labels: Lists the labels
+      option: calls: Lists the calls
       option: allcalls: Lists all the possible locations for calls
+      option: srclabels: Lists the source labels
+      option: allsrclabels: Lists all the possible locations for source labels
+      option: looplabels: Lists the loop labels
+      option: alllooplabels: Lists all the possible locations for loop labels
+      option: endpoints: Lists the endpoints
       option: allendpoints: Lists all the possible locations for endpoints
       option: branches [route id]: Lists the branches - optionally for the specified route
-      option: calls: Lists the calls
       option: cores: Lists the active cores
-      option: endpoints: Lists the endpoints
       option: exclusions [route id]: Displays the exclusions - optionally for the specified route
       option: functions: Lists the functions in the loaded application
       option: functiontimes: Displays the function time defines
       option: instructiontimes: Displays the instruction time defines
       option: knowns <route id>: Displays the list of knowns set for the given route
-      option: labels: Lists the labels
+      option: unknowns <route id>: Displays the list of unknowns for the given route
       option: loops: Displays the loop defines
       option: looppaths: Displays the loop path defines
       option: loopscopes: Displays the loop scope defines
@@ -71,11 +76,8 @@
       option: sources: Lists the source files
       option: srccommands: Displays the command list embedded in the loaded executable
       option: srcloops: Displays the loop counts embedded in the loaded executable
-      option: srclabels: Lists the source labels
-      option: allsrclabels: Lists all the possible locations for source labels
       option: threadstartpoints: Lists the thread start points
       option: threadstoppoints: Lists the thread stop points
-      option: unknowns <route id>: Displays the list of unknowns for the given route
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary (verbosity -2|-1|0)
@@ -137,6 +139,18 @@
     EndpointFileLine: Endpoint specified in the format: 'file name:line number'
     Endpoint: Endpoint specified using the source level pragma mechanism
     Label: Any source or assembly level symbol defined with respect to an executable section
+  Any of the following types are permitted in this reference class:
+    LoopLabelPc: Raw program counter specified in the format: 0x*
+    SrcLabelFileLine: Loop label specified in the format: 'file name:line number'
+    LoopLabel: Loop label specified using the source level pragma mechanism
+    EndpointPc: Raw program counter specified in the format: 0x*
+    EndpointFileLine: Endpoint specified in the format: 'file name:line number'
+    Endpoint: Endpoint specified using the source level pragma mechanism
+    CallPc: Call specified in the format: 0x*
+    CallFileLine: Call specified in the format: 'file name:line number'
+    Call: Call specified using the source level pragma mechanism
+    Label: Any source or assembly level symbol defined with respect to an executable section
+    CallLabel: Any source or assembly level symbol defined with respect to an executable section
   Any of the following types are permitted in this reference class:
     SrcLabelPc: Raw program counter specified in the format: 0x*
     EndpointPc: Raw program counter specified in the format: 0x*

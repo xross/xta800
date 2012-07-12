@@ -760,7 +760,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addInstructionTime(reference, timeUnit);
 			}
-		}, ReferenceClass.ENDPOINT);
+		}, ReferenceClass.ENDPOINT, false);
 	}
 
 	public void addLoop(CommandSource src, String refString, final long iterations) {
@@ -768,7 +768,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoop(reference, iterations);
 			}
-		}, ReferenceClass.LOOP);
+		}, ReferenceClass.LOOP, true);
 	}
 
 	public void addLoopPath(CommandSource src, String refString, final long iterations) {
@@ -776,7 +776,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopPath(reference, iterations);
 			}
-		}, ReferenceClass.LOOP);
+		}, ReferenceClass.ANY, true);
 	}
 
 	public void addLoopScope(CommandSource src, String refString, final boolean absolute) {
@@ -784,7 +784,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addLoopScope(reference, absolute);
 			}
-		}, ReferenceClass.LOOP);
+		}, ReferenceClass.LOOP, true);
 	}
 
 	public void addExclusion(CommandSource src, String refString) {
@@ -792,7 +792,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.addExclusion(reference);
 			}
-		}, ReferenceClass.ANY);
+		}, ReferenceClass.ANY, false);
 	}
 	
 	public void removeFunctionTime(CommandSource src, String functionName) {
@@ -847,7 +847,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeInstructionTime(reference);
 			}
-		}, ReferenceClass.ENDPOINT_WITH_EVERYTHING);
+		}, ReferenceClass.ENDPOINT_WITH_EVERYTHING, false);
 	}
 
 	public void removeLoop(CommandSource src, String refString) {
@@ -855,7 +855,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoop(reference);
 			}
-		}, ReferenceClass.ANY_WITH_EVERYTHING);
+		}, ReferenceClass.LOOP_WITH_EVERYTHING, true);
 	}
 
 	public void removeLoopPath(CommandSource src, String refString) {
@@ -863,7 +863,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoopPath(reference);
 			}
-		}, ReferenceClass.ANY_WITH_EVERYTHING);
+		}, ReferenceClass.ANY_WITH_EVERYTHING, true);
 	}
 
 	public void removeLoopScope(CommandSource src, String refString) {
@@ -871,7 +871,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeLoopScope(reference);
 			}
-		}, ReferenceClass.ANY_WITH_EVERYTHING);
+		}, ReferenceClass.LOOP_WITH_EVERYTHING, true);
 	}
 
 	public void removeExclusion(CommandSource src, String refString) {
@@ -879,7 +879,7 @@ public class Engine extends Notifier implements Aborter {
 			public void run(Reference reference) {
 				m_defines.removeExclusion(reference);
 			}
-		}, ReferenceClass.ANY_WITH_EVERYTHING);
+		}, ReferenceClass.ANY_WITH_EVERYTHING, false);
 	}	
 	
 	public Collection<FunctionTimeInfo> getFunctionTimeDefines() {
@@ -1046,7 +1046,7 @@ public class Engine extends Notifier implements Aborter {
 	// Set Loop Methods
 	// ===================================================================== //
 	public void setLoop(CommandSource src, int routeId, String refString, final long iterations) {	    
-	    updateLoops(src, routeId, refString, new LoopsUpdate() {
+	    updateLoops(src, routeId, refString, ReferenceClass.LOOP, new LoopsUpdate() {
             public void check(Route route, Reference reference, CommandSource src) throws Exception {
                 route.getRouteUnknowns().checkSetLoopIterations(reference, iterations, Engine.this, src);
             }
@@ -1085,7 +1085,7 @@ public class Engine extends Notifier implements Aborter {
 	// Set Loop Path Methods
 	// ===================================================================== //
 	public void setLoopPath(CommandSource src, int routeId, String refString, final long iterations) {
-        updateLoops(src, routeId, refString, new LoopsUpdate() {
+        updateLoops(src, routeId, refString, ReferenceClass.ANY, new LoopsUpdate() {
             public void check(Route route, Reference reference, CommandSource src) throws Exception {
                 route.getRouteUnknowns().checkSetLoopPathIterations(reference, iterations, Engine.this, src);
             }
@@ -1123,7 +1123,7 @@ public class Engine extends Notifier implements Aborter {
 	// Set Loop Scope Methods
 	// ===================================================================== //
 	public void setLoopScope(CommandSource src, int routeId, String refString, final boolean absolute) {
-        updateLoops(src, routeId, refString, new LoopsUpdate() {
+        updateLoops(src, routeId, refString, ReferenceClass.LOOP, new LoopsUpdate() {
             public void check(Route route, Reference reference, CommandSource src) throws Exception {
                 route.getRouteUnknowns().checkSetLoopScope(reference, absolute, Engine.this, src);
             }
@@ -1519,7 +1519,9 @@ public class Engine extends Notifier implements Aborter {
 		return false;
 	}
 
-	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, ReferenceClass refClass) {		
+	private void updateDefines(CommandSource src, String refString, DefinesUpdate update, 
+	        ReferenceClass refClass, boolean isLoop) {
+	    
 		boolean hit = false;
 		boolean removed = false;
 		for (CoreId activeCore : m_activeCores) {			
@@ -1544,7 +1546,11 @@ public class Engine extends Notifier implements Aborter {
             notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
  
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+            if (isLoop) {
+                notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not within a loop on any active core", refString));
+            } else {
+                notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+            }
 		}
 	}
 
@@ -1552,7 +1558,9 @@ public class Engine extends Notifier implements Aborter {
 		void run(Reference reference);
 	}
 	
-    public void updateLoops(CommandSource src, int routeId, String refString, LoopsUpdate update) {
+    public void updateLoops(CommandSource src, int routeId, String refString, 
+            ReferenceClass referenceClass, LoopsUpdate update) {
+        
         Collection<Route> routes = getRoute(routeId);
         if (routes.size() == 0) {
             notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
@@ -1565,8 +1573,7 @@ public class Engine extends Notifier implements Aborter {
             Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
             for (Route route : routes) {                
                 Reference reference = ReferenceFactory.createReference(refString, 
-                        ReferenceClass.LOOP,
-                        route.getRouteCoreContainer().getCoreId());
+                        referenceClass, route.getRouteCoreContainer().getCoreId());
 
                 Result result = resolveReference(reference); 
                 switch (result) {
@@ -1598,8 +1605,8 @@ public class Engine extends Notifier implements Aborter {
             notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
             
         } else {
-            notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));          
-        }       
+            notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not within a loop on any active core", refString));          
+        }
         notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
     }
 	

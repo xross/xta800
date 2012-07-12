@@ -30,17 +30,17 @@ public class LoopLabels extends Command {
         if ((index + numArgs()) >= args.length)
             return null;
 
-        return new SrcLabels();
+        return new LoopLabels();
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
         if (!isExecutableLoaded(engine, console))
             return;
 
-        listSrcLabels(engine, console);
+        listLoopLabels(engine, console);
     }
 
-    private void listSrcLabels(final Engine engine, final Console console) {
+    private void listLoopLabels(final Engine engine, final Console console) {
         for (CoreId activeCore : engine.getActiveCores()) {         
             for (CodePointInfo info : engine.getLoopLabels(activeCore)) {
                 console.display(String.format("%s, label: %s, pc: 0x%x", 
