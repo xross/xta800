@@ -1,6 +1,6 @@
 include_directories(
   "./"
-  "${PROJECT_SOURCE_DIR}/../infr_libs_java/com.xmos.libs/frontends/frontendlib"
+  "${PROJECT_SOURCE_DIR}/../infr_libs_java/com.xmos.libs.core/frontends/frontendlib"
   "${PROJECT_SOURCE_DIR}/../infr_libs_cpp/export/include"
 )
 add_executable(xta
