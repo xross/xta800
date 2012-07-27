@@ -2,8 +2,8 @@ package com.xmos.xta.core.engine.points;
 
 import java.util.Map;
 
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;

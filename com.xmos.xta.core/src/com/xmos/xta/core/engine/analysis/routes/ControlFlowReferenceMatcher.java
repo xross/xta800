@@ -5,12 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.xmos.libs.controlflow.ControlFlow;
-import com.xmos.libs.controlflow.FunctionControlFlow;
-import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
-import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.memorymonitor.MemoryMonitorException;
-import com.xmos.libs.util.Pair;
+import com.xmos.libs.core.controlflow.ControlFlow;
+import com.xmos.libs.core.controlflow.FunctionControlFlow;
+import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
+import com.xmos.libs.core.utils.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;

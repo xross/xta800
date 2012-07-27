@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.xmos.libs.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 

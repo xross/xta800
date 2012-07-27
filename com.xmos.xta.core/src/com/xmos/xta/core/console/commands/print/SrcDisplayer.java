@@ -3,10 +3,10 @@ package com.xmos.xta.core.console.commands.print;
 import java.util.List;
 import java.util.Set;
 
-import com.xmos.libs.instructiondecoder.Instruction;
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.NonIteratableMap;
-import com.xmos.libs.util.NonIteratableSet;
+import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.NonIteratableMap;
+import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

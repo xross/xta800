@@ -3,15 +3,15 @@ package com.xmos.xta.core.engine.sourcemapper;
 import java.util.Collection;
 import java.util.Set;
 
-import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.instructiondecoder.InstructionDecoder;
-import com.xmos.libs.instructiondecoder.InstructionDecoders;
-import com.xmos.libs.util.CoreCollection;
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.Pair;
-import com.xmos.libs.xeloader.DebugInfo;
-import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.core.instructiondecoder.InstructionDecoder;
+import com.xmos.libs.core.instructiondecoder.InstructionDecoders;
+import com.xmos.libs.core.utils.CoreCollection;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableSet;
+import com.xmos.libs.core.utils.Pair;
+import com.xmos.libs.core.xeloader.DebugInfo;
+import com.xmos.libs.core.xeloader.XeLoader;
 
 public class SourceLine {
 	private String     m_text;

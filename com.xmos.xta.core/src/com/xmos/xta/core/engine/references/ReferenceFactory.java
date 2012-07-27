@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.references;
 
 import java.util.Set;
 
-import com.xmos.libs.util.CoreId;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.references.types.EndpointPcReference;
 import com.xmos.xta.core.engine.references.types.ReferenceType;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory;

@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
-import com.xmos.libs.controlflow.nodes.CfgNode;
-import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.Pair;
+
+import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.utils.IteratableSet;
+import com.xmos.libs.core.utils.Pair;
 import com.xmos.xta.core.engine.analysis.routes.StackNode;
 
 public class CfgUserBranchLookUp {

@@ -3,10 +3,10 @@ package com.xmos.xta.core.console.commands.status;
 import java.io.File;
 import java.util.List;
 
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.xeloader.DebugInfo;
-import com.xmos.libs.xeloader.XeLoader;
-import com.xmos.libs.xnloader.XnLoader;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.xeloader.DebugInfo;
+import com.xmos.libs.core.xeloader.XeLoader;
+import com.xmos.libs.core.xnloader.XnLoader;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;

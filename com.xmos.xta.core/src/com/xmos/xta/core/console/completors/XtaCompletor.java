@@ -11,7 +11,7 @@ import jline.FileNameCompletor;
 import jline.NullCompletor;
 import jline.SimpleCompletor;
 
-import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.engine.Engine;

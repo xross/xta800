@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.utils;
 
 import java.io.File;
 
-import com.xmos.libs.util.FileNameCompare;
+import com.xmos.libs.core.utils.FileNameCompare;
 import com.xmos.xta.core.engine.sourcemapper.SourceFile;
 import com.xmos.xta.core.engine.sourcemapper.SourceMapper;
 

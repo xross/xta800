@@ -2,14 +2,14 @@ package com.xmos.xta.core.engine.debugger;
 
 import java.util.Set;
 
-import com.xmos.libs.controlflow.ControlFlow;
-import com.xmos.libs.controlflow.FunctionControlFlow;
-import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
-import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.controlflow.nodes.CfgNode;
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.NonIteratableSet;
+import com.xmos.libs.core.controlflow.ControlFlow;
+import com.xmos.libs.core.controlflow.FunctionControlFlow;
+import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableSet;
+import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;

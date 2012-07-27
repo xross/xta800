@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.Defines;

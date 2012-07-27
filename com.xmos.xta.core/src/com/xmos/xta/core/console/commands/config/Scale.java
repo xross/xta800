@@ -1,6 +1,6 @@
 package com.xmos.xta.core.console.commands.config;
 
-import com.xmos.libs.util.Conversion;
+import com.xmos.libs.core.utils.Conversion;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;

@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableSet;
+import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;

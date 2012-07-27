@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.xta.core.engine.defines.DefineInfo;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.defines.ScriptUpdater;

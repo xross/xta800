@@ -1,9 +1,9 @@
 package com.xmos.xta.core.engine.references.types;
 
-import com.xmos.libs.controlflow.functionmapper.FunctionMapper;
-import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.instructiondecoder.InstructionDecoder;
-import com.xmos.libs.util.CoreId;
+import com.xmos.libs.core.controlflow.functionmapper.FunctionMapper;
+import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.core.instructiondecoder.InstructionDecoder;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.Engine;
 
 public class CallPcReference extends ReferenceType {

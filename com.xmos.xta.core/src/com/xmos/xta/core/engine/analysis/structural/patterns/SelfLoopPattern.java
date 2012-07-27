@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
 
-import com.xmos.libs.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

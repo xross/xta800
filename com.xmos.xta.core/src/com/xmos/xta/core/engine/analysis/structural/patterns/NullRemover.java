@@ -2,8 +2,8 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
 
-import com.xmos.libs.controlflow.nodes.CfgNode;
-import com.xmos.libs.controlflow.nodes.CfgNullNode;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
 
 public class NullRemover  extends PatternMatcher {
 

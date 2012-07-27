@@ -12,7 +12,7 @@ import org.python.core.PyString;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
-import com.xmos.libs.util.StringUtil;
+import com.xmos.libs.core.utils.StringUtil;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;

@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.xmos.libs.controlflow.ControlFlow;
-import com.xmos.libs.controlflow.FunctionControlFlow;
-import com.xmos.libs.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.instructiondecoder.Instruction;
-import com.xmos.libs.memorymonitor.MemoryMonitorException;
-import com.xmos.libs.util.CoreId;
+import com.xmos.libs.core.controlflow.ControlFlow;
+import com.xmos.libs.core.controlflow.FunctionControlFlow;
+import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;

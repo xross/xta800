@@ -5,7 +5,7 @@ import java.util.Set;
 
 import jline.Completor;
 
-import com.xmos.libs.util.CoreId;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.Engine;
 
 public class FunctionCompletor implements Completor {

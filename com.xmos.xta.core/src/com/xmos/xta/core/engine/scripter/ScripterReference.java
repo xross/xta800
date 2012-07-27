@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

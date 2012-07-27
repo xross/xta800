@@ -3,8 +3,8 @@ package com.xmos.xta.core.engine.sections;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 

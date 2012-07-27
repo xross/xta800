@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
 
-import com.xmos.libs.util.StringUtil;
+import com.xmos.libs.core.utils.StringUtil;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandFactory;
 import com.xmos.xta.core.console.commands.Invalid;

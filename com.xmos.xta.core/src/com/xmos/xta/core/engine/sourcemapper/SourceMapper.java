@@ -8,11 +8,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.xmos.libs.dwarfhandler.DebugFile;
-import com.xmos.libs.instructiondecoder.InstructionDecoders;
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.xeloader.DebugInfo;
-import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.core.dwarfhandler.DebugFile;
+import com.xmos.libs.core.instructiondecoder.InstructionDecoders;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.xeloader.DebugInfo;
+import com.xmos.libs.core.xeloader.XeLoader;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;

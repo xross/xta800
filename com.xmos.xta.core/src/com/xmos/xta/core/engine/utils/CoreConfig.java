@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.utils;
 
-import com.xmos.libs.xnloader.XmlHandler;
+import com.xmos.libs.core.xnloader.XmlHandler;
 
 public class CoreConfig {
 	public int m_numThreads;

@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import com.xmos.libs.controlflow.nodes.CfgNode;
-import com.xmos.libs.instructiondecoder.Instruction;
-import com.xmos.libs.util.IteratableSet;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;

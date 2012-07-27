@@ -6,7 +6,7 @@ import java.util.List;
 
 import jline.Completor;
 
-import com.xmos.libs.util.CoreId;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointInfo;

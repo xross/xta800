@@ -1,6 +1,6 @@
 package com.xmos.xta.core.console.commands.print;
 
-import com.xmos.libs.instructiondecoder.Instruction;
+import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.LoopNode;

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import com.xmos.libs.instructiondecoder.Instruction;
-import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.utils.IteratableSet;
+import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.LoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;

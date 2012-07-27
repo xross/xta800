@@ -3,8 +3,8 @@ package com.xmos.xta.core.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.xmos.libs.util.Conversion;
-import com.xmos.libs.util.CoreId;
+import com.xmos.libs.core.utils.Conversion;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;

@@ -16,7 +16,7 @@ Export-Package: com.xmos.xta.core.console,com.xmos.xta.core.console.co
  ypes,com.xmos.xta.core.engine.scripter,com.xmos.xta.core.engine.secti
  ons,com.xmos.xta.core.engine.sourcemapper,com.xmos.xta.core.engine.ut
  ils
-Require-Bundle: com.xmos.libs
+Require-Bundle: com.xmos.libs.core
 Bundle-Version: 1.0.0
 
 

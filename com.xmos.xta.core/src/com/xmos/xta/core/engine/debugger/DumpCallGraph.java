@@ -2,11 +2,11 @@ package com.xmos.xta.core.engine.debugger;
 
 import java.util.Map;
 
-import com.xmos.libs.controlflow.ControlFlow;
-import com.xmos.libs.controlflow.FunctionControlFlow;
-import com.xmos.libs.controlflow.nodes.CfgFunctionReferenceNode;
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.core.controlflow.ControlFlow;
+import com.xmos.libs.core.controlflow.FunctionControlFlow;
+import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;

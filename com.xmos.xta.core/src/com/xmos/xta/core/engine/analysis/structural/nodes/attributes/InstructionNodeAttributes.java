@@ -1,8 +1,8 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
-import com.xmos.libs.instructiondecoder.Instruction;
-import com.xmos.libs.instructiondecoder.InstructionMnemonics;
-import com.xmos.libs.xeloader.XeLoader.Architecture;
+import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.instructiondecoder.InstructionMnemonics;
+import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;

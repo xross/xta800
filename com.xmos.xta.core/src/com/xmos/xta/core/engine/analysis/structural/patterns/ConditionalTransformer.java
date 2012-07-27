@@ -3,8 +3,8 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 import java.util.Collection;
 import java.util.Set;
 
-import com.xmos.libs.controlflow.nodes.CfgNode;
-import com.xmos.libs.util.NonIteratableSet;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.utils.NonIteratableSet;
 
 public class ConditionalTransformer extends PatternMatcher {
 

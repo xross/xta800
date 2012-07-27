@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.utils;
 
-import com.xmos.libs.util.Conversion;
+import com.xmos.libs.core.utils.Conversion;
 
 public class TimeUnit {
 	public enum Units {

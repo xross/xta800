@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.defines;
 
-import com.xmos.libs.util.CoreId;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class LoopScopeInfo implements DefineInfo {

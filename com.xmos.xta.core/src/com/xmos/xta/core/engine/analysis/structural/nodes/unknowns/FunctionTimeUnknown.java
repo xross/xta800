@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.unknowns;
 
-import com.xmos.libs.util.Conversion;
+import com.xmos.libs.core.utils.Conversion;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;

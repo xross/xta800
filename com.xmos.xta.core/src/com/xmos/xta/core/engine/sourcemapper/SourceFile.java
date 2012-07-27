@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.xmos.libs.dwarfhandler.DebugFile;
-import com.xmos.libs.instructiondecoder.InstructionDecoders;
-import com.xmos.libs.util.CoreCollection;
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.NonIteratableMap;
-import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.core.dwarfhandler.DebugFile;
+import com.xmos.libs.core.instructiondecoder.InstructionDecoders;
+import com.xmos.libs.core.utils.CoreCollection;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.NonIteratableMap;
+import com.xmos.libs.core.xeloader.XeLoader;
 
 public class SourceFile implements Comparable<SourceFile> {
 	private DebugFile m_debugFile;

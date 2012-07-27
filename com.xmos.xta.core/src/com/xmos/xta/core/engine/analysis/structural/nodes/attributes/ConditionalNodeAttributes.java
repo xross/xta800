@@ -2,7 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
 import java.util.Map;
 
-import com.xmos.libs.util.IteratableMap;
+import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status.S;

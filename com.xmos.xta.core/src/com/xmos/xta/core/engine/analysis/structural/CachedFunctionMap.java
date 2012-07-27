@@ -2,9 +2,9 @@ package com.xmos.xta.core.engine.analysis.structural;
 
 import java.util.Map;
 
-import com.xmos.libs.controlflow.FunctionControlFlow;
-import com.xmos.libs.memorymonitor.MemoryMonitorException;
-import com.xmos.libs.util.NonIteratableMap;
+import com.xmos.libs.core.controlflow.FunctionControlFlow;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
+import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;

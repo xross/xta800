@@ -3,13 +3,13 @@ package com.xmos.xta.core.engine.sections;
 import java.util.Map;
 import java.util.Set;
 
-import com.xmos.libs.elfhandler.ElfHandler;
-import com.xmos.libs.elfhandler.Symbol;
-import com.xmos.libs.util.CoreId;
-import com.xmos.libs.util.IteratableMap;
-import com.xmos.libs.util.IteratableSet;
-import com.xmos.libs.xeloader.SymbolTable;
-import com.xmos.libs.xeloader.XeLoader;
+import com.xmos.libs.core.elfhandler.ElfHandler;
+import com.xmos.libs.core.elfhandler.Symbol;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableMap;
+import com.xmos.libs.core.utils.IteratableSet;
+import com.xmos.libs.core.xeloader.SymbolTable;
+import com.xmos.libs.core.xeloader.XeLoader;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
