@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.sections;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,6 +140,7 @@ public class Sections {
 		List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
 		for(Section s : getSections(m_srcLabels, coreId))
 			collections.addAll(((CodePoints)s).get());
+		Collections.sort(collections);
 		return collections;
 	}
 
@@ -153,6 +155,7 @@ public class Sections {
         List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
         for(Section s : getSections(m_loopLabels, coreId))
             collections.addAll(((CodePoints)s).get());
+        Collections.sort(collections);
         return collections;
     }
 
@@ -167,6 +170,7 @@ public class Sections {
 		List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
 		for(Section s : getSections(m_endpoints, coreId))
 			collections.addAll(((CodePoints)s).get());
+        Collections.sort(collections);
 		return collections;
 	}
 
@@ -181,6 +185,7 @@ public class Sections {
 		List<CodePointInfo> collections = new ArrayList<CodePointInfo>();
 		for(Section s : getSections(m_calls, coreId))
 			collections.addAll(((CodePoints)s).get());
+        Collections.sort(collections);
 		return collections;
 	}
 
