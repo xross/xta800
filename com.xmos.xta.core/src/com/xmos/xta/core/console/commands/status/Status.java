@@ -70,7 +70,7 @@ public class Status extends Command {
 
 		for (CoreId coreId : xeLoader.getCoreIds()) {
     		int threads = engine.getNumThreads(coreId);
-    		console.display(String.format("%s, Threads: %d ", coreId.getCoreReference(), threads));
+    		console.display(String.format("%s, Tasks: %d ", coreId.getCoreReference(), threads));
 
     		DebugInfo debugInfo = xeLoader.getDebugInfo(coreId);
     		if (debugInfo.getDebugEngine().hasDebugInfo()) {

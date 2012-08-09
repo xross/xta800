@@ -7,7 +7,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Threads extends Command {
-	private static final String[] COMMAND_NAMES = { "threads" };
+	private static final String[] COMMAND_NAMES = { "tasks", "threads" };
 
 	private String m_coreReference;
 	private int m_numThreads;
@@ -33,7 +33,7 @@ public class Threads extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <core id> <num threads>: Sets number of threads currently executing for the given core";
+        return name() + " <tile id> <num tasks>: Sets number of tasks currently executing on the given tile";
     }
 
     public Command clone(String[] args, int index) {

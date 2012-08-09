@@ -7,7 +7,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Core extends Command {
-	private static final String[] COMMAND_NAMES = { "core" };
+	private static final String[] COMMAND_NAMES = { "tile", "core" };
 
 	private String m_coreName;
 
@@ -30,7 +30,7 @@ public class Core extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <core id|*>: Remove core from active set";
+        return name() + " <core id|*>: Remove tile from active set";
     }
 
     public Command clone(String[] args, int index) {

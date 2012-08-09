@@ -7,7 +7,7 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Cores extends Command {
-	private static final String[] COMMAND_NAMES = { "cores" };
+	private static final String[] COMMAND_NAMES = { "tiles", "cores" };
 
 	public Cores() {
 		super(COMMAND_NAMES);
@@ -22,14 +22,10 @@ public class Cores extends Command {
 	}
 
 	public String description(Engine engine, boolean detailed) {
-        return name() + ": Lists the active cores";
+        return name() + ": Lists the active tiles";
 	}
 
 	public Command clone(String[] args, int index) {
-		// Not possible
-/*		if ((index + numArgs()) >= args.length)
-			return null;*/
-
    		return new Cores();
 	}
 
