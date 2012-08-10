@@ -59,7 +59,7 @@ public class Analyzer {
 		update(src, routeContainer, isResolved);
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
-	    			String.format("Reference: %s not resolved on any active core", functionName));
+	    			String.format("Reference: %s not resolved on any active tile", functionName));
 		}
 	}
 
@@ -96,7 +96,7 @@ public class Analyzer {
 		update(src, routeContainer, isResolved);
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
-	    			"References not resolved on any active core");
+	    			"References not resolved on any active tile");
 	    }
 	}
 
@@ -123,7 +123,7 @@ public class Analyzer {
 		update(src, routeContainer, isResolved);
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format(
-	    			"Reference: %s not resolved on any active core", loopPoints.getRefString()));
+	    			"Reference: %s not resolved on any active tile", loopPoints.getRefString()));
 		}
 	}
 

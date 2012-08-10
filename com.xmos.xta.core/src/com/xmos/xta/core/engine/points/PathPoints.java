@@ -27,7 +27,7 @@ public class PathPoints extends Points {
 	public boolean setFrom(CommandSource src, String ref) {
 		m_fromName = ref;				
 		if (!update(ref, m_froms) && !ref.equals("")) {
-			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
+			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active tile", ref));
 			return false;
 		}
 		getEngine().notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
@@ -37,7 +37,7 @@ public class PathPoints extends Points {
 	public boolean setTo(CommandSource src, String ref) {
 		m_toName = ref;
 		if (!update(ref, m_tos) && !ref.equals("")) {
-			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active core", ref));
+			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active tile", ref));
 			return false;
 		}
 		getEngine().notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");

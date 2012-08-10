@@ -23,7 +23,7 @@ public class LoopPoints extends Points {
 	public boolean setLoop(CommandSource src, String ref) {
 		m_refString = ref;				
 		if (!update(ref, m_points) && !ref.equals("")) {
-			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid loop point on any active core", ref));
+			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid loop point on any active tile", ref));
 			return false;
 		}
 		getEngine().notify(src, Notifier.NOTIFY_LOOP_POINT_SET, "");

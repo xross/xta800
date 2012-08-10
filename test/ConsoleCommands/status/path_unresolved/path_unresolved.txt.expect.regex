@@ -1,5 +1,5 @@
-xta: error: 'test.xc:3' is not a valid endpoint on any active core
-xta: error: 'test.xc:4' is not a valid endpoint on any active core
+xta: error: 'test.xc:3' is not a valid endpoint on any active tile
+xta: error: 'test.xc:4' is not a valid endpoint on any active tile
 TimingFailAsError: true
 WarnAsError: false
 ErrorAsWarn: false
@@ -8,7 +8,7 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
-stdcore\[0\], Threads: 1 \(Debug information avaliable\)
+stdcore\[0\], Tasks: 1 \(Debug information avaliable\)
 No routes analyzed
 From endpoint 'test.xc:3'
 To endpoint 'test.xc:4'

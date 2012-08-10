@@ -35,7 +35,7 @@ public class DumpControlFlow {
 		}
 		
 		if (!hit) { 
-		    m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("Function: %s not found on any active core", functionName));
+		    m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("Function: %s not found on any active tile", functionName));
 		}
 	}
 	

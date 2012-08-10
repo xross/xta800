@@ -1,15 +1,15 @@
-xta: cmds.txt:3: error: Reference: test0 not resolved on any active core
-xta: cmds.txt:4: error: Reference: test1 not resolved on any active core
-xta: cmds.txt:5: error: Reference: test2 not resolved on any active core
-xta: cmds.txt:9: error: Reference: test0 not resolved on any active core
-xta: cmds.txt:10: error: Reference: test1 not resolved on any active core
-xta: cmds.txt:12: error: Reference: test3 not resolved on any active core
-xta: cmds.txt:15: error: Reference: test0 not resolved on any active core
-xta: cmds.txt:17: error: Reference: test2 not resolved on any active core
-xta: cmds.txt:18: error: Reference: test3 not resolved on any active core
-xta: cmds.txt:22: error: Reference: test1 not resolved on any active core
-xta: cmds.txt:23: error: Reference: test2 not resolved on any active core
-xta: cmds.txt:24: error: Reference: test3 not resolved on any active core
+xta: cmds.txt:3: error: Reference: test0 not resolved on any active tile
+xta: cmds.txt:4: error: Reference: test1 not resolved on any active tile
+xta: cmds.txt:5: error: Reference: test2 not resolved on any active tile
+xta: cmds.txt:9: error: Reference: test0 not resolved on any active tile
+xta: cmds.txt:10: error: Reference: test1 not resolved on any active tile
+xta: cmds.txt:12: error: Reference: test3 not resolved on any active tile
+xta: cmds.txt:15: error: Reference: test0 not resolved on any active tile
+xta: cmds.txt:17: error: Reference: test2 not resolved on any active tile
+xta: cmds.txt:18: error: Reference: test3 not resolved on any active tile
+xta: cmds.txt:22: error: Reference: test1 not resolved on any active tile
+xta: cmds.txt:23: error: Reference: test2 not resolved on any active tile
+xta: cmds.txt:24: error: Reference: test3 not resolved on any active tile
 Route\(0\) function: test3
     No Timing Specified
 

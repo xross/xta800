@@ -32,7 +32,7 @@ public class Freq extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <node id> <core frequency>: Sets the operating frequency in MHz for the given node";
+        return name() + " <node id> <frequency>: Sets the operating frequency in MHz for the given node";
     }
 
     public Command clone(String[] args, int index) {

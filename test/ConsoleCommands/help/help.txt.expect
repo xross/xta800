@@ -19,7 +19,7 @@
   [-]version: Displays the version information
   [-]add <option> <arg0> <arg1>...: Add item to given list
       option: branch <from BRANCH> [<to INSTRUCTION>]+: Adds the given from/to references to the branches list
-      option: core <core id|*>: Add core to active set
+      option: tile <tile id|*>: Add tile to active set
       option: exclusion <ANY>: Adds the given reference to the list of exclusions
       option: functiontime <FUNCTION> <value> <MODE>: Adds the given function time to the list of defines
       option: instructiontime <ENDPOINT> <value> <MODE>: Adds the given instruction time to the list of defines
@@ -35,12 +35,12 @@
   [-]config <option> <arg0> <arg1>...: Configures the given option
       option: case <best/worst>: Sets the case (currently: worst)
       option: Ewarning <on/off>: treat errors as warnings or not (currently: off)
-      option: freq <node id> <core frequency>: Sets the operating frequency in MHz for the given node
+      option: freq <node id> <frequency>: Sets the operating frequency in MHz for the given node
       option: from <ENDPOINT>: Sets the from endpoint
       option: looppoint <ANY>: Sets the loop point
       option: scale <true/false>: Configures whether results are scales (currently: true)
       option: srcpaths <paths>: Sets the (semicolon separated) source search path
-      option: threads <core id> <num threads>: Sets number of threads currently executing for the given core
+      option: tasks <tile id> <num tasks>: Sets number of tasks currently executing on the given tile
       option: timeout <seconds>: Sets the tools timeout on load
       option: Terror <on/off>: treat timing failures as errors or not (currently: on)
       option: to <ENDPOINT>: Sets the to endpoint
@@ -62,7 +62,7 @@
       option: endpoints: Lists the endpoints
       option: allendpoints: Lists all the possible locations for endpoints
       option: branches [route id]: Lists the branches - optionally for the specified route
-      option: cores: Lists the active cores
+      option: tiles: Lists the active tiles
       option: exclusions [route id]: Displays the exclusions - optionally for the specified route
       option: functions: Lists the functions in the loaded application
       option: functiontimes: Displays the function time defines
@@ -76,8 +76,8 @@
       option: sources: Lists the source files
       option: srccommands: Displays the command list embedded in the loaded executable
       option: srcloops: Displays the loop counts embedded in the loaded executable
-      option: threadstartpoints: Lists the thread start points
-      option: threadstoppoints: Lists the thread stop points
+      option: taskstartpoints: Lists the task start points
+      option: taskstoppoints: Lists the task stop points
   [-]load <xe file>: Loads the given xmos executable file
   [-]print <option> <arg0> <arg1>...: Display analysis information
       option: summary: Show routes summary (verbosity -2|-1|0)
@@ -92,7 +92,7 @@
   [-]pwd: Displays the current working directory
   [-]remove <option> <arg0> <arg1>...: Remove item from given list
       option: branch <from BRANCH|*> [<to INSTRUCTION|*>]+: Removes the given from/to references from the branches list
-      option: core <core id|*>: Remove core from active set
+      option: tile <tile id|*>: Remove tile from active set
       option: exclusion <ANY|*>: Removes the given reference (or all if '*') from the list of exclusions
       option: functiontime <FUNCTION|*>: Removes the given functon time from the list of defines
       option: instructiontime <ENDPOINT|*>: Removes the given instruction time from the list of defines

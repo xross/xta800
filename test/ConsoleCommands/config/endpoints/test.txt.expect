@@ -4,8 +4,8 @@ stdcore[1] (NodeId 0)
 stdcore[2] (NodeId 0)
 stdcore[3] (NodeId 0)
 ============= set invalid endopints
-xta: cmds.txt:5: error: 'crap.xc:25' is not a valid endpoint on any active core
-xta: cmds.txt:6: error: 'crap.xc:26' is not a valid endpoint on any active core
+xta: cmds.txt:5: error: 'crap.xc:25' is not a valid endpoint on any active tile
+xta: cmds.txt:6: error: 'crap.xc:26' is not a valid endpoint on any active tile
 ============= set valid endopints
 ============= display endopints
 stdcore[0]::test.xc:25
@@ -19,7 +19,7 @@ stdcore[3]::test.xc:26
 ============= change active cores
 ============= display endopints
 ============= analyze path
-xta: cmds.txt:24: error: References not resolved on any active core
+xta: cmds.txt:24: error: References not resolved on any active tile
 ============= change active cores
 ============= display endopints
 stdcore[0]::test.xc:25

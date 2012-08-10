@@ -1,4 +1,4 @@
 function: main \d+\.\d+ \d+\.\d+
 loop: loop \d+\.\d+ \d+\.\d+
-xta.analyzeFunction: Reference: Invalid not resolved on any active core
-xta.analyzeLoop: 'Invalid' is not a valid loop point on any active core
+xta.analyzeFunction: Reference: Invalid not resolved on any active tile
+xta.analyzeLoop: 'Invalid' is not a valid loop point on any active tile

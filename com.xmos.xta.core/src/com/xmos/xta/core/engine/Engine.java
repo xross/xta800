@@ -727,7 +727,7 @@ public class Engine extends Notifier implements Aborter {
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", functionName));
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active tile", functionName));
 		}		    
 	}
 
@@ -751,7 +751,7 @@ public class Engine extends Notifier implements Aborter {
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		}		    
 	}
 
@@ -813,7 +813,7 @@ public class Engine extends Notifier implements Aborter {
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", functionName));
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active tile", functionName));
 		}		    
 	}
 
@@ -838,7 +838,7 @@ public class Engine extends Notifier implements Aborter {
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		}		    		
 	}
 
@@ -941,7 +941,7 @@ public class Engine extends Notifier implements Aborter {
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", functionName));			
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active tile", functionName));			
 		}
 	}
 
@@ -983,7 +983,7 @@ public class Engine extends Notifier implements Aborter {
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		}
 	}
 
@@ -1027,7 +1027,7 @@ public class Engine extends Notifier implements Aborter {
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		} else {
-		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active core", refString));			
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active tile", refString));			
 		}		
 	    notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 	    return true;
@@ -1292,7 +1292,7 @@ public class Engine extends Notifier implements Aborter {
 		}
 		
 		if (!resolved) {
-		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		    
 		} else if (!removedRefStrings.isEmpty()) {
 		    for (String removedRefString : removedRefStrings) {
@@ -1353,7 +1353,7 @@ public class Engine extends Notifier implements Aborter {
 		}
 
 		if (!resolved) {
-		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		    
         } else if (!removedRefStrings.isEmpty()) {
             for (String removedRefString : removedRefStrings) {
@@ -1547,9 +1547,9 @@ public class Engine extends Notifier implements Aborter {
  
 		} else {
             if (isLoop) {
-                notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not within a loop on any active core", refString));
+                notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not within a loop on any active tile", refString));
             } else {
-                notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active core");
+                notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
             }
 		}
 	}
@@ -1605,7 +1605,7 @@ public class Engine extends Notifier implements Aborter {
             notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
             
         } else {
-            notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not within a loop on any active core", refString));          
+            notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not within a loop on any active tile", refString));          
         }
         notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
     }

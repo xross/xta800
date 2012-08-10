@@ -30,7 +30,7 @@ public class Core extends Command {
     }
 
     public String description(Engine engine, boolean detailed) {
-        return name() + " <core id|*>: Add tile to active set";
+        return name() + " <tile id|*>: Add tile to active set";
     }
 
     public Command clone(String[] args, int index) {

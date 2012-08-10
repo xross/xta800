@@ -6,7 +6,7 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
-stdcore\[0\], Threads: 1 \(Debug information avaliable\)
+stdcore\[0\], Tasks: 1 \(Debug information avaliable\)
 Loaded Route\(0\): endpoints: test.xc:8 to test.xc:10 
 From endpoint 'test.xc:8'
 To endpoint 'test.xc:10'
