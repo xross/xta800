@@ -19,13 +19,11 @@ public class BlockNode extends Node {
 	public BlockNode(List<InstructionNode> insts) {
 		super();
 		m_insts = insts;
-        m_attributes = new BlockNodeAttributes(this);
 	}
 
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<InstructionNode>();
-		m_attributes = new BlockNodeAttributes(this);
 	}
 	
 	public Node copyRouteStructure() {
@@ -45,6 +43,8 @@ public class BlockNode extends Node {
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new BlockNodeAttributes(this);
     	return m_attributes;
     }
 

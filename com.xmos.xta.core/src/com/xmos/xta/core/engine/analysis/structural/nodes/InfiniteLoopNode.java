@@ -22,7 +22,6 @@ public class InfiniteLoopNode extends Node {
 		super();
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
-		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
 	public InfiniteLoopNode(Collection<Node> loops, Node base) {
@@ -33,7 +32,6 @@ public class InfiniteLoopNode extends Node {
 		for (Node loop : loops) {
 			m_loops.add(loop);
 		}
-		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
@@ -44,7 +42,6 @@ public class InfiniteLoopNode extends Node {
 		}
 		ln.m_loopHeader = m_loopHeader.copyRouteStructure();
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
-		ln.m_attributes = new InfiniteLoopNodeAttributes(ln);
 		return ln;
 	}
 
@@ -53,6 +50,8 @@ public class InfiniteLoopNode extends Node {
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new InfiniteLoopNodeAttributes(this);
     	return m_attributes;
     }
 

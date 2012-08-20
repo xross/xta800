@@ -28,7 +28,6 @@ public class FunctionNode extends Node {
 	 */
 	public FunctionNode(String functionName) {
 		super();
-		m_attributes = new NodeAttributes(this);
 		m_functionName = functionName + "(Recursive)";
 		m_functionSequence = new LinkedList<Node>();
 		setUnresolved(true);
@@ -52,7 +51,6 @@ public class FunctionNode extends Node {
 			m_functionName = functionName;
 		}
 		m_callingPc = callingPc;
-		m_attributes = new NodeAttributes(this);
 	}
 
 	public long getCallingPc(){
@@ -69,7 +67,6 @@ public class FunctionNode extends Node {
 	public Node copyRouteStructure() {
 		FunctionNode fn = new FunctionNode();
 		fn.m_functionName = m_functionName;
-		fn.m_attributes = new NodeAttributes(fn);
 		fn.setUnresolved(getUnresolved());
 		if (m_functionSequence != null) {
 			List<Node> nodes = new LinkedList<Node>();
@@ -86,6 +83,8 @@ public class FunctionNode extends Node {
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new NodeAttributes(this);
     	return m_attributes;
     }
 

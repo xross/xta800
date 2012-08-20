@@ -19,13 +19,13 @@ public class InstructionNode extends Node {
 	public InstructionNode(CfgInstructionNode node) {
 		super(node);
 		m_inst = node.getInstruction();
-		m_attributes = new InstructionNodeAttributes(this);
+		//m_attributes = new InstructionNodeAttributes(this);
 	}
 
 	public InstructionNode(InstructionNode node) {
 		super(node);
 		m_inst = node.m_inst;
-		m_attributes = new InstructionNodeAttributes(this);
+		//m_attributes = new InstructionNodeAttributes(this);
 	}
 	
 	public String toString(){
@@ -43,6 +43,8 @@ public class InstructionNode extends Node {
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new InstructionNodeAttributes(this);
     	return m_attributes;
     }
 

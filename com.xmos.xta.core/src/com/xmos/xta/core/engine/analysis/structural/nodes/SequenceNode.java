@@ -18,13 +18,11 @@ public class SequenceNode extends Node {
 		super();
 		assert (nodes != null);
 		m_nodes = nodes;
-		m_attributes = new NodeAttributes(this);
 	}
 
 	public SequenceNode() {
 		super();
 		m_nodes = new LinkedList<Node>();
-		m_attributes = new NodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
@@ -33,7 +31,6 @@ public class SequenceNode extends Node {
 			Node clone = path.copyRouteStructure();
 			pn.m_nodes.add(clone);
 		}
-		pn.m_attributes = new NodeAttributes(pn);
 		return pn;
 	}
 	public boolean isSequenceNode() {
@@ -44,6 +41,8 @@ public class SequenceNode extends Node {
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new NodeAttributes(this);
     	return m_attributes;
     }
 

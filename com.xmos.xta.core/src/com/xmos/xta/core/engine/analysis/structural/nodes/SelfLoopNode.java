@@ -18,19 +18,16 @@ public class SelfLoopNode extends Node{
 	public SelfLoopNode() {
 		super();
 		m_loop = null;
-		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
 	public SelfLoopNode(Node base) {
 		super();
 		m_loop = base;
-		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
 		SelfLoopNode ln = new SelfLoopNode();
 		ln.m_loop = m_loop.copyRouteStructure();
-		ln.m_attributes = new SelfLoopNodeAttributes(ln);
 		return ln;
 	}
     public String getTypeName() {
@@ -38,6 +35,8 @@ public class SelfLoopNode extends Node{
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new SelfLoopNodeAttributes(this);
     	return m_attributes;
     }
 

@@ -18,19 +18,16 @@ public class InfiniteSelfLoopNode extends Node{
 	public InfiniteSelfLoopNode() {
 		super();
 		m_loop = null;
-		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
 	public InfiniteSelfLoopNode(Node base) {
 		super();
 		m_loop = base;
-		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
 		InfiniteSelfLoopNode ln = new InfiniteSelfLoopNode();
 		ln.m_loop = m_loop.copyRouteStructure();
-		ln.m_attributes = new InfiniteSelfLoopNodeAttributes(ln);
 		return ln;
 	}
 
@@ -39,6 +36,8 @@ public class InfiniteSelfLoopNode extends Node{
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
     	return m_attributes;
     }
 

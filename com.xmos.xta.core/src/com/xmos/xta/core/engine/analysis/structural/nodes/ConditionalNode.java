@@ -26,7 +26,6 @@ public class ConditionalNode extends Node {
 		super();
 		m_options = new IteratableSet<Node>();
 		m_alive = new NonIteratableMap<Node, Boolean>();
-		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
 	public ConditionalNode(Collection<Node> options, boolean isOptional) {
@@ -39,7 +38,6 @@ public class ConditionalNode extends Node {
 		for (Node option : m_options){
 			m_alive.put(option, true);
 		}	
-		m_attributes = new ConditionalNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
@@ -49,7 +47,6 @@ public class ConditionalNode extends Node {
 			sn.m_options.add(clone);
 			sn.m_alive.put(clone, m_alive.get(option));
 		}
-		sn.m_attributes = new ConditionalNodeAttributes(sn);
 		return sn;
 	}
 
@@ -58,6 +55,8 @@ public class ConditionalNode extends Node {
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new ConditionalNodeAttributes(this);
     	return m_attributes;
     }
 

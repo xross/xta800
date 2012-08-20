@@ -27,7 +27,6 @@ public class LoopNode extends Node {
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
 		m_alive = new NonIteratableMap<Node, Boolean>();
-		m_attributes = new LoopNodeAttributes(this);
 	}
 
 	public LoopNode(Collection<Node> loops, Node base) {
@@ -40,7 +39,6 @@ public class LoopNode extends Node {
 			m_loops.add(loop);
 			m_alive.put(loop, true);
 		}
-		m_attributes = new LoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
@@ -52,7 +50,6 @@ public class LoopNode extends Node {
 		}
 		ln.m_loopHeader = m_loopHeader.copyRouteStructure();
 		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
-		ln.m_attributes = new LoopNodeAttributes(ln);
 		return ln;
 	}
 
@@ -61,6 +58,8 @@ public class LoopNode extends Node {
     }
 
     public NodeAttributes getAttributes() {
+    	if(m_attributes==null)
+    		m_attributes = new LoopNodeAttributes(this);
     	return m_attributes;
     }
 
