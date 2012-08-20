@@ -34,6 +34,7 @@ import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.libs.core.utils.Pair;
+import com.xmos.libs.core.utils.ProgressMonitor;
 import com.xmos.libs.core.utils.WarningNotifier;
 import com.xmos.libs.core.xeloader.MemoryImage;
 import com.xmos.libs.core.xeloader.SymbolTable;
