@@ -1,6 +1,6 @@
 package com.xmos.xta.core.console;
 
-import com.xmos.xta.core.engine.ProgressMonitor;
+import com.xmos.libs.core.utils.ProgressMonitor;
 
 public class ConsoleProgessMonitor implements ProgressMonitor {
 	private Console m_console;
@@ -28,4 +28,6 @@ public class ConsoleProgessMonitor implements ProgressMonitor {
 	public void worked(int work) {
 	}
 
+    public void done() {
+    }
 }
