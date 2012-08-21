@@ -21,6 +21,7 @@ public class ThreadDelimiters extends Section {
 	}
 
 	boolean add(CommandSource src, long pc) {
+		if(m_pcs.contains(pc)) return true;
 		if (m_pcs.add(pc)) {
 			return true;
 		} else {
@@ -58,8 +59,8 @@ public class ThreadDelimiters extends Section {
 	        while (byteIndex < data.length) {
 	        	long pc = Instruction.makeLongPc(ByteArrayManipulation.readInt(data, byteIndex));
 	        	byteIndex += 4;
-
-	    		m_pcs.add(pc);
+	        	if(!m_pcs.contains(pc))
+	        		m_pcs.add(pc);
 	        }
 		} catch (Exception e) {
 			getNotifier().notify(src, Notifier.NOTIFY_ERROR, String.format(

@@ -87,6 +87,8 @@ public class Sections {
 			m_callTables.add(new CodePointTable(coreId, ".xtacalltable", m_notifier));
 			m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtathreadstart", m_notifier));
 			m_threadStopPoints.add(new ThreadDelimiters(coreId, ".xtathreadstop", m_notifier));
+			m_threadStartPoints.add(new ThreadDelimiters(coreId, ".xtataskstart", m_notifier));
+			m_threadStopPoints.add(new ThreadDelimiters(coreId, ".xtataskstop", m_notifier));
 			m_srcLevelCommands.add(new SrcLevelCommands(coreId, m_notifier));
 			m_srcLevelLoops.add(new SrcLevelLoops(coreId, m_notifier));
 			m_systems.add(new Systems(coreId, m_notifier));
