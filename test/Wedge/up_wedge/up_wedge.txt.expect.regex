@@ -1,0 +1,11 @@
+function\(\d+\)   : 13.78 us / 13.78 us main
+.    selfloop\(\d+\)   : 13.7 us / 13.7 us 
+.    .    seq\(\d+\)        : 13.7 us / 13.7 us 
+.    .    .    selfloop\(\d+\)   : 13.3 us / 13.3 us 
+.    .    .    .    seq\(\d+\)        : 13.3 us / 13.3 us 
+.    .    .    .    .    selfloop\(\d+\)   : 10.5 us / 10.5 us 
+.    .    .    .    .    .    block\(\d+\)       : 10.5 us \(x 105\) / 10.5 us \(x 105\) 
+.    .    .    .    .    block\(\d+\)      : 2.8 us \(x 35\) / 2.8 us \(x 35\) 
+.    .    .    block\(\d+\)      : 400.0 ns \(x 5\) / 400.0 ns \(x 5\) 
+.    block\(\d+\)      : 80.0 ns \(x 1\) / 80.0 ns \(x 1\) 
+
