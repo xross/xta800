@@ -199,7 +199,7 @@ public class NodeAttributes {
 		double value = 0;
 		for (Node child : getNode().iChildren()) {
 			Status childStatus = new Status();
-			value += child.getAttributes().getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
+			value += child.getAttributes(false).getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
 			status.mergeStatus(childStatus.getStatus());
 		}
 
@@ -223,7 +223,7 @@ public class NodeAttributes {
 
 		long value = 0;
 		for (Node child : getNode().iChildren()) {
-			value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveCond);
+			value += child.getAttributes(false).getNumCycles(c, status, ignoreIterationsAboveCond);
 		}
 		if (ignoreIterationsAboveCond == null) {
 			setCachedNumCycles(c, value);
@@ -241,7 +241,7 @@ public class NodeAttributes {
 
 		long value = 0;
 		for (Node child : getNode().iChildren()) {
-			value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveCond);
+			value += child.getAttributes(false).getNumInstructions(c, status, ignoreIterationsAboveCond);
 		}
 		if (ignoreIterationsAboveCond == null) {
 			setCachedNumInstructions(c, value);
@@ -259,7 +259,7 @@ public class NodeAttributes {
 
 		long value = 0;
 		for (Node child : getNode().iChildren()) {
-			value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveCond);
+			value += child.getAttributes(false).getNumFNops(c, status, ignoreIterationsAboveCond);
 		}
 		if (ignoreIterationsAboveCond == null) {
 			setCachedNumFnops(c, value);
@@ -273,7 +273,7 @@ public class NodeAttributes {
 	public long getNumPaths() throws NumPathsOverflowException {
 		long value = 1;
 		for (Node child : getNode().iChildren()) {
-			value = multiplyNumPaths(value, child.getAttributes().getNumPaths());
+			value = multiplyNumPaths(value, child.getAttributes(false).getNumPaths());
 		}
 		return value;
 	}
@@ -373,7 +373,7 @@ public class NodeAttributes {
 	void clearUnknowns(Node node) {
 		node.traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
-	    		node.getAttributes().clearUnknowns();
+	    		node.getAttributes(false).clearUnknowns();
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
@@ -518,7 +518,7 @@ public class NodeAttributes {
         throws CondIterationsNotSetException, InfiniteIterationsException {
 
 		if (getNode().getParent() != null) {
-			return getNode().getParent().getAttributes().getLocalIterations(getNode());
+			return getNode().getParent().getAttributes(false).getLocalIterations(getNode());
 		}
 		return 1;
 	}
@@ -527,7 +527,7 @@ public class NodeAttributes {
 	    throws IgnoreCondIterationsException, InfiniteIterationsException {
 
 		if (getNode().getParent() != null) {
-			return getNode().getParent().getAttributes().getTotalIterations(
+			return getNode().getParent().getAttributes(false).getTotalIterations(
 					c, getNode(), ignoreIterationsAboveCond);
 		}
 		return new Iterations();

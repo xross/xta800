@@ -54,7 +54,7 @@ public class RouteUnknowns {
 	        }
 	        
 	        private void addToList(Node node) {
-	    		for (Unknown unknown : node.getAttributes().getUnknowns()) {
+	    		for (Unknown unknown : node.getAttributes(false).getUnknowns()) {
 	    			if (unknown.getState() == unknownState) {
 		    			unknowns.add(unknown);
 	    			}
@@ -112,12 +112,12 @@ public class RouteUnknowns {
 		if (enclosingLoopNode == null) {
 			return 1;
 		}
-		return enclosingLoopNode.getAttributes().getLoopIterations();
+		return enclosingLoopNode.getAttributes(false).getLoopIterations();
 	}
 
 	private void checkLoopIterationsValid(Node node, long iterations) throws Exception {
 		Node loopNode = node.getEnclosingLoopNode();
-		loopNode.getAttributes().loopIterationsValid(iterations);
+		loopNode.getAttributes(true).loopIterationsValid(iterations);
 	}
 
 	private void setLoopIterationsNoCheck(CommandSource src, Engine engine,
@@ -127,8 +127,8 @@ public class RouteUnknowns {
 		invalidateCachedStats();
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
 		if (enclosingLoopNode != null) {
-	        enclosingLoopNode.getAttributes().setLoopIterations(src, engine, iterations, sourceLevelIterations);
-	        enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_ITERATIONS, source, new Reference[] {reference});
+	        enclosingLoopNode.getAttributes(true).setLoopIterations(src, engine, iterations, sourceLevelIterations);
+	        enclosingLoopNode.getAttributes(true).addKnown(m_route, Type.LOOP_ITERATIONS, source, new Reference[] {reference});
 	        clearPathIterations(enclosingLoopNode);
 	        refreshDisplayedUnknowns();		    
 		}
@@ -185,14 +185,14 @@ public class RouteUnknowns {
 	public long getSetLoopPathIterations(Node node) {
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-	    long iterations = condNode.getAttributes().getSetLoopPathIterations(optionNode);
+	    long iterations = condNode.getAttributes(false).getSetLoopPathIterations(optionNode);
 	    return iterations;
 	}
 
 	private void checkLoopPathIterationsValid(Node node, long iterations) throws Exception {
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
-		condNode.getAttributes().loopPathIterationsValid(optionNode, iterations);
+		condNode.getAttributes(true).loopPathIterationsValid(optionNode, iterations);
 	}
 
 	private void setLoopPathIterationsNoCheck(Node node, long iterations, Reference reference, Source source) {
@@ -200,8 +200,8 @@ public class RouteUnknowns {
 		Node condNode = node.getEnclosingCondNode();
 		Node optionNode = node.getEnclosingOptionNode();
 		if ((condNode != null) && (optionNode != null)) {		
-	        condNode.getAttributes().setLoopPathIterations(optionNode, iterations);
-	        optionNode.getAttributes().addKnown(m_route, Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
+	        condNode.getAttributes(true).setLoopPathIterations(optionNode, iterations);
+	        optionNode.getAttributes(true).addKnown(m_route, Type.LOOP_PATH_ITERATIONS, source, new Reference[] {reference});
 		    refreshDisplayedUnknowns();
 		}
 	}
@@ -239,15 +239,15 @@ public class RouteUnknowns {
 
 	public boolean getSetLoopScope(Node node) {
 		Node enclosingLoopNode = node.getEnclosingLoopNode();
-		return enclosingLoopNode.getAttributes().getIsAbsolute();
+		return enclosingLoopNode.getAttributes(false).getIsAbsolute();
 	}
 
 	private void setLoopScopeNoCheck(Node node, boolean isAbsolute, Reference reference, Source source) {
 		invalidateCachedStats();
     	Node enclosingLoopNode = node.getEnclosingLoopNode();
     	if (enclosingLoopNode != null) {
-            enclosingLoopNode.getAttributes().setIsAbsolute(isAbsolute);
-            enclosingLoopNode.getAttributes().addKnown(m_route, Type.LOOP_SCOPE, source, new Reference[] {reference});    	    
+            enclosingLoopNode.getAttributes(true).setIsAbsolute(isAbsolute);
+            enclosingLoopNode.getAttributes(true).addKnown(m_route, Type.LOOP_SCOPE, source, new Reference[] {reference});    	    
     	}
 	}
 	
@@ -280,7 +280,7 @@ public class RouteUnknowns {
 					return true;
 				} 
 			} else if (parent instanceof LoopNode) {
-				if (!currentNode.getAttributes().getIsLoopHeader()) {
+				if (!currentNode.getAttributes(false).getIsLoopHeader()) {
 					return true;
 				}
 			}			
@@ -301,14 +301,14 @@ public class RouteUnknowns {
 				ConditionalNode condNode = (ConditionalNode)parent;
 				condNode.setAlive(currentNode, false);
 				if (!condNode.iChildren().isEmpty()) {
-					currentNode.getAttributes().addKnown(m_route, Type.EXCLUSION, source, new Reference[] {reference});
+					currentNode.getAttributes(true).addKnown(m_route, Type.EXCLUSION, source, new Reference[] {reference});
 					break;
 				}
 			} else if (parent instanceof LoopNode) {
 				LoopNode loopNode = (LoopNode)parent;
-				if (!currentNode.getAttributes().getIsLoopHeader()) {				
+				if (!currentNode.getAttributes(false).getIsLoopHeader()) {				
 				    loopNode.setAlive(currentNode, false);				    
-					currentNode.getAttributes().addKnown(m_route, Type.EXCLUSION, source, new Reference[] {reference});
+					currentNode.getAttributes(true).addKnown(m_route, Type.EXCLUSION, source, new Reference[] {reference});
 				    setLoopIterationsNoCheck(src, engine, currentNode, 0, false, reference, source);				    
 					break;
 				}
@@ -339,13 +339,13 @@ public class RouteUnknowns {
 	public void setFixedTime(Node node, TimeUnit timeUnit, Reference reference, Type type, Source source) {
 		timeUnit.setCoreConfig(m_route.getRouteCoreContainer().getCoreConfig());
 		invalidateCachedStats();
-    	node.getAttributes().setFixedTime(timeUnit);
-	    node.getAttributes().addKnown(m_route, type, source, new Reference[] {reference});
+    	node.getAttributes(true).setFixedTime(timeUnit);
+	    node.getAttributes(true).addKnown(m_route, type, source, new Reference[] {reference});
 		refreshDisplayedUnknowns();
 	}
 
 	public TimeUnit getFixedTime(Node node) {
-		return node.getAttributes().getFixedTime();
+		return node.getAttributes(false).getFixedTime();
 	}
 
 	public boolean canInstructionPause(Reference reference) throws AbortedException {
@@ -362,7 +362,7 @@ public class RouteUnknowns {
 	void invalidateCachedStats() {
 		m_route.getNode().traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
-	    		node.getAttributes().invalidateCachedStats();
+	    		node.getAttributes(true).invalidateCachedStats();
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
@@ -379,7 +379,7 @@ public class RouteUnknowns {
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
-	    		node.getAttributes().setDisplayAsUnknown(false);
+	    		node.getAttributes(true).setDisplayAsUnknown(false);
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
@@ -387,7 +387,7 @@ public class RouteUnknowns {
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
 	    node.traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
-	    		if (node.getAttributes().hasUnknowns()) {
+	    		if (node.getAttributes(false).hasUnknowns()) {
 	    			setDisplayAsUnknownOnParentNodes(node);
 	    		}
 	        	return TraverseStatus.CONTINUE;
@@ -398,7 +398,7 @@ public class RouteUnknowns {
 	private void setDisplayAsUnknownOnParentNodes(Node node) {
 		Node parent = node;
 		while (parent != null) {
-			parent.getAttributes().setDisplayAsUnknown(true);
+			parent.getAttributes(true).setDisplayAsUnknown(true);
 			parent = parent.getParent();
 		}
 	}
@@ -406,7 +406,7 @@ public class RouteUnknowns {
 	private void clearPathIterations(Node node) {
 	    node.traverse( new DefaultNodeTraverser() {
 	    	public TraverseStatus foundConditionalNode(Node node) {
-	    		node.getAttributes().resetPathIterations();
+	    		node.getAttributes(true).resetPathIterations();
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });

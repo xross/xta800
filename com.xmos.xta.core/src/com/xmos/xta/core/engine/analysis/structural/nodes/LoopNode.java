@@ -17,6 +17,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class LoopNode extends Node {
+	private boolean m_ownsOwnAttrib;
 	private LoopNodeAttributes m_attributes;
 	private Node m_loopHeader;
 	private List<Node> m_loops;
@@ -27,18 +28,21 @@ public class LoopNode extends Node {
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
 		m_alive = new NonIteratableMap<Node, Boolean>();
+		m_ownsOwnAttrib = false;
 	}
 
 	public LoopNode(Collection<Node> loops, Node base) {
 		super();
 		m_loopHeader = base;
-		m_loopHeader.getAttributes().setIsLoopHeader(true);
+		m_loopHeader.getAttributes(true).setIsLoopHeader(true);
 		m_alive = new NonIteratableMap<Node, Boolean>();
 		m_loops = new ArrayList<Node>();
 		for (Node loop : loops) {
 			m_loops.add(loop);
 			m_alive.put(loop, true);
 		}
+		m_ownsOwnAttrib = true;
+		m_attributes = new LoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
@@ -49,7 +53,7 @@ public class LoopNode extends Node {
 			ln.m_alive.put(clone, m_alive.get(loop));
 		}
 		ln.m_loopHeader = m_loopHeader.copyRouteStructure();
-		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
+		ln.m_loopHeader.getAttributes(true).setIsLoopHeader(true);
 		return ln;
 	}
 
@@ -57,9 +61,11 @@ public class LoopNode extends Node {
         return "loop";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
+    public NodeAttributes getAttributes(boolean modifier) {
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
     		m_attributes = new LoopNodeAttributes(this);
+    	}
     	return m_attributes;
     }
 

@@ -19,7 +19,7 @@ public class LoopUnknown extends Unknown {
 		case KNOWN:
 			return String.format("Loop iterations (node id: " +
 					getNode().getId() + ") are set to " + 
-					getNode().getAttributes().getLoopIterations());
+					getNode().getAttributes(false).getLoopIterations());
 		}
 		assert(false);
 		return "";
@@ -29,10 +29,10 @@ public class LoopUnknown extends Unknown {
     	assert(getSource() == Source.SET);
     	return String.format("set loop %s %s %d",
 	    		routeIdStr, refStrs[0],
-	    		getNode().getAttributes().getLoopIterations());
+	    		getNode().getAttributes(false).getLoopIterations());
 	}
 
     public String getValueStr() {
-    	return String.format("%d", getNode().getAttributes().getLoopIterations());
+    	return String.format("%d", getNode().getAttributes(false).getLoopIterations());
     }	
 }

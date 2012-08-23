@@ -14,17 +14,17 @@ public class LoopScopeUnknown extends Unknown {
 		assert(getState() == State.KNOWN);
 		return String.format("Loop scope (node id: " +
 				getNode().getId() + ") has been set to '" + 
-				(getNode().getAttributes().getIsAbsolute() ? "a" : "r") + "'");
+				(getNode().getAttributes(false).getIsAbsolute() ? "a" : "r") + "'");
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) {
     	assert(getSource() == Source.SET);
     	return String.format("set loopscope %s %s %s",
     			routeIdStr, refStrs[0],
-    			getNode().getAttributes().getIsAbsolute() ? "a" : "r");
+    			getNode().getAttributes(false).getIsAbsolute() ? "a" : "r");
 	}
 	
     public String getValueStr() {
-    	return getNode().getAttributes().getIsAbsolute() ? "a" : "r";
+    	return getNode().getAttributes(false).getIsAbsolute() ? "a" : "r";
     }	
 }

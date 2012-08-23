@@ -129,7 +129,7 @@ public class RouteTiming {
 			if (numWarnings > 1)
 				description += "s";
 			
-			description += ", Num Paths: " + m_route.getNode().getAttributes().getNumPathsStr();
+			description += ", Num Paths: " + m_route.getNode().getAttributes(false).getNumPathsStr();
 
 			if (level == Level.DETAILED) {
 				description += ", ";
@@ -240,12 +240,12 @@ public class RouteTiming {
 
 	public long getCycles(Status status, Case c) {
 		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes().getNumCycles(c, status, null);
+		return worstCaseSubRoute.getAttributes(false).getNumCycles(c, status, null);
 	}
 
 	public double getTime(Status status, Case c) {
 		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes().getTimeTaken(c, status, null);
+		return worstCaseSubRoute.getAttributes(false).getTimeTaken(c, status, null);
 	}
 	
 	private boolean passedUnknowns() {

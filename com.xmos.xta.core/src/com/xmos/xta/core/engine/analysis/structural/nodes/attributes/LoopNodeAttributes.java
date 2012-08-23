@@ -42,13 +42,13 @@ public class LoopNodeAttributes extends NodeAttributes {
 		if (getIsAbsolute()) {
 			long iterations = 1;
 			if (getNode().getParent() != null) {
-				getNode().getParent().getAttributes().getLocalIterations(getNode());
+				getNode().getParent().getAttributes(false).getLocalIterations(getNode());
 			}
-			long headerAdjustment = child.getAttributes().getIsLoopHeader() ? iterations : 0;
+			long headerAdjustment = child.getAttributes(false).getIsLoopHeader() ? iterations : 0;
 			return m_numIterations + headerAdjustment;
 		}
 
-		long headerAdjustment = child.getAttributes().getIsLoopHeader() ? 1 : 0;
+		long headerAdjustment = child.getAttributes(false).getIsLoopHeader() ? 1 : 0;
 		return m_numIterations + headerAdjustment;
     }
 
@@ -58,7 +58,7 @@ public class LoopNodeAttributes extends NodeAttributes {
 		Iterations iterations = null;
 		if (getNode().getParent() != null) {
             try {
-			    iterations = getNode().getParent().getAttributes().getTotalIterations(
+			    iterations = getNode().getParent().getAttributes(false).getTotalIterations(
 			    		c, getNode(), ignoreIterationsAboveCond);
 
 		    } catch (IgnoreCondIterationsException e) {
@@ -71,13 +71,13 @@ public class LoopNodeAttributes extends NodeAttributes {
 		long iterationsAbove = iterations.getGlobalIterations() * iterations.getLocalIterations();
 
 		if (getIsAbsolute()) {
-			long headerAdjustment = child.getAttributes().getIsLoopHeader() ? iterationsAbove : 0;
+			long headerAdjustment = child.getAttributes(false).getIsLoopHeader() ? iterationsAbove : 0;
 			iterations.setGlobalIterations(1);
 			iterations.setLocalIterations(m_numIterations + headerAdjustment);
 			return iterations;
 		}
 
-		long headerAdjustment = child.getAttributes().getIsLoopHeader() ? 1 : 0;
+		long headerAdjustment = child.getAttributes(false).getIsLoopHeader() ? 1 : 0;
 		iterations.setGlobalIterations(iterationsAbove);
 		iterations.setLocalIterations(m_numIterations + headerAdjustment);
 		return iterations;

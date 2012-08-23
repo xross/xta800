@@ -15,17 +15,17 @@ public class PathTimeUnknown extends Unknown {
 		assert(getState() == State.KNOWN);
 		return String.format("Time taken for path (node id: %d) is set to %s",
 				getNode().getId(),
-				Conversion.getTimeString(getNode().getAttributes().getFixedTime().getNs()));
+				Conversion.getTimeString(getNode().getAttributes(false).getFixedTime().getNs()));
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) {
     	assert(getSource() == Source.SET);
     	return String.format("set pathtime %s %s %s %s",
     			routeIdStr, refStrs[0], refStrs[1],
-    			getNode().getAttributes().getFixedTimeString());
+    			getNode().getAttributes(false).getFixedTimeString());
 	}
 
     public String getValueStr() {
-    	return getNode().getAttributes().getFixedTimeString();
+    	return getNode().getAttributes(false).getFixedTimeString();
     }	
 }

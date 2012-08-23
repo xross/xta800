@@ -149,7 +149,7 @@ public class Route {
 	private void setRouteSpecificCoreConfigs(final CoreConfig coreConfig, final Architecture architecture) {
 		m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
 			public TraverseStatus foundInstructionNode(Node node) {
-				((InstructionNodeAttributes)node.getAttributes()).setCoreConfig(coreConfig, architecture);
+				((InstructionNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, architecture);
 				return TraverseStatus.CONTINUE;
 			}
 		});

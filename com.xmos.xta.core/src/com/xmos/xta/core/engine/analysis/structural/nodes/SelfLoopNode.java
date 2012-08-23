@@ -12,31 +12,38 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class SelfLoopNode extends Node{
+	private boolean m_ownsOwnAttrib;
 	private SelfLoopNodeAttributes m_attributes;
 	private Node m_loop;
 
 	public SelfLoopNode() {
 		super();
 		m_loop = null;
+		m_ownsOwnAttrib = false;
 	}
 
 	public SelfLoopNode(Node base) {
 		super();
 		m_loop = base;
+		m_ownsOwnAttrib = true;
+		m_attributes = new SelfLoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
 		SelfLoopNode ln = new SelfLoopNode();
 		ln.m_loop = m_loop.copyRouteStructure();
+		ln.m_attributes = m_attributes;
 		return ln;
 	}
     public String getTypeName() {
         return "selfloop";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
+    public NodeAttributes getAttributes(boolean modifier) {
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
     		m_attributes = new SelfLoopNodeAttributes(this);
+    	}
     	return m_attributes;
     }
 
@@ -83,7 +90,7 @@ public class SelfLoopNode extends Node{
 
 	public TimeDistributionBuckets getTimeSpread() {
 		TimeDistributionBuckets tdb = m_loop.getTimeSpread();
-		tdb.repeat(getAttributes().getLoopIterations());
+		tdb.repeat(getAttributes(false).getLoopIterations());
 		return tdb;
 	}
 

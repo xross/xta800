@@ -63,7 +63,7 @@ public class NodeInfo extends Command {
 		for (Route route : engine.getRoute(m_routeId)) {
 	    	Node node = route.getNode(m_nodeId);
 	    	if (node != null) {
-	        	console.display(node.getAttributes().getTimingDetails());
+	        	console.display(node.getAttributes(false).getTimingDetails());
 	    		return;
 	    	}
 		}

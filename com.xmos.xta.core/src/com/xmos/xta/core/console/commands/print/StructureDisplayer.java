@@ -63,9 +63,9 @@ public class StructureDisplayer {
 
 	private void printModifiers(Node node, int depth, StringBuffer sb) {
 		if (depth > 0) {
-			if (node.getAttributes().getFixedTime() != null) {
+			if (node.getAttributes(false).getFixedTime() != null) {
 				sb.append(".  F ");
-			} else if (node.getAttributes().getDisplayAsUnknown()) {
+			} else if (node.getAttributes(false).getDisplayAsUnknown()) {
 				sb.append(".  * ");
 			} else {
 				sb.append(".    ");
@@ -79,12 +79,12 @@ public class StructureDisplayer {
 	}
 
 	private void displayTimeTaken(Node node, StringBuffer sb) {
-		sb.append(node.getAttributes().getTimingSummary());
+		sb.append(node.getAttributes(false).getTimingSummary());
 	}
 
 	private void displayNumPaths(Node node, StringBuffer sb) {
 		if (m_verbosity >= Config.VERBOSITY_DISPLAY_NUM_PATHS)
-			sb.append(String.format(" [%s]", node.getAttributes().getNumPathsStr()));
+			sb.append(String.format(" [%s]", node.getAttributes(false).getNumPathsStr()));
 	}
 
 	private void displayDescription(Node node, StringBuffer sb) {
@@ -93,7 +93,7 @@ public class StructureDisplayer {
 
 	private void displayAttributes(Node node, StringBuffer sb) {
 		if (m_verbosity >= Config.VERBOSITY_DISPLAY_ATTRIBUTES) {
-			NodeAttributes nodeAttributes = node.getAttributes();
+			NodeAttributes nodeAttributes = node.getAttributes(false);
 
 			if (node.getUnresolved())
 				sb.append(" UNRESOLVED");
@@ -112,13 +112,13 @@ public class StructureDisplayer {
 	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
 	                	sb.append(String.format("[%s,%d,%d]", optionSet,
 	                			nodeAttributes.getLoopPathIterations(
-	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.WORST),
+	                					enclosingLoopNode.getAttributes(false).getLoopIterations(), option, Case.WORST),
 	                			nodeAttributes.getLoopPathIterations(
-	                					enclosingLoopNode.getAttributes().getLoopIterations(), option, Case.BEST)));
+	                					enclosingLoopNode.getAttributes(false).getLoopIterations(), option, Case.BEST)));
 	                }
 				}
 
-			} else if (node.getAttributes().getIsLoopHeader())  {
+			} else if (node.getAttributes(false).getIsLoopHeader())  {
 				sb.append(" (HEADER)");
 			}
 		}

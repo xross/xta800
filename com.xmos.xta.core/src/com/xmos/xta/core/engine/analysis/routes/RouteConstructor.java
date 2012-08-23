@@ -930,20 +930,20 @@ public class RouteConstructor {
 				public TraverseStatus foundInstructionNode(Node node) {
 					Instruction instruction = ((InstructionNode)node).getInstruction();
 					if (instruction.canPause()) {
-						NodeAttributes nodeAttributes = node.getAttributes();
+						NodeAttributes nodeAttributes = node.getAttributes(true);
 						nodeAttributes.addUnknown(route, UnknownFactory.Type.INSTRUCTION_TIME);
 					}
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the loop iterations to unknown.
 				public TraverseStatus foundLoopNode(Node node) {
-					NodeAttributes nodeAttributes = node.getAttributes();
+					NodeAttributes nodeAttributes = node.getAttributes(true);
 					nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
 				}
 				// Sets all the self loop iterations to unknown.
 				public TraverseStatus foundSelfLoopNode(Node node) {
-					NodeAttributes nodeAttributes = node.getAttributes();
+					NodeAttributes nodeAttributes = node.getAttributes(true);
 					nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
 					return TraverseStatus.CONTINUE;
 				}
@@ -1113,7 +1113,7 @@ public class RouteConstructor {
 		// Clears the display unknown flags on all nodes..
 	    node.traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
-	    		node.getAttributes().setDisplayAsUnknown(false);
+	    		node.getAttributes(true).setDisplayAsUnknown(false);
 	        	return TraverseStatus.CONTINUE;
 	    	}
 	    });
@@ -1121,7 +1121,7 @@ public class RouteConstructor {
 		// On each of the unknown nodes, mark all of their parents to 'display unknown'.
 	    node.traverse(new UntypedNodeTraverser() {
 	    	public TraverseStatus foundNode(Node node) {
-	    		if (node.getAttributes().hasUnknowns()) {
+	    		if (node.getAttributes(false).hasUnknowns()) {
 	    			setDisplayAsUnknownOnParentNodes(node);
 	    		}
 	        	return TraverseStatus.CONTINUE;
@@ -1133,10 +1133,10 @@ public class RouteConstructor {
 	private void setDisplayAsUnknownOnParentNodes(Node node) {
 		Node parent = node;
 		while (parent != null) {
-			if(parent.getAttributes().getDisplayAsUnknown() == false){
-				parent.getAttributes().setDisplayAsUnknown(true);
+			if(parent.getAttributes(false).getDisplayAsUnknown() == false){
+				parent.getAttributes(true).setDisplayAsUnknown(true);
 			}
-			parent.getAttributes().setDisplayAsUnknown(true);
+			parent.getAttributes(true).setDisplayAsUnknown(true);
 			parent = parent.getParent();
 		}
 	}

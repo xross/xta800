@@ -82,7 +82,7 @@ public class FunctionNode extends Node {
         return "function";
     }
 
-    public NodeAttributes getAttributes() {
+    public NodeAttributes getAttributes(boolean modifier) {
     	if(m_attributes==null)
     		m_attributes = new NodeAttributes(this);
     	return m_attributes;

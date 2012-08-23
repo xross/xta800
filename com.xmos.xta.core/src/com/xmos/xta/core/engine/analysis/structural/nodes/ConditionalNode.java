@@ -18,6 +18,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class ConditionalNode extends Node {
+	private boolean m_ownsOwnAttrib;
 	private ConditionalNodeAttributes m_attributes;
 	private Collection<Node> m_options;
 	private Map<Node, Boolean> m_alive;
@@ -26,6 +27,7 @@ public class ConditionalNode extends Node {
 		super();
 		m_options = new IteratableSet<Node>();
 		m_alive = new NonIteratableMap<Node, Boolean>();
+		m_ownsOwnAttrib = false;
 	}
 
 	public ConditionalNode(Collection<Node> options, boolean isOptional) {
@@ -37,8 +39,11 @@ public class ConditionalNode extends Node {
 		}
 		for (Node option : m_options){
 			m_alive.put(option, true);
-		}	
+		}
+		m_ownsOwnAttrib = true;
+		m_attributes = new ConditionalNodeAttributes(this);
 	}
+	
 
 	public Node copyRouteStructure() {
 		ConditionalNode sn = new ConditionalNode();
@@ -47,6 +52,7 @@ public class ConditionalNode extends Node {
 			sn.m_options.add(clone);
 			sn.m_alive.put(clone, m_alive.get(option));
 		}
+		sn.m_attributes = m_attributes;
 		return sn;
 	}
 
@@ -54,9 +60,11 @@ public class ConditionalNode extends Node {
         return "cond";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
+    public NodeAttributes getAttributes(boolean modifier) {
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
     		m_attributes = new ConditionalNodeAttributes(this);
+    	}
     	return m_attributes;
     }
 
@@ -141,7 +149,7 @@ public class ConditionalNode extends Node {
 	public List<Node> getAllUnsetOptions() {
 		List<Node> unsetOptions = new LinkedList<Node>();
 		for (Node option : getAliveOptions()) {
-			if (!getAttributes().getSetOption(option)) {
+			if (!getAttributes(false).getSetOption(option)) {
 				unsetOptions.add(option);
 			}
 		}
@@ -196,7 +204,7 @@ public class ConditionalNode extends Node {
 		Iterator<Node> iter = nodes.iterator();
 		Node caseNode = iter.next();
 		Status s = new Status();
-		double caseTime = caseNode.getAttributes().getTimeTaken(c, s, ignoreIterationsAboveCond);
+		double caseTime = caseNode.getAttributes(false).getTimeTaken(c, s, ignoreIterationsAboveCond);
 		if (c == Case.WORST && s.isUnresolved()) {
 			return caseNode;
 		} else if (c == Case.BEST && (s.isZero() || s.isUnresolved())) {
@@ -206,7 +214,7 @@ public class ConditionalNode extends Node {
 		while (iter.hasNext()) {
 			Node node = iter.next();
 			Status status = new Status();
-			double time = node.getAttributes().getTimeTaken(c, status, ignoreIterationsAboveCond);
+			double time = node.getAttributes(false).getTimeTaken(c, status, ignoreIterationsAboveCond);
 			switch (c) {
 			case WORST:
 				if (status.isUnresolved()) {

@@ -15,7 +15,7 @@ public class LoopPathUnknown extends Unknown {
 		Node condNode = getNode().getEnclosingCondNode();
 		return String.format("Loop path iterations (node id: " +
 				getNode().getId() + ") are set to " + 
-				condNode.getAttributes().getSetLoopPathIterations(getNode()));
+				condNode.getAttributes(false).getSetLoopPathIterations(getNode()));
 	}
 
 	public String getScriptStr(String routeIdStr, String[] refStrs) {
@@ -23,11 +23,11 @@ public class LoopPathUnknown extends Unknown {
 		Node condNode = getNode().getEnclosingCondNode();
 		return String.format("set looppath %s %s %d",
     			routeIdStr, refStrs[0],
-    			condNode.getAttributes().getSetLoopPathIterations(getNode()));
+    			condNode.getAttributes(false).getSetLoopPathIterations(getNode()));
 	}
 	
     public String getValueStr() {
 		Node condNode = getNode().getEnclosingCondNode();
-    	return String.format("%d", condNode.getAttributes().getSetLoopPathIterations(getNode()));
+    	return String.format("%d", condNode.getAttributes(false).getSetLoopPathIterations(getNode()));
     }		
 }

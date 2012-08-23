@@ -13,25 +13,31 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseSta
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class BlockNode extends Node {
+	private boolean m_ownsOwnAttrib;
 	private BlockNodeAttributes m_attributes;
 	private List<InstructionNode> m_insts;
 
 	public BlockNode(List<InstructionNode> insts) {
 		super();
 		m_insts = insts;
+		m_attributes = new BlockNodeAttributes(this);
+		m_ownsOwnAttrib = true;
 	}
+	
 
 	public BlockNode() {
 		super();
 		m_insts = new LinkedList<InstructionNode>();
+		m_ownsOwnAttrib = false;
 	}
 	
 	public Node copyRouteStructure() {
-		List<InstructionNode> insts = new LinkedList<InstructionNode>();
+		BlockNode bn = new BlockNode();
 		for (InstructionNode inst : m_insts){
-			insts.add((InstructionNode) inst.copyRouteStructure());
+			bn.m_insts.add((InstructionNode) inst.copyRouteStructure());
 		}
-		return new BlockNode(insts);
+		bn.m_attributes = m_attributes;
+		return bn;
 	}
 	
 	public List<InstructionNode> getInstructionList(){
@@ -42,9 +48,11 @@ public class BlockNode extends Node {
         return "block";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
+    public NodeAttributes getAttributes(boolean modifier) {
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
     		m_attributes = new BlockNodeAttributes(this);
+    	}
     	return m_attributes;
     }
 
@@ -108,7 +116,7 @@ public class BlockNode extends Node {
 
 		long time = 0;
 		for (InstructionNode inst : m_insts) {
-			time += inst.getAttributes().getFixedTime().getCycles();
+			time += inst.getAttributes(false).getFixedTime().getCycles();
 		}
     	return new TimeDistributionBuckets(time);
     }

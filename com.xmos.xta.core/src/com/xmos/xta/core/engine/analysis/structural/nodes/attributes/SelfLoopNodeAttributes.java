@@ -55,7 +55,7 @@ public class SelfLoopNodeAttributes extends NodeAttributes {
 		if (getNode().getParent() != null) {
 			Iterations iterations = null;
 		    try {
-		    	iterations = getNode().getParent().getAttributes().getTotalIterations(
+		    	iterations = getNode().getParent().getAttributes(false).getTotalIterations(
 						c, getNode(), ignoreIterationsAboveCond);
 
 		    } catch (IgnoreCondIterationsException e) {

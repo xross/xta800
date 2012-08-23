@@ -12,22 +12,27 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class InfiniteSelfLoopNode extends Node{
+	private boolean m_ownsOwnAttrib;
 	private NodeAttributes m_attributes;
 	private Node m_loop;
 
 	public InfiniteSelfLoopNode() {
 		super();
 		m_loop = null;
+		m_ownsOwnAttrib = false;
 	}
 
 	public InfiniteSelfLoopNode(Node base) {
 		super();
 		m_loop = base;
+		m_ownsOwnAttrib = true;
+		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
 		InfiniteSelfLoopNode ln = new InfiniteSelfLoopNode();
 		ln.m_loop = m_loop.copyRouteStructure();
+		ln.m_attributes = m_attributes;
 		return ln;
 	}
 
@@ -35,9 +40,11 @@ public class InfiniteSelfLoopNode extends Node{
         return "infiniteselfloop";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
+    public NodeAttributes getAttributes(boolean modifier) {
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
     		m_attributes = new InfiniteSelfLoopNodeAttributes(this);
+    	}
     	return m_attributes;
     }
 

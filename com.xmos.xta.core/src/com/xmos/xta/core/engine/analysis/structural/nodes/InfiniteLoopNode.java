@@ -14,6 +14,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class InfiniteLoopNode extends Node {
+	private boolean m_ownsOwnAttrib;
 	private NodeAttributes m_attributes;
 	private Node m_loopHeader;
 	private List<Node> m_loops;
@@ -22,16 +23,19 @@ public class InfiniteLoopNode extends Node {
 		super();
 		m_loopHeader = null;
 		m_loops = new ArrayList<Node>();
+		m_ownsOwnAttrib = false;
 	}
 
 	public InfiniteLoopNode(Collection<Node> loops, Node base) {
 		super();
 		m_loopHeader = base;
-		m_loopHeader.getAttributes().setIsLoopHeader(true);
+		m_loopHeader.getAttributes(true).setIsLoopHeader(true);
 		m_loops = new ArrayList<Node>();
 		for (Node loop : loops) {
 			m_loops.add(loop);
 		}
+		m_ownsOwnAttrib = true;
+		m_attributes = new InfiniteLoopNodeAttributes(this);
 	}
 
 	public Node copyRouteStructure() {
@@ -41,7 +45,8 @@ public class InfiniteLoopNode extends Node {
 			ln.m_loops.add(clone);
 		}
 		ln.m_loopHeader = m_loopHeader.copyRouteStructure();
-		ln.m_loopHeader.getAttributes().setIsLoopHeader(true);
+		ln.m_loopHeader.getAttributes(true).setIsLoopHeader(true);
+		ln.m_attributes = m_attributes;
 		return ln;
 	}
 
@@ -49,9 +54,11 @@ public class InfiniteLoopNode extends Node {
         return "infiniteloop";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
+    public NodeAttributes getAttributes(boolean modifier) {
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
     		m_attributes = new InfiniteLoopNodeAttributes(this);
+    	}
     	return m_attributes;
     }
 

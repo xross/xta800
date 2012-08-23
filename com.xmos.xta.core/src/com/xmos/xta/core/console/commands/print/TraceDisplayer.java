@@ -49,7 +49,7 @@ public class TraceDisplayer {
     		return false;
 
     	Status status = new Status();
-    	node.getAttributes().getTimeTaken(c, status, null);
+    	node.getAttributes(false).getTimeTaken(c, status, null);
     	if (status.isInfinite()) {
     		return true;
     	}
@@ -73,13 +73,13 @@ public class TraceDisplayer {
     		Node child = getChild(node, c, totalIterations, iteration);
     		displayInstructions(child, c, totalIterations, iteration);
 
-    	} else if (node.getAttributes().getFixedTime() != null) {
+    	} else if (node.getAttributes(false).getFixedTime() != null) {
     		// Deal with function/sequence nodes which have a fixed time
     		double timeBefore = m_currentTime;
     		displayChildren(node, c, totalIterations, iteration);
     		double timeAfter = m_currentTime;
 
-    		double fixedTime = node.getAttributes().getFixedTime().getNs();
+    		double fixedTime = node.getAttributes(false).getFixedTime().getNs();
     		double timeDifference = fixedTime - (timeAfter - timeBefore);
          	m_console.display(String.format("  %.1f: (%.1fns) fixed %s time\n",
              		m_currentTime,
@@ -95,7 +95,7 @@ public class TraceDisplayer {
 
 	private Node getChild(Node cond, Case c, long totalIterations, long iteration) {
     	for (Node child : cond.iChildren()) {
-    		long childIterations = cond.getAttributes().getLoopPathIterations(totalIterations, child, c);
+    		long childIterations = cond.getAttributes(false).getLoopPathIterations(totalIterations, child, c);
     		if (iteration < childIterations) {
     			return child;
     		}
@@ -111,8 +111,8 @@ public class TraceDisplayer {
 	}
 
     private void displayLoop(Node node, Case c, long totalIterations, long iteration) throws EscapedDetctedException, IllegalException, RecursionDetctedException, UnresolvedDetctedException {
-		long loopIterations = node.getAttributes().getLoopIterations();
-		if (node.getAttributes().getIsAbsolute()) {
+		long loopIterations = node.getAttributes(false).getLoopIterations();
+		if (node.getAttributes(false).getIsAbsolute()) {
 			if (iteration == 0) {
 				// Only print body of absolute once
 	    		for (int i = 0; i < loopIterations; i++) {
@@ -136,7 +136,7 @@ public class TraceDisplayer {
 
 	private void displayInstruction(InstructionNode instructionNode) throws EscapedDetctedException, 
 	IllegalException, UnresolvedDetctedException, RecursionDetctedException {
-		String isUnknown = instructionNode.getAttributes().getDisplayAsUnknown() ? "*" : " ";
+		String isUnknown = instructionNode.getAttributes(false).getDisplayAsUnknown() ? "*" : " ";
 		String isUnresolved = instructionNode.getUnresolved() ? " [UNRESOLVED]" : "";
 		String formsRecursion = instructionNode.getRecursion() ? " [RECURSION]" : "";
 
@@ -152,7 +152,7 @@ public class TraceDisplayer {
      	m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s%s%s",
      			isUnknown,
          		m_currentTime,
-         		instructionNode.getAttributes().getFixedTime().getNs(),
+         		instructionNode.getAttributes(false).getFixedTime().getNs(),
          		instruction.getPc(),
            		functionOffsetString,
            		instruction.getMnemonic(),
@@ -164,7 +164,7 @@ public class TraceDisplayer {
      	if (instruction.canPause())
      		m_console.display(" (P)");
 
-     	m_currentTime += instructionNode.getAttributes().getFixedTime().getNs();
+     	m_currentTime += instructionNode.getAttributes(false).getFixedTime().getNs();
       	m_console.display("\n");
 
       	if (instructionNode.getRecursion()) {

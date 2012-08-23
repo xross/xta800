@@ -26,7 +26,7 @@ public class InstructionTimeUnknown extends Unknown {
 			return String.format("Time for instruction (0x%x: %s) set to %s",
 					instruction.getPc(),
 					instruction.getMnemonic(),
-					Conversion.getTimeString(getNode().getAttributes().getFixedTime().getNs()));
+					Conversion.getTimeString(getNode().getAttributes(false).getFixedTime().getNs()));
 		}
 		assert(false);
 		return "";
@@ -36,10 +36,10 @@ public class InstructionTimeUnknown extends Unknown {
     	assert(getSource() == Source.SET);
     	return String.format("set instructiontime %s %s %s",
     			routeIdStr, refStrs[0],
-    			getNode().getAttributes().getFixedTimeString());
+    			getNode().getAttributes(false).getFixedTimeString());
 	}
 	
     public String getValueStr() {
-    	return getNode().getAttributes().getFixedTimeString();
+    	return getNode().getAttributes(false).getFixedTimeString();
     }	
 }

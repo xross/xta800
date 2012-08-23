@@ -11,6 +11,8 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class SequenceNode extends Node {
+
+	private boolean m_ownsOwnAttrib;
 	private NodeAttributes m_attributes;
 	List<Node> m_nodes;
 
@@ -18,11 +20,14 @@ public class SequenceNode extends Node {
 		super();
 		assert (nodes != null);
 		m_nodes = nodes;
+		m_ownsOwnAttrib = true;
+		m_attributes = new NodeAttributes(this);
 	}
 
 	public SequenceNode() {
 		super();
 		m_nodes = new LinkedList<Node>();
+		m_ownsOwnAttrib = false;
 	}
 
 	public Node copyRouteStructure() {
@@ -31,6 +36,7 @@ public class SequenceNode extends Node {
 			Node clone = path.copyRouteStructure();
 			pn.m_nodes.add(clone);
 		}
+		pn.m_attributes = m_attributes;
 		return pn;
 	}
 	public boolean isSequenceNode() {
@@ -40,9 +46,11 @@ public class SequenceNode extends Node {
         return "seq";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
-    		m_attributes = new NodeAttributes(this);
+    public NodeAttributes getAttributes(boolean modifier) {    	
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
+			m_attributes = new NodeAttributes(this);
+		}
     	return m_attributes;
     }
 

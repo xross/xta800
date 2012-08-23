@@ -45,14 +45,14 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 		double value = 0;
 		for (Node child : m_setIterations.keySet()) {
 			Status childStatus = new Status();
-		    value += child.getAttributes().getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
+		    value += child.getAttributes(false).getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
 			status.mergeStatus(childStatus.getStatus());
 		}
 
 		Node option = getFloatingOption(c, ignoreIterationsAboveCond);
 		if (option != null) {
 			Status childStatus = new Status();
-			value += option.getAttributes().getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
+			value += option.getAttributes(false).getTimeTaken(c, childStatus, ignoreIterationsAboveCond);
 			status.mergeStatus(childStatus.getStatus());
 		}
 
@@ -72,11 +72,11 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
     	long value = 0;
     	for (Node child : m_setIterations.keySet()) {
-   		    value += child.getAttributes().getNumCycles(c, status, ignoreIterationsAboveCond);
+   		    value += child.getAttributes(false).getNumCycles(c, status, ignoreIterationsAboveCond);
     	}
     	Node option = getFloatingOption(c, ignoreIterationsAboveCond);
     	if (option != null) {
-    		value += option.getAttributes().getNumCycles(c, status, ignoreIterationsAboveCond);
+    		value += option.getAttributes(false).getNumCycles(c, status, ignoreIterationsAboveCond);
     	}
 		if (ignoreIterationsAboveCond == null) {
 			setCachedNumCycles(c, value);
@@ -94,11 +94,11 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
 		long value = 0;
 		for (Node child : m_setIterations.keySet()) {
-		    value += child.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveCond);
+		    value += child.getAttributes(false).getNumInstructions(c, status, ignoreIterationsAboveCond);
 		}
 		Node option = getFloatingOption(c, ignoreIterationsAboveCond);
 		if (option != null) {
-			value += option.getAttributes().getNumInstructions(c, status, ignoreIterationsAboveCond);
+			value += option.getAttributes(false).getNumInstructions(c, status, ignoreIterationsAboveCond);
 		}
 		if (ignoreIterationsAboveCond == null) {
 			setCachedNumInstructions(c, value);
@@ -116,11 +116,11 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 
 		long value = 0;
 		for (Node child : m_setIterations.keySet()) {
-		    value += child.getAttributes().getNumFNops(c, status, ignoreIterationsAboveCond);
+		    value += child.getAttributes(false).getNumFNops(c, status, ignoreIterationsAboveCond);
 		}
 		Node option = getFloatingOption(c, ignoreIterationsAboveCond);
 		if (option != null) {
-			value += option.getAttributes().getNumFNops(c, status, ignoreIterationsAboveCond);
+			value += option.getAttributes(false).getNumFNops(c, status, ignoreIterationsAboveCond);
 		}
 		if (ignoreIterationsAboveCond == null) {
 			setCachedNumFnops(c, value);
@@ -133,7 +133,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 	public long getNumPaths() throws NumPathsOverflowException {
 		long value = 0;
 		for (Node child : getNode().iChildren()) {
-			value = addNumPaths(value, child.getAttributes().getNumPaths());
+			value = addNumPaths(value, child.getAttributes(false).getNumPaths());
 		}
 
 		return value;
@@ -146,7 +146,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 		// Gets the iterations set from above for this node.
 		long loopIterations = 1;
 		try {
-			loopIterations = getNode().getParent().getAttributes().getLocalIterations(getNode());
+			loopIterations = getNode().getParent().getAttributes(false).getLocalIterations(getNode());
 
 		} catch (CondIterationsNotSetException e) {
 			throw new Exception("Within a nested loop, but the outer loop iterations for this path have not been set");
@@ -239,7 +239,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 		} else {
 			Iterations iterations = null;
 			if (getNode().getParent() != null) {
-				iterations =  getNode().getParent().getAttributes().getTotalIterations(
+				iterations =  getNode().getParent().getAttributes(false).getTotalIterations(
 						c, getNode(), ignoreIterationsAboveCond);
 
 			    long localCondIterations = getLoopPathIterations(iterations.getLocalIterations(), child, c);
@@ -284,7 +284,7 @@ public class ConditionalNodeAttributes extends NodeAttributes {
 	public boolean hasFloatingIterations() {
 		long loopIterations = 1;
 		try {
-			loopIterations = getNode().getParent().getAttributes().getLocalIterations(getNode());
+			loopIterations = getNode().getParent().getAttributes(false).getLocalIterations(getNode());
 
 		} catch (CondIterationsNotSetException e) {
 			return true;

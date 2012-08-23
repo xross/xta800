@@ -19,7 +19,7 @@ public class NullNode extends Node {
 		return new NullNode();
 	}
 
-	public NodeAttributes getAttributes() {
+	public NodeAttributes getAttributes(boolean modifier) {
 		assert(false);
 		return null;
 	}

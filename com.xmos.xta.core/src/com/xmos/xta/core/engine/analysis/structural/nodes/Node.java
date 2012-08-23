@@ -28,7 +28,7 @@ public abstract class Node implements Comparable<Node> {
 	}
 
 	public abstract String getTypeName();
-	public abstract NodeAttributes getAttributes();
+	public abstract NodeAttributes getAttributes(boolean modifyer);
 	public abstract Node copyRouteStructure();
 	public abstract TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser);
 	public abstract TraverseStatus traverse(NodeTraverser nodeTraverser);

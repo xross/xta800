@@ -13,19 +13,22 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class InstructionNode extends Node {
+	private boolean m_ownsOwnAttrib;
 	private InstructionNodeAttributes m_attributes;
 	private Instruction m_inst;
 
 	public InstructionNode(CfgInstructionNode node) {
 		super(node);
 		m_inst = node.getInstruction();
-		//m_attributes = new InstructionNodeAttributes(this);
+    	m_attributes = new InstructionNodeAttributes(this);
+		m_ownsOwnAttrib = true;
 	}
 
 	public InstructionNode(InstructionNode node) {
 		super(node);
 		m_inst = node.m_inst;
-		//m_attributes = new InstructionNodeAttributes(this);
+		m_attributes = node.m_attributes;
+		m_ownsOwnAttrib = false;
 	}
 	
 	public String toString(){
@@ -34,7 +37,7 @@ public class InstructionNode extends Node {
 	
 	public Node copyRouteStructure() {
 		InstructionNode in = new InstructionNode(this);
-		in.m_attributes = new InstructionNodeAttributes(in);
+		in.m_attributes = m_attributes;
 		return in;
 	}
 
@@ -42,9 +45,11 @@ public class InstructionNode extends Node {
         return "instruction";
     }
 
-    public NodeAttributes getAttributes() {
-    	if(m_attributes==null)
+    public NodeAttributes getAttributes(boolean modifier) {
+    	if(modifier && !m_ownsOwnAttrib){
+    		m_ownsOwnAttrib = true;
     		m_attributes = new InstructionNodeAttributes(this);
+    	}
     	return m_attributes;
     }
 
