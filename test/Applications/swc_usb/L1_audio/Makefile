@@ -35,7 +35,7 @@ INCLUDES = \
     -I ./apps/L1_audio/src \
     -I ./apps/audio/shared
 
-FLAGS = -Wall -g -O3 -fasm-linenum -fcomment-asm -fsubword-select
+FLAGS = -Wall -g -O3 -fasm-linenum -fcomment-asm -fsubword-select -target=XS1-L1A-TQ128
 
 DEFINES = -DASYNC -DSPDIF -D UIFM_MODE=2 -D VENDOR_LSB=0x92 -D VENDOR_MSB=0x0A -D PRODUCT_LSB=0x11 -D PRODUCT_MSB=0x70 -D G1
 
