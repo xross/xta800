@@ -1450,12 +1450,20 @@ public class Engine extends Notifier implements Aborter {
 		return m_sections.getSystems(coreId);
 	}
 
-    public CoreId getCoreId(CommandSource src, String coreReference) {
+    public CoreId getCoreId(CommandSource src, String coreReference) {               
     	XnLoader xnLoader = m_xeLoader.getXnLoader();
 		Pair<Integer,Integer> nodeCore = xnLoader.getNodeChainIndexCoreNumber(coreReference);
 		if (nodeCore == null) {
-    		notify(src, Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
-    		return null;
+		    
+	        // Handle backward compatibility when using stdcore[n] references.
+	        if (coreReference.matches("stdcore.*")) {
+	            coreReference = coreReference.replaceAll("stdcore", "tile");
+	            nodeCore = xnLoader.getNodeChainIndexCoreNumber(coreReference);
+	        }
+	        if (nodeCore == null) {
+	            notify(src, Notifier.NOTIFY_ERROR, String.format("core '%s' not found", coreReference));
+	            return null;	            
+	        }
 		}
 		int nodeChainIndex = nodeCore.first;
 		int coreNumber = nodeCore.second;		
