@@ -1,6 +1,6 @@
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10014 (binary)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10014 (binary)
 xta: cmds.txt:2: warning: adding branch from instruction which is not a branch: (test+4) 0x1000c ldc (ru6) r0, 0x0
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10014 (binary)
-- stdcore[0]::target1 => stdcore[0]::source1 (user)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10014 (binary)
+- tile[0]::target1 => tile[0]::source1 (user)

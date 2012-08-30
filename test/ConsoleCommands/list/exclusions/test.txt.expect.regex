@@ -14,10 +14,10 @@ Num Fnops:        2 / 2
 Num Paths:        3
 Node Id:          \d+
 before
-stdcore\[0\]::target3: 0x10012
+tile\[0\]::target3: 0x10012
 after
-stdcore\[0\]::target2: 0x10010
-stdcore\[0\]::target3: 0x10012
+tile\[0\]::target2: 0x10010
+tile\[0\]::target3: 0x10012
 function main
 Time taken:       140.0 ns / 140.0 ns
 Thread cycles:    7 / 7

@@ -1,12 +1,12 @@
-stdcore[0]::f: 1.0 us
-stdcore[0]::g: 2.0 us
-stdcore[0]::start1 to stdcore[0]::stop1: 1.0 us
-stdcore[0]::start2 to stdcore[0]::stop2: 2.0 us
-stdcore[0]::inst1: 1.0 us
-stdcore[0]::inst2: 2.0 us
-stdcore[0]::l1: 10
-stdcore[0]::l2: 20
-stdcore[0]::lp1: 22
-stdcore[0]::lp2: 23
-stdcore[0]::l1: false
-stdcore[0]::l2: false
+tile[0]::f: 1.0 us
+tile[0]::g: 2.0 us
+tile[0]::start1 to tile[0]::stop1: 1.0 us
+tile[0]::start2 to tile[0]::stop2: 2.0 us
+tile[0]::inst1: 1.0 us
+tile[0]::inst2: 2.0 us
+tile[0]::l1: 10
+tile[0]::l2: 20
+tile[0]::lp1: 22
+tile[0]::lp2: 23
+tile[0]::l1: false
+tile[0]::l2: false

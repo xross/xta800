@@ -14,7 +14,7 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 100.0 MHz
-stdcore[0], Tasks: 1 (No debug information found)
+tile[0], Tasks: 1 (No debug information found)
 No routes analyzed
 xta: error: Frequency '-1.0' invalid
 TimingFailAsError: true
@@ -25,7 +25,7 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 100.0 MHz
-stdcore[0], Tasks: 1 (No debug information found)
+tile[0], Tasks: 1 (No debug information found)
 No routes analyzed
 TimingFailAsError: true
 WarnAsError: false
@@ -35,5 +35,5 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 1000.0 MHz
-stdcore[0], Tasks: 1 (No debug information found)
+tile[0], Tasks: 1 (No debug information found)
 No routes analyzed

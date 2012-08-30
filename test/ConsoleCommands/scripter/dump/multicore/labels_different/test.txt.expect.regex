@@ -4,100 +4,100 @@
 # Route: function: f
 #
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add branch Lbranch Ltarget1
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add branch Lbranch Ltarget2
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add branch Lbranch Ltarget3
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add branch Lbranch Ltarget4
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add functiontime g 10.0 us
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add functiontime g 20.0 us
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add functiontime g 30.0 us
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add functiontime g 40.0 us
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add instructiontime timer1 20.0 us
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add instructiontime timer1 30.0 us
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add instructiontime timer1 40.0 us
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add instructiontime timer1 50.0 us
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add loop loop1 10
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add loop loop1_inner 5
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add loop loop1 20
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add loop loop1_inner 15
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add loop loop1 30
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add loop loop1_inner 25
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add loop loop1 40
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add loop loop1_inner 35
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add looppath loop1_if 8
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add looppath loop1_if 18
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add looppath loop1_if 28
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add looppath loop1_if 38
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add loopscope loop1_inner true
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add loopscope loop1_inner false
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add loopscope loop1_inner true
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add loopscope loop1_inner false
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 add exclusion then0
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 add exclusion then1
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 add exclusion then2
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 add exclusion then3
 analyze function f
 set instructiontime 0 timer2 20.0 us

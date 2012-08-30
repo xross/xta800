@@ -1,4 +1,4 @@
-stdcore\[0\], label: removed, pc: 0x0, compilation dir: .*removed_references, filename: test.xc, line number: 9, exists: false
+tile\[0\], label: removed, pc: 0x0, compilation dir: .*removed_references, filename: test.xc, line number: 9, exists: false
 xta: cmds.txt:15: error: Reference: removed not within a loop on any active tile
 xta: cmds.txt:16: error: Reference: removed not within a loop on any active tile
 xta: cmds.txt:18: warning: Reference: removed has been removed

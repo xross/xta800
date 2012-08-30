@@ -6,15 +6,15 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
-stdcore[0], Tasks: 2 (No debug information found)
-stdcore[1], Tasks: 1 (No debug information found)
-stdcore[2], Tasks: 1 (No debug information found)
-stdcore[3], Tasks: 1 (No debug information found)
+tile[0], Tasks: 2 (No debug information found)
+tile[1], Tasks: 1 (No debug information found)
+tile[2], Tasks: 1 (No debug information found)
+tile[3], Tasks: 1 (No debug information found)
 No routes analyzed
-stdcore[0] (NodeId 0)
-stdcore[1] (NodeId 0)
-stdcore[2] (NodeId 0)
-stdcore[3] (NodeId 0)
+tile[0] (NodeId 0)
+tile[1] (NodeId 0)
+tile[2] (NodeId 0)
+tile[3] (NodeId 0)
 TimingFailAsError: true
 WarnAsError: false
 ErrorAsWarn: false
@@ -23,10 +23,10 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
-stdcore[0], Tasks: 2 (No debug information found)
-stdcore[1], Tasks: 1 (No debug information found)
-stdcore[2], Tasks: 1 (No debug information found)
-stdcore[3], Tasks: 1 (No debug information found)
+tile[0], Tasks: 2 (No debug information found)
+tile[1], Tasks: 1 (No debug information found)
+tile[2], Tasks: 1 (No debug information found)
+tile[3], Tasks: 1 (No debug information found)
 No routes analyzed
 TimingFailAsError: true
 WarnAsError: false
@@ -36,12 +36,12 @@ Case: worst
 Verbosity: 0
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
-stdcore[0], Tasks: 2 (No debug information found)
-stdcore[1], Tasks: 1 (No debug information found)
-stdcore[2], Tasks: 1 (No debug information found)
-stdcore[3], Tasks: 1 (No debug information found)
+tile[0], Tasks: 2 (No debug information found)
+tile[1], Tasks: 1 (No debug information found)
+tile[2], Tasks: 1 (No debug information found)
+tile[3], Tasks: 1 (No debug information found)
 No routes analyzed
-stdcore[0] (NodeId 0)
-stdcore[1] (NodeId 0)
-stdcore[2] (NodeId 0)
-stdcore[3] (NodeId 0)
+tile[0] (NodeId 0)
+tile[1] (NodeId 0)
+tile[2] (NodeId 0)
+tile[3] (NodeId 0)

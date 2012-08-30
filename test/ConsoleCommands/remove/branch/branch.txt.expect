@@ -1,21 +1,21 @@
 start
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10012 (binary)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10012 (binary)
 add1
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10012 (binary)
-- stdcore[0]::source1 => stdcore[0]::source2 stdcore[0]::target2 stdcore[0]::target3 stdcore[0]::target4 (user)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10012 (binary)
+- tile[0]::source1 => tile[0]::source2 tile[0]::target2 tile[0]::target3 tile[0]::target4 (user)
 remove1
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10012 (binary)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10012 (binary)
 add1again
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10012 (binary)
-- stdcore[0]::source1 => stdcore[0]::source2 stdcore[0]::target3 stdcore[0]::target4 (user)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10012 (binary)
+- tile[0]::source1 => tile[0]::source2 tile[0]::target3 tile[0]::target4 (user)
 removetargets
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10012 (binary)
-- stdcore[0]::source1 => stdcore[0]::source2 stdcore[0]::target4 (user)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10012 (binary)
+- tile[0]::source1 => tile[0]::source2 tile[0]::target4 (user)
 removeall
-- stdcore[0]::0x10008 => stdcore[0]::0x1000c (binary)
-- stdcore[0]::0x1000a => stdcore[0]::0x10012 (binary)
+- tile[0]::0x10008 => tile[0]::0x1000c (binary)
+- tile[0]::0x1000a => tile[0]::0x10012 (binary)

@@ -1,4 +1,4 @@
-Route\(0\) endpoints: stdcore\[0\]::0x[0-9a-zA-Z]+ to stdcore\[0\]::0x[0-9a-zA-Z]+
+Route\(0\) endpoints: tile\[0\]::0x[0-9a-zA-Z]+ to tile\[0\]::0x[0-9a-zA-Z]+
     No Timing Specified
 
 Fail, Timing Unspecified

@@ -4,99 +4,99 @@
 # Route: function: f
 #
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 # Warning: 'test.xc:37' is a non-portable reference.
 add instructiontime test.xc:37 20.0 us
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 # Warning: 'test.xc:37' is a non-portable reference.
 add instructiontime test.xc:37 30.0 us
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 # Warning: 'test.xc:37' is a non-portable reference.
 add instructiontime test.xc:37 40.0 us
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 # Warning: 'test.xc:37' is a non-portable reference.
 add instructiontime test.xc:37 50.0 us
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 # Warning: 'test.xc:46' is a non-portable reference.
 add loop test.xc:46 10
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loop test.xc:43 5
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 # Warning: 'test.xc:46' is a non-portable reference.
 add loop test.xc:46 20
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loop test.xc:43 15
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 # Warning: 'test.xc:46' is a non-portable reference.
 add loop test.xc:46 30
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loop test.xc:43 25
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 # Warning: 'test.xc:46' is a non-portable reference.
 add loop test.xc:46 40
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loop test.xc:43 35
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 # Warning: 'test.xc:47' is a non-portable reference.
 add looppath test.xc:47 8
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 # Warning: 'test.xc:47' is a non-portable reference.
 add looppath test.xc:47 18
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 # Warning: 'test.xc:47' is a non-portable reference.
 add looppath test.xc:47 28
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 # Warning: 'test.xc:47' is a non-portable reference.
 add looppath test.xc:47 38
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loopscope test.xc:43 true
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loopscope test.xc:43 false
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loopscope test.xc:43 true
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 # Warning: 'test.xc:43' is a non-portable reference.
 add loopscope test.xc:43 false
 remove core \*
-add core stdcore\[0\]
+add core tile\[0\]
 # Warning: 'test.xc:25' is a non-portable reference.
 add exclusion test.xc:25
 remove core \*
-add core stdcore\[1\]
+add core tile\[1\]
 # Warning: 'test.xc:27' is a non-portable reference.
 add exclusion test.xc:27
 remove core \*
-add core stdcore\[2\]
+add core tile\[2\]
 # Warning: 'test.xc:29' is a non-portable reference.
 add exclusion test.xc:29
 remove core \*
-add core stdcore\[3\]
+add core tile\[3\]
 # Warning: 'test.xc:31' is a non-portable reference.
 add exclusion test.xc:31
 analyze function f

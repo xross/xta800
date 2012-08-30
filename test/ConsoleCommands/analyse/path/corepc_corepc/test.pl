@@ -34,7 +34,7 @@ my $startPc = getPc("$genDir/test.symbols", "INPUT_1");
 my $endPc   = getPc("$genDir/test.symbols", "INPUT_2");
 
 system("@ARGV load $genDir/test.xe " .
-       "analyze path stdcore[0]::$startPc stdcore[0]::$endPc " .
+       "analyze path tile[0]::$startPc tile[0]::$endPc " .
        "print summary " .
        "-exit > $genDir/test.txt 2>&1");
 

@@ -1,15 +1,15 @@
-stdcore\[0\]::then: 0x[0-9a-z]+
-stdcore\[1\]::then: 0x[0-9a-z]+
-stdcore\[2\]::then: 0x[0-9a-z]+
-stdcore\[3\]::then: 0x[0-9a-z]+
-stdcore\[0\]::loop: 10
-stdcore\[1\]::loop: 10
-stdcore\[2\]::loop: 10
-stdcore\[3\]::loop: 10
-stdcore\[0\]::g: 1.0 us
-stdcore\[1\]::g: 1.0 us
-stdcore\[2\]::g: 1.0 us
-stdcore\[3\]::g: 1.0 us
+tile\[0\]::then: 0x[0-9a-z]+
+tile\[1\]::then: 0x[0-9a-z]+
+tile\[2\]::then: 0x[0-9a-z]+
+tile\[3\]::then: 0x[0-9a-z]+
+tile\[0\]::loop: 10
+tile\[1\]::loop: 10
+tile\[2\]::loop: 10
+tile\[3\]::loop: 10
+tile\[0\]::g: 1.0 us
+tile\[1\]::g: 1.0 us
+tile\[2\]::g: 1.0 us
+tile\[3\]::g: 1.0 us
 ----------------------
 All Cores
 ----------------------

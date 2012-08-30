@@ -4,6 +4,6 @@
 # Route: function: main
 #
 config freq 0 100.000000
-config threads stdcore\[0\] 5
+config threads tile\[0\] 5
 analyze function main
 

@@ -1,5 +1,5 @@
-stdcore\[0\], label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 5, exists: true
-stdcore\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/up.xc, line number: 3, exists: true
+tile\[0\], label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 5, exists: true
+tile\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/up.xc, line number: 3, exists: true
 ----------------------------------
 .*test.xc
 ----------------------------------

@@ -25,11 +25,11 @@ out port p_lpfclk = on stdcore[0] : XS1_PORT_1L;
 void lcdac_init()
 {
   char message[] = "WARNING! CORE # REF CLK WILL BE MODIFIED!";
-  message[14] = get_core_id() + '0';
+  message[14] = get_tile_id() + '0';
   printstrln(message);
 
   // Set reference clock divider and clock block divider
-  write_pswitch_reg(get_core_id(), 6, R);
+  write_pswitch_reg(get_tile_id(), 6, R);
   set_clock_div(b_i2s, D);
 
   // Setup ports

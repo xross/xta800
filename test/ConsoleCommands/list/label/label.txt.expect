@@ -1,5 +1,5 @@
-stdcore[0], label: A, pcs: 0x10004
-stdcore[0], label: B, pcs: 0x1000c
-stdcore[0], label: C, pcs: 0x10014
-stdcore[0], label: _start, pcs: 0x10000
-stdcore[0], label: main, pcs: 0x10002
+tile[0], label: A, pcs: 0x10004
+tile[0], label: B, pcs: 0x1000c
+tile[0], label: C, pcs: 0x10014
+tile[0], label: _start, pcs: 0x10000
+tile[0], label: main, pcs: 0x10002

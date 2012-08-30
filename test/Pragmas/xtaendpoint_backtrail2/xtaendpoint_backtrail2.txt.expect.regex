@@ -1,15 +1,15 @@
-stdcore\[0\], label: start, pc: 0x1001c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
-stdcore\[0\], label: read1,start, pc: 0x1002c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
-stdcore\[0\], label: read2,start, pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
-stdcore\[0\], label: stop, pc: 0x1001e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
-stdcore\[0\], label: read1,stop, pc: 0x1002e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
-stdcore\[0\], label: read2,stop, pc: 0x1003e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
-stdcore\[0\], pc: 0x1001c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
-stdcore\[0\], pc: 0x1002c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
-stdcore\[0\], pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
-stdcore\[0\], pc: 0x1001e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 11
-stdcore\[0\], pc: 0x1002e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 11
-stdcore\[0\], pc: 0x1003e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 11
+tile\[0\], label: start, pc: 0x1001c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
+tile\[0\], label: read1,start, pc: 0x1002c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
+tile\[0\], label: read2,start, pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
+tile\[0\], label: stop, pc: 0x1001e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
+tile\[0\], label: read1,stop, pc: 0x1002e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
+tile\[0\], label: read2,stop, pc: 0x1003e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
+tile\[0\], pc: 0x1001c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
+tile\[0\], pc: 0x1002c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
+tile\[0\], pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
+tile\[0\], pc: 0x1001e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 11
+tile\[0\], pc: 0x1002e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 11
+tile\[0\], pc: 0x1003e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 11
 Route\(0\) endpoints: start to stop
     Pass with 1 unknown, Num Paths: 1, Slack: 90.0 ns, Required: 100.0 ns, Worst: 10.0 ns, Min Core Frequency: 40 MHz
 

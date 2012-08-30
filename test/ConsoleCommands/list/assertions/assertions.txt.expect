@@ -1,6 +1,6 @@
-stdcore[0]::f: 2.0 us
-stdcore[0]::start to stdcore[0]::stop: 2.0 us
-stdcore[0]::inst: 2.0 us
-stdcore[0]::l: 20
-stdcore[0]::lp: 23
-stdcore[0]::l: true
+tile[0]::f: 2.0 us
+tile[0]::start to tile[0]::stop: 2.0 us
+tile[0]::inst: 2.0 us
+tile[0]::l: 20
+tile[0]::lp: 23
+tile[0]::l: true

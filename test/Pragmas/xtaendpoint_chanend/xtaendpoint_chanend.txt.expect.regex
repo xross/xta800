@@ -1,6 +1,6 @@
-stdcore\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[15]
-stdcore\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[15]
-stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
-stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
-stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 20
-stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 21
+tile\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[15]
+tile\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 1[15]
+tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
+tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
+tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 20
+tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 21

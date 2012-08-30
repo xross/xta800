@@ -1,12 +1,12 @@
-stdcore\[0\], label: mainA, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: main.xc, line number: \d+, exists: true
-stdcore\[0\], label: mainB, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: main.xc, line number: \d+, exists: true
-stdcore\[0\], label: src1, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line number: \d+, exists: true
-stdcore\[0\], label: src1Term, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line number: \d+, exists: true
-stdcore\[0\], label: src2, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line number: \d+, exists: true
-stdcore\[0\], label: src2Term, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line number: \d+, exists: true
-stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: main.xc, line numbers: \d+ - \d+
+tile\[0\], label: mainA, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: main.xc, line number: \d+, exists: true
+tile\[0\], label: mainB, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: main.xc, line number: \d+, exists: true
+tile\[0\], label: src1, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line number: \d+, exists: true
+tile\[0\], label: src1Term, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line number: \d+, exists: true
+tile\[0\], label: src2, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line number: \d+, exists: true
+tile\[0\], label: src2Term, pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line number: \d+, exists: true
+tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: main.xc, line numbers: \d+ - \d+
 [^^^]
-stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line numbers: \d+ - \d+
+tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src1/src.xc, line numbers: \d+ - \d+
 [^^^]
-stdcore\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line numbers: \d+ - \d+
+tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*xtalabel_multidirectory, filename: src2/src.xc, line numbers: \d+ - \d+
 [^^^]
