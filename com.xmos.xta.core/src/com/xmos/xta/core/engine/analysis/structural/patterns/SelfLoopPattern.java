@@ -3,13 +3,22 @@ package com.xmos.xta.core.engine.analysis.structural.patterns;
 import java.util.Collection;
 
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.memorymonitor.MemoryMonitor;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.InfiniteSelfLoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SelfLoopNode;
 
 public class SelfLoopPattern extends PatternMatcher {
-	public boolean isMatch(CfgNode currentNode, Collection<CfgNode> workingSet, CfgNode treeStart) {
+
+    public SelfLoopPattern(MemoryMonitor memoryMonitor) {
+        super(memoryMonitor);
+    }
+
+    public boolean isMatch(CfgNode currentNode, 
+            Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
+        
 		m_treeStart = treeStart;
 
 		if (currentNode.getNextNodes().contains(currentNode)) {

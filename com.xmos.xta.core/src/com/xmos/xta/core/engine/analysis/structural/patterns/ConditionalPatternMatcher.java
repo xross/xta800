@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.memorymonitor.MemoryMonitor;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.libs.core.utils.NonIteratableSet;
@@ -14,7 +16,13 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class ConditionalPatternMatcher extends PatternMatcher {
 
-	public boolean isMatch(CfgNode currentNode, Collection<CfgNode> workingSet, CfgNode treeStart) {
+    public ConditionalPatternMatcher(MemoryMonitor memoryMonitor) {
+        super(memoryMonitor);
+    }
+    
+	public boolean isMatch(CfgNode currentNode, 
+	        Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
+	    
 		m_treeStart = treeStart;
 
 		if (currentNode.getNextNodesSize() < 2) {

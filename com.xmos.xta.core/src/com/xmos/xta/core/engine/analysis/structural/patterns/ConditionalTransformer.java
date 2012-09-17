@@ -4,11 +4,19 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.memorymonitor.MemoryMonitor;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.NonIteratableSet;
 
 public class ConditionalTransformer extends PatternMatcher {
 
-	public boolean isMatch(CfgNode currentNode, Collection<CfgNode> workingSet, CfgNode treeStart) {
+    public ConditionalTransformer(MemoryMonitor memoryMonitor) {
+        super(memoryMonitor);
+    }
+
+	public boolean isMatch(CfgNode currentNode, 
+	        Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
+	    
 		m_treeStart = treeStart;
 		if (currentNode.getNextNodesSize() < 2) {
 			return false;
@@ -18,15 +26,17 @@ public class ConditionalTransformer extends PatternMatcher {
 	}
 
 	private boolean explore(CfgNode node, NonIteratableSet<CfgNode> seen, 
-			Set<CfgNode> dominators, CfgNode start, Collection<CfgNode> workingSet) {
+			Set<CfgNode> dominators, CfgNode start, Collection<CfgNode> workingSet) throws MemoryMonitorException {
 		
 		seen.add(node);
 		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
 
+		    checkMemory();
 			if(node.getNextNodesSize() >1 && node.getPrevNodes().size() == 1){
 				CommonMethods.wedgeUp(node, workingSet);
 				return true;
 			}
+			checkMemory();
 			if(node.getNextNodesSize() == 1 && node.getPrevNodes().size() > 1){
 				CommonMethods.wedgeDown(node, workingSet);
 				return true;
@@ -35,6 +45,7 @@ public class ConditionalTransformer extends PatternMatcher {
 
 		boolean found = false;
 		for (CfgNode next : node.getNextNodes()){
+		    checkMemory();
 			if (!seen.contains(next)){
 				found = explore(next, seen, dominators, start, workingSet);
 			}

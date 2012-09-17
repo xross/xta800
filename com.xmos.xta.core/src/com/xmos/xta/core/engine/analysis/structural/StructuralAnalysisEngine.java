@@ -12,6 +12,7 @@ import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
+import com.xmos.libs.core.memorymonitor.MemoryMonitor;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.libs.core.utils.IteratableSet;
@@ -47,15 +48,17 @@ public class StructuralAnalysisEngine {
 	public StructuralAnalysisEngine(Engine engine) {
 		m_engine = engine;
 		
+		MemoryMonitor memoryMonitor = engine.getMemoryMonitor();
+		
 		//never ever change the order of this
 		m_patternMatchers = new ArrayList<PatternMatcher>();
-		m_patternMatchers.add(new SelfLoopPattern());
-		m_patternMatchers.add(new LoopPatternMatcher());
-		m_patternMatchers.add(new ConditionalPatternMatcher());
-		m_patternMatchers.add(new NullRemover());
-		m_patternMatchers.add(new SequencePatternMatcher());	//uses dominators
-		m_patternMatchers.add(new ConditionalTransformer());	//uses dominators
-		m_patternMatchers.add(new PanicTransformer());			//uses dominators
+		m_patternMatchers.add(new SelfLoopPattern(memoryMonitor));
+		m_patternMatchers.add(new LoopPatternMatcher(memoryMonitor));
+		m_patternMatchers.add(new ConditionalPatternMatcher(memoryMonitor));
+		m_patternMatchers.add(new NullRemover(memoryMonitor));
+		m_patternMatchers.add(new SequencePatternMatcher(memoryMonitor));	//uses dominators
+		m_patternMatchers.add(new ConditionalTransformer(memoryMonitor));	//uses dominators
+		m_patternMatchers.add(new PanicTransformer(memoryMonitor));			//uses dominators
 	}
 
 	public Node createStructure(Set<CfgNode> workingSet, CfgNode startNode, String name) 

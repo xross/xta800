@@ -7,6 +7,8 @@ import java.util.Set;
 
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
+import com.xmos.libs.core.memorymonitor.MemoryMonitor;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -14,7 +16,13 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.NullNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
 
 public class SequencePatternMatcher extends PatternMatcher {
-	public boolean isMatch(CfgNode currentNode, Collection<CfgNode> workingSet, CfgNode treeStart) {
+
+    public SequencePatternMatcher(MemoryMonitor memoryMonitor) {
+        super(memoryMonitor);
+    }
+    
+    public boolean isMatch(CfgNode currentNode, 
+            Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
 
 		m_treeStart = treeStart;
 		LinkedList<CfgNode> pathList = new LinkedList<CfgNode>();

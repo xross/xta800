@@ -4,10 +4,18 @@ import java.util.Collection;
 
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
+import com.xmos.libs.core.memorymonitor.MemoryMonitor;
+import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 
-public class NullRemover  extends PatternMatcher {
+public class NullRemover extends PatternMatcher {
 
-	public boolean isMatch(CfgNode currentNode, Collection<CfgNode> workingSet, CfgNode treeStart) {
+    public NullRemover(MemoryMonitor memoryMonitor) {
+        super(memoryMonitor);
+    }
+
+	public boolean isMatch(CfgNode currentNode, 
+	        Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
+	    
 		m_treeStart = treeStart;
 		
 		if (!(currentNode instanceof CfgNullNode)) {
