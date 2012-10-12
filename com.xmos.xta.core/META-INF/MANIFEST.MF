@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bundle-Name: XDE Timing Analysis Core Plugin
+Bundle-Name: XMOS Timing Analysis Core Plugin
 Import-Package: jline
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: XMOS
