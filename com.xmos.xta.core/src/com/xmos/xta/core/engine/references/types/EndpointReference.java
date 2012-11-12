@@ -26,20 +26,26 @@ public class EndpointReference extends ReferenceType {
 		Result result = Result.UNRESOLVED;
 		for (CodePointInfo info : engine.getEndpoints(getCoreId())) {
 	    	if (labelsMatch(info.getLabel(), label)) {
-				long pc = info.getPc();
-				addPc(pc, info.getLabel());
+	    	    
+                if (info.exists()) {
+                    long pc = info.getPc();
+                    addPc(pc, info.getLabel());
 
-				IteratableSet<CodePointTableInfo> endpointTable = engine.getEndpointTable(getCoreId());
+                    IteratableSet<CodePointTableInfo> endpointTable = engine.getEndpointTable(getCoreId());
 
-				for(CodePointTableInfo cpti : endpointTable){
-					if(cpti.getPc() == info.getPc()){
-						setFileName(cpti.getFileName());
-		        	    setLineNum(cpti.getLineNumber());
-		        	    setResolved(true);
-		        	    result = Result.RESOLVED;
-						break;
-					}
-				}
+                    for(CodePointTableInfo cpti : endpointTable){
+                        if(cpti.getPc() == info.getPc()){
+                            setFileName(cpti.getFileName());
+                            setLineNum(cpti.getLineNumber());
+                            setResolved(true);
+                            result = Result.RESOLVED;
+                            break;
+                        }
+                    }                    
+                    
+                } else {
+                    result = Result.REMOVED;
+                }	    	    
 			}
 		}
 		return result;

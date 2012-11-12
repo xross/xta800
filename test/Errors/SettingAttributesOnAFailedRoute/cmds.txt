@@ -1,0 +1,26 @@
+# This test checks that if we analyse between endpoints, and 
+# the analysis fails due to the endpoints not being specified
+# correctly, then we also error when any future commands try to 
+# set attributes on this route using the '-' route id.
+
+# Create a valid route here, to make sure that 
+# we dont incorrectly apply the attributes to this one.
+analyse function g
+
+# Should error!
+analyse endpoints ep1xxx ep4xxx
+
+# These should all error too, as the '-' refers to a failed route!
+set exclusion - ex1 
+set loop - lp1 10
+set loopscope - lp1 r
+set looppath - lp1 10
+set instructiontime - ep1 100.0 ns
+set pathtime - ep1 ep2 100.0 ns
+set functiontime - h 100.0 ns
+set required - 100.0 us
+
+# Ensures that only the single 'g' route has been produced,
+# and that this does not have any attributes set on it by the above.
+print summary
+

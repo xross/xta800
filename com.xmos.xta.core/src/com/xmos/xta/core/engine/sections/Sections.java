@@ -79,7 +79,7 @@ public class Sections {
 			m_labels.add(new Labels(coreId, m_notifier));
 			m_srcLabels.add(new CodePoints(coreId, ".xtalabel", m_notifier, true));
 			m_loopLabels.add(new CodePoints(coreId, ".xtalooplabel", m_notifier, true));
-			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier, false));
+			m_endpoints.add(new CodePoints(coreId, ".xtaendpoint", m_notifier, true));
 			m_calls.add(new CodePoints(coreId, ".xtacall", m_notifier, false));
 			m_srcLabelTables.add(new SrcLabelTable(coreId, ".xtalabeltable", m_notifier));
             m_loopLabelTables.add(new SrcLabelTable(coreId, ".xtalooplabeltable", m_notifier));

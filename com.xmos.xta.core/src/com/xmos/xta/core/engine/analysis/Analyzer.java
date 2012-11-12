@@ -21,6 +21,14 @@ import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Analyzer {
+    
+    public enum Status {
+        COMPLETED, 
+        ELIMINATED, 
+        PARTIALLY_ELIMINATED,
+        ERROR
+    }
+    
 	private Engine m_engine;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
@@ -34,7 +42,7 @@ public class Analyzer {
 		engine.getMemoryMonitor().reset();
 	}
 
-	public void analyzeFunction(CommandSource src, String functionName) {
+	public Status analyzeFunction(CommandSource src, String functionName) {
         RouteContainer routeContainer = new RouteContainer(
         		RouteMode.FUNCTION, functionName, m_engine, src);		
 
@@ -51,7 +59,7 @@ public class Analyzer {
 						routeContainer, m_engine, activeCore);
 				
 				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
-					return;
+					return Status.ERROR;
 				}
 				routeFound = true;
 			}
@@ -60,10 +68,12 @@ public class Analyzer {
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
 	    			String.format("Reference: %s not resolved on any active tile", functionName));
+	    	return Status.ERROR;
 		}
+		return Status.COMPLETED;
 	}
 
-	public void analyzeEndpoints(CommandSource src, PathPoints pathPoints) {
+	public Status analyzeEndpoints(CommandSource src, PathPoints pathPoints) {
         RouteContainer routeContainer = new RouteContainer(pathPoints.getFromName(), pathPoints.getToName(), m_engine, src);
 
         boolean isResolved = false;
@@ -88,7 +98,7 @@ public class Analyzer {
 						routeContainer, m_engine, activeCore);
 				
 				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
-					return;
+				    return Status.ERROR;
 				}
 				routeFound = true;
     		}			
@@ -97,10 +107,12 @@ public class Analyzer {
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
 	    			"References not resolved on any active tile");
+	    	return Status.ERROR;
 	    }
+		return Status.COMPLETED;
 	}
 
-	public void analyzeLoop(CommandSource src, LoopPoints loopPoints) {
+	public Status analyzeLoop(CommandSource src, LoopPoints loopPoints) {
         RouteContainer routeContainer = new RouteContainer(
         		RouteMode.LOOP, loopPoints.getRefString(), m_engine, src);		
 
@@ -115,7 +127,7 @@ public class Analyzer {
 						routeContainer, m_engine, activeCore);
 				
 				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
-					return;
+				    return Status.ERROR;
 				}
 				routeFound = true;
 			}		    
@@ -124,7 +136,9 @@ public class Analyzer {
 		if (!routeFound) {
 	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format(
 	    			"Reference: %s not resolved on any active tile", loopPoints.getRefString()));
+	    	return Status.ERROR;
 		}
+		return Status.COMPLETED;
 	}
 
 	private boolean analyzeRoute(CommandSource src, RouteContainer routeContainer,

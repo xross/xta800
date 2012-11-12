@@ -4,6 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.analysis.Analyzer.Status;
 
 public class Loop extends Command {
 	private static final String[] COMMAND_NAMES = { "loop" };
@@ -62,9 +63,11 @@ public class Loop extends Command {
 			return;
 
 		if (hasLoopPoint()) {
-		    if (!engine.getLoopPoints().setLoop(getSrc(), m_loopRef))
+		    if (!engine.getLoopPoints().setLoop(getSrc(), m_loopRef)) {
+		        engine.setLastAnalysisStatus(Status.ERROR);
 			    return;
-		}		
+		    }
+		}
         engine.analyzeLoop(getSrc());
     }
     

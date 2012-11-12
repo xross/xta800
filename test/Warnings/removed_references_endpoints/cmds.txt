@@ -1,0 +1,26 @@
+# This test ensures that the removed reference warnings work.
+# A reference, in this case, an endpoint reference, can 
+# be removed by the compiler if it is located within a block of code
+# that has been optimised away for whatever reason. 
+
+# Should show the endpoints marked as being non-existent
+list endpoints
+
+analyse function main
+
+# ---------------------------------------------------
+# Defines: All the following should produce warnings.
+# ---------------------------------------------------
+
+add instructiontime removed1 10.0 us
+remove instructiontime removed1
+
+add pathtime removed1 removed2 10.0 us
+remove pathtime removed1 removed2
+
+# ---------------------------------------------------
+# Sets: All the following should produce warnings.
+# ---------------------------------------------------
+
+set instructiontime - removed1 10.0 us
+set pathtime - removed1 removed2 10.0 us

@@ -1,9 +1,9 @@
-tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 9
-tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 13
-tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 9
-tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 13
-tile\[0\], label: input_8[AB], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
-tile\[0\], label: input_8[AB], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16
+tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 9, exists: true
+tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 13, exists: true
+tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 9, exists: true
+tile\[0\], label: input_1[ABCD], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src2/src.xc, line number: 13, exists: true
+tile\[0\], label: input_8[AB], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12, exists: true
+tile\[0\], label: input_8[AB], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 16, exists: true
 tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 10
 tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 11
 tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: src1/src.xc, line number: 14

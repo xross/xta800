@@ -1,8 +1,17 @@
+
+# Checks that we can create a route from 0 -> 0
+# The 1 -> 1 endpoints have been removed from core 0,
+# so a route will not be created.
+
 remove core *
 add core stdcore[0]
 list endpoints
 analyze path output1 input1
 analyze path output0 input0
+
+# Checks that we can create a route from 1 -> 1
+# The 0 -> 0 endpoints have been removed from core 1,
+# so a route will not be created.
 
 remove core *
 add core stdcore[1]

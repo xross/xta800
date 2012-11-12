@@ -4,6 +4,9 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
+import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.analysis.Analyzer.Status;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 
 public class Endpoints extends Command {
 	private static final String[] COMMAND_NAMES = { "endpoints", "path" };
@@ -66,11 +69,29 @@ public class Endpoints extends Command {
 			return;
 
 		if (hasEndPoints()) {
-			boolean fromOk = engine.getPathPoints().setFrom(getSrc(), m_fromRef);
-			boolean toOk = engine.getPathPoints().setTo(getSrc(), m_toRef);
+			Result fromResult = engine.getPathPoints().setFrom(getSrc(), m_fromRef);
+			Result toResult = engine.getPathPoints().setTo(getSrc(), m_toRef);
 					
-			if (!fromOk || !toOk)
+			if ((fromResult == Result.UNRESOLVED) || (toResult == Result.UNRESOLVED)) {			    
+			    engine.setLastAnalysisStatus(Status.ERROR);
 				return;
+
+			} else if ((fromResult == Result.REMOVED) && (toResult == Result.REMOVED)) {
+			    engine.setLastAnalysisStatus(Status.ELIMINATED);
+			    return;
+
+            } else if (fromResult == Result.REMOVED) {
+                engine.notify(getSrc(), Notifier.NOTIFY_WARNING, 
+                        String.format("Endpoint '%s' has been removed", m_fromRef));
+                engine.setLastAnalysisStatus(Status.PARTIALLY_ELIMINATED);
+                return;			    
+
+		    } else if (toResult == Result.REMOVED) {
+                engine.notify(getSrc(), Notifier.NOTIFY_WARNING, 
+                        String.format("Endpoint '%s' has been removed", m_toRef));
+                engine.setLastAnalysisStatus(Status.PARTIALLY_ELIMINATED);
+                return;             		                        
+			}
 		}
 		engine.analyzeEndpoints(getSrc());
     }

@@ -1,9 +1,9 @@
-tile\[0\], label: start, pc: 0x1001c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
-tile\[0\], label: read1,start, pc: 0x1002c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
-tile\[0\], label: read2,start, pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7
-tile\[0\], label: stop, pc: 0x1001e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
-tile\[0\], label: read1,stop, pc: 0x1002e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
-tile\[0\], label: read2,stop, pc: 0x1003e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10
+tile\[0\], label: start, pc: 0x1001c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7, exists: true
+tile\[0\], label: read1,start, pc: 0x1002c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7, exists: true
+tile\[0\], label: read2,start, pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 7, exists: true
+tile\[0\], label: stop, pc: 0x1001e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10, exists: true
+tile\[0\], label: read1,stop, pc: 0x1002e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10, exists: true
+tile\[0\], label: read2,stop, pc: 0x1003e, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 10, exists: true
 tile\[0\], pc: 0x1001c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
 tile\[0\], pc: 0x1002c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8
 tile\[0\], pc: 0x1003c, compilation dir: .*xtaendpoint_backtrail2, filename: in_test.xc, line number: 8

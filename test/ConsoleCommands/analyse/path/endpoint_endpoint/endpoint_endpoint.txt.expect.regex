@@ -1,11 +1,11 @@
-tile\[0\], label: output0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 8
-tile\[0\], label: input0, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 11
-xta: cmds.txt:4: error: 'output1' is not a valid endpoint on any active tile
-xta: cmds.txt:4: error: 'input1' is not a valid endpoint on any active tile
-tile\[1\], label: output1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 19
-tile\[1\], label: input1, pc: 0x[0-9a-fA-F]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 22
-xta: cmds.txt:10: error: 'output0' is not a valid endpoint on any active tile
-xta: cmds.txt:10: error: 'input0' is not a valid endpoint on any active tile
+tile\[0\], label: output0, pc: 0x100c0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 8, exists: true
+tile\[0\], label: input0, pc: 0x100cc, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10, exists: true
+tile\[0\], label: output1, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 16, exists: false
+tile\[0\], label: input1, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 18, exists: false
+tile\[1\], label: output0, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 8, exists: false
+tile\[1\], label: input0, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10, exists: false
+tile\[1\], label: output1, pc: 0x100c0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 16, exists: true
+tile\[1\], label: input1, pc: 0x100cc, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 18, exists: true
 Route\(0\) endpoints: output0 to input0
     No Timing Specified
 

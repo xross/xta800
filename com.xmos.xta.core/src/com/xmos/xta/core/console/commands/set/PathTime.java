@@ -75,6 +75,9 @@ public class PathTime extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
+        if (!validateRouteId(engine, console, m_routeId))
+            return;
+		
 		TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
 		assert(timeUnit.isValid());
         engine.setPathTime(getSrc(), m_routeId, m_fromRef, m_toRef, timeUnit);

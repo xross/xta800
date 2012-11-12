@@ -1,0 +1,33 @@
+# This test checks that if we analyse between endpoints, and 
+# the start endpoint has been removed by the compiler, the xta warns,
+# and no routes are created.
+
+# Should show the endpoints marked as being non-existent
+list endpoints
+
+# Anaylse a function here, just to ensure that we have at least one
+# route existing.
+analyse function main
+
+# Should not produce any output, but should not produce a route either.
+analyse endpoints start end
+
+# In a typical script, we create a route and set some attributes on it.
+# In order to set the attributes in a robust way, we use '-' as the route
+# id, as this always refers to the last route successfully created.
+# In the case where the route fails to be created (and warns), we must
+# ensure that these commands also warn, and dont end up being applied 
+# to the previous route (which in the case would be the analysis of main above).
+set exclusion - ex1 
+set loop - lp1 10
+set loopscope - lp1 r
+set looppath - lp1 10
+set instructiontime - ep1 100.0 ns
+set pathtime - ep1 ep2 100.0 ns
+set functiontime - a 100.0 ns
+set required - 100.0 us
+
+# Ensures that only the single 'main' route has been produced,
+# and that this does not have any attributes set on it by the above.
+print summary
+

@@ -8,6 +8,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class PathPoints extends Points {
@@ -24,24 +25,14 @@ public class PathPoints extends Points {
 		m_tos = new IteratableMap<CoreId, Reference>();		
 	}
 
-	public boolean setFrom(CommandSource src, String ref) {
-		m_fromName = ref;				
-		if (!update(ref, m_froms) && !ref.equals("")) {
-			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active tile", ref));
-			return false;
-		}
-		getEngine().notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
-		return true;
+	public Result setFrom(CommandSource src, String ref) {
+		m_fromName = ref;
+		return set(src, ref, update(ref, m_froms), Notifier.NOTIFY_FROM_END_POINT_SET);
 	}
 
-	public boolean setTo(CommandSource src, String ref) {
+	public Result setTo(CommandSource src, String ref) {
 		m_toName = ref;
-		if (!update(ref, m_tos) && !ref.equals("")) {
-			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active tile", ref));
-			return false;
-		}
-		getEngine().notify(src, Notifier.NOTIFY_FROM_END_POINT_SET, "");
-		return true;		
+		return set(src, ref, update(ref, m_tos), Notifier.NOTIFY_FROM_END_POINT_SET);
 	}
 
 	public Map<CoreId, Reference> getFroms() {
@@ -78,5 +69,19 @@ public class PathPoints extends Points {
 	public void refresh() {
 		update(m_fromName, m_froms);
 		update(m_toName, m_tos);		
+	}
+	
+	private Result set(CommandSource src, String ref, Result result, String endPointSet) {
+        if (!ref.equals("")) {
+            if (result == Result.UNRESOLVED) {
+                getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active tile", ref));
+                return result;
+                
+            } else if (result == Result.REMOVED) {
+                return result;               
+            }               
+        }
+        getEngine().notify(src, endPointSet, "");	    
+        return result;
 	}
 }

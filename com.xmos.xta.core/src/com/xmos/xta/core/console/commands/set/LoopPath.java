@@ -64,6 +64,9 @@ public class LoopPath extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
+        if (!validateRouteId(engine, console, m_routeId))
+            return;
+		
 		Node node = getReferencedNode(engine, m_routeId, m_refString);
 		if (node != null) {
 			engine.setSelectedRouteId(getSrc(), m_routeId);

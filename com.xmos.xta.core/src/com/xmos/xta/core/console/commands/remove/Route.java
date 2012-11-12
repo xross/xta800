@@ -44,7 +44,8 @@ public class Route extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (isExecutableLoaded(engine, console) && validateRouteId(engine, console, m_routeId)){
+		if (isExecutableLoaded(engine, console) && 
+		    validateRouteId(engine, console, m_routeId)) {
 			engine.removeRoute(getSrc(), m_routeId);
 		}
     }

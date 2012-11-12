@@ -1,3 +1,3 @@
-xta: error: failed to set instruction time on reference id: main
-xta: error: failed to set instruction time on reference id: main
-xta: error: failed to set instruction time on reference id: main
+xta: error: failed to set instruction time on reference: main (instruction referenced is non-pausing)
+xta: error: failed to set instruction time on reference: main (instruction referenced is non-pausing)
+xta: error: failed to set instruction time on reference: main (instruction referenced is non-pausing)
