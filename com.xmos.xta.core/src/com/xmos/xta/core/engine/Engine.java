@@ -42,6 +42,7 @@ import com.xmos.libs.core.xeloader.XeLoader;
 import com.xmos.libs.core.xnloader.XmlHandler;
 import com.xmos.libs.core.xnloader.XnLoader;
 import com.xmos.xta.core.engine.analysis.Analyzer;
+import com.xmos.xta.core.engine.analysis.Analyzer.Status;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
@@ -82,17 +83,22 @@ import com.xmos.xta.core.engine.utils.CoreConfig;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class Engine extends Notifier implements Aborter {
+
+    public static final String ROUTE_ID_LAST_STR = "-";
+    public static final String ROUTE_ID_ALL_STR = "*";
+    
 	public static final int ROUTE_ID_LAST     = -1;
 	public static final int ROUTE_ID_INVALID  = -2;
 	public static final int ROUTE_ID_ALL      = -3;
-	public static final int NODE_ID_TOP_LEVEL = -4;
-
+	public static final int NODE_ID_TOP_LEVEL = -4;	
+	
 	private XeLoader m_xeLoader;
 	private SourceMapper m_sourceMapper;
 	private InstructionDecoders m_instructionDecoders;
 	private ControlFlows m_controlFlows;
 	private List<Route> m_routes;
 	private List<RouteContainer> m_routeContainers;
+	private Status m_lastAnalysisStatus;
 	private Route m_selectedRoute;
 	private Config m_config;
 	private File m_executableFile;
@@ -239,6 +245,14 @@ public class Engine extends Notifier implements Aborter {
 		m_srcPaths += ";.";
 	}
 
+	public void setLastAnalysisStatus(Status status) {
+	    m_lastAnalysisStatus = status;
+	}
+
+    public Status getLastAnalysisStatus() {
+        return m_lastAnalysisStatus;
+    }
+	
 	public boolean loadExecutable(CommandSource src, File executableFile, CommandRunner commandRunner) {			
 		try {
 	    	m_loadStartTime = System.currentTimeMillis();
@@ -321,17 +335,17 @@ public class Engine extends Notifier implements Aborter {
 
 	public void analyzeFunction(CommandSource src, String functionName) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		analyzer.analyzeFunction(src, functionName);
+		m_lastAnalysisStatus = analyzer.analyzeFunction(src, functionName);
 	}
 
 	public void analyzeEndpoints(CommandSource src) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		analyzer.analyzeEndpoints(src, m_pathPoints);
+		m_lastAnalysisStatus = analyzer.analyzeEndpoints(src, m_pathPoints);
 	}
 
 	public void analyzeLoop(CommandSource src) {
 		Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
-		analyzer.analyzeLoop(src, m_loopPoints);
+		m_lastAnalysisStatus = analyzer.analyzeLoop(src, m_loopPoints);
 	}
 	
 	public Notifier getNotifier() {
@@ -434,8 +448,10 @@ public class Engine extends Notifier implements Aborter {
 		Collection<Route> routes = getRoute(routeId);
 		assert(validateRouteCount());
 		
-		if (routes.size() == 0)
+		if (routes.size() == 0) {
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
 			return false;
+		}
 		
 		assert(validateRouteCount());
 
@@ -697,8 +713,10 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	public boolean setRequiredTime(CommandSource src, int routeId, TimeUnit timeUnit) {
 		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty())
+		if (routes.isEmpty()) {
+		    notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
 			return false;
+		}
 
 		for (Route route : routes) {
 			route.getRouteTiming().setMaxTime(src, timeUnit);
@@ -734,6 +752,9 @@ public class Engine extends Notifier implements Aborter {
 
 	public void addPathTime(CommandSource src, String from, String to, TimeUnit timeUnit) {
 		boolean hit = false;
+		boolean removed = false;
+		String refString = "";
+		
 		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
@@ -746,11 +767,25 @@ public class Engine extends Notifier implements Aborter {
 			
 			if ((fromResult == Result.RESOLVED) && (toResult == Result.RESOLVED)) {
 			    m_defines.addPathTime(fromRef, toRef, timeUnit);
-			    hit = true;			    
+			    hit = true;
+			    
+			} else if (fromResult == Result.REMOVED) {
+			    refString = from;
+			    removed = true;
+			    break;
+			    
+            } else if (toResult == Result.REMOVED) {
+                refString = to;
+                removed = true;
+                break;			    
 			}
 		}
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+
+        } else if (removed) {
+            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		}		    
@@ -820,6 +855,9 @@ public class Engine extends Notifier implements Aborter {
 
 	public void removePathTime(CommandSource src, String from, String to) {
 		boolean hit = false;
+        boolean removed = false;
+        String refString = "";
+		
 		for (CoreId activeCore : m_activeCores) {
 			
 			Reference fromRef = ReferenceFactory.createReference(from, 
@@ -834,10 +872,24 @@ public class Engine extends Notifier implements Aborter {
                 (toResult == Result.RESOLVED)) {
                 m_defines.removePathTime(fromRef, toRef);
                 hit = true;
-            }
+            
+            } else if (fromResult == Result.REMOVED) {
+                refString = from;
+                removed = true;
+                break;
+            
+            } else if (toResult == Result.REMOVED) {
+                refString = to;
+                removed = true;
+                break;              
+            }            
 		}
 		if (hit) {	
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+
+		} else if (removed) {
+            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		}		    		
@@ -919,8 +971,7 @@ public class Engine extends Notifier implements Aborter {
 	// Set Function Time Methods
 	// ===================================================================== //
 	public void setFunctionTime(CommandSource src, int routeId, String functionName, TimeUnit timeUnit) {		
-		RouteDefines defines = new RouteDefines();
-		
+		RouteDefines defines = new RouteDefines();		
 		boolean hit = false;
 		try {
 			for (Route route : getRoute(routeId)) {
@@ -928,7 +979,7 @@ public class Engine extends Notifier implements Aborter {
 				Reference functionRef = ReferenceFactory.createReference(functionName, 
 						ReferenceClass.FUNCTION, route.getRouteCoreContainer().getCoreId());
 				
-	            Result result = resolveReference(functionRef); 
+	            Result result = resolveReference(functionRef); 	            
 	            switch (result) {
 	            case RESOLVED:
                     FunctionTimeInfo info = new FunctionTimeInfo(functionRef, timeUnit);                    
@@ -957,9 +1008,10 @@ public class Engine extends Notifier implements Aborter {
 	// Set Path Time Methods
 	// ===================================================================== //	
 	public void setPathTime(CommandSource src, int routeId, String from, String to, TimeUnit timeUnit) {
-		RouteDefines defines = new RouteDefines();
-		
+		RouteDefines defines = new RouteDefines();		
 		boolean hit = false;		
+        boolean removed = false;
+        String refString = "";		
 		try {			
 			for (Route route : getRoute(routeId)) {
 				CoreId coreId = route.getRouteCoreContainer().getCoreId();
@@ -977,12 +1029,26 @@ public class Engine extends Notifier implements Aborter {
                     PathTimeInfo info = new PathTimeInfo(fromRef, toRef, timeUnit);                 
                     defines.applyPathDefine(this, src, route, info, Source.SET);
 	                hit = true;
-	            }
+	            
+	            } else if (fromResult == Result.REMOVED) {
+	                refString = from;
+	                removed = true;
+	                break;
+	            
+	            } else if (toResult == Result.REMOVED) {
+	                refString = to;
+	                removed = true;
+	                break;              
+	            }            
 			}
 		} catch (AbortedException e) { }
 
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
+
+		} else if (removed) {
+            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		}
@@ -993,11 +1059,8 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	public boolean setInstructionTime(CommandSource src, int routeId, String refString, TimeUnit timeUnit) {
 		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty()) {
-			return false;
-		}
-
 		boolean hit = false;		
+        boolean removed = false;
 		try {
 	    	Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
 			for (Route route : routes) {
@@ -1005,14 +1068,23 @@ public class Engine extends Notifier implements Aborter {
 						ReferenceClass.ENDPOINT,
 				        route.getRouteCoreContainer().getCoreId());
 				
-                Result result = resolveReference(reference); 
+                Result result = resolveReference(reference);                
                 switch (result) {
                 case RESOLVED:
-                    if (!route.getRouteUnknowns().canInstructionPause(reference))
+                    if (!route.getRouteUnknowns().canInstructionPause(reference)) {
+                        notify(src, Notifier.NOTIFY_ERROR, String.format(
+                                "failed to set instruction time on reference: %s " + 
+                                "(instruction referenced is non-pausing)", refString));
+
                         return false;
+                    }
                     
                     refMap.put(route, reference);
                     hit = true;
+                    break;
+                    
+                case REMOVED:
+                    removed = true;
                     break;
                 }
 			}
@@ -1027,6 +1099,10 @@ public class Engine extends Notifier implements Aborter {
 
 		if (hit) {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+		    
+        } else if (removed) {
+            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active tile", refString));			
 		}		
@@ -1161,16 +1237,11 @@ public class Engine extends Notifier implements Aborter {
 	// ===================================================================== //
 	// Set Exclusion Methods
 	// ===================================================================== //
-	public boolean setExclusion(CommandSource src, int routeId, String refString) {
-		Collection<Route> routes = getRoute(routeId);
-		if (routes.isEmpty()) {
-			return false;
-		}
-		
+	public boolean setExclusion(CommandSource src, int routeId, String refString) {		
 		boolean hit = false;
 		boolean removed = false;
 	    try {
-			for (Route route : routes) {
+			for (Route route : getRoute(routeId)) {
 				Reference reference = ReferenceFactory.createReference(refString, 
 						ReferenceClass.ANY,
 				        route.getRouteCoreContainer().getCoreId());
@@ -1571,10 +1642,6 @@ public class Engine extends Notifier implements Aborter {
             ReferenceClass referenceClass, LoopsUpdate update) {
         
         Collection<Route> routes = getRoute(routeId);
-        if (routes.size() == 0) {
-            notify(src, Notifier.NOTIFY_ERROR, String.format("Failed to find route: %d", routeId));
-            return;
-        }
 
         boolean hit = false;        
         boolean removed = false;
@@ -1759,6 +1826,9 @@ public class Engine extends Notifier implements Aborter {
 	private int getNumLastRoutesAnalyzed() {
 		if (m_routeContainers.isEmpty()) { 
 			return 0;
+		}
+		if (m_lastAnalysisStatus != Status.COMPLETED) {
+		    return 0;
 		}
 		return m_routeContainers.get(m_routeContainers.size() -1).getNumExistingRoutes();
 	}

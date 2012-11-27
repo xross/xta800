@@ -10,6 +10,7 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.analysis.Analyzer.Status;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
@@ -91,29 +92,18 @@ public abstract class Command {
     }
 
     public boolean validateRouteId(Engine engine, Console console, int routeId) {
-	    if (engine.getRoutes().size() == 0) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
-		    return false;
-	    }
     	Collection<Route> routes = engine.getRoute(routeId);
     	if (routes.size() == 0) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   					"invalid route id: %d", routeId));
+    	    reportRouteIdIssue(engine, routeId);
     		return false;
     	}
-
     	return true;
     }
 
     public boolean validateNodeId(Engine engine, Console console, int routeId, int nodeId) {
-    	if (engine.getRoutes().size() == 0) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no routes analysed");
-    		return false;
-    	}
     	Collection<Route> routes = engine.getRoute(routeId);
     	if (routes.size() == 0) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   					"invalid route id: %d", routeId));
+    	    reportRouteIdIssue(engine, routeId);
     		return false;
     	}
 
@@ -133,9 +123,10 @@ public abstract class Command {
     }
 
     public static int getRouteId(String routeId) {
-    	if (routeId.equals("-")) {
+    	if (routeId.equals(Engine.ROUTE_ID_LAST_STR)) {
     		return Engine.ROUTE_ID_LAST;
-    	}else if (routeId.equals("*")) {
+    		
+    	} else if (routeId.equals(Engine.ROUTE_ID_ALL_STR)) {
     		return Engine.ROUTE_ID_ALL;
     	}
     	int route = Integer.parseInt(routeId);
@@ -144,9 +135,10 @@ public abstract class Command {
 
     public static String getRouteId(int routeId) {
     	if (routeId == Engine.ROUTE_ID_LAST) {
-    		return "-";
+    		return Engine.ROUTE_ID_LAST_STR;
+    		
     	} else if (routeId == Engine.ROUTE_ID_ALL) {
-    		return "*";
+    		return Engine.ROUTE_ID_ALL_STR;
     	}
     	return String.format("%d", routeId);
     }
@@ -236,6 +228,17 @@ public abstract class Command {
     
     public CoreId getCoreId(Engine engine, String coreReference) {
     	return engine.getCoreId(getSrc(), coreReference);
+    }
+    
+    private void reportRouteIdIssue(Engine engine, int routeId) {
+        if (engine.getLastAnalysisStatus() == Status.PARTIALLY_ELIMINATED) {
+            engine.notify(getSrc(), Notifier.NOTIFY_WARNING, String.format(
+                    "Failed to find route with id: %s", getRouteId(routeId)));              
+        
+        } else if (engine.getLastAnalysisStatus() != Status.ELIMINATED) {
+            engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+                    "Failed to find route with id: %s", getRouteId(routeId)));              
+        }         
     }
 }
 

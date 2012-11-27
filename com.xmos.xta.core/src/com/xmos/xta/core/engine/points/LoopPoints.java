@@ -8,6 +8,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.references.Reference;
+import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class LoopPoints extends Points {
@@ -22,7 +23,7 @@ public class LoopPoints extends Points {
 
 	public boolean setLoop(CommandSource src, String ref) {
 		m_refString = ref;				
-		if (!update(ref, m_points) && !ref.equals("")) {
+		if ((update(ref, m_points) != Result.RESOLVED) && !ref.equals("")) {
 			getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid loop point on any active tile", ref));
 			return false;
 		}

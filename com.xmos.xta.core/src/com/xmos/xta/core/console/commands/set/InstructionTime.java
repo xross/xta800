@@ -4,7 +4,6 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class InstructionTime extends Command {
@@ -75,11 +74,11 @@ public class InstructionTime extends Command {
 		if (!isExecutableLoaded(engine, console))
 			return;
 
+        if (!validateRouteId(engine, console, m_routeId))
+            return;
+		
 		TimeUnit timeUnit = new TimeUnit(m_value, m_mode);
 		assert(timeUnit.isValid());
-        if (!engine.setInstructionTime(getSrc(), m_routeId, m_refString, timeUnit)) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   	       			"failed to set instruction time on reference id: %s", m_refString));
-		}
+        engine.setInstructionTime(getSrc(), m_routeId, m_refString, timeUnit);
     }
 }

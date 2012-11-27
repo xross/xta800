@@ -19,8 +19,11 @@ bool needToRun(int argc, char **argv);
 bool xeContainsXtaCommands(char *xeName);
 void checkJavaVersion(int major, int minor);
 int getInt(const char *str, int offset, int &number);
+string getConsoleStr(string &args);
+string getJvmHeapSizeStr(string &args);
 
 #define CONSOLE_BASIC "\"--console-basic\""
+#define JVM_HEAP_SIZE "--jvm-heap-size"
 
 int main(int argc, char **argv)
 {
@@ -40,14 +43,12 @@ int main(int argc, char **argv)
     if (needToRun(argc, argv)) {
       checkJavaVersion(1, 5);
      
-      string consoleStr = "";
-      size_t pos = args.find(CONSOLE_BASIC);
-      if (pos != string::npos) {
-          args.erase(pos, strlen(CONSOLE_BASIC));           
-          consoleStr = "-DConsole=Basic";
-      }
+      string consoleStr = getConsoleStr(args);
+      string jvmHeapSizeStr = getJvmHeapSizeStr(args);
  
-      string command = "java -Xmx256m " + jvmArgString + " " + consoleStr + " -jar \"" + jar + "\"" + args;
+      string command = "java -Xmx256m " + jvmArgString + " " + 
+        consoleStr + " " + jvmHeapSizeStr + " -jar \"" + jar + "\"" + args;
+
       int returnCode = run(command.c_str());
       return returnCode;
     } else {
@@ -214,3 +215,26 @@ int getInt(const char *str, int offset, int &number)
   number = strtoul(buf, NULL, 0);
   return offset + i;
 }
+
+string getConsoleStr(string &args) {
+  string str = "";
+  size_t pos = args.find(CONSOLE_BASIC);
+  if (pos != string::npos) {
+    str = "-DConsole=Basic";
+    args.erase(pos, strlen(CONSOLE_BASIC));           
+  }
+  return str;
+}
+
+string getJvmHeapSizeStr(string &args) {
+  string str = "";
+  size_t pos = args.find(JVM_HEAP_SIZE);
+  if (pos != string::npos) {
+    size_t start = args.find('=', pos) + 1;
+    size_t end   = args.find('"', pos);
+    str = "-Xmx" + args.substr(start, end - start);
+    args.erase(pos - 1, end - pos + 2);           
+  }
+  return str;
+}
+

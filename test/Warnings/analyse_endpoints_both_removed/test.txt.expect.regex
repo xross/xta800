@@ -1,0 +1,8 @@
+tile\[0\], label: removed1, pc: 0x0, compilation dir: .*analyse_endpoints_both_removed, filename: test.xc, line number: 13, exists: false
+tile\[0\], label: ep1, pc: 0x0, compilation dir: .*analyse_endpoints_both_removed, filename: test.xc, line number: 30, exists: false
+tile\[0\], label: ep2, pc: 0x0, compilation dir: .*analyse_endpoints_both_removed, filename: test.xc, line number: 32, exists: false
+tile\[0\], label: removed2, pc: 0x0, compilation dir: .*analyse_endpoints_both_removed, filename: test.xc, line number: 35, exists: false
+Route\(0\) function: main
+    No Timing Specified
+
+Fail, Timing Unspecified

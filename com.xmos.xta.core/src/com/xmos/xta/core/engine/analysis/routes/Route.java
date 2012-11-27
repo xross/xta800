@@ -19,10 +19,6 @@ import com.xmos.xta.core.engine.utils.CoreConfig;
 public class Route {
 	private static int s_routeCount;
 
-	enum RouteStatus {
-		COMPLETED, ABORTED, ERROR
-	}
-
 	private int m_routeId;
 	private RouteCoreContainer m_coreContainer;
 	private RouteTiming m_timing;

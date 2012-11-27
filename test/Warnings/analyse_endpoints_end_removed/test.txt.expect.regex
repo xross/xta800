@@ -1,0 +1,17 @@
+tile\[0\], label: start, pc: 0x100da, compilation dir: .*analyse_endpoints_end_removed, filename: functions.xc, line number: 10, exists: true
+tile\[0\], label: ep1, pc: 0x100e4, compilation dir: .*analyse_endpoints_end_removed, filename: functions.xc, line number: 32, exists: true
+tile\[0\], label: ep2, pc: 0x100e6, compilation dir: .*analyse_endpoints_end_removed, filename: functions.xc, line number: 34, exists: true
+tile\[0\], label: end, pc: 0x0, compilation dir: .*analyse_endpoints_end_removed, filename: functions.xc, line number: 39, exists: false
+xta: cmds.txt:13: warning: Endpoint 'end' has been removed
+xta: cmds.txt:21: warning: Failed to find route with id: -
+xta: cmds.txt:22: warning: Failed to find route with id: -
+xta: cmds.txt:23: warning: Failed to find route with id: -
+xta: cmds.txt:24: warning: Failed to find route with id: -
+xta: cmds.txt:25: warning: Failed to find route with id: -
+xta: cmds.txt:26: warning: Failed to find route with id: -
+xta: cmds.txt:27: warning: Failed to find route with id: -
+xta: cmds.txt:28: warning: Failed to find route with id: -
+Route\(0\) function: main
+    No Timing Specified
+
+Fail, Timing Unspecified

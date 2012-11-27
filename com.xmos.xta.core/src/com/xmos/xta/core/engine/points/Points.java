@@ -22,18 +22,32 @@ class Points {
 		return m_engine;
 	}
 	
-	boolean update(String refStr, Map<CoreId, Reference> endpoints) {
+	Result update(String refStr, Map<CoreId, Reference> endpoints) {
 		endpoints.clear();
 
-		boolean hit = false;		
+		boolean resolved = false;
+		boolean removed = false;
+		
 		for (CoreId activeCore : m_engine.getActiveCores()) {
 			Reference reference = ReferenceFactory.createReference(refStr, m_refClass, activeCore);
 
-			if (reference.resolve(m_engine) == Result.RESOLVED) {
+            Result result = reference.resolve(m_engine);
+			if (result == Result.RESOLVED) {
 				endpoints.put(activeCore, reference);
-				hit = true;
+				resolved = true;
+
+			} else if (result == Result.REMOVED) {
+			    removed = true;
 			}
 		}
-		return hit;
+		if (resolved) {
+		    return Result.RESOLVED;
+		    
+		} else if (removed) {
+		    return Result.REMOVED;
+		    
+		} else {
+		    return Result.UNRESOLVED;
+		}
 	}
 }

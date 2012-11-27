@@ -1,5 +1,5 @@
-tile\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: (9|16)
-tile\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: (9|16)
+tile\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: (9|16), exists: true
+tile\[0\], label: input[12], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: (9|16), exists: true
 tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 10
 tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 12
 tile\[0\], pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 14

@@ -19,3 +19,6 @@ main:
           ldc       r0, 0x2
 .L0:
           retsp     0x0 
+.L2:
+	.size	main, .L2-main
+
