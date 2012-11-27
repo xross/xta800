@@ -1,0 +1,10 @@
+Route\(0\) endpoints: call_1,endpoint_a to call_1,endpoint_b
+    Pass with 1 unknown, Num Paths: 1, Slack: .*
+
+Route\(1\) endpoints: call_1,endpoint_b to call_2,endpoint_a
+    Pass with 1 unknown, Num Paths: 1, Slack: .*
+
+Route\(2\) endpoints: call_2,endpoint_a to call_2,endpoint_b
+    Pass with 1 unknown, Num Paths: 1, Slack: .*
+
+Pass, Min Core Frequency: 40 MHz

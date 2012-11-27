@@ -1,0 +1,8 @@
+analyse path call_1,endpoint_a call_1,endpoint_b
+set required - 100.0 ns
+analyse path call_1,endpoint_b call_2,endpoint_a
+set required - 100.0 ns
+analyse path call_2,endpoint_a call_2,endpoint_b
+set required - 100.0 ns
+print summary
+exit
