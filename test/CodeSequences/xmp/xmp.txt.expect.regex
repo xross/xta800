@@ -1,0 +1,137 @@
+TimingFailAsError: true
+WarnAsError: false
+ErrorAsWarn: false
+SrcPaths: .
+Case: worst
+Verbosity: 0
+Loaded executable: test.xe
+Frequency: NodeId 0 \(JTAG chain index 0, routing id \d+\), 400.0 MHz
+ NodeId 1 \(JTAG chain index 1, routing id \d+\), 400.0 MHz
+ NodeId 2 \(JTAG chain index 2, routing id \d+\), 400.0 MHz
+ NodeId 3 \(JTAG chain index 3, routing id \d+\), 400.0 MHz
+ NodeId 4 \(JTAG chain index 4, routing id \d+\), 400.0 MHz
+ NodeId 5 \(JTAG chain index 5, routing id \d+\), 400.0 MHz
+ NodeId 6 \(JTAG chain index 6, routing id \d+\), 400.0 MHz
+ NodeId 7 \(JTAG chain index 7, routing id \d+\), 400.0 MHz
+ NodeId 8 \(JTAG chain index 8, routing id \d+\), 400.0 MHz
+ NodeId 9 \(JTAG chain index 9, routing id \d+\), 400.0 MHz
+ NodeId 10 \(JTAG chain index 10, routing id \d+\), 400.0 MHz
+ NodeId 11 \(JTAG chain index 11, routing id \d+\), 400.0 MHz
+ NodeId 12 \(JTAG chain index 12, routing id \d+\), 400.0 MHz
+ NodeId 13 \(JTAG chain index 13, routing id \d+\), 400.0 MHz
+ NodeId 14 \(JTAG chain index 14, routing id \d+\), 400.0 MHz
+ NodeId 15 \(JTAG chain index 15, routing id \d+\), 400.0 MHz
+tile\[0\], Tasks: 2 \(Debug information avaliable\)
+tile\[1\], Tasks: 1 \(Debug information avaliable\)
+tile\[2\], Tasks: 1 \(Debug information avaliable\)
+tile\[3\], Tasks: 1 \(Debug information avaliable\)
+tile\[4\], Tasks: 1 \(Debug information avaliable\)
+tile\[5\], Tasks: 1 \(Debug information avaliable\)
+tile\[6\], Tasks: 1 \(Debug information avaliable\)
+tile\[7\], Tasks: 1 \(Debug information avaliable\)
+tile\[8\], Tasks: 1 \(Debug information avaliable\)
+tile\[9\], Tasks: 1 \(Debug information avaliable\)
+tile\[10\], Tasks: 1 \(Debug information avaliable\)
+tile\[11\], Tasks: 1 \(Debug information avaliable\)
+tile\[12\], Tasks: 1 \(Debug information avaliable\)
+tile\[13\], Tasks: 1 \(Debug information avaliable\)
+tile\[14\], Tasks: 1 \(Debug information avaliable\)
+tile\[15\], Tasks: 1 \(Debug information avaliable\)
+tile\[16\], Tasks: 1 \(Debug information avaliable\)
+tile\[17\], Tasks: 1 \(Debug information avaliable\)
+tile\[18\], Tasks: 1 \(Debug information avaliable\)
+tile\[19\], Tasks: 1 \(Debug information avaliable\)
+tile\[20\], Tasks: 1 \(Debug information avaliable\)
+tile\[21\], Tasks: 1 \(Debug information avaliable\)
+tile\[22\], Tasks: 1 \(Debug information avaliable\)
+tile\[23\], Tasks: 1 \(Debug information avaliable\)
+tile\[24\], Tasks: 1 \(Debug information avaliable\)
+tile\[25\], Tasks: 1 \(Debug information avaliable\)
+tile\[26\], Tasks: 1 \(Debug information avaliable\)
+tile\[27\], Tasks: 1 \(Debug information avaliable\)
+tile\[28\], Tasks: 1 \(Debug information avaliable\)
+tile\[29\], Tasks: 1 \(Debug information avaliable\)
+tile\[30\], Tasks: 1 \(Debug information avaliable\)
+tile\[31\], Tasks: 1 \(Debug information avaliable\)
+tile\[32\], Tasks: 1 \(Debug information avaliable\)
+tile\[33\], Tasks: 1 \(Debug information avaliable\)
+tile\[34\], Tasks: 1 \(Debug information avaliable\)
+tile\[35\], Tasks: 1 \(Debug information avaliable\)
+tile\[36\], Tasks: 1 \(Debug information avaliable\)
+tile\[37\], Tasks: 1 \(Debug information avaliable\)
+tile\[38\], Tasks: 1 \(Debug information avaliable\)
+tile\[39\], Tasks: 1 \(Debug information avaliable\)
+tile\[40\], Tasks: 1 \(Debug information avaliable\)
+tile\[41\], Tasks: 1 \(Debug information avaliable\)
+tile\[42\], Tasks: 1 \(Debug information avaliable\)
+tile\[43\], Tasks: 1 \(Debug information avaliable\)
+tile\[44\], Tasks: 1 \(Debug information avaliable\)
+tile\[45\], Tasks: 1 \(Debug information avaliable\)
+tile\[46\], Tasks: 1 \(Debug information avaliable\)
+tile\[47\], Tasks: 1 \(Debug information avaliable\)
+tile\[48\], Tasks: 1 \(Debug information avaliable\)
+tile\[49\], Tasks: 1 \(Debug information avaliable\)
+tile\[50\], Tasks: 1 \(Debug information avaliable\)
+tile\[51\], Tasks: 1 \(Debug information avaliable\)
+tile\[52\], Tasks: 1 \(Debug information avaliable\)
+tile\[53\], Tasks: 1 \(Debug information avaliable\)
+tile\[54\], Tasks: 1 \(Debug information avaliable\)
+tile\[55\], Tasks: 1 \(Debug information avaliable\)
+tile\[56\], Tasks: 1 \(Debug information avaliable\)
+tile\[57\], Tasks: 1 \(Debug information avaliable\)
+tile\[58\], Tasks: 1 \(Debug information avaliable\)
+tile\[59\], Tasks: 1 \(Debug information avaliable\)
+tile\[60\], Tasks: 1 \(Debug information avaliable\)
+tile\[61\], Tasks: 1 \(Debug information avaliable\)
+tile\[62\], Tasks: 1 \(Debug information avaliable\)
+tile\[63\], Tasks: 1 \(Debug information avaliable\)
+No routes analyzed
+Route\(0\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(1\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(2\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(3\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(4\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(5\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(6\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(7\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(8\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(9\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(10\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(11\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(12\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(13\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(14\) endpoints: loop to loop
+    No Timing Specified
+
+Route\(15\) endpoints: loop to loop
+    No Timing Specified
+
+Fail, Timing Unspecified

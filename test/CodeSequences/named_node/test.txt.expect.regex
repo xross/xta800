@@ -5,10 +5,10 @@ SrcPaths: .
 Case: worst
 Verbosity: 0
 Loaded executable: test.xe
-Frequency: NodeId A \(JTAG chain index 0, routing id 0\), 100.0 MHz
- NodeId B \(JTAG chain index 1, routing id 64\), 200.0 MHz
- NodeId C \(JTAG chain index 2, routing id 192\), 300.0 MHz
- NodeId D \(JTAG chain index 3, routing id 128\), 400.0 MHz
+Frequency: NodeId A \(JTAG chain index 0, routing id \d+\), 100.0 MHz
+ NodeId B \(JTAG chain index 1, routing id \d+\), 200.0 MHz
+ NodeId C \(JTAG chain index 2, routing id \d+\), 300.0 MHz
+ NodeId D \(JTAG chain index 3, routing id \d+\), 400.0 MHz
 stdcore\[0\], Tasks: 1 \(Debug information avaliable\)
 stdcore\[1\], Tasks: 1 \(Debug information avaliable\)
 stdcore\[2\], Tasks: 1 \(Debug information avaliable\)
