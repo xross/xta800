@@ -1734,7 +1734,7 @@ public class Engine extends Notifier implements Aborter {
 		}
 		
 		for (CoreId coreId : xeLoader.getCoreIds()) {
-			int coreThreads = getCoreThreads(xnLoader, progInfoLoader, coreId);
+			int coreThreads = getCoreThreads(progInfoLoader, coreId);
 			m_coreThreads.add(coreId, coreThreads);			
 		}
 		
@@ -1745,10 +1745,9 @@ public class Engine extends Notifier implements Aborter {
 		}
 		
 		// Sets the frequencies with the ones actually used (from the proginfo sector)..
-		for (Integer nodeRoutingId : progInfoLoader.getNodeFrequencies().keySet()) {			
-			int nodeChainIndex = xnLoader.getNodeChainIndex(nodeRoutingId);			
+		for (Integer nodeChainIndex : progInfoLoader.getNodeFrequencies().keySet()) {			
 			String nodeId = xnLoader.getNodeId(nodeChainIndex);			
-			m_nodeHz.put(nodeId, progInfoLoader.getNodeFrequencies().get(nodeRoutingId));
+			m_nodeHz.put(nodeId, progInfoLoader.getNodeFrequencies().get(nodeChainIndex));
 		}		
 	}
 
@@ -1784,10 +1783,10 @@ public class Engine extends Notifier implements Aborter {
 		notify(src, Notifier.RELEASE_MESSAGES, "");		
 	}
 	
-	private int getCoreThreads(XnLoader xnLoader, ProgInfoLoader progInfoLoader, CoreId coreId) {
-		int nodeRoutingId = xnLoader.getNodeRoutingId(coreId.getNodeChainIndex());
+	private int getCoreThreads(ProgInfoLoader progInfoLoader, CoreId coreId) {
+		int nodeChainIndex = coreId.getNodeChainIndex();
 		for (ProgInfoEntry entry : progInfoLoader.getProgInfos())  {
-			if ((entry.getNodeRoutingId() == nodeRoutingId) &&
+			if ((entry.getNodeChainIndex() == nodeChainIndex) &&
 				(entry.getCoreNumber() == coreId.getCoreNumber()) &&
 				entry.getType().getCategory().equals(ProgInfoLoader.PI_CATEGORY_THREADS) &&
 				entry.getType().getLabel().equals(ProgInfoLoader.PI_LABEL_USED)) {
