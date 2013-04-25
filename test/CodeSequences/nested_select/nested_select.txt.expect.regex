@@ -1,11 +1,4 @@
-function\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s main
-.  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 1\) 
-.  \* cond\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
-.    .  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 0\) / \d+\.\d+ [mun]s \(x 1\) 
-.    .  \* seq\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
-.    .    .  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 0\) 
-.    .    .  \* cond\(\d+\)\s+: \d+\.\d+ [mun]s / \d+\.\d+ [mun]s 
-.    .    .    .  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 1\) / \d+\.\d+ [mun]s \(x 0\) 
-.    .    .    .  \* block\(\d+\)\s+: \d+\.\d+ [mun]s \(x 0\) / \d+\.\d+ [mun]s \(x 0\) 
-.*
-[^^^]
+Route\(\d+\) function: main
+    Pass with \d+ unknowns, Num Paths: \d+, Slack: \d+.\d+ us, Required: 10.0 us, Worst: \d+.\d+ us, Min Core Frequency: \d+ MHz
+
+Pass, Min Core Frequency: \d+ MHz

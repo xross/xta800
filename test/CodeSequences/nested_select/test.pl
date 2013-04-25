@@ -12,6 +12,7 @@ system("xcc -target=$target -march=$arch -g test.xc -o $genDir/test.xe > $genDir
 }
 system("@ARGV load $genDir/test.xe " .
        "analyse function main " .
-       "print structure - " .
+       "set required - 10.0 us " .
+       "-print summary " .
        "-exit > $genDir/nested_select.txt 2>&1");
 
