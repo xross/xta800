@@ -92,7 +92,7 @@ try:
     doAnalyze(xta, "looppath", 1, 0, doLoopPath)
     doAnalyze(xta, "loopscope", 2, 0, doLoopScope)
     doAnalyze(xta, "functiontime", 0, 0, doFunctionTime)
-    doAnalyze(xta, "pathtime", 0, 3, doPathTime)
+    doAnalyze(xta, "pathtime", 0, 2, doPathTime)
     doAnalyze(xta, "instructiontime", 0, 1, doInstructionTime)
     doAnalyze(xta, "exclusion", 0, 0, doExclusion)
 
