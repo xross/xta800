@@ -1,0 +1,7 @@
+iic.xc: In function `iic_read':
+iic.xc:347: warning: unused variable `time'
+main.xc: In function `iictestLocal':
+main.xc:60: warning: unused variable `ack'
+main.xc:61: warning: unused variable `tmp'
+main.xc:62: warning: unused variable `wrData'
+main.xc:63: warning: unused variable `rdData'

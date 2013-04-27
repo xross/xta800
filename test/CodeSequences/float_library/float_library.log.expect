@@ -1,0 +1,2 @@
+test.c: In function 'main':
+test.c:11: warning: unused variable 'result'

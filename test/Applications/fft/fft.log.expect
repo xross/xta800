@@ -1,0 +1,18 @@
+fft.xc: In function `fix_fft_64':
+fft.xc:5: warning: unused variable `i'
+fft.xc:5: warning: unused variable `j'
+fft.xc:6: warning: unused variable `qr'
+fft.xc:6: warning: unused variable `qi'
+fft.xc:6: warning: unused variable `wr'
+fft.xc:6: warning: unused variable `wi'
+fft.xc:6: warning: unused variable `t'
+fft.xc: In function `fix_fft_64_inverse':
+fft.xc:60: warning: unused variable `qr'
+fft.xc:60: warning: unused variable `qi'
+fft.xc:60: warning: unused variable `wr'
+fft.xc:60: warning: unused variable `wi'
+fft.xc:60: warning: unused variable `t'
+fft.xc: In function `main':
+fft.xc:152: warning: control reaches end of non-void function
+fft.xc:137: warning: unused variable `undefined'
+fft.xc:138: warning: unused variable `t4'
