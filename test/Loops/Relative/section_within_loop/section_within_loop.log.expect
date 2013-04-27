@@ -1,0 +1,2 @@
+test.xc: In function `main':
+test.xc:4: warning: unused variable `a'
