@@ -1,0 +1,6 @@
+source/AES.xc: In function `main':
+source/AES.xc:50: warning: unused variable `t'
+source/AES.xc:51: warning: unused variable `start'
+source/AES.xc:51: warning: unused variable `end'
+source/KeyExpansion.xc: In function `KeyExpansion':
+source/KeyExpansion.xc:25: warning: unused variable `i'

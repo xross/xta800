@@ -1,0 +1,6 @@
+test.xc: In function `f':
+test.xc:2: warning: unused variable `i'
+test.xc: In function `g':
+test.xc:7: warning: unused variable `i'
+test.xc: In function `h':
+test.xc:12: warning: unused variable `i'

@@ -3,6 +3,6 @@ WarnAsError: true
 ErrorAsWarn: false
 .*
 [^^^]
-xta: error: route\(\d+\)\s+ Fail \(timing violation\) with 2 unknowns, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
-xta: warning: route\(\d+\)\s+ Fail \(timing violation\) with 2 unknowns, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
+xta: error: route\(\d+\)\s+ Fail \(timing violation\) with 1 unknown, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
+xta: warning: route\(\d+\)\s+ Fail \(timing violation\) with 1 unknown, Num Paths: \d+, Violation: \d+\.\d+ ns, Required: \d+\.\d+ ns, Worst: \d+\.\d+ ns, Min Core Frequency: \d+ MHz
 RETURN CODE OK

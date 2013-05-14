@@ -1,0 +1,8 @@
+test.xc: In function `testA':
+test.xc:22: warning: control reaches end of non-void function
+test.xc: In function `testB':
+test.xc:26: warning: control reaches end of non-void function
+test.xc: In function `testAandB':
+test.xc:31: warning: control reaches end of non-void function
+test.xc: In function `testAorB':
+test.xc:38: warning: control reaches end of non-void function

@@ -1,0 +1,2 @@
+.*/test.xc: In function `g':
+.*/test.xc:17: warning: unused variable `y'

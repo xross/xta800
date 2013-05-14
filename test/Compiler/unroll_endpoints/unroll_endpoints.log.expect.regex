@@ -1,3 +1,5 @@
+functions.xc: In function `producer':
+functions.xc:4: warning: unused variable `x'
 Route\(\d+\) endpoints: producer to producer
     Pass with \d+ unknowns, Num Paths: 1, Slack: \d+\.\d [mun]s, Required: 150.0 ns, Worst: \d+\.\d [mun]s, Min Core Frequency: \d+ MHz
 

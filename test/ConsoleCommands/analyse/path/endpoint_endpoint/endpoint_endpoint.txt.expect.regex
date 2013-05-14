@@ -1,11 +1,11 @@
-tile\[0\], label: output0, pc: 0x100c0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 8, exists: true
-tile\[0\], label: input0, pc: 0x100cc, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10, exists: true
-tile\[0\], label: output1, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 16, exists: false
-tile\[0\], label: input1, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 18, exists: false
-tile\[1\], label: output0, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 8, exists: false
-tile\[1\], label: input0, pc: 0x0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10, exists: false
-tile\[1\], label: output1, pc: 0x100c0, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 16, exists: true
-tile\[1\], label: input1, pc: 0x100cc, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 18, exists: true
+tile\[0\], label: output0, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 8, exists: true
+tile\[0\], label: input0, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10, exists: true
+tile\[0\], label: output1, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 16, exists: false
+tile\[0\], label: input1, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 18, exists: false
+tile\[1\], label: output0, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 8, exists: false
+tile\[1\], label: input0, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 10, exists: false
+tile\[1\], label: output1, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 16, exists: true
+tile\[1\], label: input1, pc: 0x[0-9a-f]+, compilation dir: .*endpoint_endpoint, filename: test.xc, line number: 18, exists: true
 Route\(0\) endpoints: output0 to input0
     No Timing Specified
 

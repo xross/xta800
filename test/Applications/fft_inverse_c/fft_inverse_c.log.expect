@@ -1,0 +1,16 @@
+fft.c: In function 'fix_fft_64':
+fft.c:6: warning: unused variable 't'
+fft.c:6: warning: unused variable 'wi'
+fft.c:6: warning: unused variable 'wr'
+fft.c:6: warning: unused variable 'qi'
+fft.c:6: warning: unused variable 'qr'
+fft.c:5: warning: unused variable 'j'
+fft.c:5: warning: unused variable 'i'
+fft.c: In function 'fix_fft_64_inverse':
+fft.c:70: warning: ignoring #pragma unsafearrays 
+fft.c:90: warning: ignoring #pragma unsafearrays 
+fft.c:65: warning: unused variable 't'
+fft.c:65: warning: unused variable 'wi'
+fft.c:65: warning: unused variable 'wr'
+fft.c:65: warning: unused variable 'qi'
+fft.c:65: warning: unused variable 'qr'

@@ -39,7 +39,8 @@ int main()
     par {
         consumer(channel);
         mii_rx_pins(channel);
-    } 
+    }
+    return 0;
 }
 
 void consumer(chanend input)

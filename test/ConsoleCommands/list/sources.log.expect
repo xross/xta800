@@ -1,0 +1,4 @@
+b.xc: In function `b':
+b.xc:3: warning: control reaches end of non-void function
+c.xc: In function `c':
+c.xc:3: warning: control reaches end of non-void function
