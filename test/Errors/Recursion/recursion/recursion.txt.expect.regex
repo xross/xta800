@@ -2,7 +2,7 @@ function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns main
 .*
 [^^^]
 
-function\(\d+\)\s+: Recursion / \d+.\d+ ns f
+function\(\d+\)\s+: \d+.\d+ ns / Recursion f
 .*
 [^^^]
 
