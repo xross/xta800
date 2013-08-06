@@ -1,16 +1,16 @@
-function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns main
+function\(\d+\)\s+: Recursion / \d+.\d+ ns main
 .*
 [^^^]
 
-function\(\d+\)\s+: \d+.\d+ ns / Recursion f
+function\(\d+\)\s+: Recursion / \d+.\d+ ns f
 .*
 [^^^]
 
-function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns f
+function\(\d+\)\s+: Recursion / \d+.\d+ ns f
 .*
 [^^^]
 
-function\(\d+\)\s+: \d+.\d+ ns / Recursion g
+function\(\d+\)\s+: Recursion / \d+.\d+ ns g
 .*
 [^^^]
 
