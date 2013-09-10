@@ -1,4 +1,4 @@
-xta: error: the file '.*john.xe' could not be loaded.
+xta: error: the file '.*john.xe' could not be loaded: .*
 xta: error: no executable loaded
-xta: error: the file '.*sponge.xe' could not be loaded.
+xta: error: the file '.*sponge.xe' could not be loaded: .*
 xta: error: no executable loaded

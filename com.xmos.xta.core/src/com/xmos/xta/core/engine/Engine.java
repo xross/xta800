@@ -268,7 +268,8 @@ public class Engine extends Notifier implements Aborter {
 			setAnalysisName("Loading Executable");
 			XeLoader xeLoader = new XeLoader();
 			if (!xeLoader.loadExecutable(executableFile)) {
-				notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' could not be loaded.");
+				notify(src, Notifier.NOTIFY_ERROR, "the file '" + executableFile + "' could not be loaded: " + 
+				        xeLoader.getErrorMessage() + ".");
 				return false;
 			}
 
