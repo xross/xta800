@@ -17,6 +17,7 @@ my $CONFIG;
 my $HOST;
 my $DOMAIN;
 my $BUILD_NUM;
+my $DATE_STRING;
 my $BIN;
 
 my %ALIASES =
@@ -49,6 +50,7 @@ sub main
   $CONFIG = $xmosArg->GetOption("CONFIG");
   $DOMAIN = $xmosArg->GetOption("DOMAIN");
   $BUILD_NUM = $xmosArg->GetOption("BUILD_NUM");
+  $DATE_STRING = $xmosArg->GetOption("DATE_STRING");
   $HOST = $xmosArg->GetOption("HOST");
   $BIN = $xmosArg->GetBinDir();
 
@@ -162,7 +164,7 @@ sub DoBuild
 
   XmosBuildLib::Make('install', $CONFIG);
 
-  UpdateBuildNumber();
+  UpdateVersionString();
 
   chdir("com.xmos.xta.core")
     or die("Failed to find com.xmos.xta.core\n");
@@ -225,27 +227,24 @@ sub DoLint
   }
 }
 
-sub UpdateBuildNumber
+sub UpdateVersionString
 {
-  if (defined($BUILD_NUM))
-  {
-    UpdateBuildNumberInFile("<com.xmos.xta.core/version.xml");
+  if (!defined($BUILD_NUM) and !defined($DATE_STRING)) {
+    return;
   }
-}
-
-sub UpdateBuildNumberInFile
-{
-  my $file = shift;
-
-  # Reads in the plugin.xml and patches the build number..
-  open(my $infp, "+$file")
-    or die("Cannot open file: $file for reading");
+  
+  open(my $infp, "+<com.xmos.xta.core/version.xml")
+    or die("Cannot open file: com.xmos.xta.core/version.xml for reading");
   my @lines = <$infp>;
 
   seek $infp,0,0;
-  foreach my $line (@lines)
-  {
-    $line =~ s/\(build ....\)/\(build $BUILD_NUM\)/g;
+  foreach my $line (@lines) {
+    if (defined($BUILD_NUM)) {
+      $line =~ s/\(build ....,/\(build $BUILD_NUM,/g;
+    }
+    if (defined($DATE_STRING)) {
+      $line =~ s/, ...-..-....\)/, $DATE_STRING\)/g;
+    }
     print $infp $line;
   }
   close $infp;
