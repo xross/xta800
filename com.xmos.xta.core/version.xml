@@ -2,5 +2,5 @@
 <?eclipse version="3.2"?>
 <version
      name="aboutText"
-     value="This is an unreleased/unsupported version. (build 9999)">
+     value="This is an unreleased/unsupported version. (build xxxx, xxx-xx-xxxx)">
 </version>
