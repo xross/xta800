@@ -3,6 +3,7 @@ package com.xmos.xta.core.console.commands.analyze;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
+import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.Analyzer.Status;
@@ -77,6 +78,10 @@ public class Endpoints extends Command {
 				return;
 
 			} else if ((fromResult == Result.REMOVED) && (toResult == Result.REMOVED)) {
+			    if (engine.getConfig().getWarningEnabled(Config.WARNING_REMOVED)) {
+	                engine.notify(getSrc(), Notifier.NOTIFY_WARNING, 
+	                        String.format("Both endpoints have been removed", m_fromRef));			        
+			    }
 			    engine.setLastAnalysisStatus(Status.ELIMINATED);
 			    return;
 

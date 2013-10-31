@@ -3,6 +3,8 @@
 # be removed by the compiler if it is located within a block of code
 # that has been optimised away for whatever reason. 
 
+config warn removed
+
 # Should show the srclabel marked as being non-existent
 list srclabels
 

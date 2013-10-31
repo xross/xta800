@@ -1,13 +1,13 @@
 tile\[0\], label: removed, pc: 0x0, compilation dir: .*removed_references_srclabels, filename: test.xc, line number: 9, exists: false
-xta: cmds.txt:15: error: Reference: removed not within a loop on any active tile
-xta: cmds.txt:16: error: Reference: removed not within a loop on any active tile
-xta: cmds.txt:18: warning: Reference: removed has been removed
-xta: cmds.txt:19: warning: Reference: removed has been removed
-xta: cmds.txt:21: error: Reference: removed not within a loop on any active tile
-xta: cmds.txt:22: error: Reference: removed not within a loop on any active tile
-xta: cmds.txt:24: warning: Reference: removed has been removed
-xta: cmds.txt:25: warning: Reference: removed has been removed
-xta: cmds.txt:31: error: Reference: removed not within a loop on any active tile
-xta: cmds.txt:32: warning: Reference: removed has been removed
+xta: cmds.txt:17: error: Reference: removed not within a loop on any active tile
+xta: cmds.txt:18: error: Reference: removed not within a loop on any active tile
+xta: cmds.txt:20: warning: Reference: removed has been removed
+xta: cmds.txt:21: warning: Reference: removed has been removed
+xta: cmds.txt:23: error: Reference: removed not within a loop on any active tile
+xta: cmds.txt:24: error: Reference: removed not within a loop on any active tile
+xta: cmds.txt:26: warning: Reference: removed has been removed
+xta: cmds.txt:27: warning: Reference: removed has been removed
 xta: cmds.txt:33: error: Reference: removed not within a loop on any active tile
 xta: cmds.txt:34: warning: Reference: removed has been removed
+xta: cmds.txt:35: error: Reference: removed not within a loop on any active tile
+xta: cmds.txt:36: warning: Reference: removed has been removed

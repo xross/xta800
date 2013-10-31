@@ -1,8 +1,8 @@
 tile\[0\], label: removed1, pc: 0x0, compilation dir: .*removed_references_endpoints, filename: test.xc, line number: 11, exists: false
 tile\[0\], label: removed2, pc: 0x0, compilation dir: .*removed_references_endpoints, filename: test.xc, line number: 13, exists: false
-xta: cmds.txt:15: warning: Reference: removed1 has been removed
-xta: cmds.txt:16: warning: Reference: removed1 has been removed
+xta: cmds.txt:17: warning: Reference: removed1 has been removed
 xta: cmds.txt:18: warning: Reference: removed1 has been removed
-xta: cmds.txt:19: warning: Reference: removed1 has been removed
-xta: cmds.txt:25: warning: Reference: removed1 has been removed
-xta: cmds.txt:26: warning: Reference: removed1 has been removed
+xta: cmds.txt:20: warning: Reference: removed1 has been removed
+xta: cmds.txt:21: warning: Reference: removed1 has been removed
+xta: cmds.txt:27: warning: Reference: removed1 has been removed
+xta: cmds.txt:28: warning: Reference: removed1 has been removed

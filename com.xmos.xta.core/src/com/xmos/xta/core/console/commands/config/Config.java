@@ -20,6 +20,8 @@ public class Config extends CommandContainer {
 		new To(),		
 		new Verbosity(),
 		new WarnAsErrors(),
+		new Warn(),
+		new NoWarn(),
 	};
 
 	public Config() { super(COMMAND_NAMES); }

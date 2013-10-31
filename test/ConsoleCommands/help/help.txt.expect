@@ -46,6 +46,8 @@
       option: to <ENDPOINT>: Sets the to endpoint
       option: verbosity <level>: Sets the tool verbosity level (range: -10 -> +10, default: 0)
       option: Werror <on/off>: treat warnings as errors or not (currently: off)
+      option: warn <removed>: Enable the given warning
+      option: nowarn <removed>: Disable the given warning
   [-]echo "text": Prints the text to the console
   [-]exit: Quits the application (Command line version only)
   [-]help [command|command subcommand|option]: Displays help message for the given arguments

@@ -12,6 +12,8 @@
       option: to <ENDPOINT>: Sets the to endpoint
       option: verbosity <level>: Sets the tool verbosity level \(range: -10 -> \+10, default: 0\)
       option: Werror <on/off>: treat warnings as errors or not \(currently: off\)
+      option: warn <removed>: Enable the given warning
+      option: nowarn <removed>: Disable the given warning
 TimingFailAsError: false
 WarnAsError: false
 ErrorAsWarn: true

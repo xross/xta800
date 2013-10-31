@@ -785,7 +785,9 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 
         } else if (removed) {
-            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {            
+                notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            }
 		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
@@ -889,7 +891,9 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 
 		} else if (removed) {
-            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+		    if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {
+	            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));		        
+		    }
 		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
@@ -1048,7 +1052,9 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ROUTE_CHANGED, String.format("%d", routeId));
 
 		} else if (removed) {
-            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {
+                notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            }
             
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
@@ -1102,7 +1108,9 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		    
         } else if (removed) {
-            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {        
+                notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            }
 		    
 		} else {
 		    notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not resolved on any active tile", refString));			
@@ -1276,7 +1284,9 @@ public class Engine extends Notifier implements Aborter {
 	    	notify(src, Notifier.NOTIFY_UPDATE_UNKNOWNS, "");
 
 	    } else if (removed) {
-	        notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {
+	            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            }
 	        
 	    } else {
 			notify(src, Notifier.NOTIFY_ERROR, String.format("Unable to set exclusion for reference: %s", refString));
@@ -1368,10 +1378,12 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		    
 		} else if (!removedRefStrings.isEmpty()) {
-		    for (String removedRefString : removedRefStrings) {
-	            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", removedRefString));		        
-		    }
- 
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {
+                for (String removedRefString : removedRefStrings) {
+                    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", removedRefString));                
+                }                
+            }
+
 		} else {		   
 			initialiseControlFlows(m_xeLoader, m_sections, src);			
 		    initialiseCachedFunctions(m_xeLoader);			
@@ -1429,8 +1441,10 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_ERROR, "References not resolved on any active tile");
 		    
         } else if (!removedRefStrings.isEmpty()) {
-            for (String removedRefString : removedRefStrings) {
-                notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", removedRefString));                
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {            
+                for (String removedRefString : removedRefStrings) {
+                    notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", removedRefString));                
+                }
             }
  
 		} else {		    
@@ -1624,7 +1638,9 @@ public class Engine extends Notifier implements Aborter {
 		    notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 		    
 		} else if (removed) {
-            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {
+                notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            }
  
 		} else {
             if (isLoop) {
@@ -1679,7 +1695,9 @@ public class Engine extends Notifier implements Aborter {
             notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
 
         } else if (removed) {
-            notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            if (m_config.getWarningEnabled(Config.WARNING_REMOVED)) {
+                notify(src, Notifier.NOTIFY_WARNING, String.format("Reference: %s has been removed", refString));
+            }
             
         } else {
             notify(src, Notifier.NOTIFY_ERROR, String.format("Reference: %s not within a loop on any active tile", refString));          

@@ -1,5 +1,8 @@
 package com.xmos.xta.core.engine;
 
+import java.util.Map;
+
+import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 
 public class Config {
@@ -7,7 +10,8 @@ public class Config {
 	private Case m_case;
 	private boolean m_timingFailuresAsErrors;
 	private boolean m_warningsAsErrors;
-	private boolean m_errorsAsWarnings;
+	private boolean m_errorsAsWarnings;	
+	private Map<String, Boolean> m_warnings;
 
 	static final public int VERBOSITY_DISPLAY_INSTRUCTION_NODES = 1;
 	static final public int VERBOSITY_DISPLAY_NULL_NODE = 50;
@@ -18,12 +22,16 @@ public class Config {
 	static final public int VERBOSITY_DISPLAY_KNOWNS_INFO = 50;
 	static final public int VERBOSITY_DISPLAY_MEMORY_USAGE = 100;
 
+	static final public String WARNING_REMOVED = "removed";
+	
 	public Config() {
 		m_verbosity = 0;
 		m_case = Case.WORST;
 		m_timingFailuresAsErrors = true;
 		m_warningsAsErrors = false;
-		m_errorsAsWarnings = false;
+		m_errorsAsWarnings = false;		
+		m_warnings = new IteratableMap<String, Boolean>();
+		m_warnings.put(WARNING_REMOVED, false);
 	}
 
 	public void setVerbosity(int verbosity) {
@@ -70,5 +78,22 @@ public class Config {
 
 	public boolean getErrorsAsWarnings() {
 		return m_errorsAsWarnings;
+	}
+	
+	public Map<String, Boolean> getWarnings() {
+	    return m_warnings;
+	}
+	
+	public void setWarningEnabled(String key, boolean value, Notifier notifier, CommandSource src) {
+	    if (m_warnings.keySet().contains(key)) {
+	        m_warnings.put(key, value);
+
+	    } else {
+            notifier.notify(src, Notifier.NOTIFY_ERROR, String.format("Invalid warning string: %s", key));
+	    }
+	}
+	
+	public boolean getWarningEnabled(String key) {
+        return m_warnings.get(key);
 	}
 }
