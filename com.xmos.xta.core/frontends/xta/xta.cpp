@@ -10,7 +10,7 @@
 #include "XBHandler.h"
 #include "ElfHandler.h"
 #include "XmosUtils.h"
-
+#include "XmosDefines.h"
 #include "frontend.h"
 
 using namespace std;
