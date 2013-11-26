@@ -1,6 +1,7 @@
 include_directories(
   "./"
   "${PROJECT_SOURCE_DIR}/../lib_xmosutils/export/include"
+  "${PROJECT_SOURCE_DIR}/../lib_xsimutils/export/include"
   "${PROJECT_SOURCE_DIR}/../infr_libs_cpp/export/include"
   "${PROJECT_SOURCE_DIR}/../infr_libs_java/com.xmos.libs.core/frontends/frontendlib"
 )
@@ -14,6 +15,6 @@ target_link_libraries(xta
   ${PROJECT_SOURCE_DIR}/../lib_xmosutils/${BINEXP}/ErrorHandler${LIBEXT}  
   ${PROJECT_SOURCE_DIR}/../lib_xmosutils/${BINEXP}/XmlParser${LIBEXT}
   ${PROJECT_SOURCE_DIR}/../lib_xmosutils/${BINEXP}/StringLibrary${LIBEXT}
-  ${PROJECT_SOURCE_DIR}/../infr_libs_cpp/${BINEXP}/ConfigurationHandler${LIBEXT}
+  ${PROJECT_SOURCE_DIR}/../lib_xsimutils/${BINEXP}/ConfigurationHandler${LIBEXT}
 )
 install(TARGETS xta DESTINATION ${PROJECT_SOURCE_DIR}/${BINEXP})
