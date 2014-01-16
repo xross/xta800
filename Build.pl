@@ -240,7 +240,7 @@ sub UpdateVersionString
   seek $infp,0,0;
   foreach my $line (@lines) {
     if (defined($BUILD_NUM)) {
-      $line =~ s/\(build ....,/\(build $BUILD_NUM,/g;
+      $line =~ s/\(build .*,/\(build $BUILD_NUM,/g;
     }
     if (defined($DATE_STRING)) {
       $line =~ s/, ...-..-....\)/, $DATE_STRING\)/g;
