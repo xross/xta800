@@ -43,7 +43,7 @@ public class Load extends Command {
 		if ((index + numArgs()) >= args.length)
 			return null;
 
-    	String executableName = args[index + 1];
+    	String executableName = expandTilde(args[index + 1]);
         return new Load(executableName);
     }
 

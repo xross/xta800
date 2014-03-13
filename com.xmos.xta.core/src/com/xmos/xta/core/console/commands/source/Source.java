@@ -88,7 +88,7 @@ public class Source extends Command {
 		if ((index + numArgs()) >= args.length)
 			return null;
 
-    	String fileName = args[index + 1];
+    	String fileName = expandTilde(args[index + 1]);
     	ScriptType scriptType = getScriptType(fileName);
     	
     	switch (scriptType) {

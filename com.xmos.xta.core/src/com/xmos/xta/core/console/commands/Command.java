@@ -44,6 +44,14 @@ public abstract class Command {
     public abstract Command clone(String[] args, int index);
     public abstract void execute(Shell shell, Engine engine, Console console);
 
+    public static String expandTilde(String str) {
+    	if (System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0 &&
+    		str.charAt(0) == '~') {
+            return System.getenv("HOME") + str.substring(1);
+    	}
+        return str;
+    }
+
     public Command(String[] commandNames) {
     	m_commandNames = commandNames;
     }
