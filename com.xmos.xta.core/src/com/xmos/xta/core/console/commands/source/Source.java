@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
-
 import org.python.core.PyList;
 import org.python.core.PyString;
 import org.python.core.PySystemState;
@@ -179,8 +178,9 @@ public class Source extends Command {
                             	commandString = line;
                             }
                             multilineCommand = false;
+                            
+                            String[] tokens = StringUtil.extractTokens(commandString);
 
-                            String[] tokens = commandString.trim().split("\\s+");
                             ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
                             if (tokenGroups.size() > 0) {
                                 tokens = tokenGroups.toArray(new String[0]);
