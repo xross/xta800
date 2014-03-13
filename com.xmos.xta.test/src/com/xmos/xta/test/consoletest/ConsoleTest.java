@@ -31,95 +31,95 @@ import com.xmos.xta.test.consoletest.commands.Version;
 
 public class ConsoleTest {
 
-	public static boolean allowMess = false;
-	
-	private static Command[] realCommands = { new Add(), new Analyse(),
-			new Config(), new Clear(), new Echo(), new Help(), new History(),
-			new List(), 
-			//new Load("test.xe"), 
-			new Print(),
-			new Pwd(), new Remove(), new Scripter(), new Set(), new Source(),
-			new Status(), new Version() , new Pling()};			
+    public static boolean allowMess = false;
 
-	private HashSet<String> m_errorToFile;
-	
-	
-	public static void main(String[] args) {
-		ConsoleTest ct = new ConsoleTest();
-		if(args.length < 1){
-			System.out.println("read the source");
-			
-		} else {
-			if(args[0].equals("auto")){
-				ct.test();
-			} else if(args[0].equals("generate")){
-				ct.generate();
-			} else{
-				
-			}
-		}
-	}
+    private static Command[] realCommands = { new Add(), new Analyse(),
+            new Config(), new Clear(), new Echo(), new Help(), new History(),
+            new List(),
+            //new Load("test.xe"),
+            new Print(),
+            new Pwd(), new Remove(), new Scripter(), new Set(), new Source(),
+            new Status(), new Version() , new Pling()};
 
-	private void generate() {
-		StringBuffer sb = new StringBuffer();
-		Random r = new Random();
-		makeCmdList(r, sb);
-        writeOutCmdFile(sb); 
-	}
+    private HashSet<String> m_errorToFile;
 
-	public void test(){
-		m_errorToFile = new HashSet<String>();
-		Random r = new Random();
-		StringBuffer sb = new StringBuffer();
-		
-		int iteration = 0;
-		while(true){
-			
-			
-			makeCmdList(r, sb);
-			
-	        writeOutCmdFile(sb); 
-	        
-	        run();
-	        
-	        detectErrors(iteration);
-	        iteration++;
-	        sb = new StringBuffer();
-		}
-	}
 
-	private void detectErrors(int i) {
-		String error = "";
-        try {
-	        FileReader fr = new FileReader("output.txt");
-	        BufferedReader br = new BufferedReader(fr);
-	        String s;
-	        
-	        while((s = br.readLine()) != null) {
-	        	
-	        	if(s.contains("com.xmos.xta") || s.contains("java.")){
-	        		error += s +"\n";
-	        	}
-	        }
-	        fr.close(); 
-        } catch (IOException e) {
-			e.printStackTrace();
-		}
-        if(!error.equals("") && !m_errorToFile.contains(error)){
-        	m_errorToFile.add(error);
-        	System.out.println(error);
-        	try {
-    			Process p = Runtime.getRuntime().exec(
-    					"cp cmds.txt cmds" + i +".txt");
-    			p.waitFor();
-    		} catch (Exception err) {
-    			err.printStackTrace();
-    		}
+    public static void main(String[] args) {
+        ConsoleTest ct = new ConsoleTest();
+        if(args.length < 1){
+            System.out.println("read the source");
+
+        } else {
+            if(args[0].equals("auto")){
+                ct.test();
+            } else if(args[0].equals("generate")){
+                ct.generate();
+            } else{
+
+            }
         }
-	}
+    }
 
-	private void writeOutCmdFile(StringBuffer sb) {
-		FileWriter outputStream = null;
+    private void generate() {
+        StringBuffer sb = new StringBuffer();
+        Random r = new Random();
+        makeCmdList(r, sb);
+        writeOutCmdFile(sb);
+    }
+
+    public void test(){
+        m_errorToFile = new HashSet<String>();
+        Random r = new Random();
+        StringBuffer sb = new StringBuffer();
+
+        int iteration = 0;
+        while(true){
+
+
+            makeCmdList(r, sb);
+
+            writeOutCmdFile(sb);
+
+            run();
+
+            detectErrors(iteration);
+            iteration++;
+            sb = new StringBuffer();
+        }
+    }
+
+    private void detectErrors(int i) {
+        String error = "";
+        try {
+            FileReader fr = new FileReader("output.txt");
+            BufferedReader br = new BufferedReader(fr);
+            String s;
+
+            while((s = br.readLine()) != null) {
+
+                if(s.contains("com.xmos.xta") || s.contains("java.")){
+                    error += s +"\n";
+                }
+            }
+            fr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(!error.equals("") && !m_errorToFile.contains(error)){
+            m_errorToFile.add(error);
+            System.out.println(error);
+            try {
+                Process p = Runtime.getRuntime().exec(
+                        "cp cmds.txt cmds" + i +".txt");
+                p.waitFor();
+            } catch (Exception err) {
+                err.printStackTrace();
+            }
+        }
+    }
+
+    private void writeOutCmdFile(StringBuffer sb) {
+        FileWriter outputStream = null;
         PrintWriter printer = null;
         try {
             outputStream = new FileWriter("cmds.txt");
@@ -130,45 +130,45 @@ public class ConsoleTest {
                 outputStream.close();
             }
         } catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	private void makeCmdList(Random r, StringBuffer sb) {
-		
-		Command load = new Load("test.xe");
-		for(int i=0;i<10;i++){
-			sb.append(load.getCommand());
-		}
-		
-		for(int i=0;i<100;i++){
-			if(r.nextBoolean()){
-				sb.append("-");
-			}
-			int j= r.nextInt(realCommands.length);
-			sb.append(realCommands[j].getCommand());
-			sb.append("\n");
-		}
-		
-		Exit exit = new Exit();
-		for(int i=0;i<10;i++){
-			sb.append(exit.getCommand());
-			sb.append("\n");
-		}
+    private void makeCmdList(Random r, StringBuffer sb) {
 
-	}
+        Command load = new Load("test.xe");
+        for(int i=0;i<10;i++){
+            sb.append(load.getCommand());
+        }
 
-	private boolean run() {
-		
-		String command = "xta -source cmds.txt > output.txt 2>&1";
+        for(int i=0;i<100;i++){
+            if(r.nextBoolean()){
+                sb.append("-");
+            }
+            int j= r.nextInt(realCommands.length);
+            sb.append(realCommands[j].getCommand());
+            sb.append("\n");
+        }
 
-		try {
-			Process p = Runtime.getRuntime().exec(command);
-			p.waitFor();
-		} catch (Exception err) {
-			err.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+        Exit exit = new Exit();
+        for(int i=0;i<10;i++){
+            sb.append(exit.getCommand());
+            sb.append("\n");
+        }
+
+    }
+
+    private boolean run() {
+
+        String command = "xta -source cmds.txt > output.txt 2>&1";
+
+        try {
+            Process p = Runtime.getRuntime().exec(command);
+            p.waitFor();
+        } catch (Exception err) {
+            err.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }

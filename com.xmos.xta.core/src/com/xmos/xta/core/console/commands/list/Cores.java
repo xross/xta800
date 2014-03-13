@@ -7,31 +7,31 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Cores extends Command {
-	private static final String[] COMMAND_NAMES = { "tiles", "cores" };
+    private static final String[] COMMAND_NAMES = { "tiles", "cores" };
 
-	public Cores() {
-		super(COMMAND_NAMES);
-	}
+    public Cores() {
+        super(COMMAND_NAMES);
+    }
 
-	public int numArgs() {
+    public int numArgs() {
         return 0;
-	}
+    }
 
-	public String commandLine() {
-   		return name();
-	}
+    public String commandLine() {
+           return name();
+    }
 
-	public String description(Engine engine, boolean detailed) {
+    public String description(Engine engine, boolean detailed) {
         return name() + ": Lists the active tiles";
-	}
+    }
 
-	public Command clone(String[] args, int index) {
-   		return new Cores();
-	}
+    public Command clone(String[] args, int index) {
+           return new Cores();
+    }
 
-	public void execute(Shell shell, final Engine engine, final Console console) {
-		for (CoreId activeCore : engine.getActiveCores()) {			
-			console.display(activeCore.getDescription() + "\n");
-		}
-	}
+    public void execute(Shell shell, final Engine engine, final Console console) {
+        for (CoreId activeCore : engine.getActiveCores()) {
+            console.display(activeCore.getDescription() + "\n");
+        }
+    }
 }

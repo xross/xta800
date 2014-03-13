@@ -10,14 +10,14 @@ import com.xmos.xta.test.pseudorandom.XtaPragma;
 
 public class GenerateWhile extends Generator {
 
-	public void generate(StringBuffer file, PseudoRandom pseudoRandom,
-			int indent, Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
-		int nextIndent = indent + 1;
-		addIndent(file, indent);
-		file.append("while(x != 42){\n");
-		ReferenceTree<XtaPragma> currentRef = addLabelPragma(file, pseudoRandom, nextIndent, PragmaType.Label, references, "while");
-		makeNext(file, pseudoRandom, functionStacks, functionName, nextIndent, currentRef, activeThreads);
-		addIndent(file, indent);
-		file.append("}\n");
-	}
+    public void generate(StringBuffer file, PseudoRandom pseudoRandom,
+            int indent, Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
+        int nextIndent = indent + 1;
+        addIndent(file, indent);
+        file.append("while(x != 42){\n");
+        ReferenceTree<XtaPragma> currentRef = addLabelPragma(file, pseudoRandom, nextIndent, PragmaType.Label, references, "while");
+        makeNext(file, pseudoRandom, functionStacks, functionName, nextIndent, currentRef, activeThreads);
+        addIndent(file, indent);
+        file.append("}\n");
+    }
 }

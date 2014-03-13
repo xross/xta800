@@ -35,9 +35,9 @@ public class NoWarn extends Command {
         boolean first = true;
         for (String key : warnings.keySet()) {
             if (!first) {
-                desc += "|";                
+                desc += "|";
             }
-            desc += key;    
+            desc += key;
             first = false;
         }
         return desc + ">: Disable the given warning";

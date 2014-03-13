@@ -12,47 +12,47 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class Warnings extends Command {
-	private static final String[] COMMAND_NAMES = { "warnings" };
+    private static final String[] COMMAND_NAMES = { "warnings" };
 
-	public Warnings() {
-		super(COMMAND_NAMES);
-	}
+    public Warnings() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return name() + ": Print all timing warnings";
+        return name() + ": Print all timing warnings";
     }
 
     public Command clone(String[] args, int index) {
-   		return new Warnings();
+           return new Warnings();
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		for (Route route : engine.getRoutes()) {
-		    displayRouteSummary(engine, console, route);
-		}
+        for (Route route : engine.getRoutes()) {
+            displayRouteSummary(engine, console, route);
+        }
     }
 
     private void displayRouteSummary(Engine engine, Console console, Route route) {
-		RouteTiming routeTiming = route.getRouteTiming();
-		CommandSource src = routeTiming.getCommandSource();
+        RouteTiming routeTiming = route.getRouteTiming();
+        CommandSource src = routeTiming.getCommandSource();
 
-		if (!routeTiming.isTimingSpecified() || !routeTiming.passed() ||
-			(route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0)) {
+        if (!routeTiming.isTimingSpecified() || !routeTiming.passed() ||
+            (route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size() > 0)) {
 
-			// Need to take the '\n' off the end of the string
-			String description = routeTiming.getDescription(Level.DETAILED);
-			description = description.substring(0, description.length() - 1);
+            // Need to take the '\n' off the end of the string
+            String description = routeTiming.getDescription(Level.DETAILED);
+            description = description.substring(0, description.length() - 1);
 
-			engine.notify(src, Notifier.NOTIFY_WARNING,
-					String.format("route(%d) %s", route.getRouteId(), description));
-		}
-	}
+            engine.notify(src, Notifier.NOTIFY_WARNING,
+                    String.format("route(%d) %s", route.getRouteId(), description));
+        }
+    }
 }

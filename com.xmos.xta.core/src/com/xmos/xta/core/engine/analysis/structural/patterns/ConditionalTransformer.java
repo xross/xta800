@@ -14,50 +14,50 @@ public class ConditionalTransformer extends PatternMatcher {
         super(memoryMonitor);
     }
 
-	public boolean isMatch(CfgNode currentNode, 
-	        Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
-	    
-		m_treeStart = treeStart;
-		if (currentNode.getNextNodesSize() < 2) {
-			return false;
-		}
-		return explore(currentNode, new NonIteratableSet<CfgNode>(), 
-				currentNode.getDominators(), currentNode, workingSet);
-	}
+    public boolean isMatch(CfgNode currentNode,
+            Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
 
-	private boolean explore(CfgNode node, NonIteratableSet<CfgNode> seen, 
-			Set<CfgNode> dominators, CfgNode start, Collection<CfgNode> workingSet) throws MemoryMonitorException {
-		
-		seen.add(node);
-		if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
+        m_treeStart = treeStart;
+        if (currentNode.getNextNodesSize() < 2) {
+            return false;
+        }
+        return explore(currentNode, new NonIteratableSet<CfgNode>(),
+                currentNode.getDominators(), currentNode, workingSet);
+    }
 
-		    checkMemory();
-			if(node.getNextNodesSize() >1 && node.getPrevNodes().size() == 1){
-				CommonMethods.wedgeUp(node, workingSet);
-				return true;
-			}
-			checkMemory();
-			if(node.getNextNodesSize() == 1 && node.getPrevNodes().size() > 1){
-				CommonMethods.wedgeDown(node, workingSet);
-				return true;
-			}
-		}
+    private boolean explore(CfgNode node, NonIteratableSet<CfgNode> seen,
+            Set<CfgNode> dominators, CfgNode start, Collection<CfgNode> workingSet) throws MemoryMonitorException {
 
-		boolean found = false;
-		for (CfgNode next : node.getNextNodes()){
-		    checkMemory();
-			if (!seen.contains(next)){
-				found = explore(next, seen, dominators, start, workingSet);
-			}
-			if (found) {
-				return true;
-			}
-		}
-		return false;
-	}
+        seen.add(node);
+        if(node.getDominators().containsAll(dominators) && node.getDominators().size() == dominators.size() + 1){
 
-	public boolean usesDominatorTree() {
-		return true;
-	}
+            checkMemory();
+            if(node.getNextNodesSize() >1 && node.getPrevNodes().size() == 1){
+                CommonMethods.wedgeUp(node, workingSet);
+                return true;
+            }
+            checkMemory();
+            if(node.getNextNodesSize() == 1 && node.getPrevNodes().size() > 1){
+                CommonMethods.wedgeDown(node, workingSet);
+                return true;
+            }
+        }
+
+        boolean found = false;
+        for (CfgNode next : node.getNextNodes()){
+            checkMemory();
+            if (!seen.contains(next)){
+                found = explore(next, seen, dominators, start, workingSet);
+            }
+            if (found) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean usesDominatorTree() {
+        return true;
+    }
 
 }

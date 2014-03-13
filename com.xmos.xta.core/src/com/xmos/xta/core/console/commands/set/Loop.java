@@ -7,70 +7,70 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class Loop extends Command {
-	private static final String[] COMMAND_NAMES = { "loop" };
+    private static final String[] COMMAND_NAMES = { "loop" };
 
-	private int m_routeId;
-	private String m_refString;
-	private int m_iterations;
+    private int m_routeId;
+    private String m_refString;
+    private int m_iterations;
 
-	public Loop() {
-		super(COMMAND_NAMES);
-		m_routeId = 0;
-		m_refString = "";
-		m_iterations = 0;
-	}
-
-	public Loop(int routeId, String refString, int iterations) {
-		super(COMMAND_NAMES);
-		m_routeId = routeId;
-		m_refString = refString;
-		m_iterations = iterations;
-	}
-
-    public int numArgs() {
-   		return 3;
+    public Loop() {
+        super(COMMAND_NAMES);
+        m_routeId = 0;
+        m_refString = "";
+        m_iterations = 0;
     }
 
-	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS};
-	}
+    public Loop(int routeId, String refString, int iterations) {
+        super(COMMAND_NAMES);
+        m_routeId = routeId;
+        m_refString = refString;
+        m_iterations = iterations;
+    }
+
+    public int numArgs() {
+           return 3;
+    }
+
+    public ArgType[] getArgTypes() {
+        return new Command.ArgType[] {ArgType.IGNORE, ArgType.ALLREFS};
+    }
 
     public String commandLine() {
-       	return name() + " " + getRouteId(m_routeId) + " " + m_refString + " " + m_iterations;
+           return name() + " " + getRouteId(m_routeId) + " " + m_refString + " " + m_iterations;
     }
 
     public String description(Engine engine, boolean detailed) {
-   		return name() + " <route id> <ANY> <iterations>: Sets the number of iterations for the loop identified";
+           return name() + " <route id> <ANY> <iterations>: Sets the number of iterations for the loop identified";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-		try {
-			int routeId = getRouteId(args[index + 1]);
-	   	    int iterations = Integer.parseInt(args[index + 3]);
-	        return new Loop(routeId, args[index + 2], iterations);
+        try {
+            int routeId = getRouteId(args[index + 1]);
+               int iterations = Integer.parseInt(args[index + 3]);
+            return new Loop(routeId, args[index + 2], iterations);
 
-		} catch (NumberFormatException e) {
-	   	    return null;
-	   	}
+        } catch (NumberFormatException e) {
+               return null;
+           }
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
         if (!validateRouteId(engine, console, m_routeId))
             return;
-		
-		Node node = getReferencedNode(engine, m_routeId, m_refString);
-		if (node != null) {
-			engine.setSelectedRouteId(getSrc(), m_routeId);
-   		    engine.setLoop(getSrc(), node, m_iterations);
 
-		} else {
-   		    engine.setLoop(getSrc(), m_routeId, m_refString, m_iterations);
-		}
+        Node node = getReferencedNode(engine, m_routeId, m_refString);
+        if (node != null) {
+            engine.setSelectedRouteId(getSrc(), m_routeId);
+               engine.setLoop(getSrc(), node, m_iterations);
+
+        } else {
+               engine.setLoop(getSrc(), m_routeId, m_refString, m_iterations);
+        }
     }
  }

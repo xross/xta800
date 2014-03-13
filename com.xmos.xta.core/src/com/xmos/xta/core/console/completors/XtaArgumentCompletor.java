@@ -8,21 +8,21 @@ import jline.ArgumentCompletor.WhitespaceArgumentDelimiter;
 
 public class XtaArgumentCompletor implements Completor {
     private final List<Completor> m_completors;
-    private final ArgumentDelimiter m_delim;    
+    private final ArgumentDelimiter m_delim;
     private String m_buffer;
 
     public XtaArgumentCompletor(final List<Completor> completors) {
-    	m_completors = completors;
+        m_completors = completors;
         m_delim = new WhitespaceArgumentDelimiter();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	public int complete(final String buffer, final int cursor,
+    public int complete(final String buffer, final int cursor,
                         final List candidates) {
         jline.ArgumentCompletor.ArgumentList list = m_delim.delimit(buffer, cursor);
         int argpos = list.getArgumentPosition();
         int argIndex = list.getCursorArgumentIndex();
-        m_buffer = buffer;        
+        m_buffer = buffer;
 
         if (argIndex < 0) {
             return -1;
@@ -68,8 +68,8 @@ public class XtaArgumentCompletor implements Completor {
         }
         return pos;
     }
-    
+
     public String getBuffer() {
-    	return m_buffer;
+        return m_buffer;
     }
 }

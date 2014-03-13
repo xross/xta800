@@ -9,30 +9,30 @@ import com.xmos.xta.core.engine.CommandSource.Type;
 
 public class BasicConsole extends Console {
 
-	public BasicConsole(){
-	}
-	
-	public void display(String str) {
-		if (!redirectToFile(str)) {
-			System.out.printf("%s", str);
-		}
-	}
+    public BasicConsole(){
+    }
 
-	public void displayPrompt(String str) {
-		System.out.printf("%s", str);
-	}
+    public void display(String str) {
+        if (!redirectToFile(str)) {
+            System.out.printf("%s", str);
+        }
+    }
 
-	public ConsoleCommand getNextLine(Vector<Command> commandHistory) {
-    	Scanner in = new Scanner(System.in);
+    public void displayPrompt(String str) {
+        System.out.printf("%s", str);
+    }
+
+    public ConsoleCommand getNextLine(Vector<Command> commandHistory) {
+        Scanner in = new Scanner(System.in);
         String command = in.nextLine();
         CommandSource src = new CommandSource(Type.CONSOLE);
         return new ConsoleCommand(command, src);
-	}
+    }
 
-	public void clearScreen() {
-	}
+    public void clearScreen() {
+    }
 
-	public boolean hasEscaped() {
-		return false;
-	}
+    public boolean hasEscaped() {
+        return false;
+    }
 }

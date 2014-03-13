@@ -5,42 +5,42 @@ import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.Engine;
 
 public class FunctionPcReference extends ReferenceType {
-	FunctionPcReference(String ref, CoreId coreId) {
-		super(ref, Type.FUNCTION, coreId);
-		if (ref != null) {
-		    addPc(getPcString(ref));
-		}
-	}
+    FunctionPcReference(String ref, CoreId coreId) {
+        super(ref, Type.FUNCTION, coreId);
+        if (ref != null) {
+            addPc(getPcString(ref));
+        }
+    }
 
-	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
-		if (checkTypeString(reference, Type.FUNCTION, 1) &&
-		    isPcString(reference)) {
-			return new FunctionPcReference(reference, coreId);
-		}
-		return null;
-	}
+    public ReferenceType create(Engine engine, String reference, CoreId coreId) {
+        if (checkTypeString(reference, Type.FUNCTION, 1) &&
+            isPcString(reference)) {
+            return new FunctionPcReference(reference, coreId);
+        }
+        return null;
+    }
 
-	public Result resolve(Engine engine) {
-		FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
-		if (functionMapper == null)
-			return Result.UNRESOLVED;
+    public Result resolve(Engine engine) {
+        FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
+        if (functionMapper == null)
+            return Result.UNRESOLVED;
 
-		if (functionMapper.areProfilablePcs(getPcs())) {
-	        setResolved(true);
-	        return Result.RESOLVED;
-	    }
-	    return Result.UNRESOLVED;
-	}
+        if (functionMapper.areProfilablePcs(getPcs())) {
+            setResolved(true);
+            return Result.RESOLVED;
+        }
+        return Result.UNRESOLVED;
+    }
 
-	public String name() {
-		return "FunctionPc";
-	}
+    public String name() {
+        return "FunctionPc";
+    }
 
-	public String description() {
-		return "Raw program counter specified in the format: 0x*";
-	}
+    public String description() {
+        return "Raw program counter specified in the format: 0x*";
+    }
 
-	public boolean isPortable() {
-		return false;
-	}
+    public boolean isPortable() {
+        return false;
+    }
 }

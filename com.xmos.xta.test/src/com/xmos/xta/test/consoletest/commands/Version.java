@@ -6,15 +6,15 @@ import com.xmos.xta.test.consoletest.ConsoleTest;
 
 public class Version implements Command{
 
-	public String getCommand() {
-		Random r = new Random();
-		if(r.nextBoolean() || ConsoleTest.allowMess){
-			return "version ";
-		} else {
-			Mess mess = new Mess();
-			return "version " + mess.getCommand();
-		}
-		
-	}
+    public String getCommand() {
+        Random r = new Random();
+        if(r.nextBoolean() || ConsoleTest.allowMess){
+            return "version ";
+        } else {
+            Mess mess = new Mess();
+            return "version " + mess.getCommand();
+        }
+
+    }
 
 }

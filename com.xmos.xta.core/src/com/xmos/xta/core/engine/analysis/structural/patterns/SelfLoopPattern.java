@@ -16,65 +16,65 @@ public class SelfLoopPattern extends PatternMatcher {
         super(memoryMonitor);
     }
 
-    public boolean isMatch(CfgNode currentNode, 
+    public boolean isMatch(CfgNode currentNode,
             Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
-        
-		m_treeStart = treeStart;
 
-		if (currentNode.getNextNodes().contains(currentNode)) {
-			assert(currentNode.getPrevNodes().contains(currentNode));
-			CfgNode loop = createStructuralNode(currentNode, workingSet);
+        m_treeStart = treeStart;
 
-			if (m_treeStart == currentNode) {
-				m_treeStart = loop;
-			}
+        if (currentNode.getNextNodes().contains(currentNode)) {
+            assert(currentNode.getPrevNodes().contains(currentNode));
+            CfgNode loop = createStructuralNode(currentNode, workingSet);
 
-			currentNode.removeNextNode(currentNode);
-			currentNode.removePrevNode(currentNode);
+            if (m_treeStart == currentNode) {
+                m_treeStart = loop;
+            }
 
-			for (CfgNode next : currentNode.getNextNodes()) {
-					next.removePrevNode(currentNode);
-					next.addPrevNode(loop);
-					loop.addNextNode(next);
-			}
+            currentNode.removeNextNode(currentNode);
+            currentNode.removePrevNode(currentNode);
 
-			for (CfgNode prev : currentNode.getPrevNodes()) {
-					prev.removeNextNode(currentNode);
-					prev.addNextNode(loop);
-					loop.addPrevNode(prev);
-			}
+            for (CfgNode next : currentNode.getNextNodes()) {
+                    next.removePrevNode(currentNode);
+                    next.addPrevNode(loop);
+                    loop.addNextNode(next);
+            }
 
-			assert(workingSet.contains(currentNode));
-			workingSet.remove(currentNode);
-			workingSet.add(loop);
+            for (CfgNode prev : currentNode.getPrevNodes()) {
+                    prev.removeNextNode(currentNode);
+                    prev.addNextNode(loop);
+                    loop.addPrevNode(prev);
+            }
 
-			return true;
-		}
-		return false;
-	}
+            assert(workingSet.contains(currentNode));
+            workingSet.remove(currentNode);
+            workingSet.add(loop);
 
-	public boolean usesDominatorTree() {
-		return false;
-	}
+            return true;
+        }
+        return false;
+    }
 
-	private CfgNode createStructuralNode(CfgNode currentNode, Collection<CfgNode> workingSet) {
+    public boolean usesDominatorTree() {
+        return false;
+    }
 
-		CfgNode cfgNode = null;
-		Node strNode = getStructuralNode(currentNode);
-		
-		if (currentNode.getNextNodesSize() == 1) {
-			Node structuralNode = new InfiniteSelfLoopNode(strNode);
-			cfgNode = new CfgContainerNode(structuralNode);
+    private CfgNode createStructuralNode(CfgNode currentNode, Collection<CfgNode> workingSet) {
 
-			CfgNode nullNode = CommonMethods.findNullNode(workingSet);
-			if (nullNode != null) {
-				CfgNode.connect(nullNode, cfgNode);
-			}
+        CfgNode cfgNode = null;
+        Node strNode = getStructuralNode(currentNode);
 
-		} else {
-			Node structuralNode = new SelfLoopNode(strNode);
-			cfgNode = new CfgContainerNode(structuralNode);
-		}
-		return cfgNode;
-	}	
+        if (currentNode.getNextNodesSize() == 1) {
+            Node structuralNode = new InfiniteSelfLoopNode(strNode);
+            cfgNode = new CfgContainerNode(structuralNode);
+
+            CfgNode nullNode = CommonMethods.findNullNode(workingSet);
+            if (nullNode != null) {
+                CfgNode.connect(nullNode, cfgNode);
+            }
+
+        } else {
+            Node structuralNode = new SelfLoopNode(strNode);
+            cfgNode = new CfgContainerNode(structuralNode);
+        }
+        return cfgNode;
+    }
 }

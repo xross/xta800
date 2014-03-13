@@ -9,67 +9,67 @@ public class SrcLabelTableInfo extends SectionInfo implements Comparable<SrcLabe
     private int m_lineNumberStart;
     private int m_lineNumberEnd;
 
-    public SrcLabelTableInfo(Section section, long pc, 
-    		String compilationDir, String fileName,
-    		int lineNumberStart, int lineNumberEnd) {
-    	super(section);
+    public SrcLabelTableInfo(Section section, long pc,
+            String compilationDir, String fileName,
+            int lineNumberStart, int lineNumberEnd) {
+        super(section);
 
-		if(compilationDir.endsWith("/")){
-			compilationDir = compilationDir.substring(0, compilationDir.length()-1);
-		}
-    	m_pc = pc;
-    	m_compilationDir = compilationDir;
-    	m_fileName = fileName;
-    	m_lineNumberStart = lineNumberStart;
-    	m_lineNumberEnd = lineNumberEnd;
+        if(compilationDir.endsWith("/")){
+            compilationDir = compilationDir.substring(0, compilationDir.length()-1);
+        }
+        m_pc = pc;
+        m_compilationDir = compilationDir;
+        m_fileName = fileName;
+        m_lineNumberStart = lineNumberStart;
+        m_lineNumberEnd = lineNumberEnd;
     }
 
     public long getPc() {
-    	return m_pc;
+        return m_pc;
     }
 
     public String getCompilationDir() {
-    	return m_compilationDir;
+        return m_compilationDir;
     }
 
     public String getFileName() {
-    	return m_fileName;
+        return m_fileName;
     }
 
     public int getLineNumberStart() {
-    	return m_lineNumberStart;
+        return m_lineNumberStart;
     }
 
     public int getLineNumberEnd() {
-    	return m_lineNumberEnd;
+        return m_lineNumberEnd;
     }
 
-	public void setLineNumberEnd(int lineNumberEnd) {
-		m_lineNumberEnd = lineNumberEnd;
-	}
+    public void setLineNumberEnd(int lineNumberEnd) {
+        m_lineNumberEnd = lineNumberEnd;
+    }
 
-	public int compareTo(SrcLabelTableInfo o) {
-		if (!m_fileName.equals(o.m_fileName)) {
-			return m_fileName.compareTo(o.m_fileName);
-		} else if (m_lineNumberStart < o.m_lineNumberStart) {
-			return -1;
-		} else if (m_lineNumberStart > o.m_lineNumberStart) {
-			return 1;
-		} else if (m_pc < o.m_pc) {
-			return -1;
-		} else if (m_pc > o.m_pc) {
-			return 1;
-		} else {
-			return 0;
-		}
-	}
+    public int compareTo(SrcLabelTableInfo o) {
+        if (!m_fileName.equals(o.m_fileName)) {
+            return m_fileName.compareTo(o.m_fileName);
+        } else if (m_lineNumberStart < o.m_lineNumberStart) {
+            return -1;
+        } else if (m_lineNumberStart > o.m_lineNumberStart) {
+            return 1;
+        } else if (m_pc < o.m_pc) {
+            return -1;
+        } else if (m_pc > o.m_pc) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
     public String toString() {
-		return m_compilationDir + File.separator + m_fileName + ":" +
-			Long.toString(m_lineNumberStart) + "-" + Long.toString(m_lineNumberEnd);
+        return m_compilationDir + File.separator + m_fileName + ":" +
+            Long.toString(m_lineNumberStart) + "-" + Long.toString(m_lineNumberEnd);
     }
 
     public String toReferenceString() {
-		return m_compilationDir + File.separator + m_fileName + ":" + Long.toString(m_lineNumberStart);
+        return m_compilationDir + File.separator + m_fileName + ":" + Long.toString(m_lineNumberStart);
     }
 }

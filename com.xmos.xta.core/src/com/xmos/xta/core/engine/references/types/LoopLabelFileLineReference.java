@@ -13,9 +13,9 @@ public class LoopLabelFileLineReference extends ReferenceType {
     public ReferenceType create(Engine engine, String reference, CoreId coreId) {
         if (checkTypeString(reference, Type.LOOPLABEL, 2) &&
             isSourceReference(reference) &&
-            inSrcLabelTable(reference, 
-                    engine.getLoopLabelTable(coreId), 
-                    engine.getWorkspacePath(), 
+            inSrcLabelTable(reference,
+                    engine.getLoopLabelTable(coreId),
+                    engine.getWorkspacePath(),
                     engine.getSourceMapper())) {
             return new LoopLabelFileLineReference(reference, coreId);
         }
@@ -29,7 +29,7 @@ public class LoopLabelFileLineReference extends ReferenceType {
 
         for (SrcLabelTableInfo info : engine.getLoopLabelTable(getCoreId())) {
             if (((lineNumber >= info.getLineNumberStart()) && (lineNumber <= info.getLineNumberEnd())) &&
-                    FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
+                    FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(),
                             fileName, engine.getWorkspacePath(), engine.getSourceMapper())) {
 
                 addPc(info.getPc());

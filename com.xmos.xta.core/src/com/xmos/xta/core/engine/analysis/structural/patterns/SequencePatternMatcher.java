@@ -20,173 +20,173 @@ public class SequencePatternMatcher extends PatternMatcher {
     public SequencePatternMatcher(MemoryMonitor memoryMonitor) {
         super(memoryMonitor);
     }
-    
-    public boolean isMatch(CfgNode currentNode, 
+
+    public boolean isMatch(CfgNode currentNode,
             Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
 
-		m_treeStart = treeStart;
-		LinkedList<CfgNode> pathList = new LinkedList<CfgNode>();
-		pathList.add(currentNode);
-		if (isStart(currentNode)) {
-			while (continueDown(currentNode, workingSet, pathList)) {
-				currentNode = currentNode.getNextNode();
-				pathList.add(currentNode);
-			}
-		}
+        m_treeStart = treeStart;
+        LinkedList<CfgNode> pathList = new LinkedList<CfgNode>();
+        pathList.add(currentNode);
+        if (isStart(currentNode)) {
+            while (continueDown(currentNode, workingSet, pathList)) {
+                currentNode = currentNode.getNextNode();
+                pathList.add(currentNode);
+            }
+        }
 
-		CfgNode lastNode = pathList.getLast();
-		if ((lastNode instanceof CfgNullNode) && pathList.size() > 1) {
-			CfgNode.disconnect(lastNode, pathList.get(pathList.size()-2));
-			pathList.removeLast();
-			workingSet.remove(lastNode);
-		}
+        CfgNode lastNode = pathList.getLast();
+        if ((lastNode instanceof CfgNullNode) && pathList.size() > 1) {
+            CfgNode.disconnect(lastNode, pathList.get(pathList.size()-2));
+            pathList.removeLast();
+            workingSet.remove(lastNode);
+        }
 
-		if (pathList.size() > 1) {
-			assert(pathSanityCheck(pathList));
-			updateGraph(pathList, workingSet, treeStart);
-			return true;
-		} else {
-			return false;
-		}
-	}
+        if (pathList.size() > 1) {
+            assert(pathSanityCheck(pathList));
+            updateGraph(pathList, workingSet, treeStart);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	private boolean isStart(CfgNode node){
-		if (node == m_treeStart){
-			return true;
-			
-		} else if (node.getPrevNodes().size() ==  0) {
-			return true;
-			
-		} else if (node.getPrevNodes().size() ==  1) {
-			CfgNode prev = node.getPrevNode();
-			if (prev.getNextNodesSize() > 1) {
-				return true;
-			} else {
-				return false;
-			}
-		} else if (node.getPrevNodes().size() > 1) {
-			return true;
-			
-		} else {
-			return false;
-		}
-	}
+    private boolean isStart(CfgNode node){
+        if (node == m_treeStart){
+            return true;
 
-	private boolean isEnd(CfgNode node, Collection<CfgNode> workingSet, LinkedList<CfgNode> pathList) {
+        } else if (node.getPrevNodes().size() ==  0) {
+            return true;
 
-		if (node.getNextNodesSize() ==  0){
-			return true;
-		} else if (node.getNextNodesSize() ==  1) {
-			CfgNode next = node.getNextNode();
+        } else if (node.getPrevNodes().size() ==  1) {
+            CfgNode prev = node.getPrevNode();
+            if (prev.getNextNodesSize() > 1) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (node.getPrevNodes().size() > 1) {
+            return true;
 
-			if ((next instanceof CfgNullNode) && pathList.size() + 1 < workingSet.size()) {
-				return true;
-			}
+        } else {
+            return false;
+        }
+    }
 
-			if(next == m_treeStart){
-				return true;
-			}
+    private boolean isEnd(CfgNode node, Collection<CfgNode> workingSet, LinkedList<CfgNode> pathList) {
 
-			if (next.getPrevNodes().size() > 1) {
-				return true;
-			} else {
-				return false;
-			}
-		}
+        if (node.getNextNodesSize() ==  0){
+            return true;
+        } else if (node.getNextNodesSize() ==  1) {
+            CfgNode next = node.getNextNode();
 
-		//FIXME - i dont think this can be hit
-		else if (node.getNextNodesSize() > 1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+            if ((next instanceof CfgNullNode) && pathList.size() + 1 < workingSet.size()) {
+                return true;
+            }
 
-	private boolean continueDown(CfgNode node, Collection<CfgNode> workingSet, LinkedList<CfgNode> pathList){
-		if (node.getNextNodesSize() == 1 && !isEnd(node, workingSet, pathList) &&
-			!node.dominatorsContain(node.getNextNode())) {
-			return true;
-		} 
-		return false;
-	}
+            if(next == m_treeStart){
+                return true;
+            }
 
-	private boolean pathSanityCheck(LinkedList<CfgNode> pathList) {
-		Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
+            if (next.getPrevNodes().size() > 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
-		if (pathList.size() < 2) {
-			return false;
-		}
+        //FIXME - i dont think this can be hit
+        else if (node.getNextNodesSize() > 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-		for (int i = 0; i < pathList.size() - 2; i++) {
-			CfgNode node = pathList.get(i);
+    private boolean continueDown(CfgNode node, Collection<CfgNode> workingSet, LinkedList<CfgNode> pathList){
+        if (node.getNextNodesSize() == 1 && !isEnd(node, workingSet, pathList) &&
+            !node.dominatorsContain(node.getNextNode())) {
+            return true;
+        }
+        return false;
+    }
 
-			if (seen.contains(node)) {
-				return false;
-			}
+    private boolean pathSanityCheck(LinkedList<CfgNode> pathList) {
+        Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
 
-			if (node.getNextNodesSize() != 1) {
-				return false;
-			}
+        if (pathList.size() < 2) {
+            return false;
+        }
 
-			if (node.getNextNode() != pathList.get(i + 1)) {
-				return false;
-			}
+        for (int i = 0; i < pathList.size() - 2; i++) {
+            CfgNode node = pathList.get(i);
 
-			seen.add(node);
-		}
-		return true;
-	}
+            if (seen.contains(node)) {
+                return false;
+            }
 
-	protected void updateGraph(LinkedList<CfgNode> pathList, Collection<CfgNode> workingSet, CfgNode treeStart) {
+            if (node.getNextNodesSize() != 1) {
+                return false;
+            }
 
-		CfgNode path = createStructuralNode(pathList);
+            if (node.getNextNode() != pathList.get(i + 1)) {
+                return false;
+            }
 
-		if (pathList.contains(treeStart)) {
-			m_treeStart = path;
-		} else {
-			m_treeStart = treeStart;
-		}
+            seen.add(node);
+        }
+        return true;
+    }
 
-		CfgNode startNodeInPath = pathList.getFirst();
-		CfgNode endNodeInPath = pathList.getLast();
+    protected void updateGraph(LinkedList<CfgNode> pathList, Collection<CfgNode> workingSet, CfgNode treeStart) {
 
-		for (CfgNode prev : startNodeInPath.getPrevNodes()) {
-			path.addPrevNode(prev);
+        CfgNode path = createStructuralNode(pathList);
 
-			prev.removeNextNode(startNodeInPath);
-			//prev.getNextNodes().remove(startNodeInPath);
-			prev.addNextNode(path);
-		}
-		for (CfgNode next : endNodeInPath.getNextNodes()) {
-			path.addNextNode(next);
+        if (pathList.contains(treeStart)) {
+            m_treeStart = path;
+        } else {
+            m_treeStart = treeStart;
+        }
 
-			next.removePrevNode(endNodeInPath);
-			next.addPrevNode(path);
-		}
+        CfgNode startNodeInPath = pathList.getFirst();
+        CfgNode endNodeInPath = pathList.getLast();
 
-		workingSet.removeAll(pathList);
-		workingSet.add(path);
-	}
+        for (CfgNode prev : startNodeInPath.getPrevNodes()) {
+            path.addPrevNode(prev);
 
-	public boolean usesDominatorTree() {
-		return true;
-	}
-	
-	private CfgNode createStructuralNode(LinkedList<CfgNode> pathList) {
-		
-		Node path = null;
-		boolean allNodesNull = true;
-		for (CfgNode node : pathList) {
-			if (!(node instanceof CfgNullNode)) {
-				allNodesNull = false;
-			}
-		}
-		if (allNodesNull) {
-			path = new NullNode();
-		} else {
-			List<Node> strPathNodes = getStructuralNodes(pathList);
-			path = new SequenceNode(strPathNodes);
-		}
-		return new CfgContainerNode(path);
-	}
+            prev.removeNextNode(startNodeInPath);
+            //prev.getNextNodes().remove(startNodeInPath);
+            prev.addNextNode(path);
+        }
+        for (CfgNode next : endNodeInPath.getNextNodes()) {
+            path.addNextNode(next);
+
+            next.removePrevNode(endNodeInPath);
+            next.addPrevNode(path);
+        }
+
+        workingSet.removeAll(pathList);
+        workingSet.add(path);
+    }
+
+    public boolean usesDominatorTree() {
+        return true;
+    }
+
+    private CfgNode createStructuralNode(LinkedList<CfgNode> pathList) {
+
+        Node path = null;
+        boolean allNodesNull = true;
+        for (CfgNode node : pathList) {
+            if (!(node instanceof CfgNullNode)) {
+                allNodesNull = false;
+            }
+        }
+        if (allNodesNull) {
+            path = new NullNode();
+        } else {
+            List<Node> strPathNodes = getStructuralNodes(pathList);
+            path = new SequenceNode(strPathNodes);
+        }
+        return new CfgContainerNode(path);
+    }
 }

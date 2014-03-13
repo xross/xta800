@@ -16,268 +16,268 @@ import com.xmos.xta.core.engine.utils.TimeUnit;
 import com.xmos.xta.core.engine.utils.TimeUnit.Units;
 
 public class RouteTiming {
-	public enum Level {
-		REQUIRED,
-		SIMPLE,
-		DETAILED,
-		COMPLETE
-	}
+    public enum Level {
+        REQUIRED,
+        SIMPLE,
+        DETAILED,
+        COMPLETE
+    }
 
-	private Route m_route;
-	private CoreConfig m_coreConfig;
-	private CoreId m_coreId;
-	private TimeUnit m_maxTime;
-	private boolean m_maxTimeSet;
-	private CommandSource m_requirementsSrc;
+    private Route m_route;
+    private CoreConfig m_coreConfig;
+    private CoreId m_coreId;
+    private TimeUnit m_maxTime;
+    private boolean m_maxTimeSet;
+    private CommandSource m_requirementsSrc;
 
-	RouteTiming(CommandSource src, Route route, CoreConfig coreConfig, CoreId coreId) {
-		m_requirementsSrc = src;
-		m_route = route;
-		m_coreConfig = coreConfig;
-		m_coreId = coreId;
-		m_maxTime = new TimeUnit(m_coreConfig, 0.0, Units.NS);
-		m_maxTimeSet = false;
-	}
+    RouteTiming(CommandSource src, Route route, CoreConfig coreConfig, CoreId coreId) {
+        m_requirementsSrc = src;
+        m_route = route;
+        m_coreConfig = coreConfig;
+        m_coreId = coreId;
+        m_maxTime = new TimeUnit(m_coreConfig, 0.0, Units.NS);
+        m_maxTimeSet = false;
+    }
 
-	public boolean isTimingSpecified() {
-		return m_maxTimeSet;
-	}
+    public boolean isTimingSpecified() {
+        return m_maxTimeSet;
+    }
 
-	public void setMaxTime(CommandSource src, TimeUnit maxTime) {
-		m_requirementsSrc = src;
-		m_maxTime = new TimeUnit(m_coreConfig, maxTime);
-		m_maxTimeSet = true;
-	}
+    public void setMaxTime(CommandSource src, TimeUnit maxTime) {
+        m_requirementsSrc = src;
+        m_maxTime = new TimeUnit(m_coreConfig, maxTime);
+        m_maxTimeSet = true;
+    }
 
-	public TimeUnit getMaxTime() {
-		return m_maxTime;
-	}
+    public TimeUnit getMaxTime() {
+        return m_maxTime;
+    }
 
-	public CommandSource getCommandSource() {
-		return m_requirementsSrc;
-	}
+    public CommandSource getCommandSource() {
+        return m_requirementsSrc;
+    }
 
-	public boolean passed() {
-		return passedUnknowns() && passedTiming();
-	}
+    public boolean passed() {
+        return passedUnknowns() && passedTiming();
+    }
 
-	public List<String> getWarnings() {
-		return getStrings(Unknown.Level.WARNING);
-	}
+    public List<String> getWarnings() {
+        return getStrings(Unknown.Level.WARNING);
+    }
 
-	public List<String> getErrors() {
-		return getStrings(Unknown.Level.ERROR);
-	}
-	
-	public long getViolationCycles(Status status) {
-		return getCycles(status, Case.WORST) - m_maxTime.getCycles();
-	}
+    public List<String> getErrors() {
+        return getStrings(Unknown.Level.ERROR);
+    }
 
-	public double getViolationTime(Status status) {
-		return getTime(status, Case.WORST) - m_maxTime.getNs();
-	}
+    public long getViolationCycles(Status status) {
+        return getCycles(status, Case.WORST) - m_maxTime.getCycles();
+    }
 
-	public long getSlackCycles(Status status) {
-		return m_maxTime.getCycles() - getCycles(status, Case.WORST);
-	}
+    public double getViolationTime(Status status) {
+        return getTime(status, Case.WORST) - m_maxTime.getNs();
+    }
 
-	public double getSlackTime(Status status) {
-		return m_maxTime.getNs() - getTime(status, Case.WORST);
-	}
+    public long getSlackCycles(Status status) {
+        return m_maxTime.getCycles() - getCycles(status, Case.WORST);
+    }
 
-	public int getMinFrequency(Status status) {
-		return (int)((getTime(status, Case.WORST) / m_maxTime.getNs()) * m_coreConfig.m_frequency);
-	}
+    public double getSlackTime(Status status) {
+        return m_maxTime.getNs() - getTime(status, Case.WORST);
+    }
 
-	public Status getWorstCaseTimeStatus() {
-		Status status = new Status();
-		getTime(status, Case.WORST);
-		return status;
-	}
+    public int getMinFrequency(Status status) {
+        return (int)((getTime(status, Case.WORST) / m_maxTime.getNs()) * m_coreConfig.m_frequency);
+    }
 
-	public String getDescription(Level level) {
-		String description = "";
-		if (isTimingSpecified()) {
-			if (level == Level.REQUIRED) {
-				return m_maxTime.getDescription(true);
-			}
+    public Status getWorstCaseTimeStatus() {
+        Status status = new Status();
+        getTime(status, Case.WORST);
+        return status;
+    }
 
-			if (level == Level.COMPLETE) {
-				description += String.format("%s (node: %d, core: %d)\n",
-						m_coreId.getCoreReference(), 
-						m_coreId.getNodeChainIndex(), 
-						m_coreId.getCoreNumber());				
-			} else {
-				description += "    ";
-			}
+    public String getDescription(Level level) {
+        String description = "";
+        if (isTimingSpecified()) {
+            if (level == Level.REQUIRED) {
+                return m_maxTime.getDescription(true);
+            }
 
-			if (passed()) {
-				description += "Pass";
-			} else {
-			
-				if (!passedTiming()) {
-					description += "Fail (timing violation)";
+            if (level == Level.COMPLETE) {
+                description += String.format("%s (node: %d, core: %d)\n",
+                        m_coreId.getCoreReference(),
+                        m_coreId.getNodeChainIndex(),
+                        m_coreId.getCoreNumber());
+            } else {
+                description += "    ";
+            }
 
-				} else {
-					description += "Fail (missing loop iterations)";					
-				}				
-			}
-			
-			int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
-			if (numWarnings > 0)
-				description += " with " + numWarnings + " unknown";
-			if (numWarnings > 1)
-				description += "s";
-			
-			description += ", Num Paths: " + m_route.getNode().getAttributes(false).getNumPathsStr();
+            if (passed()) {
+                description += "Pass";
+            } else {
 
-			if (level == Level.DETAILED) {
-				description += ", ";
+                if (!passedTiming()) {
+                    description += "Fail (timing violation)";
 
-				if (passedTiming()) {
-					Status status = new Status();
-					double slackTime = getSlackTime(status);
-					assert(status.isComplete());
-				    description += String.format("Slack: %s, ",
-				    		Conversion.getTimeString(slackTime));
+                } else {
+                    description += "Fail (missing loop iterations)";
+                }
+            }
 
-				} else {
-					Status status = new Status();
-					double violationTime = getViolationTime(status);
-			    	if (status.isExceptionalCase()) {
-			    		description += String.format("Violation: %s, ", status.getString());
+            int numWarnings = m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN).size();
+            if (numWarnings > 0)
+                description += " with " + numWarnings + " unknown";
+            if (numWarnings > 1)
+                description += "s";
 
-			    	} else {
-					    description += String.format("Violation: %s, ",
-					    		Conversion.getTimeString(violationTime));
-			    	}
-				}
+            description += ", Num Paths: " + m_route.getNode().getAttributes(false).getNumPathsStr();
 
-				description += String.format("Required: %s, ",
-						Conversion.getTimeString(m_maxTime.getNs()));
+            if (level == Level.DETAILED) {
+                description += ", ";
 
-				Status worstTimeStatus = new Status();
-				double worstTime = getTime(worstTimeStatus, Case.WORST);
-		    	if (worstTimeStatus.isExceptionalCase()) {
-		    		description += String.format("Worst: %s, ", worstTimeStatus.getString());
+                if (passedTiming()) {
+                    Status status = new Status();
+                    double slackTime = getSlackTime(status);
+                    assert(status.isComplete());
+                    description += String.format("Slack: %s, ",
+                            Conversion.getTimeString(slackTime));
 
-		    	} else {
-				    description += String.format("Worst: %s, ",
-				    		Conversion.getTimeString(worstTime));
-		    	}
+                } else {
+                    Status status = new Status();
+                    double violationTime = getViolationTime(status);
+                    if (status.isExceptionalCase()) {
+                        description += String.format("Violation: %s, ", status.getString());
 
-				Status minFrequencyStatus = new Status();
-				int minFrequency = getMinFrequency(minFrequencyStatus);
-		    	if (minFrequencyStatus.isExceptionalCase()) {
-		    		description += String.format("Min Core Frequency: %s\n", minFrequencyStatus.getString());
+                    } else {
+                        description += String.format("Violation: %s, ",
+                                Conversion.getTimeString(violationTime));
+                    }
+                }
 
-		    	} else {
-				    description += String.format("Min Core Frequency: %d MHz\n", minFrequency);
-				}
+                description += String.format("Required: %s, ",
+                        Conversion.getTimeString(m_maxTime.getNs()));
 
-			} else if (level == Level.COMPLETE) {
-				description += "\n";
+                Status worstTimeStatus = new Status();
+                double worstTime = getTime(worstTimeStatus, Case.WORST);
+                if (worstTimeStatus.isExceptionalCase()) {
+                    description += String.format("Worst: %s, ", worstTimeStatus.getString());
 
-		    	Status status = new Status();
-		    	double worstTime = getTime(status, Case.WORST);
+                } else {
+                    description += String.format("Worst: %s, ",
+                            Conversion.getTimeString(worstTime));
+                }
 
-		    	if (status.isExceptionalCase()) {
-		    		description += String.format("Worst Case:  %s\n", status.getString());
+                Status minFrequencyStatus = new Status();
+                int minFrequency = getMinFrequency(minFrequencyStatus);
+                if (minFrequencyStatus.isExceptionalCase()) {
+                    description += String.format("Min Core Frequency: %s\n", minFrequencyStatus.getString());
 
-		    	} else {
-		    		description += String.format("Worst Case Timing:  %8s,%8.2f MHz,%8d thread cycles\n",
-		    				Conversion.getTimeString(worstTime),
-		    				getMhz(worstTime),
-		    				getCycles(new Status(), Case.WORST));
-		    	}
+                } else {
+                    description += String.format("Min Core Frequency: %d MHz\n", minFrequency);
+                }
 
-				if (isTimingSpecified()) {
-					description += String.format("Required:    %8s,%8.2f MHz,%8d thread cycles\n",
-							Conversion.getTimeString(m_maxTime.getNs()),
-							m_maxTime.getMhz(),
-							m_maxTime.getCycles());
+            } else if (level == Level.COMPLETE) {
+                description += "\n";
 
-					if (passedTiming()) {
-						assert(status.isComplete());
-		                double slackTime = getSlackTime(new Status());
-		                description += String.format("Slack:      %8s,%8.2f MHz,%8d thread cycles\n",
-		                		Conversion.getTimeString(slackTime),
-		                		getMhz(slackTime),
-		                		getSlackCycles(new Status()));
-		    	    } else {
-				    	if (status.isInfinite() || status.isUnresolved()) {
-				    		description += String.format("Violation:  %s\n", status.getString());
+                Status status = new Status();
+                double worstTime = getTime(status, Case.WORST);
 
-				    	} else {
-			                double violationTime = getViolationTime(new Status());
-			                description += String.format("Failed, Violation:  %8s,%8.2f MHz,%8d thread cycles\n",
-			                		Conversion.getTimeString(violationTime),
-			                		getMhz(violationTime),
-			                		getViolationCycles(new Status()));
-				    	}
-		    	    }
+                if (status.isExceptionalCase()) {
+                    description += String.format("Worst Case:  %s\n", status.getString());
 
-					if (status.isComplete())
-					    description += String.format("Min Core Frequency: %8d MHz\n", getMinFrequency(new Status()));
+                } else {
+                    description += String.format("Worst Case Timing:  %8s,%8.2f MHz,%8d thread cycles\n",
+                            Conversion.getTimeString(worstTime),
+                            getMhz(worstTime),
+                            getCycles(new Status(), Case.WORST));
+                }
 
-				} else {
-					description += "No Timing Specified\n";
-				}
-			}
-		} else {
-			if (level == Level.COMPLETE) {
-				description += String.format("%s (node: %d, core: %d)\n",
-						m_coreId.getCoreReference(), 
-						m_coreId.getNodeChainIndex(), 
-						m_coreId.getCoreNumber());				
-			} else {
-				description += "    ";
-			}
-			description += "No Timing Specified\n";
-		}
-		return description;
-	}
+                if (isTimingSpecified()) {
+                    description += String.format("Required:    %8s,%8.2f MHz,%8d thread cycles\n",
+                            Conversion.getTimeString(m_maxTime.getNs()),
+                            m_maxTime.getMhz(),
+                            m_maxTime.getCycles());
 
-	public long getCycles(Status status, Case c) {
-		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes(false).getNumCycles(c, status, null);
-	}
+                    if (passedTiming()) {
+                        assert(status.isComplete());
+                        double slackTime = getSlackTime(new Status());
+                        description += String.format("Slack:      %8s,%8.2f MHz,%8d thread cycles\n",
+                                Conversion.getTimeString(slackTime),
+                                getMhz(slackTime),
+                                getSlackCycles(new Status()));
+                    } else {
+                        if (status.isInfinite() || status.isUnresolved()) {
+                            description += String.format("Violation:  %s\n", status.getString());
 
-	public double getTime(Status status, Case c) {
-		Node worstCaseSubRoute = m_route.getNode();
-		return worstCaseSubRoute.getAttributes(false).getTimeTaken(c, status, null);
-	}
-	
-	private boolean passedUnknowns() {
-		for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
-			if (unknown.getLevel() == Unknown.Level.ERROR) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean passedTiming() {
-		Status status = new Status();
-		double worstTime = getTime(status, Case.WORST);
-		if (status.isComplete()) {
-			if ((worstTime <= m_maxTime.getNs()) && (worstTime != Double.POSITIVE_INFINITY))
-			    return true;
-		}
-		return false;
-	}
+                        } else {
+                            double violationTime = getViolationTime(new Status());
+                            description += String.format("Failed, Violation:  %8s,%8.2f MHz,%8d thread cycles\n",
+                                    Conversion.getTimeString(violationTime),
+                                    getMhz(violationTime),
+                                    getViolationCycles(new Status()));
+                        }
+                    }
+
+                    if (status.isComplete())
+                        description += String.format("Min Core Frequency: %8d MHz\n", getMinFrequency(new Status()));
+
+                } else {
+                    description += "No Timing Specified\n";
+                }
+            }
+        } else {
+            if (level == Level.COMPLETE) {
+                description += String.format("%s (node: %d, core: %d)\n",
+                        m_coreId.getCoreReference(),
+                        m_coreId.getNodeChainIndex(),
+                        m_coreId.getCoreNumber());
+            } else {
+                description += "    ";
+            }
+            description += "No Timing Specified\n";
+        }
+        return description;
+    }
+
+    public long getCycles(Status status, Case c) {
+        Node worstCaseSubRoute = m_route.getNode();
+        return worstCaseSubRoute.getAttributes(false).getNumCycles(c, status, null);
+    }
+
+    public double getTime(Status status, Case c) {
+        Node worstCaseSubRoute = m_route.getNode();
+        return worstCaseSubRoute.getAttributes(false).getTimeTaken(c, status, null);
+    }
+
+    private boolean passedUnknowns() {
+        for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
+            if (unknown.getLevel() == Unknown.Level.ERROR) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean passedTiming() {
+        Status status = new Status();
+        double worstTime = getTime(status, Case.WORST);
+        if (status.isComplete()) {
+            if ((worstTime <= m_maxTime.getNs()) && (worstTime != Double.POSITIVE_INFINITY))
+                return true;
+        }
+        return false;
+    }
 
     private double getMhz(double ns) {
-    	return (1.0 * 1000) / ns;
+        return (1.0 * 1000) / ns;
     }
-    
+
     private List<String> getStrings(Unknown.Level level) {
-    	List<String> strings = new ArrayList<String>();		
-    	for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
-    		if (unknown.getLevel() == level) {
-    			strings.add(unknown.getDescription());
-    		}
-    	}
-    	return strings;        	
+        List<String> strings = new ArrayList<String>();
+        for (Unknown unknown : m_route.getRouteUnknowns().getUnknowns(State.UNKNOWN)) {
+            if (unknown.getLevel() == level) {
+                strings.add(unknown.getDescription());
+            }
+        }
+        return strings;
     }
 }

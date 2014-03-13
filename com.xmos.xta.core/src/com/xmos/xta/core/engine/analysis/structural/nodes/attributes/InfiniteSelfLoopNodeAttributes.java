@@ -4,17 +4,17 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 
 public class InfiniteSelfLoopNodeAttributes extends NodeAttributes {
-	public InfiniteSelfLoopNodeAttributes(Node node) {
-		super(node);
-	}
-
-	long getLocalIterations(Node child)
-        throws CondIterationsNotSetException, InfiniteIterationsException {
-	    throw new InfiniteIterationsException();
+    public InfiniteSelfLoopNodeAttributes(Node node) {
+        super(node);
     }
 
-	Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveCond)
+    long getLocalIterations(Node child)
+        throws CondIterationsNotSetException, InfiniteIterationsException {
+        throw new InfiniteIterationsException();
+    }
+
+    Iterations getTotalIterations(Case c, Node child, Node ignoreIterationsAboveCond)
         throws IgnoreCondIterationsException, InfiniteIterationsException {
-	    throw new InfiniteIterationsException();
+        throw new InfiniteIterationsException();
     }
 }

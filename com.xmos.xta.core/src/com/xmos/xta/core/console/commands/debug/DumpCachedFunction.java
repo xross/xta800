@@ -12,30 +12,30 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class DumpCachedFunction extends Command {
-	private static final String[] COMMAND_NAMES = { "dumpcachedfunction" };
+    private static final String[] COMMAND_NAMES = { "dumpcachedfunction" };
 
-	private String m_functionName;
+    private String m_functionName;
 
-	public DumpCachedFunction() {
-		super(COMMAND_NAMES);
-		m_functionName = "";
-	}
-
-	public DumpCachedFunction(String functionName) {
-		super(COMMAND_NAMES);
-		m_functionName = functionName;
-	}
-
-    public int numArgs() {
-    	return 1;
+    public DumpCachedFunction() {
+        super(COMMAND_NAMES);
+        m_functionName = "";
     }
 
-	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.FUNCTION};
-	}
+    public DumpCachedFunction(String functionName) {
+        super(COMMAND_NAMES);
+        m_functionName = functionName;
+    }
+
+    public int numArgs() {
+        return 1;
+    }
+
+    public ArgType[] getArgTypes() {
+        return new Command.ArgType[] {ArgType.FUNCTION};
+    }
 
     public String commandLine() {
-    	return name() + " " + m_functionName;
+        return name() + " " + m_functionName;
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -43,28 +43,28 @@ public class DumpCachedFunction extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-    	String functionName = args[index + 1];
+        String functionName = args[index + 1];
         return new DumpCachedFunction(functionName);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		final StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
+        final StructureDisplayer displayer = new StructureDisplayer(console, engine.getVerbosity());
 
-		for (CoreId coreId : engine.getActiveCores()) {			
-			console.display(String.format("Core: %s\n", coreId.getCoreReference()));
+        for (CoreId coreId : engine.getActiveCores()) {
+            console.display(String.format("Core: %s\n", coreId.getCoreReference()));
 
-			Node cachedFunction = engine.getDebugger().getCachedFunction(getSrc(), m_functionName, coreId);
-			if (cachedFunction != null) {
-				Collection<Node> nodes = new ArrayList<Node>();		
-				nodes.add(cachedFunction);
-	    		displayer.display(nodes);				
-			}
-		}						
+            Node cachedFunction = engine.getDebugger().getCachedFunction(getSrc(), m_functionName, coreId);
+            if (cachedFunction != null) {
+                Collection<Node> nodes = new ArrayList<Node>();
+                nodes.add(cachedFunction);
+                displayer.display(nodes);
+            }
+        }
     }
 }

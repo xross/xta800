@@ -11,25 +11,25 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.State;
 
 public class Unknowns extends Command {
-	private static final String[] COMMAND_NAMES = { "unknowns" };
+    private static final String[] COMMAND_NAMES = { "unknowns" };
 
-	private int m_routeId;
+    private int m_routeId;
 
-	public Unknowns() {
-		super(COMMAND_NAMES);
-	}
+    public Unknowns() {
+        super(COMMAND_NAMES);
+    }
 
-	public Unknowns(int routeId) {
-		super(COMMAND_NAMES);
-		m_routeId = routeId;
-	}
+    public Unknowns(int routeId) {
+        super(COMMAND_NAMES);
+        m_routeId = routeId;
+    }
 
     public int numArgs() {
-   		return 1;
+           return 1;
     }
 
     public String commandLine() {
-   		return name() + " " + getRouteId(m_routeId);
+           return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -37,34 +37,34 @@ public class Unknowns extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-    	try {
-    	    return new Unknowns(getRouteId(args[index + 1]));
-	    } catch (NumberFormatException e) {
-	        return null;
-	    }
+        try {
+            return new Unknowns(getRouteId(args[index + 1]));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public void execute(Shell shell, Engine engine, final Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		if (!validateRouteId(engine, console, m_routeId))
-		    return;
+        if (!validateRouteId(engine, console, m_routeId))
+            return;
 
-	    for (Route route : engine.getRoute(m_routeId)) {
-		    Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.UNKNOWN);
-		    if (unknowns.size() > 0) {
-				for (Unknown unknown : unknowns) {
-				    console.display(String.format("%s: %s, pc: 0x%x, backtrace: %s\n",
-				    		unknown.getLevel().toString(),
-				    		unknown.getDescription(),
-				    		unknown.getNode().getStartPc(),
-				    		unknown.getNode().getBackTrace("")));
-				}
-		    }
-	    }
+        for (Route route : engine.getRoute(m_routeId)) {
+            Collection<Unknown> unknowns = route.getRouteUnknowns().getUnknowns(State.UNKNOWN);
+            if (unknowns.size() > 0) {
+                for (Unknown unknown : unknowns) {
+                    console.display(String.format("%s: %s, pc: 0x%x, backtrace: %s\n",
+                            unknown.getLevel().toString(),
+                            unknown.getDescription(),
+                            unknown.getNode().getStartPc(),
+                            unknown.getNode().getBackTrace("")));
+                }
+            }
+        }
     }
 }

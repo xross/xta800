@@ -8,38 +8,38 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 
 public class Src extends Command {
-	private static final String[] COMMAND_NAMES = { "src" };
+    private static final String[] COMMAND_NAMES = { "src" };
 
-	private int m_routeId;
-	private int m_nodeId;
-	private boolean m_nodeIdSet;
+    private int m_routeId;
+    private int m_nodeId;
+    private boolean m_nodeIdSet;
 
-	public Src() {
-		super(COMMAND_NAMES);
-		m_routeId = 0;
-		m_nodeId = 0;
-		m_nodeIdSet = false;
-	}
+    public Src() {
+        super(COMMAND_NAMES);
+        m_routeId = 0;
+        m_nodeId = 0;
+        m_nodeIdSet = false;
+    }
 
-	public Src(int routeId, int nodeId, boolean nodeIdSpecified) {
-		super(COMMAND_NAMES);
-		m_routeId = routeId;
-		m_nodeId = nodeId;
-		m_nodeIdSet = nodeIdSpecified;
-	}
+    public Src(int routeId, int nodeId, boolean nodeIdSpecified) {
+        super(COMMAND_NAMES);
+        m_routeId = routeId;
+        m_nodeId = nodeId;
+        m_nodeIdSet = nodeIdSpecified;
+    }
 
     public int numArgs() {
-    	if (m_nodeIdSet) {
-    		return 2;
-    	}
-    	return 1;
+        if (m_nodeIdSet) {
+            return 2;
+        }
+        return 1;
     }
 
     public String commandLine() {
-    	if (m_nodeIdSet) {
-        	return name() + " " + getRouteId(m_routeId) + " " + m_nodeId;
-    	}
-    	return name() + " " + getRouteId(m_routeId);
+        if (m_nodeIdSet) {
+            return name() + " " + getRouteId(m_routeId) + " " + m_nodeId;
+        }
+        return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -47,45 +47,45 @@ public class Src extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-    	int routeId = 0;
-    	try {
-    		routeId = getRouteId(args[index + 1]);
-	    } catch (NumberFormatException e) {
-	    	return null;
-	    }
+        int routeId = 0;
+        try {
+            routeId = getRouteId(args[index + 1]);
+        } catch (NumberFormatException e) {
+            return null;
+        }
 
-		if (!areArgsDone(args, index + 2)) {
-	    	try {
-	    		return new Src(routeId, getNodeId(args[index + 2]), true);
-		    } catch (NumberFormatException e) {
-		    	return null;
-		    }
-		}
-		return new Src(routeId, 0, false);
+        if (!areArgsDone(args, index + 2)) {
+            try {
+                return new Src(routeId, getNodeId(args[index + 2]), true);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return new Src(routeId, 0, false);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-	    if (!validateRouteId(engine, console, m_routeId))
-		    return;
+        if (!validateRouteId(engine, console, m_routeId))
+            return;
 
-	    if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
-		    return;
+        if (m_nodeIdSet && !validateNodeId(engine, console, m_routeId, m_nodeId))
+            return;
 
-		SrcDisplayer displayer = new SrcDisplayer(engine, console);
-		for (Route route : engine.getRoute(m_routeId)) {
-		    CoreId coreId = route.getRouteCoreContainer().getCoreId();
+        SrcDisplayer displayer = new SrcDisplayer(engine, console);
+        for (Route route : engine.getRoute(m_routeId)) {
+            CoreId coreId = route.getRouteCoreContainer().getCoreId();
 
-			if (m_nodeIdSet) {
-				displayer.display(route.getNode(m_nodeId), coreId);
-			} else {
-				displayer.display(route.getNode(), coreId);
-			}
-		}
+            if (m_nodeIdSet) {
+                displayer.display(route.getNode(m_nodeId), coreId);
+            } else {
+                displayer.display(route.getNode(), coreId);
+            }
+        }
    }
 }

@@ -10,18 +10,18 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class ToPoints extends Command {
-	private static final String[] COMMAND_NAMES = { "topoints" };
-	
-	public ToPoints() {
-		super(COMMAND_NAMES);
-	}
+    private static final String[] COMMAND_NAMES = { "topoints" };
+
+    public ToPoints() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -29,13 +29,13 @@ public class ToPoints extends Command {
     }
 
     public Command clone(String[] args, int index) {
-    	return new ToPoints();
+        return new ToPoints();
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	Map<CoreId, Reference> tos = engine.getPathPoints().getTos();    	
-    	for (CoreId core : tos.keySet()) {
-    		console.display(tos.get(core).toString() + "\n");    		
-    	}
+        Map<CoreId, Reference> tos = engine.getPathPoints().getTos();
+        for (CoreId core : tos.keySet()) {
+            console.display(tos.get(core).toString() + "\n");
+        }
     }
 }

@@ -7,26 +7,26 @@ import com.xmos.xta.core.engine.sections.CodePointInfo;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 
 public class EndpointReference extends ReferenceType {
-	EndpointReference(String ref, CoreId coreId) {
-		super(ref, Type.ENDPOINT, coreId);
-	}
+    EndpointReference(String ref, CoreId coreId) {
+        super(ref, Type.ENDPOINT, coreId);
+    }
 
-	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
-		if (checkTypeString(reference, Type.ENDPOINT, 1) &&
-		    isValid(engine.getEndpoints(coreId), getLabel(reference))) {
-			return new EndpointReference(reference, coreId);
-		}
-		return null;
-	}
+    public ReferenceType create(Engine engine, String reference, CoreId coreId) {
+        if (checkTypeString(reference, Type.ENDPOINT, 1) &&
+            isValid(engine.getEndpoints(coreId), getLabel(reference))) {
+            return new EndpointReference(reference, coreId);
+        }
+        return null;
+    }
 
-	public Result resolve(Engine engine) {
-		String ref = getRef();
-		String label = getLabel(ref);
+    public Result resolve(Engine engine) {
+        String ref = getRef();
+        String label = getLabel(ref);
 
-		Result result = Result.UNRESOLVED;
-		for (CodePointInfo info : engine.getEndpoints(getCoreId())) {
-	    	if (labelsMatch(info.getLabel(), label)) {
-	    	    
+        Result result = Result.UNRESOLVED;
+        for (CodePointInfo info : engine.getEndpoints(getCoreId())) {
+            if (labelsMatch(info.getLabel(), label)) {
+
                 if (info.exists()) {
                     long pc = info.getPc();
                     addPc(pc, info.getLabel());
@@ -41,25 +41,25 @@ public class EndpointReference extends ReferenceType {
                             result = Result.RESOLVED;
                             break;
                         }
-                    }                    
-                    
+                    }
+
                 } else {
                     result = Result.REMOVED;
-                }	    	    
-			}
-		}
-		return result;
-	}
+                }
+            }
+        }
+        return result;
+    }
 
-	public String name() {
-		return "Endpoint";
-	}
+    public String name() {
+        return "Endpoint";
+    }
 
-	public String description() {
-		return "Endpoint specified using the source level pragma mechanism";
-	}
+    public String description() {
+        return "Endpoint specified using the source level pragma mechanism";
+    }
 
-	public boolean isPortable() {
-		return true;
-	}
+    public boolean isPortable() {
+        return true;
+    }
 }

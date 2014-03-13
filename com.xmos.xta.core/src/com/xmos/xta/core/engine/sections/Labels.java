@@ -14,41 +14,41 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public class Labels extends Section  {
-	private Map<String, Set<Long>> m_labels;
+    private Map<String, Set<Long>> m_labels;
 
-	Labels(CoreId coreId, Notifier notifier) {
-		super(coreId, notifier);
-		m_labels = new IteratableMap<String, Set<Long>>();
-	}
+    Labels(CoreId coreId, Notifier notifier) {
+        super(coreId, notifier);
+        m_labels = new IteratableMap<String, Set<Long>>();
+    }
 
-	boolean add(CommandSource src, String label, long pc) {
-		Set<Long> pcs = m_labels.get(label);
-		if (pcs == null) {
-			pcs = new IteratableSet<Long>();
-			m_labels.put(label, pcs);
-		}
-		pcs.add(pc);
-		return true;
-	}
+    boolean add(CommandSource src, String label, long pc) {
+        Set<Long> pcs = m_labels.get(label);
+        if (pcs == null) {
+            pcs = new IteratableSet<Long>();
+            m_labels.put(label, pcs);
+        }
+        pcs.add(pc);
+        return true;
+    }
 
-	Map<String, Set<Long>> get() {
-		return m_labels;
-	}
+    Map<String, Set<Long>> get() {
+        return m_labels;
+    }
 
-	boolean load(CommandSource src, XeLoader xeLoader) {
+    boolean load(CommandSource src, XeLoader xeLoader) {
         SymbolTable symbolTable = xeLoader.getSymbolTable(getCoreId());
         ElfHandler elfHandler = symbolTable.getElfHandler();
 
         for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {
-        	if (!symbol.isSpecialSection()) {
-            	int sectionIndex = symbol.getShndx();
-            	if (elfHandler.getSections().get(sectionIndex).isExecutable()) {
-            		if (symbol.getName().charAt(0) != '.') {
-            			add(src, symbol.getName(), symbol.getValue());
-            		}
-            	}
-        	}
+            if (!symbol.isSpecialSection()) {
+                int sectionIndex = symbol.getShndx();
+                if (elfHandler.getSections().get(sectionIndex).isExecutable()) {
+                    if (symbol.getName().charAt(0) != '.') {
+                        add(src, symbol.getName(), symbol.getValue());
+                    }
+                }
+            }
         }
         return true;
-	}
+    }
 }

@@ -6,55 +6,55 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Loop extends Command {
-	private static final String[] COMMAND_NAMES = { "loop" };
+    private static final String[] COMMAND_NAMES = { "loop" };
 
-	private String m_refString;
-	private int m_iterations;
+    private String m_refString;
+    private int m_iterations;
 
-	public Loop() {
-		super(COMMAND_NAMES);
-	}
-
-	public Loop(String refString, int iterations) {
-		super(COMMAND_NAMES);
-		m_refString = refString;
-		m_iterations = iterations;
-	}
-
-    public int numArgs() {
-   		return 2;
+    public Loop() {
+        super(COMMAND_NAMES);
     }
 
-	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.ALLREFS};
-	}
+    public Loop(String refString, int iterations) {
+        super(COMMAND_NAMES);
+        m_refString = refString;
+        m_iterations = iterations;
+    }
+
+    public int numArgs() {
+           return 2;
+    }
+
+    public ArgType[] getArgTypes() {
+        return new Command.ArgType[] {ArgType.ALLREFS};
+    }
 
     public String commandLine() {
-       	return name() + " " + " " + m_refString + " " + m_iterations;
+           return name() + " " + " " + m_refString + " " + m_iterations;
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return name() + " <ANY> <iterations>: Adds the given loop count define to the list of defines";
+        return name() + " <ANY> <iterations>: Adds the given loop count define to the list of defines";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) {
-			return null;
-		}
+        if ((index + numArgs()) >= args.length) {
+            return null;
+        }
 
-		try {
-	   	    int iterations = Integer.parseInt(args[index + 2]);
-	        return new Loop(args[index + 1], iterations);
-		} catch (NumberFormatException e) {
-	   	    return null;
-	   	}
+        try {
+               int iterations = Integer.parseInt(args[index + 2]);
+            return new Loop(args[index + 1], iterations);
+        } catch (NumberFormatException e) {
+               return null;
+           }
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
-		}
+        if (!isExecutableLoaded(engine, console)) {
+            return;
+        }
 
-		engine.addLoop(getSrc(), m_refString, m_iterations);
+        engine.addLoop(getSrc(), m_refString, m_iterations);
     }
  }

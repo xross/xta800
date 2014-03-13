@@ -28,7 +28,7 @@ public class LoopLabelReference extends ReferenceType {
                     addPc(info.getPc(), info.getLabel());
                     setResolved(true);
                     result = Result.RESOLVED;
-                    
+
                 } else {
                     result = Result.REMOVED;
                 }

@@ -6,18 +6,18 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class History extends Command {
-	private static final String[] COMMAND_NAMES = { "history" };
+    private static final String[] COMMAND_NAMES = { "history" };
 
-	public History() {
-		super(COMMAND_NAMES);
-	}
+    public History() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -29,11 +29,11 @@ public class History extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	int index = 1;
-    	for (Command command : shell.getCommandHistory()) {
-    		console.display(String.format("%d: %s", index, command.getFullCommandLine()));
-    		console.display("\n");
-    		++index;
-    	}
+        int index = 1;
+        for (Command command : shell.getCommandHistory()) {
+            console.display(String.format("%d: %s", index, command.getFullCommandLine()));
+            console.display("\n");
+            ++index;
+        }
     }
 }

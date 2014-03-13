@@ -11,17 +11,17 @@ import com.xmos.xta.test.pseudorandom.XtaPragma;
 
 public class GeneratePar extends Generator {
 
-	public void generate(StringBuffer file, PseudoRandom pseudoRandom,
-			int indent, Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
-		int nextIndent = indent + 1;
-		addIndent(file, indent);
-		file.append("par {\n");
-		Random r = new Random();
-		int count = r.nextInt(2) + 1;
-		for(int i=0;i<count; i++){
-			makeFunction(file, pseudoRandom, functionStacks, functionName, nextIndent, new ReferenceTree<XtaPragma>(new XtaPragma("root")), activeThreads);
-		}
-		addIndent(file, indent);
-		file.append("}\n");
-	}
+    public void generate(StringBuffer file, PseudoRandom pseudoRandom,
+            int indent, Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
+        int nextIndent = indent + 1;
+        addIndent(file, indent);
+        file.append("par {\n");
+        Random r = new Random();
+        int count = r.nextInt(2) + 1;
+        for(int i=0;i<count; i++){
+            makeFunction(file, pseudoRandom, functionStacks, functionName, nextIndent, new ReferenceTree<XtaPragma>(new XtaPragma("root")), activeThreads);
+        }
+        addIndent(file, indent);
+        file.append("}\n");
+    }
 }

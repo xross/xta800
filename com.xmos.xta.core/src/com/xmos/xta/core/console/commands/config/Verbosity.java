@@ -6,26 +6,26 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Verbosity extends Command {
-	private static final String[] COMMAND_NAMES = { "verbosity" };
+    private static final String[] COMMAND_NAMES = { "verbosity" };
 
-	private int m_verbosity;
+    private int m_verbosity;
 
-	public Verbosity() {
-		super(COMMAND_NAMES);
-		m_verbosity = 0;
-	}
+    public Verbosity() {
+        super(COMMAND_NAMES);
+        m_verbosity = 0;
+    }
 
-	public Verbosity(int verbosity) {
-		super(COMMAND_NAMES);
-		m_verbosity = verbosity;
-	}
+    public Verbosity(int verbosity) {
+        super(COMMAND_NAMES);
+        m_verbosity = verbosity;
+    }
 
     public int numArgs() {
-    	return 1;
+        return 1;
     }
 
     public String commandLine() {
-    	return name() + String.format(" %d", m_verbosity);
+        return name() + String.format(" %d", m_verbosity);
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -33,10 +33,10 @@ public class Verbosity extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-    	int verbosity;
+        int verbosity;
         try { verbosity = Integer.parseInt(args[index + 1]); }
         catch (NumberFormatException e) {
             return null;

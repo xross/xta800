@@ -9,44 +9,44 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.LoopScopeInfo;
 
 public class LoopScopes extends Command {
-	private static final String[] COMMAND_NAMES = { "loopscopes" };
+    private static final String[] COMMAND_NAMES = { "loopscopes" };
 
-	public LoopScopes() {
-		super(COMMAND_NAMES);
-	}
-
-    public int numArgs() {
-    	return 0;
+    public LoopScopes() {
+        super(COMMAND_NAMES);
     }
 
-	public ArgType[] getArgTypes() {
+    public int numArgs() {
+        return 0;
+    }
+
+    public ArgType[] getArgTypes() {
         return super.getArgTypes();
-	}
+    }
 
     public String commandLine() {
-   		return name();
+           return name();
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return name() + ": Displays the loop scope defines";
+        return name() + ": Displays the loop scope defines";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) {
-			return null;
-		}
+        if ((index + numArgs()) >= args.length) {
+            return null;
+        }
 
-    	return new LoopScopes();
+        return new LoopScopes();
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console)) {
-			return;
-		}
+        if (!isExecutableLoaded(engine, console)) {
+            return;
+        }
 
-		Collection<LoopScopeInfo> infos = engine.getLoopScopeDefines();
-		for (LoopScopeInfo info : infos) {
-			console.display(info + "\n");
-		}
+        Collection<LoopScopeInfo> infos = engine.getLoopScopeDefines();
+        for (LoopScopeInfo info : infos) {
+            console.display(info + "\n");
+        }
     }
  }

@@ -13,124 +13,124 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNode
 
 public class StructureDisplayer {
 
-	private Console m_console;
-	private int m_verbosity;
+    private Console m_console;
+    private int m_verbosity;
 
-	public StructureDisplayer(Console console, int verbosity) {
-		m_console = console;
-		m_verbosity = verbosity;
-	}
-
-	public void display(Collection<Node> nodes) {
-		final StringBuffer sb = new StringBuffer();
-		for (Node node : nodes) {
-		    node.traverse(new Stack<Node>(), new UntypedNodeTraverserWithAncestors() {
-				public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-					displayNodeInfo(node, ancestors, sb);
-					return TraverseStatus.CONTINUE;
-				}
-		    });
-		    sb.append("\n");
-		}
-		m_console.display(sb.toString());
+    public StructureDisplayer(Console console, int verbosity) {
+        m_console = console;
+        m_verbosity = verbosity;
     }
 
-	private void displayNodeInfo(Node node, Stack<Node> ancestors, StringBuffer sb) {
-		if (node.isInstructionNode() &&
-			(m_verbosity < Config.VERBOSITY_DISPLAY_INSTRUCTION_NODES))
-			return;
+    public void display(Collection<Node> nodes) {
+        final StringBuffer sb = new StringBuffer();
+        for (Node node : nodes) {
+            node.traverse(new Stack<Node>(), new UntypedNodeTraverserWithAncestors() {
+                public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
+                    displayNodeInfo(node, ancestors, sb);
+                    return TraverseStatus.CONTINUE;
+                }
+            });
+            sb.append("\n");
+        }
+        m_console.display(sb.toString());
+    }
 
-		if (node.isNullNode() &&
-			(m_verbosity < Config.VERBOSITY_DISPLAY_NULL_NODE))
-			return;
+    private void displayNodeInfo(Node node, Stack<Node> ancestors, StringBuffer sb) {
+        if (node.isInstructionNode() &&
+            (m_verbosity < Config.VERBOSITY_DISPLAY_INSTRUCTION_NODES))
+            return;
 
-		printIndent(ancestors.size(), sb);
-		printModifiers(node, ancestors.size(), sb);
-		displayNodeName(node, sb);
-		displayTimeTaken(node, sb);
-		displayNumPaths(node, sb);
-		displayDescription(node, sb);
-		displayAttributes(node, sb);
-		displayAncestors(node, ancestors, sb);
-		sb.append("\n");
-	}
+        if (node.isNullNode() &&
+            (m_verbosity < Config.VERBOSITY_DISPLAY_NULL_NODE))
+            return;
 
-	private void printIndent(int depth, StringBuffer sb) {
-		for (int i = 0; i < depth - 1; ++i) {
-			sb.append(".    ");
-		}
-	}
+        printIndent(ancestors.size(), sb);
+        printModifiers(node, ancestors.size(), sb);
+        displayNodeName(node, sb);
+        displayTimeTaken(node, sb);
+        displayNumPaths(node, sb);
+        displayDescription(node, sb);
+        displayAttributes(node, sb);
+        displayAncestors(node, ancestors, sb);
+        sb.append("\n");
+    }
 
-	private void printModifiers(Node node, int depth, StringBuffer sb) {
-		if (depth > 0) {
-			if (node.getAttributes(false).getFixedTime() != null) {
-				sb.append(".  F ");
-			} else if (node.getAttributes(false).getDisplayAsUnknown()) {
-				sb.append(".  * ");
-			} else {
-				sb.append(".    ");
-			}
-		}
-	}
+    private void printIndent(int depth, StringBuffer sb) {
+        for (int i = 0; i < depth - 1; ++i) {
+            sb.append(".    ");
+        }
+    }
 
-	private void displayNodeName(Node node, StringBuffer sb) {
-		String nodeName = String.format("%s(%d)", node.getTypeName(), node.getId());
-		sb.append(String.format("%-14s", nodeName));
-	}
+    private void printModifiers(Node node, int depth, StringBuffer sb) {
+        if (depth > 0) {
+            if (node.getAttributes(false).getFixedTime() != null) {
+                sb.append(".  F ");
+            } else if (node.getAttributes(false).getDisplayAsUnknown()) {
+                sb.append(".  * ");
+            } else {
+                sb.append(".    ");
+            }
+        }
+    }
 
-	private void displayTimeTaken(Node node, StringBuffer sb) {
-		sb.append(node.getAttributes(false).getTimingSummary());
-	}
+    private void displayNodeName(Node node, StringBuffer sb) {
+        String nodeName = String.format("%s(%d)", node.getTypeName(), node.getId());
+        sb.append(String.format("%-14s", nodeName));
+    }
 
-	private void displayNumPaths(Node node, StringBuffer sb) {
-		if (m_verbosity >= Config.VERBOSITY_DISPLAY_NUM_PATHS)
-			sb.append(String.format(" [%s]", node.getAttributes(false).getNumPathsStr()));
-	}
+    private void displayTimeTaken(Node node, StringBuffer sb) {
+        sb.append(node.getAttributes(false).getTimingSummary());
+    }
 
-	private void displayDescription(Node node, StringBuffer sb) {
-		sb.append(" " + node.getDescription());
-	}
+    private void displayNumPaths(Node node, StringBuffer sb) {
+        if (m_verbosity >= Config.VERBOSITY_DISPLAY_NUM_PATHS)
+            sb.append(String.format(" [%s]", node.getAttributes(false).getNumPathsStr()));
+    }
 
-	private void displayAttributes(Node node, StringBuffer sb) {
-		if (m_verbosity >= Config.VERBOSITY_DISPLAY_ATTRIBUTES) {
-			NodeAttributes nodeAttributes = node.getAttributes(false);
+    private void displayDescription(Node node, StringBuffer sb) {
+        sb.append(" " + node.getDescription());
+    }
 
-			if (node.getUnresolved())
-				sb.append(" UNRESOLVED");
+    private void displayAttributes(Node node, StringBuffer sb) {
+        if (m_verbosity >= Config.VERBOSITY_DISPLAY_ATTRIBUTES) {
+            NodeAttributes nodeAttributes = node.getAttributes(false);
 
-			if (node.isLoopNode() || node.isSelfLoopNode()) {
-				sb.append(String.format(" [%d]",
-						nodeAttributes.getLoopIterations()));
+            if (node.getUnresolved())
+                sb.append(" UNRESOLVED");
 
-				if (nodeAttributes.getIsAbsolute())
-					sb.append(" (ABSOLUTE)");
+            if (node.isLoopNode() || node.isSelfLoopNode()) {
+                sb.append(String.format(" [%d]",
+                        nodeAttributes.getLoopIterations()));
 
-			} else if (node.isCondNode()) {
-				Node enclosingLoopNode = node.getEnclosingLoopNode();
-				if (enclosingLoopNode != null) {
-	                for (Node option : node.iChildren()) {
-	                	String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
-	                	sb.append(String.format("[%s,%d,%d]", optionSet,
-	                			nodeAttributes.getLoopPathIterations(
-	                					enclosingLoopNode.getAttributes(false).getLoopIterations(), option, Case.WORST),
-	                			nodeAttributes.getLoopPathIterations(
-	                					enclosingLoopNode.getAttributes(false).getLoopIterations(), option, Case.BEST)));
-	                }
-				}
+                if (nodeAttributes.getIsAbsolute())
+                    sb.append(" (ABSOLUTE)");
 
-			} else if (node.getAttributes(false).getIsLoopHeader())  {
-				sb.append(" (HEADER)");
-			}
-		}
-	}
+            } else if (node.isCondNode()) {
+                Node enclosingLoopNode = node.getEnclosingLoopNode();
+                if (enclosingLoopNode != null) {
+                    for (Node option : node.iChildren()) {
+                        String optionSet = nodeAttributes.getSetOption(option) ? "T" : "F";
+                        sb.append(String.format("[%s,%d,%d]", optionSet,
+                                nodeAttributes.getLoopPathIterations(
+                                        enclosingLoopNode.getAttributes(false).getLoopIterations(), option, Case.WORST),
+                                nodeAttributes.getLoopPathIterations(
+                                        enclosingLoopNode.getAttributes(false).getLoopIterations(), option, Case.BEST)));
+                    }
+                }
 
-	private void displayAncestors(Node node, Stack<Node> ancestors, StringBuffer sb) {
-		if (m_verbosity >= Config.VERBOSITY_DISPLAY_ANCESTORS) {
-			sb.append(" [ANCESTORS: ");
-			for (Node ancestor : ancestors) {
-				sb.append(String.format("%d ", ancestor.getId()));
-			}
-			sb.append("]");
-		}
-	}
+            } else if (node.getAttributes(false).getIsLoopHeader())  {
+                sb.append(" (HEADER)");
+            }
+        }
+    }
+
+    private void displayAncestors(Node node, Stack<Node> ancestors, StringBuffer sb) {
+        if (m_verbosity >= Config.VERBOSITY_DISPLAY_ANCESTORS) {
+            sb.append(" [ANCESTORS: ");
+            for (Node ancestor : ancestors) {
+                sb.append(String.format("%d ", ancestor.getId()));
+            }
+            sb.append("]");
+        }
+    }
 }

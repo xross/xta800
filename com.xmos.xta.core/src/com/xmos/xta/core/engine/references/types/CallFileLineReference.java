@@ -6,56 +6,56 @@ import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.utils.FileNameMatcher;
 
 public class CallFileLineReference extends ReferenceType {
-	CallFileLineReference(String ref, CoreId coreId) {
-		super(ref, Type.CALL, coreId);
-	}
+    CallFileLineReference(String ref, CoreId coreId) {
+        super(ref, Type.CALL, coreId);
+    }
 
-	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
-		if (checkTypeString(reference, Type.CALL, 2) &&
-		    isSourceReference(reference) &&
-			inCodePointTable(reference, 
-					engine.getCallTable(coreId), 
-					engine.getWorkspacePath(),
-					engine.getSourceMapper())) {
-	    	return new CallFileLineReference(reference, coreId);
-		}
-		return null;
-	}
+    public ReferenceType create(Engine engine, String reference, CoreId coreId) {
+        if (checkTypeString(reference, Type.CALL, 2) &&
+            isSourceReference(reference) &&
+            inCodePointTable(reference,
+                    engine.getCallTable(coreId),
+                    engine.getWorkspacePath(),
+                    engine.getSourceMapper())) {
+            return new CallFileLineReference(reference, coreId);
+        }
+        return null;
+    }
 
-	public Result resolve(Engine engine) {
-    	String ref  = getRef();
-		String fileName = getFileName(ref);
+    public Result resolve(Engine engine) {
+        String ref  = getRef();
+        String fileName = getFileName(ref);
         long lineNumber = getLineNumber(ref);
 
         Result result = Result.UNRESOLVED;
-		for (CodePointTableInfo info : engine.getCallTable(getCoreId())) {
-			if ((info.getLineNumber() == lineNumber) && 
-				FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(), 
-						fileName, engine.getWorkspacePath(), engine.getSourceMapper())) {
-				
-				addPc(info.getPc());
-				setFileName(fileName);
-				setLineNum(lineNumber);
-	            setResolved(true);
-				result = Result.RESOLVED;
-			}
-		}
-		return result;
-	}
+        for (CodePointTableInfo info : engine.getCallTable(getCoreId())) {
+            if ((info.getLineNumber() == lineNumber) &&
+                FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(),
+                        fileName, engine.getWorkspacePath(), engine.getSourceMapper())) {
 
-	public String name() {
-		return "CallFileLine";
-	}
+                addPc(info.getPc());
+                setFileName(fileName);
+                setLineNum(lineNumber);
+                setResolved(true);
+                result = Result.RESOLVED;
+            }
+        }
+        return result;
+    }
 
-	public String description() {
-		return "Call specified in the format: 'file name:line number'";
-	}
+    public String name() {
+        return "CallFileLine";
+    }
 
-	public boolean isPortable() {
-		return false;
-	}
+    public String description() {
+        return "Call specified in the format: 'file name:line number'";
+    }
 
-	public boolean matches(String s, Engine engine) {
-		return fileLineMatches(s, engine);
-	}
+    public boolean isPortable() {
+        return false;
+    }
+
+    public boolean matches(String s, Engine engine) {
+        return fileLineMatches(s, engine);
+    }
 }

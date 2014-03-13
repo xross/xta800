@@ -41,17 +41,17 @@ public class LoopLabels extends Command {
     }
 
     private void listLoopLabels(final Engine engine, final Console console) {
-        for (CoreId activeCore : engine.getActiveCores()) {         
+        for (CoreId activeCore : engine.getActiveCores()) {
             for (CodePointInfo info : engine.getLoopLabels(activeCore)) {
-                console.display(String.format("%s, label: %s, pc: 0x%x", 
+                console.display(String.format("%s, label: %s, pc: 0x%x",
                         activeCore.toString(), info.getLabel(), info.getPc()));
 
                 console.display(", compilation dir: " + info.getCompilationDir());
                 console.display(", filename: " + info.getFileName());
-                console.display(", line number: " + info.getLineNumber());                
-                console.display(", exists: " + info.exists());              
+                console.display(", line number: " + info.getLineNumber());
+                console.display(", exists: " + info.exists());
                 console.display("\n");
-            }           
+            }
         }
     }
 }

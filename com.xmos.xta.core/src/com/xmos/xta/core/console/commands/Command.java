@@ -15,28 +15,28 @@ import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public abstract class Command {
-	public static final String REDIRECT_OVERWITE = ">";
-	public static final String REDIRECT_APPEND   = ">>";
+    public static final String REDIRECT_OVERWITE = ">";
+    public static final String REDIRECT_APPEND   = ">>";
 
     public enum ArgType {
-    	FILE,
-    	FUNCTION,
-    	ALLREFS,
-    	ENDPOINT,
-    	LABEL,
-    	HELP,
-    	HELPCOMMAND,
-    	IGNORE,
+        FILE,
+        FUNCTION,
+        ALLREFS,
+        ENDPOINT,
+        LABEL,
+        HELP,
+        HELPCOMMAND,
+        IGNORE,
     }
     public enum RedirectMode {
-    	OVERWRITE,
-    	APPEND,
+        OVERWRITE,
+        APPEND,
     }
 
     private CommandSource m_src;
     private String m_fileRedirect;
     private RedirectMode m_fileRedirectMode;
-	private String[] m_commandNames;
+    private String[] m_commandNames;
 
     public abstract int numArgs();
     public abstract String commandLine();
@@ -45,208 +45,208 @@ public abstract class Command {
     public abstract void execute(Shell shell, Engine engine, Console console);
 
     public static String expandTilde(String str) {
-    	if (System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0 &&
-    		str.charAt(0) == '~') {
+        if (System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0 &&
+            str.charAt(0) == '~') {
             return System.getenv("HOME") + str.substring(1);
-    	}
+        }
         return str;
     }
 
     public Command(String[] commandNames) {
-    	m_commandNames = commandNames;
+        m_commandNames = commandNames;
     }
-    
+
     public String name() {
-    	return m_commandNames[0];
+        return m_commandNames[0];
     }
-   
+
     public boolean matches(String arg) {
-    	for (String command : m_commandNames) {
-    		if (command.equals(arg)) {
-    			return true;
-    		}
-    	}
-    	return false;
+        for (String command : m_commandNames) {
+            if (command.equals(arg)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-	public String toString(){
-		return commandLine();
-	}
+    public String toString(){
+        return commandLine();
+    }
 
-	public Command[] getSubCommands() {
-		return new Command[] {};
-	}
+    public Command[] getSubCommands() {
+        return new Command[] {};
+    }
 
-	public ArgType[] getArgTypes() {
-		return new ArgType[] {};
-	}
+    public ArgType[] getArgTypes() {
+        return new ArgType[] {};
+    }
 
     public boolean isExecutableLoaded(Engine engine, Console console) {
-	    File executable = engine.getExecutable();
-    	if (executable == null) {
-    		engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no executable loaded");
-	        return false;
-    	}
-    	return true;
+        File executable = engine.getExecutable();
+        if (executable == null) {
+            engine.notify(getSrc(), Notifier.NOTIFY_ERROR, "no executable loaded");
+            return false;
+        }
+        return true;
     }
 
     public boolean validateRoutes(Engine engine, Console console) {
-       	if (engine.getRoutes().size() == 0) {
-    		engine.notify(m_src, Notifier.NOTIFY_ERROR,
-    				"no routes analyzed");
-    		return false;
-     	}
+           if (engine.getRoutes().size() == 0) {
+            engine.notify(m_src, Notifier.NOTIFY_ERROR,
+                    "no routes analyzed");
+            return false;
+         }
         return true;
     }
 
     public boolean validateRouteId(Engine engine, Console console, int routeId) {
-    	Collection<Route> routes = engine.getRoute(routeId);
-    	if (routes.size() == 0) {
-    	    reportRouteIdIssue(engine, routeId);
-    		return false;
-    	}
-    	return true;
+        Collection<Route> routes = engine.getRoute(routeId);
+        if (routes.size() == 0) {
+            reportRouteIdIssue(engine, routeId);
+            return false;
+        }
+        return true;
     }
 
     public boolean validateNodeId(Engine engine, Console console, int routeId, int nodeId) {
-    	Collection<Route> routes = engine.getRoute(routeId);
-    	if (routes.size() == 0) {
-    	    reportRouteIdIssue(engine, routeId);
-    		return false;
-    	}
+        Collection<Route> routes = engine.getRoute(routeId);
+        if (routes.size() == 0) {
+            reportRouteIdIssue(engine, routeId);
+            return false;
+        }
 
-    	boolean found = true;
-    	for (Route route : routes) {
-        	Node node = route.getNode(nodeId);
-        	if (node == null) {
-        		found = false;
-        	}
-    	}
-    	if (!found) {
-   			engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-   					"invalid node id: %d", nodeId));
-    		return false;
-    	}
-    	return true;
+        boolean found = true;
+        for (Route route : routes) {
+            Node node = route.getNode(nodeId);
+            if (node == null) {
+                found = false;
+            }
+        }
+        if (!found) {
+               engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
+                       "invalid node id: %d", nodeId));
+            return false;
+        }
+        return true;
     }
 
     public static int getRouteId(String routeId) {
-    	if (routeId.equals(Engine.ROUTE_ID_LAST_STR)) {
-    		return Engine.ROUTE_ID_LAST;
-    		
-    	} else if (routeId.equals(Engine.ROUTE_ID_ALL_STR)) {
-    		return Engine.ROUTE_ID_ALL;
-    	}
-    	int route = Integer.parseInt(routeId);
-    	return route;
+        if (routeId.equals(Engine.ROUTE_ID_LAST_STR)) {
+            return Engine.ROUTE_ID_LAST;
+
+        } else if (routeId.equals(Engine.ROUTE_ID_ALL_STR)) {
+            return Engine.ROUTE_ID_ALL;
+        }
+        int route = Integer.parseInt(routeId);
+        return route;
     }
 
     public static String getRouteId(int routeId) {
-    	if (routeId == Engine.ROUTE_ID_LAST) {
-    		return Engine.ROUTE_ID_LAST_STR;
-    		
-    	} else if (routeId == Engine.ROUTE_ID_ALL) {
-    		return Engine.ROUTE_ID_ALL_STR;
-    	}
-    	return String.format("%d", routeId);
+        if (routeId == Engine.ROUTE_ID_LAST) {
+            return Engine.ROUTE_ID_LAST_STR;
+
+        } else if (routeId == Engine.ROUTE_ID_ALL) {
+            return Engine.ROUTE_ID_ALL_STR;
+        }
+        return String.format("%d", routeId);
     }
 
     public static int getNodeId(String nodeId) {
-    	if (nodeId.equals("-")) {
-    		return Engine.NODE_ID_TOP_LEVEL;
-    	}
-    	int node = Integer.parseInt(nodeId);
-    	return node;
+        if (nodeId.equals("-")) {
+            return Engine.NODE_ID_TOP_LEVEL;
+        }
+        int node = Integer.parseInt(nodeId);
+        return node;
     }
 
     public static String getNodeId(int nodeId) {
-    	if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
-    		return "-";
-    	}
-    	return String.format("%d", nodeId);
+        if (nodeId == Engine.NODE_ID_TOP_LEVEL) {
+            return "-";
+        }
+        return String.format("%d", nodeId);
     }
 
     protected boolean areArgsDone(String[] args, int i) {
-		if ((i >= args.length) ||
-			(args[i].startsWith("-") && (args[i].length() > 1)) ||
-			args[i].startsWith("\n") ||
-			args[i].equals(REDIRECT_OVERWITE) ||
-			args[i].equals(REDIRECT_APPEND)) {
-			return true;
-		}
-		return false;
-	}
+        if ((i >= args.length) ||
+            (args[i].startsWith("-") && (args[i].length() > 1)) ||
+            args[i].startsWith("\n") ||
+            args[i].equals(REDIRECT_OVERWITE) ||
+            args[i].equals(REDIRECT_APPEND)) {
+            return true;
+        }
+        return false;
+    }
 
     protected Collection<Node> getCollection(Node node) {
-    	Collection<Node> nodes = new ArrayList<Node>();
-    	nodes.add(node);
-    	return nodes;
+        Collection<Node> nodes = new ArrayList<Node>();
+        nodes.add(node);
+        return nodes;
     }
 
     protected Node getReferencedNode(Engine engine, int routeId, String nodeString) {
-    	Collection<Route> routes = engine.getRoute(routeId);
-    	for (Route route : routes) {
-    		Node node = route.getNode(nodeString);
-    		if (node != null) {
-    			return node;
-    		}
-    	}
-    	return null;
+        Collection<Route> routes = engine.getRoute(routeId);
+        for (Route route : routes) {
+            Node node = route.getNode(nodeString);
+            if (node != null) {
+                return node;
+            }
+        }
+        return null;
     }
 
     public void setSrc(CommandSource src) {
-		m_src = src;
-	}
+        m_src = src;
+    }
 
     public CommandSource getSrc() {
-		return m_src;
-	}
+        return m_src;
+    }
 
     public void setFileRedirect(String fileRedirect) {
-    	m_fileRedirect = fileRedirect;
+        m_fileRedirect = fileRedirect;
     }
 
     public String getFileRedirect() {
-    	return m_fileRedirect;
+        return m_fileRedirect;
     }
 
     public void setFileRedirectMode(RedirectMode fileRedirectMode) {
-    	m_fileRedirectMode = fileRedirectMode;
+        m_fileRedirectMode = fileRedirectMode;
     }
 
     public RedirectMode getFileRedirectMode() {
-    	return m_fileRedirectMode;
+        return m_fileRedirectMode;
     }
 
     public String getFullCommandLine() {
-		if (m_fileRedirect != null) {
-			switch (m_fileRedirectMode) {
-			case OVERWRITE:
-				return commandLine() + " " + REDIRECT_OVERWITE + " " + m_fileRedirect;
+        if (m_fileRedirect != null) {
+            switch (m_fileRedirectMode) {
+            case OVERWRITE:
+                return commandLine() + " " + REDIRECT_OVERWITE + " " + m_fileRedirect;
 
-			case APPEND:
-				return commandLine() + " " + REDIRECT_APPEND + " " + m_fileRedirect;
+            case APPEND:
+                return commandLine() + " " + REDIRECT_APPEND + " " + m_fileRedirect;
 
-			default:
-				return commandLine();
-			}
-		}
-		return commandLine();
+            default:
+                return commandLine();
+            }
+        }
+        return commandLine();
     }
-    
+
     public CoreId getCoreId(Engine engine, String coreReference) {
-    	return engine.getCoreId(getSrc(), coreReference);
+        return engine.getCoreId(getSrc(), coreReference);
     }
-    
+
     private void reportRouteIdIssue(Engine engine, int routeId) {
         if (engine.getLastAnalysisStatus() == Status.PARTIALLY_ELIMINATED) {
             engine.notify(getSrc(), Notifier.NOTIFY_WARNING, String.format(
-                    "Failed to find route with id: %s", getRouteId(routeId)));              
-        
+                    "Failed to find route with id: %s", getRouteId(routeId)));
+
         } else if (engine.getLastAnalysisStatus() != Status.ELIMINATED) {
             engine.notify(getSrc(), Notifier.NOTIFY_ERROR, String.format(
-                    "Failed to find route with id: %s", getRouteId(routeId)));              
-        }         
+                    "Failed to find route with id: %s", getRouteId(routeId)));
+        }
     }
 }
 

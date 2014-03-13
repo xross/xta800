@@ -8,56 +8,56 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 
 public class Scale extends Command {
-	private static final String[] COMMAND_NAMES = { "scale" };
+    private static final String[] COMMAND_NAMES = { "scale" };
 
-	private boolean m_scale;
+    private boolean m_scale;
 
-	public Scale() {
-		super(COMMAND_NAMES);
-		m_scale = true;
-	}
+    public Scale() {
+        super(COMMAND_NAMES);
+        m_scale = true;
+    }
 
-	public Scale(boolean scale) {
-		super(COMMAND_NAMES);
-		m_scale = scale;
-	}
+    public Scale(boolean scale) {
+        super(COMMAND_NAMES);
+        m_scale = scale;
+    }
 
     public int numArgs() {
-    	return 1;
+        return 1;
     }
 
     public String commandLine() {
-    	if (m_scale) {
-    		return name() + " true";
-    	} else {
-    		return name() + " false";
-    	}
+        if (m_scale) {
+            return name() + " true";
+        } else {
+            return name() + " false";
+        }
     }
 
     public String description(Engine engine, boolean detailed) {
         return name() + String.format(" <true/false>: Configures whether results are scales (currently: %s)",
-        		Conversion.getScale());
+                Conversion.getScale());
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-		boolean scale = true;
-    	if (args[index + 1].toLowerCase().equals("true")) {
-    		scale = true;
-    	} else if (args[index + 1].toLowerCase().equals("false")) {
-    		scale = false;
-    	} else {
+        boolean scale = true;
+        if (args[index + 1].toLowerCase().equals("true")) {
+            scale = true;
+        } else if (args[index + 1].toLowerCase().equals("false")) {
+            scale = false;
+        } else {
             return null;
         }
         return new Scale(scale);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	if (Conversion.getScale() != m_scale) {
-	    	Conversion.setScale(m_scale);
-	    	engine.notify(getSrc(), Notifier.NOTIFY_UPDATE_STATE, "");
-    	}
+        if (Conversion.getScale() != m_scale) {
+            Conversion.setScale(m_scale);
+            engine.notify(getSrc(), Notifier.NOTIFY_UPDATE_STATE, "");
+        }
     }
 }

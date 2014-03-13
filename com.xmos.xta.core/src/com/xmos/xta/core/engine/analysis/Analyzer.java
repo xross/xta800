@@ -21,185 +21,185 @@ import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class Analyzer {
-    
+
     public enum Status {
-        COMPLETED, 
-        ELIMINATED, 
+        COMPLETED,
+        ELIMINATED,
         PARTIALLY_ELIMINATED,
         ERROR
     }
-    
-	private Engine m_engine;
-	private List<Route> m_routes;
-	private List<RouteContainer> m_routeContainers;
 
-	private static final boolean development_mode = false;
+    private Engine m_engine;
+    private List<Route> m_routes;
+    private List<RouteContainer> m_routeContainers;
 
-	public Analyzer(Engine engine, List<Route> routes, List<RouteContainer> routeContainers) {
-		m_engine = engine;
-		m_routes = routes;
-		m_routeContainers = routeContainers;
-		engine.getMemoryMonitor().reset();
-	}
+    private static final boolean development_mode = false;
 
-	public Status analyzeFunction(CommandSource src, String functionName) {
+    public Analyzer(Engine engine, List<Route> routes, List<RouteContainer> routeContainers) {
+        m_engine = engine;
+        m_routes = routes;
+        m_routeContainers = routeContainers;
+        engine.getMemoryMonitor().reset();
+    }
+
+    public Status analyzeFunction(CommandSource src, String functionName) {
         RouteContainer routeContainer = new RouteContainer(
-        		RouteMode.FUNCTION, functionName, m_engine, src);		
+                RouteMode.FUNCTION, functionName, m_engine, src);
 
         boolean isResolved = false;
         boolean routeFound = false;
-		for (CoreId activeCore : m_engine.getActiveCores()) {			
-			Reference functionRef = ReferenceFactory.createReference(functionName, 
-					ReferenceClass.FUNCTION, activeCore);
+        for (CoreId activeCore : m_engine.getActiveCores()) {
+            Reference functionRef = ReferenceFactory.createReference(functionName,
+                    ReferenceClass.FUNCTION, activeCore);
 
-			if (functionRef.resolve(m_engine) == Result.RESOLVED) {
-				isResolved = true;
-				
-				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef, 
-						routeContainer, m_engine, activeCore);
-				
-				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
-					return Status.ERROR;
-				}
-				routeFound = true;
-			}
-		}
-		update(src, routeContainer, isResolved);
-		if (!routeFound) {
-	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
-	    			String.format("Reference: %s not resolved on any active tile", functionName));
-	    	return Status.ERROR;
-		}
-		return Status.COMPLETED;
-	}
+            if (functionRef.resolve(m_engine) == Result.RESOLVED) {
+                isResolved = true;
 
-	public Status analyzeEndpoints(CommandSource src, PathPoints pathPoints) {
+                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef,
+                        routeContainer, m_engine, activeCore);
+
+                if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
+                    return Status.ERROR;
+                }
+                routeFound = true;
+            }
+        }
+        update(src, routeContainer, isResolved);
+        if (!routeFound) {
+            m_engine.notify(src, Notifier.NOTIFY_ERROR,
+                    String.format("Reference: %s not resolved on any active tile", functionName));
+            return Status.ERROR;
+        }
+        return Status.COMPLETED;
+    }
+
+    public Status analyzeEndpoints(CommandSource src, PathPoints pathPoints) {
         RouteContainer routeContainer = new RouteContainer(pathPoints.getFromName(), pathPoints.getToName(), m_engine, src);
 
         boolean isResolved = false;
         boolean routeFound = false;
-		for (CoreId activeCore : m_engine.getActiveCores()) {
-			isResolved = true;
-			
-			boolean fromFound = true;
-			Reference fromEndpoint = pathPoints.getFrom(activeCore);
-		    if ((fromEndpoint == null) || fromEndpoint.getRef().equals("")) {
-		    	fromFound = false;
-		    }
+        for (CoreId activeCore : m_engine.getActiveCores()) {
+            isResolved = true;
 
-			boolean toFound = true;
-			Reference toEndpoint = pathPoints.getTo(activeCore);
-		    if ((toEndpoint == null) || toEndpoint.getRef().equals("")) {
-		    	toFound = false;
-		    }
+            boolean fromFound = true;
+            Reference fromEndpoint = pathPoints.getFrom(activeCore);
+            if ((fromEndpoint == null) || fromEndpoint.getRef().equals("")) {
+                fromFound = false;
+            }
 
-		    if (fromFound && toFound) {
-				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(fromEndpoint, toEndpoint,
-						routeContainer, m_engine, activeCore);
-				
-				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
-				    return Status.ERROR;
-				}
-				routeFound = true;
-    		}			
-		}
-		update(src, routeContainer, isResolved);
-		if (!routeFound) {
-	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, 
-	    			"References not resolved on any active tile");
-	    	return Status.ERROR;
-	    }
-		return Status.COMPLETED;
-	}
+            boolean toFound = true;
+            Reference toEndpoint = pathPoints.getTo(activeCore);
+            if ((toEndpoint == null) || toEndpoint.getRef().equals("")) {
+                toFound = false;
+            }
 
-	public Status analyzeLoop(CommandSource src, LoopPoints loopPoints) {
+            if (fromFound && toFound) {
+                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(fromEndpoint, toEndpoint,
+                        routeContainer, m_engine, activeCore);
+
+                if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
+                    return Status.ERROR;
+                }
+                routeFound = true;
+            }
+        }
+        update(src, routeContainer, isResolved);
+        if (!routeFound) {
+            m_engine.notify(src, Notifier.NOTIFY_ERROR,
+                    "References not resolved on any active tile");
+            return Status.ERROR;
+        }
+        return Status.COMPLETED;
+    }
+
+    public Status analyzeLoop(CommandSource src, LoopPoints loopPoints) {
         RouteContainer routeContainer = new RouteContainer(
-        		RouteMode.LOOP, loopPoints.getRefString(), m_engine, src);		
+                RouteMode.LOOP, loopPoints.getRefString(), m_engine, src);
 
         boolean isResolved = false;
         boolean routeFound = false;
-		for (CoreId activeCore : m_engine.getActiveCores()) {
-			isResolved = true;
-			
-			Reference loopRef = loopPoints.getLoop(activeCore);
-		    if ((loopRef != null) && !loopRef.getRef().equals("")) {
-				RouteCoreContainer routeCoreContainer = new RouteCoreContainer(loopRef, 
-						routeContainer, m_engine, activeCore);
-				
-				if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
-				    return Status.ERROR;
-				}
-				routeFound = true;
-			}		    
-		}
-		update(src, routeContainer, isResolved);
-		if (!routeFound) {
-	    	m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format(
-	    			"Reference: %s not resolved on any active tile", loopPoints.getRefString()));
-	    	return Status.ERROR;
-		}
-		return Status.COMPLETED;
-	}
+        for (CoreId activeCore : m_engine.getActiveCores()) {
+            isResolved = true;
 
-	private boolean analyzeRoute(CommandSource src, RouteContainer routeContainer,
-			RouteCoreContainer routeCoreContainer, CoreId core) {
-		
-		try {
-			RouteConstructor routeConstructor = new RouteConstructor(m_engine, 					
-					m_engine.getControlFlow(core), m_engine.getCachedFunctionMap(core),
-					routeCoreContainer, core);			
-			routeConstructor.analyze(src);
+            Reference loopRef = loopPoints.getLoop(activeCore);
+            if ((loopRef != null) && !loopRef.getRef().equals("")) {
+                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(loopRef,
+                        routeContainer, m_engine, activeCore);
 
-			if (!routeConstructor.getRoutes().isEmpty()) {
-				routeCoreContainer.add(routeConstructor.getRoutes());
-				routeContainer.addRouteCoreContainer(routeCoreContainer);
-			}			
-			
-		} catch (final java.lang.OutOfMemoryError e) {
-			if (development_mode) e.printStackTrace();
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
-			return false;
-			
-		} catch (final java.lang.StackOverflowError e) {
-			if (development_mode) e.printStackTrace();
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
-			return false;
+                if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
+                    return Status.ERROR;
+                }
+                routeFound = true;
+            }
+        }
+        update(src, routeContainer, isResolved);
+        if (!routeFound) {
+            m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format(
+                    "Reference: %s not resolved on any active tile", loopPoints.getRefString()));
+            return Status.ERROR;
+        }
+        return Status.COMPLETED;
+    }
 
-		} catch (MemoryMonitorException e) {
-			if (development_mode) e.printStackTrace();
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, "heap memory running low, aborting");
-			return false;
-			
-		} catch (AbortedException e) {
-			return false;
-			
-		} catch (Exception e) {
-			if (development_mode) e.printStackTrace();
-			m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
-			return false;
-		}
-		return true;
-	}
-	
-	private void update(CommandSource src, RouteContainer routeContainer, boolean isResolved) {
-		if (routeContainer.getNumExistingRoutes() > 0) {
-			m_routeContainers.add(routeContainer);
+    private boolean analyzeRoute(CommandSource src, RouteContainer routeContainer,
+            RouteCoreContainer routeCoreContainer, CoreId core) {
 
-			int currentSize = m_routes.size();			
-			for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
-				for (Route route : routeCoreContainer.getRoutes()) {
-					m_routes.add(route);	
-				}
-			}
-			m_engine.setSelectedRoute(src, m_routes.get(currentSize));
-			m_engine.notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE, 
-				Integer.toString(m_routes.get(currentSize).getRouteId()));
-		} else {
-			if (isResolved) {
-				// All the references for this analysis were resolved, 
-				// but no routes were created..
-		        m_engine.notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
-			}
-		}
-	}
+        try {
+            RouteConstructor routeConstructor = new RouteConstructor(m_engine,
+                    m_engine.getControlFlow(core), m_engine.getCachedFunctionMap(core),
+                    routeCoreContainer, core);
+            routeConstructor.analyze(src);
+
+            if (!routeConstructor.getRoutes().isEmpty()) {
+                routeCoreContainer.add(routeConstructor.getRoutes());
+                routeContainer.addRouteCoreContainer(routeCoreContainer);
+            }
+
+        } catch (final java.lang.OutOfMemoryError e) {
+            if (development_mode) e.printStackTrace();
+            m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
+            return false;
+
+        } catch (final java.lang.StackOverflowError e) {
+            if (development_mode) e.printStackTrace();
+            m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (stack)");
+            return false;
+
+        } catch (MemoryMonitorException e) {
+            if (development_mode) e.printStackTrace();
+            m_engine.notify(src, Notifier.NOTIFY_ERROR, "heap memory running low, aborting");
+            return false;
+
+        } catch (AbortedException e) {
+            return false;
+
+        } catch (Exception e) {
+            if (development_mode) e.printStackTrace();
+            m_engine.notify(src, Notifier.NOTIFY_ERROR, String.format("internal error detected (%s)", e.getMessage()));
+            return false;
+        }
+        return true;
+    }
+
+    private void update(CommandSource src, RouteContainer routeContainer, boolean isResolved) {
+        if (routeContainer.getNumExistingRoutes() > 0) {
+            m_routeContainers.add(routeContainer);
+
+            int currentSize = m_routes.size();
+            for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
+                for (Route route : routeCoreContainer.getRoutes()) {
+                    m_routes.add(route);
+                }
+            }
+            m_engine.setSelectedRoute(src, m_routes.get(currentSize));
+            m_engine.notify(src, Notifier.NOTIFY_ANALYSIS_COMPLETE,
+                Integer.toString(m_routes.get(currentSize).getRouteId()));
+        } else {
+            if (isResolved) {
+                // All the references for this analysis were resolved,
+                // but no routes were created..
+                m_engine.notify(src, Notifier.NOTIFY_WARNING, "no valid paths of execution");
+            }
+        }
+    }
 }

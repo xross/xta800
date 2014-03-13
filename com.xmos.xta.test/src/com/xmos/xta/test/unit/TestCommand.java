@@ -9,13 +9,13 @@ public class TestCommand extends TestCase {
         String ignore = "/~/hello/~/world";
         assertEquals("subsequent '~' must be ignored", ignore, Command.expandTilde(ignore));
         String initial = "~/hello/~/world";
-        String os = System.setProperty("os.name","Windows");        
+        String os = System.setProperty("os.name","Windows");
         assertEquals("none linux ignores '~'", initial, Command.expandTilde(initial));
         System.setProperty("os.name","Linuxxxxxx");
         // Shame there is no System.setEnv()
         String replaced = System.getenv("HOME") + "/hello/~/world";
         assertEquals("linux replaces '~'", replaced, Command.expandTilde(initial));
-        System.setProperty("os.name",os);        
+        System.setProperty("os.name",os);
     }
 
 }

@@ -4,50 +4,50 @@ import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.references.Reference;
 
 public class LoopScopeInfo implements DefineInfo {
-	private Reference m_reference;
-	private boolean m_absolute;
+    private Reference m_reference;
+    private boolean m_absolute;
 
-	public LoopScopeInfo(Reference reference, boolean absolute) {
-		m_reference = reference;
-		m_absolute = absolute;
-	}
+    public LoopScopeInfo(Reference reference, boolean absolute) {
+        m_reference = reference;
+        m_absolute = absolute;
+    }
 
-	public Reference getReference() {
-		return m_reference;
-	}
+    public Reference getReference() {
+        return m_reference;
+    }
 
-	public boolean getAbsolute() {
-		return m_absolute;
-	}
+    public boolean getAbsolute() {
+        return m_absolute;
+    }
 
-	public String toString() {
-		return String.format("%s: %s", m_reference, m_absolute ? "true" : "false");
-	}
+    public String toString() {
+        return String.format("%s: %s", m_reference, m_absolute ? "true" : "false");
+    }
 
     public String getDescription() {
-    	return m_reference.getRef();
+        return m_reference.getRef();
     }
 
     public String getValue() {
-    	return m_absolute ? "true" : "false";
+        return m_absolute ? "true" : "false";
     }
-    
+
     public CoreId getCoreId() {
-    	return m_reference.getCoreId();
+        return m_reference.getCoreId();
     }
 
     public Reference[] getReferences() {
-    	return new Reference[] {m_reference};
+        return new Reference[] {m_reference};
     }
-    
+
     public boolean equals(Object o) {
-		boolean ret = false;
-		if (o != null) {
-			if (o instanceof LoopScopeInfo){
-				ret = ((LoopScopeInfo)o).m_reference.equals(m_reference) &&
-	                  (((LoopScopeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
-			}
-		}
-		return ret;
-	}
+        boolean ret = false;
+        if (o != null) {
+            if (o instanceof LoopScopeInfo){
+                ret = ((LoopScopeInfo)o).m_reference.equals(m_reference) &&
+                      (((LoopScopeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
+            }
+        }
+        return ret;
+    }
 }
