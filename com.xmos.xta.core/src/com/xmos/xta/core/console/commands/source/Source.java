@@ -179,7 +179,7 @@ public class Source extends Command {
                             }
                             multilineCommand = false;
                             
-                            String[] tokens = StringUtil.extractTokens(commandString);
+                            String[] tokens = commandString.trim().split("\\s+");
 
                             ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
                             if (tokenGroups.size() > 0) {
