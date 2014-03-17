@@ -44,9 +44,8 @@ public class Shell {
 
     public void execute(String commandStr, CommandSource src) {
         m_executeArgsOnly = true;
-        String[] tokens = commandStr.trim().split("\\s+");
-        ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
-        processCommands(tokenGroups.toArray(new String[] {}), src);
+        String[] tokens = StringUtil.extractTokens(commandStr);
+        processCommands(tokens, src);
         execute();
     }
 
@@ -159,10 +158,8 @@ public class Shell {
                     continue; // Ignore comment and blank lines...
                 }
 
-                String[] tokens = line.trim().split("\\s+");
-                ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
-                if (tokenGroups.size() > 0) {
-                    tokens = tokenGroups.toArray(new String[0]);
+                String[] tokens = StringUtil.extractTokens(line);
+                if (tokens.length > 0) {
                     Command command = CommandFactory.buildCommand(
                             consoleCommand.getSrc(), tokens, 0, m_commandHistory, m_console);
 

@@ -179,12 +179,8 @@ public class Source extends Command {
                             }
                             multilineCommand = false;
 
-                            String[] tokens = commandString.trim().split("\\s+");
-
-                            ArrayList<String> tokenGroups = StringUtil.groupQuotedTokens(tokens);
-                            if (tokenGroups.size() > 0) {
-                                tokens = tokenGroups.toArray(new String[0]);
-
+                            String[] tokens = StringUtil.extractTokens(commandString);
+                            if (tokens.length > 0) {
                                 CommandSource src = new CommandSource(Type.FILE, m_fileName, lineNumber);
                                 Command command = CommandFactory.buildCommand(src,
                                         tokens, 0, shell.getCommandHistory(), console);
