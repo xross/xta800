@@ -5,50 +5,50 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class InstructionTimeInfo implements DefineInfo {
-	private Reference m_reference;
-	private TimeUnit m_timeUnit;
+    private Reference m_reference;
+    private TimeUnit m_timeUnit;
 
-	public InstructionTimeInfo(Reference reference, TimeUnit timeUnit) {
-		m_reference = reference;
-		m_timeUnit = timeUnit;
-	}
+    public InstructionTimeInfo(Reference reference, TimeUnit timeUnit) {
+        m_reference = reference;
+        m_timeUnit = timeUnit;
+    }
 
-	public Reference getReference() {
-		return m_reference;
-	}
+    public Reference getReference() {
+        return m_reference;
+    }
 
-	public TimeUnit getTimeUnit() {
-		return m_timeUnit;
-	}
+    public TimeUnit getTimeUnit() {
+        return m_timeUnit;
+    }
 
-	public String toString() {
-		return String.format("%s: %s", m_reference, m_timeUnit.getDescription(false));
-	}
+    public String toString() {
+        return String.format("%s: %s", m_reference, m_timeUnit.getDescription(false));
+    }
 
     public String getDescription() {
-    	return m_reference.getRef();
+        return m_reference.getRef();
     }
 
     public String getValue() {
-    	return m_timeUnit.getDescription(true);
+        return m_timeUnit.getDescription(true);
     }
 
     public CoreId getCoreId() {
-    	return m_reference.getCoreId();
+        return m_reference.getCoreId();
     }
 
     public Reference[] getReferences() {
-    	return new Reference[] {m_reference};
+        return new Reference[] {m_reference};
     }
-        
-	public boolean equals(Object o) {
-		boolean ret = false;
-		if (o != null) {
-			if (o instanceof InstructionTimeInfo) {
-				ret = ((InstructionTimeInfo)o).m_reference.equals(m_reference) &&
-			          (((InstructionTimeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
-			}
-		}
-		return ret;
-	}
+
+    public boolean equals(Object o) {
+        boolean ret = false;
+        if (o != null) {
+            if (o instanceof InstructionTimeInfo) {
+                ret = ((InstructionTimeInfo)o).m_reference.equals(m_reference) &&
+                      (((InstructionTimeInfo)o).m_reference.getCoreId().equals(m_reference.getCoreId()));
+            }
+        }
+        return ret;
+    }
 }

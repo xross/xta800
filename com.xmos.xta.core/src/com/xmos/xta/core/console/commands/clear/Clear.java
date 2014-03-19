@@ -6,18 +6,18 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Clear extends Command  {
-	private static final String[] COMMAND_NAMES = { "clear" };
-	
-	public Clear() {
-		super(COMMAND_NAMES);
-	}
+    private static final String[] COMMAND_NAMES = { "clear" };
+
+    public Clear() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -25,11 +25,11 @@ public class Clear extends Command  {
     }
 
     public Command clone(String[] args, int index) {
-    	return new Clear();
+        return new Clear();
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	console.clearScreen();
+        console.clearScreen();
     }
 }
 

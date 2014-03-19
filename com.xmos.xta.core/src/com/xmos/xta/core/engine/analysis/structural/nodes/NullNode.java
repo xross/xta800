@@ -11,56 +11,56 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class NullNode extends Node {
-	public NullNode(){
-		super();
-	}
+    public NullNode(){
+        super();
+    }
 
-	public Node copyRouteStructure() {
-		return new NullNode();
-	}
+    public Node copyRouteStructure() {
+        return new NullNode();
+    }
 
-	public NodeAttributes getAttributes(boolean modifier) {
-		assert(false);
-		return null;
-	}
+    public NodeAttributes getAttributes(boolean modifier) {
+        assert(false);
+        return null;
+    }
 
-	public LinkedList<Instruction> getInstructions() {
-		return new LinkedList<Instruction>();
-	}
+    public LinkedList<Instruction> getInstructions() {
+        return new LinkedList<Instruction>();
+    }
 
-	public long getStartPc() {
-		return 0;
-	}
+    public long getStartPc() {
+        return 0;
+    }
 
-	public String getTypeName() {
-		return "null";
-	}
+    public String getTypeName() {
+        return "null";
+    }
 
-	public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-		return TraverseStatus.CONTINUE;
-	}
+    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
+        return TraverseStatus.CONTINUE;
+    }
 
-	public boolean isNullNode() {
-		return true;
-	}
+    public boolean isNullNode() {
+        return true;
+    }
 
-	public TimeDistributionBuckets getTimeSpread() {
-		return new TimeDistributionBuckets(0);
-	}
+    public TimeDistributionBuckets getTimeSpread() {
+        return new TimeDistributionBuckets(0);
+    }
 
-	//below here the methods have been verified useful
+    //below here the methods have been verified useful
 
-	public List<Node> iChildren() {
-		return new LinkedList<Node>();
-	}
+    public List<Node> iChildren() {
+        return new LinkedList<Node>();
+    }
 
-	public void buildListDown(List<Node> nodeList) {
+    public void buildListDown(List<Node> nodeList) {
 
-	}
-	public void buildListUp(List<Node> nodeList,Node start) {
-	}
+    }
+    public void buildListUp(List<Node> nodeList,Node start) {
+    }
 
-	public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-		return TraverseStatus.CONTINUE;
-	}
+    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+        return TraverseStatus.CONTINUE;
+    }
 }

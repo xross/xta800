@@ -6,18 +6,18 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Pwd extends Command {
-	private static final String[] COMMAND_NAMES = { "pwd" };
+    private static final String[] COMMAND_NAMES = { "pwd" };
 
-	public Pwd() {
-		super(COMMAND_NAMES);
-	}
+    public Pwd() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -29,7 +29,7 @@ public class Pwd extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	String currentDirectory = System.getProperty("user.dir");
-    	console.display(String.format("%s\n", currentDirectory));
+        String currentDirectory = System.getProperty("user.dir");
+        console.display(String.format("%s\n", currentDirectory));
     }
 }

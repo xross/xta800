@@ -7,29 +7,29 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Threads extends Command {
-	private static final String[] COMMAND_NAMES = { "tasks", "threads" };
+    private static final String[] COMMAND_NAMES = { "tasks", "threads" };
 
-	private String m_coreReference;
-	private int m_numThreads;
+    private String m_coreReference;
+    private int m_numThreads;
 
-	public Threads() {
-		super(COMMAND_NAMES);
-		m_coreReference = "";
-		m_numThreads = 0;
-	}
+    public Threads() {
+        super(COMMAND_NAMES);
+        m_coreReference = "";
+        m_numThreads = 0;
+    }
 
-	public Threads(String coreReference, int threads) {
-		super(COMMAND_NAMES);
-		m_coreReference = coreReference;
-		m_numThreads = threads;
-	}
+    public Threads(String coreReference, int threads) {
+        super(COMMAND_NAMES);
+        m_coreReference = coreReference;
+        m_numThreads = threads;
+    }
 
     public int numArgs() {
-    	return 2;
+        return 2;
     }
 
     public String commandLine() {
-    	return name() + String.format(" %s %d", m_coreReference, m_numThreads);
+        return name() + String.format(" %s %d", m_coreReference, m_numThreads);
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -37,13 +37,13 @@ public class Threads extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-    	int numThreads;
-        try { 
-        	numThreads = Integer.parseInt(args[index + 2]);
-        	
+        int numThreads;
+        try {
+            numThreads = Integer.parseInt(args[index + 2]);
+
         } catch (NumberFormatException e) {
             return null;
         }
@@ -51,12 +51,12 @@ public class Threads extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		CoreId coreId = getCoreId(engine, m_coreReference);
-		if (coreId != null) {
-			engine.setNumThreads(getSrc(), coreId, m_numThreads);
-		}
+        CoreId coreId = getCoreId(engine, m_coreReference);
+        if (coreId != null) {
+            engine.setNumThreads(getSrc(), coreId, m_numThreads);
+        }
     }
 }

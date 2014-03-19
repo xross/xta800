@@ -11,18 +11,18 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 
 public class AllCalls extends Command {
-	private static final String[] COMMAND_NAMES = { "allcalls" };
+    private static final String[] COMMAND_NAMES = { "allcalls" };
 
-	public AllCalls() {
-		super(COMMAND_NAMES);
-	}
+    public AllCalls() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -34,20 +34,20 @@ public class AllCalls extends Command {
     }
 
     public void execute(Shell shell, final Engine engine, final Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		for (CoreId activeCore : engine.getActiveCores()) {				
-			LinkedList<CodePointTableInfo> list = new LinkedList<CodePointTableInfo>();
-			list.addAll(engine.getCallTable(activeCore));
-			Collections.sort(list);	
-			for (CodePointTableInfo info : list) {
-	    	    console.display(String.format("%s, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n",
-	    	    		activeCore.toString(), 
-	    	    		info.getPc(), info.getCompilationDir(),
-	    	    		info.getFileName(), info.getLineNumber()));
-	    	}
-		}		
+        for (CoreId activeCore : engine.getActiveCores()) {
+            LinkedList<CodePointTableInfo> list = new LinkedList<CodePointTableInfo>();
+            list.addAll(engine.getCallTable(activeCore));
+            Collections.sort(list);
+            for (CodePointTableInfo info : list) {
+                console.display(String.format("%s, pc: 0x%x, compilation dir: %s, filename: %s, line number: %d\n",
+                        activeCore.toString(),
+                        info.getPc(), info.getCompilationDir(),
+                        info.getFileName(), info.getLineNumber()));
+            }
+        }
     }
 
 }

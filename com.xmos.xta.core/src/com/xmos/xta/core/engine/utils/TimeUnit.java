@@ -3,276 +3,276 @@ package com.xmos.xta.core.engine.utils;
 import com.xmos.libs.core.utils.Conversion;
 
 public class TimeUnit {
-	public enum Units {
-		NS,
-		MHZ,
-		CYCLES,
-		INVALID,
-	}
-	
-	private CoreConfig m_coreConfig;
-	private Units m_units;
-	private long m_cycles;
-	private double m_ns;
-	private double m_mhz;
+    public enum Units {
+        NS,
+        MHZ,
+        CYCLES,
+        INVALID,
+    }
 
-	public static String getHelp() {
-		String helpStr = "";
-   		helpStr += "          mode: ns:     nanoseconds\n";
-   		helpStr += "          mode: us:     microseconds\n";
-   		helpStr += "          mode: ms:     milliseconds\n";
-   		helpStr += "          mode: MHz:    megahertz\n";
-   		helpStr += "          mode: KHz:    kilohertz\n";
-   		helpStr += "          mode: Hz:     hertz\n";
-   		helpStr += "          mode: cycles: processor thread cycles";
-   		return helpStr;
-	}
+    private CoreConfig m_coreConfig;
+    private Units m_units;
+    private long m_cycles;
+    private double m_ns;
+    private double m_mhz;
 
-	public static String[] getUnits() {
-		return new String[] {
-				"ns", 
-				"us", 
-				"ms", 
-				"MHz", 
-				"KHz", 
-				"Hz", 
-				"cycles"};
-	}
+    public static String getHelp() {
+        String helpStr = "";
+           helpStr += "          mode: ns:     nanoseconds\n";
+           helpStr += "          mode: us:     microseconds\n";
+           helpStr += "          mode: ms:     milliseconds\n";
+           helpStr += "          mode: MHz:    megahertz\n";
+           helpStr += "          mode: KHz:    kilohertz\n";
+           helpStr += "          mode: Hz:     hertz\n";
+           helpStr += "          mode: cycles: processor thread cycles";
+           return helpStr;
+    }
 
-	public static String[] getUnitsDesc() {
-		return new String[] {
-				"nanoseconds", 
-				"microseconds", 
-				"milliseconds", 
-				"megahertz",
-				"kilohertz",
-				"hertz",
-				
-				"the thread cycle count is the number of scheduled slots " +
-				"that the thread required to perform the sequence. The relationship " + 
-				"between thread cycles and time is a function of the number of " +
-				"threads currently running and the core frequency"};
-	}
-	
-	public TimeUnit(String value, String units) {
-		try {
-		   	if (units.equals("ns")) {
-		   		m_ns = Double.parseDouble(value);
-		   		m_units = Units.NS;
+    public static String[] getUnits() {
+        return new String[] {
+                "ns",
+                "us",
+                "ms",
+                "MHz",
+                "KHz",
+                "Hz",
+                "cycles"};
+    }
 
-	   	   	} else if (units.equals("us")) {
-	   	   		m_ns = Double.parseDouble(value) * 1000.0;
-		   		m_units = Units.NS;
+    public static String[] getUnitsDesc() {
+        return new String[] {
+                "nanoseconds",
+                "microseconds",
+                "milliseconds",
+                "megahertz",
+                "kilohertz",
+                "hertz",
 
-	   	   	} else if (units.equals("ms")) {
-	   	   		m_ns = Double.parseDouble(value) * 1000000.0;
-		   		m_units = Units.NS;
+                "the thread cycle count is the number of scheduled slots " +
+                "that the thread required to perform the sequence. The relationship " +
+                "between thread cycles and time is a function of the number of " +
+                "threads currently running and the core frequency"};
+    }
 
-	   	   	} else if (units.equals("MHz") || units.equals("mhz")) {
-	   	   	    m_mhz = Double.parseDouble(value);
-		   		m_units = Units.MHZ;
+    public TimeUnit(String value, String units) {
+        try {
+               if (units.equals("ns")) {
+                   m_ns = Double.parseDouble(value);
+                   m_units = Units.NS;
 
-	   	   	} else if (units.equals("KHz") || units.equals("khz")) {
-	   	   	    m_mhz = Double.parseDouble(value) / 1000.0;
-		   		m_units = Units.MHZ;
+                  } else if (units.equals("us")) {
+                      m_ns = Double.parseDouble(value) * 1000.0;
+                   m_units = Units.NS;
 
-	   	   	} else if (units.equals("Hz") || units.equals("hz")) {
-	   	   	    m_mhz = Double.parseDouble(value) / 1000000.0;
-		   		m_units = Units.MHZ;
-		   		
-	   	   	} else if (units.equals("cycles")) {
-	   	   	    m_cycles = Long.parseLong(value);
-		   		m_units = Units.CYCLES;
+                  } else if (units.equals("ms")) {
+                      m_ns = Double.parseDouble(value) * 1000000.0;
+                   m_units = Units.NS;
 
-	   	   	} else {
-				m_units = Units.INVALID;
-	   	   	}
+                  } else if (units.equals("MHz") || units.equals("mhz")) {
+                      m_mhz = Double.parseDouble(value);
+                   m_units = Units.MHZ;
 
-		} catch (NumberFormatException e) {
-			m_units = Units.INVALID;
-		}
-		m_coreConfig = null;
-	}
+                  } else if (units.equals("KHz") || units.equals("khz")) {
+                      m_mhz = Double.parseDouble(value) / 1000.0;
+                   m_units = Units.MHZ;
 
-	public TimeUnit(double value, String units) throws Exception {
-	   	if (units.equals("ns")) {
-	   		m_ns = value;
-	   		m_units = Units.NS;
+                  } else if (units.equals("Hz") || units.equals("hz")) {
+                      m_mhz = Double.parseDouble(value) / 1000000.0;
+                   m_units = Units.MHZ;
 
-   	   	} else if (units.equals("us")) {
-   	   		m_ns = value * 1000.0;
-	   		m_units = Units.NS;
+                  } else if (units.equals("cycles")) {
+                      m_cycles = Long.parseLong(value);
+                   m_units = Units.CYCLES;
 
-   	   	} else if (units.equals("ms")) {
-   	   		m_ns = value * 1000000.0;
-	   		m_units = Units.NS;
+                  } else {
+                m_units = Units.INVALID;
+                  }
 
-   	   	} else if (units.equals("MHz") || units.equals("mhz")) {
-   	   	    m_mhz = value;
-	   		m_units = Units.MHZ;
+        } catch (NumberFormatException e) {
+            m_units = Units.INVALID;
+        }
+        m_coreConfig = null;
+    }
 
-   	   	} else if (units.equals("KHz") || units.equals("khz")) {
-   	   	    m_mhz = value / 1000.0;
-	   		m_units = Units.MHZ;
+    public TimeUnit(double value, String units) throws Exception {
+           if (units.equals("ns")) {
+               m_ns = value;
+               m_units = Units.NS;
 
-   	   	} else if (units.equals("Hz") || units.equals("hz")) {
-   	   	    m_mhz = value / 1000000.0;
-	   		m_units = Units.MHZ;
-	   		
-   	   	} else {
-			throw new Exception("Invalid units");   	   		
-   	   	}
-		m_coreConfig = null;
-	}
-	
-	public TimeUnit(CoreConfig coreConfig, long value, Units units) {
-		assert(units == Units.CYCLES);
-   	    m_cycles = value;
-   		m_units = Units.CYCLES;
-   		m_coreConfig = coreConfig;
-	}
+              } else if (units.equals("us")) {
+                  m_ns = value * 1000.0;
+               m_units = Units.NS;
 
-	public TimeUnit(CoreConfig coreConfig, double value, Units units) {
-		assert((units == Units.NS) || (units == Units.MHZ));
-		m_units = units;
-		switch (m_units) {
-		case NS:
-			m_ns = value;
-			break;
-		case MHZ:
-			m_mhz = value;
-			break;
-		}
-		m_coreConfig = coreConfig;
-	}
+              } else if (units.equals("ms")) {
+                  m_ns = value * 1000000.0;
+               m_units = Units.NS;
 
-	public TimeUnit(CoreConfig coreConfig, TimeUnit timeUnit) {
-		m_coreConfig = coreConfig;
-		m_units = timeUnit.m_units;
-		m_cycles = timeUnit.m_cycles;
-		m_ns = timeUnit.m_ns;
-		m_mhz = timeUnit.m_mhz;
-	}
+              } else if (units.equals("MHz") || units.equals("mhz")) {
+                  m_mhz = value;
+               m_units = Units.MHZ;
 
-	public void setCoreConfig(CoreConfig coreConfig) {
-		m_coreConfig = coreConfig;
-	}
+              } else if (units.equals("KHz") || units.equals("khz")) {
+                  m_mhz = value / 1000.0;
+               m_units = Units.MHZ;
 
-	public boolean isValid() {
-		return m_units != Units.INVALID;
-	}
+              } else if (units.equals("Hz") || units.equals("hz")) {
+                  m_mhz = value / 1000000.0;
+               m_units = Units.MHZ;
 
-	public String getDescription(boolean precise) {
-       	switch (m_units) {
-       	case NS:
-       		return Conversion.getTimeString(precise, m_ns);
-       	case MHZ:
-           	return precise ?
-           			Conversion.stripTrailingZeros(String.format("%f", m_mhz)) + " MHz" :
-           		    String.format("%.1f MHz", m_mhz);
-       	case CYCLES:
-           	return String.format("%d cycles", m_cycles);
-       	}
-       	assert(false);
-       	return "";
-	}
+              } else {
+            throw new Exception("Invalid units");
+              }
+        m_coreConfig = null;
+    }
 
-	public String getValueStr() {
-       	switch (m_units) {
-       	case NS:     return Conversion.getValueString(true, m_ns);
-       	case MHZ:    return Conversion.stripTrailingZeros(String.format("%f", m_mhz));
-       	case CYCLES: return String.format("%d", m_cycles);
-       	}
-       	assert(false);
-       	return "";
-	}
+    public TimeUnit(CoreConfig coreConfig, long value, Units units) {
+        assert(units == Units.CYCLES);
+           m_cycles = value;
+           m_units = Units.CYCLES;
+           m_coreConfig = coreConfig;
+    }
 
-	public String getUnitsStr() {
-       	switch (m_units) {
-       	case NS:     return Conversion.getUnitsString(m_ns);
-       	case MHZ:    return "MHz";
-       	case CYCLES: return "cycles";
-       	}
-       	assert(false);
-       	return "";
-	}
- 
-	public long getCycles() {
-		assert(m_coreConfig != null);
+    public TimeUnit(CoreConfig coreConfig, double value, Units units) {
+        assert((units == Units.NS) || (units == Units.MHZ));
+        m_units = units;
+        switch (m_units) {
+        case NS:
+            m_ns = value;
+            break;
+        case MHZ:
+            m_mhz = value;
+            break;
+        }
+        m_coreConfig = coreConfig;
+    }
 
-       	switch (m_units) {
-       	case NS: {
-       		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
-           	return (long)((m_ns * m_coreConfig.m_frequency) / (threadFactor * 1000));
-       	}
-       	case MHZ: {
-       		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
-           	return (long)(m_coreConfig.m_frequency / (threadFactor * m_mhz));
-       	}
-       	case CYCLES:
-           	return m_cycles;
-       	}
-       	assert(false);
-       	return 0;
-	}
+    public TimeUnit(CoreConfig coreConfig, TimeUnit timeUnit) {
+        m_coreConfig = coreConfig;
+        m_units = timeUnit.m_units;
+        m_cycles = timeUnit.m_cycles;
+        m_ns = timeUnit.m_ns;
+        m_mhz = timeUnit.m_mhz;
+    }
 
-	public double getNs() {
-       	switch (m_units) {
-       	case NS:
-           	return m_ns;
+    public void setCoreConfig(CoreConfig coreConfig) {
+        m_coreConfig = coreConfig;
+    }
 
-       	case MHZ:
-       		return 1000.0 / m_mhz;
+    public boolean isValid() {
+        return m_units != Units.INVALID;
+    }
 
-       	case CYCLES:
-    		if (m_coreConfig != null) {
-           		int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
-           	    return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
-    		}
-    		return 0;
-       	}
-       	assert(false);
-       	return 0;
-	}
+    public String getDescription(boolean precise) {
+           switch (m_units) {
+           case NS:
+               return Conversion.getTimeString(precise, m_ns);
+           case MHZ:
+               return precise ?
+                       Conversion.stripTrailingZeros(String.format("%f", m_mhz)) + " MHz" :
+                       String.format("%.1f MHz", m_mhz);
+           case CYCLES:
+               return String.format("%d cycles", m_cycles);
+           }
+           assert(false);
+           return "";
+    }
 
-	public double getMhz() {
-       	switch (m_units) {
-       	case NS:
-       		return 1000.0 / m_ns;
+    public String getValueStr() {
+           switch (m_units) {
+           case NS:     return Conversion.getValueString(true, m_ns);
+           case MHZ:    return Conversion.stripTrailingZeros(String.format("%f", m_mhz));
+           case CYCLES: return String.format("%d", m_cycles);
+           }
+           assert(false);
+           return "";
+    }
 
-       	case MHZ:
-           	return m_mhz;
+    public String getUnitsStr() {
+           switch (m_units) {
+           case NS:     return Conversion.getUnitsString(m_ns);
+           case MHZ:    return "MHz";
+           case CYCLES: return "cycles";
+           }
+           assert(false);
+           return "";
+    }
 
-       	case CYCLES:
-    		assert(m_coreConfig != null);
-       	  	int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+    public long getCycles() {
+        assert(m_coreConfig != null);
+
+           switch (m_units) {
+           case NS: {
+               int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+               return (long)((m_ns * m_coreConfig.m_frequency) / (threadFactor * 1000));
+           }
+           case MHZ: {
+               int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+               return (long)(m_coreConfig.m_frequency / (threadFactor * m_mhz));
+           }
+           case CYCLES:
+               return m_cycles;
+           }
+           assert(false);
+           return 0;
+    }
+
+    public double getNs() {
+           switch (m_units) {
+           case NS:
+               return m_ns;
+
+           case MHZ:
+               return 1000.0 / m_mhz;
+
+           case CYCLES:
+            if (m_coreConfig != null) {
+                   int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+                   return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
+            }
+            return 0;
+           }
+           assert(false);
+           return 0;
+    }
+
+    public double getMhz() {
+           switch (m_units) {
+           case NS:
+               return 1000.0 / m_ns;
+
+           case MHZ:
+               return m_mhz;
+
+           case CYCLES:
+            assert(m_coreConfig != null);
+                 int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
             return m_coreConfig.m_frequency / (threadFactor * m_cycles);
-       	}
-       	assert(false);
-       	return 0;
-	}
-	
-	public double getValue(String units) throws Exception {
-	   	if (units.equals("ns")) {
-	   		return getNs();
+           }
+           assert(false);
+           return 0;
+    }
 
-   	   	} else if (units.equals("us")) {
-	   		return getNs() / 1000.0;
+    public double getValue(String units) throws Exception {
+           if (units.equals("ns")) {
+               return getNs();
 
-   	   	} else if (units.equals("ms")) {
-	   		return getNs() / 1000000.0;
+              } else if (units.equals("us")) {
+               return getNs() / 1000.0;
 
-   	   	} else if (units.equals("MHz") || units.equals("mhz")) {
-	   		return getMhz();
+              } else if (units.equals("ms")) {
+               return getNs() / 1000000.0;
 
-   	   	} else if (units.equals("KHz") || units.equals("khz")) {
-     	   	return getMhz() / 1000.0;
+              } else if (units.equals("MHz") || units.equals("mhz")) {
+               return getMhz();
 
-   	   	} else if (units.equals("Hz") || units.equals("hz")) {
-   	    	return getMhz() / 1000000.0;
-	   		
-   	   	} else {
-			throw new Exception("Invalid units");
-   	   	}		
-	}
+              } else if (units.equals("KHz") || units.equals("khz")) {
+                return getMhz() / 1000.0;
+
+              } else if (units.equals("Hz") || units.equals("hz")) {
+               return getMhz() / 1000000.0;
+
+              } else {
+            throw new Exception("Invalid units");
+              }
+    }
 }

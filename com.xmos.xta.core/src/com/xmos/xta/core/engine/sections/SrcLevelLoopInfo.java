@@ -5,17 +5,17 @@ public class SrcLevelLoopInfo extends SectionInfo {
     private int m_numIterations;
 
     public SrcLevelLoopInfo(Section section, long pc, int numIterations) {
-    	super(section);
-    	
-    	m_pc = pc;
-    	m_numIterations = numIterations;
+        super(section);
+
+        m_pc = pc;
+        m_numIterations = numIterations;
     }
 
     public long getPc() {
-    	return m_pc;
+        return m_pc;
     }
 
     public int getNumIterations() {
-    	return m_numIterations;
+        return m_numIterations;
     }
 }

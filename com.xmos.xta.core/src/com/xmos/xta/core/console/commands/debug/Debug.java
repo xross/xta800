@@ -4,34 +4,34 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Debug extends CommandContainer {
-	private static final String[] COMMAND_NAMES = { "debug" };
+    private static final String[] COMMAND_NAMES = { "debug" };
 
-	static private Command[] m_options = {
-		new DumpActiveExclusions(),
-		new DumpCachedFunction(),
-		new DumpCallGraph(),
-		new DumpControlFlow(),
-		new DumpManual(),
-		new DumpStackNodes(),
-		new DumpUnresolvedInstructions(),
-		new VerifyReference(),
-		new FromPoints(),
-		new ToPoints(),
-		new InstructionTime(),
-		new Loop(),
-		new LoopPath(),
-		new LoopScope(),
-		new ListGlobalReferences(),
-		new ListRouteReferences(),
-		new MemUsage(),
-		new GetMemThreshold(),
-		new SetMemThreshold(),
-	};
+    static private Command[] m_options = {
+        new DumpActiveExclusions(),
+        new DumpCachedFunction(),
+        new DumpCallGraph(),
+        new DumpControlFlow(),
+        new DumpManual(),
+        new DumpStackNodes(),
+        new DumpUnresolvedInstructions(),
+        new VerifyReference(),
+        new FromPoints(),
+        new ToPoints(),
+        new InstructionTime(),
+        new Loop(),
+        new LoopPath(),
+        new LoopScope(),
+        new ListGlobalReferences(),
+        new ListRouteReferences(),
+        new MemUsage(),
+        new GetMemThreshold(),
+        new SetMemThreshold(),
+    };
 
-	public Debug() { super(COMMAND_NAMES); }
-	public Debug(Command command) { super(COMMAND_NAMES, command); }
+    public Debug() { super(COMMAND_NAMES); }
+    public Debug(Command command) { super(COMMAND_NAMES, command); }
 
-	public Command[] getSubCommands() { return m_options; }
-	protected String getDescription() { return "Internal debug commands"; }
-	protected Command clone(Command command) { return new Debug(command); }
+    public Command[] getSubCommands() { return m_options; }
+    protected String getDescription() { return "Internal debug commands"; }
+    protected Command clone(Command command) { return new Debug(command); }
 }

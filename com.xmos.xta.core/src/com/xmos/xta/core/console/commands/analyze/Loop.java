@@ -7,38 +7,38 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.Analyzer.Status;
 
 public class Loop extends Command {
-	private static final String[] COMMAND_NAMES = { "loop" };
+    private static final String[] COMMAND_NAMES = { "loop" };
 
-	private String m_loopRef;
+    private String m_loopRef;
 
-	public Loop() {
-		super(COMMAND_NAMES);
-		m_loopRef = "";
-	}
-
-	public Loop(String loopRef) {
-		super(COMMAND_NAMES);
-		m_loopRef = loopRef;
-	}
-
-    public int numArgs() {
-    	if (hasLoopPoint()) {
-    		return 1;
-    	} else {
-    		return 0;
-    	}
+    public Loop() {
+        super(COMMAND_NAMES);
+        m_loopRef = "";
     }
 
-	public ArgType[] getArgTypes() {
-		return new Command.ArgType[] {ArgType.ALLREFS};
-	}
+    public Loop(String loopRef) {
+        super(COMMAND_NAMES);
+        m_loopRef = loopRef;
+    }
+
+    public int numArgs() {
+        if (hasLoopPoint()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public ArgType[] getArgTypes() {
+        return new Command.ArgType[] {ArgType.ALLREFS};
+    }
 
     public String commandLine() {
-    	if (hasLoopPoint()) {
-    	    return name() + " " + m_loopRef;
-    	} else {
-    		return name();    		
-    	}
+        if (hasLoopPoint()) {
+            return name() + " " + m_loopRef;
+        } else {
+            return name();
+        }
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -46,32 +46,32 @@ public class Loop extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if (areArgsDone(args, index + 1)) {
-			return new Loop();
-			
-		} else {    	
-		    if ((index + 1) >= args.length)
-			    return null;
+        if (areArgsDone(args, index + 1)) {
+            return new Loop();
 
-    	    String loopRef = args[index + 1];
+        } else {
+            if ((index + 1) >= args.length)
+                return null;
+
+            String loopRef = args[index + 1];
             return new Loop(loopRef);
-		}
+        }
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		if (hasLoopPoint()) {
-		    if (!engine.getLoopPoints().setLoop(getSrc(), m_loopRef)) {
-		        engine.setLastAnalysisStatus(Status.ERROR);
-			    return;
-		    }
-		}
+        if (hasLoopPoint()) {
+            if (!engine.getLoopPoints().setLoop(getSrc(), m_loopRef)) {
+                engine.setLastAnalysisStatus(Status.ERROR);
+                return;
+            }
+        }
         engine.analyzeLoop(getSrc());
     }
-    
-	private boolean hasLoopPoint() {
-    	return (m_loopRef.length() > 0);
-	}    
+
+    private boolean hasLoopPoint() {
+        return (m_loopRef.length() > 0);
+    }
 }

@@ -11,107 +11,107 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
 public class CommonMethods {
 
-	public static boolean wedgeUp(CfgNode node, Collection<CfgNode> workingSet) {
+    public static boolean wedgeUp(CfgNode node, Collection<CfgNode> workingSet) {
 
-		if (node.getNextNodesSize() < 2) {
-			return false;
-		}
-		Collection<CfgNode> newNodes = new IteratableSet<CfgNode>();
-		
-		for (CfgNode next : node.getNextNodes()) {
-			
-			assert(node instanceof CfgContainerNode);
-			Node strNode = ((CfgContainerNode)node).getNode().copyRouteStructure();
-			CfgNode newNode = new CfgContainerNode(strNode);								
-			
-			newNodes.add(newNode);
-			next.addPrevNode(newNode);
-			next.removePrevNode(node);
-			newNode.addNextNode(next);
-		}
+        if (node.getNextNodesSize() < 2) {
+            return false;
+        }
+        Collection<CfgNode> newNodes = new IteratableSet<CfgNode>();
 
-		for (CfgNode newNode : newNodes){
-			for (CfgNode prev : node.getPrevNodes()) {
-				newNode.addPrevNode(prev);
-				prev.addNextNode(newNode);
-			}
-		}
+        for (CfgNode next : node.getNextNodes()) {
 
-		for (CfgNode prev : node.getPrevNodes()) {
-			prev.removeNextNode(node);
-		}
+            assert(node instanceof CfgContainerNode);
+            Node strNode = ((CfgContainerNode)node).getNode().copyRouteStructure();
+            CfgNode newNode = new CfgContainerNode(strNode);
 
-		workingSet.remove(node);
-		workingSet.addAll(newNodes);
-		return true;
-	}
+            newNodes.add(newNode);
+            next.addPrevNode(newNode);
+            next.removePrevNode(node);
+            newNode.addNextNode(next);
+        }
 
-	//TODO find out why these functions aren't symmetric
+        for (CfgNode newNode : newNodes){
+            for (CfgNode prev : node.getPrevNodes()) {
+                newNode.addPrevNode(prev);
+                prev.addNextNode(newNode);
+            }
+        }
 
-	public static boolean wedgeDown(CfgNode node, Collection<CfgNode> workingSet) {
+        for (CfgNode prev : node.getPrevNodes()) {
+            prev.removeNextNode(node);
+        }
 
-		if (node.getPrevNodes().size() < 2) {
-			return false;
-		}
+        workingSet.remove(node);
+        workingSet.addAll(newNodes);
+        return true;
+    }
 
-		Collection<CfgNode> newNodes = new IteratableSet<CfgNode>();
-		for (CfgNode prev : node.getPrevNodes()){
+    //TODO find out why these functions aren't symmetric
 
-			assert(node instanceof CfgContainerNode);
-			Node strNode = ((CfgContainerNode)node).getNode().copyRouteStructure();
-			CfgNode newNode = new CfgContainerNode(strNode);								
+    public static boolean wedgeDown(CfgNode node, Collection<CfgNode> workingSet) {
 
-			newNodes.add(newNode);
+        if (node.getPrevNodes().size() < 2) {
+            return false;
+        }
 
-			prev.removeNextNode(node);
+        Collection<CfgNode> newNodes = new IteratableSet<CfgNode>();
+        for (CfgNode prev : node.getPrevNodes()){
 
-			//prev.getNextNodes().remove(node);
-			prev.addNextNode(newNode);
+            assert(node instanceof CfgContainerNode);
+            Node strNode = ((CfgContainerNode)node).getNode().copyRouteStructure();
+            CfgNode newNode = new CfgContainerNode(strNode);
 
-			//add a connection to the new node
-			newNode.addPrevNode(prev);
+            newNodes.add(newNode);
 
-			for (CfgNode next : node.getNextNodes()) {
-				if (next != node) {
-					next.removePrevNode(node);
-					next.addPrevNode(newNode);
-					newNode.addNextNode(next);
-				}
-			}
-		}
+            prev.removeNextNode(node);
 
-		workingSet.remove(node);
-		workingSet.addAll(newNodes);
-		return true;
-	}
+            //prev.getNextNodes().remove(node);
+            prev.addNextNode(newNode);
 
-	public static Set<Node> getAllContainedNodes(Node node) {
-		Set<Node> seen = new IteratableSet<Node>();
-		seen.add(node);
-		for(Node child : node.iChildren()){
-			seen.addAll(getAllContainedNodes(child));
-		}
-		
-		return seen;
-	}
-	
-	public static CfgNode findNullNode(Collection<CfgNode> workingSet){
-		for (CfgNode node : workingSet){
-			if (node instanceof CfgNullNode) {
-				return node;
-			}
-		}
-		//didn't find one so make a new one!!!!
-		CfgNode nullNode = new CfgNullNode();
+            //add a connection to the new node
+            newNode.addPrevNode(prev);
 
-		for (CfgNode node : workingSet){
-			if (node.getNextNodesSize() == 0){
-				CfgNode.connect(nullNode, node);
-			}
-		}
+            for (CfgNode next : node.getNextNodes()) {
+                if (next != node) {
+                    next.removePrevNode(node);
+                    next.addPrevNode(newNode);
+                    newNode.addNextNode(next);
+                }
+            }
+        }
 
-		//must add all other terminals to it
-		workingSet.add(nullNode);
-		return nullNode;
-	}	
+        workingSet.remove(node);
+        workingSet.addAll(newNodes);
+        return true;
+    }
+
+    public static Set<Node> getAllContainedNodes(Node node) {
+        Set<Node> seen = new IteratableSet<Node>();
+        seen.add(node);
+        for(Node child : node.iChildren()){
+            seen.addAll(getAllContainedNodes(child));
+        }
+
+        return seen;
+    }
+
+    public static CfgNode findNullNode(Collection<CfgNode> workingSet){
+        for (CfgNode node : workingSet){
+            if (node instanceof CfgNullNode) {
+                return node;
+            }
+        }
+        //didn't find one so make a new one!!!!
+        CfgNode nullNode = new CfgNullNode();
+
+        for (CfgNode node : workingSet){
+            if (node.getNextNodesSize() == 0){
+                CfgNode.connect(nullNode, node);
+            }
+        }
+
+        //must add all other terminals to it
+        workingSet.add(nullNode);
+        return nullNode;
+    }
 }

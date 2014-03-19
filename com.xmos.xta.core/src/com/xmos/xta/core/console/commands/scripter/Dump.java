@@ -7,18 +7,18 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.scripter.Scripter;
 
 public class Dump extends Command {
-	private static final String[] COMMAND_NAMES = { "dump" };
+    private static final String[] COMMAND_NAMES = { "dump" };
 
-	public Dump() {
-		super(COMMAND_NAMES);
-	}
+    public Dump() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -30,11 +30,11 @@ public class Dump extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		Scripter scripter = engine.getScripter();
-		console.display(scripter.dump());
+        Scripter scripter = engine.getScripter();
+        console.display(scripter.dump());
     }
 }
 

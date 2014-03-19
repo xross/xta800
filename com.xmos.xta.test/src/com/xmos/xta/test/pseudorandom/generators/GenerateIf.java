@@ -10,26 +10,26 @@ import com.xmos.xta.test.pseudorandom.ReferenceTree;
 import com.xmos.xta.test.pseudorandom.XtaPragma;
 
 public class GenerateIf extends Generator {
-	
-	public void generate(StringBuffer file, PseudoRandom pseudoRandom, int indent, 
-			Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
-		int nextIndent = indent + 1;
-		Random r = new Random();
-		addIndent(file, indent);
-		file.append("if(x==0){\n");
-		ReferenceTree<XtaPragma> ifRef =  addLabelPragma(file, pseudoRandom, nextIndent, PragmaType.Label, references, "if");
-		makeNext(file, pseudoRandom, functionStacks, functionName, nextIndent, ifRef, activeThreads);
-		addIndent(file, indent);
-		file.append("}");
-		if(r.nextBoolean()){
-			file.append(" else {\n");
-			ReferenceTree<XtaPragma> elseRef =  addLabelPragma(file, pseudoRandom, nextIndent, PragmaType.Label, references, "else");
-			makeNext(file, pseudoRandom, functionStacks, functionName, nextIndent, elseRef, activeThreads);
-			addIndent(file, indent);
-			file.append("}\n");
-		} else {
-			file.append("\n");
-		}
-	}
-	
+
+    public void generate(StringBuffer file, PseudoRandom pseudoRandom, int indent,
+            Set<Stack<String>> functionStacks, String functionName, ReferenceTree<XtaPragma> references, int activeThreads) {
+        int nextIndent = indent + 1;
+        Random r = new Random();
+        addIndent(file, indent);
+        file.append("if(x==0){\n");
+        ReferenceTree<XtaPragma> ifRef =  addLabelPragma(file, pseudoRandom, nextIndent, PragmaType.Label, references, "if");
+        makeNext(file, pseudoRandom, functionStacks, functionName, nextIndent, ifRef, activeThreads);
+        addIndent(file, indent);
+        file.append("}");
+        if(r.nextBoolean()){
+            file.append(" else {\n");
+            ReferenceTree<XtaPragma> elseRef =  addLabelPragma(file, pseudoRandom, nextIndent, PragmaType.Label, references, "else");
+            makeNext(file, pseudoRandom, functionStacks, functionName, nextIndent, elseRef, activeThreads);
+            addIndent(file, indent);
+            file.append("}\n");
+        } else {
+            file.append("\n");
+        }
+    }
+
 }

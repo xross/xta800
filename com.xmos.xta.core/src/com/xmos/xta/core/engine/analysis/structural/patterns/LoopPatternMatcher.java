@@ -18,91 +18,91 @@ public class LoopPatternMatcher extends PatternMatcher {
         super(memoryMonitor);
     }
 
-	public boolean isMatch(CfgNode currentNode, 
-	        Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
-	    
-		// a loop pattern is when one or more nodes are doubly attached to a
-		// single node
-		Set<CfgNode> intersection = new IteratableSet<CfgNode>(currentNode.getNextNodes());
-		intersection.retainAll(currentNode.getPrevNodes());
-		if (intersection.size() > 0) {
-			Set <CfgNode> workingIntersection = new IteratableSet<CfgNode>();
+    public boolean isMatch(CfgNode currentNode,
+            Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
 
-			for (CfgNode loop : intersection) {
-				if (!(loop.getNextNodesSize() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
-					workingIntersection.add(loop);
-				}
-			}
-			if (workingIntersection.size() > 0 && !intersection.contains(treeStart)) {
-				updateGraph(workingIntersection, workingSet, currentNode, treeStart);
-				return true;
-			} else {
-				return false;
-			}
-		}
-		return false;
-	}
+        // a loop pattern is when one or more nodes are doubly attached to a
+        // single node
+        Set<CfgNode> intersection = new IteratableSet<CfgNode>(currentNode.getNextNodes());
+        intersection.retainAll(currentNode.getPrevNodes());
+        if (intersection.size() > 0) {
+            Set <CfgNode> workingIntersection = new IteratableSet<CfgNode>();
 
-	protected void updateGraph(Set<CfgNode> intersection, Collection<CfgNode> workingSet,
-			CfgNode header, CfgNode treeStart) {
-		
-		boolean noNextNode = false;
-		if (header.getNextNodesSize() == intersection.size()) {
-			noNextNode = true;
-		}
-		
-		CfgNode loop = createStructuralNode(intersection, header, noNextNode);
+            for (CfgNode loop : intersection) {
+                if (!(loop.getNextNodesSize() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
+                    workingIntersection.add(loop);
+                }
+            }
+            if (workingIntersection.size() > 0 && !intersection.contains(treeStart)) {
+                updateGraph(workingIntersection, workingSet, currentNode, treeStart);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 
-		if (intersection.contains(treeStart) || header == treeStart){
-			m_treeStart = loop;
-		} else {
-			m_treeStart = treeStart;
-		}
+    protected void updateGraph(Set<CfgNode> intersection, Collection<CfgNode> workingSet,
+            CfgNode header, CfgNode treeStart) {
 
-		for (CfgNode prev : header.getPrevNodes()) {
-			if (!intersection.contains(prev)) {
-				loop.addPrevNode(prev);
-				prev.removeNextNode(header);
-				//prev.getNextNodes().remove(base);
-				prev.addNextNode(loop);
-			}
-		}
+        boolean noNextNode = false;
+        if (header.getNextNodesSize() == intersection.size()) {
+            noNextNode = true;
+        }
 
-		for (CfgNode next : header.getNextNodes()) {
-			if (!intersection.contains(next)) {
-				loop.addNextNode(next);
+        CfgNode loop = createStructuralNode(intersection, header, noNextNode);
 
-				next.removePrevNode(header);
-				//next.getPrevNodes().remove(base);
-				next.addPrevNode(loop);
-			}
-		}
+        if (intersection.contains(treeStart) || header == treeStart){
+            m_treeStart = loop;
+        } else {
+            m_treeStart = treeStart;
+        }
 
-		if (noNextNode){
-			CfgNode.connect(CommonMethods.findNullNode(workingSet), loop);
-		}
+        for (CfgNode prev : header.getPrevNodes()) {
+            if (!intersection.contains(prev)) {
+                loop.addPrevNode(prev);
+                prev.removeNextNode(header);
+                //prev.getNextNodes().remove(base);
+                prev.addNextNode(loop);
+            }
+        }
 
-		workingSet.removeAll(intersection);
-		workingSet.remove(header);
-		workingSet.add(loop);
-	}
+        for (CfgNode next : header.getNextNodes()) {
+            if (!intersection.contains(next)) {
+                loop.addNextNode(next);
 
-	public boolean usesDominatorTree() {
-		return false;
-	}
-	
-	private CfgNode createStructuralNode(Set<CfgNode> intersection, 
-			CfgNode header, boolean noNextNode) {
+                next.removePrevNode(header);
+                //next.getPrevNodes().remove(base);
+                next.addPrevNode(loop);
+            }
+        }
 
-		Node strHeader = getStructuralNode(header);
-		Collection<Node> strLoops = getStructuralNodes(intersection);
-				
-		Node structuralNode = null;
-		if (noNextNode){
-			structuralNode = new InfiniteLoopNode(strLoops, strHeader);
-		} else {
-			structuralNode = new LoopNode(strLoops, strHeader);
-		}		
-		return new CfgContainerNode(structuralNode);
-	}	
+        if (noNextNode){
+            CfgNode.connect(CommonMethods.findNullNode(workingSet), loop);
+        }
+
+        workingSet.removeAll(intersection);
+        workingSet.remove(header);
+        workingSet.add(loop);
+    }
+
+    public boolean usesDominatorTree() {
+        return false;
+    }
+
+    private CfgNode createStructuralNode(Set<CfgNode> intersection,
+            CfgNode header, boolean noNextNode) {
+
+        Node strHeader = getStructuralNode(header);
+        Collection<Node> strLoops = getStructuralNodes(intersection);
+
+        Node structuralNode = null;
+        if (noNextNode){
+            structuralNode = new InfiniteLoopNode(strLoops, strHeader);
+        } else {
+            structuralNode = new LoopNode(strLoops, strHeader);
+        }
+        return new CfgContainerNode(structuralNode);
+    }
 }

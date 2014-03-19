@@ -7,54 +7,54 @@ import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.Engine;
 
 public class CallPcReference extends ReferenceType {
-	CallPcReference(String ref, CoreId coreId) {
-		super(ref, Type.CALL, coreId);
-		if (ref != null) {
-		    addPc(getPcString(ref));
-		}
-	}
+    CallPcReference(String ref, CoreId coreId) {
+        super(ref, Type.CALL, coreId);
+        if (ref != null) {
+            addPc(getPcString(ref));
+        }
+    }
 
-	public ReferenceType create(Engine engine, String reference, CoreId coreId) {
-		if (checkTypeString(reference, Type.CALL, 1) &&
-			isPcString(reference)) {
-	    	return new CallPcReference(reference, coreId);
-		}
-		return null;
-	}
+    public ReferenceType create(Engine engine, String reference, CoreId coreId) {
+        if (checkTypeString(reference, Type.CALL, 1) &&
+            isPcString(reference)) {
+            return new CallPcReference(reference, coreId);
+        }
+        return null;
+    }
 
-	public Result resolve(Engine engine) {
-		FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
-		if (functionMapper == null)
-			return Result.UNRESOLVED;
+    public Result resolve(Engine engine) {
+        FunctionMapper functionMapper = engine.getFunctionMapper(getCoreId());
+        if (functionMapper == null)
+            return Result.UNRESOLVED;
 
-		InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());		
-		for (Long pc : getPcs()) {
-		    
-		    CfgInstructionNode node = instructionDecoder.getNode(pc);
-		    if (node == null) {
-		        return Result.UNRESOLVED;
-		    }
-			if (!node.getInstruction().isLink()) {
-				return Result.UNRESOLVED;
-			}
-		}
+        InstructionDecoder instructionDecoder = engine.getInstructionDecoder(getCoreId());
+        for (Long pc : getPcs()) {
 
-		if (functionMapper.areProfilablePcs(getPcs())) {
-	        setResolved(true);
-	        return Result.RESOLVED;
-	    }
-	    return Result.UNRESOLVED;
-	}
+            CfgInstructionNode node = instructionDecoder.getNode(pc);
+            if (node == null) {
+                return Result.UNRESOLVED;
+            }
+            if (!node.getInstruction().isLink()) {
+                return Result.UNRESOLVED;
+            }
+        }
 
-	public String name() {
-		return "CallPc";
-	}
+        if (functionMapper.areProfilablePcs(getPcs())) {
+            setResolved(true);
+            return Result.RESOLVED;
+        }
+        return Result.UNRESOLVED;
+    }
 
-	public String description() {
-		return "Call specified in the format: 0x*";
-	}
+    public String name() {
+        return "CallPc";
+    }
 
-	public boolean isPortable() {
-		return false;
-	}
+    public String description() {
+        return "Call specified in the format: 0x*";
+    }
+
+    public boolean isPortable() {
+        return false;
+    }
 }

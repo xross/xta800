@@ -18,78 +18,78 @@ import com.xmos.xta.core.engine.utils.CoreConfig;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class RouteDefines {
-	
-	private static RouteDefinePatterns[] m_patterns = new RouteDefinePatterns[] {
-			new SameBlockPattern(),
-			new DifferentBlockPattern()};
 
-	public static boolean matchPathDefine(Node from, Node to) {
-		assert(from instanceof InstructionNode);
-		Node fromBlock = from.getParent();
-		assert(fromBlock instanceof BlockNode);
+    private static RouteDefinePatterns[] m_patterns = new RouteDefinePatterns[] {
+            new SameBlockPattern(),
+            new DifferentBlockPattern()};
 
-		assert(to instanceof InstructionNode);
-		Node toBlock = to.getParent();
-		assert(toBlock instanceof BlockNode);
+    public static boolean matchPathDefine(Node from, Node to) {
+        assert(from instanceof InstructionNode);
+        Node fromBlock = from.getParent();
+        assert(fromBlock instanceof BlockNode);
 
-		for (RouteDefinePatterns pattern : m_patterns) {
-			if (pattern.match(fromBlock, from, toBlock, to)) {
-				return true;
-			}
-		}
-		return false;
-	}
+        assert(to instanceof InstructionNode);
+        Node toBlock = to.getParent();
+        assert(toBlock instanceof BlockNode);
 
-	public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
-		Reference reference = info.getFunction();
-		for (Node node : route.getReferencedFunctionNodes(reference)) {
-			route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(),
-					reference, Type.FUNCTION_TIME, source);
-		}
-	}
+        for (RouteDefinePatterns pattern : m_patterns) {
+            if (pattern.match(fromBlock, from, toBlock, to)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public void applyPathDefine(Engine engine, CommandSource src,
-			Route route, PathTimeInfo info, Source source) throws AbortedException {
+    public void applyFunctionDefine(CommandSource src, Route route, FunctionTimeInfo info, Source source) throws AbortedException {
+        Reference reference = info.getFunction();
+        for (Node node : route.getReferencedFunctionNodes(reference)) {
+            route.getRouteUnknowns().setFixedTime(node, info.getTimeUnit(),
+                    reference, Type.FUNCTION_TIME, source);
+        }
+    }
 
-		Reference fromRef = info.getFrom();
-		Reference toRef = info.getTo();
+    public void applyPathDefine(Engine engine, CommandSource src,
+            Route route, PathTimeInfo info, Source source) throws AbortedException {
 
-		Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
-		Collection<Node> toNodes = route.getReferencedNodes(toRef);
+        Reference fromRef = info.getFrom();
+        Reference toRef = info.getTo();
 
-		CoreConfig coreConfig = route.getRouteCoreContainer().getCoreConfig();
-		TimeUnit timeUnit = new TimeUnit(coreConfig, info.getTimeUnit());
+        Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
+        Collection<Node> toNodes = route.getReferencedNodes(toRef);
 
-		for (Node from : fromNodes) {
-			assert(from instanceof InstructionNode);
-			Node fromBlock = from.getParent();
-			assert(fromBlock instanceof BlockNode);
+        CoreConfig coreConfig = route.getRouteCoreContainer().getCoreConfig();
+        TimeUnit timeUnit = new TimeUnit(coreConfig, info.getTimeUnit());
 
-			boolean success = false;
-			for (Node to : toNodes) {
-				assert(to instanceof InstructionNode);
-				Node toBlock = to.getParent();
-				assert(toBlock instanceof BlockNode);
+        for (Node from : fromNodes) {
+            assert(from instanceof InstructionNode);
+            Node fromBlock = from.getParent();
+            assert(fromBlock instanceof BlockNode);
 
-				for (RouteDefinePatterns pattern : m_patterns) {
-					if (pattern.match(fromBlock, from, toBlock, to)) {
+            boolean success = false;
+            for (Node to : toNodes) {
+                assert(to instanceof InstructionNode);
+                Node toBlock = to.getParent();
+                assert(toBlock instanceof BlockNode);
 
-						pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, timeUnit, source);
-						RouteConstructor.setParent(route.getNode());
-					
-						success = true;
-						break;
-					}
-				}
-			}
+                for (RouteDefinePatterns pattern : m_patterns) {
+                    if (pattern.match(fromBlock, from, toBlock, to)) {
 
-			if (!success) {
-				engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s",
-						info, route.getRouteCoreContainer().getRouteContainer().getDescription()));
-			}
-		}
+                        pattern.apply(fromRef, toRef, route, fromBlock, from, toBlock, to, timeUnit, source);
+                        RouteConstructor.setParent(route.getNode());
 
-		route.getRouteUnknowns().invalidateCachedStats();
-		route.getRouteUnknowns().refreshDisplayedUnknowns();
-	}
+                        success = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!success) {
+                engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s",
+                        info, route.getRouteCoreContainer().getRouteContainer().getDescription()));
+            }
+        }
+
+        route.getRouteUnknowns().invalidateCachedStats();
+        route.getRouteUnknowns().refreshDisplayedUnknowns();
+    }
 }

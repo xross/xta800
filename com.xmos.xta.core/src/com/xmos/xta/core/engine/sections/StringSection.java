@@ -9,18 +9,18 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Notifier;
 
 public class StringSection extends Section {
-	private Collection<String> m_strings;
+    private Collection<String> m_strings;
 
-	StringSection(CoreId coreId, Notifier notifier) {
-		super(coreId, notifier);
-		m_strings = new ArrayList<String>();
-	}
+    StringSection(CoreId coreId, Notifier notifier) {
+        super(coreId, notifier);
+        m_strings = new ArrayList<String>();
+    }
 
-	Collection<String> get() {
-		return m_strings;
-	}
+    Collection<String> get() {
+        return m_strings;
+    }
 
-	boolean load(CommandSource src, XeLoader xeLoader) {
+    boolean load(CommandSource src, XeLoader xeLoader) {
         return true;
-	}
+    }
 }

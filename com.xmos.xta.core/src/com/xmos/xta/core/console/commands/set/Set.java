@@ -4,23 +4,23 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.console.commands.CommandContainer;
 
 public class Set extends CommandContainer {
-	private static final String[] COMMAND_NAMES = { "set" };
+    private static final String[] COMMAND_NAMES = { "set" };
 
-	static private Command[] m_options = {
-		new Exclusion(),
-		new FunctionTime(),
-		new InstructionTime(),
-		new Loop(),
-		new LoopPath(),
-		new LoopScope(),
-		new PathTime(),
-		new Required(),
-	};
+    static private Command[] m_options = {
+        new Exclusion(),
+        new FunctionTime(),
+        new InstructionTime(),
+        new Loop(),
+        new LoopPath(),
+        new LoopScope(),
+        new PathTime(),
+        new Required(),
+    };
 
-	public Set() { super(COMMAND_NAMES); }
-	public Set(Command command) { super(COMMAND_NAMES, command); }
+    public Set() { super(COMMAND_NAMES); }
+    public Set(Command command) { super(COMMAND_NAMES, command); }
 
-	public Command[] getSubCommands() { return m_options; }
-	protected String getDescription() { return "Set path information"; }
-	protected Command clone(Command command) { return new Set(command); }
+    public Command[] getSubCommands() { return m_options; }
+    protected String getDescription() { return "Set path information"; }
+    protected Command clone(Command command) { return new Set(command); }
 }

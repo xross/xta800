@@ -9,58 +9,58 @@ import com.xmos.xta.core.engine.analysis.routes.RouteTiming;
 import com.xmos.xta.core.engine.analysis.routes.RouteTiming.Level;
 
 public class RouteInfo extends Command {
-	private static final String[] COMMAND_NAMES = { "routeinfo" };
+    private static final String[] COMMAND_NAMES = { "routeinfo" };
 
-	private int m_routeId;
+    private int m_routeId;
 
-	public RouteInfo() {
-		super(COMMAND_NAMES);
-		m_routeId = 0;
-	}
+    public RouteInfo() {
+        super(COMMAND_NAMES);
+        m_routeId = 0;
+    }
 
-	public RouteInfo(int routeId) {
-		super(COMMAND_NAMES);
-		m_routeId = routeId;
-	}
+    public RouteInfo(int routeId) {
+        super(COMMAND_NAMES);
+        m_routeId = routeId;
+    }
 
     public int numArgs() {
-   		return 1;
+           return 1;
     }
 
     public String commandLine() {
-   	    return name() + " " + getRouteId(m_routeId);
+           return name() + " " + getRouteId(m_routeId);
     }
 
     public String description(Engine engine, boolean detailed) {
-    	return name() + " <route id>: Show detailed information for the given route";
+        return name() + " <route id>: Show detailed information for the given route";
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
         try {
             return new RouteInfo(getRouteId(args[index + 1]));
         } catch (NumberFormatException e) {
-          	return null;
+              return null;
         }
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-	    if (!validateRouteId(engine, console, m_routeId))
-		    return;
+        if (!validateRouteId(engine, console, m_routeId))
+            return;
 
-		for (Route route : engine.getRoute(m_routeId)) {
-    	    RouteTiming routeTiming = route.getRouteTiming();
-    	    
-    	    console.display(String.format("%s %s\n", 
-    	    		route.getRouteCoreContainer().getRouteContainer().getDescription(), 
-    	    		route.getEndpointsPcsString()));
-    	    
-    	    console.display(routeTiming.getDescription(Level.COMPLETE));
-		}
+        for (Route route : engine.getRoute(m_routeId)) {
+            RouteTiming routeTiming = route.getRouteTiming();
+
+            console.display(String.format("%s %s\n",
+                    route.getRouteCoreContainer().getRouteContainer().getDescription(),
+                    route.getEndpointsPcsString()));
+
+            console.display(routeTiming.getDescription(Level.COMPLETE));
+        }
     }
 }

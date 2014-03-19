@@ -8,18 +8,18 @@ import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
 public class Functions extends Command {
-	private static final String[] COMMAND_NAMES = { "functions" };
+    private static final String[] COMMAND_NAMES = { "functions" };
 
-	public Functions() {
-		super(COMMAND_NAMES);
-	}
+    public Functions() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -31,15 +31,15 @@ public class Functions extends Command {
     }
 
     public void execute(Shell shell, final Engine engine, final Console console) {
-		if (!isExecutableLoaded(engine, console)) 
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		Collection<String> functionNames = engine.getNonSystemFunctionNames();
-		if (functionNames.size() > 0) {
-			for (String functionName : functionNames) {
-				console.display(String.format("- %s\n", functionName));
-			}
-			console.display("\n");
-		}
+        Collection<String> functionNames = engine.getNonSystemFunctionNames();
+        if (functionNames.size() > 0) {
+            for (String functionName : functionNames) {
+                console.display(String.format("- %s\n", functionName));
+            }
+            console.display("\n");
+        }
     }
 }

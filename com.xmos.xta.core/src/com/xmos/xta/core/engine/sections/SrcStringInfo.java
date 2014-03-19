@@ -7,28 +7,28 @@ public class SrcStringInfo extends SectionInfo {
     private long m_lineNumber;
 
     public SrcStringInfo(Section section, String string, String compilationDir,
-    		String fileName, long lineNumber) {
-    	super(section);
-    	
-    	m_string = string;
-    	m_compilationDir = compilationDir;
-    	m_fileName = fileName;
-    	m_lineNumber = lineNumber;
+            String fileName, long lineNumber) {
+        super(section);
+
+        m_string = string;
+        m_compilationDir = compilationDir;
+        m_fileName = fileName;
+        m_lineNumber = lineNumber;
     }
 
     public String getString() {
-    	return m_string;
+        return m_string;
     }
 
     public String getCompilationDir() {
-    	return m_compilationDir;
+        return m_compilationDir;
     }
 
     public String getFileName() {
-    	return m_fileName;
+        return m_fileName;
     }
 
     public long getLineNumber() {
-    	return m_lineNumber;
+        return m_lineNumber;
     }
 }

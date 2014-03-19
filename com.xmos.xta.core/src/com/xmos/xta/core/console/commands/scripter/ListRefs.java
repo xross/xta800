@@ -10,18 +10,18 @@ import com.xmos.xta.core.engine.scripter.Scripter;
 import com.xmos.xta.core.engine.scripter.ScripterReference;
 
 public class ListRefs extends Command {
-	private static final String[] COMMAND_NAMES = { "listrefs" };
+    private static final String[] COMMAND_NAMES = { "listrefs" };
 
-	public ListRefs() {
-		super(COMMAND_NAMES);
-	}
+    public ListRefs() {
+        super(COMMAND_NAMES);
+    }
 
     public int numArgs() {
-    	return 0;
+        return 0;
     }
 
     public String commandLine() {
-    	return name();
+        return name();
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -33,21 +33,21 @@ public class ListRefs extends Command {
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		Scripter scripter = engine.getScripter();
-		scripter.createRefs();
-		Collection<ScripterReference> refs = scripter.getRefs();
+        Scripter scripter = engine.getScripter();
+        scripter.createRefs();
+        Collection<ScripterReference> refs = scripter.getRefs();
 
-		console.display(String.format("%-10s %-10s %-10s -> %10s\n",
-				"Modifiable", "Enabled", "Reference", "MapsTo"));
+        console.display(String.format("%-10s %-10s %-10s -> %10s\n",
+                "Modifiable", "Enabled", "Reference", "MapsTo"));
 
-		for (ScripterReference ref : refs) {
-			String refString = ref.getBaseReference().getRef();
-			console.display(String.format("%-10s %-10s %-10s -> %10s\n",
-					ref.isModifiable(), ref.isEnabled(), refString, ref.getMapsToLabel()));
-		}
+        for (ScripterReference ref : refs) {
+            String refString = ref.getBaseReference().getRef();
+            console.display(String.format("%-10s %-10s %-10s -> %10s\n",
+                    ref.isModifiable(), ref.isEnabled(), refString, ref.getMapsToLabel()));
+        }
     }
 }
 

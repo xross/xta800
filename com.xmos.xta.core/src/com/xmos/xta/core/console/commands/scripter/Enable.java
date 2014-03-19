@@ -7,25 +7,25 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.scripter.Scripter;
 
 public class Enable extends Command {
-	private static final String[] COMMAND_NAMES = { "enable" };
+    private static final String[] COMMAND_NAMES = { "enable" };
 
-	private String m_reference;
+    private String m_reference;
 
-	public Enable() {
-		super(COMMAND_NAMES);
-	}
+    public Enable() {
+        super(COMMAND_NAMES);
+    }
 
-	public Enable(String reference) {
-		super(COMMAND_NAMES);
-		m_reference = reference;
-	}
+    public Enable(String reference) {
+        super(COMMAND_NAMES);
+        m_reference = reference;
+    }
 
     public int numArgs() {
-    	return 1;
+        return 1;
     }
 
     public String commandLine() {
-    	return name() + " " + m_reference;
+        return name() + " " + m_reference;
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -33,20 +33,20 @@ public class Enable extends Command {
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length) {
-			return null;
-		}
+        if ((index + numArgs()) >= args.length) {
+            return null;
+        }
 
         return new Enable(args[index + 1]);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-		if (!isExecutableLoaded(engine, console))
-			return;
+        if (!isExecutableLoaded(engine, console))
+            return;
 
-		Scripter scripter = engine.getScripter();
-		scripter.createRefs();
-		scripter.enable(getSrc(), engine, m_reference);
+        Scripter scripter = engine.getScripter();
+        scripter.createRefs();
+        scripter.enable(getSrc(), engine, m_reference);
     }
 }
 

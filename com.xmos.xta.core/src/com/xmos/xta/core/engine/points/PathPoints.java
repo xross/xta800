@@ -12,76 +12,76 @@ import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
 
 public class PathPoints extends Points {
-	private String m_fromName;
-	private String m_toName;	
-	private Map<CoreId, Reference> m_froms;
-	private Map<CoreId, Reference> m_tos;
+    private String m_fromName;
+    private String m_toName;
+    private Map<CoreId, Reference> m_froms;
+    private Map<CoreId, Reference> m_tos;
 
-	public PathPoints(Engine engine) {
-		super(engine, ReferenceClass.ENDPOINT);
-		m_fromName = "";
-		m_toName = "";
-		m_froms = new IteratableMap<CoreId, Reference>();
-		m_tos = new IteratableMap<CoreId, Reference>();		
-	}
+    public PathPoints(Engine engine) {
+        super(engine, ReferenceClass.ENDPOINT);
+        m_fromName = "";
+        m_toName = "";
+        m_froms = new IteratableMap<CoreId, Reference>();
+        m_tos = new IteratableMap<CoreId, Reference>();
+    }
 
-	public Result setFrom(CommandSource src, String ref) {
-		m_fromName = ref;
-		return set(src, ref, update(ref, m_froms), Notifier.NOTIFY_FROM_END_POINT_SET);
-	}
+    public Result setFrom(CommandSource src, String ref) {
+        m_fromName = ref;
+        return set(src, ref, update(ref, m_froms), Notifier.NOTIFY_FROM_END_POINT_SET);
+    }
 
-	public Result setTo(CommandSource src, String ref) {
-		m_toName = ref;
-		return set(src, ref, update(ref, m_tos), Notifier.NOTIFY_FROM_END_POINT_SET);
-	}
+    public Result setTo(CommandSource src, String ref) {
+        m_toName = ref;
+        return set(src, ref, update(ref, m_tos), Notifier.NOTIFY_FROM_END_POINT_SET);
+    }
 
-	public Map<CoreId, Reference> getFroms() {
-		return m_froms;
-	}
+    public Map<CoreId, Reference> getFroms() {
+        return m_froms;
+    }
 
-	public Reference getFrom(CoreId core) {
-		return m_froms.get(core);				
-	}
-	
-	public Map<CoreId, Reference> getTos() {
-		return m_tos;
-	}
+    public Reference getFrom(CoreId core) {
+        return m_froms.get(core);
+    }
 
-	public Reference getTo(CoreId core) {
-		return m_tos.get(core);				
-	}
-	
-	public String getFromName() {
-		return m_fromName;
-	}
+    public Map<CoreId, Reference> getTos() {
+        return m_tos;
+    }
 
-	public String getToName() {
-		return m_toName;
-	}
+    public Reference getTo(CoreId core) {
+        return m_tos.get(core);
+    }
 
-	public void clear() {
-		m_fromName = "";
-		m_toName = "";
-		m_froms.clear();
-		m_tos.clear();		
-	}
+    public String getFromName() {
+        return m_fromName;
+    }
 
-	public void refresh() {
-		update(m_fromName, m_froms);
-		update(m_toName, m_tos);		
-	}
-	
-	private Result set(CommandSource src, String ref, Result result, String endPointSet) {
+    public String getToName() {
+        return m_toName;
+    }
+
+    public void clear() {
+        m_fromName = "";
+        m_toName = "";
+        m_froms.clear();
+        m_tos.clear();
+    }
+
+    public void refresh() {
+        update(m_fromName, m_froms);
+        update(m_toName, m_tos);
+    }
+
+    private Result set(CommandSource src, String ref, Result result, String endPointSet) {
         if (!ref.equals("")) {
             if (result == Result.UNRESOLVED) {
                 getEngine().notify(src, Notifier.NOTIFY_ERROR, String.format("'%s' is not a valid endpoint on any active tile", ref));
                 return result;
-                
+
             } else if (result == Result.REMOVED) {
-                return result;               
-            }               
+                return result;
+            }
         }
-        getEngine().notify(src, endPointSet, "");	    
+        getEngine().notify(src, endPointSet, "");
         return result;
-	}
+    }
 }

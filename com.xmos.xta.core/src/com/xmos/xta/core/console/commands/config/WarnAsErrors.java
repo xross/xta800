@@ -7,52 +7,52 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 
 public class WarnAsErrors extends Command {
-	private static final String[] COMMAND_NAMES = { "Werror" };
+    private static final String[] COMMAND_NAMES = { "Werror" };
 
-	private boolean m_errorOn;
+    private boolean m_errorOn;
 
-	public WarnAsErrors() {
-		super(COMMAND_NAMES);
-		m_errorOn = false;
-	}
+    public WarnAsErrors() {
+        super(COMMAND_NAMES);
+        m_errorOn = false;
+    }
 
-	public WarnAsErrors(boolean errorOn) {
-		super(COMMAND_NAMES);
-		m_errorOn = errorOn;
-	}
+    public WarnAsErrors(boolean errorOn) {
+        super(COMMAND_NAMES);
+        m_errorOn = errorOn;
+    }
 
     public int numArgs() {
-    	return 1;
+        return 1;
     }
 
     public String commandLine() {
-    	if (m_errorOn) {
-    		return name() + " on";
-    	} else {
-    		return name() + " off";
-    	}
+        if (m_errorOn) {
+            return name() + " on";
+        } else {
+            return name() + " off";
+        }
     }
 
     public String description(Engine engine, boolean detailed) {
-    	Config config = engine.getConfig();
+        Config config = engine.getConfig();
         return name() + String.format(" <on/off>: treat warnings as errors or not (currently: %s)",
-            	config.getWarningsAsErrors() ? "on" : "off");
+                config.getWarningsAsErrors() ? "on" : "off");
     }
 
     public Command clone(String[] args, int index) {
-		if ((index + numArgs()) >= args.length)
-			return null;
+        if ((index + numArgs()) >= args.length)
+            return null;
 
-		if (args[index + 1].equals("on")) {
-			return new WarnAsErrors(true);
-		} else if (args[index + 1].equals("off")) {
-			return new WarnAsErrors(false);
-		} else {
-			return null;
-		}
+        if (args[index + 1].equals("on")) {
+            return new WarnAsErrors(true);
+        } else if (args[index + 1].equals("off")) {
+            return new WarnAsErrors(false);
+        } else {
+            return null;
+        }
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
-    	engine.setWarnAsErrors(m_errorOn);
+        engine.setWarnAsErrors(m_errorOn);
     }
 }
