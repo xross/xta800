@@ -45,7 +45,9 @@ public abstract class Command {
     public abstract void execute(Shell shell, Engine engine, Console console);
 
     public static String expandTilde(String str) {
-        if (System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0 &&
+        String os = System.getProperty("os.name").toLowerCase();
+        if ( (os.indexOf("os x") >= 0 ||
+              os.indexOf("linux") >= 0) &&
             str.charAt(0) == '~') {
             return System.getenv("HOME") + str.substring(1);
         }
