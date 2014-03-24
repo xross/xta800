@@ -5,6 +5,7 @@ int test(int loop){
   for(i=0;i<3;i++){    
     for(j=0;j<loop;j++){
       #pragma xta label "inner_loop"
+      asm volatile("" : : "r"(i), "r"(j));
       res += j;
     }
   }

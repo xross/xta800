@@ -9,6 +9,7 @@ int test(int loop1, int loop2){
       #pragma xta label "outer_loop"
         for(k=0;k<loop2;k++){
           #pragma xta label "inner_loop"
+          asm volatile("" : : "r"(i), "r"(j), "r"(k));
           res += k;
         }
       res += j;
