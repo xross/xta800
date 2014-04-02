@@ -22,9 +22,6 @@
              <fileset dir="../../infr_libs_java/export/jars/">
                  <include name="**/*.jar"/>
              </fileset>
-             <fileset dir="../../infr_libs_java/com.xmos.libs.core/jars/">
-                 <include name="**/*.jar"/>
-             </fileset>
            </classpath>
     </javac>
   </target>
@@ -36,8 +33,8 @@
          basedir="${build}"
          includes="com/xmos/xta/**, version.xml"
          manifest="manifests/xta">
-         <zipfileset src="../../infr_libs_java/com.xmos.libs.core/jars/jython.jar"/>
-         <zipfileset src="../../infr_libs_java/com.xmos.libs.core/jars/commons-lang-2.6.jar"/>
+         <zipfileset src="../../infr_libs_java/export/jars/jython.jar"/>
+         <zipfileset src="../../infr_libs_java/export/jars/commons-lang-2.6.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/dwarfhandler.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/elfhandler.jar"/>
          <zipfileset src="../../infr_libs_java/export/jars/xehandler.jar"/>

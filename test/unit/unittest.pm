@@ -11,10 +11,7 @@ my $separator = ($^O eq "MSWin32") ? ";" : ":";
 
 sub getJar($) {
     my ($name) = @_;
-    my @jars = <$infrLibsJava/com.xmos.libs.core/jars/${name}*.jar>;
-    if (scalar(@jars) == 0) {
-        @jars = <$infrLibsJava/export/jars/${name}*.jar>;
-    }
+    my @jars = <$infrLibsJava/export/jars/${name}*.jar>;
     if (scalar(@jars) != 1) {
         die "Cannot find a unique jar for: $name";
     }
