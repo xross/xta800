@@ -69,6 +69,7 @@ if (join("", @ARGV) =~ m/emma\.jar/) {
   system("java -DConsole=Basic -cp $xmosRoot/infr_libs_java/com.xmos.libs/jars/emma.jar emma run -ix -org.* -quiet -raw -outfile ./coveragedata  -jar $xtaJar $cmds");
 } else {
   my $installsDir = $ENV{'INSTALLS_DIR'};
+  system("env | sort");
   print("java -DConsole=Basic -jar $xtaJar $cmds");
   system("java -DConsole=Basic -jar $xtaJar $cmds");
 }
