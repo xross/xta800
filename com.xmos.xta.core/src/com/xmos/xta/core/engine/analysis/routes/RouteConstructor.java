@@ -424,6 +424,8 @@ public class RouteConstructor {
                     connectToNullNode(previous, workingSet);
                     return true;
                 }
+            case LOOP:
+                break;
             }
         }
         return false;

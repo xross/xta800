@@ -102,6 +102,9 @@ public abstract class Generator {
         case Function:
             refString = data ;
             break;
+            
+        case Root:
+            break;
         }
 
         XtaPragma xtapragma = new XtaPragma(type, refString, "test.xc");

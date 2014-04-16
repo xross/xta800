@@ -63,6 +63,8 @@ public abstract class Unknown  {
         case FUNCTION_TIME:
         case EXCLUSION:
             return Level.WARNING;
+        case OTHER:
+            break;
         }
         assert(false);
         return Level.ERROR;

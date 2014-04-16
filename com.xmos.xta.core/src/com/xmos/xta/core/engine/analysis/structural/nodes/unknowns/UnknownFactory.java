@@ -52,6 +52,9 @@ public class UnknownFactory {
 
         case EXCLUSION:
             return new ExclusionUnknown(route, node, type, state, source, references);
+            
+        case OTHER:
+            break;
         }
         assert(false);
         return null;
