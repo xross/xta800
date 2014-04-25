@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: XMOS Timing Analysis Core Plugin
 Import-Package: jline
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: XMOS
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: com.xmos.xta.core

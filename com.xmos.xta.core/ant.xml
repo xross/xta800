@@ -17,7 +17,7 @@
            deprecation="true"
            debug="${debug}"
            debuglevel="lines,vars,source"
-    	   target="1.5">
+    	   target="1.6">
            <classpath>
              <fileset dir="../../infr_libs_java/export/jars/">
                  <include name="**/*.jar"/>
