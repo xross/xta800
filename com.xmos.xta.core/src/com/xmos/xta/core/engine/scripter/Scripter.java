@@ -767,11 +767,9 @@ public class Scripter {
             File f2 = new File(sourceFile.getFullFileName() + ".bak");
             BufferedWriter out = new BufferedWriter(new FileWriter(f2));
             String s = "";
-            int lineCount = 1;
             while ((s = in.readLine()) != null) {
                 out.write(s);
                 out.newLine();
-                lineCount++;
             }
             in.close();
             out.close();

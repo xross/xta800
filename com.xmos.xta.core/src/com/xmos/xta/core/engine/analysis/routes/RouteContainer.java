@@ -45,6 +45,7 @@ public class RouteContainer {
         switch (mode) {
         case FUNCTION: m_description = String.format("function: %s", refName); break;
         case LOOP:     m_description = String.format("loop: %s", refName); break;
+        case ENDPOINTS: break;
         }
         initialise(engine, src);
     }

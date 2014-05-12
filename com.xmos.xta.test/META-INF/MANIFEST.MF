@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.xmos.xta.test
 Bundle-Version: 1.0.0
 Bundle-Vendor: XMOS
 Require-Bundle: com.xmos.libs.core
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.xmos.cdt.core.xdemakefiles,
  com.xmos.xta.core.console,
  com.xmos.xta.core.console.commands,

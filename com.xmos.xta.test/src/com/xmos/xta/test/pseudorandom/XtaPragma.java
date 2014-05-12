@@ -50,6 +50,8 @@ public class XtaPragma {
             return "SRCLABEL:";
         case Function:
             return "";
+        case Root:
+            break;
         }
         return "";
     }

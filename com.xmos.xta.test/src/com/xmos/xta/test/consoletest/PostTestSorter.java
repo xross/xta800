@@ -52,7 +52,6 @@ public class PostTestSorter {
                 err.printStackTrace();
             }
 
-            String error = "";
             String secondLine = "";
             int line = 0;
             try {
@@ -64,7 +63,6 @@ public class PostTestSorter {
 
                     if(s.contains("com.xmos.xta") || s.contains("java.")){
                         line++;
-                        error += s +"\n";
                         if(line == 2){
                             secondLine = s ;
                         }

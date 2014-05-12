@@ -142,6 +142,10 @@ public class TimeUnit {
         case MHZ:
             m_mhz = value;
             break;
+        case CYCLES:
+            break;
+        case INVALID:
+            break;
         }
         m_coreConfig = coreConfig;
     }
@@ -172,6 +176,8 @@ public class TimeUnit {
                        String.format("%.1f MHz", m_mhz);
            case CYCLES:
                return String.format("%d cycles", m_cycles);
+           case INVALID:
+               break;               
            }
            assert(false);
            return "";
@@ -182,6 +188,7 @@ public class TimeUnit {
            case NS:     return Conversion.getValueString(true, m_ns);
            case MHZ:    return Conversion.stripTrailingZeros(String.format("%f", m_mhz));
            case CYCLES: return String.format("%d", m_cycles);
+           case INVALID:break;               
            }
            assert(false);
            return "";
@@ -192,6 +199,7 @@ public class TimeUnit {
            case NS:     return Conversion.getUnitsString(m_ns);
            case MHZ:    return "MHz";
            case CYCLES: return "cycles";
+           case INVALID:break;
            }
            assert(false);
            return "";
@@ -211,6 +219,8 @@ public class TimeUnit {
            }
            case CYCLES:
                return m_cycles;
+           case INVALID:
+               break;               
            }
            assert(false);
            return 0;
@@ -225,11 +235,14 @@ public class TimeUnit {
                return 1000.0 / m_mhz;
 
            case CYCLES:
-            if (m_coreConfig != null) {
+               if (m_coreConfig != null) {
                    int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
                    return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
-            }
-            return 0;
+               }
+               return 0;
+            
+           case INVALID:
+               break; 
            }
            assert(false);
            return 0;
@@ -244,9 +257,12 @@ public class TimeUnit {
                return m_mhz;
 
            case CYCLES:
-            assert(m_coreConfig != null);
-                 int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
-            return m_coreConfig.m_frequency / (threadFactor * m_cycles);
+               assert(m_coreConfig != null);
+               int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
+               return m_coreConfig.m_frequency / (threadFactor * m_cycles);
+            
+           case INVALID:
+               break; 
            }
            assert(false);
            return 0;
