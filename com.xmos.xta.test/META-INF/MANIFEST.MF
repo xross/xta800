@@ -6,7 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: XMOS
 Require-Bundle: com.xmos.libs.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: com.xmos.cdt.core.xdemakefiles,
- com.xmos.xta.core.console,
+Import-Package: com.xmos.xta.core.console,
  com.xmos.xta.core.console.commands,
  junit.framework
