@@ -14,5 +14,13 @@ open (FILE, ">$genDir/cmds.txt");
 print FILE "load $genDir/test.xe\nadd e\te\tg\th\t\nexit\n";
 close FILE;
 
-system("@ARGV < $genDir/cmds.txt > $genDir/code_reference.txt 2>&1");
+# Ensures that we are running with the jline console (as this does the completion).
+my $xta = "";
+foreach my $arg (@ARGV) {
+  if ($arg ne "--console-basic") {
+    $xta .= $arg . " ";
+  }
+}
+
+system("$xta < $genDir/cmds.txt > $genDir/code_reference.txt 2>&1");
 
