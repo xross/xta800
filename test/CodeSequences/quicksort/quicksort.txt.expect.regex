@@ -16,6 +16,7 @@ function\(\d+\)\s+: Recursion / \d+.\d+ ns main
 .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
 .    .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
@@ -50,6 +51,7 @@ function\(\d+\)\s+: Recursion / \d+.\d+ ns sort
 .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
 .    .    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
+.    .    .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 0\) / \d+.\d+ ns \(x 0\) 
 .    .    .    block\(\d+\)\s+: \d+.\d+ ns \(x 1\) / \d+.\d+ ns \(x 0\) 
 .    .    .    function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns swap
