@@ -1,5 +1,5 @@
 tile\[0\], label: label1, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: test.xc, line number: 5, exists: true
-tile\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/test.xc, line number: 3, exists: true
+tile\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up[\\|/]test.xc, line number: 3, exists: true
 ----------------------------------
 .*test.xc
 ----------------------------------
@@ -13,7 +13,7 @@ tile\[0\], label: label2, pc: 0x[0-9a-fA-F]+, compilation dir: .*, filename: up/
   8: }
   9: 
 ----------------------------------
-.*up/test.xc
+.*up[\\|/]test.xc
 ----------------------------------
   1: int add\(int a, int b\)
 .*

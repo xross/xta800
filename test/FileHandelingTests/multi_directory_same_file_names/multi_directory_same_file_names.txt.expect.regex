@@ -1,5 +1,5 @@
 compilation dir: .*multi_directory_same_file_names, filename: test.xc
-compilation dir: .*multi_directory_same_file_names, filename: up/test.xc
+compilation dir: .*multi_directory_same_file_names, filename: up[\\|/]test.xc
 ----------------------------------
 .*test.xc
 ----------------------------------
@@ -12,7 +12,7 @@ compilation dir: .*multi_directory_same_file_names, filename: up/test.xc
   7: }
   8: 
 ----------------------------------
-.*up/test.xc
+.*up[\\|/]test.xc
 ----------------------------------
   1: int add\(int a, int b\)
 .*
