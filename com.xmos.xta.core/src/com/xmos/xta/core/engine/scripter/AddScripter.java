@@ -142,9 +142,9 @@ public class AddScripter {
     }
 
     private boolean branchMatch(Entry<Reference, List<Reference>> thisBranch, Entry<Reference, List<Reference>> thatBranch) {
-        Reference thisFromRef = thisBranch.getKey();
-        Reference thatFromRef = thatBranch.getKey();
-        if (!thisFromRef.equals(thatFromRef))
+        String thisFrom = thisBranch.getKey().getRefNoCoreId();
+        String thatFrom = thatBranch.getKey().getRefNoCoreId();
+        if (!thisFrom.equals(thatFrom))
             return false;
 
         List<Reference> thisToRefs = thisBranch.getValue();
@@ -154,7 +154,8 @@ public class AddScripter {
             return false;
 
         for (int i = 0; i < thisToRefs.size(); ++i) {
-            if (!thisToRefs.get(i).equals(thatToRefs.get(i))) {
+            if (!thisToRefs.get(i).getRefNoCoreId().equals(
+                 thatToRefs.get(i).getRefNoCoreId())) {
                 return false;
             }
         }

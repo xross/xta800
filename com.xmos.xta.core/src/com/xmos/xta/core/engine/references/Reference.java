@@ -23,21 +23,13 @@ public class Reference implements Comparable<Reference>  {
     }
 
     public String getRef() {
-        StringBuffer str = new StringBuffer();
-
-        if (m_coreIdString != null) {
-            str.append(m_coreIdString);
-            str.append(ReferenceFactory.CORE_ID_SEPARATOR);
-        }
-
-        for (ReferenceType backTrail : m_backTrail) {
-            str.append(backTrail.getRef());
-            str.append(",");
-        }
-        str.append(m_base.getRef());
-        return str.toString();
+        return getRef(true);
     }
 
+    public String getRefNoCoreId() {
+        return getRef(false);
+    }    
+    
     public String getPcString() {
         assert(m_base != null);
         return Conversion.pcSetToString(m_base.getPcs());
@@ -194,4 +186,20 @@ public class Reference implements Comparable<Reference>  {
         }
         return true;
     }
+    
+    private String getRef(boolean includeCoreId) {
+        StringBuffer str = new StringBuffer();
+
+        if (includeCoreId && (m_coreIdString != null)) {
+            str.append(m_coreIdString);
+            str.append(ReferenceFactory.CORE_ID_SEPARATOR);
+        }
+
+        for (ReferenceType backTrail : m_backTrail) {
+            str.append(backTrail.getRef());
+            str.append(",");
+        }
+        str.append(m_base.getRef());
+        return str.toString();
+    }        
 }
