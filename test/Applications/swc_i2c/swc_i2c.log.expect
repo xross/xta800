@@ -1,7 +1,15 @@
-iic.xc: In function `iic_read':
-iic.xc:347: warning: unused variable `time'
-main.xc: In function `iictestLocal':
-main.xc:60: warning: unused variable `ack'
-main.xc:61: warning: unused variable `tmp'
-main.xc:62: warning: unused variable `wrData'
-main.xc:63: warning: unused variable `rdData'
+iic.xc:347:8: warning: unused variable `time'
+  uint time;
+       ^~~~
+main.xc:60:8: warning: unused variable `ack'
+  uint ack;
+       ^~~
+main.xc:61:8: warning: unused variable `tmp'
+  uint tmp;
+       ^~~
+main.xc:62:8: warning: unused variable `wrData'
+  char wrData[testPageSize];
+       ^~~~~~~~~~~~~~~~~~~~
+main.xc:63:8: warning: unused variable `rdData'
+  char rdData[testPageSize];
+       ^~~~~~~~~~~~~~~~~~~~

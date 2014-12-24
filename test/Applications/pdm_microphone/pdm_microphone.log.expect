@@ -1,5 +1,9 @@
-top.xc: In function `main':
-top.xc:164: warning: unused variable `c_pdm'
-mic.xc: In function `pdm':
-mic.xc:49: warning: unused variable `s2_buf'
-mic.xc:55: warning: unused variable `s2_buf_ptr'
+top.xc:164:18: warning: unused variable `c_pdm'
+  streaming chan c_pdm;
+                 ^~~~~
+mic.xc:49:5: warning: unused variable `s2_buf'
+int s2_buf[BUF_SIZE] = {
+    ^~~~~~~~~~~~~~~~
+mic.xc:55:5: warning: unused variable `s2_buf_ptr'
+int s2_buf_ptr=0;
+    ^~~~~~~~~~

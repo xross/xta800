@@ -1,6 +1,9 @@
-test.xc: In function `f':
-test.xc:2: warning: unused variable `i'
-test.xc: In function `g':
-test.xc:7: warning: unused variable `i'
-test.xc: In function `h':
-test.xc:12: warning: unused variable `i'
+test.xc:2:9: warning: unused variable `i'
+    int i = 0;
+        ^
+test.xc:7:9: warning: unused variable `i'
+    int i = 0;
+        ^
+test.xc:12:9: warning: unused variable `i'
+    int i = 0;
+        ^

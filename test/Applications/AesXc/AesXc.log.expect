@@ -1,6 +1,12 @@
-source/AES.xc: In function `main':
-source/AES.xc:50: warning: unused variable `t'
-source/AES.xc:51: warning: unused variable `start'
-source/AES.xc:51: warning: unused variable `end'
-source/KeyExpansion.xc: In function `KeyExpansion':
-source/KeyExpansion.xc:25: warning: unused variable `i'
+source/AES.xc:50:8: warning: unused variable `t'
+        timer t;
+              ^
+source/AES.xc:51:6: warning: unused variable `start'
+        int start, end;
+            ^~~~~
+source/AES.xc:51:13: warning: unused variable `end'
+        int start, end;
+                   ^~~
+source/KeyExpansion.xc:25:15: warning: unused variable `i'
+        unsigned int i;
+                     ^

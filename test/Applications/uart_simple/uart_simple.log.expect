@@ -1,1 +1,3 @@
-UartTransmit.xc:17: warning: 'wait' defined but not used
+UartTransmit.xc:17:13: warning: 'wait' defined but not used
+static void wait(unsigned delay)
+            ^~~~~~~~~~~~~~~~~~~~
