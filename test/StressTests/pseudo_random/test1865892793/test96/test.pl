@@ -7,7 +7,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 if (!$noBuild) {
         system("cp test.xc $genDir/test.xc");
-        system("xcc -target=$target -march=$arch -g $genDir/test.xc -o $genDir/test.xe > $genDir/test96.log 2>&1");
+        system("xcc -Wno-unused -target=$target -march=$arch -g $genDir/test.xc -o $genDir/test.xe > $genDir/test96.log 2>&1");
 }
 system("@ARGV load $genDir/test.xe " .
        "source cmds.txt " .
