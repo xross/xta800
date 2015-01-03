@@ -1,2 +1,3 @@
-test.xc: In function `main':
-test.xc:12: warning: unused variable `j'
+test.xc:12:9: warning: unused variable `j'
+    int j = 0;
+        ^
