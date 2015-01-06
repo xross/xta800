@@ -1,2 +1,3 @@
-test.xc: In function `main':
-test.xc:4: warning: unused variable `count'
+test.xc:4:9: warning: unused variable `count'
+    int count = 0;
+        ^~~~~
