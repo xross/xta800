@@ -1,6 +1,6 @@
-compilation dir: .*multiple_includes, filename: \.?/?add.xc
-compilation dir: .*multiple_includes, filename: \.?/?sub.xc
-compilation dir: .*multiple_includes, filename: \.?/?test.xc
+compilation dir: .*multiple_includes, filename: \.?(/|\\)?add.xc
+compilation dir: .*multiple_includes, filename: \.?(/|\\)?sub.xc
+compilation dir: .*multiple_includes, filename: \.?(/|\\)?test.xc
 ----------------------------------
 .*add.xc
 ----------------------------------
