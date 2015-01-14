@@ -2,6 +2,7 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
@@ -16,6 +17,7 @@ public class IssueNode extends Node {
     private boolean m_ownsOwnAttrib;
     private IssueNodeAttributes m_attributes;
     private Instruction m_inst;
+    private boolean m_isFnop;
 
     public IssueNode(CfgInstructionNode node) {
         super(node);
@@ -31,8 +33,24 @@ public class IssueNode extends Node {
         m_ownsOwnAttrib = false;
     }
 
+    public void setIsFnop(boolean isFnop) {
+        m_isFnop = isFnop;
+        m_inst.setIsFnop(isFnop);
+    }    
+    public boolean isFnop() {
+        //return m_isFnop;
+        return m_inst.isFnop();
+    }
+
+    public boolean isIllegal() {
+        for (Instruction instruction : getInstructions())
+            if (!instruction.getIsIllegal())
+                return false;
+        return true;
+    }
+
     public String toString(){
-        return this.getInstruction().toString();
+        return m_inst.toString();
     }
 
     public Node copyRouteStructure() {
@@ -59,6 +77,14 @@ public class IssueNode extends Node {
         return inst;
     }
 
+    public boolean containsPc(Set<Long> Pcs) {
+        if (!isFnop())
+            for (Instruction instruction : getInstructions())
+                if (Pcs.contains( instruction.getPc()))
+                    return true;
+        return false;
+    }
+
     public long getStartPc() {
         return m_inst.getPc();
     }
@@ -83,16 +109,28 @@ public class IssueNode extends Node {
     }
 
     public String getDescription() {
-        return String.format("0x%x: %s %s",
-                m_inst.getPc(),
+        return String.format("0x%x: %s",
+                getPc(),
+                getMnemonicOperandString());
+    }
+
+    public String getMnemonicOperandString() {
+        return String.format("%s %s",
                 m_inst.getMnemonic(),
                 m_inst.getOperandString());
     }
 
-    public Instruction getInstruction() {
-        return m_inst;
+    public String getMnemonic() {
+        return m_inst.getMnemonic();
     }
 
+    public boolean canPause() {
+        for (Instruction instruction : getInstructions())
+            if (instruction.canPause())
+                return true;
+        return false;
+    }
+    
     public TimeDistributionBuckets getTimeSpread() {
         return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
     }
@@ -114,7 +152,20 @@ public class IssueNode extends Node {
         nodeList.add(this);
     }
 
-    public long getPC() {
+    public String functionOffsetString() {
+        String functionName = getFunctionName();
+        return functionName != null? functionName + " + " + getFunctionOffset() : "";
+    }
+
+    public String getFunctionName() {
+        return m_inst.getFunctionName();
+    }
+
+    public int getFunctionOffset() {
+        return m_inst.getFunctionOffset();
+    }
+
+    public long getPc() {
         return m_inst.getPc();
     }
 }

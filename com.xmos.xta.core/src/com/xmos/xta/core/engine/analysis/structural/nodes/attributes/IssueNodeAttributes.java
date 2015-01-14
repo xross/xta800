@@ -1,5 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.attributes;
 
+
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.instructiondecoder.InstructionMnemonics;
 import com.xmos.libs.core.xeloader.XeLoader.Architecture;
@@ -13,15 +14,13 @@ import com.xmos.xta.core.engine.utils.TimeUnit.Units;
 
 public class IssueNodeAttributes extends NodeAttributes {
     private long m_numCycles;
-    private Instruction m_instruction;
     private CoreConfig m_coreConfig;
     private Architecture m_architecture;
     private String m_instructionTimeString;
 
     public IssueNodeAttributes(IssueNode node) {
         super(node);
-        m_instruction = node.getInstruction();
-        m_numCycles = m_instruction.getNumCycles();
+        m_numCycles = node.getInstructions().getFirst().getNumCycles();  // RL-todo check all instructions
         m_coreConfig = null;
         m_architecture = Architecture.UNKNOWN;
     }
@@ -39,7 +38,7 @@ public class IssueNodeAttributes extends NodeAttributes {
         if (getNode().getRecursion()) {
             status.mergeStatus(S.RECURSION);
         }
-        if (m_instruction.getIsIllegal()) {
+        if (((IssueNode)getNode()).isIllegal()) {
             status.mergeStatus(S.ILLEGAL);
         }
         return new TimeUnit(m_coreConfig, m_numCycles, Units.CYCLES).getNs();
@@ -56,7 +55,7 @@ public class IssueNodeAttributes extends NodeAttributes {
         if (getNode().getUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
-        if (!m_instruction.isFnop()) {
+        if (!((IssueNode)getNode()).isFnop()) {
             return 1;
         }
         return 0;
@@ -66,7 +65,7 @@ public class IssueNodeAttributes extends NodeAttributes {
         if (getNode().getUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
-        if (m_instruction.isFnop()) {
+        if (((IssueNode)getNode()).isFnop()) {
             return 1;
         }
         return 0;
@@ -78,7 +77,7 @@ public class IssueNodeAttributes extends NodeAttributes {
 
     public void setFixedTime(TimeUnit timeUnit) {
         long cycles = timeUnit.getCycles();
-        if (m_instruction.canPause()) {
+        if (((IssueNode)getNode()).canPause()) {
             long baseNumCycles = getThreadAdjustedCycles();
             if (cycles > baseNumCycles) {
                 m_numCycles = cycles;
@@ -102,13 +101,16 @@ public class IssueNodeAttributes extends NodeAttributes {
         assert(m_architecture != Architecture.UNKNOWN);
         assert(m_coreConfig != null);
 
+        Instruction instruction = ((IssueNode)getNode()).getInstructions().getFirst();  // RL-todo check all instructions
+
         InstructionMnemonics instructionMnemonics = new InstructionMnemonics(m_architecture);
-        if (instructionMnemonics.isDivide(m_instruction) ||
-            instructionMnemonics.isRemainder(m_instruction)) {
+
+        if (instructionMnemonics.isDivide(instruction) ||
+            instructionMnemonics.isRemainder(instruction)) {
             return (m_coreConfig.m_numThreads < 4) ?
-                    m_instruction.getNumCycles() * m_coreConfig.m_numThreads :
-                    m_instruction.getNumCycles() * 4;
+                    instruction.getNumCycles() * m_coreConfig.m_numThreads :
+                    instruction.getNumCycles() * 4;
         }
-        return m_instruction.getNumCycles();
+        return instruction.getNumCycles();
     }
 }

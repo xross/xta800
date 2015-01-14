@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes.unknowns;
 
-import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.utils.Conversion;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
@@ -15,17 +14,17 @@ public class InstructionTimeUnknown extends Unknown {
 
     public String getDescription() {
         assert(getNode() instanceof IssueNode);
-        Instruction instruction = ((IssueNode)getNode()).getInstruction();
+        IssueNode issueNode = (IssueNode)getNode();
         switch(getState()) {
         case UNKNOWN:
             return String.format("Time taken for instruction (0x%x: %s) is unknown",
-                    instruction.getPc(),
-                    instruction.getMnemonic());
+                    issueNode.getPc(),
+                    issueNode.getMnemonic());
 
         case KNOWN:
             return String.format("Time for instruction (0x%x: %s) set to %s",
-                    instruction.getPc(),
-                    instruction.getMnemonic(),
+                    issueNode.getPc(),
+                    issueNode.getMnemonic(),
                     Conversion.getTimeString(getNode().getAttributes(false).getFixedTime().getNs()));
         }
         assert(false);

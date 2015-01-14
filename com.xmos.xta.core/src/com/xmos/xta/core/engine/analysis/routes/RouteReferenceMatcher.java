@@ -26,8 +26,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
 
         baseOfRouteNode.traverse(new DefaultNodeTraverser() {
             public TraverseStatus foundIssueNode(Node node) {
-                IssueNode issueNode = (IssueNode)node;
-                if(ref.getPcs().contains(issueNode.getPC()) && !issueNode.getInstruction().isFnop()){
+                if (((IssueNode)node).containsPc(ref.getPcs()) ) {
                     matchingNodes.add(node);
                 }
                 return TraverseStatus.CONTINUE;
@@ -123,7 +122,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
         } else {
             if(endOfList instanceof IssueNode){
                 IssueNode issueNode = (IssueNode)endOfList;
-                if(ref.getPcs().contains(issueNode.getPC())){
+                if(ref.getPcs().contains(issueNode.getPc())){
                     return true;
                 }
             }

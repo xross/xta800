@@ -930,8 +930,7 @@ public class RouteConstructor {
             node.traverse( new DefaultNodeTraverser() {
                 // Sets all the pausing instructions to unknown.
                 public TraverseStatus foundIssueNode(Node node) {
-                    Instruction instruction = ((IssueNode)node).getInstruction();
-                    if (instruction.canPause()) {
+                    if (((IssueNode)node).canPause()) {
                         NodeAttributes nodeAttributes = node.getAttributes(true);
                         nodeAttributes.addUnknown(route, UnknownFactory.Type.INSTRUCTION_TIME);
                     }
@@ -990,31 +989,32 @@ public class RouteConstructor {
                 Node node = route.getNode();
                 node.traverse(new DefaultNodeTraverser() {
                     public TraverseStatus foundIssueNode(Node node) {
-                        Instruction instruction = ((IssueNode)node).getInstruction();
-
-                        // Checks for threading instructions...
-                        if (mnenonics.isSsync(instruction))
-                            engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-                                    "ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
-
-                        if (mnenonics.isMsync(instruction))
-                            engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-                                    "msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
-
-                        if (mnenonics.isMjoin(instruction)) {
-                            engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-                                    "mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
-                        }
-
-                        // Checks for interrupt enable..
-                        if (mnenonics.isSetSr(instruction)) {
-
-                            long op1Field = instruction.getOperandField("op1");
-                            int shift = SR_IEBLE_SHIFT;
-                            int mask = (1 << SR_IEBLE_SIZE) - 1;
-                            if (((op1Field >> shift) & mask) == 1)
+                        for (Instruction instruction : ((IssueNode)node).getInstructions()) {
+                       
+                            // Checks for threading instructions...
+                            if (mnenonics.isSsync(instruction))
                                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
-                                        "interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
+                                        "ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+    
+                            if (mnenonics.isMsync(instruction))
+                                engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
+                                        "msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+    
+                            if (mnenonics.isMjoin(instruction)) {
+                                engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
+                                        "mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
+                            }
+    
+                            // Checks for interrupt enable..
+                            if (mnenonics.isSetSr(instruction)) {
+    
+                                long op1Field = instruction.getOperandField("op1");
+                                int shift = SR_IEBLE_SHIFT;
+                                int mask = (1 << SR_IEBLE_SIZE) - 1;
+                                if (((op1Field >> shift) & mask) == 1)
+                                    engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
+                                            "interrupt enable detected. Pc: 0x%08x", instruction.getPc()));
+                            }
                         }
                         return TraverseStatus.CONTINUE;
                     }

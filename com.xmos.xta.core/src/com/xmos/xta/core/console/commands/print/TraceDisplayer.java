@@ -1,8 +1,5 @@
 package com.xmos.xta.core.console.commands.print;
 
-import java.util.LinkedList;
-
-import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.LoopNode;
@@ -138,33 +135,17 @@ public class TraceDisplayer {
 
     private void displayIssue(IssueNode issueNode) throws EscapedDetctedException,
     IllegalException, UnresolvedDetctedException, RecursionDetctedException {
-        String isUnknown = issueNode.getAttributes(false).getDisplayAsUnknown() ? "*" : " ";
-        String isUnresolved = issueNode.getUnresolved() ? " [UNRESOLVED]" : "";
-        String formsRecursion = issueNode.getRecursion() ? " [RECURSION]" : "";
-        boolean illegalNode = false;
-        LinkedList<Instruction> instructions = issueNode.getInstructions();
-        Instruction firstInst = instructions.getFirst();
-        String functionName = firstInst.getFunctionName();
-        String functionOffsetString = functionName != null? functionName + " + " + firstInst.getFunctionOffset() : "";
-
-        m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s",
-                isUnknown,
+        m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s%s%s%s%s\n",
+                issueNode.getAttributes(false).getDisplayAsUnknown() ? "*" : " ",
                 m_currentTime,
                 issueNode.getAttributes(false).getFixedTime().getNs(),
-                firstInst.getPc(),
-                functionOffsetString));
-        for (Instruction instruction : instructions) {
-            if (instruction.getIsIllegal()) illegalNode = true;
-            String isIllegal = instruction.getIsIllegal() ? " [ILLEGAL]" : "";
-            String canPause = instruction.canPause()? " (P)" : "";
-            m_console.display(String.format(" %-12s %s%s%s%s%s\n",
-                    instruction.getMnemonic(),
-                    instruction.getOperandString(),
-                    isUnresolved,
-                    formsRecursion,
-                    isIllegal,
-                    canPause));
-        }
+                issueNode.getPc(),
+                issueNode.functionOffsetString(),
+                issueNode.getMnemonicOperandString(),
+                issueNode.getUnresolved() ? " [UNRESOLVED]" : "",
+                issueNode.getRecursion() ? " [RECURSION]" : "",
+                issueNode.isIllegal() ? " [ILLEGAL]" : "",
+                issueNode.canPause()? " (P)" : ""));
         m_currentTime += issueNode.getAttributes(false).getFixedTime().getNs();
         if (issueNode.getRecursion()) {
             throw new RecursionDetctedException();
@@ -175,7 +156,7 @@ public class TraceDisplayer {
         if (m_console.hasEscaped()) {
             throw new EscapedDetctedException();
         }
-        if (illegalNode) {
+        if (issueNode.isIllegal()) {
             throw new IllegalException();
         }
     }

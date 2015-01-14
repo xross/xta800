@@ -349,14 +349,10 @@ public class RouteUnknowns {
     }
 
     public boolean canInstructionPause(Reference reference) throws AbortedException {
-        boolean canPause = false;
-
-        for (Node node : m_route.getReferencedNodes(reference)) {
-            if (((IssueNode)node).getInstruction().canPause()) {
-                canPause = true;
-            }
-        }
-        return canPause;
+        for (Node node : m_route.getReferencedNodes(reference))
+            if (((IssueNode)node).canPause())
+                return true;
+        return false;
     }
 
     void invalidateCachedStats() {
