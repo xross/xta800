@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.IssueNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
@@ -144,8 +144,8 @@ public class Route {
 
     private void setRouteSpecificCoreConfigs(final CoreConfig coreConfig, final Architecture architecture) {
         m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
-            public TraverseStatus foundInstructionNode(Node node) {
-                ((InstructionNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, architecture);
+            public TraverseStatus foundIssueNode(Node node) {
+                ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, architecture);
                 return TraverseStatus.CONTINUE;
             }
         });

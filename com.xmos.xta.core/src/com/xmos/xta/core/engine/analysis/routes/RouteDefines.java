@@ -7,7 +7,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory.Type;
@@ -24,11 +24,11 @@ public class RouteDefines {
             new DifferentBlockPattern()};
 
     public static boolean matchPathDefine(Node from, Node to) {
-        assert(from instanceof InstructionNode);
+        assert(from instanceof IssueNode);
         Node fromBlock = from.getParent();
         assert(fromBlock instanceof BlockNode);
 
-        assert(to instanceof InstructionNode);
+        assert(to instanceof IssueNode);
         Node toBlock = to.getParent();
         assert(toBlock instanceof BlockNode);
 
@@ -61,13 +61,13 @@ public class RouteDefines {
         TimeUnit timeUnit = new TimeUnit(coreConfig, info.getTimeUnit());
 
         for (Node from : fromNodes) {
-            assert(from instanceof InstructionNode);
+            assert(from instanceof IssueNode);
             Node fromBlock = from.getParent();
             assert(fromBlock instanceof BlockNode);
 
             boolean success = false;
             for (Node to : toNodes) {
-                assert(to instanceof InstructionNode);
+                assert(to instanceof IssueNode);
                 Node toBlock = to.getParent();
                 assert(toBlock instanceof BlockNode);
 

@@ -36,7 +36,7 @@ public class StructureDisplayer {
     }
 
     private void displayNodeInfo(Node node, Stack<Node> ancestors, StringBuffer sb) {
-        if (node.isInstructionNode() &&
+        if (node.isIssueNode() &&
             (m_verbosity < Config.VERBOSITY_DISPLAY_INSTRUCTION_NODES))
             return;
 

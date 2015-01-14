@@ -15,7 +15,7 @@ public class DefaultNodeTraverser implements NodeTraverser {
         return TraverseStatus.CONTINUE;
     }
 
-    public TraverseStatus foundInstructionNode(Node node) {
+    public TraverseStatus foundIssueNode(Node node) {
         return TraverseStatus.CONTINUE;
     }
 

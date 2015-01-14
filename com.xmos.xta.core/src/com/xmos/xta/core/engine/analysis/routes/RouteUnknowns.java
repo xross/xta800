@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.LoopNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -352,7 +352,7 @@ public class RouteUnknowns {
         boolean canPause = false;
 
         for (Node node : m_route.getReferencedNodes(reference)) {
-            if (((InstructionNode)node).getInstruction().canPause()) {
+            if (((IssueNode)node).getInstruction().canPause()) {
                 canPause = true;
             }
         }

@@ -23,7 +23,7 @@ import com.xmos.xta.core.engine.Config;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -90,8 +90,8 @@ public class StructuralAnalysisEngine {
             CfgNode current = toDo.iterator().next();
             toDo.remove(current);
 
-            List<InstructionNode> insts = new LinkedList<InstructionNode>();
-            insts.add(new InstructionNode((CfgInstructionNode)current));
+            List<IssueNode> issueNodes = new LinkedList<IssueNode>();
+            issueNodes.add(new IssueNode((CfgInstructionNode)current));
 
             seenNodes.add(current);
 
@@ -100,13 +100,13 @@ public class StructuralAnalysisEngine {
             boolean firstInBlock = true;
             while (nextIsInSameBlock(current, workingSet, seenNodes, firstInBlock)) {
                 CfgNode next = getNextNodes(current, workingSet).iterator().next();
-                insts.add(new InstructionNode((CfgInstructionNode)next));
+                issueNodes.add(new IssueNode((CfgInstructionNode)next));
                 current = next;
                 seenNodes.add(current);
                 firstInBlock = false;
             }
 
-            BlockNode strBasicBlock = new BlockNode(insts);
+            BlockNode strBasicBlock = new BlockNode(issueNodes);
             CfgNode basicBlock = new CfgContainerNode(strBasicBlock);
 
             instToBlock.put(startOfBlock, basicBlock);

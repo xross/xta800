@@ -6,25 +6,25 @@ import java.util.Stack;
 
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
-import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InstructionNodeAttributes;
+import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.IssueNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
-public class InstructionNode extends Node {
+public class IssueNode extends Node {
     private boolean m_ownsOwnAttrib;
-    private InstructionNodeAttributes m_attributes;
+    private IssueNodeAttributes m_attributes;
     private Instruction m_inst;
 
-    public InstructionNode(CfgInstructionNode node) {
+    public IssueNode(CfgInstructionNode node) {
         super(node);
         m_inst = node.getInstruction();
-        m_attributes = new InstructionNodeAttributes(this);
+        m_attributes = new IssueNodeAttributes(this);
         m_ownsOwnAttrib = true;
     }
 
-    public InstructionNode(InstructionNode node) {
+    public IssueNode(IssueNode node) {
         super(node);
         m_inst = node.m_inst;
         m_attributes = node.m_attributes;
@@ -36,7 +36,7 @@ public class InstructionNode extends Node {
     }
 
     public Node copyRouteStructure() {
-        InstructionNode in = new InstructionNode(this);
+        IssueNode in = new IssueNode(this);
         in.m_attributes = m_attributes;
         return in;
     }
@@ -48,7 +48,7 @@ public class InstructionNode extends Node {
     public NodeAttributes getAttributes(boolean modifier) {
         if(modifier && !m_ownsOwnAttrib){
             m_ownsOwnAttrib = true;
-            m_attributes = new InstructionNodeAttributes(this);
+            m_attributes = new IssueNodeAttributes(this);
         }
         return m_attributes;
     }
@@ -64,7 +64,7 @@ public class InstructionNode extends Node {
     }
 
     public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundInstructionNode(this, ancestors);
+        TraverseStatus status = nodeTraverser.foundIssueNode(this, ancestors);
         if (status == TraverseStatus.ABORT) {
             return status;
         }
@@ -72,13 +72,13 @@ public class InstructionNode extends Node {
     }
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundInstructionNode(this);
+        TraverseStatus status = nodeTraverser.foundIssueNode(this);
         if (status == TraverseStatus.ABORT) {
             return status;
         }
         return TraverseStatus.CONTINUE;
     }
-    public boolean isInstructionNode() {
+    public boolean isIssueNode() {
         return true;
     }
 

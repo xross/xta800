@@ -7,7 +7,7 @@ import java.util.Set;
 import com.xmos.libs.core.utils.CoreId;
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
@@ -279,8 +279,8 @@ public class ScripterReference {
 
         if (enclosingNode != null) {
             enclosingNode.traverse(new DefaultNodeTraverser() {
-                public TraverseStatus foundInstructionNode(Node node) {
-                    pcs.add(((InstructionNode)node).getPC());
+                public TraverseStatus foundIssueNode(Node node) {
+                    pcs.add(((IssueNode)node).getPC());
                     return TraverseStatus.CONTINUE;
                 }
 

@@ -64,7 +64,7 @@ public abstract class Node implements Comparable<Node> {
     }
 
     public boolean isCondNode()             { return false; }
-    public boolean isInstructionNode()      { return false; }
+    public boolean isIssueNode()            { return false; }
     public boolean isFunctionNode()         { return false; }
     public boolean isLoopNode()             { return false; }
     public boolean isBlockNode()            { return false; }
@@ -215,7 +215,7 @@ public abstract class Node implements Comparable<Node> {
     }
 
     private Set<Node> m_branchReturnNodes;
-    public void addBranchReturnNode(InstructionNode node) {
+    public void addBranchReturnNode(IssueNode node) {
         if (m_branchReturnNodes == null){
             m_branchReturnNodes = new IteratableSet<Node>();
         }

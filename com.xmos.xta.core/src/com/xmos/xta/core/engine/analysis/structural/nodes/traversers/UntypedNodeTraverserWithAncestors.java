@@ -19,7 +19,7 @@ public abstract class UntypedNodeTraverserWithAncestors implements NodeTraverser
         return foundNode(node, ancestors);
     }
 
-    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundIssueNode(Node node, Stack<Node> ancestors) {
         return foundNode(node, ancestors);
     }
 

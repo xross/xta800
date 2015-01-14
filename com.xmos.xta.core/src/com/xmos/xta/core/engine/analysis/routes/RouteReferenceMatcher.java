@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
@@ -25,9 +25,9 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
         //find all nodes in the route that match the ref base
 
         baseOfRouteNode.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundInstructionNode(Node node) {
-                InstructionNode inst = (InstructionNode)node;
-                if(ref.getPcs().contains(inst.getPC()) && !inst.getInstruction().isFnop()){
+            public TraverseStatus foundIssueNode(Node node) {
+                IssueNode issueNode = (IssueNode)node;
+                if(ref.getPcs().contains(issueNode.getPC()) && !issueNode.getInstruction().isFnop()){
                     matchingNodes.add(node);
                 }
                 return TraverseStatus.CONTINUE;
@@ -121,9 +121,9 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
                 }
             }
         } else {
-            if(endOfList instanceof InstructionNode){
-                InstructionNode inst = (InstructionNode)endOfList;
-                if(ref.getPcs().contains(inst.getPC())){
+            if(endOfList instanceof IssueNode){
+                IssueNode issueNode = (IssueNode)endOfList;
+                if(ref.getPcs().contains(issueNode.getPC())){
                     return true;
                 }
             }

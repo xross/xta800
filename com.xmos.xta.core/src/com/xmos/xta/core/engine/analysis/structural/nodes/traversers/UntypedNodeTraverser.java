@@ -17,7 +17,7 @@ public abstract class UntypedNodeTraverser implements NodeTraverser {
         return foundNode(node);
     }
 
-    public TraverseStatus foundInstructionNode(Node node) {
+    public TraverseStatus foundIssueNode(Node node) {
         return foundNode(node);
     }
 

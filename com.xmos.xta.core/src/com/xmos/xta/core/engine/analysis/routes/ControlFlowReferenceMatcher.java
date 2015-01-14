@@ -13,7 +13,7 @@ import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.Pair;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
@@ -154,9 +154,9 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
             }
         } else {
             Node functionNode =  m_cachedFunctionMap.getCachedFunction(frn.getFunctionControlFlow());
-            InstructionNode inst = getInstructionNode(functionNode, latestPc);
+            IssueNode issueNode = getIssueNode(functionNode, latestPc);
             List<Node> nodeList = new LinkedList<Node>();
-            inst.buildListUp(nodeList, null);
+            issueNode.buildListUp(nodeList, null);
 
             for (long pc : r.getPcs()) {
                 int index = getIndexOfInst(nodeList, pc);
@@ -172,9 +172,9 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
 
     private int getIndexOfInst(List<Node> nodeList, long pc) {
         for (int i = nodeList.size()-2; i >= 0;i--) {
-            if (nodeList.get(i) instanceof InstructionNode){
-                InstructionNode inst = (InstructionNode)nodeList.get(i);
-                if (inst.getPC() == pc){
+            if (nodeList.get(i) instanceof IssueNode){
+                IssueNode issueNode = (IssueNode)nodeList.get(i);
+                if (issueNode.getPC() == pc){
                     return i;
                 }
             }
@@ -182,20 +182,20 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
         return -1;
     }
 
-    private InstructionNode getInstructionNode(Node node, final long pc) {
-        final List<InstructionNode> instructionNodes = new ArrayList<InstructionNode>();
+    private IssueNode getIssueNode(Node node, final long pc) {
+        final List<IssueNode> issueNodes = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundInstructionNode(Node node) {
-                InstructionNode instructionNode = (InstructionNode)node;
+            public TraverseStatus foundIssueNode(Node node) {
+                IssueNode issueNode = (IssueNode)node;
 
-                if (instructionNode.getPC() == pc) {
-                    instructionNodes.add((InstructionNode)node);
+                if (issueNode.getPC() == pc) {
+                    issueNodes.add((IssueNode)node);
                     return TraverseStatus.ABORT;
                 }
                 return TraverseStatus.CONTINUE;
             }
         });
-        assert(instructionNodes.size() == 1);
-        return instructionNodes.iterator().next();
+        assert(issueNodes.size() == 1);
+        return issueNodes.iterator().next();
     }
 }

@@ -17,7 +17,7 @@ public class DefaultNodeTraverserWithAncestors implements NodeTraverserWithAnces
         return TraverseStatus.CONTINUE;
     }
 
-    public TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors) {
+    public TraverseStatus foundIssueNode(Node node, Stack<Node> ancestors) {
         return TraverseStatus.CONTINUE;
     }
 

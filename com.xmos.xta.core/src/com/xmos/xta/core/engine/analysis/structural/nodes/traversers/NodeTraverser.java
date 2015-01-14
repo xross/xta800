@@ -5,7 +5,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 public interface NodeTraverser {
     TraverseStatus foundBlockNode(Node node);
     TraverseStatus foundFunctionNode(Node node);
-    TraverseStatus foundInstructionNode(Node node);
+    TraverseStatus foundIssueNode(Node node);
     TraverseStatus foundSequenceNode(Node node);
     TraverseStatus foundLoopNode(Node node);
     TraverseStatus foundInfiniteLoopNode(Node node);

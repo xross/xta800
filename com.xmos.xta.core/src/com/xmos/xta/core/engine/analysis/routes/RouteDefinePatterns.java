@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.SequenceNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.Unknown.Source;
@@ -18,12 +18,12 @@ public abstract class RouteDefinePatterns {
             Node fromBlock, Node from, Node toBlock, Node to, TimeUnit time, Source source);
 
     boolean createBlock(List<Node> blocks, List<Node> children, int fromIndex, int toIndex) {
-        List<InstructionNode> instructions = new ArrayList<InstructionNode>();
+        List<IssueNode> issueNodes = new ArrayList<IssueNode>();
         for (Node child : children.subList(fromIndex, toIndex)) {
-            instructions.add((InstructionNode)child);
+            issueNodes.add((IssueNode)child);
         }
-        if (!instructions.isEmpty()) {
-            blocks.add(new BlockNode(instructions));
+        if (!issueNodes.isEmpty()) {
+            blocks.add(new BlockNode(issueNodes));
             return true;
         }
         return false;

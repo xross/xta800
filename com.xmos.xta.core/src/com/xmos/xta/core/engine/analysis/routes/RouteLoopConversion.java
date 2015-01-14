@@ -14,7 +14,7 @@ import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
@@ -64,10 +64,10 @@ public class RouteLoopConversion {
             // First we look for a loop in the function that contained the original reference..
             FunctionControlFlow functionControlFlow =
                 m_controlFlow.getFunctionControlFlow(fromStackNode.getInstruction());
-            InstructionNode instructionNode = getCachedInstructionNode(
+            IssueNode issueNode = getCachedIssueNode(
                     functionControlFlow, fromStackNode.getInstruction());
 
-            Node loopNode = findLoopNode(instructionNode);
+            Node loopNode = findLoopNode(issueNode);
             if (loopNode != null) {
                 addLoopStackNodes(loopNode, fromStackNode.getNodeStacks(),
                         functionControlFlow, loopStartStackNodes, exclusionStackNodes);
@@ -93,9 +93,9 @@ public class RouteLoopConversion {
                     CfgInstructionNode instructionCallNode = (CfgInstructionNode)callNode;
 
                     functionControlFlow = m_controlFlow.getFunctionControlFlow(instructionCallNode);
-                    instructionNode = getCachedInstructionNode(functionControlFlow, instructionCallNode);
+                    issueNode = getCachedIssueNode(functionControlFlow, instructionCallNode);
 
-                    loopNode = findLoopNode(instructionNode);
+                    loopNode = findLoopNode(issueNode);
                     if (loopNode != null) {
                         List<Stack<CfgFunctionReferenceNode>> nodeStacks =
                             new ArrayList<Stack<CfgFunctionReferenceNode>>();
@@ -114,7 +114,7 @@ public class RouteLoopConversion {
         return withinLoop;
     }
 
-    private Node findLoopNode(InstructionNode node) {
+    private Node findLoopNode(IssueNode node) {
         Node loopNode = node.getEnclosingLoopNode();
         if (loopNode != null) {
             return loopNode;
@@ -137,60 +137,60 @@ public class RouteLoopConversion {
 
         // For the given structural loop node, this finds the
         // first structural instruction node in the loop.
-        InstructionNode instructionNode = getFirstInstructionNode(loopNode);
+        IssueNode issueNode = getFirstIssueNode(loopNode);
 
         // Now find the control flow instruction node
         // corresponding to the above structural instruction node.
-        CfgInstructionNode cfgInstructionNode = functionControlFlow.getInstructionNode(instructionNode.getPC());
+        CfgInstructionNode cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getPC());
 
         loopStartStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
 
         if (loopNode.isLoopNode() || loopNode.isSelfLoopNode()) {
             Node successor = loopNode.getSuccessor();
             if (successor != null) {
-                instructionNode = getFirstInstructionNode(successor);
-                cfgInstructionNode = functionControlFlow.getInstructionNode(instructionNode.getPC());
+                issueNode = getFirstIssueNode(successor);
+                cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getPC());
 
                 exclusionStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
             }
         }
     }
 
-    private InstructionNode getCachedInstructionNode(
+    private IssueNode getCachedIssueNode(
             FunctionControlFlow functionControlFlow,
             CfgInstructionNode cfgInstructionNode)
         throws AbortedException, MemoryMonitorException {
 
         Node functionNode = m_cachedFunctionMap.getCachedFunction(functionControlFlow);
-        return getInstructionNodeMatchingPc(functionNode, cfgInstructionNode.getPc());
+        return getIssueNodeMatchingPc(functionNode, cfgInstructionNode.getPc());
     }
 
-    private InstructionNode getInstructionNodeMatchingPc(Node node, final long pc) {
-        final List<InstructionNode> instructionNodes = new ArrayList<InstructionNode>();
+    private IssueNode getIssueNodeMatchingPc(Node node, final long pc) {
+        final List<IssueNode> issueNodes = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundInstructionNode(Node node) {
-                InstructionNode instructionNode = (InstructionNode)node;
+            public TraverseStatus foundIssueNode(Node node) {
+                IssueNode issueNode = (IssueNode)node;
 
-                if (instructionNode.getPC() == pc) {
-                    instructionNodes.add((InstructionNode)node);
+                if (issueNode.getPC() == pc) {
+                    issueNodes.add((IssueNode)node);
                     return TraverseStatus.ABORT;
                 }
                 return TraverseStatus.CONTINUE;
             }
         });
-        assert(instructionNodes.size() == 1);
-        return instructionNodes.iterator().next();
+        assert(issueNodes.size() == 1);
+        return issueNodes.iterator().next();
     }
 
-    private InstructionNode getFirstInstructionNode(Node node) {
-        final Collection<InstructionNode> instructionNode = new ArrayList<InstructionNode>();
+    private IssueNode getFirstIssueNode(Node node) {
+        final Collection<IssueNode> issueNode = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundInstructionNode(Node node) {
-                instructionNode.add((InstructionNode)node);
+            public TraverseStatus foundIssueNode(Node node) {
+                issueNode.add((IssueNode)node);
                 return TraverseStatus.ABORT;
             }
         });
-        assert(instructionNode.size() == 1);
-        return instructionNode.iterator().next();
+        assert(issueNode.size() == 1);
+        return issueNode.iterator().next();
     }
 }

@@ -4,7 +4,7 @@ import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
@@ -72,7 +72,7 @@ public class InstructionTime extends Command {
     }
 
     private void display(Engine engine, Console console, Node node) {
-        if ((node != null) && (node instanceof InstructionNode)) {
+        if ((node != null) && (node instanceof IssueNode)) {
             engine.setSelectedRouteId(getSrc(), m_routeId);
             TimeUnit timeUnit = engine.getInstructionTime(node);
             console.display(timeUnit.getDescription(true) + "\n");

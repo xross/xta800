@@ -30,7 +30,7 @@ import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
-import com.xmos.xta.core.engine.analysis.structural.nodes.InstructionNode;
+import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
@@ -743,7 +743,7 @@ public class RouteConstructor {
 
         node.traverse(new UntypedNodeTraverser() {
             public TraverseStatus foundNode(Node node) {
-                if(node.isInstructionNode()){
+                if(node.isIssueNode()){
                     nodeList.add(node.getTypeName()+node.getStartPc());
                 } else {
                     nodeList.add(node.getTypeName());
@@ -929,8 +929,8 @@ public class RouteConstructor {
             Node node = route.getNode();
             node.traverse( new DefaultNodeTraverser() {
                 // Sets all the pausing instructions to unknown.
-                public TraverseStatus foundInstructionNode(Node node) {
-                    Instruction instruction = ((InstructionNode)node).getInstruction();
+                public TraverseStatus foundIssueNode(Node node) {
+                    Instruction instruction = ((IssueNode)node).getInstruction();
                     if (instruction.canPause()) {
                         NodeAttributes nodeAttributes = node.getAttributes(true);
                         nodeAttributes.addUnknown(route, UnknownFactory.Type.INSTRUCTION_TIME);
@@ -989,8 +989,8 @@ public class RouteConstructor {
 
                 Node node = route.getNode();
                 node.traverse(new DefaultNodeTraverser() {
-                    public TraverseStatus foundInstructionNode(Node node) {
-                        Instruction instruction = ((InstructionNode)node).getInstruction();
+                    public TraverseStatus foundIssueNode(Node node) {
+                        Instruction instruction = ((IssueNode)node).getInstruction();
 
                         // Checks for threading instructions...
                         if (mnenonics.isSsync(instruction))

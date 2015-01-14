@@ -8,7 +8,7 @@ public interface NodeTraverserWithAncestors {
 
     TraverseStatus foundBlockNode(Node node, Stack<Node> ancestors);
     TraverseStatus foundFunctionNode(Node node, Stack<Node> ancestors);
-    TraverseStatus foundInstructionNode(Node node, Stack<Node> ancestors);
+    TraverseStatus foundIssueNode(Node node, Stack<Node> ancestors);
     TraverseStatus foundSequenceNode(Node node, Stack<Node> ancestors);
     TraverseStatus foundLoopNode(Node node, Stack<Node> ancestors);
     TraverseStatus foundInfiniteLoopNode(Node node, Stack<Node> ancestors);
