@@ -1,5 +1,7 @@
 package com.xmos.xta.core.console.commands.print;
 
+import java.util.LinkedList;
+
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
@@ -139,46 +141,43 @@ public class TraceDisplayer {
         String isUnknown = issueNode.getAttributes(false).getDisplayAsUnknown() ? "*" : " ";
         String isUnresolved = issueNode.getUnresolved() ? " [UNRESOLVED]" : "";
         String formsRecursion = issueNode.getRecursion() ? " [RECURSION]" : "";
+        boolean illegalNode = false;
+        LinkedList<Instruction> instructions = issueNode.getInstructions();
+        Instruction firstInst = instructions.getFirst();
+        String functionName = firstInst.getFunctionName();
+        String functionOffsetString = functionName != null? functionName + " + " + firstInst.getFunctionOffset() : "";
 
-         Instruction instruction = issueNode.getInstruction();
-        String functionName = instruction.getFunctionName();
-        String isIllegal = instruction.getIsIllegal() ? " [ILLEGAL]" : "";
-
-        String functionOffsetString = "";
-        if (functionName != null) {
-            functionOffsetString = functionName + " + " + instruction.getFunctionOffset();
+        m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s",
+                isUnknown,
+                m_currentTime,
+                issueNode.getAttributes(false).getFixedTime().getNs(),
+                firstInst.getPc(),
+                functionOffsetString));
+        for (Instruction instruction : instructions) {
+            if (instruction.getIsIllegal()) illegalNode = true;
+            String isIllegal = instruction.getIsIllegal() ? " [ILLEGAL]" : "";
+            String canPause = instruction.canPause()? " (P)" : "";
+            m_console.display(String.format(" %-12s %s%s%s%s%s\n",
+                    instruction.getMnemonic(),
+                    instruction.getOperandString(),
+                    isUnresolved,
+                    formsRecursion,
+                    isIllegal,
+                    canPause));
         }
-
-         m_console.display(String.format("%s %.1f: (%.1fns) 0x%05x %-22s %-12s %s%s%s%s",
-                 isUnknown,
-                 m_currentTime,
-                 issueNode.getAttributes(false).getFixedTime().getNs(),
-                 instruction.getPc(),
-                   functionOffsetString,
-                   instruction.getMnemonic(),
-                   instruction.getOperandString(),
-                   isUnresolved,
-                   formsRecursion,
-                   isIllegal));
-
-         if (instruction.canPause())
-             m_console.display(" (P)");
-
-         m_currentTime += issueNode.getAttributes(false).getFixedTime().getNs();
-          m_console.display("\n");
-
-          if (issueNode.getRecursion()) {
-              throw new RecursionDetctedException();
-          }
-          if (issueNode.getUnresolved()) {
-              throw new UnresolvedDetctedException();
-          }
-          if (m_console.hasEscaped()) {
-              throw new EscapedDetctedException();
-          }
-          if (instruction.getIsIllegal()) {
-              throw new IllegalException();
-          }
+        m_currentTime += issueNode.getAttributes(false).getFixedTime().getNs();
+        if (issueNode.getRecursion()) {
+            throw new RecursionDetctedException();
+        }
+        if (issueNode.getUnresolved()) {
+            throw new UnresolvedDetctedException();
+        }
+        if (m_console.hasEscaped()) {
+            throw new EscapedDetctedException();
+        }
+        if (illegalNode) {
+            throw new IllegalException();
+        }
     }
 }
 
