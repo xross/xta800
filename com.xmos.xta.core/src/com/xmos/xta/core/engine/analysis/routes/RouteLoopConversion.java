@@ -141,7 +141,7 @@ public class RouteLoopConversion {
 
         // Now find the control flow instruction node
         // corresponding to the above structural instruction node.
-        CfgInstructionNode cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getPc());
+        CfgInstructionNode cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getStartPc());
 
         loopStartStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
 
@@ -149,7 +149,7 @@ public class RouteLoopConversion {
             Node successor = loopNode.getSuccessor();
             if (successor != null) {
                 issueNode = getFirstIssueNode(successor);
-                cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getPc());
+                cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getStartPc());
 
                 exclusionStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
             }
@@ -171,7 +171,7 @@ public class RouteLoopConversion {
             public TraverseStatus foundIssueNode(Node node) {
                 IssueNode issueNode = (IssueNode)node;
 
-                if (issueNode.getPc() == pc) {
+                if (issueNode.getStartPc() == pc) {
                     issueNodes.add((IssueNode)node);
                     return TraverseStatus.ABORT;
                 }

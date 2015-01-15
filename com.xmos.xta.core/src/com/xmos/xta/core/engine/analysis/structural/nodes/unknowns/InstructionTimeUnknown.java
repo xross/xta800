@@ -18,12 +18,12 @@ public class InstructionTimeUnknown extends Unknown {
         switch(getState()) {
         case UNKNOWN:
             return String.format("Time taken for instruction (0x%x: %s) is unknown",
-                    issueNode.getPc(),
+                    issueNode.getStartPc(),
                     issueNode.getMnemonic());
 
         case KNOWN:
             return String.format("Time for instruction (0x%x: %s) set to %s",
-                    issueNode.getPc(),
+                    issueNode.getStartPc(),
                     issueNode.getMnemonic(),
                     Conversion.getTimeString(getNode().getAttributes(false).getFixedTime().getNs()));
         }

@@ -122,7 +122,7 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
         } else {
             if(endOfList instanceof IssueNode){
                 IssueNode issueNode = (IssueNode)endOfList;
-                if(ref.getPcs().contains(issueNode.getPc())){
+                if(ref.getPcs().contains(issueNode.getStartPc())){
                     return true;
                 }
             }

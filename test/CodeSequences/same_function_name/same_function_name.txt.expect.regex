@@ -1,10 +1,10 @@
 function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] f \[ANCESTORS: \]
 .*
 [^^^]
-.    .  F instruction\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] 0x[a-fA-F0-9]{5}: retsp \(u6\) *0x\d\s+\[ANCESTORS: \d+ \d+ \]
+.    .  F instruction\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] 0x[a-fA-F0-9]{5} .* retsp \(u6\) *0x\d\s+\[ANCESTORS: \d+ \d+ \]
 
 function\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] f \[ANCESTORS: \]
 .*
 [^^^]
-.    .  F instruction\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] 0x[a-fA-F0-9]{5}: retsp \(u6\) *0x\d\s+\[ANCESTORS: \d+ \d+ \]
+.    .  F instruction\(\d+\)\s+: \d+.\d+ ns / \d+.\d+ ns \[1\] 0x[a-fA-F0-9]{5} .* retsp \(u6\) *0x\d\s+\[ANCESTORS: \d+ \d+ \]
 

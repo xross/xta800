@@ -280,7 +280,7 @@ public class ScripterReference {
         if (enclosingNode != null) {
             enclosingNode.traverse(new DefaultNodeTraverser() {
                 public TraverseStatus foundIssueNode(Node node) {
-                    pcs.add(((IssueNode)node).getPc());
+                    pcs.add(node.getStartPc());
                     return TraverseStatus.CONTINUE;
                 }
 

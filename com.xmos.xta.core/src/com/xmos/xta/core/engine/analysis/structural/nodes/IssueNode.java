@@ -16,42 +16,46 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseSta
 public class IssueNode extends Node {
     private boolean m_ownsOwnAttrib;
     private IssueNodeAttributes m_attributes;
-    private Instruction m_inst;
+    private LinkedList<Instruction> m_insts;
     private boolean m_isFnop;
 
     public IssueNode(CfgInstructionNode node) {
         super(node);
-        m_inst = node.getInstruction();
+        m_insts = new LinkedList<Instruction>();
+        m_insts.add(node.getInstruction());
         m_attributes = new IssueNodeAttributes(this);
         m_ownsOwnAttrib = true;
     }
 
-    public IssueNode(IssueNode node) {
+    private IssueNode(IssueNode node) {
         super(node);
-        m_inst = node.m_inst;
+        m_insts = new LinkedList<Instruction>();
+        for (Instruction instruction : node.m_insts)
+            m_insts.add(instruction);
         m_attributes = node.m_attributes;
         m_ownsOwnAttrib = false;
     }
 
     public void setIsFnop(boolean isFnop) {
         m_isFnop = isFnop;
-        m_inst.setIsFnop(isFnop);
+        for (Instruction instruction : m_insts)
+            instruction.setIsFnop(isFnop);
     }    
     public boolean isFnop() {
         //return m_isFnop;
-        return m_inst.isFnop();
+        for (Instruction instruction : m_insts)
+            if (instruction.isFnop())
+                return true;
+        return false;
     }
 
     public boolean isIllegal() {
-        for (Instruction instruction : getInstructions())
+        for (Instruction instruction : m_insts)
             if (!instruction.getIsIllegal())
                 return false;
         return true;
     }
 
-    public String toString(){
-        return m_inst.toString();
-    }
 
     public Node copyRouteStructure() {
         IssueNode in = new IssueNode(this);
@@ -60,7 +64,7 @@ public class IssueNode extends Node {
     }
 
     public String getTypeName() {
-        return "instruction";
+        return "instruction";   // This may be an VLIW instruction!
     }
 
     public NodeAttributes getAttributes(boolean modifier) {
@@ -72,21 +76,15 @@ public class IssueNode extends Node {
     }
 
     public LinkedList<Instruction> getInstructions() {
-        LinkedList<Instruction> inst = new LinkedList<Instruction>();
-        inst.add(m_inst);
-        return inst;
+        return m_insts;
     }
 
     public boolean containsPc(Set<Long> Pcs) {
         if (!isFnop())
-            for (Instruction instruction : getInstructions())
+            for (Instruction instruction : m_insts)
                 if (Pcs.contains( instruction.getPc()))
                     return true;
         return false;
-    }
-
-    public long getStartPc() {
-        return m_inst.getPc();
     }
 
     public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
@@ -104,28 +102,59 @@ public class IssueNode extends Node {
         }
         return TraverseStatus.CONTINUE;
     }
+
     public boolean isIssueNode() {
         return true;
     }
 
+    public String toString(){
+        return getDescription();
+    }
+
     public String getDescription() {
-        return String.format("0x%x: %s",
-                getPc(),
+        return String.format("0x%05x %-22s %s",
+                getStartPc(),
+                functionOffsetString(),
                 getMnemonicOperandString());
     }
 
-    public String getMnemonicOperandString() {
-        return String.format("%-12s %s",
-                m_inst.getMnemonic(),
-                m_inst.getOperandString());
+    private String functionOffsetString() {
+        String functionName = getFunctionName();
+        return functionName != null? functionName + " + " + m_insts.getFirst().getFunctionOffset() : "";
     }
 
+    private String getMnemonicOperandString() {
+        String str = "";
+        boolean multiIssue = m_insts.size() > 1;
+        boolean addSeperator = false;
+        if (multiIssue) str += "{ ";
+        for (Instruction instruction : m_insts) {
+            if (addSeperator) str += " ; ";
+            addSeperator = true;
+            str += String.format("%-12s %s",
+                    instruction.getMnemonic(),
+                    instruction.getOperandString());
+        }
+        if (multiIssue) str += " }";
+        return str;
+     }
+
     public String getMnemonic() {
-        return m_inst.getMnemonic();
+        String str = "";
+        boolean multiIssue = m_insts.size() > 1;
+        boolean addSeperator = false;
+        if (multiIssue) str += "{ ";
+        for (Instruction instruction : m_insts) {
+            if (addSeperator) str += " ; ";
+            addSeperator = true;
+            str += instruction.getMnemonic();
+        }
+        if (multiIssue) str += " }";
+        return str;
     }
 
     public boolean canPause() {
-        for (Instruction instruction : getInstructions())
+        for (Instruction instruction : m_insts)
             if (instruction.canPause())
                 return true;
         return false;
@@ -152,20 +181,12 @@ public class IssueNode extends Node {
         nodeList.add(this);
     }
 
-    public String functionOffsetString() {
-        String functionName = getFunctionName();
-        return functionName != null? functionName + " + " + getFunctionOffset() : "";
-    }
-
     public String getFunctionName() {
-        return m_inst.getFunctionName();
+        return m_insts.getFirst().getFunctionName();
     }
 
-    public int getFunctionOffset() {
-        return m_inst.getFunctionOffset();
+    public long getStartPc() {
+        return m_insts.getFirst().getPc();
     }
 
-    public long getPc() {
-        return m_inst.getPc();
-    }
 }
