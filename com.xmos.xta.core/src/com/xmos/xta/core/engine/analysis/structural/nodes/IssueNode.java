@@ -115,7 +115,7 @@ public class IssueNode extends Node {
     }
 
     public String getMnemonicOperandString() {
-        return String.format("%s %s",
+        return String.format("%-12s %s",
                 m_inst.getMnemonic(),
                 m_inst.getOperandString());
     }
