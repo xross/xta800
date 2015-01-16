@@ -94,28 +94,15 @@ public class IssueNodeAttributes extends NodeAttributes {
     }
 
     private long calculateCycles() {
-        InstructionMnemonics instructionMnemonics = null;
-        if (m_coreConfig != null && m_architecture != Architecture.UNKNOWN);
-            instructionMnemonics = new InstructionMnemonics(m_architecture);
-
         long cycles = 0;
-        long cyclesDivRem = 0;
         for (Instruction instruction : ((IssueNode)getNode()).getInstructions()) {
-            if (instructionMnemonics != null &&
-                (instructionMnemonics.isDivide(instruction) ||
-                 instructionMnemonics.isRemainder(instruction))) {
-                    assert (cyclesDivRem == 0);// We only expect one div/rem per issue.
-                    cyclesDivRem = instruction.getNumCycles();
-            }
-            else if (instruction.getNumCycles() > cycles) {
-                cycles = instruction.getNumCycles();
-            }
+            long instCycles = instruction.getNumCycles();
+            assert (cycles <= 1 || instCycles <= 1); // We only expect one multi-cycle per issue.
+            if (cycles < instCycles)
+                cycles = instCycles;
         }
-
-        if (cyclesDivRem > 0) {
-            assert (cycles <= 1); // We only expect single cycle instructions issued with a div/rem.
-            return cyclesDivRem * (m_coreConfig.m_numThreads < 4 ? m_coreConfig.m_numThreads : 4);
-        }
-        return cycles;
+        int threadsRunning = (m_coreConfig != null)? m_coreConfig.m_numThreads : 1;
+        double threadInterlacing = (m_architecture == Architecture.REV2A)? 5 : 4;
+        return (long) Math.ceil((cycles * threadsRunning) / Math.max(threadsRunning, threadInterlacing));
     }
 }
