@@ -36,11 +36,12 @@ public class IssueNode extends Node {
         m_ownsOwnAttrib = false;
     }
 
-    public void setIsFnop(boolean isFnop) {
-        m_isFnop = isFnop;
-        for (Instruction instruction : m_insts)
-            instruction.setIsFnop(isFnop);
-    }    
+// First need to refactor FnopAdder.update().
+// Need to remove isFNop from NullInstruction and set fnop later here instead!
+//    public void setIsFnop(boolean isFnop) {
+//        m_isFnop = isFnop;
+//    }
+
     public boolean isFnop() {
         //return m_isFnop;
         for (Instruction instruction : m_insts)
@@ -51,9 +52,9 @@ public class IssueNode extends Node {
 
     public boolean isIllegal() {
         for (Instruction instruction : m_insts)
-            if (!instruction.getIsIllegal())
-                return false;
-        return true;
+            if (instruction.getIsIllegal())
+                return true;
+        return false;
     }
 
 
@@ -82,7 +83,7 @@ public class IssueNode extends Node {
     public boolean containsPc(Set<Long> Pcs) {
         if (!isFnop())
             for (Instruction instruction : m_insts)
-                if (Pcs.contains( instruction.getPc()))
+                if (Pcs.contains(instruction.getPc()))
                     return true;
         return false;
     }
@@ -125,7 +126,7 @@ public class IssueNode extends Node {
 
     private String getMnemonicOperandString() {
         String str = "";
-        boolean multiIssue = m_insts.size() > 1;    // RL-todo Add a m_multiIssue flag to the class.
+        boolean multiIssue = m_insts.size() > 1;
         boolean addSeperator = false;
         if (multiIssue) str += "{ ";
         for (Instruction instruction : m_insts) {

@@ -20,15 +20,15 @@ public class IssueNodeAttributes extends NodeAttributes {
 
     public IssueNodeAttributes(IssueNode node) {
         super(node);
-        m_numCycles = node.getInstructions().getFirst().getNumCycles();  // RL-todo check all instructions
         m_coreConfig = null;
         m_architecture = Architecture.UNKNOWN;
+        m_numCycles = calculateCycles(); // accesses m_coreConfig, m_architecture
     }
 
     public void setCoreConfig(CoreConfig coreConfig, Architecture architecture) {
         m_coreConfig = coreConfig;
         m_architecture = architecture;
-        m_numCycles = getThreadAdjustedCycles();
+        m_numCycles = calculateCycles(); // accesses m_coreConfig, m_architecture
     }
 
     public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
@@ -52,23 +52,19 @@ public class IssueNodeAttributes extends NodeAttributes {
     }
 
     public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {
-        if (getNode().getUnresolved()) {
+        IssueNode issueNode = (IssueNode)getNode();
+        if (issueNode.getUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
-        if (!((IssueNode)getNode()).isFnop()) {
-            return 1;
-        }
-        return 0;
+        return issueNode.isFnop()? 0 : issueNode.getInstructions().size();
     }
 
     public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
-        if (getNode().getUnresolved()) {
+        IssueNode issueNode = (IssueNode)getNode();
+        if (issueNode.getUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
-        if (((IssueNode)getNode()).isFnop()) {
-            return 1;
-        }
-        return 0;
+        return issueNode.isFnop() ? 1 : 0;
     }
 
     public long getNumPaths() throws ArithmeticException {
@@ -78,7 +74,7 @@ public class IssueNodeAttributes extends NodeAttributes {
     public void setFixedTime(TimeUnit timeUnit) {
         long cycles = timeUnit.getCycles();
         if (((IssueNode)getNode()).canPause()) {
-            long baseNumCycles = getThreadAdjustedCycles();
+            long baseNumCycles = calculateCycles();
             if (cycles > baseNumCycles) {
                 m_numCycles = cycles;
             } else {
@@ -97,20 +93,29 @@ public class IssueNodeAttributes extends NodeAttributes {
         return m_instructionTimeString;
     }
 
-    private long getThreadAdjustedCycles() {
-        assert(m_architecture != Architecture.UNKNOWN);
-        assert(m_coreConfig != null);
+    private long calculateCycles() {
+        InstructionMnemonics instructionMnemonics = null;
+        if (m_coreConfig != null && m_architecture != Architecture.UNKNOWN);
+            instructionMnemonics = new InstructionMnemonics(m_architecture);
 
-        Instruction instruction = ((IssueNode)getNode()).getInstructions().getFirst();  // RL-todo check all instructions
-
-        InstructionMnemonics instructionMnemonics = new InstructionMnemonics(m_architecture);
-
-        if (instructionMnemonics.isDivide(instruction) ||
-            instructionMnemonics.isRemainder(instruction)) {
-            return (m_coreConfig.m_numThreads < 4) ?
-                    instruction.getNumCycles() * m_coreConfig.m_numThreads :
-                    instruction.getNumCycles() * 4;
+        long cycles = 0;
+        long cyclesDivRem = 0;
+        for (Instruction instruction : ((IssueNode)getNode()).getInstructions()) {
+            if (instructionMnemonics != null &&
+                (instructionMnemonics.isDivide(instruction) ||
+                 instructionMnemonics.isRemainder(instruction))) {
+                    assert (cyclesDivRem == 0);// We only expect one div/rem per issue.
+                    cyclesDivRem = instruction.getNumCycles();
+            }
+            else if (instruction.getNumCycles() > cycles) {
+                cycles = instruction.getNumCycles();
+            }
         }
-        return instruction.getNumCycles();
+
+        if (cyclesDivRem > 0) {
+            assert (cycles <= 1); // We only expect single cycle instructions issued with a div/rem.
+            return cyclesDivRem * (m_coreConfig.m_numThreads < 4 ? m_coreConfig.m_numThreads : 4);
+        }
+        return cycles;
     }
 }
