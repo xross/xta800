@@ -11,12 +11,12 @@ xta: warning: target (0x100c8) of: (main+66) 0x10048 bf (ru6) r0, 0x3f not found
 xta: warning: target (0x3004c) of: (main+68) 0x1004a bf (lru6) r0, 0xffff not found in executable sections
 xta: warning: target (0x30052) of: (main+74) 0x10050 bt (lru6) r0, 0xffff not found in executable sections
 xta: warning: target (0x30058) of: (main+80) 0x10056 bu (lu6) 0xffff not found in executable sections
-  0.0: (20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0
-  20.0: (20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, 0x1
-  40.0: (20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0
-  60.0: (20.0ns) 0x1000c main + 6               andnot (2r)  r0, r0
-  80.0: (20.0ns) 0x1000e main + 8               ashr (l3r)   r0, r0, r0
-  100.0: (20.0ns) 0x10012                        --FNOP--     
-  120.0: (20.0ns) 0x10012 main + 12              ashr (l2rus) r0, r0, 0x1
-  140.0: (20.0ns) 0x10016 main + 16              bau (1r)     r0 [UNRESOLVED]
+         0.0: ( 20.0ns) 0x10006 main + 0               add (3r)     r0, r0, r0  
+        20.0: ( 20.0ns) 0x10008 main + 2               add (2rus)   r0, r0, 0x1 
+        40.0: ( 20.0ns) 0x1000a main + 4               and (3r)     r0, r0, r0  
+        60.0: ( 20.0ns) 0x1000c main + 6               andnot (2r)  r0, r0      
+        80.0: ( 20.0ns) 0x1000e main + 8               ashr (l3r)   r0, r0, r0  
+       100.0: ( 20.0ns) 0x10012                        --FNOP--                 
+       120.0: ( 20.0ns) 0x10012 main + 12              ashr (l2rus) r0, r0, 0x1 
+       140.0: ( 20.0ns) 0x10016 main + 16              bau (1r)     r0           [UNRESOLVED]
 

@@ -26,7 +26,7 @@ while (<INFILE>) {
         } else {
             $line =~ s/^\s+//;
             my @fields = split /\s+/, $line;
-            $line = $fields[2];
+            $line = $fields[3];
         }
         $linecount++;
         if($linecount==1 && $line =~ m/FNOP/){

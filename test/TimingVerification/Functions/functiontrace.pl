@@ -71,7 +71,7 @@ while (<INFILE>) {
 
         # Gets the pc from the trace. 
         my @lineArray = split('\s+', $line);
-        my $pc = $lineArray[2]; 
+        my $pc = $lineArray[3]; 
                 
         if($line =~ m/FNOP/ ){
            

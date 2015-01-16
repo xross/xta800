@@ -1,5 +1,5 @@
-  0.0: (20.0ns) 0x10002 main + 0               bl (u10)     0x1
-  20.0: (20.0ns) 0x10006 test + 0               retsp (u6)   0x0
-  40.0: (20.0ns) 0x10004                        --FNOP--     
-  60.0: (20.0ns) 0x10004 main + 2               retsp (u6)   0x0
+         0.0: ( 20.0ns) 0x10002 main + 0               bl (u10)     0x1         
+        20.0: ( 20.0ns) 0x10006 test + 0               retsp (u6)   0x0         
+        40.0: ( 20.0ns) 0x10004                        --FNOP--                 
+        60.0: ( 20.0ns) 0x10004 main + 2               retsp (u6)   0x0         
 

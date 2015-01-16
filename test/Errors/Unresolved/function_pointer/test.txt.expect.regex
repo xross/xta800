@@ -4,7 +4,7 @@ function\(\d+\) +: Unresolved / Unresolved main
 .    .    block\(\d+\) +: Unresolved \(x 1\) / Unresolved \(x 1\) 
 .    block\(\d+\) +: \d+.0 ns \(x 1\) / \d+.0 ns \(x 1\) 
 
-  \d+\.\d+: \(\d+\.\d+[mun]s\) 0x[0-9a-z]+ .*
+ +\d+\.\d+: \( *\d+\.\d+[mun]s\) 0x[0-9a-z]+ .*
 [^^^]
 .* +bla.* +\[UNRESOLVED\]
 

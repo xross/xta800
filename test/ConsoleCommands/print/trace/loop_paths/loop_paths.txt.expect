@@ -1,62 +1,62 @@
-  0.0: (20.0ns) 0x10004 main + 0               ldc (ru6)    r0, 0xa
-  20.0: (20.0ns) 0x10006 main + 2               ldc (ru6)    r2, 0x0
-  40.0: (20.0ns) 0x10008 main + 4               ldc (lru6)   r3, 0x64
-  60.0: (20.0ns) 0x1000c main + 8               ldc (ru6)    r4, 0x1
-  80.0: (20.0ns) 0x1000e main + 10              ldc (ru6)    r5, 0x3
-  100.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  120.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  140.0: (20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1
-  160.0: (20.0ns) 0x10016 main + 18              bu (u6)      0x2
-  180.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  200.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  220.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  240.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  260.0: (20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1
-  280.0: (20.0ns) 0x10016 main + 18              bu (u6)      0x2
-  300.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  320.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  340.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  360.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  380.0: (20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1
-  400.0: (20.0ns) 0x10016 main + 18              bu (u6)      0x2
-  420.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  440.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  460.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  480.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  500.0: (20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1
-  520.0: (20.0ns) 0x10016 main + 18              bu (u6)      0x2
-  540.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  560.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  580.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  600.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  620.0: (20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1
-  640.0: (20.0ns) 0x10016 main + 18              bu (u6)      0x2
-  660.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  680.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  700.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  720.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  740.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5
-  1380.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  1400.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  1420.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  1440.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  1460.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5
-  2100.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  2120.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  2140.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  2160.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  2180.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5
-  2820.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  2840.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  2860.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  2880.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  2900.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5
-  3540.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  3560.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  3580.0: (20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4
-  3600.0: (20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2
-  3620.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5
-  4260.0: (20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1
-  4280.0: (20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8
-  4300.0: (20.0ns) 0x10020 main + 28              retsp (u6)   0x0
+         0.0: ( 20.0ns) 0x10004 main + 0               ldc (ru6)    r0, 0xa     
+        20.0: ( 20.0ns) 0x10006 main + 2               ldc (ru6)    r2, 0x0     
+        40.0: ( 20.0ns) 0x10008 main + 4               ldc (lru6)   r3, 0x64    
+        60.0: ( 20.0ns) 0x1000c main + 8               ldc (ru6)    r4, 0x1     
+        80.0: ( 20.0ns) 0x1000e main + 10              ldc (ru6)    r5, 0x3     
+       100.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+       120.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+       140.0: ( 20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1 
+       160.0: ( 20.0ns) 0x10016 main + 18              bu (u6)      0x2         
+       180.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+       200.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+       220.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+       240.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+       260.0: ( 20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1 
+       280.0: ( 20.0ns) 0x10016 main + 18              bu (u6)      0x2         
+       300.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+       320.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+       340.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+       360.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+       380.0: ( 20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1 
+       400.0: ( 20.0ns) 0x10016 main + 18              bu (u6)      0x2         
+       420.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+       440.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+       460.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+       480.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+       500.0: ( 20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1 
+       520.0: ( 20.0ns) 0x10016 main + 18              bu (u6)      0x2         
+       540.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+       560.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+       580.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+       600.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+       620.0: ( 20.0ns) 0x10014 main + 16              add (2rus)   r2, r2, 0x1 
+       640.0: ( 20.0ns) 0x10016 main + 18              bu (u6)      0x2         
+       660.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+       680.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+       700.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+       720.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+       740.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5  
+      1380.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+      1400.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+      1420.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+      1440.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+      1460.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5  
+      2100.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+      2120.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+      2140.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+      2160.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+      2180.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5  
+      2820.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+      2840.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+      2860.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+      2880.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+      2900.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5  
+      3540.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+      3560.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+      3580.0: ( 20.0ns) 0x10010 main + 12              and (3r)     r1, r0, r4  
+      3600.0: ( 20.0ns) 0x10012 main + 14              bt (ru6)     r1, 0x2     
+      3620.0: (640.0ns) 0x10018 main + 20              divu (l3r)   r3, r3, r5  
+      4260.0: ( 20.0ns) 0x1001c main + 24              sub (2rus)   r0, r0, 0x1 
+      4280.0: ( 20.0ns) 0x1001e main + 26              bt (ru6)     r0, -0x8    
+      4300.0: ( 20.0ns) 0x10020 main + 28              retsp (u6)   0x0         
 

@@ -125,13 +125,13 @@ public class IssueNode extends Node {
 
     private String getMnemonicOperandString() {
         String str = "";
-        boolean multiIssue = m_insts.size() > 1;
+        boolean multiIssue = m_insts.size() > 1;    // RL-todo Add a m_multiIssue flag to the class.
         boolean addSeperator = false;
         if (multiIssue) str += "{ ";
         for (Instruction instruction : m_insts) {
             if (addSeperator) str += " ; ";
             addSeperator = true;
-            str += String.format("%-12s %s",
+            str += String.format("%-12s %-12s",
                     instruction.getMnemonic(),
                     instruction.getOperandString());
         }

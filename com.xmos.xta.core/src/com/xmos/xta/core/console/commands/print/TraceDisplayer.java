@@ -135,7 +135,7 @@ public class TraceDisplayer {
 
     private void displayIssue(IssueNode issueNode) throws EscapedDetctedException,
     IllegalException, UnresolvedDetctedException, RecursionDetctedException {
-        m_console.display(String.format("%s %.1f: (%.1fns) %s%s%s%s%s\n",
+        m_console.display(String.format("%s %10.1f: (%5.1fns) %s%s%s%s%s\n",
                 issueNode.getAttributes(false).getDisplayAsUnknown() ? "*" : " ",
                 m_currentTime,
                 issueNode.getAttributes(false).getFixedTime().getNs(),
