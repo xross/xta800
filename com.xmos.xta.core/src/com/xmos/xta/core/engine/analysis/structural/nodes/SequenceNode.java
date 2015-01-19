@@ -66,18 +66,15 @@ public class SequenceNode extends Node {
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
         TraverseStatus status = nodeTraverser.foundSequenceNode(this, clientState);
-        if (status == TraverseStatus.CONTINUE) {
+        if (status == TraverseStatus.CONTINUE)
             for (Node node : m_nodes) {
                 status = node.traverse(nodeTraverser, clientState);
-                if (status != TraverseStatus.CONTINUE) {
-                    break;
-                }
+                if (status != TraverseStatus.CONTINUE)
+                    break;  // ABORT or NO_CHILDREN
             }
-        }
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
+        if (status != TraverseStatus.ABORT)
+            status = nodeTraverser.foundSequenceNodeExit(this, clientState);
+        return (status == TraverseStatus.ABORT)? TraverseStatus.ABORT : TraverseStatus.CONTINUE;
     }
 
     public TimeDistributionBuckets getTimeSpread() {

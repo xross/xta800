@@ -88,10 +88,9 @@ public class IssueNode extends Node {
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
         TraverseStatus status = nodeTraverser.foundIssueNode(this, clientState);
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
+        if (status != TraverseStatus.ABORT)
+            status = nodeTraverser.foundIssueNodeExit(this, clientState);
+        return (status == TraverseStatus.ABORT)? TraverseStatus.ABORT : TraverseStatus.CONTINUE;
     }
 
     public boolean isIssueNode() {

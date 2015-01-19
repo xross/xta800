@@ -97,19 +97,16 @@ public class LoopNode extends Node {
         TraverseStatus status = nodeTraverser.foundLoopNode(this, clientState);
         if (status == TraverseStatus.CONTINUE) {
             status = m_loopHeader.traverse( nodeTraverser, clientState);
-            if (status == TraverseStatus.CONTINUE) {
-                for (Node node : getAliveLoops()) {
-                    status = node.traverse( nodeTraverser, clientState);
-                    if (status != TraverseStatus.CONTINUE) {
-                        break;
-                    }
+            if (status == TraverseStatus.CONTINUE)
+                for (Node node :  getAliveLoops()) {
+                    status = node.traverse(nodeTraverser, clientState);
+                    if (status != TraverseStatus.CONTINUE)
+                        break;  // ABORT or NO_CHILDREN
                 }
-            }
         }
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
+        if (status != TraverseStatus.ABORT)
+            status = nodeTraverser.foundLoopNodeExit(this, clientState);
+        return (status == TraverseStatus.ABORT)? TraverseStatus.ABORT : TraverseStatus.CONTINUE;
     }
 
     public boolean isLoopNode() {

@@ -57,13 +57,11 @@ public class InfiniteSelfLoopNode extends Node{
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
         TraverseStatus status = nodeTraverser.foundInfiniteSelfLoopNode(this, clientState);
-        if (status == TraverseStatus.CONTINUE) {
+        if (status == TraverseStatus.CONTINUE)
             status = m_loop.traverse(nodeTraverser, clientState);
-        }
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
+        if (status != TraverseStatus.ABORT)
+            status = nodeTraverser.foundInfiniteSelfLoopNodeExit(this, clientState);
+        return (status == TraverseStatus.ABORT)? TraverseStatus.ABORT : TraverseStatus.CONTINUE;
     }
 
     public boolean isInfiniteSelfLoopNode() {

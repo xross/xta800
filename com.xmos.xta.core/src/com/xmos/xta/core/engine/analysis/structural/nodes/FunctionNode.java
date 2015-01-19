@@ -121,21 +121,16 @@ public class FunctionNode extends Node {
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
         TraverseStatus status = nodeTraverser.foundFunctionNode(this, clientState);
-        if (status == TraverseStatus.CONTINUE) {
-            if (m_functionSequence != null) {
-                for (Node node : m_functionSequence) {
-                    status = node.traverse(nodeTraverser, clientState);
-                    if (status != TraverseStatus.CONTINUE) {
-                        break;
-                    }
-                }
+        if (status == TraverseStatus.CONTINUE &&
+                m_functionSequence != null)
+            for (Node node : m_functionSequence) {
+                status = node.traverse(nodeTraverser, clientState);
+                if (status != TraverseStatus.CONTINUE)
+                    break;  // ABORT or NO_CHILDREN
             }
-        }
-
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
+        if (status != TraverseStatus.ABORT)
+            status = nodeTraverser.foundFunctionNodeExit(this, clientState);
+        return (status == TraverseStatus.ABORT)? TraverseStatus.ABORT : TraverseStatus.CONTINUE;
     }
 
     public boolean isFunctionNode() {

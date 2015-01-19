@@ -91,18 +91,15 @@ public class ConditionalNode extends Node {
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
         TraverseStatus status = nodeTraverser.foundConditionalNode(this, clientState);
-        if (status == TraverseStatus.CONTINUE) {
+        if (status == TraverseStatus.CONTINUE)
             for (Node node : getAliveOptions()) {
                 status = node.traverse(nodeTraverser, clientState);
-                if (status != TraverseStatus.CONTINUE) {
-                    break;
-                }
+                if (status != TraverseStatus.CONTINUE)
+                    break;  // ABORT or NO_CHILDREN
             }
-        }
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
+        if (status != TraverseStatus.ABORT)
+            status = nodeTraverser.foundConditionalNodeExit(this, clientState);
+        return (status == TraverseStatus.ABORT)? TraverseStatus.ABORT : TraverseStatus.CONTINUE;
     }
 
     public Node getOption(Case c, Node ignoreIterationsAboveCond) {
