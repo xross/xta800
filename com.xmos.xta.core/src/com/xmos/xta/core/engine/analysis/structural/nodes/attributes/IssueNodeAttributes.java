@@ -103,7 +103,7 @@ public class IssueNodeAttributes extends NodeAttributes {
         }
         int threadsRunning = (m_coreConfig != null)? m_coreConfig.m_numThreads : 1;
         double worstCaseHwCycles = hwCycles * threadsRunning;   // N.B. Should be 'cycles * ThreadsThatCouldHoldResource' (viz DivUnit busy).
-        double scheduleRate = Math.max(threadsRunning, (m_architecture == Architecture.REV2A)? 5 : 4);
+        double scheduleRate = Math.max(threadsRunning, (m_architecture == Architecture.XS2A)? 5 : 4);
         return (long) Math.ceil(worstCaseHwCycles / scheduleRate);   // number of 'thread Cycles'.
     }
 }
