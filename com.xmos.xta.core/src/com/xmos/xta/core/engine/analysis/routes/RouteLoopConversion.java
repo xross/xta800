@@ -168,7 +168,7 @@ public class RouteLoopConversion {
     private IssueNode getIssueNodeMatchingPc(Node node, final long pc) {
         final List<IssueNode> issueNodes = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundIssueNode(Node node) {
+            public TraverseStatus foundIssueNode(Node node, Object clientState) {
                 IssueNode issueNode = (IssueNode)node;
 
                 if (issueNode.getStartPc() == pc) {
@@ -177,7 +177,9 @@ public class RouteLoopConversion {
                 }
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null    // No clientState
+        );
         assert(issueNodes.size() == 1);
         return issueNodes.iterator().next();
     }
@@ -185,11 +187,13 @@ public class RouteLoopConversion {
     private IssueNode getFirstIssueNode(Node node) {
         final Collection<IssueNode> issueNode = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundIssueNode(Node node) {
+            public TraverseStatus foundIssueNode(Node node, Object clientState) {
                 issueNode.add((IssueNode)node);
                 return TraverseStatus.ABORT;
             }
-        });
+        },
+        null    // No clientState
+        );
         assert(issueNode.size() == 1);
         return issueNode.iterator().next();
     }

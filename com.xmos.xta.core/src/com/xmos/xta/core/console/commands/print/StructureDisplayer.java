@@ -25,11 +25,13 @@ public class StructureDisplayer {
         final StringBuffer sb = new StringBuffer();
         for (Node node : nodes) {
             node.traverse(new UntypedNodeTraverser() {
-                public TraverseStatus foundNode(Node node) {
+                public TraverseStatus foundNode(Node node, Object clientState) {
                     displayNodeInfo(node, sb);
                     return TraverseStatus.CONTINUE;
                 }
-            });
+            },
+            null    // No clientState
+            );
             sb.append("\n");
         }
         m_console.display(sb.toString());

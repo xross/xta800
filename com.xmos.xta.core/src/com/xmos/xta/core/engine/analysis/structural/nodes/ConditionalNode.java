@@ -89,11 +89,11 @@ public class ConditionalNode extends Node {
         return 0;
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundConditionalNode(this);
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundConditionalNode(this, clientState);
         if (status == TraverseStatus.CONTINUE) {
             for (Node node : getAliveOptions()) {
-                status = node.traverse(nodeTraverser);
+                status = node.traverse(nodeTraverser, clientState);
                 if (status != TraverseStatus.CONTINUE) {
                     break;
                 }

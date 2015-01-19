@@ -32,25 +32,25 @@ public class RouteUnknowns {
     public Collection<Unknown> getUnknowns(final State unknownState) {
         final Collection<Unknown> unknowns = new ArrayList<Unknown>();
         m_route.getNode().traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 addToList(node);
                 return TraverseStatus.CONTINUE;
             }
 
-            public TraverseStatus foundConditionalNode(Node node) {
+            public TraverseStatus foundConditionalNode(Node node, Object clientState) {
                 ConditionalNode conditionalNode = (ConditionalNode)node;
                 for (Node excludedNode : conditionalNode.getExcludedOptions()) {
                     addToList(excludedNode);
                 }
-                return foundNode(node);
+                return foundNode(node, null);
             }
 
-            public TraverseStatus foundLoopNode(Node node) {
+            public TraverseStatus foundLoopNode(Node node, Object clientState) {
                 LoopNode loopNode = (LoopNode)node;
                 for (Node excludedNode : loopNode.getExcludedLoops()) {
                     addToList(excludedNode);
                 }
-                return foundNode(node);
+                return foundNode(node, null);
             }
 
             private void addToList(Node node) {
@@ -60,7 +60,9 @@ public class RouteUnknowns {
                     }
                 }
             }
-        });
+        },
+        null  // No clientState
+        );
         return unknowns;
     }
 
@@ -357,11 +359,13 @@ public class RouteUnknowns {
 
     void invalidateCachedStats() {
         m_route.getNode().traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 node.getAttributes(true).invalidateCachedStats();
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null  // No clientState
+        );
     }
 
     // ===================================================================== //
@@ -374,21 +378,25 @@ public class RouteUnknowns {
     private void refreshDisplayedUnknowns(Node node) {
         // Clears the display unknown flags on all nodes..
         node.traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 node.getAttributes(true).setDisplayAsUnknown(false);
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null  // No clientState
+        );
 
         // On each of the unknown nodes, mark all of their parents to 'display unknown'.
         node.traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 if (node.getAttributes(false).hasUnknowns()) {
                     setDisplayAsUnknownOnParentNodes(node);
                 }
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null  // No clientState
+        );
     }
 
     private void setDisplayAsUnknownOnParentNodes(Node node) {
@@ -401,11 +409,13 @@ public class RouteUnknowns {
 
     private void clearPathIterations(Node node) {
         node.traverse( new DefaultNodeTraverser() {
-            public TraverseStatus foundConditionalNode(Node node) {
+            public TraverseStatus foundConditionalNode(Node node, Object clientState) {
                 node.getAttributes(true).resetPathIterations();
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null    // No clientState
+        );
     }
 
     private void checkReferencedNodes(Reference reference, Notifier notifier,

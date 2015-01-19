@@ -70,11 +70,11 @@ public class BlockNode extends Node {
         return getInstructions().getFirst().getPc();
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundBlockNode(this);
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundBlockNode(this, clientState);
         if (status == TraverseStatus.CONTINUE) {
             for (Node issueNode : m_issueNodes) {
-                status = issueNode.traverse(nodeTraverser);
+                status = issueNode.traverse(nodeTraverser, clientState);
                 if (status != TraverseStatus.CONTINUE) {
                     break;
                 }

@@ -80,14 +80,16 @@ public class Route {
         } else {
             m_searchNode = null;
             m_baseOfRouteNode.traverse(new UntypedNodeTraverser() {
-                public TraverseStatus foundNode(Node node) {
+                public TraverseStatus foundNode(Node node, Object clientState) {
                     if (node.getId() == nodeId) {
                         m_searchNode = node;
                         return TraverseStatus.NO_CHILDREN;
                     }
                     return TraverseStatus.CONTINUE;
                 }
-            });
+            },
+            null  // No clientState
+            );
             return m_searchNode;
         }
     }
@@ -144,11 +146,13 @@ public class Route {
 
     private void setRouteSpecificCoreConfigs(final CoreConfig coreConfig, final Architecture architecture) {
         m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
-            public TraverseStatus foundIssueNode(Node node) {
+            public TraverseStatus foundIssueNode(Node node, Object clientState) {
                 ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, architecture);
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null    // No clientState
+        );
     }
 }
 

@@ -742,7 +742,7 @@ public class RouteConstructor {
         final List<String> nodeList = new LinkedList<String>();
 
         node.traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 if(node.isIssueNode()){
                     nodeList.add(node.getTypeName()+node.getStartPc());
                 } else {
@@ -750,7 +750,9 @@ public class RouteConstructor {
                 }
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null  // No clientState
+        );
         return nodeList;
     }
 
@@ -929,7 +931,7 @@ public class RouteConstructor {
             Node node = route.getNode();
             node.traverse( new DefaultNodeTraverser() {
                 // Sets all the pausing instructions to unknown.
-                public TraverseStatus foundIssueNode(Node node) {
+                public TraverseStatus foundIssueNode(Node node, Object clientState) {
                     if (((IssueNode)node).canPause()) {
                         NodeAttributes nodeAttributes = node.getAttributes(true);
                         nodeAttributes.addUnknown(route, UnknownFactory.Type.INSTRUCTION_TIME);
@@ -937,18 +939,20 @@ public class RouteConstructor {
                     return TraverseStatus.CONTINUE;
                 }
                 // Sets all the loop iterations to unknown.
-                public TraverseStatus foundLoopNode(Node node) {
+                public TraverseStatus foundLoopNode(Node node, Object clientState) {
                     NodeAttributes nodeAttributes = node.getAttributes(true);
                     nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
                     return TraverseStatus.CONTINUE;
                 }
                 // Sets all the self loop iterations to unknown.
-                public TraverseStatus foundSelfLoopNode(Node node) {
+                public TraverseStatus foundSelfLoopNode(Node node, Object clientState) {
                     NodeAttributes nodeAttributes = node.getAttributes(true);
                     nodeAttributes.addUnknown(route, UnknownFactory.Type.LOOP_ITERATIONS);
                     return TraverseStatus.CONTINUE;
                 }
-            });
+            },
+            null    // No clientState
+            );
             refreshDisplayedUnknowns(node);
         }
     }
@@ -988,7 +992,7 @@ public class RouteConstructor {
 
                 Node node = route.getNode();
                 node.traverse(new DefaultNodeTraverser() {
-                    public TraverseStatus foundIssueNode(Node node) {
+                    public TraverseStatus foundIssueNode(Node node, Object clientState) {
                         for (Instruction instruction : ((IssueNode)node).getInstructions()) {
                        
                             // Checks for threading instructions...
@@ -1018,7 +1022,9 @@ public class RouteConstructor {
                         }
                         return TraverseStatus.CONTINUE;
                     }
-                });
+                },
+                null    // No clientState
+                );
             }
         }
     }
@@ -1114,21 +1120,25 @@ public class RouteConstructor {
     private void refreshDisplayedUnknowns(Node node) {
         // Clears the display unknown flags on all nodes..
         node.traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 node.getAttributes(true).setDisplayAsUnknown(false);
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null  // No clientState
+        );
 
         // On each of the unknown nodes, mark all of their parents to 'display unknown'.
         node.traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 if (node.getAttributes(false).hasUnknowns()) {
                     setDisplayAsUnknownOnParentNodes(node);
                 }
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null  // No clientState
+        );
 
     }
 

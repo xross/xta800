@@ -72,12 +72,12 @@ public class InfiniteLoopNode extends Node {
         return m_loopHeader.getStartPc();
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this);
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this, clientState);
         if (status == TraverseStatus.CONTINUE) {
-            m_loopHeader.traverse(nodeTraverser);
+            m_loopHeader.traverse(nodeTraverser, clientState);
             for (Node node : m_loops) {
-                status = node.traverse(nodeTraverser);
+                status = node.traverse(nodeTraverser, clientState);
                 if (status != TraverseStatus.CONTINUE) {
                     break;
                 }

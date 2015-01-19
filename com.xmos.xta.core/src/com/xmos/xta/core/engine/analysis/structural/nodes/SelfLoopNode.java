@@ -54,11 +54,11 @@ public class SelfLoopNode extends Node{
         return m_loop.getStartPc();
     }
 
-    public TraverseStatus traverse( NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundSelfLoopNode(this);
+    public TraverseStatus traverse( NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundSelfLoopNode(this, clientState);
 
         if (status == TraverseStatus.CONTINUE) {
-            status = m_loop.traverse(nodeTraverser);
+            status = m_loop.traverse(nodeTraverser, clientState);
         }
 
         if (status == TraverseStatus.ABORT) {

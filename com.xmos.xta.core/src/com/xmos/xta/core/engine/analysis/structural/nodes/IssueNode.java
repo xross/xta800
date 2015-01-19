@@ -86,8 +86,8 @@ public class IssueNode extends Node {
         return false;
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundIssueNode(this);
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundIssueNode(this, clientState);
         if (status == TraverseStatus.ABORT) {
             return status;
         }

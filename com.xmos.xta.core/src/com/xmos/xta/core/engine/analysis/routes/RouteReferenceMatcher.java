@@ -25,13 +25,15 @@ public class RouteReferenceMatcher extends ReferenceMatcher {
         //find all nodes in the route that match the ref base
 
         baseOfRouteNode.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundIssueNode(Node node) {
+            public TraverseStatus foundIssueNode(Node node, Object clientState) {
                 if (((IssueNode)node).containsPc(ref.getPcs()) ) {
                     matchingNodes.add(node);
                 }
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null    // No clientState
+        );
 
 
         //refine the matchingNodes down to the ones that match the backtrail

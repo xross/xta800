@@ -185,7 +185,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
     private IssueNode getIssueNode(Node node, final long pc) {
         final List<IssueNode> issueNodes = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
-            public TraverseStatus foundIssueNode(Node node) {
+            public TraverseStatus foundIssueNode(Node node, Object clientState) {
                 IssueNode issueNode = (IssueNode)node;
 
                 if (issueNode.getStartPc() == pc) {
@@ -194,7 +194,9 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
                 }
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null // No clientState
+        );
         assert(issueNodes.size() == 1);
         return issueNodes.iterator().next();
     }

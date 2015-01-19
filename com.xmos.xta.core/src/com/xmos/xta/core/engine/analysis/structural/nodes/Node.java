@@ -28,7 +28,7 @@ public abstract class Node implements Comparable<Node> {
     public abstract String getTypeName();
     public abstract NodeAttributes getAttributes(boolean modifyer);
     public abstract Node copyRouteStructure();
-    public abstract TraverseStatus traverse(NodeTraverser nodeTraverser);
+    public abstract TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState);
     public abstract LinkedList<Instruction> getInstructions();
     public abstract TimeDistributionBuckets getTimeSpread();
 

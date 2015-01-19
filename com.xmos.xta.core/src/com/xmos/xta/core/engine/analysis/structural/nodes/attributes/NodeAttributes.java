@@ -372,11 +372,13 @@ public class NodeAttributes {
 
     void clearUnknowns(Node node) {
         node.traverse(new UntypedNodeTraverser() {
-            public TraverseStatus foundNode(Node node) {
+            public TraverseStatus foundNode(Node node, Object clientState) {
                 node.getAttributes(false).clearUnknowns();
                 return TraverseStatus.CONTINUE;
             }
-        });
+        },
+        null  // No clientState
+        );
     }
 
     public TimeUnit getFixedTime() {

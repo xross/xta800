@@ -279,12 +279,12 @@ public class ScripterReference {
 
         if (enclosingNode != null) {
             enclosingNode.traverse(new DefaultNodeTraverser() {
-                public TraverseStatus foundIssueNode(Node node) {
+                public TraverseStatus foundIssueNode(Node node, Object clientState) {
                     pcs.add(node.getStartPc());
                     return TraverseStatus.CONTINUE;
                 }
 
-                public TraverseStatus foundInfiniteLoopNode(Node node) {
+                public TraverseStatus foundInfiniteLoopNode(Node node, Object clientState) {
                     if (isLoop) {
                         // Prevent loops from finding references within inner loops
                         return TraverseStatus.NO_CHILDREN;
@@ -292,7 +292,7 @@ public class ScripterReference {
                     return TraverseStatus.CONTINUE;
                 }
 
-                public TraverseStatus foundSelfLoopNode(Node node) {
+                public TraverseStatus foundSelfLoopNode(Node node, Object clientState) {
                     if (isLoop) {
                         // Prevent loops from finding references within inner loops
                         return TraverseStatus.NO_CHILDREN;
@@ -300,14 +300,16 @@ public class ScripterReference {
                     return TraverseStatus.CONTINUE;
                 }
 
-                public TraverseStatus foundInfiniteSelfLoopNode(Node node) {
+                public TraverseStatus foundInfiniteSelfLoopNode(Node node, Object clientState) {
                     if (isLoop) {
                         // Prevent loops from finding references within inner loops
                         return TraverseStatus.NO_CHILDREN;
                     }
                     return TraverseStatus.CONTINUE;
                 }
-            });
+            },
+            null    // No clientState
+            );
         }
 
         return pcs;

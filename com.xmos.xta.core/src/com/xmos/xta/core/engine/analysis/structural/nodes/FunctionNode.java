@@ -119,12 +119,12 @@ public class FunctionNode extends Node {
         return 0;
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundFunctionNode(this);
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundFunctionNode(this, clientState);
         if (status == TraverseStatus.CONTINUE) {
             if (m_functionSequence != null) {
                 for (Node node : m_functionSequence) {
-                    status = node.traverse( nodeTraverser);
+                    status = node.traverse(nodeTraverser, clientState);
                     if (status != TraverseStatus.CONTINUE) {
                         break;
                     }

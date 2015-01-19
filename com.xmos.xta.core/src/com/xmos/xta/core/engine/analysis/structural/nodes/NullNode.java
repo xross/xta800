@@ -54,7 +54,7 @@ public class NullNode extends Node {
     public void buildListUp(List<Node> nodeList,Node start) {
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
         return TraverseStatus.CONTINUE;
     }
 }

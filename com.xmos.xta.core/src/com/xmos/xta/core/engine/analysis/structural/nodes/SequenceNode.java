@@ -64,11 +64,11 @@ public class SequenceNode extends Node {
         return m_nodes.get(0).getStartPc();
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundSequenceNode(this);
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundSequenceNode(this, clientState);
         if (status == TraverseStatus.CONTINUE) {
             for (Node node : m_nodes) {
-                status = node.traverse(nodeTraverser);
+                status = node.traverse(nodeTraverser, clientState);
                 if (status != TraverseStatus.CONTINUE) {
                     break;
                 }

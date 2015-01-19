@@ -93,13 +93,13 @@ public class LoopNode extends Node {
         return m_loopHeader.getStartPc();
     }
 
-    public TraverseStatus traverse(NodeTraverser nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundLoopNode(this);
+    public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
+        TraverseStatus status = nodeTraverser.foundLoopNode(this, clientState);
         if (status == TraverseStatus.CONTINUE) {
-            status = m_loopHeader.traverse( nodeTraverser);
+            status = m_loopHeader.traverse( nodeTraverser, clientState);
             if (status == TraverseStatus.CONTINUE) {
                 for (Node node : getAliveLoops()) {
-                    status = node.traverse( nodeTraverser);
+                    status = node.traverse( nodeTraverser, clientState);
                     if (status != TraverseStatus.CONTINUE) {
                         break;
                     }

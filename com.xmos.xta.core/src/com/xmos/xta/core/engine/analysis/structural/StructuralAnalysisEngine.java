@@ -270,7 +270,7 @@ public class StructuralAnalysisEngine {
         while(!done){
             done =true;
             fn.traverse(new DefaultNodeTraverser() {
-                public TraverseStatus foundSequenceNode(Node node) {
+                public TraverseStatus foundSequenceNode(Node node, Object clientState) {
 
                     for(Node child : node.iChildren()){
                         if(child instanceof SequenceNode){
@@ -287,7 +287,7 @@ public class StructuralAnalysisEngine {
                     return TraverseStatus.CONTINUE;
                 }
 
-                public TraverseStatus foundFunctionNode(Node node) {
+                public TraverseStatus foundFunctionNode(Node node, Object clientState) {
                     for(Node child : node.iChildren()){
                         if(child instanceof SequenceNode){
                             SequenceNode sn = (SequenceNode)child;
@@ -302,7 +302,9 @@ public class StructuralAnalysisEngine {
                     }
                     return TraverseStatus.CONTINUE;
                 }
-            });
+            },
+            null    // No clientState
+            );
             setParent(fn);
         }
         setParent(fn);
