@@ -2,12 +2,10 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
@@ -121,27 +119,6 @@ public class FunctionNode extends Node {
         return 0;
     }
 
-    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundFunctionNode(this, ancestors);
-        if (status == TraverseStatus.CONTINUE) {
-            if (m_functionSequence != null) {
-                ancestors.add(this);
-                for (Node node : m_functionSequence) {
-                    status = node.traverse(ancestors, nodeTraverser);
-                    if (status != TraverseStatus.CONTINUE) {
-                        break;
-                    }
-                }
-                ancestors.remove(this);
-            }
-        }
-
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
-    }
-
     public TraverseStatus traverse(NodeTraverser nodeTraverser) {
         TraverseStatus status = nodeTraverser.foundFunctionNode(this);
         if (status == TraverseStatus.CONTINUE) {
@@ -160,6 +137,7 @@ public class FunctionNode extends Node {
         }
         return TraverseStatus.CONTINUE;
     }
+
     public boolean isFunctionNode() {
         return true;
     }

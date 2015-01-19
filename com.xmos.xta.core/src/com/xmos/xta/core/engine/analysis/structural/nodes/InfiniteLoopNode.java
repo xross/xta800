@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.InfiniteLoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class InfiniteLoopNode extends Node {
@@ -72,26 +70,6 @@ public class InfiniteLoopNode extends Node {
 
     public long getStartPc() {
         return m_loopHeader.getStartPc();
-    }
-
-    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundInfiniteLoopNode(this, ancestors);
-        if (status == TraverseStatus.CONTINUE) {
-            ancestors.push(this);
-            m_loopHeader.traverse(ancestors, nodeTraverser);
-            for (Node node : m_loops) {
-                status = node.traverse(ancestors, nodeTraverser);
-                if (status != TraverseStatus.CONTINUE) {
-                    break;
-                }
-            }
-            ancestors.pop();
-        }
-
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
     }
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser) {

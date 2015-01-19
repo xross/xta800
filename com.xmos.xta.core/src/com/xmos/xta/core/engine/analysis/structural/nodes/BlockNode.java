@@ -2,13 +2,11 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.BlockNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
@@ -70,25 +68,6 @@ public class BlockNode extends Node {
 
     public long getStartPc() {
         return getInstructions().getFirst().getPc();
-    }
-
-    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundBlockNode(this, ancestors);
-        if (status == TraverseStatus.CONTINUE) {
-            ancestors.push(this);
-            for (Node issueNode : m_issueNodes) {
-                status = issueNode.traverse(ancestors, nodeTraverser);
-                if (status != TraverseStatus.CONTINUE) {
-                    break;
-                }
-            }
-            ancestors.pop();
-        }
-
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
     }
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser) {

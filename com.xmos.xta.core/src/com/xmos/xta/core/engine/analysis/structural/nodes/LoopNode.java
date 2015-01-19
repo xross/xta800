@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.utils.IteratableSet;
@@ -13,7 +12,6 @@ import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.LoopNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class LoopNode extends Node {
@@ -93,27 +91,6 @@ public class LoopNode extends Node {
 
     public long getStartPc() {
         return m_loopHeader.getStartPc();
-    }
-
-    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundLoopNode(this, ancestors);
-        if (status == TraverseStatus.CONTINUE) {
-            ancestors.push(this);
-            status = m_loopHeader.traverse(ancestors, nodeTraverser);
-            if (status == TraverseStatus.CONTINUE) {
-                for (Node node : getAliveLoops()) {
-                    status = node.traverse(ancestors, nodeTraverser);
-                    if (status != TraverseStatus.CONTINUE) {
-                        break;
-                    }
-                }
-            }
-            ancestors.pop();
-        }
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
     }
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser) {

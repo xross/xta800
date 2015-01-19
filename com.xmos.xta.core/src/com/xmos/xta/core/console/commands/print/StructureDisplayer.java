@@ -1,7 +1,7 @@
 package com.xmos.xta.core.console.commands.print;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Stack;
 
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.engine.Config;
@@ -9,7 +9,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverserWithAncestors;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 
 public class StructureDisplayer {
 
@@ -24,9 +24,9 @@ public class StructureDisplayer {
     public void display(Collection<Node> nodes) {
         final StringBuffer sb = new StringBuffer();
         for (Node node : nodes) {
-            node.traverse(new Stack<Node>(), new UntypedNodeTraverserWithAncestors() {
-                public TraverseStatus foundNode(Node node, Stack<Node> ancestors) {
-                    displayNodeInfo(node, ancestors, sb);
+            node.traverse(new UntypedNodeTraverser() {
+                public TraverseStatus foundNode(Node node) {
+                    displayNodeInfo(node, sb);
                     return TraverseStatus.CONTINUE;
                 }
             });
@@ -35,7 +35,7 @@ public class StructureDisplayer {
         m_console.display(sb.toString());
     }
 
-    private void displayNodeInfo(Node node, Stack<Node> ancestors, StringBuffer sb) {
+    private void displayNodeInfo(Node node, StringBuffer sb) {
         if (node.isIssueNode() &&
             (m_verbosity < Config.VERBOSITY_DISPLAY_INSTRUCTION_NODES))
             return;
@@ -44,6 +44,12 @@ public class StructureDisplayer {
             (m_verbosity < Config.VERBOSITY_DISPLAY_NULL_NODE))
             return;
 
+        Collection<Node> ancestors = new ArrayList<Node>();
+        Node parentNode = node.getParent();
+        while (parentNode != null) {
+            ancestors.add(parentNode);
+            parentNode = parentNode.getParent();
+        }
         printIndent(ancestors.size(), sb);
         printModifiers(node, ancestors.size(), sb);
         displayNodeName(node, sb);
@@ -124,7 +130,7 @@ public class StructureDisplayer {
         }
     }
 
-    private void displayAncestors(Node node, Stack<Node> ancestors, StringBuffer sb) {
+    private void displayAncestors(Node node, Collection<Node> ancestors, StringBuffer sb) {
         if (m_verbosity >= Config.VERBOSITY_DISPLAY_ANCESTORS) {
             sb.append(" [ANCESTORS: ");
             for (Node ancestor : ancestors) {

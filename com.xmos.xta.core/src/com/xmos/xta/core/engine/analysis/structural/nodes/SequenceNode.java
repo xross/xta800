@@ -2,12 +2,10 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class SequenceNode extends Node {
@@ -64,26 +62,6 @@ public class SequenceNode extends Node {
 
     public long getStartPc() {
         return m_nodes.get(0).getStartPc();
-    }
-
-    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundSequenceNode(this, ancestors);
-
-        if (status == TraverseStatus.CONTINUE) {
-            ancestors.push(this);
-            for (Node node : m_nodes) {
-                status = node.traverse(ancestors, nodeTraverser);
-                if (status != TraverseStatus.CONTINUE) {
-                    break;
-                }
-            }
-            ancestors.pop();
-        }
-
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
     }
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser) {

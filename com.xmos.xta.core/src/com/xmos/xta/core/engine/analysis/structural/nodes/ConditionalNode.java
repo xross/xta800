@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.utils.IteratableSet;
@@ -14,7 +13,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Conditional
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.Status;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class ConditionalNode extends Node {
@@ -89,24 +87,6 @@ public class ConditionalNode extends Node {
     public long getStartPc() {
         assert(false);
         return 0;
-    }
-
-    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        TraverseStatus status = nodeTraverser.foundConditionalNode(this, ancestors);
-        if (status == TraverseStatus.CONTINUE) {
-            ancestors.push(this);
-            for (Node node : getAliveOptions()) {
-                status = node.traverse(ancestors, nodeTraverser);
-                if (status != TraverseStatus.CONTINUE) {
-                    break;
-                }
-            }
-            ancestors.pop();
-        }
-        if (status == TraverseStatus.ABORT) {
-            return status;
-        }
-        return TraverseStatus.CONTINUE;
     }
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser) {

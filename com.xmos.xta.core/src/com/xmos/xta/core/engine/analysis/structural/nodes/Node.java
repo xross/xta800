@@ -3,14 +3,12 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public abstract class Node implements Comparable<Node> {
@@ -30,7 +28,6 @@ public abstract class Node implements Comparable<Node> {
     public abstract String getTypeName();
     public abstract NodeAttributes getAttributes(boolean modifyer);
     public abstract Node copyRouteStructure();
-    public abstract TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser);
     public abstract TraverseStatus traverse(NodeTraverser nodeTraverser);
     public abstract LinkedList<Instruction> getInstructions();
     public abstract TimeDistributionBuckets getTimeSpread();

@@ -2,12 +2,10 @@ package com.xmos.xta.core.engine.analysis.structural.nodes;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverserWithAncestors;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class NullNode extends Node {
@@ -34,10 +32,6 @@ public class NullNode extends Node {
 
     public String getTypeName() {
         return "null";
-    }
-
-    public TraverseStatus traverse(Stack<Node> ancestors, NodeTraverserWithAncestors nodeTraverser) {
-        return TraverseStatus.CONTINUE;
     }
 
     public boolean isNullNode() {
