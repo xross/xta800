@@ -94,15 +94,16 @@ public class IssueNodeAttributes extends NodeAttributes {
     }
 
     private long calculateCycles() {
-        long cycles = 0;
+        long hwCycles = 0;
         for (Instruction instruction : ((IssueNode)getNode()).getInstructions()) {
-            long instCycles = instruction.getNumCycles();
-            assert (cycles <= 1 || instCycles <= 1); // We only expect one multi-cycle per issue.
-            if (cycles < instCycles)
-                cycles = instCycles;
+            long cycles = instruction.getNumCycles();
+            assert (hwCycles <= 1 || cycles <= 1); // We only expect one multi-cycle per issue.
+            if (hwCycles < cycles)
+                hwCycles = cycles;
         }
         int threadsRunning = (m_coreConfig != null)? m_coreConfig.m_numThreads : 1;
-        double threadInterlacing = (m_architecture == Architecture.REV2A)? 5 : 4;
-        return (long) Math.ceil((cycles * threadsRunning) / Math.max(threadsRunning, threadInterlacing));
+        double worstCaseHwCycles = hwCycles * threadsRunning;   // N.B. Should be 'cycles * ThreadsThatCouldHoldResource' (viz DivUnit busy).
+        double scheduleRate = Math.max(threadsRunning, (m_architecture == Architecture.REV2A)? 5 : 4);
+        return (long) Math.ceil(worstCaseHwCycles / scheduleRate);   // number of 'thread Cycles'.
     }
 }
