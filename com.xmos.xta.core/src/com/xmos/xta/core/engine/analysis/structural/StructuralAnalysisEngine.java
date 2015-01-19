@@ -69,20 +69,10 @@ public class StructuralAnalysisEngine {
         Node structuralNode = buildStructure(workingSet, newStartNode, "Converting CFG to structure");
         assert(workingSet.size() == 1);
         normaliseGraph(structuralNode);
-
-        InstructionIssueAnayser(structuralNode);
-        FnopAdder(structuralNode);
-
         return structuralNode;
     }
 
-    private void InstructionIssueAnayser(Node structuralNode) {
-    }
-
-    private void FnopAdder(Node structuralNode) {
-    }
-
-    private CfgNode basicBlock(Set<CfgNode> workingSet, CfgNode originalStartNode, String string) {
+      private CfgNode basicBlock(Set<CfgNode> workingSet, CfgNode originalStartNode, String string) {
         dumpTree("before_basicBlock_"+ string, workingSet, false);
 
         Set<CfgNode> toDo = new IteratableSet<CfgNode>();
