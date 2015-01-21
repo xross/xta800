@@ -29,11 +29,13 @@ import com.xmos.xta.core.engine.analysis.routes.RouteContainer.RouteMode;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.CfgContainerNode;
 import com.xmos.xta.core.engine.analysis.structural.StructuralAnalysisEngine;
+import com.xmos.xta.core.engine.analysis.structural.nodes.ConditionalNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.FunctionNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
+import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
@@ -118,6 +120,8 @@ public class RouteConstructor {
             assert(false);
         }
 
+        InstructionIssueAnayser();
+        FnopAdder();
         setUnknowns();
         setSrcLoopCounts();
         checkSupportedInstructions(src);
@@ -921,6 +925,39 @@ public class RouteConstructor {
             }
         }
         System.out.println("}");
+    }
+
+    private void InstructionIssueAnayser() {
+        m_engine.provideFeedback("We only handle single issue routes - skip InstructionIssueAnayser.");
+    }
+
+    private void FnopAdder() throws AbortedException {
+        m_engine.getAbort();
+        m_engine.provideFeedback("Adding fnops to routes...");
+
+        for (final Route route : m_routes) {
+            Node node = route.getNode();
+            InstructionBuffer instructionBuffer = new InstructionBuffer(node.getStartPc(), 0, m_engine.getXeLoader().getArchitecture());
+            node.traverse( new UntypedNodeTraverser() {
+                public TraverseStatus foundNode(Node node, Object clientState) {
+                    ((InstructionBuffer)clientState).startNode(node);
+                    if (node.isCondNode())
+                        ((InstructionBuffer)clientState).createForks(((ConditionalNode)node).iChildren());
+                    else if (node.isIssueNode())
+                        ((InstructionBuffer)clientState).handleIssueNode(node);
+                    return TraverseStatus.CONTINUE;
+                }
+                public TraverseStatus foundNodeExit(Node node, Object clientState) {
+                    if (node.isCondNode())
+                        ((InstructionBuffer)clientState).joinForks(((ConditionalNode)node).iChildren());
+                    ((InstructionBuffer)clientState).endNode(node);
+                    return TraverseStatus.CONTINUE;
+                }
+            },
+            instructionBuffer    // clientState
+            );
+            refreshDisplayedUnknowns(node);
+        }
     }
 
     private void setUnknowns() throws AbortedException {

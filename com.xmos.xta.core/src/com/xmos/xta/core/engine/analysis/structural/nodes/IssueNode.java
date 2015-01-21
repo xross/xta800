@@ -34,6 +34,34 @@ public class IssueNode extends Node {
         m_ownsOwnAttrib = false;
     }
 
+    public int getNumBytes() {
+        int numBytes = 0;
+        for (Instruction instruction : m_insts)
+            numBytes += instruction.getNumBytes();
+        return numBytes;
+    }
+
+    public boolean hasLoadStore() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isLoadStore()) return true;
+        return false;
+    }
+
+    public boolean isBranch() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isBranch()) return true;
+        return false;
+    }
+
+    public long getBranchPc() {
+        // We assume there is only one branch instruction per IssueNode!
+        for (Instruction instruction : m_insts)
+            if (instruction.isBranch())
+                return instruction.getBranchPcRelativeTargetPc();
+        assert(false); // isBranch() == false.
+        return 0;
+    }
+
 // First need to refactor FnopAdder.update().
 // Need to remove isFNop from NullInstruction and set fnop later here instead!
 //    public void setIsFnop(boolean isFnop) {
