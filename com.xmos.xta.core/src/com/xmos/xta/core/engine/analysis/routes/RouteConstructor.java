@@ -937,7 +937,9 @@ public class RouteConstructor {
 
         for (final Route route : m_routes) {
             Node node = route.getNode();
-            InstructionBuffer instructionBuffer = new InstructionBuffer(node.getStartPc(), 0, m_engine.getXeLoader().getArchitecture());
+            // Workout IBuff by looking back in the cfg & running from cfg-block-start to node pc.
+            int iBuffStartEntries = 1;
+            InstructionBuffer instructionBuffer = new InstructionBuffer( m_engine.getXeLoader().getArchitecture(), node.getStartPc(), iBuffStartEntries);
             node.traverse( new UntypedNodeTraverser() {
                 public TraverseStatus foundNode(Node node, Object clientState) {
                     ((InstructionBuffer)clientState).startNode(node);
