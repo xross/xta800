@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
+import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -16,8 +19,9 @@ public class InstructionBuffer {
     private Map<Integer, IBuff> m_ibStash = null;
     private IBuff m_ib = null;
 
-    public InstructionBuffer(Architecture arch, long pc, int startEntries) {
-        m_ib = new IBuff(arch, pc, startEntries);
+    public InstructionBuffer(Architecture arch, long startPc, List<CfgInstructionNode> cfgs) {
+        if(traceTree) System.out.printf("\nInstructionBuffer\n=================\n");
+        m_ib = new IBuff(arch, startPc, cfgs);
         m_ibStash = new TreeMap<Integer, IBuff>();
     }
 
@@ -96,7 +100,7 @@ public class InstructionBuffer {
             }
         }
 
-        if(traceInstructions) System.out.printf("%d:%d  ", m_ib.offset, m_ib.bytes);
+        if(traceInstructions) System.out.printf("%d:%d (%d) ", m_ib.offset, m_ib.bytes, issueNode.getNumBytes());
         if(traceInstructions) System.out.print(issueNode);
         if(traceInstructions) System.out.printf("      %s\n", issueNode.hasLoadStore()? "load/store" : "ifetch");
     }
@@ -117,9 +121,9 @@ public class InstructionBuffer {
         private static final int IBUFFER_NUM_ENTRIES = 2;
         private static final int XS1_BYTES_PER_ENTRY = 4;
         private static final int XS2_BYTES_PER_ENTRY = 16;
+
         private final int m_bytesPerEntry;
         private final Architecture m_arch;
-
         private int m_offset;           // Position of next instruction in tail-entry.
         private int m_bytes;            // Number of bytes in the IBuff (multiple of m_bytesPerEntry).
         // if (m_offset > m_bytes) the next instruction isn't in the IBuff.
@@ -133,12 +137,11 @@ public class InstructionBuffer {
         int offset = 0;
         int bytes = 0;
 
-        public IBuff(Architecture arch, long pc, int startEntries) {
+        public IBuff(Architecture arch, long startPc, List<CfgInstructionNode> cfgs) {
             m_arch = arch;
             m_bytesPerEntry = (arch == Architecture.XS2A)? XS2_BYTES_PER_ENTRY : XS1_BYTES_PER_ENTRY;
-            m_offset = (int) (pc % m_bytesPerEntry);
-            assert(startEntries <= IBUFFER_NUM_ENTRIES && startEntries >= 0);
-            m_bytes = startEntries * m_bytesPerEntry;
+            m_offset = (int) (startPc % m_bytesPerEntry);
+            m_bytes = IBuff.predictIBuffEntries(arch, startPc, cfgs, m_bytesPerEntry) * m_bytesPerEntry;
             m_pendingFetch = false;
             m_pendingBranch = false;
             m_nonBranchPc = 0;
@@ -158,7 +161,7 @@ public class InstructionBuffer {
         public int readInstruction(long pc, int lenBytes, boolean isBranch, boolean loadStoreAvailable) {
             // Run the IBuff fetch using carried forward state.
             if (m_pendingBranch) {
-                //System.out.print("<m_pendingBranch>\n");
+                if(traceIBuff) System.out.print("<m_pendingBranch>\n");
                 if (m_nonBranchPc == pc) {
                     // The branch was not taken
                     if(traceIBuff) System.out.print("<branch not taken>\n");
@@ -174,6 +177,10 @@ public class InstructionBuffer {
                     m_offset = (int) (pc % m_bytesPerEntry);
                     m_bytes = 0;
                 }
+            } else {
+                //assert(m_nonBranchPc == 0 || m_nonBranchPc == pc);
+                if(m_nonBranchPc != 0 && m_nonBranchPc != pc)
+                    if(traceIBuff) System.out.print("<ERROR:m_nonBranchPc != pc>\n");
             }
             cycleIBuff(m_pendingFetch, this);
 
@@ -184,7 +191,6 @@ public class InstructionBuffer {
                 cycleIBuff(true, this); // We assume the instruction will fit!
             }
 
-            // traceTree usage
             if(traceInstructions) {
                 offset = m_offset;
                 bytes = m_bytes;
@@ -240,6 +246,51 @@ public class InstructionBuffer {
                 ib.m_offset -= ib.m_bytesPerEntry;
                 ib.m_bytes -= ib.m_bytesPerEntry;
             }
+        }
+        static private int predictIBuffEntries(Architecture arch, long startPc, List<CfgInstructionNode> cfgs, int bytesPerEntry) {
+            final int INVALID = IBUFFER_NUM_ENTRIES + 1;
+            int minEntries = INVALID;
+            for(CfgInstructionNode cfg : cfgs) {
+                assert(startPc == cfg.getPc());
+                int entries = predictIBuffEntries(arch, cfg, bytesPerEntry);
+                if (minEntries > entries)
+                    minEntries = entries;
+            }
+            return (minEntries == INVALID)? 0 : minEntries;
+        }
+
+        static private int predictIBuffEntries(Architecture arch, CfgInstructionNode cfg, int bytesPerEntry) {
+            //assert(IBUFFER_NUM_ENTRIES == 2);  // Algorithm only works for 2 entry buffers.
+            long pc = cfg.getPc();
+            int offset = (int) (pc % bytesPerEntry);
+
+            int len = cfg.getInstruction().getNumBytes();
+            if(offset + len > bytesPerEntry)
+                return 2;  // An FNOP has preceded this instruction filling the 2nd entry too.
+
+            if(mimicOriginal)
+                return 1;
+
+            CfgNode prevNode = cfg.getPrevNonBranchingNode();  // A branch would have flushed the IBuff.
+            while (prevNode != null && offset > 0) {
+                // We have either 1 or 2 entries.
+                // Working backwards through this entry, to see if a previous instruction fetched the 2nd entry.
+                if (!(prevNode instanceof CfgInstructionNode)) break; // RL-TODO do we need to keep looking for the previous instruction?
+                Instruction instr = ((CfgInstructionNode)prevNode).getInstruction();
+                int lenInstr = instr.getNumBytes();
+                // Update pc & offset to the previous instruction, assuming it did not branch.
+                offset -= lenInstr;
+                pc -= lenInstr;
+                if (offset < 0) break; // Not (fully) in this entry.
+                if (instr.isBranch())
+                    if (instr.getPc() != pc) break; // It was a branch, hence not in this entry.
+                    else if(arch==Architecture.XS2A) continue; // It was in this entry BUT the fetch was discarded.
+                if (!instr.isLoadStore())
+                    return 2; // It was in the entry and a fetch filled the next entry.
+                prevNode = prevNode.getPrevNonBranchingNode();
+            }
+            // We could have either 0 or 1 entries.
+            return 1;  // If we had 0 entries, an FNOP preceded this instruction.
         }
     }
 }

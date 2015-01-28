@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.xmos.libs.core.controlflow.ControlFlow;
+import com.xmos.libs.core.controlflow.FunctionControlFlow;
 import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
@@ -35,7 +36,6 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.DefaultNodeTraverser;
-import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.UntypedNodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.unknowns.UnknownFactory;
@@ -937,14 +937,20 @@ public class RouteConstructor {
 
         for (final Route route : m_routes) {
             Node node = route.getNode();
-            // Workout IBuff by looking back in the cfg & running from cfg-block-start to node pc.
-            int iBuffStartEntries = 1;
-            InstructionBuffer instructionBuffer = new InstructionBuffer( m_engine.getXeLoader().getArchitecture(), node.getStartPc(), iBuffStartEntries);
+            long startPc = node.getStartPc();
+
+            List<CfgInstructionNode> cfgs = new LinkedList<CfgInstructionNode>();
+            for (FunctionControlFlow fcf : m_controlFlow.getFunctionContaining(startPc))
+                cfgs.add(fcf.getInstructionNode(startPc));
+
+            InstructionBuffer instructionBuffer = new InstructionBuffer( m_engine.getXeLoader().getArchitecture(), startPc, cfgs);
             node.traverse( new UntypedNodeTraverser() {
                 public TraverseStatus foundNode(Node node, Object clientState) {
                     ((InstructionBuffer)clientState).startNode(node);
                     if (node.isCondNode())
                         ((InstructionBuffer)clientState).createForks(((ConditionalNode)node).iChildren());
+                    //else if (node.isLoopNode())
+                    //    ((InstructionBuffer)clientState).createLoop(((ConditionalNode)node).iChildren());
                     else if (node.isIssueNode())
                         ((InstructionBuffer)clientState).handleIssueNode(node);
                     return TraverseStatus.CONTINUE;
