@@ -61,7 +61,7 @@ public class StructuralAnalysisEngine {
         m_patternMatchers.add(new PanicTransformer(memoryMonitor));            //uses dominators
     }
 
-    public Node createStructure(Set<CfgNode> workingSet, CfgNode startNode, String name)
+    public Node createStructure(Set<CfgNode> workingSet, CfgInstructionNode startNode, String name)
         throws AbortedException, MemoryMonitorException {
 
         assert(workingSet.contains(startNode));
@@ -72,61 +72,63 @@ public class StructuralAnalysisEngine {
         return structuralNode;
     }
 
-      private CfgNode basicBlock(Set<CfgNode> workingSet, CfgNode originalStartNode, String string) {
+      private CfgNode basicBlock(Set<CfgNode> workingSet, CfgInstructionNode originalStartNode, String string) {
         dumpTree("before_basicBlock_"+ string, workingSet, false);
 
-        Set<CfgNode> toDo = new IteratableSet<CfgNode>();
+        Set<CfgInstructionNode> toDo = new IteratableSet<CfgInstructionNode>();
         toDo.add(originalStartNode);
 
-        CfgNode firstNode = null;
+        CfgContainerNode firstNode = null;
         Set<CfgNode> seenNodes = new NonIteratableSet<CfgNode>();
         Set<CfgNode> newWorkingSet = new IteratableSet<CfgNode>();
 
         Map<CfgNode, Set<CfgNode>> nexts = new IteratableMap<CfgNode, Set<CfgNode>>();
-        Map<CfgNode, CfgNode> instToBlock = new NonIteratableMap<CfgNode, CfgNode>();
+        //Map<CfgNode, CfgContainerNode> cfgNodeToBlock = new NonIteratableMap<CfgNode, CfgContainerNode>();
+        // we need to add CfgNullNode too...
+        Map<CfgNode, CfgNode> cfgNodeToBlock = new NonIteratableMap<CfgNode, CfgNode>();
 
         while (!toDo.isEmpty()) {
-
-            CfgNode current = toDo.iterator().next();
+            CfgInstructionNode current = toDo.iterator().next();
             toDo.remove(current);
 
+            // build a list of contiguous instructions that can't be branched into or out from.
+            CfgInstructionNode startOfBlock = current;
             List<IssueNode> issueNodes = new LinkedList<IssueNode>();
-            issueNodes.add(new IssueNode((CfgInstructionNode)current));
-
+            issueNodes.add(new IssueNode(current));
             seenNodes.add(current);
-
-            CfgNode startOfBlock = current;
-
-            boolean firstInBlock = true;
-            while (nextIsInSameBlock(current, workingSet, seenNodes, firstInBlock)) {
-                CfgNode next = getNextNodes(current, workingSet).iterator().next();
-                issueNodes.add(new IssueNode((CfgInstructionNode)next));
-                current = next;
-                seenNodes.add(current);
-                firstInBlock = false;
+            {
+                boolean firstInBlock = true;
+                CfgInstructionNode next;
+                while ( (next=getNextInSameBlock(current, workingSet, seenNodes, firstInBlock)) != null) {
+                    issueNodes.add(new IssueNode(next));
+                    seenNodes.add(next);
+                    current = next;
+                    firstInBlock = false;
+                }
             }
-
-            BlockNode strBasicBlock = new BlockNode(issueNodes);
-            CfgNode basicBlock = new CfgContainerNode(strBasicBlock);
-
-            instToBlock.put(startOfBlock, basicBlock);
+            CfgContainerNode basicBlock = new CfgContainerNode(new BlockNode(issueNodes));
+            cfgNodeToBlock.put(startOfBlock, basicBlock);
             nexts.put(basicBlock, current.getNextNodes());
             if (newWorkingSet.isEmpty()) {
                 firstNode = basicBlock;
             }
             newWorkingSet.add(basicBlock);
 
+// RL-todo add knowledge about if a branch is taken or not.
+
             for (CfgNode next : current.getNextNodes()) {
+
                 if (next instanceof CfgFunctionReferenceNode) {
                     FunctionNode fnNode = new FunctionNode();
                     CfgContainerNode cnNode = new CfgContainerNode(fnNode);
                     newWorkingSet.add(cnNode);
                     seenNodes.add(cnNode);
-                    instToBlock.put(next, cnNode);
+                    cfgNodeToBlock.put(next, cnNode);
                     nexts.put(cnNode, new IteratableSet<CfgNode>(next.getNextNodes()));
                     for (CfgNode nextNext : next.getNextNodes()) {
                         if (!seenNodes.contains(nextNext)) {
-                            toDo.add(nextNext);
+                            assert(nextNext instanceof CfgInstructionNode);
+                            toDo.add((CfgInstructionNode)nextNext);
                         }
                     }
 
@@ -134,11 +136,12 @@ public class StructuralAnalysisEngine {
                     next.getPrevNodes().clear();
                     newWorkingSet.add(next);
                     seenNodes.add(next);
-                    instToBlock.put(next, next);
+                    cfgNodeToBlock.put(next, (CfgContainerNode)next);
                     nexts.put(next, new IteratableSet<CfgNode>(next.getNextNodes()));
                     for (CfgNode nextNext : next.getNextNodes()){
                         if (!seenNodes.contains(nextNext)){
-                            toDo.add(nextNext);
+                            assert(nextNext instanceof CfgInstructionNode);
+                            toDo.add((CfgInstructionNode)nextNext);
                         }
                     }
                     next.getNextNodes().clear();
@@ -147,20 +150,20 @@ public class StructuralAnalysisEngine {
                     next.getPrevNodes().clear();
                     newWorkingSet.add(next);
                     seenNodes.add(next);
-                    instToBlock.put(next, next);
+                    cfgNodeToBlock.put(next, next);
                     nexts.put(next, new IteratableSet<CfgNode>(next.getNextNodes()));
                     next.getNextNodes().clear();
 
                 } else if (!seenNodes.contains(next)) {
                     assert(next instanceof CfgInstructionNode);
-                    toDo.add(next);
+                    toDo.add((CfgInstructionNode)next);
                 }
             }
         }
 
         for (CfgNode node : nexts.keySet()) {
             for (CfgNode next : nexts.get(node)) {
-                CfgNode.connect(instToBlock.get(next), node);
+                CfgNode.connect(cfgNodeToBlock.get(next), node);
             }
         }
 
@@ -230,6 +233,7 @@ public class StructuralAnalysisEngine {
 
             working = false;
             for (PatternMatcher pm : m_patternMatchers) {
+                dumpTree("PatternMatcher" + pm.toString(), workingSet, false);
                 if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
                     buildDominatorTree(workingSet, treeStart);
                     dominatorTreeUpToDate = true;
@@ -402,39 +406,39 @@ public class StructuralAnalysisEngine {
         return terminals;
     }
 
-    private boolean nextIsInSameBlock(CfgNode current, Set<CfgNode> workingSet,
+    private CfgInstructionNode getNextInSameBlock(CfgNode current, Set<CfgNode> workingSet,
             Set<CfgNode> seenNodes, boolean firstInblock) {
 
-        if (getNextNodes(current, workingSet).size() != 1){
-            return false;
+        if (getNextNodes(current, workingSet).size() != 1) {
+            return null;
         }
         CfgNode next = getNextNodes(current, workingSet).iterator().next();
 
         if (seenNodes.contains(next)) {
-            return false;
+            return null;
         }
         if (next instanceof CfgNullNode) {
-            return false;
+            return null;
         }
         if (!(next instanceof CfgInstructionNode)) {
-            return false;
+            return null;
         }
         if (getPrevNodes(next, workingSet).size() > 1){
-            return false;
+            return null;
         }
         if (getPrevNodes(current, workingSet).size() > 1 && !firstInblock){
-            return false;
+            return null;
         }
 
         if (current instanceof CfgInstructionNode) {
             if (((CfgInstructionNode)current).getInstruction().getReturn()) {
-                return false;
+                return null;
             }
             if (((CfgInstructionNode)current).getInstruction().isLink()) {
-                return false;
+                return null;
             }
         }
-        return true;
+        return (CfgInstructionNode) next;
     }
 
     private Set<CfgNode> getNextNodes(CfgNode node, Set<CfgNode> workingSet){

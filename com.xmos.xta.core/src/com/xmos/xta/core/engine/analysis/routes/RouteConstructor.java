@@ -776,7 +776,8 @@ public class RouteConstructor {
         dumpGraph(workingSet);
 
         StructuralAnalysisEngine sae = new StructuralAnalysisEngine(m_engine);
-        return sae.createStructure(workingSet, originalStartNode, "route");
+        assert(originalStartNode instanceof CfgInstructionNode);
+        return sae.createStructure(workingSet, (CfgInstructionNode)originalStartNode, "route");
     }
 
     //TODO clean up the next two functions
@@ -895,11 +896,11 @@ public class RouteConstructor {
         return false;
     }
 
-    private void addToWorkingSet(CfgNode parent, CfgNode currentNode, Set<CfgNode> workingSet) {
+    private void addToWorkingSet(CfgNode parent, CfgNode child, Set<CfgNode> workingSet) {
         if (parent!= null) {
-            CfgNode.connect(currentNode, parent);
+            CfgNode.connect(child, parent);
         }
-        workingSet.add(currentNode);
+        workingSet.add(child);
     }
 
     private void dumpGraph(Set<CfgNode> workingSet) {
