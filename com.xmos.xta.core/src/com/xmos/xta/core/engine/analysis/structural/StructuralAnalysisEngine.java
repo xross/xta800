@@ -233,7 +233,7 @@ public class StructuralAnalysisEngine {
 
             working = false;
             for (PatternMatcher pm : m_patternMatchers) {
-                dumpTree("PatternMatcher" + pm.toString(), workingSet, false);
+                if (debug_structure) System.out.print("Running " + pm.toString() + " : ");
                 if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
                     buildDominatorTree(workingSet, treeStart);
                     dominatorTreeUpToDate = true;
@@ -247,7 +247,7 @@ public class StructuralAnalysisEngine {
                     if (m_engine.getMemoryMonitor().outOfMemoryAbort()) {
                         throw new MemoryMonitorException();
                     }
-
+                    if (debug_structure) System.out.print("  " + node.getId());
                     if (pm.isMatch(node, workingSet, treeStart)) {
                         treeStart = pm.getTreeStart();
                         assert(workingSet.contains(treeStart));
@@ -257,8 +257,11 @@ public class StructuralAnalysisEngine {
                         break;
                     }
                 }
-                if (working)
+                if (debug_structure) System.out.print("\n");
+                if (working) {
+                    if (debug_structure) dumpTree("PatternMatcher" + pm.toString(), workingSet, false);
                     break;
+                }
             }
         }
 
