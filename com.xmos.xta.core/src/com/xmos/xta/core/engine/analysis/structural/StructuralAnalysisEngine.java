@@ -320,13 +320,10 @@ public class StructuralAnalysisEngine {
     private void buildDominatorTree(Collection<CfgNode> reachableNodes, CfgNode treeStart) {
         //try to remove tree sets from this
         for (CfgNode node : reachableNodes) {
-            node.clearDominators();
-            if (treeStart == node) {
-                node.setDominatorSetComplete(false);
-                node.addDominator(node);
-            } else {
-                node.setDominatorSetComplete(true);
-            }
+            if (treeStart == node)
+                node.resetDominator(treeStart);
+            else
+                node.resetDominator(null);
         }
 
         Set<CfgNode> intersection = new IteratableSet<CfgNode>();
@@ -356,9 +353,7 @@ public class StructuralAnalysisEngine {
                 intersection.add(node);
 
                 if (!intersection.equals(node.getDominators())) {
-                    node.clearDominators();
-                    node.addAllDominators(intersection);
-                    node.setDominatorSetComplete(intersectionIsCompleteSet);
+                    node.resetDominators(intersection, intersectionIsCompleteSet);
                     stillChanging = true;
                 }
             }

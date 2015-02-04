@@ -7,7 +7,7 @@ public class CfgContainerNode extends CfgNode {
 
     private Node m_node;
 
-    public CfgNode clone() {
+    public CfgContainerNode copy() {
         return new CfgContainerNode(m_node.copyRouteStructure());
     }
 

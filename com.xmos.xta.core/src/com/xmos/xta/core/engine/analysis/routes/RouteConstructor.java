@@ -872,9 +872,9 @@ public class RouteConstructor {
             assert((node instanceof CfgInstructionNode) ||
                    (node instanceof CfgFunctionReferenceNode));
 
-            CfgNode clone = node.clone();
-            nodeToWorkingSet.put(nd, clone);
-            return clone;
+            CfgNode copy = node.copy();
+            nodeToWorkingSet.put(nd, copy);
+            return copy;
         }
     }
 
