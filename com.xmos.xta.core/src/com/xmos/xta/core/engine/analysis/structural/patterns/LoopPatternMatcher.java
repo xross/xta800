@@ -29,7 +29,7 @@ public class LoopPatternMatcher extends PatternMatcher {
             Set <CfgNode> workingIntersection = new IteratableSet<CfgNode>();
 
             for (CfgNode loop : intersection) {
-                if (!(loop.getNextNodesSize() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
+                if (!(loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
                     workingIntersection.add(loop);
                 }
             }
@@ -47,7 +47,7 @@ public class LoopPatternMatcher extends PatternMatcher {
             CfgNode header, CfgNode treeStart) {
 
         boolean noNextNode = false;
-        if (header.getNextNodesSize() == intersection.size()) {
+        if (header.getNextNodes().size() == intersection.size()) {
             noNextNode = true;
         }
 

@@ -206,7 +206,7 @@ public class StructuralAnalysisEngine {
     private Node buildStructure(Collection<CfgNode> workingSet, CfgNode treeStart, String jobPrefix)
         throws AbortedException, MemoryMonitorException {
 
-        if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodesSize() == 0) {
+        if (workingSet.size() == 1 && workingSet.iterator().next().getNextNodes().size() == 0) {
             CfgNode node = workingSet.iterator().next();
             assert(node instanceof CfgContainerNode);
             return ((CfgContainerNode)node).getNode();
@@ -395,7 +395,7 @@ public class StructuralAnalysisEngine {
         while (!following.isEmpty()) {
             CfgNode current = following.iterator().next();
             seen.add(current);
-            if (current.getNextNodesSize() == 0) {
+            if (current.getNextNodes().size() == 0) {
                 terminals.add(current);
             } else {
                 for (CfgNode next : current.getNextNodes()) {

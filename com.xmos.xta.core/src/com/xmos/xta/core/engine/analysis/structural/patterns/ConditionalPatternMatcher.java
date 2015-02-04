@@ -30,10 +30,10 @@ public class ConditionalPatternMatcher extends PatternMatcher {
         // Possible head->tail default-conditionals are listed in isOptionalSet.
         // non-CfgContainerNode-bodyNodes with no tailNodes are also matched (listed in nullToBodiesMap) .
 
-        if (headNode.getNextNodesSize() < 2)
+        if (headNode.getNextNodes().size() < 2)
             return false;   // Not a 'branch'.
 
-        Set<CfgNode> defaultConditionals = new IteratableSet<CfgNode>();
+        Set<CfgNode> emptyBody = new IteratableSet<CfgNode>();
         Map<CfgNode, Set<CfgNode>> tailToBodiesMap = new IteratableMap<CfgNode, Set<CfgNode>>();
         Set<CfgNode> nullToBodiesMap = new IteratableSet<CfgNode>();
         for (CfgNode bodyNode : headNode.getNextNodes()) {
@@ -45,12 +45,12 @@ public class ConditionalPatternMatcher extends PatternMatcher {
                 // We will compare this 'tailNode' with other tailNodes later.
                 // (otherwise we ignore it as a potential bodyNode)
                 CfgNode tailNode = bodyNode;
-                defaultConditionals.add(tailNode);
+                emptyBody.add(tailNode);
                 continue;
             }
 
             // Look at the body's tails.
-            switch (bodyNode.getNextNodesSize()) {
+            switch (bodyNode.getNextNodes().size()) {
             case 0:
                 if (bodyNode instanceof CfgContainerNode)
                     return false; // This is "something else".
@@ -70,7 +70,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
                     break;
                 }
                 assert(tailNode.getPrevNodes().size() == 1);
-                if(tailNode.getNextNodesSize() == 1)
+                if(tailNode.getNextNodes().size() == 1)
                     return false; // This is another body. Handle this body->body sequence first!
                 // else the bodyNode is a leaf, ignore it.
                 assert(bodyNode instanceof CfgContainerNode ||
@@ -91,23 +91,21 @@ public class ConditionalPatternMatcher extends PatternMatcher {
         }
         for (CfgNode tailNode : tailToBodiesMap.keySet()) {
             Set<CfgNode> bodyNodes = tailToBodiesMap.get(tailNode);
-            boolean hasDefault = defaultConditionals.contains(tailNode);
+            boolean hasEmptyBody = emptyBody.contains(tailNode);
             if(!bodyNodes.contains(treeStart) &&
-                    bodyNodes.size() + (hasDefault?1:0) > 1) {
-                updateGraph(headNode, bodyNodes, hasDefault, workingSet, tailNode);
+                    bodyNodes.size() + (hasEmptyBody?1:0) > 1) {
+                updateGraph(headNode, bodyNodes, hasEmptyBody, workingSet, tailNode);
                 return true;
             }
         }
         return false;
     }
 
-    protected void updateGraph(CfgNode headNode, Collection<CfgNode> bodyNodes, boolean hasDefault,
+    protected void updateGraph(CfgNode headNode, Collection<CfgNode> bodyNodes, boolean hasEmptyBody,
             Collection<CfgNode> workingSet, CfgNode tailNode) {
 
-        // RL-TODO transfer the 'NonBranchingNode' state from Cfg to structure.
-
         // Create the new structural node.
-        CfgNode newBodyNodes = createStructuralNode(bodyNodes, hasDefault);
+        CfgNode newBodyNodes = createStructuralNode(bodyNodes, hasEmptyBody);
         newBodyNodes.addNextNode(tailNode);
         newBodyNodes.addPrevNode(headNode);
 
@@ -121,7 +119,7 @@ public class ConditionalPatternMatcher extends PatternMatcher {
         tailNode.addPrevNode(newBodyNodes);
 
         // Remove the explicit fall through too.
-        if (hasDefault) {
+        if (hasEmptyBody) {
             headNode.removeNextNode(tailNode);
             tailNode.getPrevNodes().remove(headNode);
         }
@@ -134,9 +132,9 @@ public class ConditionalPatternMatcher extends PatternMatcher {
         return false;
     }
 
-    private CfgNode createStructuralNode(Collection<CfgNode> condNodes, boolean isOptional) {
-        Collection<Node> strCondNodes = getStructuralNodes(condNodes);
-        Node structuralNode = new ConditionalNode(strCondNodes, isOptional);
+    private CfgNode createStructuralNode(Collection<CfgNode> bodyNodes, boolean hasEmptyBody) {
+        Collection<Node> strCondNodes = getStructuralNodes(bodyNodes);
+        Node structuralNode = new ConditionalNode(strCondNodes, hasEmptyBody); // Also add in branching info.
         return new CfgContainerNode(structuralNode);
     }
 }

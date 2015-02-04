@@ -18,7 +18,7 @@ public class PanicTransformer extends PatternMatcher {
             Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
 
         m_treeStart = treeStart;
-        if (currentNode.getNextNodesSize() < 2) {
+        if (currentNode.getNextNodes().size() < 2) {
             return false;
         }
         return explore(currentNode, new NonIteratableSet<CfgNode>(),
@@ -33,7 +33,7 @@ public class PanicTransformer extends PatternMatcher {
             node.getDominators().size() == (dominators.size() + 1)) {
 
             checkMemory();
-            if (node.getNextNodesSize() >1 && node.getPrevNodes().size() > 1){
+            if (node.getNextNodes().size() >1 && node.getPrevNodes().size() > 1){
                 CommonMethods.wedgeDown(node, workingSet);
                 return true;
             }

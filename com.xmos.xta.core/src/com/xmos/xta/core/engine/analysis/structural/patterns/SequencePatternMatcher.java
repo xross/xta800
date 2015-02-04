@@ -59,7 +59,7 @@ public class SequencePatternMatcher extends PatternMatcher {
 
         } else if (node.getPrevNodes().size() ==  1) {
             CfgNode prev = node.getPrevNode();
-            if (prev.getNextNodesSize() > 1) {
+            if (prev.getNextNodes().size() > 1) {
                 return true;
             } else {
                 return false;
@@ -74,9 +74,9 @@ public class SequencePatternMatcher extends PatternMatcher {
 
     private boolean isEnd(CfgNode node, Collection<CfgNode> workingSet, LinkedList<CfgNode> pathList) {
 
-        if (node.getNextNodesSize() ==  0){
+        if (node.getNextNodes().size() ==  0){
             return true;
-        } else if (node.getNextNodesSize() ==  1) {
+        } else if (node.getNextNodes().size() ==  1) {
             CfgNode next = node.getNextNode();
 
             if ((next instanceof CfgNullNode) && pathList.size() + 1 < workingSet.size()) {
@@ -95,7 +95,7 @@ public class SequencePatternMatcher extends PatternMatcher {
         }
 
         //FIXME - i dont think this can be hit
-        else if (node.getNextNodesSize() > 1) {
+        else if (node.getNextNodes().size() > 1) {
             return true;
         } else {
             return false;
@@ -103,7 +103,7 @@ public class SequencePatternMatcher extends PatternMatcher {
     }
 
     private boolean continueDown(CfgNode node, Collection<CfgNode> workingSet, LinkedList<CfgNode> pathList){
-        if (node.getNextNodesSize() == 1 && !isEnd(node, workingSet, pathList) &&
+        if (node.getNextNodes().size() == 1 && !isEnd(node, workingSet, pathList) &&
             !node.dominatorsContain(node.getNextNode())) {
             return true;
         }
@@ -124,7 +124,7 @@ public class SequencePatternMatcher extends PatternMatcher {
                 return false;
             }
 
-            if (node.getNextNodesSize() != 1) {
+            if (node.getNextNodes().size() != 1) {
                 return false;
             }
 

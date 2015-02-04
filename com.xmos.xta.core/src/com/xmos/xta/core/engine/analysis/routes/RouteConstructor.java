@@ -790,7 +790,7 @@ public class RouteConstructor {
         while(!following.isEmpty()){
             CfgNode current = following.iterator().next();
             seen.add(current);
-            if(current.getNextNodesSize() == 0){
+            if(current.getNextNodes().size() == 0){
                 if(current instanceof CfgInstructionNode){
                     endNodes.add((CfgInstructionNode)current);
                 } else {

@@ -62,7 +62,7 @@ public class SelfLoopPattern extends PatternMatcher {
         CfgNode cfgNode = null;
         Node strNode = getStructuralNode(currentNode);
 
-        if (currentNode.getNextNodesSize() == 1) {
+        if (currentNode.getNextNodes().size() == 1) {
             Node structuralNode = new InfiniteSelfLoopNode(strNode);
             cfgNode = new CfgContainerNode(structuralNode);
 

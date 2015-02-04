@@ -13,7 +13,7 @@ public class CommonMethods {
 
     public static boolean wedgeUp(CfgNode node, Collection<CfgNode> workingSet) {
 
-        if (node.getNextNodesSize() < 2) {
+        if (node.getNextNodes().size() < 2) {
             return false;
         }
         Collection<CfgNode> newNodes = new IteratableSet<CfgNode>();
@@ -105,7 +105,7 @@ public class CommonMethods {
         CfgNode nullNode = new CfgNullNode();
 
         for (CfgNode node : workingSet){
-            if (node.getNextNodesSize() == 0){
+            if (node.getNextNodes().size() == 0){
                 CfgNode.connect(nullNode, node);
             }
         }
