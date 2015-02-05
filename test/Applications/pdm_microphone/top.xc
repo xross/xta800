@@ -4,12 +4,12 @@
 #include <xclib.h>
 #include <stdlib.h>
 
-out port p_bitclk = on stdcore[0] : XS1_PORT_1H;
-out buffered port:32 p_data = on stdcore[0] : XS1_PORT_1I;
-out buffered port:32 p_lrclk = on stdcore[0] : XS1_PORT_1F;
-clock b_i2s = on stdcore[0] : XS1_CLKBLK_1;
-clock b_lpf = on stdcore[0] : XS1_CLKBLK_2;
-out port p_lpfclk = on stdcore[0] : XS1_PORT_1L;
+out port p_bitclk = on tile[0] : XS1_PORT_1H;
+out buffered port:32 p_data = on tile[0] : XS1_PORT_1I;
+out buffered port:32 p_lrclk = on tile[0] : XS1_PORT_1F;
+clock b_i2s = on tile[0] : XS1_CLKBLK_1;
+clock b_lpf = on tile[0] : XS1_CLKBLK_2;
+out port p_lpfclk = on tile[0] : XS1_PORT_1L;
 
 // These values are such that F*D*N*(R+1) = 25000000
 // Or F*D*(R+1) = 781250 if resolution is fixed to 32
@@ -164,7 +164,7 @@ int main()
   streaming chan c_pdm;
   par
   {
-    on stdcore[0] :
+    on tile[0] :
     {
       lcdac_init();
       par
@@ -173,11 +173,11 @@ int main()
         lcdac(c_lcdac);
       }
     }
-    on stdcore[0] : pdm(c_lcdac);
+    on tile[0] : pdm(c_lcdac);
 
 
 #if 0
-    on stdcore[1] :
+    on tile[1] :
     {
       timer tmr;
       unsigned t, T = (100000000 / F);
@@ -215,8 +215,8 @@ int main()
       }
     }
 #endif
-    //on stdcore[1] : sine(c_lcdac, 10, 0);
-    //on stdcore[1] : sine_timed(c_lcdac, 4, 0);
+    //on tile[1] : sine(c_lcdac, 10, 0);
+    //on tile[1] : sine_timed(c_lcdac, 4, 0);
   }
   return 0;
 }

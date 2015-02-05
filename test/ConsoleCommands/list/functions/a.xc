@@ -54,10 +54,10 @@ int main()
 {
   par
   {
-    on stdcore[0] : a_test0();
-    on stdcore[1] : a_test1();
-    on stdcore[2] : a_test2();
-    on stdcore[3] : a_test3();
+    on tile[0] : a_test0();
+    on tile[1] : a_test1();
+    on tile[2] : a_test2();
+    on tile[3] : a_test3();
   }
   return 0;
 }

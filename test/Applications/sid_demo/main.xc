@@ -20,7 +20,7 @@
 #include "pwm.h"
 #include "led_controller.h"
 
-on stdcore[0] : port p_speaker = XS1_PORT_1K;
+on tile[0] : port p_speaker = XS1_PORT_1K;
 
 int main(void)
 {
@@ -33,14 +33,14 @@ int main(void)
 	
 	par
 	{
-		on stdcore[0]: sid_player(c_sid, c_led, c_tunes1, c_tunes2, c_tunes3);
-		on stdcore[0]: buffer(c_sid, c_pwm);
-		on stdcore[0]: pwm_server(c_pwm, p_speaker, SAMPLE_RATE);
-		on stdcore[0]: led_controller(c_led);
+		on tile[0]: sid_player(c_sid, c_led, c_tunes1, c_tunes2, c_tunes3);
+		on tile[0]: buffer(c_sid, c_pwm);
+		on tile[0]: pwm_server(c_pwm, p_speaker, SAMPLE_RATE);
+		on tile[0]: led_controller(c_led);
 
-		on stdcore[1]: sid_store_core_1(c_tunes1);
-		on stdcore[2]: sid_store_core_2(c_tunes2);
-		on stdcore[3]: sid_store_core_3(c_tunes3);
+		on tile[1]: sid_store_core_1(c_tunes1);
+		on tile[2]: sid_store_core_2(c_tunes2);
+		on tile[3]: sid_store_core_3(c_tunes3);
 	}
 	
 	return 0;

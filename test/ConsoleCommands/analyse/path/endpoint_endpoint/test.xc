@@ -25,8 +25,8 @@ int main()
   chan c0;
   chan c1;
   par {
-    on stdcore[0] : test0(c0, c1);
-    on stdcore[1] : test1(c0, c1);
+    on tile[0] : test0(c0, c1);
+    on tile[1] : test1(c0, c1);
   }
   return 0;
 }

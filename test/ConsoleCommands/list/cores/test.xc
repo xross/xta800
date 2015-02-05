@@ -14,11 +14,11 @@
 #include <xs1.h>
 #include <platform.h>
 
-on stdcore[0] : out port p_led0 = XS1_PORT_1F;
-on stdcore[1] : out port p_led1 = XS1_PORT_1F;
-on stdcore[2] : out port p_led2 = XS1_PORT_1F;
-on stdcore[3] : out port p_led3 = XS1_PORT_1F;
-on stdcore[0] : in port p_button = XS1_PORT_4F;
+on tile[0] : out port p_led0 = XS1_PORT_1F;
+on tile[1] : out port p_led1 = XS1_PORT_1F;
+on tile[2] : out port p_led2 = XS1_PORT_1F;
+on tile[3] : out port p_led3 = XS1_PORT_1F;
+on tile[0] : in port p_button = XS1_PORT_4F;
 
 void led1_thread(out port p_led, chanend prev, chanend next, int start);
 void button_listener(in port p_button, chanend prev, chanend next);
@@ -33,11 +33,11 @@ int main()
 
   par
   {
-    on stdcore[0] : led1_thread(p_led0, c_0to1, c_1to2, 1);
-    on stdcore[1] : led1_thread(p_led1, c_1to2, c_2to3, 0);
-    on stdcore[2] : led1_thread(p_led2, c_2to3, c_3to0, 0);
-    on stdcore[3] : led1_thread(p_led3, c_3to0, button_chan, 0);
-    on stdcore[0] : button_listener(p_button, button_chan, c_0to1);
+    on tile[0] : led1_thread(p_led0, c_0to1, c_1to2, 1);
+    on tile[1] : led1_thread(p_led1, c_1to2, c_2to3, 0);
+    on tile[2] : led1_thread(p_led2, c_2to3, c_3to0, 0);
+    on tile[3] : led1_thread(p_led3, c_3to0, button_chan, 0);
+    on tile[0] : button_listener(p_button, button_chan, c_0to1);
   }
 
   return 0;

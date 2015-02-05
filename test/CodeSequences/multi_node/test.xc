@@ -13,22 +13,22 @@ int main()
 {
     
   par {
-    on stdcore[0] : f(1);
-    on stdcore[1] : f(1);
-    on stdcore[2] : f(1);
-    on stdcore[3] : f(1);
-    on stdcore[4] : f(1);
-    on stdcore[5] : f(1);
-    on stdcore[6] : f(1);
-    on stdcore[7] : f(1);
-    on stdcore[8] : f(1);
-    on stdcore[9] : f(1);
-    on stdcore[10] : f(1);
-    on stdcore[11] : f(1);
-    on stdcore[12] : f(1);
-    on stdcore[13] : f(1);
-    on stdcore[14] : f(1);
-    on stdcore[15] : f(1);
+    on tile[0] : f(1);
+    on tile[1] : f(1);
+    on tile[2] : f(1);
+    on tile[3] : f(1);
+    on tile[4] : f(1);
+    on tile[5] : f(1);
+    on tile[6] : f(1);
+    on tile[7] : f(1);
+    on tile[8] : f(1);
+    on tile[9] : f(1);
+    on tile[10] : f(1);
+    on tile[11] : f(1);
+    on tile[12] : f(1);
+    on tile[13] : f(1);
+    on tile[14] : f(1);
+    on tile[15] : f(1);
     }
   return 0;
 }

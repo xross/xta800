@@ -3,16 +3,16 @@
 #include <xclib.h>
 #include <syscall.h>
 
-on stdcore[0] : out port             p_uart     = XS1_PORT_1H;
-on stdcore[1] : buffered in port:8   p_sync0    = XS1_PORT_1C;
-on stdcore[1] : buffered in port:8   p_sync1    = XS1_PORT_1D;
-on stdcore[1] : buffered in port:8   p_sdo0     = XS1_PORT_1A;
-on stdcore[1] : buffered in port:8   p_sdo1     = XS1_PORT_1F;
-on stdcore[1] : buffered out port:32 p_sdi      = XS1_PORT_1I;
-on stdcore[1] : buffered in port:1   p_reset    = XS1_PORT_1H;
-on stdcore[1] : in port              p_bclk     = XS1_PORT_1E;
-on stdcore[1] : clock                b_sampling = XS1_CLKBLK_1;
-on stdcore[1] : clock                b_driving  = XS1_CLKBLK_2;
+on tile[0] : out port             p_uart     = XS1_PORT_1H;
+on tile[1] : buffered in port:8   p_sync0    = XS1_PORT_1C;
+on tile[1] : buffered in port:8   p_sync1    = XS1_PORT_1D;
+on tile[1] : buffered in port:8   p_sdo0     = XS1_PORT_1A;
+on tile[1] : buffered in port:8   p_sdo1     = XS1_PORT_1F;
+on tile[1] : buffered out port:32 p_sdi      = XS1_PORT_1I;
+on tile[1] : buffered in port:1   p_reset    = XS1_PORT_1H;
+on tile[1] : in port              p_bclk     = XS1_PORT_1E;
+on tile[1] : clock                b_sampling = XS1_CLKBLK_1;
+on tile[1] : clock                b_driving  = XS1_CLKBLK_2;
 
 void init_ports()
 {
@@ -44,14 +44,14 @@ void init_ports()
 }
 
 #ifdef SIMULATION
-on stdcore[2] : buffered out port:32 s_sync = XS1_PORT_1A;
-on stdcore[2] : buffered out port:32 s_sdo = XS1_PORT_1D;
-on stdcore[2] : buffered in port:32 s_sdi = XS1_PORT_1N;
-on stdcore[2] : out port s_reset = XS1_PORT_1O;
-on stdcore[2] : out port s_bclk = XS1_PORT_1M;
-on stdcore[2] : clock b_bclk = XS1_CLKBLK_2;
-on stdcore[2] : clock b_50mhz = XS1_CLKBLK_1;
-on stdcore[2] : buffered out port:32 s_50mhz = XS1_PORT_1P;
+on tile[2] : buffered out port:32 s_sync = XS1_PORT_1A;
+on tile[2] : buffered out port:32 s_sdo = XS1_PORT_1D;
+on tile[2] : buffered in port:32 s_sdi = XS1_PORT_1N;
+on tile[2] : out port s_reset = XS1_PORT_1O;
+on tile[2] : out port s_bclk = XS1_PORT_1M;
+on tile[2] : clock b_bclk = XS1_CLKBLK_2;
+on tile[2] : clock b_50mhz = XS1_CLKBLK_1;
+on tile[2] : buffered out port:32 s_50mhz = XS1_PORT_1P;
 
 void stimulus()
 {
@@ -177,7 +177,7 @@ int main()
   chan c_sync, c_sdo;
   par
   {
-    on stdcore[1] :
+    on tile[1] :
     {
       static const unsigned morton1[256] =
       {
@@ -264,7 +264,7 @@ int main()
       }
     }
 #ifdef SIMULATION
-    on stdcore[2] : stimulus();
+    on tile[2] : stimulus();
 #endif
   }
   return 0;

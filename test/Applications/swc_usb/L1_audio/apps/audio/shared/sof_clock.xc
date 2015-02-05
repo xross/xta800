@@ -33,7 +33,7 @@ static int clockSettings[7] = { 1, 0, 0, 48000, 48000, 48000, 1 };
 #include <platform.h>
 
 int lval = 0;
-on stdcore[2] : out port theLeds                  = XS1_PORT_8D;
+on tile[2] : out port theLeds                  = XS1_PORT_8D;
 
 void reportErrors(chanend c) {
     timer t;

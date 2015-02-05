@@ -7,10 +7,10 @@ void dummy() {
 
 int main() {
   par {
-     on stdcore[0] : func();
-     on stdcore[1] : dummy();
-     on stdcore[2] : dummy();
-     on stdcore[3] : dummy();
+     on tile[0] : func();
+     on tile[1] : dummy();
+     on tile[2] : dummy();
+     on tile[3] : dummy();
   }
   return 0;
 }

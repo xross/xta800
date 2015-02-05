@@ -204,14 +204,14 @@ Sample Rate - Data
 
 #define AUDIO_CORE 0
 
-on stdcore[AUDIO_CORE] : port p_CODEC_CTRL = XS1_PORT_4F;  // cs, clk, cdi
-on stdcore[AUDIO_CORE] : port p_CODEC_RESET_N = XS1_PORT_4C;  // reset
+on tile[AUDIO_CORE] : port p_CODEC_CTRL = XS1_PORT_4F;  // cs, clk, cdi
+on tile[AUDIO_CORE] : port p_CODEC_RESET_N = XS1_PORT_4C;  // reset
 
 int main()
 {
 	par
 	{
-	    on stdcore[AUDIO_CORE] : swc_audio_codec_init(p_CODEC_CTRL, p_CODEC_RESET_N, 44100);
+	    on tile[AUDIO_CORE] : swc_audio_codec_init(p_CODEC_CTRL, p_CODEC_RESET_N, 44100);
 	}
 	
 	return 0;

@@ -11,37 +11,37 @@
 /*
  * Test the CAN phy. Either in simulation or silicon. If running a simulation need to
  * loopback:
- *   -port stdcore[0] XS1_PORT_1A 0 1 -port stdcore[0] XS1_PORT_1B 0 1
- *   -port stdcore[1] XS1_PORT_1A 0 1 -port stdcore[1] XS1_PORT_1B 0 1
- *   -port stdcore[0] XS1_PORT_1A 0 1 -port stdcore[1] XS1_PORT_1A 0 1
- *   -port stdcore[0] XS1_PORT_1A 0 1 -port stdcore[1] XS1_PORT_1B 0 1
- *   -port stdcore[0] XS1_PORT_1B 0 1 -port stdcore[1] XS1_PORT_1A 0 1
+ *   -port tile[0] XS1_PORT_1A 0 1 -port tile[0] XS1_PORT_1B 0 1
+ *   -port tile[1] XS1_PORT_1A 0 1 -port tile[1] XS1_PORT_1B 0 1
+ *   -port tile[0] XS1_PORT_1A 0 1 -port tile[1] XS1_PORT_1A 0 1
+ *   -port tile[0] XS1_PORT_1A 0 1 -port tile[1] XS1_PORT_1B 0 1
+ *   -port tile[0] XS1_PORT_1B 0 1 -port tile[1] XS1_PORT_1A 0 1
  *
  * For hardware need to use the XC-1 made up by Suleiman.
  *
  */
 
-on stdcore[0] : clock               canClk_0   = XS1_CLKBLK_1;
-on stdcore[0] : buffered in port:32 canRx_0    = XS1_PORT_1A;
-on stdcore[0] :             port    canTx_0    = XS1_PORT_1B;
-on stdcore[0] :             port    led0_0     = XS1_PORT_4A;
-on stdcore[0] :             port    led1_0     = XS1_PORT_4B;
-on stdcore[0] :             port    led2_0     = XS1_PORT_4C;
-on stdcore[0] :             port    ledRed_0   = XS1_PORT_1F;
-on stdcore[0] :             port    ledGreen_0 = XS1_PORT_1E;
+on tile[0] : clock               canClk_0   = XS1_CLKBLK_1;
+on tile[0] : buffered in port:32 canRx_0    = XS1_PORT_1A;
+on tile[0] :             port    canTx_0    = XS1_PORT_1B;
+on tile[0] :             port    led0_0     = XS1_PORT_4A;
+on tile[0] :             port    led1_0     = XS1_PORT_4B;
+on tile[0] :             port    led2_0     = XS1_PORT_4C;
+on tile[0] :             port    ledRed_0   = XS1_PORT_1F;
+on tile[0] :             port    ledGreen_0 = XS1_PORT_1E;
 
-on stdcore[1] : clock               canClk_1   = XS1_CLKBLK_1;
-on stdcore[1] : buffered in port:32 canRx_1    = XS1_PORT_1A;
-on stdcore[1] :             port    canTx_1    = XS1_PORT_1B;
-on stdcore[1] :             port    led0_1     = XS1_PORT_4A;
-on stdcore[1] :             port    led1_1     = XS1_PORT_4B;
-on stdcore[1] :             port    led2_1     = XS1_PORT_4C;
-on stdcore[1] :             port    ledRed_1   = XS1_PORT_1F;
-on stdcore[1] :             port    ledGreen_1 = XS1_PORT_1E;
+on tile[1] : clock               canClk_1   = XS1_CLKBLK_1;
+on tile[1] : buffered in port:32 canRx_1    = XS1_PORT_1A;
+on tile[1] :             port    canTx_1    = XS1_PORT_1B;
+on tile[1] :             port    led0_1     = XS1_PORT_4A;
+on tile[1] :             port    led1_1     = XS1_PORT_4B;
+on tile[1] :             port    led2_1     = XS1_PORT_4C;
+on tile[1] :             port    ledRed_1   = XS1_PORT_1F;
+on tile[1] :             port    ledGreen_1 = XS1_PORT_1E;
 
-on stdcore[0] : clock               canClk_2   = XS1_CLKBLK_2;
-on stdcore[0] : buffered in port:32 canRx_2    = XS1_PORT_1C;
-on stdcore[0] :             port    canTx_2    = XS1_PORT_1D;
+on tile[0] : clock               canClk_2   = XS1_CLKBLK_2;
+on tile[0] : buffered in port:32 canRx_2    = XS1_PORT_1C;
+on tile[0] :             port    canTx_2    = XS1_PORT_1D;
 
 #define COMMAND_NONE  0
 #define SEND_PACKET   1
@@ -176,15 +176,15 @@ int main() {
 	chan ledChan_0, ledChan_1, ledChan_2;
 
 	par {
-		on stdcore[0]: canPhyRxTx(rxChan_0, txChan_0, canClk_0, canRx_0, canTx_0);
-		on stdcore[0]: canPhyRxTx(rxChan_1, txChan_1, canClk_2, canRx_2, canTx_2);
-		on stdcore[0]: ledManager(ledChan_0, ledChan_1, ledChan_2,
+		on tile[0]: canPhyRxTx(rxChan_0, txChan_0, canClk_0, canRx_0, canTx_0);
+		on tile[0]: canPhyRxTx(rxChan_1, txChan_1, canClk_2, canRx_2, canTx_2);
+		on tile[0]: ledManager(ledChan_0, ledChan_1, ledChan_2,
 				led0_0, led1_0, led2_0, ledGreen_0, ledRed_0);
 
-		on stdcore[1]: canTestRxTx(controlChan_0, rxChan_0, txChan_0, ledChan_0, 0);
-		on stdcore[1]: canTestRxTx(controlChan_1, rxChan_1, txChan_1, ledChan_1, 1);
+		on tile[1]: canTestRxTx(controlChan_0, rxChan_0, txChan_0, ledChan_0, 0);
+		on tile[1]: canTestRxTx(controlChan_1, rxChan_1, txChan_1, ledChan_1, 1);
 
-		on stdcore[1]: canController(controlChan_0, controlChan_1);
+		on tile[1]: canController(controlChan_0, controlChan_1);
 	}
 	return 0;
 }

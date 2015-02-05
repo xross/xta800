@@ -19,9 +19,9 @@ typedef chanend PTYPE;
 {int,int, int} parseAdat44100(chanend adatRx, chanend dataOut);
 #else
 typedef buffered in port:32 PTYPE;
-on stdcore[2]: buffered in port:32 aPort = XS1_PORT_1P;
-on stdcore[2]: clock clk = XS1_CLKBLK_2;
-on stdcore[2] : out port theLeds                  = XS1_PORT_8D;
+on tile[2]: buffered in port:32 aPort = XS1_PORT_1P;
+on tile[2]: clock clk = XS1_CLKBLK_2;
+on tile[2] : out port theLeds                  = XS1_PORT_8D;
 {int,int, int, int} parseAdat44100(PTYPE x, chanend dataOut);
 #endif
 
@@ -193,7 +193,7 @@ main() {
     mymain();
 #else
     par {
-        on stdcore[2]: mymain();
+        on tile[2]: mymain();
     }
 #endif
 }

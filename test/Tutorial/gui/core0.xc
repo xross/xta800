@@ -5,8 +5,8 @@
 #include <xs1.h>
 #include <platform.h>
 
-on stdcore[0] : buffered in port:32 dataPort    = XS1_PORT_8A;
-on stdcore[0] :          in port    controlPort = XS1_PORT_8B;
+on tile[0] : buffered in port:32 dataPort    = XS1_PORT_8A;
+on tile[0] :          in port    controlPort = XS1_PORT_8B;
 
 unsigned int readWord() {
   unsigned int data;

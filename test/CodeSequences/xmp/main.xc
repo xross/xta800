@@ -2,22 +2,22 @@
 #include <platform.h>
 
 out port pled[16] = {
-  on stdcore[0] : XS1_PORT_1E,
-  on stdcore[4] : XS1_PORT_1E,
-  on stdcore[8] : XS1_PORT_1E,
-  on stdcore[12] : XS1_PORT_1E,
-  on stdcore[16] : XS1_PORT_1E,
-  on stdcore[20] : XS1_PORT_1E,
-  on stdcore[24] : XS1_PORT_1E,
-  on stdcore[28] : XS1_PORT_1E,
-  on stdcore[32] : XS1_PORT_1E,
-  on stdcore[36] : XS1_PORT_1E,
-  on stdcore[40] : XS1_PORT_1E,
-  on stdcore[44] : XS1_PORT_1E,
-  on stdcore[48] : XS1_PORT_1E,
-  on stdcore[52] : XS1_PORT_1E,
-  on stdcore[56] : XS1_PORT_1E,
-  on stdcore[60] : XS1_PORT_1E
+  on tile[0] : XS1_PORT_1E,
+  on tile[4] : XS1_PORT_1E,
+  on tile[8] : XS1_PORT_1E,
+  on tile[12] : XS1_PORT_1E,
+  on tile[16] : XS1_PORT_1E,
+  on tile[20] : XS1_PORT_1E,
+  on tile[24] : XS1_PORT_1E,
+  on tile[28] : XS1_PORT_1E,
+  on tile[32] : XS1_PORT_1E,
+  on tile[36] : XS1_PORT_1E,
+  on tile[40] : XS1_PORT_1E,
+  on tile[44] : XS1_PORT_1E,
+  on tile[48] : XS1_PORT_1E,
+  on tile[52] : XS1_PORT_1E,
+  on tile[56] : XS1_PORT_1E,
+  on tile[60] : XS1_PORT_1E
 };
 
 void driver(chanend prev, chanend next);
@@ -28,11 +28,11 @@ int main()
   chan channels[17];
   
   par {
-    on stdcore[0] : driver(channels[16], channels[0]);
+    on tile[0] : driver(channels[16], channels[0]);
   
     par (int i = 0; i < 16; i++)
     {
-      on stdcore[i*4] : led_func(pled[i], channels[i], channels[i+1], i);
+      on tile[i*4] : led_func(pled[i], channels[i], channels[i+1], i);
     }
   }
 

@@ -23,8 +23,8 @@ int main()
   chan c1;
   par
   {
-    on stdcore[0] : test0();
-    on stdcore[1] : test1();
+    on tile[0] : test0();
+    on tile[1] : test1();
   }
   return 0;
 }

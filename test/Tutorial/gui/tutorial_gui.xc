@@ -11,8 +11,8 @@ int main() {
   streaming chan c;
   par
   {
-    on stdcore[0] : inputData(c);
-    on stdcore[1] : processData(c);
+    on tile[0] : inputData(c);
+    on tile[1] : processData(c);
   }
   return 0;
 }

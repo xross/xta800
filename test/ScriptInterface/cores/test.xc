@@ -7,10 +7,10 @@ void f3() {}
 
 int main() {
     par {
-    on stdcore[0] : f1();
-    on stdcore[1] : f2();
-    on stdcore[2] : f2();
-    on stdcore[3] : f3();
+    on tile[0] : f1();
+    on tile[1] : f2();
+    on tile[2] : f2();
+    on tile[3] : f3();
     }
     return 0;
 }

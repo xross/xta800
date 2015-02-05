@@ -19,7 +19,7 @@
 #include "sid_demo.h"
 #include "led_controller.h"
 
-on stdcore[0] : in port p_buttons = XS1_PORT_4D;
+on tile[0] : in port p_buttons = XS1_PORT_4D;
 
 unsigned short load_addr;
 unsigned short init_addr;

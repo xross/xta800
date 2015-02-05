@@ -19,7 +19,7 @@
 #define BITS_PER_WORD 24
 #define MAX_ERRORS 10
 
-on stdcore[1] : out port statusP = XS1_PORT_4A;
+on tile[1] : out port statusP = XS1_PORT_4A;
 
 unsigned int checkWord(unsigned int data)
 {

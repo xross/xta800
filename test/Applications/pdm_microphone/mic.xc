@@ -26,9 +26,9 @@
 
 //#define PRINT_SAMPLES
 
-clock               b_pdm  = on stdcore[0] : XS1_CLKBLK_3;
-out         port    p_pdmc = on stdcore[0] : XS1_PORT_1J;
-buffered in port:32 p_pdmd = on stdcore[0] : XS1_PORT_1O;  // get the 1bit samples 32 at a time
+clock               b_pdm  = on tile[0] : XS1_CLKBLK_3;
+out         port    p_pdmc = on tile[0] : XS1_PORT_1J;
+buffered in port:32 p_pdmd = on tile[0] : XS1_PORT_1O;  // get the 1bit samples 32 at a time
 
 // Microphone clock = 100MHz / 86 = 1.163MHz
 // Stage1 filter runs at 1.163MHz, but is decimated to have output samples at 290kHz

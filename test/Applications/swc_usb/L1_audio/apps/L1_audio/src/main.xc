@@ -35,36 +35,36 @@ XUD_EpType epTypeTableIn[XUD_EP_COUNT] = {   XUD_EPTYPE_CTL,
                                              XUD_EPTYPE_DIS};
 
 /* USB Port declarations */
-on stdcore[USB_CORE] : in port  p_usb_clk       = UIFM_USB_CLK_PORT;
-on stdcore[USB_CORE] : out port reg_write_port  = UIFM_REG_WRITE_PORT;
-on stdcore[USB_CORE] : in  port reg_read_port   = UIFM_REG_READ_PORT;
-on stdcore[USB_CORE] : in  port flag0_port      = UIFM_FLAG_0_PORT;
-on stdcore[USB_CORE] : in  port flag1_port      = UIFM_FLAG_1_PORT;
-on stdcore[USB_CORE] : in  port flag2_port      = UIFM_FLAG_2_PORT;
-on stdcore[USB_CORE] : out port p_usb_txd       = UIFM_TX_DATA_PORT;
-on stdcore[USB_CORE] :     port p_usb_rxd       = UIFM_RX_DATA_PORT;
+on tile[USB_CORE] : in port  p_usb_clk       = UIFM_USB_CLK_PORT;
+on tile[USB_CORE] : out port reg_write_port  = UIFM_REG_WRITE_PORT;
+on tile[USB_CORE] : in  port reg_read_port   = UIFM_REG_READ_PORT;
+on tile[USB_CORE] : in  port flag0_port      = UIFM_FLAG_0_PORT;
+on tile[USB_CORE] : in  port flag1_port      = UIFM_FLAG_1_PORT;
+on tile[USB_CORE] : in  port flag2_port      = UIFM_FLAG_2_PORT;
+on tile[USB_CORE] : out port p_usb_txd       = UIFM_TX_DATA_PORT;
+on tile[USB_CORE] :     port p_usb_rxd       = UIFM_RX_DATA_PORT;
 #ifdef G1
-on stdcore[USB_CORE] : out port p_usb_rst       = XS1_PORT_1I; // XDK PORT_1B, XTR: 1k, XVB: 1D, XTAG: 1I
+on tile[USB_CORE] : out port p_usb_rst       = XS1_PORT_1I; // XDK PORT_1B, XTR: 1k, XVB: 1D, XTAG: 1I
 #else
-on stdcore[USB_CORE] : out port p_usb_rst       = XS1_PORT_1K; // XDK PORT_1B, XTR: 1k
+on tile[USB_CORE] : out port p_usb_rst       = XS1_PORT_1K; // XDK PORT_1B, XTR: 1k
 #endif
 
-on stdcore[USB_CORE] : clock    clk             = XS1_CLKBLK_3;  // USB clock
+on tile[USB_CORE] : clock    clk             = XS1_CLKBLK_3;  // USB clock
 
 // audio IOs
-on stdcore[0] : buffered out port:32 p_sdout = XS1_PORT_1D;  // also OSC_SEL
-on stdcore[0] : buffered in port:32 p_sdin = XS1_PORT_1A;  
-on stdcore[0] : buffered out port:32 p_lrclk = XS1_PORT_1C;
-on stdcore[0] : buffered out port:32 p_bclk = XS1_PORT_1K;
-on stdcore[0] : port p_mclk = XS1_PORT_1M;
-on stdcore[0] : port p_codec_rst_n = XS1_PORT_1J;  // also CLK for OSC_SEL D-type
-on stdcore[0] : buffered out port:32 p_spdif_tx = XS1_PORT_1L;
+on tile[0] : buffered out port:32 p_sdout = XS1_PORT_1D;  // also OSC_SEL
+on tile[0] : buffered in port:32 p_sdin = XS1_PORT_1A;  
+on tile[0] : buffered out port:32 p_lrclk = XS1_PORT_1C;
+on tile[0] : buffered out port:32 p_bclk = XS1_PORT_1K;
+on tile[0] : port p_mclk = XS1_PORT_1M;
+on tile[0] : port p_codec_rst_n = XS1_PORT_1J;  // also CLK for OSC_SEL D-type
+on tile[0] : buffered out port:32 p_spdif_tx = XS1_PORT_1L;
 
 
-on stdcore[0] : port p_spi_flash_ss = XS1_PORT_1B;
+on tile[0] : port p_spi_flash_ss = XS1_PORT_1B;
 	
-on stdcore[USB_CORE] : clock    clk_audio_mclk             = XS1_CLKBLK_1;  
-on stdcore[USB_CORE] : clock    clk_audio_bclk             = XS1_CLKBLK_2;  
+on tile[USB_CORE] : clock    clk_audio_mclk             = XS1_CLKBLK_1;  
+on tile[USB_CORE] : clock    clk_audio_bclk             = XS1_CLKBLK_2;  
 
 	
 int XUD_SetData(chanend c, unsigned char buffer[], unsigned datalength, unsigned pidToggle, unsigned startIndex);
@@ -421,20 +421,20 @@ int main()
     {
 
         /* USB Interface, must be on its own core */
-        on stdcore[USB_CORE] : XUD_Manager( c_ep0_out, c_ep0_in, 
+        on tile[USB_CORE] : XUD_Manager( c_ep0_out, c_ep0_in, 
                                             c_ep1_out, c_ep1_in, 
                                             c_ep2_out, c_ep2_in,   
                                             c_ep3_out, c_ep3_in, 
                                             c_sof, epTypeTableOut, epTypeTableIn);  
         /* Endpoint 0 */
-        on stdcore[USB_CORE] : Endpoint0( c_ep0_out, c_ep0_in);
+        on tile[USB_CORE] : Endpoint0( c_ep0_out, c_ep0_in);
 
-        on stdcore[USB_CORE] : Endpoint2_in(c_ep2_in, c_aud_adc);
-        on stdcore[USB_CORE] : Endpoint1_out(c_ep1_out, c_aud_dac);
-        on stdcore[USB_CORE] : Endpoint1_in(c_ep1_in);
+        on tile[USB_CORE] : Endpoint2_in(c_ep2_in, c_aud_adc);
+        on tile[USB_CORE] : Endpoint1_out(c_ep1_out, c_aud_dac);
+        on tile[USB_CORE] : Endpoint1_in(c_ep1_in);
      
-        //on stdcore[USB_CORE] : dacFast(c_aud) ;
-        on stdcore[USB_CORE] : audio(c_aud_dac, c_aud_adc) ;
+        //on tile[USB_CORE] : dacFast(c_aud) ;
+        on tile[USB_CORE] : audio(c_aud_dac, c_aud_adc) ;
         
         
     }

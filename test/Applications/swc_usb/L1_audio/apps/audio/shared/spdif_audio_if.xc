@@ -76,7 +76,7 @@ extern int parseSpDif(in buffered port:4 i, chanend output, int unused, clock cl
 extern void parseAdat48000(in buffered port:32 adatRx, chanend dataOut);
 extern void parseAdat44100(in buffered port:32 adatRx, chanend dataOut);
 
-//on stdcore[2] : out port p_leds                  = XS1_PORT_8D;
+//on tile[2] : out port p_leds                  = XS1_PORT_8D;
 
 void adat_receiver(clock clk, in buffered port:32 p, chanend adatReceivedData) {
     set_clock_div(clk, 1); 

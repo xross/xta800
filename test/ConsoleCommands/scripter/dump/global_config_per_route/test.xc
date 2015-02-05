@@ -16,10 +16,10 @@ int d() {
 
 int main() {
     par {
-        on stdcore[0] : a();
-        on stdcore[1] : b();
-        on stdcore[2] : c();
-        on stdcore[3] : d();
+        on tile[0] : a();
+        on tile[1] : b();
+        on tile[2] : c();
+        on tile[3] : d();
     }
     return 0;
 }

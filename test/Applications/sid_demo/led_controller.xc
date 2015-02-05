@@ -18,11 +18,11 @@
 
 #include "led_controller.h"
 
-on stdcore[0] : out port p_ledA = XS1_PORT_4A;
-on stdcore[0] : out port p_ledB = XS1_PORT_4B;
-on stdcore[0] : out port p_ledC = XS1_PORT_4C;
-on stdcore[0] : out port p_ledG = XS1_PORT_1E;
-on stdcore[0] : out port p_ledR = XS1_PORT_1F;
+on tile[0] : out port p_ledA = XS1_PORT_4A;
+on tile[0] : out port p_ledB = XS1_PORT_4B;
+on tile[0] : out port p_ledC = XS1_PORT_4C;
+on tile[0] : out port p_ledG = XS1_PORT_1E;
+on tile[0] : out port p_ledR = XS1_PORT_1F;
 
 // The red LEDs are brighter so scale the values to match the green LEDs
 #define LED_SCALE_R 96
