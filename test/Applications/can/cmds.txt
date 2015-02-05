@@ -1,9 +1,9 @@
 # load "C:\Documents and Settings\peter.XMOS\workspace\CAN\Release\CAN.xe"
 
-#config threads stdcore[0] 8
+#config threads tile[0] 8
 remove core *
-add core stdcore[0]
-add core stdcore[1]
+add tileref tile[0]
+add tileref tile[1]
 
 #
 # RX loop: worst-case time is where the synchronization brings edge forward by 4 samples (4 * 40 = 160ns)

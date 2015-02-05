@@ -7,8 +7,8 @@ analyze path 0x10000 0x10002
 
 invalid command with arguments
 
-config core stdcore[9]
-config core stdcore[0]
+config tileref tile[9]
+config tileref tile[0]
 config freq 999
 config threads 99
 config srcpaths /test/path/srcpath/

@@ -13,16 +13,16 @@ system("xcc -target=$target -march=$arch test.xc -o $genDir/test.xe > $genDir/co
 system("@ARGV load $genDir/test.xe " .
        "-status " .
        "list cores " .
-       "-remove core stdcore[0] " .
-       "-remove core stdcore[1] " .
-       "-remove core stdcore[2] " .
-       "-remove core stdcore[3] " .
+       "-remove tileref tile[0] " .
+       "-remove tileref tile[1] " .
+       "-remove tileref tile[2] " .
+       "-remove tileref tile[3] " .
        "-status " .
        "list cores " .
-       "-add core stdcore[0] " .
-       "-add core stdcore[1] " .
-       "-add core stdcore[2] " .
-       "-add core stdcore[3] " .
+       "-add tileref tile[0] " .
+       "-add tileref tile[1] " .
+       "-add tileref tile[2] " .
+       "-add tileref tile[3] " .
        "-status " .
        "list cores " .
        "exit > $genDir/cores.txt 2>&1");

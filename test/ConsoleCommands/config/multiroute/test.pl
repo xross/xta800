@@ -14,7 +14,7 @@ system("@ARGV load $genDir/test.xe " .
        "analyze function main " .
        "-set instructiontime - main 100.0 ns " .
        "-print structure - " .
-       "-config threads stdcore[0] 1 " .
+       "-config threads tile[0] 1 " .
        "-set instructiontime - main 100.0 ns " .
        "-print structure - " .
        "-exit > $genDir/multiroute.txt 2>&1");

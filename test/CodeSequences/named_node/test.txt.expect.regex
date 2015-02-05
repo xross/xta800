@@ -9,22 +9,22 @@ Frequency: NodeId A \(JTAG chain index 0, routing id \d+\), 100.0 MHz
  NodeId B \(JTAG chain index 1, routing id \d+\), 200.0 MHz
  NodeId C \(JTAG chain index 2, routing id \d+\), 300.0 MHz
  NodeId D \(JTAG chain index 3, routing id \d+\), 400.0 MHz
-stdcore\[0\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[1\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[2\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[3\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[4\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[5\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[6\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[7\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[8\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[9\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[10\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[11\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[12\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[13\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[14\], Tasks: 1 \(Debug information avaliable\)
-stdcore\[15\], Tasks: 1 \(Debug information avaliable\)
+tile\[0\], Tasks: 1 \(Debug information avaliable\)
+tile\[1\], Tasks: 1 \(Debug information avaliable\)
+tile\[2\], Tasks: 1 \(Debug information avaliable\)
+tile\[3\], Tasks: 1 \(Debug information avaliable\)
+tile\[4\], Tasks: 1 \(Debug information avaliable\)
+tile\[5\], Tasks: 1 \(Debug information avaliable\)
+tile\[6\], Tasks: 1 \(Debug information avaliable\)
+tile\[7\], Tasks: 1 \(Debug information avaliable\)
+tile\[8\], Tasks: 1 \(Debug information avaliable\)
+tile\[9\], Tasks: 1 \(Debug information avaliable\)
+tile\[10\], Tasks: 1 \(Debug information avaliable\)
+tile\[11\], Tasks: 1 \(Debug information avaliable\)
+tile\[12\], Tasks: 1 \(Debug information avaliable\)
+tile\[13\], Tasks: 1 \(Debug information avaliable\)
+tile\[14\], Tasks: 1 \(Debug information avaliable\)
+tile\[15\], Tasks: 1 \(Debug information avaliable\)
 Loaded Route\(0\): function: f 
 Loaded Route\(1\): function: f 
 Loaded Route\(2\): function: f 

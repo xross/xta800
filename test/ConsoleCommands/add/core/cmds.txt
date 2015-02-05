@@ -3,8 +3,8 @@ list cores
 remove core *
 status
 list cores
-add core stdcore[1]
-add core stdcore[2]
+add tileref tile[1]
+add tileref tile[2]
 status
 list cores
 remove core *

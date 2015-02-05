@@ -4,7 +4,7 @@
 # so a route will not be created.
 
 remove core *
-add core stdcore[0]
+add tileref tile[0]
 list endpoints
 analyze path output1 input1
 analyze path output0 input0
@@ -14,7 +14,7 @@ analyze path output0 input0
 # so a route will not be created.
 
 remove core *
-add core stdcore[1]
+add tileref tile[1]
 list endpoints
 analyze path output0 input0
 analyze path output1 input1

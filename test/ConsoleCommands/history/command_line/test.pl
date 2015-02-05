@@ -25,7 +25,7 @@ system("@ARGV  " .
        "-add pathtime 0x10000 0x10002 10001 ns " .
 
        "-config freq 0 999 " .
-       "-config threads stdcore[0] 99 " .
+       "-config threads tile[0] 99 " .
        "-config case best " .
        "-config case worst " .
        "-config srcpaths /test/path/srcpath/ " .

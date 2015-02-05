@@ -9,10 +9,10 @@ def displayCores():
 try:
     displayCores()
 
-    xta.removeCore("stdcore[0]")
+    xta.removeCore("tile[0]")
     displayCores()
 
-    xta.addCore("stdcore[0]")
+    xta.addCore("tile[0]")
     displayCores()
 
 except java.lang.Exception, e:

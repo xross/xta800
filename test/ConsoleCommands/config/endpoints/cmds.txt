@@ -24,7 +24,7 @@ echo "============= analyze path"
 analyze path
 
 echo "============= change active cores"
-add core stdcore[0]
+add tileref tile[0]
 
 echo "============= display endopints"
 debug frompoints

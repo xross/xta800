@@ -20,7 +20,7 @@ if (!$noBuild) {
     system("xsim --max-cycles 10000 -t --enable-fnop-tracing $genDir/test.xe >  $suite.trace ");
 }
 system("@ARGV load $genDir/test.xe " .
-        "-config threads stdcore[0] 4 " .
+        "-config threads tile[0] 4 " .
         "-analyse function test " .
         "-set loop - inner_loop_1 18 " .
         "-set loopscope - inner_loop_1 a " .

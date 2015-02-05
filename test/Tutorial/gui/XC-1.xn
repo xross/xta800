@@ -5,14 +5,14 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
   <Type>Board</Type>
 
   <Declarations>
-    <Declaration>core stdcore[4]</Declaration>
+    <Declaration>tileref tile[4]</Declaration>
   </Declarations>
 
   <Packages>
     <Package Id="0" Type="XS1-G4B-FB512">
       <Nodes>
         <Node Id="0" InPackageId="0" Type="XS1-G4B">
-          <Core Number="0" Reference="stdcore[0]">
+          <Tile Number="0" Reference="tile[0]">
             <Port Location="XS1_PORT_4A" Name="PORT_CLOCKLED_0"/>
             <Port Location="XS1_PORT_4B" Name="PORT_CLOCKLED_1"/>
             <Port Location="XS1_PORT_4C" Name="PORT_CLOCKLED_2"/>
@@ -27,9 +27,9 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
             <Port Location="XS1_PORT_1K" Name="PORT_SPEAKER"/>
             <Port Location="XS1_PORT_8D" Name="PORT_BUTTONLED"/>
           </Core>
-          <Core Number="1" Reference="stdcore[1]"/>
-          <Core Number="2" Reference="stdcore[2]"/>
-          <Core Number="3" Reference="stdcore[3]"/>
+          <Tile Number="1" Reference="tile[1]"/>
+          <Tile Number="2" Reference="tile[2]"/>
+          <Tile Number="3" Reference="tile[3]"/>
         </Node>
       </Nodes>
     </Package>

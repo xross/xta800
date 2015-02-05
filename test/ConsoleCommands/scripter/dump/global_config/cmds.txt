@@ -1,4 +1,4 @@
-config threads stdcore[0] 5
+config threads tile[0] 5
 config freq 0 100
 
 analyze function main

@@ -1,10 +1,10 @@
 remove core *
-add core stdcore[0]
+add tileref tile[0]
 analyze path test.xc:16 test.xc:17
 analyze path test.xc:7 test.xc:8
 
 remove core *
-add core stdcore[1]
+add tileref tile[1]
 analyze path test.xc:7 test.xc:8
 analyze path test.xc:16 test.xc:17
 

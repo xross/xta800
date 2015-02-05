@@ -4,47 +4,47 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
 
   <Declarations>
-    <Declaration>core stdcore[16]</Declaration>
+    <Declaration>tileref tile[16]</Declaration>
   </Declarations>
 
   <Packages>
     <Package id="0" Type="XS1-G4A-FB512">
       <Nodes>
         <Node Id="0" InPackageId="0" Type="XS1-G4A">
-          <Core Number="0" Reference="stdcore[0]"/>
-          <Core Number="1" Reference="stdcore[1]"/>
-          <Core Number="2" Reference="stdcore[2]"/>
-          <Core Number="3" Reference="stdcore[3]"/>
+          <Tile Number="0" Reference="tile[0]"/>
+          <Tile Number="1" Reference="tile[1]"/>
+          <Tile Number="2" Reference="tile[2]"/>
+          <Tile Number="3" Reference="tile[3]"/>
         </Node>
       </Nodes>
     </Package>
     <Package id="1" Type="XS1-G4A-FB512">
       <Nodes>
         <Node Id="1" InPackageId="0" Type="XS1-G4A">
-          <Core Number="0" Reference="stdcore[4]"/>
-          <Core Number="1" Reference="stdcore[5]"/>
-          <Core Number="2" Reference="stdcore[6]"/>
-          <Core Number="3" Reference="stdcore[7]"/>
+          <Tile Number="0" Reference="tile[4]"/>
+          <Tile Number="1" Reference="tile[5]"/>
+          <Tile Number="2" Reference="tile[6]"/>
+          <Tile Number="3" Reference="tile[7]"/>
         </Node>
       </Nodes>
     </Package>
     <Package id="2" Type="XS1-G4A-FB512">
       <Nodes>
         <Node Id="2" InPackageId="0" Type="XS1-G4A">
-          <Core Number="0" Reference="stdcore[8]"/>
-          <Core Number="1" Reference="stdcore[9]"/>
-          <Core Number="2" Reference="stdcore[10]"/>
-          <Core Number="3" Reference="stdcore[11]"/>
+          <Tile Number="0" Reference="tile[8]"/>
+          <Tile Number="1" Reference="tile[9]"/>
+          <Tile Number="2" Reference="tile[10]"/>
+          <Tile Number="3" Reference="tile[11]"/>
         </Node>
       </Nodes>
     </Package>
     <Package id="3" Type="XS1-G4A-FB512">
       <Nodes>
         <Node Id="3" InPackageId="0" Type="XS1-G4A">
-          <Core Number="0" Reference="stdcore[12]"/>
-          <Core Number="1" Reference="stdcore[13]"/>
-          <Core Number="2" Reference="stdcore[14]"/>
-          <Core Number="3" Reference="stdcore[15]"/>
+          <Tile Number="0" Reference="tile[12]"/>
+          <Tile Number="1" Reference="tile[13]"/>
+          <Tile Number="2" Reference="tile[14]"/>
+          <Tile Number="3" Reference="tile[15]"/>
         </Node>
       </Nodes>
     </Package>

@@ -19,7 +19,7 @@ echo "Cores 0"
 echo "----------------------"
 remove route *
 remove core *
-add core stdcore[0]
+add tileref tile[0]
 analyze function f
 set required - 20 us
 print summary
@@ -29,8 +29,8 @@ echo "Cores 0 1"
 echo "----------------------"
 remove route *
 remove core *
-add core stdcore[0]
-add core stdcore[1]
+add tileref tile[0]
+add tileref tile[1]
 analyze function f
 set required - 20 us
 print summary
@@ -40,9 +40,9 @@ echo "Core 0 1 2"
 echo "----------------------"
 remove route *
 remove core *
-add core stdcore[0]
-add core stdcore[1]
-add core stdcore[2]
+add tileref tile[0]
+add tileref tile[1]
+add tileref tile[2]
 analyze function f
 set required - 20 us
 print summary
@@ -52,10 +52,10 @@ echo "Core 0 1 2 3"
 echo "----------------------"
 remove route *
 remove core *
-add core stdcore[0]
-add core stdcore[1]
-add core stdcore[2]
-add core stdcore[3]
+add tileref tile[0]
+add tileref tile[1]
+add tileref tile[2]
+add tileref tile[3]
 analyze function f
 set required - 20 us
 print summary

@@ -10,7 +10,7 @@
 
 #if !defined(__ASSEMBLER__)
 /* Core array declaration. */
-extern core stdcore[4];
+extern tileref tile[4];
 
 #endif
 #if !defined(__ASSEMBLER__)

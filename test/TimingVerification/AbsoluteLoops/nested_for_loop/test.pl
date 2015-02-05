@@ -21,7 +21,7 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "-config threads stdcore[0] 4 " .
+        "-config threads tile[0] 4 " .
         "-analyse function test " .
         "-set loop - outer_outer_loop 3 " .
         "-set loop - outer_loop 6 " .

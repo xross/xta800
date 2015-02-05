@@ -13,10 +13,10 @@ int f(int i) {
 
 int main() {
   par {
-    on stdcore[0] : f(10);
-    on stdcore[1] : f(10);
-    on stdcore[2] : f(10);
-    on stdcore[3] : f(10);
+    on tile[0] : f(10);
+    on tile[1] : f(10);
+    on tile[2] : f(10);
+    on tile[3] : f(10);
   }
   return 0;
 }

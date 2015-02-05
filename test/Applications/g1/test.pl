@@ -13,9 +13,9 @@ if (!$noBuild) {
 }
 
 system("@ARGV load $genDir/test.xe " .
-        "remove core stdcore[0] " .
-        "remove core stdcore[2] " .
-        "remove core stdcore[3] " .
+        "remove tileref tile[0] " .
+        "remove tileref tile[2] " .
+        "remove tileref tile[3] " .
 
         "analyse path sdr_input0_0 sdr_input0_1 " .
         "set required - 333 ns " .

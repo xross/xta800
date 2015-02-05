@@ -10,7 +10,7 @@
 
 #ifdef __XC__
 /* Core array declaration. */
-extern core stdcore[4];
+extern tileref tile[4];
 #endif
 
 #ifdef __XC__
