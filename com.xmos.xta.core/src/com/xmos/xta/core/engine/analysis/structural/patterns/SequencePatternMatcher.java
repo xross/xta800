@@ -34,6 +34,7 @@ public class SequencePatternMatcher extends PatternMatcher {
             }
         }
 
+        // Remove CfgNullNode from the end.
         CfgNode lastNode = pathList.getLast();
         if ((lastNode instanceof CfgNullNode) && pathList.size() > 1) {
             CfgNode prev = pathList.get(pathList.size()-2);
@@ -139,32 +140,9 @@ public class SequencePatternMatcher extends PatternMatcher {
     }
 
     protected void updateGraph(LinkedList<CfgNode> pathList, Collection<CfgNode> workingSet, CfgNode treeStart) {
-
         CfgNode path = createStructuralNode(pathList);
-
-        if (pathList.contains(treeStart)) {
-            m_treeStart = path;
-        } else {
-            m_treeStart = treeStart;
-        }
-
-        CfgNode startNodeInPath = pathList.getFirst();
-        CfgNode endNodeInPath = pathList.getLast();
-
-        for (CfgNode prev : startNodeInPath.getPrevNodes()) {
-            path.addPrevNode(prev);
-
-            prev.removeNextNode(startNodeInPath);
-            //prev.getNextNodes().remove(startNodeInPath);
-            prev.addNextNode(path);
-        }
-        for (CfgNode next : endNodeInPath.getNextNodes()) {
-            path.addNextNode(next);
-
-            next.removePrevNode(endNodeInPath);
-            next.addPrevNode(path);
-        }
-
+        m_treeStart = pathList.contains(treeStart)? path : treeStart;
+        CfgNode.Replace(pathList.getFirst(), pathList.getLast(), path);
         workingSet.removeAll(pathList);
         workingSet.add(path);
     }

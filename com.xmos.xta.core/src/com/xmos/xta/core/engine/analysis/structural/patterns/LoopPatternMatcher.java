@@ -63,7 +63,6 @@ public class LoopPatternMatcher extends PatternMatcher {
             if (!intersection.contains(prev)) {
                 loop.addPrevNode(prev);
                 prev.removeNextNode(header);
-                //prev.getNextNodes().remove(base);
                 prev.addNextNode(loop);
             }
         }
@@ -73,7 +72,6 @@ public class LoopPatternMatcher extends PatternMatcher {
                 loop.addNextNode(next);
 
                 next.removePrevNode(header);
-                //next.getPrevNodes().remove(base);
                 next.addPrevNode(loop);
             }
         }
