@@ -45,6 +45,7 @@ public class ConditionalNode extends Node {
 
     public Node copyRouteStructure() {
         ConditionalNode sn = new ConditionalNode();
+        sn.copyBase(this);
         for (Node option : m_options) {
             Node clone = option.copyRouteStructure();
             sn.m_options.add(clone);
@@ -148,8 +149,8 @@ public class ConditionalNode extends Node {
     }
 
     public void buildListUp(List<Node> nodeList, Node start) {
-        if (m_parent!= null) {
-            m_parent.buildListUp(nodeList, this);
+        if (getParent() != null) {
+            getParent().buildListUp(nodeList, this);
         }
     }
 
@@ -163,7 +164,7 @@ public class ConditionalNode extends Node {
     }
 
     public Node getSuccessor(Node child) {
-        return m_parent.getSuccessor(this);
+        return getParent().getSuccessor(this);
     }
 
     private Collection<Node> getAliveOptions() {

@@ -21,8 +21,7 @@ public class CommonMethods {
         for (CfgNode next : node.getNextNodes()) {
 
             assert(node instanceof CfgContainerNode);
-            Node strNode = ((CfgContainerNode)node).getNode().copyRouteStructure();
-            CfgNode newNode = new CfgContainerNode(strNode);
+            CfgNode newNode = node.copy();
 
             newNodes.add(newNode);
             next.addPrevNode(newNode);
@@ -58,8 +57,7 @@ public class CommonMethods {
         for (CfgNode prev : node.getPrevNodes()){
 
             assert(node instanceof CfgContainerNode);
-            Node strNode = ((CfgContainerNode)node).getNode().copyRouteStructure();
-            CfgNode newNode = new CfgContainerNode(strNode);
+            CfgNode newNode = node.copy();
 
             newNodes.add(newNode);
 

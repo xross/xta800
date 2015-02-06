@@ -86,6 +86,7 @@ public class IssueNode extends Node {
 
     public Node copyRouteStructure() {
         IssueNode in = new IssueNode(this);
+        in.copyBase(this);
         in.m_attributes = m_attributes;
         return in;
     }
@@ -193,8 +194,8 @@ public class IssueNode extends Node {
 
     public void buildListUp(List<Node> nodeList, Node start) {
         assert(start == null);
-        if(m_parent!= null){
-            m_parent.buildListUp(nodeList, this);
+        if(getParent() != null){
+            getParent().buildListUp(nodeList, this);
         }
         nodeList.add(this);
     }

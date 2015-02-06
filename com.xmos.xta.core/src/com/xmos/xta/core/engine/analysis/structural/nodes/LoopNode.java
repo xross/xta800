@@ -45,6 +45,7 @@ public class LoopNode extends Node {
 
     public Node copyRouteStructure() {
         LoopNode ln = new LoopNode();
+        ln.copyBase(this);
         for (Node loop : m_loops) {
             Node clone = loop.copyRouteStructure();
             ln.m_loops.add(clone);
@@ -164,8 +165,8 @@ public class LoopNode extends Node {
     }
 
     public void buildListUp(List<Node> nodeList, Node start) {
-        if (m_parent!= null){
-            m_parent.buildListUp(nodeList, this);
+        if (getParent() != null){
+            getParent().buildListUp(nodeList, this);
         }
 
         if (m_loops.contains(start)){

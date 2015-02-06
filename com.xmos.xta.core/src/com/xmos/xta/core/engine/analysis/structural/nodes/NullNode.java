@@ -14,7 +14,9 @@ public class NullNode extends Node {
     }
 
     public Node copyRouteStructure() {
-        return new NullNode();
+        NullNode nn = new NullNode();
+        nn.copyBase(this);
+        return nn;
     }
 
     public NodeAttributes getAttributes(boolean modifier) {

@@ -38,6 +38,7 @@ public class InfiniteLoopNode extends Node {
 
     public Node copyRouteStructure() {
         InfiniteLoopNode ln = new InfiniteLoopNode();
+        ln.copyBase(this);
         for (Node loop : m_loops) {
             Node clone = loop.copyRouteStructure();
             ln.m_loops.add(clone);
@@ -135,8 +136,8 @@ public class InfiniteLoopNode extends Node {
     }
 
     public void buildListUp(List<Node> nodeList, Node start) {
-        if(m_parent!= null){
-            m_parent.buildListUp(nodeList, this);
+        if(getParent() != null){
+            getParent().buildListUp(nodeList, this);
         }
         if(m_loops.contains(start)){
             m_loopHeader.buildListDown(nodeList);

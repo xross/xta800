@@ -11,9 +11,9 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseSta
 import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class BlockNode extends Node {
-    private boolean m_ownsOwnAttrib;
-    private BlockNodeAttributes m_attributes;
     private List<IssueNode> m_issueNodes;
+    private BlockNodeAttributes m_attributes;
+    private boolean m_ownsOwnAttrib;
 
     public BlockNode(List<IssueNode> issueNodes) {
         super();
@@ -31,10 +31,12 @@ public class BlockNode extends Node {
 
     public Node copyRouteStructure() {
         BlockNode bn = new BlockNode();
+        bn.copyBase(this);
         for (IssueNode issueNode : m_issueNodes){
             bn.m_issueNodes.add((IssueNode) issueNode.copyRouteStructure());
         }
         bn.m_attributes = m_attributes;
+        m_ownsOwnAttrib = false;
         return bn;
     }
 
@@ -103,8 +105,8 @@ public class BlockNode extends Node {
     }
 
     public void buildListUp(List<Node> nodeList, Node start) {
-        if(m_parent!= null){
-            m_parent.buildListUp(nodeList, this);
+        if(getParent() != null){
+            getParent().buildListUp(nodeList, this);
         }
         for(IssueNode issueNode : m_issueNodes){
             if(issueNode == start) break;

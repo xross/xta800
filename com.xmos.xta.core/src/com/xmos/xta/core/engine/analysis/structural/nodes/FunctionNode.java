@@ -57,13 +57,14 @@ public class FunctionNode extends Node {
 
     public void getBackTrail(StringBuffer refStr) {
         super.getBackTrail(refStr);
-        if(m_parent != null){
+        if(getParent() != null){
             refStr.append(String.format("CALL:0x%x,", m_callingPc));
         }
     }
 
     public Node copyRouteStructure() {
         FunctionNode fn = new FunctionNode();
+        fn.copyBase(this);
         fn.m_functionName = m_functionName;
         fn.setUnresolved(getUnresolved());
         if (m_functionSequence != null) {
@@ -187,8 +188,8 @@ public class FunctionNode extends Node {
     }
 
     public void buildListUp(List<Node> nodeList, Node start) {
-        if(m_parent!= null){
-            m_parent.buildListUp(nodeList, this);
+        if(getParent() != null){
+            getParent().buildListUp(nodeList, this);
         }
         nodeList.add(this);
 

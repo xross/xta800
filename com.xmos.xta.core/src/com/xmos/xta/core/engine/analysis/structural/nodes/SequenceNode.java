@@ -30,6 +30,7 @@ public class SequenceNode extends Node {
 
     public Node copyRouteStructure() {
         SequenceNode pn = new SequenceNode();
+        pn.copyBase(this);
         for (Node path : m_nodes) {
             Node clone = path.copyRouteStructure();
             pn.m_nodes.add(clone);
@@ -113,8 +114,8 @@ public class SequenceNode extends Node {
     }
 
     public void buildListUp(List<Node> nodeList, Node start) {
-        if(m_parent!= null){
-            m_parent.buildListUp(nodeList, this);
+        if(getParent() != null){
+            getParent().buildListUp(nodeList, this);
         }
         for(Node node : m_nodes){
             if(node == start) break;

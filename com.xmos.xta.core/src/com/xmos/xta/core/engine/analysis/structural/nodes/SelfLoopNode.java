@@ -29,6 +29,7 @@ public class SelfLoopNode extends Node{
 
     public Node copyRouteStructure() {
         SelfLoopNode ln = new SelfLoopNode();
+        ln.copyBase(this);
         ln.m_loop = m_loop.copyRouteStructure();
         ln.m_attributes = m_attributes;
         return ln;
@@ -101,8 +102,8 @@ public class SelfLoopNode extends Node{
     }
 
     public void buildListUp(List<Node> nodeList, Node start) {
-        if(m_parent!= null){
-            m_parent.buildListUp(nodeList, this);
+        if(getParent() != null){
+            getParent().buildListUp(nodeList, this);
         }
     }
 }

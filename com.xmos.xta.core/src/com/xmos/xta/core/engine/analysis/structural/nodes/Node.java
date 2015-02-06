@@ -15,7 +15,7 @@ public abstract class Node implements Comparable<Node> {
     public static int s_numNodes;
 
     private int m_id;
-    protected Node m_parent;
+    private Node m_parent;
     private boolean m_unresolved;
     private boolean m_recursion;
     private boolean m_isFolded;
@@ -25,19 +25,19 @@ public abstract class Node implements Comparable<Node> {
         BEST,
     }
 
-    public abstract String getTypeName();
-    public abstract NodeAttributes getAttributes(boolean modifyer);
-    public abstract Node copyRouteStructure();
-    public abstract TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState);
+    public abstract String                  getTypeName();
+    public abstract NodeAttributes          getAttributes(boolean modifyer);
+    public abstract Node                    copyRouteStructure(); // must call Node.copy()
+    public abstract TraverseStatus          traverse(NodeTraverser nodeTraverser, Object clientState);
     public abstract LinkedList<Instruction> getInstructions();
     public abstract TimeDistributionBuckets getTimeSpread();
 
     //need to take a look at this one
-    public abstract long getStartPc();
+    public abstract long                    getStartPc();
 
-    public abstract List<Node> iChildren();
-    public abstract void buildListUp(List<Node> nodeList, Node start);
-    public abstract void buildListDown(List<Node> nodeList);
+    public abstract List<Node>              iChildren();
+    public abstract void                    buildListUp(List<Node> nodeList, Node start);
+    public abstract void                    buildListDown(List<Node> nodeList);
 
     public Node() {
         m_id = s_numNodes++;
@@ -59,6 +59,14 @@ public abstract class Node implements Comparable<Node> {
         m_unresolved = node.getUnresolved();
         m_recursion = node.getRecursive();
     }
+
+    void copyBase(Node node) {
+        // we don't touch the id.
+        m_parent     = node.m_parent;
+        m_unresolved = node.m_unresolved;
+        m_recursion  = node.m_recursion;
+        m_isFolded   = node.m_isFolded;
+    };
 
     public boolean isCondNode()             { return false; }
     public boolean isIssueNode()            { return false; }
