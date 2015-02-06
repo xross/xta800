@@ -271,7 +271,7 @@ public class InstructionBuffer {
             if(mimicOriginal)
                 return 1;
 
-            CfgNode prevNode = cfg.getPrevNonBranchingNode();  // A branch would have flushed the IBuff.
+            CfgInstructionNode prevNode = cfg.getPrevBranchNotTakenNode();  // A branch would have flushed the IBuff.
             while (prevNode != null && offset > 0) {
                 // We have either 1 or 2 entries.
                 // Working backwards through this entry, to see if a previous instruction fetched the 2nd entry.
@@ -287,7 +287,7 @@ public class InstructionBuffer {
                     else if(arch==Architecture.XS2A) continue; // It was in this entry BUT the fetch was discarded.
                 if (!instr.isLoadStore())
                     return 2; // It was in the entry and a fetch filled the next entry.
-                prevNode = prevNode.getPrevNonBranchingNode();
+                prevNode = prevNode.getPrevBranchNotTakenNode();
             }
             // We could have either 0 or 1 entries.
             return 1;  // If we had 0 entries, an FNOP preceded this instruction.

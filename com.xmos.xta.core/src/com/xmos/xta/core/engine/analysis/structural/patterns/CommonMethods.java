@@ -104,7 +104,7 @@ public class CommonMethods {
 
         for (CfgNode node : workingSet){
             if (node.getNextNodes().size() == 0){
-                CfgNode.connect(nullNode, node);
+                node.connectNext(nullNode);
             }
         }
 

@@ -36,7 +36,8 @@ public class SequencePatternMatcher extends PatternMatcher {
 
         CfgNode lastNode = pathList.getLast();
         if ((lastNode instanceof CfgNullNode) && pathList.size() > 1) {
-            CfgNode.disconnect(lastNode, pathList.get(pathList.size()-2));
+            CfgNode prev = pathList.get(pathList.size()-2);
+            prev.disconnectNext(lastNode);
             pathList.removeLast();
             workingSet.remove(lastNode);
         }

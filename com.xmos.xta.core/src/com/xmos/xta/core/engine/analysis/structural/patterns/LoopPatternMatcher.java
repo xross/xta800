@@ -79,7 +79,7 @@ public class LoopPatternMatcher extends PatternMatcher {
         }
 
         if (noNextNode){
-            CfgNode.connect(CommonMethods.findNullNode(workingSet), loop);
+            loop.connectNext(CommonMethods.findNullNode(workingSet));
         }
 
         workingSet.removeAll(intersection);

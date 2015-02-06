@@ -681,7 +681,7 @@ public class RouteConstructor {
             CfgNode nextNodeFromWorkingSet) {
 
         if (routeMode == RouteMode.FUNCTION){
-            CfgNode.connect(nextNodeFromWorkingSet, currentNode);
+            currentNode.connectNext(nextNodeFromWorkingSet);
             return;
         }
 
@@ -694,7 +694,7 @@ public class RouteConstructor {
         boolean nextNodeIsAnExcludedNode = stackNodesContainNode(exclusionStackNodes, currentStack, nextNode);
         if ( !nextNodeIsAnExcludedNode) {
             // We've formed a loop, so connect the current to the target thats already in the working set..
-            CfgNode.connect(nextNodeFromWorkingSet, currentNode);
+            currentNode.connectNext(nextNodeFromWorkingSet);
         }
     }
 
@@ -825,7 +825,7 @@ public class RouteConstructor {
 
                 if (current.getPrevNodes().size() == 1) {
                     CfgNode prev = current.getPrevNodes().iterator().next();
-                    CfgNode.disconnect(current, prev);
+                    prev.disconnectNext(current);
                     workingSet.remove(current);
                     if (prev.getNextNodes().size() == 0){
                         current = prev;
@@ -898,7 +898,7 @@ public class RouteConstructor {
 
     private void addToWorkingSet(CfgNode parent, CfgNode child, Set<CfgNode> workingSet) {
         if (parent!= null) {
-            CfgNode.connect(child, parent);
+            parent.connectNext(child);
         }
         workingSet.add(child);
     }

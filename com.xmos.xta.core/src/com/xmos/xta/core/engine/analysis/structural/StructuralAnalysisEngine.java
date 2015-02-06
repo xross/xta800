@@ -163,7 +163,7 @@ public class StructuralAnalysisEngine {
 
         for (CfgNode node : nexts.keySet()) {
             for (CfgNode next : nexts.get(node)) {
-                CfgNode.connect(cfgNodeToBlock.get(next), node);
+                node.connectNext(cfgNodeToBlock.get(next));
             }
         }
 
@@ -190,14 +190,14 @@ public class StructuralAnalysisEngine {
                 // node predecessors to the new null node...
                 for (CfgNode previousNode : node.getPrevNodes()) {
                     previousNode.removeNextNode(node);
-                    CfgNode.connect(newNullNode, previousNode);
+                    previousNode.connectNext(newNullNode);
                 }
                 node.getPrevNodes().clear();
                 newWorkingSet.remove(node);
 
             } else {
                 // Connects the terminal to the new null node.
-                CfgNode.connect(newNullNode, node);
+                node.connectNext(newNullNode);
             }
         }
         newWorkingSet.add(newNullNode);

@@ -68,7 +68,7 @@ public class SelfLoopPattern extends PatternMatcher {
 
             CfgNode nullNode = CommonMethods.findNullNode(workingSet);
             if (nullNode != null) {
-                CfgNode.connect(nullNode, cfgNode);
+                cfgNode.connectNext(nullNode);
             }
 
         } else {
