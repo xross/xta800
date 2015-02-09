@@ -20,6 +20,10 @@ public class ConditionalPatternMatcher extends PatternMatcher {
         super(memoryMonitor);
     }
 
+    public boolean usesDominatorTree() {
+        return false;
+    }
+
     public boolean isMatch(final CfgNode headNode, Collection<CfgNode> workingSet, final CfgNode treeStart)
             throws MemoryMonitorException {
 
@@ -105,36 +109,16 @@ public class ConditionalPatternMatcher extends PatternMatcher {
             Collection<CfgNode> workingSet, CfgNode tailNode) {
 
         // Create the new structural node.
-        CfgNode newBodyNodes = createStructuralNode(bodyNodes, hasEmptyBody);
-        newBodyNodes.addNextNode(tailNode);
-        newBodyNodes.addPrevNode(headNode);
+        Collection<Node> strCondNodes = getStructuralNodes(bodyNodes);
+        Node structuralNode = new ConditionalNode(strCondNodes, hasEmptyBody);
+        CfgNode newBodyNodes = new CfgContainerNode(structuralNode);
 
-        // Remove old bodyNodes and add newBodyNodes to head.
-        for (CfgNode bodyNode : bodyNodes)
-            headNode.removeNextNode(bodyNode);
-        headNode.addNextNode(newBodyNodes);
-
-        // Remove old bodyNodes and add newBodyNodes to tail.
-        tailNode.getPrevNodes().removeAll(bodyNodes);
-        tailNode.addPrevNode(newBodyNodes);
-
-        // Remove the explicit fall through too.
-        if (hasEmptyBody) {
-            headNode.removeNextNode(tailNode);
-            tailNode.getPrevNodes().remove(headNode);
-        }
+        CfgNode.replaceNodes(headNode, tailNode, bodyNodes, newBodyNodes);
+        // Remove the explicit fall through.
+        if (hasEmptyBody)
+            headNode.disconnectNext(tailNode);
 
         workingSet.removeAll(bodyNodes);
         workingSet.add(newBodyNodes);
-    }
-
-    public boolean usesDominatorTree() {
-        return false;
-    }
-
-    private CfgNode createStructuralNode(Collection<CfgNode> bodyNodes, boolean hasEmptyBody) {
-        Collection<Node> strCondNodes = getStructuralNodes(bodyNodes);
-        Node structuralNode = new ConditionalNode(strCondNodes, hasEmptyBody); // Also add in branching info.
-        return new CfgContainerNode(structuralNode);
     }
 }

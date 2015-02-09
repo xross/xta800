@@ -142,7 +142,7 @@ public class SequencePatternMatcher extends PatternMatcher {
     protected void updateGraph(LinkedList<CfgNode> pathList, Collection<CfgNode> workingSet, CfgNode treeStart) {
         CfgNode path = createStructuralNode(pathList);
         m_treeStart = pathList.contains(treeStart)? path : treeStart;
-        CfgNode.Replace(pathList.getFirst(), pathList.getLast(), path);
+        CfgNode.replaceRange(pathList.getFirst(), pathList.getLast(), path);
         workingSet.removeAll(pathList);
         workingSet.add(path);
     }

@@ -19,8 +19,15 @@ public class NullRemover extends PatternMatcher {
 
         m_treeStart = treeStart;
         if (currentNode instanceof CfgNullNode) {
-            assert(currentNode.getNextNodes().size() < 2);
+            // Remove any CfgNullNode linked to it.
+            //CfgNullNode next = (CfgNullNode)currentNode;
             LinkedList<CfgNode> pathList = new LinkedList<CfgNode>();
+            //while (next.getNextNodes().size() == 1 &&
+            //        next.getNextNode() instanceof CfgNullNode) {
+            //
+            //}
+
+            assert(currentNode.getNextNodes().size() < 2);
             pathList.add(currentNode); // We will keep this one.
             while (!currentNode.getNextNodes().isEmpty() &&
                     currentNode.getNextNode() instanceof CfgNullNode) {
@@ -30,7 +37,7 @@ public class NullRemover extends PatternMatcher {
                 pathList.add(currentNode);
             }
             if (pathList.size() > 1) {
-                CfgNode.Replace(pathList.getFirst(), pathList.getLast(), pathList.getFirst());
+                CfgNode.replaceRange(pathList.getFirst(), pathList.getLast(), pathList.getFirst());
                 return true;
             }
         }

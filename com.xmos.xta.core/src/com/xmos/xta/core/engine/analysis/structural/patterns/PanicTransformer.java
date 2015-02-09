@@ -33,8 +33,9 @@ public class PanicTransformer extends PatternMatcher {
             node.getDominators().size() == (dominators.size() + 1)) {
 
             checkMemory();
-            if (node.getNextNodes().size() >1 && node.getPrevNodes().size() > 1){
-                CommonMethods.wedgeDown(node, workingSet);
+            if (node.getNextNodes().size() > 1 && node.getPrevNodes().size() > 1) {
+                CfgNode.wedgeDown(node, workingSet);
+                workingSet.remove(node);
                 return true;
             }
         }

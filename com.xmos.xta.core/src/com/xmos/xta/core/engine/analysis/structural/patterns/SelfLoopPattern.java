@@ -16,65 +16,39 @@ public class SelfLoopPattern extends PatternMatcher {
         super(memoryMonitor);
     }
 
-    public boolean isMatch(CfgNode currentNode,
-            Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
+    public boolean usesDominatorTree() {
+        return false;
+    }
+
+    public boolean isMatch(CfgNode headNode, Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
 
         m_treeStart = treeStart;
 
-        if (currentNode.getNextNodes().contains(currentNode)) {
-            assert(currentNode.getPrevNodes().contains(currentNode));
-            CfgNode loop = createStructuralNode(currentNode, workingSet);
+        if (headNode.getNextNodes().contains(headNode)) {
+            assert(headNode.getPrevNodes().contains(headNode));
 
-            if (m_treeStart == currentNode) {
+            CfgNode loop = createSelfLoopStructuralNode(headNode);
+            // We currently explicitly use CfgNullNode as a terminating leaf.
+            if (headNode.getNextNodes().size() == 1) // No next node.
+                loop.connectNext(CommonMethods.findNullNode(workingSet));
+
+            if (m_treeStart == headNode)
                 m_treeStart = loop;
-            }
 
-            currentNode.removeNextNode(currentNode);
-            currentNode.removePrevNode(currentNode);
-
-            for (CfgNode next : currentNode.getNextNodes()) {
-                    next.removePrevNode(currentNode);
-                    next.addPrevNode(loop);
-                    loop.addNextNode(next);
-            }
-
-            for (CfgNode prev : currentNode.getPrevNodes()) {
-                    prev.removeNextNode(currentNode);
-                    prev.addNextNode(loop);
-                    loop.addPrevNode(prev);
-            }
-
-            assert(workingSet.contains(currentNode));
-            workingSet.remove(currentNode);
+            CfgNode.replaceNode(headNode, loop);
+            workingSet.remove(headNode);
             workingSet.add(loop);
-
             return true;
         }
         return false;
     }
 
-    public boolean usesDominatorTree() {
-        return false;
-    }
-
-    private CfgNode createStructuralNode(CfgNode currentNode, Collection<CfgNode> workingSet) {
-
-        CfgNode cfgNode = null;
+    private CfgNode createSelfLoopStructuralNode(CfgNode currentNode) {
         Node strNode = getStructuralNode(currentNode);
-
-        if (currentNode.getNextNodes().size() == 1) {
-            Node structuralNode = new InfiniteSelfLoopNode(strNode);
-            cfgNode = new CfgContainerNode(structuralNode);
-
-            CfgNode nullNode = CommonMethods.findNullNode(workingSet);
-            if (nullNode != null) {
-                cfgNode.connectNext(nullNode);
-            }
-
-        } else {
-            Node structuralNode = new SelfLoopNode(strNode);
-            cfgNode = new CfgContainerNode(structuralNode);
-        }
-        return cfgNode;
+        Node structuralNode = (currentNode.getNextNodes().size() == 1)?
+                new InfiniteSelfLoopNode(strNode) :
+                new SelfLoopNode(strNode);
+        return new CfgContainerNode(structuralNode);
     }
+
 }

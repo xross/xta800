@@ -18,89 +18,54 @@ public class LoopPatternMatcher extends PatternMatcher {
         super(memoryMonitor);
     }
 
-    public boolean isMatch(CfgNode currentNode,
-            Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
-
-        // a loop pattern is when one or more nodes are doubly attached to a
-        // single node
-        Set<CfgNode> intersection = new IteratableSet<CfgNode>(currentNode.getNextNodes());
-        intersection.retainAll(currentNode.getPrevNodes());
-        if (intersection.size() > 0) {
-            Set <CfgNode> workingIntersection = new IteratableSet<CfgNode>();
-
-            for (CfgNode loop : intersection) {
-                if (!(loop.getNextNodes().size() != 1 || !loop.getNextNodes().contains(currentNode) || loop.getPrevNodes().size() != 1)) {
-                    workingIntersection.add(loop);
-                }
-            }
-            if (workingIntersection.size() > 0 && !intersection.contains(treeStart)) {
-                updateGraph(workingIntersection, workingSet, currentNode, treeStart);
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    protected void updateGraph(Set<CfgNode> intersection, Collection<CfgNode> workingSet,
-            CfgNode header, CfgNode treeStart) {
-
-        boolean noNextNode = false;
-        if (header.getNextNodes().size() == intersection.size()) {
-            noNextNode = true;
-        }
-
-        CfgNode loop = createStructuralNode(intersection, header, noNextNode);
-
-        if (intersection.contains(treeStart) || header == treeStart){
-            m_treeStart = loop;
-        } else {
-            m_treeStart = treeStart;
-        }
-
-        for (CfgNode prev : header.getPrevNodes()) {
-            if (!intersection.contains(prev)) {
-                loop.addPrevNode(prev);
-                prev.removeNextNode(header);
-                prev.addNextNode(loop);
-            }
-        }
-
-        for (CfgNode next : header.getNextNodes()) {
-            if (!intersection.contains(next)) {
-                loop.addNextNode(next);
-
-                next.removePrevNode(header);
-                next.addPrevNode(loop);
-            }
-        }
-
-        if (noNextNode){
-            loop.connectNext(CommonMethods.findNullNode(workingSet));
-        }
-
-        workingSet.removeAll(intersection);
-        workingSet.remove(header);
-        workingSet.add(loop);
-    }
-
     public boolean usesDominatorTree() {
         return false;
     }
 
-    private CfgNode createStructuralNode(Set<CfgNode> intersection,
-            CfgNode header, boolean noNextNode) {
+    public boolean isMatch(CfgNode headNode, Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
+        assert(!headNode.getNextNodes().contains(headNode)); // Should have been picked up by SelfLoopPattern.
 
-        Node strHeader = getStructuralNode(header);
-        Collection<Node> strLoops = getStructuralNodes(intersection);
+        m_treeStart = treeStart;
 
-        Node structuralNode = null;
-        if (noNextNode){
-            structuralNode = new InfiniteLoopNode(strLoops, strHeader);
-        } else {
-            structuralNode = new LoopNode(strLoops, strHeader);
+        // A loop pattern is when one or more nodes are doubly attached to a single node (a node is both next and previous).
+        Set<CfgNode> intersection = new IteratableSet<CfgNode>(headNode.getNextNodes());
+        intersection.retainAll(headNode.getPrevNodes());
+
+        // But we only want nodes that are not attached else where.
+        Set<CfgNode> loops = new IteratableSet<CfgNode>();
+        for (CfgNode loop : intersection) {
+            assert(loop.getNextNodes().contains(headNode));
+            if (loop.getNextNodes().size() == 1 && loop.getPrevNodes().size() == 1)
+                loops.add(loop);
         }
+
+        if (!loops.isEmpty() && !loops.contains(treeStart)) {
+
+            CfgNode loopNode = createLoopStructuralNode(headNode, loops);
+            // We currently explicitly use CfgNullNode as a terminating leaf.
+            if (headNode.getNextNodes().size() == loops.size()) // No next node.
+                loopNode.connectNext(CommonMethods.findNullNode(workingSet));
+
+            if (headNode == treeStart)
+                m_treeStart = loopNode;
+
+            // N.B. Leave the headNode-loops connections intact during the replace.
+            CfgNode.replaceNode(headNode, loopNode, loops);
+
+            workingSet.remove(headNode);
+            workingSet.removeAll(loops);
+            workingSet.add(loopNode);
+            return true;
+        }
+        return false;
+    }
+
+    private CfgNode createLoopStructuralNode(CfgNode headNode, Set<CfgNode> loops) {
+        Node strHeader = getStructuralNode(headNode);
+        Collection<Node> strLoops = getStructuralNodes(loops);
+        Node structuralNode = (headNode.getNextNodes().size() == loops.size())?
+                new InfiniteLoopNode(strLoops, strHeader) :
+                new LoopNode(strLoops, strHeader);
         return new CfgContainerNode(structuralNode);
     }
 }

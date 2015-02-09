@@ -167,7 +167,7 @@ public class StructuralAnalysisEngine {
             }
         }
 
-        collateTerminals(firstNode, newWorkingSet);
+        collateTerminals(findEndPoints(firstNode), newWorkingSet);
 
         workingSet.clear();
         workingSet.addAll(newWorkingSet);
@@ -175,32 +175,23 @@ public class StructuralAnalysisEngine {
         return firstNode;
     }
 
-      private void collateTerminals(CfgNode firstNode, Set<CfgNode> newWorkingSet) {
-
-        Set<CfgNode> terminals = findEndPoints(firstNode);
-        if (terminals.size() < 2)
+      private void collateTerminals(Set<CfgNode> terminals, Set<CfgNode> newWorkingSet) {
+        if (terminals.isEmpty())
             return;
 
         // Creates a new null node which all the terminals will connect to..
         CfgNullNode newNullNode = new CfgNullNode();
-
+        newWorkingSet.add(newNullNode);
+        
         for (CfgNode node : terminals){
             if (node instanceof CfgNullNode) {
-                // This is already a null node, so we need to connect this
-                // node predecessors to the new null node...
-                for (CfgNode previousNode : node.getPrevNodes()) {
-                    previousNode.removeNextNode(node);
-                    previousNode.connectNext(newNullNode);
-                }
-                node.getPrevNodes().clear();
+                CfgNode.replaceNode(node, newNullNode);
                 newWorkingSet.remove(node);
-
             } else {
                 // Connects the terminal to the new null node.
                 node.connectNext(newNullNode);
             }
         }
-        newWorkingSet.add(newNullNode);
       }
 
     private Node buildStructure(Collection<CfgNode> workingSet, CfgNode treeStart, String jobPrefix)
