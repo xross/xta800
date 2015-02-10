@@ -814,42 +814,17 @@ public class RouteConstructor {
         return endStacks;
     }
 
-    private void removeExclusionBranches(
-            Set<CfgNode> workingSet,
-            Set<CfgNode> currentExclusions) {
-
-        while(!currentExclusions.isEmpty()){
+    private void removeExclusionBranches(Set<CfgNode> workingSet, Set<CfgNode> currentExclusions) {
+        while(!currentExclusions.isEmpty()) {
             CfgNode current = currentExclusions.iterator().next();
-
-            while(true){
-
-                if (current.getPrevNodes().size() == 1) {
-                    CfgNode prev = current.getPrevNodes().iterator().next();
-                    prev.disconnectNext(current);
-                    workingSet.remove(current);
-                    if (prev.getNextNodes().size() == 0){
-                        current = prev;
-                    } else {
-                        break;
-                    }
-
-                } else if(current.getPrevNodes().size() > 1){
-                    for(CfgNode prev : current.getPrevNodes()){
-                        prev.removeNextNode(current);
-
-                        if(prev.getNextNodes().size() == 0){
-                            currentExclusions.add(prev);
-                        }
-                    }
-                    workingSet.remove(current);
-                    break;
-
-                } else {
-                    workingSet.remove(current);
-                    break;
-                }
-            }
             currentExclusions.remove(current);
+            workingSet.remove(current);
+            Set<CfgNode> prevNodes = new IteratableSet<CfgNode>(current.getPrevNodes());
+            for(CfgNode prev : prevNodes) {
+                prev.disconnectNext(current);
+                if(prev.getNextNodes().isEmpty())
+                    currentExclusions.add(prev);
+            }
         }
     }
 
