@@ -1,7 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.patterns;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
@@ -14,30 +13,18 @@ public class NullRemover extends PatternMatcher {
         super(memoryMonitor);
     }
 
-    public boolean isMatch(CfgNode currentNode,
-            Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
-
+    public boolean isMatch(CfgNode currentNode, Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
         m_treeStart = treeStart;
         if (currentNode instanceof CfgNullNode) {
-            // Remove any CfgNullNode linked to it.
-            //CfgNullNode next = (CfgNullNode)currentNode;
-            LinkedList<CfgNode> pathList = new LinkedList<CfgNode>();
-            //while (next.getNextNodes().size() == 1 &&
-            //        next.getNextNode() instanceof CfgNullNode) {
-            //
-            //}
-
-            assert(currentNode.getNextNodes().size() < 2);
-            pathList.add(currentNode); // We will keep this one.
-            while (!currentNode.getNextNodes().isEmpty() &&
-                    currentNode.getNextNode() instanceof CfgNullNode) {
-                currentNode = currentNode.getNextNode();
-                assert(currentNode.getNextNodes().size() < 2);
-                workingSet.remove(currentNode);
-                pathList.add(currentNode);
+            // Remove multiple CfgNullNodes.
+            CfgNullNode next = (CfgNullNode)currentNode;
+            while (next.getNextNodes().size() == 1 &&
+                    next.getNextNode() instanceof CfgNullNode) {
+                next = (CfgNullNode)next.getNextNode();
+                workingSet.remove(next);
             }
-            if (pathList.size() > 1) {
-                CfgNode.replaceRange(pathList.getFirst(), pathList.getLast(), pathList.getFirst());
+            if (next != currentNode) {
+                CfgNode.replaceRange(currentNode, next, currentNode);
                 return true;
             }
         }
