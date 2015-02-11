@@ -48,7 +48,7 @@ public class DumpStackNodes extends Command {
         if (!isExecutableLoaded(engine, console))
             return;
 
-        engine.getDebugger().dumpStackNodes(getSrc(), m_reference, console);
+        engine.getDebugger().dumpBackTrails(getSrc(), m_reference, console);
     }
 }
 

@@ -14,7 +14,7 @@ public class RouteCoreContainer {
     private Reference m_reference;
     private Reference m_from;
     private Set<Reference> m_to;
-    private RouteContainer m_routeContainer;
+    private RouteContainer m_routeContainer;  // Its parent?
     private CoreId m_coreId;
     private CoreConfig m_coreConfig;
     private List<Route> m_routes;

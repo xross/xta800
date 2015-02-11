@@ -19,7 +19,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
-import com.xmos.xta.core.engine.analysis.routes.StackNode;
+import com.xmos.xta.core.engine.analysis.routes.BackTrails;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.defines.ExclusionInfo;
 import com.xmos.xta.core.engine.references.Reference;
@@ -76,12 +76,12 @@ public class Debugger {
 
             if (reference.resolve(m_engine) == Result.RESOLVED) {
                 try {
-                    for (StackNode stackNode : RouteConstructor.getPathStackNodes(
+                    for (BackTrails backTrails : RouteConstructor.getPathBackTrails(
                             m_engine.getControlFlow(activeCore),
                             m_engine.getCachedFunctionMap(activeCore),
                             reference)) {
 
-                        matchingReferences.addAll(stackNode.getBackTrails());
+                        matchingReferences.addAll(backTrails.getAsStrings());
                     }
                 } catch (AbortedException e) {
                 } catch (MemoryMonitorException e) {
@@ -117,18 +117,18 @@ public class Debugger {
         return matchingReferences;
     }
 
-    public void dumpStackNodes(CommandSource src, String refString, Console console) {
+    public void dumpBackTrails(CommandSource src, String refString, Console console) {
         for (CoreId activeCore : m_engine.getActiveCores()) {
             Reference reference = ReferenceFactory.createReference(refString,
                     ReferenceClass.ANY, activeCore);
 
             if (reference.resolve(m_engine) == Result.RESOLVED) {
                 try {
-                    for (StackNode stackNode : RouteConstructor.getPathStackNodes(
+                    for (BackTrails backTrails : RouteConstructor.getPathBackTrails(
                             m_engine.getControlFlow(activeCore),
                             m_engine.getCachedFunctionMap(activeCore),
                             reference)) {
-                        console.display(stackNode.toString());
+                        console.display(backTrails.toString());
                     }
                 } catch (AbortedException e) {
                 } catch (MemoryMonitorException e) {
@@ -160,17 +160,17 @@ public class Debugger {
     public void dumpActiveExclusions(CommandSource src, Console console) {
         for (CoreId coreId : m_engine.getActiveCores()){
 
-            List<StackNode> exclusionStackNodes = new LinkedList<StackNode>();
+            List<BackTrails> exclusionBackTrailsList = new LinkedList<BackTrails>();
             for (ExclusionInfo info : m_engine.getExclusions()) {
                 Reference ref = info.getReference();
                 if (ref.getCoreId().equals(coreId)) {
 
                     try {
-                        List<StackNode> stackNodes = RouteConstructor.getPathStackNodes(
+                        List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(
                                 m_engine.getControlFlow(coreId),
                                 m_engine.getCachedFunctionMap(coreId), ref);
 
-                        exclusionStackNodes.addAll(stackNodes);
+                        exclusionBackTrailsList.addAll(backTrailsList);
 
                     } catch (AbortedException e) {
                     } catch (MemoryMonitorException e) {
@@ -178,10 +178,10 @@ public class Debugger {
                 }
             }
 
-            if (!exclusionStackNodes.isEmpty()) {
+            if (!exclusionBackTrailsList.isEmpty()) {
                 System.out.println(coreId + ":");
-                for (StackNode exclusionStack : exclusionStackNodes){
-                    System.out.println(exclusionStack.getInstruction());
+                for (BackTrails backTrails : exclusionBackTrailsList){
+                    System.out.println(backTrails.getInstruction());
                 }
                 System.out.println("");
             }

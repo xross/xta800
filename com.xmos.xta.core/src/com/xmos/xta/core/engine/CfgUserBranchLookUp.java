@@ -3,25 +3,24 @@ package com.xmos.xta.core.engine;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
-import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.utils.BackTrail;
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.libs.core.utils.Pair;
-import com.xmos.xta.core.engine.analysis.routes.StackNode;
+import com.xmos.xta.core.engine.analysis.routes.BackTrails;
 
 public class CfgUserBranchLookUp {
 
 
-    private Map<CfgNode, List<Pair<StackNode, CfgNode>>> m_cfgNodeBranchMap;
+    private Map<CfgNode, List<Pair<BackTrails, CfgNode>>> m_cfgNodeBranchMap;
 
 
-    public CfgUserBranchLookUp(Map<CfgNode, List<Pair<StackNode, CfgNode>>> cfgNodeBranchMap){
+    public CfgUserBranchLookUp(Map<CfgNode, List<Pair<BackTrails, CfgNode>>> cfgNodeBranchMap){
         m_cfgNodeBranchMap = cfgNodeBranchMap;
     }
 
-    public Set<CfgNode> getNextNodes(Stack<CfgFunctionReferenceNode> currentStack, CfgNode node){
+    public Set<CfgNode> getNextNodes(BackTrail currentTrail, CfgNode node){
 
         if(!m_cfgNodeBranchMap.containsKey(node)){
             return node.getNextNodes();
@@ -33,18 +32,17 @@ public class CfgUserBranchLookUp {
 
         for(CfgNode mapNode : m_cfgNodeBranchMap.keySet()){
             if(mapNode == node){
-                List<Pair<StackNode, CfgNode>> pairs = m_cfgNodeBranchMap.get(mapNode);
+                List<Pair<BackTrails, CfgNode>> pairs = m_cfgNodeBranchMap.get(mapNode);
 
-                for(Pair<StackNode, CfgNode> pair : pairs){
+                for(Pair<BackTrails, CfgNode> pair : pairs){
 
-                    StackNode stack = pair.first;
+                    BackTrails backTrails = pair.first;
                     CfgNode nextNode = pair.second;
 
-                    if(stack.getNodeStacks().contains(currentStack)){
+                    if(backTrails.contains(currentTrail))
                         add.add(nextNode);
-                    } else {
+                    else
                         allNexts.remove(nextNode);
-                    }
                 }
             }
         }

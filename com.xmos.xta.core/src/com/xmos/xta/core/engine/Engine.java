@@ -48,7 +48,7 @@ import com.xmos.xta.core.engine.analysis.routes.RouteConstructor;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteDefines;
 import com.xmos.xta.core.engine.analysis.routes.RouteLoopConversion;
-import com.xmos.xta.core.engine.analysis.routes.StackNode;
+import com.xmos.xta.core.engine.analysis.routes.BackTrails;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
@@ -1379,11 +1379,11 @@ public class Engine extends Notifier implements Aborter {
             }
 
             try {
-                List<StackNode> stackNodes = RouteConstructor.getPathStackNodes(
+                List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(
                         m_controlFlows.getControlFlow(activeCore),
                         m_cachedFunctions.get(activeCore), fromRef);
 
-                if (!stackNodes.isEmpty()) {
+                if (!backTrailsList.isEmpty()) {
                     if ((fromResolved == Result.RESOLVED) && allToRefsResolved) {
                         if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
                             resolved = true;

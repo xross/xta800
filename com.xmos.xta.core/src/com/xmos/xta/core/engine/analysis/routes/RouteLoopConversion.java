@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import com.xmos.libs.core.controlflow.ControlFlow;
 import com.xmos.libs.core.controlflow.FunctionControlFlow;
@@ -12,6 +11,7 @@ import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
+import com.xmos.libs.core.utils.BackTrail;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
@@ -40,46 +40,46 @@ public class RouteLoopConversion {
     }
 
     // Given a reference, this function adds the relevant start loop
-    // and exclusion stack nodes to the given lists
-    public void updateLoopStackNodes(Reference reference,
-            List<StackNode> loopStartStackNodes,
-            List<StackNode> exclusionStackNodes)
+    // and exclusion BackTrail nodes to the given lists
+    public void updateLoopBackTrails(Reference reference,
+            List<BackTrails> loopStartBackTrailsList,
+            List<BackTrails> exclusionBackTrailsList)
         throws AbortedException, MemoryMonitorException {
 
-        process(reference, loopStartStackNodes, exclusionStackNodes);
+        process(reference, loopStartBackTrailsList, exclusionBackTrailsList);
     }
 
     private boolean process(Reference reference,
-            List<StackNode> loopStartStackNodes,
-            List<StackNode> exclusionStackNodes)
+            List<BackTrails> loopStartBackTrailsList,
+            List<BackTrails> exclusionBackTrailsList)
         throws AbortedException, MemoryMonitorException {
 
         boolean withinLoop = false;
 
-        List<StackNode> fromStackNodes = RouteConstructor.getPathStackNodes(
+        List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(
                 m_controlFlow, m_cachedFunctionMap, reference);
 
-        for (StackNode fromStackNode : fromStackNodes) {
+        for (BackTrails backTrails : backTrailsList) {
 
             // First we look for a loop in the function that contained the original reference..
             FunctionControlFlow functionControlFlow =
-                m_controlFlow.getFunctionControlFlow(fromStackNode.getInstruction());
+                m_controlFlow.getFunctionControlFlow(backTrails.getInstruction());
             IssueNode issueNode = getCachedIssueNode(
-                    functionControlFlow, fromStackNode.getInstruction());
+                    functionControlFlow, backTrails.getInstruction());
 
             Node loopNode = findLoopNode(issueNode);
             if (loopNode != null) {
-                addLoopStackNodes(loopNode, fromStackNode.getNodeStacks(),
-                        functionControlFlow, loopStartStackNodes, exclusionStackNodes);
+                addLoopBackTrails(loopNode, backTrails.getBackTrails(),
+                        functionControlFlow, loopStartBackTrailsList, exclusionBackTrailsList);
 
                 withinLoop = true;
                 break;
             }
 
-            // Next search up the various function call stacks for all the loops..
-            for (Stack<CfgFunctionReferenceNode> nodeStack : fromStackNode.getNodeStacks()) {
+            // Next search up the various function call BackTrails for all the loops..
+            for (BackTrail backTrail : backTrails.getBackTrails()) {
 
-                CfgFunctionReferenceNode functionReferenceNode = nodeStack.pop();
+                CfgFunctionReferenceNode functionReferenceNode = backTrail.pop();
                 while (functionReferenceNode != null) {
 
                     Set<CfgNode> callNodes = functionReferenceNode.getPrevNodes();
@@ -97,17 +97,13 @@ public class RouteLoopConversion {
 
                     loopNode = findLoopNode(issueNode);
                     if (loopNode != null) {
-                        List<Stack<CfgFunctionReferenceNode>> nodeStacks =
-                            new ArrayList<Stack<CfgFunctionReferenceNode>>();
-                        nodeStacks.add(nodeStack);
-
-                        addLoopStackNodes(loopNode, nodeStacks, functionControlFlow,
-                                loopStartStackNodes, exclusionStackNodes);
-
+                        List<BackTrail> newBackTrails = new ArrayList<BackTrail>();
+                        newBackTrails.add(backTrail);
+                        addLoopBackTrails(loopNode, newBackTrails, functionControlFlow, loopStartBackTrailsList, exclusionBackTrailsList);
                         withinLoop = true;
                         break;
                     }
-                    functionReferenceNode = nodeStack.pop();
+                    functionReferenceNode = backTrail.pop();
                 }
             }
         }
@@ -126,13 +122,13 @@ public class RouteLoopConversion {
         return null;
     }
 
-    private void addLoopStackNodes(Node loopNode,
-            List<Stack<CfgFunctionReferenceNode>> nodeStacks,
+    private void addLoopBackTrails(Node loopNode,
+            List<BackTrail> backTrailsList,
             FunctionControlFlow functionControlFlow,
-            List<StackNode> loopStartStackNodes,
-            List<StackNode> exclusionStackNodes) {
+            List<BackTrails> loopStartBackTrailsList,
+            List<BackTrails> exclusionBackTrailsList) {
 
-        if (loopStartStackNodes == null)
+        if (loopStartBackTrailsList == null)
             return;
 
         // For the given structural loop node, this finds the
@@ -143,7 +139,7 @@ public class RouteLoopConversion {
         // corresponding to the above structural instruction node.
         CfgInstructionNode cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getStartPc());
 
-        loopStartStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
+        loopStartBackTrailsList.add(new BackTrails(cfgInstructionNode, backTrailsList));
 
         if (loopNode.isLoopNode() || loopNode.isSelfLoopNode()) {
             Node successor = loopNode.getSuccessor();
@@ -151,7 +147,7 @@ public class RouteLoopConversion {
                 issueNode = getFirstIssueNode(successor);
                 cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getStartPc());
 
-                exclusionStackNodes.add(new StackNode(cfgInstructionNode, nodeStacks));
+                exclusionBackTrailsList.add(new BackTrails(cfgInstructionNode, backTrailsList));
             }
         }
     }

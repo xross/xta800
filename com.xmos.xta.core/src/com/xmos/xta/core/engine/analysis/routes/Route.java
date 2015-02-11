@@ -20,7 +20,7 @@ public class Route {
     private static int s_routeCount;
 
     private int m_routeId;
-    private RouteCoreContainer m_coreContainer;
+    private RouteCoreContainer m_coreContainer;  // parent?
     private RouteTiming m_timing;
     private RouteUnknowns m_unknowns;
     private Node m_baseOfRouteNode;
