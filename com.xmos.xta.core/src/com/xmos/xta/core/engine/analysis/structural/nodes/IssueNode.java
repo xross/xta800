@@ -15,7 +15,9 @@ public class IssueNode extends Node {
     private boolean m_ownsOwnAttrib;
     private IssueNodeAttributes m_attributes;
     private LinkedList<Instruction> m_insts;
-    private boolean m_isFnop;
+    //private boolean m_isFnop;
+    private int m_nextBranchNotTakenId;
+    private int m_prevBranchNotTakenId;
 
     public IssueNode(CfgInstructionNode node) {
         super(node);
@@ -23,6 +25,8 @@ public class IssueNode extends Node {
         m_insts.add(node.getInstruction());
         m_attributes = new IssueNodeAttributes(this);
         m_ownsOwnAttrib = true;
+        m_nextBranchNotTakenId = (node.getNextBranchNotTakenNode() == null)? 0 : node.getNextBranchNotTakenNode().getId();
+        m_prevBranchNotTakenId = (node.getPrevBranchNotTakenNode() == null)? 0 : node.getPrevBranchNotTakenNode().getId();
     }
 
     private IssueNode(IssueNode node) {
@@ -32,6 +36,8 @@ public class IssueNode extends Node {
             m_insts.add(instruction);
         m_attributes = node.m_attributes;
         m_ownsOwnAttrib = false;
+        m_nextBranchNotTakenId = node.m_nextBranchNotTakenId;
+        m_prevBranchNotTakenId = node.m_prevBranchNotTakenId;
     }
 
     public int getNumBytes() {
@@ -51,6 +57,13 @@ public class IssueNode extends Node {
         for (Instruction instruction : m_insts)
             if (instruction.isBranch()) return true;
         return false;
+    }
+
+    public int getNextBranchNotTakenId() {
+        return m_nextBranchNotTakenId;
+    }
+    public int getPrevBranchNotTakenId() {
+        return m_prevBranchNotTakenId;
     }
 
     public long getBranchPc() {

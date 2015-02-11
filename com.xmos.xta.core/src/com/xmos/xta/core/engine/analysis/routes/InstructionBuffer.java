@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
@@ -16,13 +15,18 @@ public class InstructionBuffer {
     private static final boolean traceTree = false;
     private static final boolean traceInstructions = false;
 
-    private Map<Integer, IBuff> m_ibStash = null;
-    private IBuff m_ib = null;
+    private IBuff m_ib = null;                            // The active IBuff state (null if we need to fetch a m_blockStartState)
+    // The following maps are temporal stores. put() & remove() are balanced. They should be empty when the traversal ends!
+    private Map<Integer, IBuff> m_blockStartState = null; // Holds starting IBuffs. Key is the first node of a block.
+    private Map<Integer, Integer> m_loopheader = null;    // Look up a loop's header-block. Key is the first node of a loop.
+    private Map<Integer, IBuff> m_loopsStartState = null; // The state when we first arrive at a loop node. Only used to verify worse case calculations.
 
     public InstructionBuffer(Architecture arch, long startPc, List<CfgInstructionNode> cfgs) {
         if(traceTree) System.out.printf("\nInstructionBuffer\n=================\n");
         m_ib = new IBuff(arch, startPc, cfgs);
-        m_ibStash = new TreeMap<Integer, IBuff>();
+        m_blockStartState = new TreeMap<Integer, IBuff>();
+        m_loopheader = new TreeMap<Integer, Integer>();
+        m_loopsStartState = new TreeMap<Integer, IBuff>();
     }
 
     public void createForks(List<Node> nodes) {
@@ -30,7 +34,7 @@ public class InstructionBuffer {
         if(traceTree) System.out.printf("Forking:");
         for (Node node : nodes) {
             if(traceTree) System.out.printf("  %d", node.getId());
-            m_ibStash.put(node.getId(), new IBuff(m_ib));
+            m_blockStartState.put(node.getId(), new IBuff(m_ib));
         }
         if(traceTree) System.out.printf("\n");
         m_ib = null;
@@ -39,33 +43,125 @@ public class InstructionBuffer {
     public void joinForks(List<Node> nodes) {
         assert(m_ib == null);
         List<IBuff> ibs = new LinkedList<IBuff>();
-        if(traceTree) System.out.printf("\nJoining:");
+        if(traceTree) System.out.printf("\nJoining Fork:");
         for (Node node : nodes) {
             if(traceTree) System.out.printf("  %d", node.getId());
-            ibs.add(m_ibStash.remove(node.getId()));
+            ibs.add(m_blockStartState.remove(node.getId()));
         }
         if(traceTree) System.out.printf("\n");
         // Pick the worst case (shortest) IBuff
-        m_ib = IBuff.shortest(ibs); // if single worst case needing fnop, add an fnop and try again!
+        m_ib = IBuff.shortest(ibs);
+        assert(m_ib != null);
+    }
+
+    public void createLoops(List<Node> nodes) {
+        assert(m_ib != null);
+        if(traceTree) System.out.printf("Looping:");
+        // N.B. We will always use a branch to loop back to the top - RL-TODO is this true?
+        m_ib.forcePendingBranch();  // make sure we are overly pessimistic.
+        int headerId = 0;
+        for (Node node : nodes) {
+            if(traceTree) System.out.printf("  %d", node.getId());
+            if (headerId == 0) {
+                headerId = node.getId();
+                m_blockStartState.put(headerId, new IBuff(m_ib));
+                m_loopsStartState.put(headerId, new IBuff(m_ib));  // This won't be changed.
+            } else
+                m_loopheader.put(node.getId(), headerId);
+        }
+        if(traceTree) System.out.printf("\n");
+        m_ib = null;
+    }
+
+    public void joinLoops(List<Node> nodes) {
+        assert(m_ib == null);
+        List<IBuff> ibs = new LinkedList<IBuff>();
+        if(traceTree) System.out.printf("\nJoining Loops:");
+        int headerId = 0;
+        IBuff startState = null;
+        for (Node node : nodes) {
+            if(traceTree) System.out.printf("  %d", node.getId());
+            if (headerId == 0) {
+                headerId = node.getId();
+                m_ib = m_blockStartState.remove(headerId);  // We exit via the header.
+                startState = m_loopsStartState.remove(headerId);
+            } else {
+                m_loopheader.remove(node.getId());
+                ibs.add(m_blockStartState.remove(node.getId())); // Added by endNode().
+            }
+        }
+        if(traceTree) System.out.printf("\n");
+        // RL-TODO Is the worst case worse than the IBuff state when we called createLoop()?
+        if (!ibs.isEmpty() && IBuff.shortest(ibs).isShorterThan(startState))
+            if(traceTree) System.out.printf("*** We should have started Loop with a worse case IBuff ***\n");
+        assert(m_ib != null);
+    }
+
+    public void createSelfLoops(List<Node> nodes) {
+        assert(m_ib != null);
+        if(traceTree) System.out.printf("SelfLooping:");
+        // N.B. We will always use a branch to loop back to the top - RL-TODO is this true?
+        m_ib.forcePendingBranch();  // make sure we are overly pessimistic.
+        int refId = 0;  // We will use the first loop's id to save state for the Loops.
+        for (Node node : nodes) {
+            if(traceTree) System.out.printf("  %d", node.getId());
+            if (refId == 0) {
+                refId = node.getId();
+                m_loopsStartState.put(refId, new IBuff(m_ib));
+            }
+            m_blockStartState.put(node.getId(), new IBuff(m_ib));
+        }
+        if(traceTree) System.out.printf("\n");
+        m_ib = null;
+    }
+
+    public void joinSelfLoops(List<Node> nodes) {
+        assert(m_ib == null);
+        List<IBuff> ibs = new LinkedList<IBuff>();
+        if(traceTree) System.out.printf("\nJoining SelfLoops:");
+        int refId = 0;
+        for (Node node : nodes) {
+            if(traceTree) System.out.printf("  %d", node.getId());
+            if (refId == 0)
+                refId = node.getId();
+            ibs.add(m_blockStartState.remove(node.getId()));
+        }
+        if(traceTree) System.out.printf("\n");
+        // Pick the worst case (shortest) IBuff
+        m_ib = IBuff.shortest(ibs);
+        // RL-TODO Is the worst case worse than the IBuff state when we called createSelfLoop()?
+        if (m_ib.isShorterThan(m_loopsStartState.remove(refId)))
+            if(traceTree) System.out.printf("*** We should have started SelfLoop with a worse case IBuff ***\n");
         assert(m_ib != null);
     }
 
     public void startNode(Node node) {
-        if (m_ibStash.containsKey(node.getId())) {
-            // This is the start of a fork.
+        int nodeId = node.getId();
+        if (m_loopheader.containsKey(nodeId)){
+            // This is the start of a loop-block with a header so load the exit IBuff state of the header.
             assert(m_ib == null);
-            m_ib = m_ibStash.get(node.getId());
-            if(traceTree) System.out.printf("\nstart %d\n", node.getId());
+            int headerId = m_loopheader.get(nodeId);
+            m_ib = m_blockStartState.get(headerId);
+            if(traceTree) System.out.printf("\nstart %d\n", nodeId);
+        }
+        else if (m_blockStartState.containsKey(nodeId)) {
+            // This is the start of a block.
+            assert(m_ib == null);
+            m_ib = m_blockStartState.get(nodeId);
+            if(traceTree) System.out.printf("\nstart %d\n", nodeId);
         }
         assert(m_ib != null);
     }
 
     public void endNode(Node node) {
         assert(m_ib != null);
-        if (m_ibStash.containsKey(node.getId())) {
-            // This is the end of a fork.
-            m_ibStash.put(node.getId(), new IBuff(m_ib)); // Write any changes back for 'joinForks' to read.
-            if(traceTree) System.out.printf("end %d\n", node.getId());
+        int nodeId = node.getId();
+        if (m_loopheader.containsKey(nodeId) ||
+                m_blockStartState.containsKey(nodeId)) {
+            // This is the end of a block.
+            // Write any changes back for the join methods to read.
+            m_blockStartState.put(nodeId, new IBuff(m_ib));
+            if(traceTree) System.out.printf("end %d\n", nodeId);
             m_ib = null;
         }
     }
@@ -80,11 +176,8 @@ public class InstructionBuffer {
            ++fnopCount;
             return;  // until we stop adding them earlier!
         }
-        // remove the instruction from the ibuff.
-        int numFnopsNeeded =  m_ib.readInstruction(issueNode.getStartPc(),
-                                                   issueNode.getNumBytes(),
-                                                   issueNode.isBranch(),
-                                                   !issueNode.hasLoadStore());
+        // remove the instruction from the IBuff.
+        int numFnopsNeeded =  m_ib.readInstruction(issueNode);
         //assert(numFnopsNeeded == fnopCount);
         while(numFnopsNeeded > 0 || fnopCount > 0) {
             if (numFnopsNeeded < fnopCount) {
@@ -131,7 +224,8 @@ public class InstructionBuffer {
         // Carried forward state.
         private boolean m_pendingFetch;   // The last instruction did not do a load/store, so we can.
         private boolean m_pendingBranch;  // We may have branched.
-        private long m_nonBranchPc;       // The PC if we have not branched.
+        private boolean m_pendingWaiteX;  // The pending branch is due to a waiteu/waitet/waitef instruction.
+        private int m_branchNotTakenId;   // The node we will end up at if the pending conditional branch was not taken.
 
         // traceTree usage: state of IBuff prior to readInstruction.
         int offset = 0;
@@ -144,7 +238,8 @@ public class InstructionBuffer {
             m_bytes = IBuff.predictIBuffEntries(arch, startPc, cfgs, m_bytesPerEntry) * m_bytesPerEntry;
             m_pendingFetch = false;
             m_pendingBranch = false;
-            m_nonBranchPc = 0;
+            m_pendingWaiteX = false;
+            m_branchNotTakenId = 0;
         }
 
         public IBuff(IBuff ib) {
@@ -155,40 +250,40 @@ public class InstructionBuffer {
             m_bytes = ib.m_bytes;
             m_pendingFetch = ib.m_pendingFetch;
             m_pendingBranch = ib.m_pendingBranch;
-            m_nonBranchPc = ib.m_nonBranchPc;
+            m_pendingWaiteX = ib.m_pendingWaiteX;
+            m_branchNotTakenId = ib.m_branchNotTakenId;
         }
 
-        public int readInstruction(long pc, int lenBytes, boolean isBranch, boolean loadStoreAvailable) {
+        public int readInstruction(IssueNode issueNode) {
             // Run the IBuff fetch using carried forward state.
             if (m_pendingBranch) {
-                if(traceIBuff) System.out.print("<m_pendingBranch>\n");
-                if (m_nonBranchPc == pc) {
+                if(traceIBuff) {
+                    System.out.print("<m_pendingBranch>");
+                    if (m_branchNotTakenId != 0 || issueNode.getPrevBranchNotTakenId() != 0)
+                        System.out.printf("  branchNotTakenId %d %d\n", m_branchNotTakenId, issueNode.getPrevBranchNotTakenId());
+                    System.out.print("\n");
+                }
+                if (m_branchNotTakenId != 0 && m_branchNotTakenId == issueNode.getPrevBranchNotTakenId()) {
                     // The branch was not taken
                     if(traceIBuff) System.out.print("<branch not taken>\n");
                     if (m_arch == Architecture.XS2A)
                         m_pendingFetch = false; // XS2A fetches the branch PC & throws it away.
-                    else if (mimicOriginal) {
-                        // A fall-through is also flushed!
-                        m_offset = (int) (m_nonBranchPc % m_bytesPerEntry);
-                        m_bytes = 0;
-                    }
                 } else {
                     if(traceIBuff) System.out.print("<Resetting IBuff>\n");
-                    m_offset = (int) (pc % m_bytesPerEntry);
+                    m_offset = (int) (issueNode.getStartPc() % m_bytesPerEntry);
                     m_bytes = 0;
+                    if (m_pendingWaiteX)
+                        m_pendingFetch = false;  // We can't do a fetch when arriving via vector.
                 }
-            } else {
-                //assert(m_nonBranchPc == 0 || m_nonBranchPc == pc);
-                if(m_nonBranchPc != 0 && m_nonBranchPc != pc)
-                    if(traceIBuff) System.out.print("<ERROR:m_nonBranchPc != pc>\n");
             }
-            cycleIBuff(m_pendingFetch, this);
+            cycleIBuff(m_pendingFetch);
 
            // Do we need any FNOPs to retrieve the next instruction?
+            int lenBytes = issueNode.getNumBytes();
             int numFnops = 0;
             while (m_offset + lenBytes > m_bytes) {
                 ++numFnops;
-                cycleIBuff(true, this); // We assume the instruction will fit!
+                cycleIBuff(true); // We assume the instruction will fit!
             }
 
             if(traceInstructions) {
@@ -200,53 +295,74 @@ public class InstructionBuffer {
             m_offset += lenBytes;
 
             // Carry forward state
-            m_pendingFetch = loadStoreAvailable;
-            m_pendingBranch = isBranch;
-            m_nonBranchPc = pc + lenBytes;
+            m_pendingFetch = !issueNode.hasLoadStore();
+            m_pendingBranch = issueNode.isBranch();
+            m_pendingWaiteX = m_pendingBranch &&
+                    (issueNode.getMnemonic().contains("waiteu") ||
+                     issueNode.getMnemonic().contains("waitet") ||
+                     issueNode.getMnemonic().contains("waitef"));
+            m_branchNotTakenId = issueNode.getNextBranchNotTakenId();
 
             return numFnops;
         }
 
+        public boolean isShorterThan(IBuff ib) {
+            return estimateIbuffBytes() < ib.estimateIbuffBytes();
+        }
+
         static public IBuff shortest(List<IBuff> ibs) {
-            int shortestEstimate = XS2_BYTES_PER_ENTRY + 1; // larger than possible.
             IBuff shortest = null;
             for (IBuff ib : ibs) {
                 assert(ib != null);
-                // Estimate the effect of pending changes to the IBuff.
-                IBuff estimate = new IBuff(ib);
-                    if (estimate.m_pendingBranch) {
-                        estimate.m_bytes = 0;
-                        // The pc will be the same for all, so choose a safe value prior to calling cycleIBuff().
-                        estimate.m_offset = 0;
-                    }
-                    cycleIBuff(estimate.m_pendingFetch, estimate);
-                if (shortestEstimate > estimate.m_bytes) {
-                    shortestEstimate = estimate.m_bytes;
+                if (shortest == null || ib.isShorterThan(shortest))
                     shortest = ib;
-                }
             }
             assert(shortest != null);
-            if(traceIBuff) System.out.printf("shortest: bytes:%d,  pendingFetch:%s, pendingBranch:%s, nonBranchPc=%x\n",
+            if(traceIBuff) System.out.printf("shortest: bytes:%d,  pendingFetch:%s, pendingBranch:%s\n",
                     shortest.m_bytes,
                     shortest.m_pendingFetch,
-                    shortest.m_pendingBranch,
-                    shortest.m_nonBranchPc);
+                    shortest.m_pendingBranch);
             return shortest;
         }
 
-        static private void cycleIBuff(boolean canLoadStore, IBuff ib) {
+        public void forcePendingBranch() {
+            // This is used by looping to preempt worse case IBuff at the start of a loop.
+            // We leave m_pendingFetch and m_bytes as they are.
+            if (!m_pendingBranch) {
+                // These changes will only ever make things more pessimistic.
+                m_pendingBranch = true;
+                m_branchNotTakenId = 0;
+            }
+        }
+
+        private void cycleIBuff(boolean canLoadStore) {
             // Do the fetch first.
             if (canLoadStore &&
-                    ib.m_bytes <= (IBUFFER_NUM_ENTRIES - 1) * ib.m_bytesPerEntry) {
-                ib.m_bytes += ib.m_bytesPerEntry;
+                    m_bytes <= (IBUFFER_NUM_ENTRIES - 1) * m_bytesPerEntry) {
+                m_bytes += m_bytesPerEntry;
                 if(traceIBuff) System.out.print("<Fetching IBuff>\n");
             }
             // Then remove instruction and update fifo.
-            while (ib.m_offset >= ib.m_bytesPerEntry) {
-                ib.m_offset -= ib.m_bytesPerEntry;
-                ib.m_bytes -= ib.m_bytesPerEntry;
+            while (m_offset >= m_bytesPerEntry) {
+                m_offset -= m_bytesPerEntry;
+                m_bytes -= m_bytesPerEntry;
             }
         }
+
+        private int estimateIbuffBytes() {
+            // Estimate the effect of pending changes to the IBuff.
+            // N.B. We do this with a copy.
+            IBuff estimate = new IBuff(this);
+            if (estimate.m_pendingBranch) {
+                // We ignore m_branchNotTakenId, as we don't know our next node.
+                estimate.m_bytes = 0;
+                // The pc is not important. Choose a safe value prior to calling cycleIBuff().
+                estimate.m_offset = 0;
+            }
+            estimate.cycleIBuff(estimate.m_pendingFetch);
+            return estimate.m_bytes;
+        }
+
         static private int predictIBuffEntries(Architecture arch, long startPc, List<CfgInstructionNode> cfgs, int bytesPerEntry) {
             final int INVALID = IBUFFER_NUM_ENTRIES + 1;
             int minEntries = INVALID;

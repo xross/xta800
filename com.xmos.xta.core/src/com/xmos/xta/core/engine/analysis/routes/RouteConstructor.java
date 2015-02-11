@@ -922,19 +922,31 @@ public class RouteConstructor {
             InstructionBuffer instructionBuffer = new InstructionBuffer( m_engine.getXeLoader().getArchitecture(), startPc, cfgs);
             node.traverse( new UntypedNodeTraverser() {
                 public TraverseStatus foundNode(Node node, Object clientState) {
-                    ((InstructionBuffer)clientState).startNode(node);
+                    InstructionBuffer ibuff = (InstructionBuffer)clientState;
+                    // First do any general node handling.
+                    ibuff.startNode(node);
+                    // Now handle specific nodes types.
                     if (node.isCondNode())
-                        ((InstructionBuffer)clientState).createForks(((ConditionalNode)node).iChildren());
-                    //else if (node.isLoopNode())
-                    //    ((InstructionBuffer)clientState).createLoop(((ConditionalNode)node).iChildren());
+                        ibuff.createForks(node.iChildren());
+                    else if (node.isLoopNode() || node.isInfiniteLoopNode())
+                        ibuff.createLoops(node.iChildren());
+                    else if (node.isSelfLoopNode() || node.isInfiniteSelfLoopNode())
+                        ibuff.createSelfLoops(node.iChildren());
                     else if (node.isIssueNode())
-                        ((InstructionBuffer)clientState).handleIssueNode(node);
+                        ibuff.handleIssueNode(node);
                     return TraverseStatus.CONTINUE;
                 }
                 public TraverseStatus foundNodeExit(Node node, Object clientState) {
+                    InstructionBuffer ibuff = (InstructionBuffer)clientState;
+                    // Handle specific nodes types.
                     if (node.isCondNode())
-                        ((InstructionBuffer)clientState).joinForks(((ConditionalNode)node).iChildren());
-                    ((InstructionBuffer)clientState).endNode(node);
+                        ibuff.joinForks(((ConditionalNode)node).iChildren());
+                    else if (node.isLoopNode() || node.isInfiniteLoopNode())
+                        ibuff.joinLoops(node.iChildren());
+                    else if (node.isSelfLoopNode() || node.isInfiniteSelfLoopNode())
+                        ibuff.joinSelfLoops(node.iChildren());
+                    // And finalize any general node handling.
+                    ibuff.endNode(node);
                     return TraverseStatus.CONTINUE;
                 }
             },
