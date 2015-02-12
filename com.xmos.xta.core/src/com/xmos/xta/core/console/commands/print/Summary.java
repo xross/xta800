@@ -64,21 +64,21 @@ public class Summary extends Command {
                 if (displayPasses) {
                     console.display(String.format("Route(%d) %s\n%s\n",
                             route.getRouteId(),
-                            route.getRouteCoreContainer().getRouteContainer().getDescription(),
+                            route.parentRouteContainer().getDescription(),
                             routeTiming.getDescription(Level.DETAILED)));
                 }
             } else {
                 if (displayFailures) {
                     console.display(String.format("Route(%d) %s\n%s\n",
                             route.getRouteId(),
-                            route.getRouteCoreContainer().getRouteContainer().getDescription(),
+                            route.parentRouteContainer().getDescription(),
                             routeTiming.getDescription(Level.DETAILED)));
                 }
             }
         } else {
             console.display(String.format("Route(%d) %s\n%s\n",
                     route.getRouteId(),
-                    route.getRouteCoreContainer().getRouteContainer().getDescription(),
+                    route.parentRouteContainer().getDescription(),
                     routeTiming.getDescription(Level.SIMPLE)));
         }
     }

@@ -49,7 +49,7 @@ class SetScripter {
 
         } else {
             for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
-                   for (Route route : routeCoreContainer.getRoutes()) {
+                   for (Route route : routeCoreContainer) {
                        if (routeCoreContainer.routeExists(route)) {
                            RouteTiming routeTiming = route.getRouteTiming();
                            if (routeTiming.isTimingSpecified()) {
@@ -85,7 +85,7 @@ class SetScripter {
     private List<Unknown> getSetKnownsList(RouteContainer routeContainer) {
         List<Unknown> setKnownsList = new ArrayList<Unknown>();
            for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
-               for (Route route : routeCoreContainer.getRoutes()) {
+               for (Route route : routeCoreContainer) {
                    if (routeCoreContainer.routeExists(route)) {
                        for (Unknown known : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {
                            if (known.getSource() == Source.SET) {
@@ -103,7 +103,7 @@ class SetScripter {
 
         List<Unknown> matched = new ArrayList<Unknown>();
            for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
-               for (Route route : routeCoreContainer.getRoutes()) {
+               for (Route route : routeCoreContainer) {
                    if (routeCoreContainer.routeExists(route) && (route != thisRoute)) {
 
                        boolean found = false;
@@ -148,7 +148,7 @@ class SetScripter {
 
     private boolean areRequirementsSameOnAllRoutes(RouteContainer routeContainer) {
         for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
-               for (Route route : routeCoreContainer.getRoutes()) {
+               for (Route route : routeCoreContainer) {
                    if (routeCoreContainer.routeExists(route)) {
                        RouteTiming routeTiming = route.getRouteTiming();
 

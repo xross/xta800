@@ -57,7 +57,7 @@ public class RouteInfo extends Command {
             RouteTiming routeTiming = route.getRouteTiming();
 
             console.display(String.format("%s %s\n",
-                    route.getRouteCoreContainer().getRouteContainer().getDescription(),
+                    route.parentRouteContainer().getDescription(),
                     route.getEndpointsPcsString()));
 
             console.display(routeTiming.getDescription(Level.COMPLETE));
