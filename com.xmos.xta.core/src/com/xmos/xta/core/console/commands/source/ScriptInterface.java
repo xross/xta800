@@ -339,7 +339,7 @@ public class ScriptInterface {
 
     public String getRouteDescription(int routeId) throws Exception {
         try {
-              return getRoute(routeId).parentRouteContainer().getDescription();
+              return getRoute(routeId).getRouteCoreContainer().getRouteContainer().getDescription();
         } catch (Exception e) {
             throw new Exception("xta.getRouteDescription: " + e.getMessage());
         }

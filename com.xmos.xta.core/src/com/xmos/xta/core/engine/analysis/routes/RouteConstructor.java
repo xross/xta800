@@ -21,7 +21,6 @@ import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.libs.core.utils.Pair;
-import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -54,16 +53,21 @@ import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceC
 import com.xmos.xta.core.engine.sections.SrcLevelLoopInfo;
 
 public class RouteConstructor {
+
     private static boolean debug_route = false;
     private static final int SR_IEBLE_SHIFT = 1;
     private static final int SR_IEBLE_SIZE = 1;
 
-    private RouteCoreContainer m_coreContainer;         // We will be adding to m_coreContainer.m_routes for this core.
+    enum RouteStatus {
+        COMPLETED, ABORTED, ERROR
+    }
+
     private ControlFlow m_controlFlow;                  // Made during the load phase.
     private CachedFunctionMap m_cachedFunctionMap;      // Keep a copy of a previous function results for this binary.
-    private Architecture m_arch;
-    StructuralAnalysisEngine m_sae;
-    
+    private List<Route> m_routes;                       // Result of the analysis... copy of m_coreContainer.m_routes
+    private Engine m_engine;                            // Do we want to keep a copy.
+    private RouteCoreContainer m_coreContainer;         // Contains m_routes for this core.
+    private CoreId m_core;                              // The core we are handling.
 
     public static List<BackTrails> getPathBackTrails(ControlFlow controlFlow,
             CachedFunctionMap cachedFunctionMap, Reference reference)
@@ -73,36 +77,30 @@ public class RouteConstructor {
         return cfrm.matchReference(reference);
     }
 
-    public static void analyze(CommandSource src, RouteCoreContainer routeCoreContainer, CoreId core, Engine engine)  throws Exception {
-        // The routeCoreContainer hold information we will need.
-        // We will be adding the routeCoreContainer.List<Route>
-        RouteConstructor routeConstructor = new RouteConstructor(engine, core, routeCoreContainer);
-        routeConstructor.analyze(engine, src, core);
-    }
+    public RouteConstructor(Engine engine, ControlFlow controlFlow,
+            CachedFunctionMap cachedFunctionMap, RouteCoreContainer routeCoreContainer,
+            CoreId core) throws AbortedException {
 
-    static void setParent(Node node) {
-        for (Node child : node.iChildren()){
-            child.setParent(node);
-            setParent(child);
-        }
-    }
-
-    private RouteConstructor(Engine engine, CoreId core, RouteCoreContainer routeCoreContainer) throws Exception {
+        m_controlFlow = controlFlow;
+        m_cachedFunctionMap = cachedFunctionMap;
+        m_routes = new ArrayList<Route>();
+        m_engine = engine;
         m_coreContainer = routeCoreContainer;
-        m_controlFlow = engine.getControlFlow(core);
-        m_cachedFunctionMap = engine.getCachedFunctionMap(core);
-        m_arch = engine.getXeLoader().getArchitecture();
-        m_sae = new StructuralAnalysisEngine(engine);
+        m_core = core;
     }
 
-    private void analyze(Engine engine, CommandSource src, CoreId core) throws Exception {
-        engine.provideFeedback("Starting analysis...");
+    public List<Route> getRoutes() {
+        return m_routes;
+    }
+
+    public void analyze(CommandSource src) throws Exception {
+        m_engine.provideFeedback("Starting analysis...");
 
         Map<BackTrails, Set<CfgNode>> branchToNext = new IteratableMap<BackTrails, Set<CfgNode>>();
-        List<BackTrails> branchBackTrailsList = buildbranchBackTrailsList(engine, branchToNext);
-        List<BackTrails> exclusionBackTrailsList = buildexclusionBackTrailsList(engine, core);
+        List<BackTrails> branchBackTrailsList = buildbranchBackTrailsList(branchToNext);
+        List<BackTrails> exclusionBackTrailsList = buildexclusionBackTrailsList();
         
-        switch (m_coreContainer.parentRouteContainer().getMode()) {
+        switch (m_coreContainer.getRouteContainer().getMode()) {
         case FUNCTION:
             analyzeFunction(src, branchBackTrailsList, branchToNext, exclusionBackTrailsList);
             break;
@@ -119,14 +117,21 @@ public class RouteConstructor {
             assert(false);
         }
 
-        InstructionIssueAnayser(engine);
-        FnopAdder(engine);
-        setUnknowns(engine);
-        setSrcLoopCounts(engine);
-        checkSupportedInstructions(engine, src);
-        applyDefines(engine, src);
+        InstructionIssueAnayser();
+        FnopAdder();
+        setUnknowns();
+        setSrcLoopCounts();
+        checkSupportedInstructions(src);
+        applyDefines(src);
 
-        engine.provideFeedback("Analysis complete");
+        m_engine.provideFeedback("Analysis complete");
+    }
+
+    static void setParent(Node node) {
+        for (Node child : node.iChildren()){
+            child.setParent(node);
+            setParent(child);
+        }
     }
 
     private void analyzeFunction(CommandSource src, List<BackTrails> branchBackTrailsList,
@@ -198,22 +203,23 @@ public class RouteConstructor {
         if (node != null) {
             setParent(node);
             if (!alreadyContainRoute(node)) {
-                Route route = new Route(src, m_arch, node, m_coreContainer);
-                m_coreContainer.add(route);
+                Route route = new Route(src, m_engine, node, m_coreContainer);
+                m_routes.add(route);
             }
         }
     }
 
-    private List<BackTrails> buildbranchBackTrailsList(Engine engine, Map<BackTrails, Set<CfgNode>> branchToNext) throws AbortedException, MemoryMonitorException {
+    private List<BackTrails> buildbranchBackTrailsList(Map<BackTrails, Set<CfgNode>> branchToNext) throws AbortedException, MemoryMonitorException {
+
        List<BackTrails> branchBackTrailsList = new LinkedList<BackTrails>();
-        for(Reference ref : engine.getUserBranches().keySet()){
+        for(Reference ref : m_engine.getUserBranches().keySet()){
             List<BackTrails> backTrailsList = getPathBackTrails(m_controlFlow, m_cachedFunctionMap, ref);
             branchBackTrailsList.addAll(backTrailsList);
             for(BackTrails backTrails : backTrailsList){
                 branchToNext.put(backTrails, new IteratableSet<CfgNode>());
 
-                for(Reference nextRef : engine.getUserBranches().get(ref)){
-                    for(BackTrails nextBackTrails : getPathBackTrails(m_controlFlow, m_cachedFunctionMap, nextRef)){
+                for(Reference next : m_engine.getUserBranches().get(ref)){
+                    for(BackTrails nextBackTrails : getPathBackTrails(m_controlFlow, m_cachedFunctionMap, next)){
                         if(backTrails.getInstruction().getInstruction().isLink()){
                             for(CfgNode nextFrn : backTrails.getInstruction().getNextNodes()){
                                 if(nextFrn instanceof CfgFunctionReferenceNode){
@@ -233,12 +239,13 @@ public class RouteConstructor {
         return branchBackTrailsList;
     }
 
-    private List<BackTrails> buildexclusionBackTrailsList(Engine engine, CoreId core) throws AbortedException, MemoryMonitorException {
+    private List<BackTrails> buildexclusionBackTrailsList() throws AbortedException, MemoryMonitorException {
         List<BackTrails> backTrailsList = new LinkedList<BackTrails>();
-        for (ExclusionInfo info : engine.getExclusions()) {
+        for (ExclusionInfo info : m_engine.getExclusions()) {
             Reference ref = info.getReference();
-            if (ref.getCoreId().equals(core))
+            if (ref.getCoreId().equals(m_core)) {
                 backTrailsList.addAll(getPathBackTrails(m_controlFlow, m_cachedFunctionMap, ref));
+            }
         }
         return backTrailsList;
     }
@@ -669,7 +676,7 @@ public class RouteConstructor {
     private boolean alreadyContainRoute(Node newGraph) {
         final List<String> newNodeList = createRouteDescription(newGraph);
 
-        for (Route route : m_coreContainer){
+        for (Route route : m_routes){
             List<String> nodeList = createRouteDescription(route.getNode());
             if (newNodeList.equals(nodeList)){
                 return true;
@@ -711,11 +718,12 @@ public class RouteConstructor {
 
         dumpGraph(workingSet);
 
+        StructuralAnalysisEngine sae = new StructuralAnalysisEngine(m_engine);
         assert(originalStartNode instanceof CfgInstructionNode);
-        return m_sae.createStructure(workingSet, (CfgInstructionNode)originalStartNode, "route");
+        return sae.createStructure(workingSet, (CfgInstructionNode)originalStartNode, "route");
     }
 
-    //TODO clean up the next function
+    //TODO clean up the next two functions
     private List<BackTrails> getFunctionEndBackTrails(BackTrail backTrail) {
         List<BackTrails> endBackTrailsList = new LinkedList<BackTrails>();
         Set<CfgNode> seen = new NonIteratableSet<CfgNode>();
@@ -839,15 +847,15 @@ public class RouteConstructor {
         System.out.println("}");
     }
 
-    private void InstructionIssueAnayser(Engine engine) throws AbortedException {
-        engine.provideFeedback("We only handle single issue routes - skip InstructionIssueAnayser.");
-        engine.getAbort();
+    private void InstructionIssueAnayser() {
+        m_engine.provideFeedback("We only handle single issue routes - skip InstructionIssueAnayser.");
     }
 
-    private void FnopAdder(Engine engine) throws AbortedException {
-        engine.provideFeedback("Adding fnops to routes...");
-        for (final Route route : m_coreContainer) {
-            engine.getAbort();
+    private void FnopAdder() throws AbortedException {
+        m_engine.getAbort();
+        m_engine.provideFeedback("Adding fnops to routes...");
+
+        for (final Route route : m_routes) {
             Node node = route.getNode();
             long startPc = node.getStartPc();
 
@@ -855,7 +863,7 @@ public class RouteConstructor {
             for (FunctionControlFlow fcf : m_controlFlow.getFunctionContaining(startPc))
                 cfgs.add(fcf.getInstructionNode(startPc));
 
-            InstructionBuffer instructionBuffer = new InstructionBuffer(m_arch, startPc, cfgs);
+            InstructionBuffer instructionBuffer = new InstructionBuffer( m_engine.getXeLoader().getArchitecture(), startPc, cfgs);
             node.traverse( new UntypedNodeTraverser() {
                 public TraverseStatus foundNode(Node node, Object clientState) {
                     InstructionBuffer ibuff = (InstructionBuffer)clientState;
@@ -892,11 +900,11 @@ public class RouteConstructor {
         }
     }
 
-    private void setUnknowns(Engine engine) throws AbortedException {
-        engine.provideFeedback("Setting unknowns on routes...");
+    private void setUnknowns() throws AbortedException {
+        m_engine.getAbort();
+        m_engine.provideFeedback("Setting unknowns on routes...");
 
-        for (final Route route : m_coreContainer) {
-            engine.getAbort();
+        for (final Route route : m_routes) {
             Node node = route.getNode();
             node.traverse( new DefaultNodeTraverser() {
                 // Sets all the pausing instructions to unknown.
@@ -926,32 +934,37 @@ public class RouteConstructor {
         }
     }
 
-    private void setSrcLoopCounts(Engine engine) throws AbortedException {
+    private void setSrcLoopCounts() throws AbortedException {
         CoreId coreId = m_coreContainer.getCoreId();
+
         // Sets the loop iteration counts specified at compile time.
-        for (SrcLevelLoopInfo srcLevelLoopInfo : engine.getSrcLevelLoops(coreId)) {
-            engine.provideFeedback(String.format("Setting loop count at pc: 0x%x", srcLevelLoopInfo.getPc()));
-            engine.getAbort();
+        for (SrcLevelLoopInfo srcLevelLoopInfo : m_engine.getSrcLevelLoops(coreId)) {
+            m_engine.provideFeedback(String.format("Setting loop count at pc: 0x%x", srcLevelLoopInfo.getPc()));
+            m_engine.getAbort();
 
             Reference reference = ReferenceFactory.createReference(
                     String.format("0x%x", srcLevelLoopInfo.getPc()),
                     ReferenceClass.INSTRUCTION, coreId);
 
             CommandSource src = new CommandSource(Type.COMPILER);
-            for (Route route : m_coreContainer) {
+            for (Route route : m_routes) {
                 try {
-                    route.getRouteUnknowns().setLoopIterations(src, engine,
+                    route.getRouteUnknowns().setLoopIterations(src, m_engine,
                             reference, srcLevelLoopInfo.getNumIterations(), true, Source.BINARY);
                 } catch (Exception e) {}
             }
         }
     }
 
-    private void checkSupportedInstructions(final Engine engine, final CommandSource src) throws AbortedException {
-        engine.provideFeedback("Checking for unsupported instructions...");
-        final InstructionMnemonics mnenonics = new InstructionMnemonics(m_arch);
-        for (Route route : m_coreContainer) {
-            engine.getAbort();
+    private void checkSupportedInstructions(final CommandSource src) throws AbortedException {
+        m_engine.getAbort();
+        m_engine.provideFeedback("Checking for unsupported instructions...");
+
+        final Engine engine = m_engine;
+        final InstructionMnemonics mnenonics = new InstructionMnemonics(
+                m_engine.getXeLoader().getArchitecture());
+
+        for (Route route : m_routes) {
             if (route.getRouteTiming().getWorstCaseTimeStatus().isComplete()) {
 
                 Node node = route.getNode();
@@ -993,49 +1006,49 @@ public class RouteConstructor {
         }
     }
 
-    private void applyDefines(Engine engine, CommandSource src) throws AbortedException {
-        engine.provideFeedback("Applying defines to route...");
-        engine.getAbort();
+    private void applyDefines(CommandSource src) throws AbortedException {
+        m_engine.getAbort();
+        m_engine.provideFeedback("Applying defines to route...");
 
         RouteDefines defines = new RouteDefines();
-        for (Route route : m_coreContainer) {
-            for (FunctionTimeInfo info : engine.getFunctionTimeDefines()) {
+        for (Route route : m_routes) {
+            for (FunctionTimeInfo info : m_engine.getFunctionTimeDefines()) {
                 if (coreMatch(route, info.getFunction())) {
                     defines.applyFunctionDefine(src, route, info, Source.ADD);
                 }
             }
-            for (PathTimeInfo info : engine.getPathTimeDefines()) {
+            for (PathTimeInfo info : m_engine.getPathTimeDefines()) {
                 if (coreMatch(route, info.getFrom()) &&
                     coreMatch(route, info.getTo())) {
-                    defines.applyPathDefine(engine, src, route, info, Source.ADD);
+                    defines.applyPathDefine(m_engine, src, route, info, Source.ADD);
                 }
             }
         }
-        for (LoopInfo info : engine.getLoopDefines()) {
+        for (LoopInfo info : m_engine.getLoopDefines()) {
             try {
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
                         route.getRouteUnknowns().checkSetLoopIterations(
-                            info.getReference(), info.getIterations(), engine, src);
+                            info.getReference(), info.getIterations(), m_engine, src);
                     }
                 }
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
-                        route.getRouteUnknowns().setLoopIterations(src, engine,
+                        route.getRouteUnknowns().setLoopIterations(src, m_engine,
                             info.getReference(), info.getIterations(), false, Source.ADD);
                     }
                 }
             } catch (Exception e) {}
         }
-        for (LoopPathInfo info : engine.getLoopPathDefines()) {
+        for (LoopPathInfo info : m_engine.getLoopPathDefines()) {
             try {
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
                         route.getRouteUnknowns().checkSetLoopPathIterations(
-                            info.getReference(), info.getIterations(), engine, src);
+                            info.getReference(), info.getIterations(), m_engine, src);
                     }
                 }
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
                         route.getRouteUnknowns().setLoopPathIterations(
                             info.getReference(), info.getIterations(), Source.ADD);
@@ -1043,15 +1056,15 @@ public class RouteConstructor {
                 }
             } catch (Exception e) {}
         }
-        for (LoopScopeInfo info : engine.getLoopScopeDefines()) {
+        for (LoopScopeInfo info : m_engine.getLoopScopeDefines()) {
             try {
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
                         route.getRouteUnknowns().checkSetLoopScope(
-                            info.getReference(), info.getAbsolute(), engine, src);
+                            info.getReference(), info.getAbsolute(), m_engine, src);
                     }
                 }
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
                         route.getRouteUnknowns().setLoopScope(
                             info.getReference(), info.getAbsolute(), Source.ADD);
@@ -1059,15 +1072,15 @@ public class RouteConstructor {
                 }
             } catch (Exception e) {}
         }
-        for (InstructionTimeInfo info : engine.getInstructionTimeDefines()) {
+        for (InstructionTimeInfo info : m_engine.getInstructionTimeDefines()) {
             try {
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
                         if (!route.getRouteUnknowns().canInstructionPause(info.getReference()))
                             throw new Exception();
                     }
                 }
-                for (Route route : m_coreContainer) {
+                for (Route route : m_routes) {
                     if (coreMatch(route, info.getReference())) {
                         route.getRouteUnknowns().setFixedTime(info.getReference(),
                                 info.getTimeUnit(), UnknownFactory.Type.INSTRUCTION_TIME, Source.ADD);
@@ -1078,7 +1091,7 @@ public class RouteConstructor {
     }
 
     private boolean coreMatch(Route route, Reference reference) {
-        return reference.getCoreId().equals(route.parentRouteCoreContainer().getCoreId());
+        return reference.getCoreId().equals(route.getRouteCoreContainer().getCoreId());
     }
 
     private void refreshDisplayedUnknowns(Node node) {

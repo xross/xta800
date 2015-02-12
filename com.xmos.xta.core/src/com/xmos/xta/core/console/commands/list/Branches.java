@@ -87,7 +87,7 @@ public class Branches extends Command {
             return;
         }
         Route firstRoute = routes.iterator().next();
-        RouteContainer routeContainer = firstRoute.parentRouteContainer();
+        RouteContainer routeContainer = firstRoute.getRouteCoreContainer().getRouteContainer();
 
         Map<Reference, java.util.List<Reference>> branches = routeContainer.getBranches();
         for (Reference fromRef : branches.keySet()) {

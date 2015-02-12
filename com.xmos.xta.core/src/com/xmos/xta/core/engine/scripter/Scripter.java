@@ -257,7 +257,7 @@ public class Scripter {
                        addReference(routeCoreContainer.getReference());
                    }
 
-                   for (Route route : routeCoreContainer) {
+                   for (Route route : routeCoreContainer.getRoutes()) {
                        for (Unknown unknown : route.getRouteUnknowns().getUnknowns(State.KNOWN)) {
                            if (unknown.getSource() == Unknown.Source.SET) {
                                for (Reference ref : unknown.getReferences()) {
@@ -330,7 +330,7 @@ public class Scripter {
 
     Reference createReferenceForUnknown(Unknown unknown) {
         String refString = unknown.getNode().getReferenceStr();
-        CoreId coreId = unknown.getRoute().parentRouteCoreContainer().getCoreId();
+        CoreId coreId = unknown.getRoute().getRouteCoreContainer().getCoreId();
         Reference ref = ReferenceFactory.createReference(refString, ReferenceClass.ANY, coreId);
         return ref;
     }
@@ -488,7 +488,7 @@ public class Scripter {
 
     private void removeRoutes(RouteContainer routeContainer, StringBuffer script) {
         for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
-               for (Route route : routeCoreContainer) {
+               for (Route route : routeCoreContainer.getRoutes()) {
                   if (!routeCoreContainer.routeExists(route)) {
                       addScriptCommand(script, String.format("remove route %d", route.getRouteId()));
                    }

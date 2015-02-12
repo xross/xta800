@@ -79,7 +79,7 @@ public class Asm extends Command {
 
         AsmDisplayer displayer = new AsmDisplayer(engine, console);
         for (Route route : engine.getRoute(m_routeId)) {
-            CoreId coreId = route.parentRouteCoreContainer().getCoreId();
+            CoreId coreId = route.getRouteCoreContainer().getCoreId();
 
             if (m_nodeIdSet) {
                 displayer.display(route.getNode(m_nodeId), coreId);

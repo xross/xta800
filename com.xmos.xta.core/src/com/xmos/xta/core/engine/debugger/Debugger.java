@@ -102,7 +102,7 @@ public class Debugger {
             for (Route route : routes) {
                 Reference reference = ReferenceFactory.createReference(refString,
                         ReferenceClass.ANY,
-                        route.parentRouteCoreContainer().getCoreId());
+                        route.getRouteCoreContainer().getCoreId());
 
                 if (reference.resolve(m_engine) == Result.RESOLVED) {
                     Set<Node> nodes = route.getReferencedNodes(reference);

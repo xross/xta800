@@ -22,6 +22,7 @@ public class RouteContainer {
     private String m_description;
     private String m_fromName;
     private String m_toName;
+    private String m_refName;
     private CommandSource m_src;
     private Collection<RouteCoreContainer> m_routeCoreContainers;
     private Collection<CoreId> m_activeCores;
@@ -30,30 +31,23 @@ public class RouteContainer {
     private Map<Reference, List<Reference>> m_branches;
     private Defines m_defines;
 
-    public RouteContainer(RouteMode mode, Engine engine, CommandSource src, String fromName, String toName) {
-        initialise( mode, engine, src, fromName, toName);
-    }
-    public RouteContainer(RouteMode mode, Engine engine, CommandSource src, String refName) {
-        initialise( mode, engine, src, refName, "");
-    }
-    private void initialise(RouteMode mode, Engine engine, CommandSource src, String fromName, String toName) {
-        String description = null;
-        switch (mode) {
-        case FUNCTION: description = String.format("function: %s", fromName); break;
-        case LOOP:     description = String.format("loop: %s", fromName); break;
-        case ENDPOINTS: description = String.format("endpoints: %s to %s", fromName, toName);
-        }
-        m_mode = mode;
-        m_description = description;
+    public RouteContainer(String fromName, String toName, Engine engine, CommandSource src) {
+        m_mode = RouteMode.ENDPOINTS;
         m_fromName = fromName;
         m_toName = toName;
-        m_src = src;
-        m_routeCoreContainers = new ArrayList<RouteCoreContainer>();
-        m_activeCores = new ArrayList<CoreId>(engine.getActiveCores());
-        m_frequencies = new NonIteratableMap<String, Double>(engine.getFrequencyMap());
-        m_numThreads = new NonIteratableMap<CoreId, Integer>(engine.getNumThreadMap());
-        m_branches = engine.getUserBranches();
-        m_defines = new Defines(engine.getDefines());
+        m_description = String.format("endpoints: %s to %s", fromName, toName);
+        initialise(engine, src);
+    }
+
+    public RouteContainer(RouteMode mode, String refName, Engine engine, CommandSource src) {
+        m_mode = mode;
+        m_refName = refName;
+        switch (mode) {
+        case FUNCTION: m_description = String.format("function: %s", refName); break;
+        case LOOP:     m_description = String.format("loop: %s", refName); break;
+        case ENDPOINTS: break;
+        }
+        initialise(engine, src);
     }
 
     public RouteMode getMode() {
@@ -64,15 +58,16 @@ public class RouteContainer {
         return m_description;
     }
 
-    public String getRefName() {
-        return m_fromName;
-    }
     public String getFromName() {
         return m_fromName;
     }
 
     public String getToName() {
         return m_toName;
+    }
+
+    public String getRefName() {
+        return m_refName;
     }
 
     public CommandSource getCommandSrc() {
@@ -113,5 +108,15 @@ public class RouteContainer {
             numExistingRoutes += coreContainer.getNumExistingRoutes();
         }
         return numExistingRoutes;
+    }
+
+    private void initialise(Engine engine, CommandSource src) {
+        m_src = src;
+        m_activeCores = new ArrayList<CoreId>(engine.getActiveCores());
+        m_frequencies = new NonIteratableMap<String, Double>(engine.getFrequencyMap());
+        m_numThreads = new NonIteratableMap<CoreId, Integer>(engine.getNumThreadMap());
+        m_routeCoreContainers = new ArrayList<RouteCoreContainer>();
+        m_defines = new Defines(engine.getDefines());
+        m_branches = engine.getUserBranches();
     }
 }

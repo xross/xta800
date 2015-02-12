@@ -339,7 +339,7 @@ public class RouteUnknowns {
     }
 
     public void setFixedTime(Node node, TimeUnit timeUnit, Reference reference, Type type, Source source) {
-        timeUnit.setCoreConfig(m_route.parentRouteCoreContainer().getCoreConfig());
+        timeUnit.setCoreConfig(m_route.getRouteCoreContainer().getCoreConfig());
         invalidateCachedStats();
         node.getAttributes(true).setFixedTime(timeUnit);
         node.getAttributes(true).addKnown(m_route, type, source, new Reference[] {reference});
