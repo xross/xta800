@@ -57,7 +57,7 @@ public class RouteDefines {
         Collection<Node> fromNodes = route.getReferencedNodes(fromRef);
         Collection<Node> toNodes = route.getReferencedNodes(toRef);
 
-        CoreConfig coreConfig = route.getRouteCoreContainer().getCoreConfig();
+        CoreConfig coreConfig = route.parentRouteCoreContainer().getCoreConfig();
         TimeUnit timeUnit = new TimeUnit(coreConfig, info.getTimeUnit());
 
         for (Node from : fromNodes) {
@@ -85,7 +85,7 @@ public class RouteDefines {
 
             if (!success) {
                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format("failed to apply path defines: %s, to route: %s",
-                        info, route.getRouteCoreContainer().getRouteContainer().getDescription()));
+                        info, route.parentRouteContainer().getDescription()));
             }
         }
 

@@ -20,29 +20,35 @@ public class Route {
     private static int s_routeCount;
 
     private int m_routeId;
-    private RouteCoreContainer m_coreContainer;  // parent?
     private RouteTiming m_timing;
     private RouteUnknowns m_unknowns;
     private Node m_baseOfRouteNode;
-    private Node m_searchNode;
+    private RouteCoreContainer m_parentRouteCoreContainer;
+
+    private Node m_searchNode;  // Used to return value from traverser.
 
     public static void resetRouteCount() {
         s_routeCount = 0;
     }
 
-    public Route(CommandSource src, Engine engine, Node node, RouteCoreContainer routeCoreContainer) {
-        m_coreContainer = routeCoreContainer;
+    public Route(CommandSource src, final Architecture arch, Node node, RouteCoreContainer parentRouteCoreContainer) {
         m_routeId = s_routeCount++;
-        m_baseOfRouteNode = node;
-        Architecture architecture = engine.getXeLoader().getArchitecture();
-
         m_timing = new RouteTiming(src, this,
-                m_coreContainer.getCoreConfig(),
-                m_coreContainer.getCoreId());
-
+                parentRouteCoreContainer.getCoreConfig(),
+                parentRouteCoreContainer.getCoreId());
         m_unknowns = new RouteUnknowns(this);
+        m_baseOfRouteNode = node;
+        m_parentRouteCoreContainer = parentRouteCoreContainer;
 
-        setRouteSpecificCoreConfigs(m_coreContainer.getCoreConfig(), architecture);
+        final CoreConfig coreConfig = parentRouteCoreContainer.getCoreConfig();
+        m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
+            public TraverseStatus foundIssueNode(Node node, Object clientState) {
+                ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, arch);
+                return TraverseStatus.CONTINUE;
+            }
+        },
+        null    // No clientState
+        );
     }
 
     public int getRouteId() {
@@ -57,8 +63,12 @@ public class Route {
         m_baseOfRouteNode = node;
     }
 
-    public RouteCoreContainer getRouteCoreContainer() {
-        return m_coreContainer;
+    public RouteContainer parentRouteContainer() {
+        return m_parentRouteCoreContainer.parentRouteContainer();
+    }
+
+    public RouteCoreContainer parentRouteCoreContainer() {
+        return m_parentRouteCoreContainer;
     }
 
     public RouteTiming getRouteTiming() {
@@ -88,7 +98,7 @@ public class Route {
                     return TraverseStatus.CONTINUE;
                 }
             },
-            null  // No clientState
+            m_searchNode
             );
             return m_searchNode;
         }
@@ -142,17 +152,6 @@ public class Route {
         }
 
         return referencedNodes;
-    }
-
-    private void setRouteSpecificCoreConfigs(final CoreConfig coreConfig, final Architecture architecture) {
-        m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
-            public TraverseStatus foundIssueNode(Node node, Object clientState) {
-                ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, architecture);
-                return TraverseStatus.CONTINUE;
-            }
-        },
-        null    // No clientState
-        );
     }
 }
 

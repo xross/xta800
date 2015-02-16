@@ -102,7 +102,7 @@ public class Exclusions extends Command {
                 }
             }
 
-            RouteContainer routeContainer = route.getRouteCoreContainer().getRouteContainer();
+            RouteContainer routeContainer = route.parentRouteContainer();
             for (ExclusionInfo info : routeContainer.getDefines().getExclusions()) {
                 uniqueExclusions.add(info.getReference());
             }

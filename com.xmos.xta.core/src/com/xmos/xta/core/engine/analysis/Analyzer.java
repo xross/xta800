@@ -19,6 +19,7 @@ import com.xmos.xta.core.engine.references.Reference;
 import com.xmos.xta.core.engine.references.ReferenceFactory;
 import com.xmos.xta.core.engine.references.types.ReferenceType.Result;
 import com.xmos.xta.core.engine.references.types.ReferenceTypeFactory.ReferenceClass;
+import com.xmos.xta.core.engine.utils.CoreConfig;
 
 public class Analyzer {
 
@@ -43,24 +44,21 @@ public class Analyzer {
     }
 
     public Status analyzeFunction(CommandSource src, String functionName) {
-        RouteContainer routeContainer = new RouteContainer(
-                RouteMode.FUNCTION, functionName, m_engine, src);
+        RouteContainer routeContainer = new RouteContainer(RouteMode.FUNCTION, m_engine, src, functionName);
 
         boolean isResolved = false;
         boolean routeFound = false;
         for (CoreId activeCore : m_engine.getActiveCores()) {
-            Reference functionRef = ReferenceFactory.createReference(functionName,
-                    ReferenceClass.FUNCTION, activeCore);
+            Reference functionRef = ReferenceFactory.createReference(functionName, ReferenceClass.FUNCTION, activeCore);
 
             if (functionRef.resolve(m_engine) == Result.RESOLVED) {
                 isResolved = true;
-
-                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(functionRef,
-                        routeContainer, m_engine, activeCore);
-
-                if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
+                CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
+                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, functionRef);
+                if (!analyzeRoute(RouteMode.FUNCTION, src, routeCoreContainer, activeCore))
                     return Status.ERROR;
-                }
+                if (!routeCoreContainer.hasNoRoutes())
+                    routeContainer.addRouteCoreContainer(routeCoreContainer);
                 routeFound = true;
             }
         }
@@ -74,8 +72,7 @@ public class Analyzer {
     }
 
     public Status analyzeEndpoints(CommandSource src, PathPoints pathPoints) {
-        RouteContainer routeContainer = new RouteContainer(pathPoints.getFromName(), pathPoints.getToName(), m_engine, src);
-
+        RouteContainer routeContainer = new RouteContainer(RouteMode.ENDPOINTS, m_engine, src, pathPoints.getFromName(), pathPoints.getToName());
         boolean isResolved = false;
         boolean routeFound = false;
         for (CoreId activeCore : m_engine.getActiveCores()) {
@@ -94,12 +91,12 @@ public class Analyzer {
             }
 
             if (fromFound && toFound) {
-                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(fromEndpoint, toEndpoint,
-                        routeContainer, m_engine, activeCore);
-
-                if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
+                CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
+                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, fromEndpoint, toEndpoint);
+                if (!analyzeRoute(RouteMode.ENDPOINTS, src, routeCoreContainer, activeCore))
                     return Status.ERROR;
-                }
+                if (!routeCoreContainer.hasNoRoutes())
+                    routeContainer.addRouteCoreContainer(routeCoreContainer);
                 routeFound = true;
             }
         }
@@ -113,8 +110,7 @@ public class Analyzer {
     }
 
     public Status analyzeLoop(CommandSource src, LoopPoints loopPoints) {
-        RouteContainer routeContainer = new RouteContainer(
-                RouteMode.LOOP, loopPoints.getRefString(), m_engine, src);
+        RouteContainer routeContainer = new RouteContainer(RouteMode.LOOP, m_engine, src, loopPoints.getRefString());
 
         boolean isResolved = false;
         boolean routeFound = false;
@@ -123,12 +119,12 @@ public class Analyzer {
 
             Reference loopRef = loopPoints.getLoop(activeCore);
             if ((loopRef != null) && !loopRef.getRef().equals("")) {
-                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(loopRef,
-                        routeContainer, m_engine, activeCore);
-
-                if (!analyzeRoute(src, routeContainer, routeCoreContainer, activeCore)) {
+                CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
+                RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, loopRef);
+                if (!analyzeRoute(RouteMode.LOOP, src, routeCoreContainer, activeCore))
                     return Status.ERROR;
-                }
+                if (!routeCoreContainer.hasNoRoutes())
+                    routeContainer.addRouteCoreContainer(routeCoreContainer);
                 routeFound = true;
             }
         }
@@ -141,20 +137,9 @@ public class Analyzer {
         return Status.COMPLETED;
     }
 
-    private boolean analyzeRoute(CommandSource src, RouteContainer routeContainer,
-            RouteCoreContainer routeCoreContainer, CoreId core) {
-
+    private boolean analyzeRoute(RouteMode mode, CommandSource src, RouteCoreContainer routeCoreContainer, CoreId core) {
         try {
-            RouteConstructor routeConstructor = new RouteConstructor(m_engine,
-                    m_engine.getControlFlow(core), m_engine.getCachedFunctionMap(core),
-                    routeCoreContainer, core);
-            routeConstructor.analyze(src);
-
-            if (!routeConstructor.getRoutes().isEmpty()) {
-                routeCoreContainer.add(routeConstructor.getRoutes());
-                routeContainer.addRouteCoreContainer(routeCoreContainer);
-            }
-
+            RouteConstructor.analyze(src, routeCoreContainer, core, m_engine);
         } catch (final java.lang.OutOfMemoryError e) {
             if (development_mode) e.printStackTrace();
             m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");
@@ -187,7 +172,7 @@ public class Analyzer {
 
             int currentSize = m_routes.size();
             for (RouteCoreContainer routeCoreContainer : routeContainer.getRouteCoreContainers()) {
-                for (Route route : routeCoreContainer.getRoutes()) {
+                for (Route route : routeCoreContainer) {
                     m_routes.add(route);
                 }
             }

@@ -405,7 +405,7 @@ public class Engine extends Notifier implements Aborter {
         try {
             for (Route route : getRoute(routeId)) {
                 Reference reference = ReferenceFactory.createReference(refString, ReferenceClass.ENDPOINT,
-                        route.getRouteCoreContainer().getCoreId());
+                        route.parentRouteCoreContainer().getCoreId());
 
                 if (resolveReference(reference) == Result.RESOLVED) {
                     if (route.getRouteUnknowns().canInstructionPause(reference)) {
@@ -457,7 +457,7 @@ public class Engine extends Notifier implements Aborter {
         assert(validateRouteCount());
 
         for (Route route : routes) {
-            route.getRouteCoreContainer().remove(route);
+            route.parentRouteCoreContainer().remove(route);
         }
         m_routes.removeAll(routes);
 
@@ -988,7 +988,7 @@ public class Engine extends Notifier implements Aborter {
             for (Route route : getRoute(routeId)) {
 
                 Reference functionRef = ReferenceFactory.createReference(functionName,
-                        ReferenceClass.FUNCTION, route.getRouteCoreContainer().getCoreId());
+                        ReferenceClass.FUNCTION, route.parentRouteCoreContainer().getCoreId());
 
                 Result result = resolveReference(functionRef);
                 switch (result) {
@@ -1028,7 +1028,7 @@ public class Engine extends Notifier implements Aborter {
         String refString = "";
         try {
             for (Route route : getRoute(routeId)) {
-                CoreId coreId = route.getRouteCoreContainer().getCoreId();
+                CoreId coreId = route.parentRouteCoreContainer().getCoreId();
 
                 Reference fromRef = ReferenceFactory.createReference(from,
                         ReferenceClass.ENDPOINT, coreId);
@@ -1082,7 +1082,7 @@ public class Engine extends Notifier implements Aborter {
             for (Route route : routes) {
                 Reference reference = ReferenceFactory.createReference(refString,
                         ReferenceClass.ENDPOINT,
-                        route.getRouteCoreContainer().getCoreId());
+                        route.parentRouteCoreContainer().getCoreId());
 
                 Result result = resolveReference(reference);
                 switch (result) {
@@ -1265,7 +1265,7 @@ public class Engine extends Notifier implements Aborter {
             for (Route route : getRoute(routeId)) {
                 Reference reference = ReferenceFactory.createReference(refString,
                         ReferenceClass.ANY,
-                        route.getRouteCoreContainer().getCoreId());
+                        route.parentRouteCoreContainer().getCoreId());
 
                 Result result = resolveReference(reference);
                 switch (result) {
@@ -1696,7 +1696,7 @@ public class Engine extends Notifier implements Aborter {
             Map<Route, Reference> refMap = new NonIteratableMap<Route, Reference>();
             for (Route route : routes) {
                 Reference reference = ReferenceFactory.createReference(refString,
-                        referenceClass, route.getRouteCoreContainer().getCoreId());
+                        referenceClass, route.parentRouteCoreContainer().getCoreId());
 
                 Result result = resolveReference(reference);
                 switch (result) {
