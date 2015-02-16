@@ -8,8 +8,7 @@ my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
 if (!$noBuild) {
-  system("xmake -f Makefile > $genDir/gui.log 2>&1");
-  rename("tutorial_gui.xe", "$genDir/tutorial_gui.xe");
+  system("xcc -target=$target -O1 tutorial_gui.xc core0.xc core1.xc -o $genDir/tutorial_gui.xe > $genDir/gui.log 2>&1");
 }
 system("@ARGV load $genDir/tutorial_gui.xe " .
        "source cmds.txt > $genDir/gui.txt 2>&1");

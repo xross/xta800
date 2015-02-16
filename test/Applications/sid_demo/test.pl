@@ -7,8 +7,6 @@ my $arch    = shift(@ARGV);
 my $target  = shift(@ARGV);
 my $noBuild = shift(@ARGV);
 
-$target = "XC-1";
-
 if (!$noBuild) {
 system("xmake TARGET=$target TARGETDIR=$genDir > $genDir/sid_demo.log 2>&1");
 }
