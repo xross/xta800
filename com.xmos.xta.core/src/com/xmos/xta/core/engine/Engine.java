@@ -580,15 +580,11 @@ public class Engine extends Notifier implements Aborter {
     // Function Names/Pcs
     // ===================================================================== //
     public Set<String> getFunctionNames(CoreId coreId) {
-        Set<FunctionControlFlow> functionControlFlows = m_controlFlows.getControlFlow(coreId).getFunctionControlFlows();
-        if (functionControlFlows != null) {
-            Set<String> functionNames = new IteratableSet<String>();
-            for(FunctionControlFlow fc : functionControlFlows){
-                functionNames.add(fc.getFunctionName());
-            }
-            return functionNames;
+        Set<String> functionNames = new IteratableSet<String>();
+        for(FunctionControlFlow fc : m_controlFlows.getControlFlow(coreId)){
+            functionNames.add(fc.getFunctionName());
         }
-        return new NonIteratableSet<String>();
+        return functionNames;
     }
 
     public Collection<String> getNonSystemFunctionNames() {
@@ -622,7 +618,7 @@ public class Engine extends Notifier implements Aborter {
 
     public List<Long> getFunctionStartPcs(String functionName, CoreId coreId) {
         List<Long> pcs = new LinkedList<Long>();
-        for (FunctionControlFlow fc : m_controlFlows.getControlFlow(coreId).getFunctionControlFlows()){
+        for (FunctionControlFlow fc : m_controlFlows.getControlFlow(coreId)){
             if (functionName.equals(fc.getFunctionName())){
                 pcs.add(fc.getStartInstructionNode().getPc());
             }
@@ -1379,10 +1375,7 @@ public class Engine extends Notifier implements Aborter {
             }
 
             try {
-                List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(
-                        m_controlFlows.getControlFlow(activeCore),
-                        m_cachedFunctions.get(activeCore), fromRef);
-
+                List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(this, activeCore, fromRef);
                 if (!backTrailsList.isEmpty()) {
                     if ((fromResolved == Result.RESOLVED) && allToRefsResolved) {
                         if (m_sections.addToBranches(src, activeCore, fromRef, toRefs)) {
@@ -1590,20 +1583,11 @@ public class Engine extends Notifier implements Aborter {
     }
 
     public boolean isWithinLoop(String ref) {
-           for (CoreId activeCore : m_activeCores) {
-
-               Reference loopRef = ReferenceFactory.createReference(ref,
-                       ReferenceClass.LOOP, activeCore);
-
-               if (resolveReference(loopRef) == Result.RESOLVED) {
-                   RouteLoopConversion converter = new RouteLoopConversion(
-                           m_controlFlows.getControlFlow(activeCore),
-                           getCachedFunctionMap(activeCore));
-
-                   if (converter.isWithinLoop(loopRef)) {
-                       return true;
-                   }
-            }
+        for (CoreId activeCore : m_activeCores) {
+            Reference loopRef = ReferenceFactory.createReference(ref, ReferenceClass.LOOP, activeCore);
+            if (resolveReference(loopRef) == Result.RESOLVED &&
+                    RouteLoopConversion.isWithinLoop(this, activeCore, loopRef))
+                return true;
         }
         return false;
     }

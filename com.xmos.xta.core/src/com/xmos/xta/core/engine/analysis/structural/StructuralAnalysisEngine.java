@@ -45,7 +45,18 @@ public class StructuralAnalysisEngine {
     private Engine m_engine;
     private List<PatternMatcher> m_patternMatchers;
 
-    public StructuralAnalysisEngine(Engine engine) {
+    public static Node createStructure(Engine engine, Set<CfgNode> workingSet, CfgInstructionNode startNode, String name)
+            throws AbortedException, MemoryMonitorException {
+        assert(workingSet.contains(startNode));
+        StructuralAnalysisEngine sae = new StructuralAnalysisEngine(engine);
+        CfgNode newStartNode = sae.basicBlock(workingSet, startNode, name);
+        Node structuralNode = sae.buildStructure(workingSet, newStartNode, "Converting CFG to structure");
+        assert(workingSet.size() == 1);
+        sae.normaliseGraph(structuralNode);
+        return structuralNode;
+    }
+
+    private StructuralAnalysisEngine(Engine engine) {
         m_engine = engine;
 
         MemoryMonitor memoryMonitor = engine.getMemoryMonitor();
@@ -61,18 +72,7 @@ public class StructuralAnalysisEngine {
         m_patternMatchers.add(new PanicTransformer(memoryMonitor));            //uses dominators
     }
 
-    public Node createStructure(Set<CfgNode> workingSet, CfgInstructionNode startNode, String name)
-        throws AbortedException, MemoryMonitorException {
-
-        assert(workingSet.contains(startNode));
-        CfgNode newStartNode = basicBlock(workingSet, startNode, name);
-        Node structuralNode = buildStructure(workingSet, newStartNode, "Converting CFG to structure");
-        assert(workingSet.size() == 1);
-        normaliseGraph(structuralNode);
-        return structuralNode;
-    }
-
-      private CfgNode basicBlock(Set<CfgNode> workingSet, CfgInstructionNode originalStartNode, String string) {
+    private CfgNode basicBlock(Set<CfgNode> workingSet, CfgInstructionNode originalStartNode, String string) {
         dumpTree("before_basicBlock_"+ string, workingSet, false);
 
         Set<CfgInstructionNode> toDo = new IteratableSet<CfgInstructionNode>();
@@ -113,8 +113,6 @@ public class StructuralAnalysisEngine {
                 firstNode = basicBlock;
             }
             newWorkingSet.add(basicBlock);
-
-// RL-todo add knowledge about if a branch is taken or not.
 
             for (CfgNode next : current.getNextNodes()) {
 

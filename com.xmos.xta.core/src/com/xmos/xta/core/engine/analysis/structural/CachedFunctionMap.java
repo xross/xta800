@@ -23,8 +23,7 @@ public class CachedFunctionMap {
 
         Node cachedFunction = m_cachedFunctions.get(functionControlFlow);
         if (cachedFunction == null){
-            StructuralAnalysisEngine sae = new StructuralAnalysisEngine(m_engine);
-            cachedFunction = sae.createStructure(
+            cachedFunction = StructuralAnalysisEngine.createStructure(m_engine,
                     functionControlFlow.getControlFlow(),
                     functionControlFlow.getStartInstructionNode(),
                     functionControlFlow.getFunctionName());

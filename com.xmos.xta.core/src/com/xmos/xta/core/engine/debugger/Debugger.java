@@ -36,7 +36,7 @@ public class Debugger {
 
     public Node getCachedFunction(CommandSource src, String functionName, CoreId coreId) {
         ControlFlow controlFlow = m_engine.getControlFlow(coreId);
-        for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
+        for (FunctionControlFlow functionControlFlow : controlFlow) {
             if (functionControlFlow.getFunctionName().equals(functionName)) {
                 try {
                     return m_engine.getCachedFunctionMap(coreId).getCachedFunction(functionControlFlow);
@@ -76,13 +76,8 @@ public class Debugger {
 
             if (reference.resolve(m_engine) == Result.RESOLVED) {
                 try {
-                    for (BackTrails backTrails : RouteConstructor.getPathBackTrails(
-                            m_engine.getControlFlow(activeCore),
-                            m_engine.getCachedFunctionMap(activeCore),
-                            reference)) {
-
+                    for (BackTrails backTrails : RouteConstructor.getPathBackTrails(m_engine, activeCore, reference))
                         matchingReferences.addAll(backTrails.getAsStrings());
-                    }
                 } catch (AbortedException e) {
                 } catch (MemoryMonitorException e) {
                 }
@@ -124,12 +119,8 @@ public class Debugger {
 
             if (reference.resolve(m_engine) == Result.RESOLVED) {
                 try {
-                    for (BackTrails backTrails : RouteConstructor.getPathBackTrails(
-                            m_engine.getControlFlow(activeCore),
-                            m_engine.getCachedFunctionMap(activeCore),
-                            reference)) {
+                    for (BackTrails backTrails : RouteConstructor.getPathBackTrails(m_engine, activeCore, reference))
                         console.display(backTrails.toString());
-                    }
                 } catch (AbortedException e) {
                 } catch (MemoryMonitorException e) {
                 }
@@ -166,10 +157,7 @@ public class Debugger {
                 if (ref.getCoreId().equals(coreId)) {
 
                     try {
-                        List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(
-                                m_engine.getControlFlow(coreId),
-                                m_engine.getCachedFunctionMap(coreId), ref);
-
+                        List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(m_engine, coreId, ref);
                         exclusionBackTrailsList.addAll(backTrailsList);
 
                     } catch (AbortedException e) {

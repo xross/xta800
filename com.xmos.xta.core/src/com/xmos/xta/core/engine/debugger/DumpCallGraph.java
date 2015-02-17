@@ -30,7 +30,7 @@ public class DumpCallGraph {
             System.out.printf("# %s\n", coreId.getCoreReference());
             System.out.printf("############################################\n");
             System.out.printf("digraph g {\n");
-            for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
+            for (FunctionControlFlow functionControlFlow : controlFlow) {
 
                 String name = functionControlFlow.getFunctionName();
                 String id = getFunctionId(name, functionIdMap);

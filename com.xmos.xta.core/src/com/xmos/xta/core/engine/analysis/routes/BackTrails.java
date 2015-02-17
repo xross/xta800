@@ -2,13 +2,14 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.utils.BackTrail;
 
-public class BackTrails implements Comparable<BackTrails> {
+public class BackTrails implements Comparable<BackTrails>, Iterable<BackTrail> {
     private List<BackTrail> m_backTrails;
     private CfgInstructionNode m_instruction;
 
@@ -17,15 +18,20 @@ public class BackTrails implements Comparable<BackTrails> {
         m_instruction = instruction;
     }
 
+    public BackTrails(CfgInstructionNode instruction, BackTrails backTrails) {
+        m_backTrails = backTrails.m_backTrails;
+        m_instruction = instruction;
+    }
+
     public boolean contains(BackTrail backTrail) {
         return m_backTrails.contains(backTrail);
     }
 
-    public List<BackTrail> getBackTrails() { // only need for iterating over. Move here?
-        return m_backTrails;
+    public Iterator<BackTrail> iterator() {
+        return m_backTrails.iterator();
     }
 
-    public CfgInstructionNode getInstruction() {
+   public CfgInstructionNode getInstruction() {
         return m_instruction;
     }
 

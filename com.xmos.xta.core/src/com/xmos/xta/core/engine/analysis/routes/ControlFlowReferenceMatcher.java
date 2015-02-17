@@ -24,35 +24,17 @@ import com.xmos.xta.core.engine.references.types.ReferenceType.Type;
 class ControlFlowReferenceMatcher extends ReferenceMatcher {
     private static final boolean DEBUG = false;
 
-    private ControlFlow m_controlFlow;
-    private CachedFunctionMap m_cachedFunctionMap;
-
-    ControlFlowReferenceMatcher(ControlFlow controlFlow, CachedFunctionMap cachedFunctionMap) {
-        m_controlFlow = controlFlow;
-        m_cachedFunctionMap = cachedFunctionMap;
-    }
-
-    List<BackTrails> matchReference(Reference ref)
-        throws AbortedException, MemoryMonitorException {
-
-        if (DEBUG) System.out.printf("========== Matching Ref: %s =============\n", ref);
-        List<BackTrails> backTrailsList = createBackTrailsList(ref);
-        if (DEBUG) System.out.printf("%s\n", backTrailsList);
-        return backTrailsList;
-    }
-
-    private List<BackTrails> createBackTrailsList(Reference reference)
-        throws AbortedException, MemoryMonitorException {
-
+    static List<BackTrails> getPathBackTrails(ControlFlow controlFlow, CachedFunctionMap cachedFunctionMap, Reference reference)
+            throws AbortedException, MemoryMonitorException {
+        if (DEBUG) System.out.printf("========== Matching Ref: %s =============\n", reference);
         List<BackTrails> refinedBackTrailsList = new LinkedList<BackTrails>();
-
         for(long pc : reference.getPcs()){
             if (DEBUG) System.out.printf("Starting on pc: 0x%x\n", pc);
 
             List<ReferenceType> refList = new LinkedList<ReferenceType>();
             matchLabel(reference, pc, refList);
 
-            List<FunctionControlFlow> containedInFunction = m_controlFlow.getFunctionContaining(pc);
+            List<FunctionControlFlow> containedInFunction = controlFlow.getFunctionContaining(pc);
 
             for (FunctionControlFlow fn : containedInFunction) {
                 if (DEBUG) System.out.printf("Function: %s\n", fn.getFunctionName());
@@ -64,7 +46,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
                     continue;
                 }
 
-                List<BackTrail> callTrails = m_controlFlow.getBackTrails(fn);
+                List<BackTrail> callTrails = controlFlow.getBackTrails(fn);
 
                 for(BackTrail backTrail : callTrails){
                     BackTrail copy = new BackTrail();
@@ -74,14 +56,14 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
                     long currentPc = pc;
                     CfgFunctionReferenceNode frn = copy.pop();
                     while(!matchingList.isEmpty()){
-                        Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList);
+                        Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, cachedFunctionMap);
                         while(res.first){
                             ReferenceType r = matchingList.get(matchingList.size() -1);
 
                             currentPc = res.second;
                             matchingList.remove(r);
 
-                            res = fnRefContainsReference(frn, currentPc, matchingList);
+                            res = fnRefContainsReference(frn, currentPc, matchingList, cachedFunctionMap);
                         }
                         currentPc = frn.getFunctionCallPc();
                         if(copy.isEmpty())
@@ -100,10 +82,11 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
             }
         }
         if (DEBUG) System.out.printf("Refining backTrail nodes (End: size: %d)...\n", refinedBackTrailsList.size());
+        if (DEBUG) System.out.printf("%s\n", refinedBackTrailsList);
         return refinedBackTrailsList;
     }
 
-    private Pair<Boolean, Long> fnRefContainsReference(CfgFunctionReferenceNode frn, Long currentPc, List<ReferenceType> refList)
+    private static Pair<Boolean, Long> fnRefContainsReference(CfgFunctionReferenceNode frn, Long currentPc, List<ReferenceType> refList, CachedFunctionMap cachedFunctionMap)
         throws AbortedException, MemoryMonitorException {
 
         if (refList.isEmpty())
@@ -116,7 +99,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
                 return new Pair<Boolean, Long>(true, (long)0);
             }
         } else if (r.getType() == ReferenceType.Type.ENDPOINT) {
-            return matchRefPc(frn, currentPc, r);
+            return matchRefPc(frn, currentPc, r, cachedFunctionMap);
 
         } else if (r.getType() == ReferenceType.Type.ERROR) {
             return new Pair<Boolean, Long>(false, (long)0);
@@ -129,10 +112,10 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
                 return new Pair<Boolean, Long>(true, frn.getFunctionStartPc());
             }
         } else if (r.getType() == ReferenceType.Type.LABEL) {
-            return matchRefPc(frn, currentPc, r);
+            return matchRefPc(frn, currentPc, r, cachedFunctionMap);
 
         } else if (r.getType() == ReferenceType.Type.SRCLABEL) {
-            return matchRefPc(frn, currentPc, r);
+            return matchRefPc(frn, currentPc, r, cachedFunctionMap);
 
         } else {
             assert(false);
@@ -140,7 +123,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
         return new Pair<Boolean, Long>(false, (long)0);
     }
 
-    private Pair<Boolean, Long> matchRefPc(CfgFunctionReferenceNode frn, Long latestPc, ReferenceType r)
+    private static Pair<Boolean, Long> matchRefPc(CfgFunctionReferenceNode frn, Long latestPc, ReferenceType r, CachedFunctionMap cachedFunctionMap)
         throws AbortedException, MemoryMonitorException {
 
         boolean found = false;
@@ -151,7 +134,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
                 found = true;
             }
         } else {
-            Node functionNode =  m_cachedFunctionMap.getCachedFunction(frn.getFunctionControlFlow());
+            Node functionNode =  cachedFunctionMap.getCachedFunction(frn.getFunctionControlFlow());
             IssueNode issueNode = getIssueNode(functionNode, latestPc);
             List<Node> nodeList = new LinkedList<Node>();
             issueNode.buildListUp(nodeList, null);
@@ -168,7 +151,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
         return new Pair<Boolean, Long>(found, latestPc);
     }
 
-    private int getIndexOfInst(List<Node> nodeList, long pc) {
+    private static int getIndexOfInst(List<Node> nodeList, long pc) {
         for (int i = nodeList.size()-2; i >= 0;i--) {
             if (nodeList.get(i) instanceof IssueNode){
                 IssueNode issueNode = (IssueNode)nodeList.get(i);
@@ -180,7 +163,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
         return -1;
     }
 
-    private IssueNode getIssueNode(Node node, final long pc) {
+    private static IssueNode getIssueNode(Node node, final long pc) {
         final List<IssueNode> issueNodes = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
             public TraverseStatus foundIssueNode(Node node, Object clientState) {

@@ -8,7 +8,7 @@ import com.xmos.xta.core.engine.references.types.ReferenceType;
 
 public class ReferenceMatcher {
 
-    void matchLabel(Reference reference, long pc, List<ReferenceType> refList){
+    static void matchLabel(Reference reference, long pc, List<ReferenceType> refList){
         List<String> backTrailForPc = new LinkedList<String>(reference.getPcBackTrail(pc));
 
         for(int i=reference.getBackTrail().size()-1; i>=0; i--){
@@ -22,7 +22,7 @@ public class ReferenceMatcher {
         }
     }
 
-    private int getIndexOf(List<String> backTrailForPc, String string){
+    private static int getIndexOf(List<String> backTrailForPc, String string){
         int i=0;
         for(String backTrail : backTrailForPc){
             int rightBra = backTrail.indexOf(")");

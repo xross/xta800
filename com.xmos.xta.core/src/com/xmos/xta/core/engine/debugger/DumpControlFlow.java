@@ -26,7 +26,7 @@ public class DumpControlFlow {
         boolean hit = false;
         for (CoreId coreId : m_engine.getXeLoader().getCoreIds()) {
             ControlFlow controlFlow = m_engine.getControlFlow(coreId);
-            for (FunctionControlFlow functionControlFlow : controlFlow.getFunctionControlFlows()) {
+            for (FunctionControlFlow functionControlFlow : controlFlow) {
                 if (functionControlFlow.getFunctionName().equals(functionName)) {
                     console.display(getControlFlow(coreId, functionControlFlow));
                     hit = true;

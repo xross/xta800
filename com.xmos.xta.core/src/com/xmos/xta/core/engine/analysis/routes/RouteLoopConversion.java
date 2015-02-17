@@ -12,7 +12,9 @@ import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.BackTrail;
+import com.xmos.libs.core.utils.CoreId;
 import com.xmos.xta.core.engine.AbortedException;
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.CachedFunctionMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -21,110 +23,87 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseSta
 import com.xmos.xta.core.engine.references.Reference;
 
 public class RouteLoopConversion {
-    private ControlFlow m_controlFlow;
-    private CachedFunctionMap m_cachedFunctionMap;
-
-    public RouteLoopConversion(ControlFlow controlFlow, CachedFunctionMap cachedFunctionMap) {
-        m_controlFlow = controlFlow;
-        m_cachedFunctionMap = cachedFunctionMap;
-    }
-
     // Given a reference, this function returns true if the reference
     // points to a location within a loop, and false otherwise.
-    public boolean isWithinLoop(Reference reference) {
+    static public boolean isWithinLoop(Engine engine, CoreId core, Reference reference) {
         try {
-            return process(reference, null, null);
-
+            return process(engine, core, reference, null, null);
         } catch (Exception e) {}
         return false;
     }
 
     // Given a reference, this function adds the relevant start loop
     // and exclusion BackTrail nodes to the given lists
-    public void updateLoopBackTrails(Reference reference,
-            List<BackTrails> loopStartBackTrailsList,
-            List<BackTrails> exclusionBackTrailsList)
+    static public List<BackTrails> updateLoopBackTrails(Engine engine, CoreId core, Reference reference, List<BackTrails> exclusionBackTrailsList)
         throws AbortedException, MemoryMonitorException {
-
-        process(reference, loopStartBackTrailsList, exclusionBackTrailsList);
+        List<BackTrails> loopStartBackTrailsList = new ArrayList<BackTrails>();
+        process(engine, core, reference, loopStartBackTrailsList, exclusionBackTrailsList);
+        return loopStartBackTrailsList;
     }
 
-    private boolean process(Reference reference,
-            List<BackTrails> loopStartBackTrailsList,
-            List<BackTrails> exclusionBackTrailsList)
-        throws AbortedException, MemoryMonitorException {
+    static public boolean process(Engine engine, CoreId core, Reference reference,
+                List<BackTrails> loopStartBackTrailsList, List<BackTrails> exclusionBackTrailsList) throws AbortedException, MemoryMonitorException {
+        ControlFlow controlFlow = engine.getControlFlow(core);
+        CachedFunctionMap cachedFunctionMap = engine.getCachedFunctionMap(core);
 
-        boolean withinLoop = false;
-
-        List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(
-                m_controlFlow, m_cachedFunctionMap, reference);
-
+        List<BackTrails> backTrailsList = RouteConstructor.getPathBackTrails(engine, core, reference);
+        boolean found = false;
         for (BackTrails backTrails : backTrailsList) {
 
             // First we look for a loop in the function that contained the original reference..
             FunctionControlFlow functionControlFlow =
-                m_controlFlow.getFunctionControlFlow(backTrails.getInstruction());
-            IssueNode issueNode = getCachedIssueNode(
+                    controlFlow.getFunctionControlFlow(backTrails.getInstruction());
+            IssueNode issueNode = getCachedIssueNode(cachedFunctionMap,
                     functionControlFlow, backTrails.getInstruction());
 
             Node loopNode = findLoopNode(issueNode);
             if (loopNode != null) {
-                addLoopBackTrails(loopNode, backTrails.getBackTrails(),
-                        functionControlFlow, loopStartBackTrailsList, exclusionBackTrailsList);
-
-                withinLoop = true;
+                if (loopStartBackTrailsList != null)
+                    addLoopBackTrails(loopNode, backTrails, functionControlFlow, loopStartBackTrailsList, exclusionBackTrailsList);
+                found = true;
                 break;
             }
 
-            // Next search up the various function call BackTrails for all the loops..
-            for (BackTrail backTrail : backTrails.getBackTrails()) {
+            // Next search up the various function call BackTrails for all the loops.
+            for (BackTrail backTrail : backTrails) {
 
-                CfgFunctionReferenceNode functionReferenceNode = backTrail.pop();
-                while (functionReferenceNode != null) {
+                CfgFunctionReferenceNode functionReferenceNode;
+                while ((functionReferenceNode = backTrail.pop()) != null &&
+                        !functionReferenceNode.getPrevNodes().isEmpty()) {
 
-                    Set<CfgNode> callNodes = functionReferenceNode.getPrevNodes();
-                    if (callNodes.isEmpty())
-                        break;
-
-                    assert(callNodes.size() == 1);
-                    CfgNode callNode = callNodes.iterator().next();
-
+                    assert(functionReferenceNode.getPrevNodes().size() == 1);
+                    CfgNode callNode = functionReferenceNode.getPrevNode();
                     assert(callNode instanceof CfgInstructionNode);
                     CfgInstructionNode instructionCallNode = (CfgInstructionNode)callNode;
 
-                    functionControlFlow = m_controlFlow.getFunctionControlFlow(instructionCallNode);
-                    issueNode = getCachedIssueNode(functionControlFlow, instructionCallNode);
+                    functionControlFlow = controlFlow.getFunctionControlFlow(instructionCallNode);
+                    issueNode = getCachedIssueNode(cachedFunctionMap, functionControlFlow, instructionCallNode);
 
                     loopNode = findLoopNode(issueNode);
                     if (loopNode != null) {
-                        List<BackTrail> newBackTrails = new ArrayList<BackTrail>();
-                        newBackTrails.add(backTrail);
-                        addLoopBackTrails(loopNode, newBackTrails, functionControlFlow, loopStartBackTrailsList, exclusionBackTrailsList);
-                        withinLoop = true;
+                        if (loopStartBackTrailsList != null) {
+                            List<BackTrail> backTrailList = new ArrayList<BackTrail>();
+                            backTrailList.add(backTrail);
+                            addLoopBackTrails(loopNode, new BackTrails(null, backTrailList), functionControlFlow,
+                                    loopStartBackTrailsList, exclusionBackTrailsList);
+                        }
+                        found = true;
                         break;
                     }
-                    functionReferenceNode = backTrail.pop();
                 }
             }
         }
-        return withinLoop;
+        return found;
     }
 
-    private Node findLoopNode(IssueNode node) {
+    private static Node findLoopNode(IssueNode node) {
         Node loopNode = node.getEnclosingLoopNode();
-        if (loopNode != null) {
+        if (loopNode != null)
             return loopNode;
-        }
-        Node infiniteLoopNode = node.getEnclosingInfiniteLoopNode();
-        if (infiniteLoopNode != null) {
-            return infiniteLoopNode;
-        }
-        return null;
+        return node.getEnclosingInfiniteLoopNode();
     }
 
-    private void addLoopBackTrails(Node loopNode,
-            List<BackTrail> backTrailsList,
-            FunctionControlFlow functionControlFlow,
+    private static void addLoopBackTrails(Node loopNode, BackTrails backTrails, FunctionControlFlow functionControlFlow,
             List<BackTrails> loopStartBackTrailsList,
             List<BackTrails> exclusionBackTrailsList) {
 
@@ -139,7 +118,7 @@ public class RouteLoopConversion {
         // corresponding to the above structural instruction node.
         CfgInstructionNode cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getStartPc());
 
-        loopStartBackTrailsList.add(new BackTrails(cfgInstructionNode, backTrailsList));
+        loopStartBackTrailsList.add(new BackTrails(cfgInstructionNode, backTrails));
 
         if (loopNode.isLoopNode() || loopNode.isSelfLoopNode()) {
             Node successor = loopNode.getSuccessor();
@@ -147,21 +126,21 @@ public class RouteLoopConversion {
                 issueNode = getFirstIssueNode(successor);
                 cfgInstructionNode = functionControlFlow.getInstructionNode(issueNode.getStartPc());
 
-                exclusionBackTrailsList.add(new BackTrails(cfgInstructionNode, backTrailsList));
+                exclusionBackTrailsList.add(new BackTrails(cfgInstructionNode, backTrails));
             }
         }
     }
 
-    private IssueNode getCachedIssueNode(
+    private static IssueNode getCachedIssueNode(CachedFunctionMap cachedFunctionMap,
             FunctionControlFlow functionControlFlow,
             CfgInstructionNode cfgInstructionNode)
         throws AbortedException, MemoryMonitorException {
 
-        Node functionNode = m_cachedFunctionMap.getCachedFunction(functionControlFlow);
+        Node functionNode = cachedFunctionMap.getCachedFunction(functionControlFlow);
         return getIssueNodeMatchingPc(functionNode, cfgInstructionNode.getPc());
     }
 
-    private IssueNode getIssueNodeMatchingPc(Node node, final long pc) {
+    private static IssueNode getIssueNodeMatchingPc(Node node, final long pc) {
         final List<IssueNode> issueNodes = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
             public TraverseStatus foundIssueNode(Node node, Object clientState) {
@@ -180,7 +159,7 @@ public class RouteLoopConversion {
         return issueNodes.iterator().next();
     }
 
-    private IssueNode getFirstIssueNode(Node node) {
+    private static IssueNode getFirstIssueNode(Node node) {
         final Collection<IssueNode> issueNode = new ArrayList<IssueNode>();
         node.traverse(new DefaultNodeTraverser() {
             public TraverseStatus foundIssueNode(Node node, Object clientState) {
