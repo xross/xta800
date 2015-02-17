@@ -177,7 +177,7 @@ public class TimeUnit {
            case CYCLES:
                return String.format("%d cycles", m_cycles);
            case INVALID:
-               break;               
+               break;
            }
            assert(false);
            return "";
@@ -188,7 +188,7 @@ public class TimeUnit {
            case NS:     return Conversion.getValueString(true, m_ns);
            case MHZ:    return Conversion.stripTrailingZeros(String.format("%f", m_mhz));
            case CYCLES: return String.format("%d", m_cycles);
-           case INVALID:break;               
+           case INVALID:break;
            }
            assert(false);
            return "";
@@ -220,7 +220,7 @@ public class TimeUnit {
            case CYCLES:
                return m_cycles;
            case INVALID:
-               break;               
+               break;
            }
            assert(false);
            return 0;
@@ -240,9 +240,9 @@ public class TimeUnit {
                    return ((threadFactor * 1000) / m_coreConfig.m_frequency) * m_cycles;
                }
                return 0;
-            
+
            case INVALID:
-               break; 
+               break;
            }
            assert(false);
            return 0;
@@ -260,9 +260,9 @@ public class TimeUnit {
                assert(m_coreConfig != null);
                int threadFactor = (m_coreConfig.m_numThreads > 4) ? m_coreConfig.m_numThreads : 4;
                return m_coreConfig.m_frequency / (threadFactor * m_cycles);
-            
+
            case INVALID:
-               break; 
+               break;
            }
            assert(false);
            return 0;

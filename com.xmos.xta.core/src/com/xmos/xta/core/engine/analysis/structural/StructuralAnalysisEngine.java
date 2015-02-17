@@ -180,7 +180,7 @@ public class StructuralAnalysisEngine {
         // Creates a new null node which all the terminals will connect to..
         CfgNullNode newNullNode = new CfgNullNode();
         newWorkingSet.add(newNullNode);
-        
+
         for (CfgNode node : terminals){
             if (node instanceof CfgNullNode) {
                 CfgNode.replaceNode(node, newNullNode);

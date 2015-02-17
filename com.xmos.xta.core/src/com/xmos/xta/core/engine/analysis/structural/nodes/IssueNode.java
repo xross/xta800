@@ -191,7 +191,7 @@ public class IssueNode extends Node {
                 return true;
         return false;
     }
-    
+
     public TimeDistributionBuckets getTimeSpread() {
         return new TimeDistributionBuckets(m_attributes.getFixedTime().getCycles());
     }

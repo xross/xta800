@@ -62,7 +62,7 @@ public class RouteConstructor {
     private Map<BackTrails, Set<CfgNode>> m_branchToNext;
     private List<BackTrails> m_branchBackTrailsList;
     private List<BackTrails> m_exclusionBackTrailsList;
-    
+
     public static List<BackTrails> getPathBackTrails(Engine engine, CoreId core, Reference reference)
             throws AbortedException, MemoryMonitorException {
         return ControlFlowReferenceMatcher.getPathBackTrails(engine.getControlFlow(core), engine.getCachedFunctionMap(core), reference);
@@ -97,7 +97,7 @@ public class RouteConstructor {
         m_engine.provideFeedback("Starting analysis...");
         buildbranchBackTrailsList();
         buildexclusionBackTrailsList();
-        
+
         switch (m_routeCoreContainer.parentRouteContainer().getMode()) {
         case FUNCTION:
             analyzeFunction();
@@ -699,7 +699,7 @@ public class RouteConstructor {
    private boolean exclusionBackTrailsListContainNode(BackTrail currentBackTrail, CfgNode node) {
        return backTrailsContainNode(m_exclusionBackTrailsList, currentBackTrail, node);
    }
-    
+
     private boolean backTrailsContainNode(List<BackTrails> backTrailsList, BackTrail currentBackTrail, CfgNode currentNode){
         if (!(currentNode instanceof CfgInstructionNode))
             return false;
@@ -867,24 +867,24 @@ public class RouteConstructor {
                 node.traverse(new DefaultNodeTraverser() {
                     public TraverseStatus foundIssueNode(Node node, Object clientState) {
                         for (Instruction instruction : ((IssueNode)node).getInstructions()) {
-                       
+
                             // Checks for threading instructions...
                             if (mnenonics.isSsync(instruction))
                                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
                                         "ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
-    
+
                             if (mnenonics.isMsync(instruction))
                                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
                                         "msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
-    
+
                             if (mnenonics.isMjoin(instruction)) {
                                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
                                         "mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
                             }
-    
+
                             // Checks for interrupt enable..
                             if (mnenonics.isSetSr(instruction)) {
-    
+
                                 long op1Field = instruction.getOperandField("op1");
                                 int shift = SR_IEBLE_SHIFT;
                                 int mask = (1 << SR_IEBLE_SIZE) - 1;

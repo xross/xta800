@@ -28,8 +28,8 @@ public class Reference implements Comparable<Reference>  {
 
     public String getRefNoCoreId() {
         return getRef(false);
-    }    
-    
+    }
+
     public String getPcString() {
         assert(m_base != null);
         return Conversion.pcSetToString(m_base.getPcs());
@@ -186,7 +186,7 @@ public class Reference implements Comparable<Reference>  {
         }
         return true;
     }
-    
+
     private String getRef(boolean includeCoreId) {
         StringBuffer str = new StringBuffer();
 
@@ -201,5 +201,5 @@ public class Reference implements Comparable<Reference>  {
         }
         str.append(m_base.getRef());
         return str.toString();
-    }        
+    }
 }

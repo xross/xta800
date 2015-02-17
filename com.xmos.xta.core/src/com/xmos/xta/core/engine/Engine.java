@@ -738,7 +738,7 @@ public class Engine extends Notifier implements Aborter {
                 m_defines.addFunctionTime(functionRef, timeUnit);
                 hit = true;
                 break;
-            case UNRESOLVED: 
+            case UNRESOLVED:
             case REMOVED:
                 break;
             }
@@ -846,9 +846,9 @@ public class Engine extends Notifier implements Aborter {
                 m_defines.removeFunctionTime(functionRef);
                 hit = true;
                 break;
-            case UNRESOLVED: 
+            case UNRESOLVED:
             case REMOVED:
-                break;                
+                break;
             }
         }
         if (hit) {
@@ -993,9 +993,9 @@ public class Engine extends Notifier implements Aborter {
                     defines.applyFunctionDefine(src, route, info, Source.SET);
                     hit = true;
                     break;
-                case UNRESOLVED: 
+                case UNRESOLVED:
                 case REMOVED:
-                    break;                    
+                    break;
                 }
             }
         } catch (AbortedException e) {    }
@@ -1098,9 +1098,9 @@ public class Engine extends Notifier implements Aborter {
                 case REMOVED:
                     removed = true;
                     break;
-                    
-                case UNRESOLVED: 
-                    break;                    
+
+                case UNRESOLVED:
+                    break;
                 }
             }
             for (Route route : routes) {
@@ -1280,9 +1280,9 @@ public class Engine extends Notifier implements Aborter {
                 case REMOVED:
                     removed = true;
                     break;
-                    
-                case UNRESOLVED: 
-                    break;                    
+
+                case UNRESOLVED:
+                    break;
                 }
             }
 
@@ -1346,9 +1346,9 @@ public class Engine extends Notifier implements Aborter {
             case REMOVED:
                 removedRefStrings.add(fromRefString);
                 break;
-                
-            case UNRESOLVED: 
-                break;                
+
+            case UNRESOLVED:
+                break;
             }
 
             Collection<Reference> toRefs = new ArrayList<Reference>();
@@ -1368,9 +1368,9 @@ public class Engine extends Notifier implements Aborter {
                 case REMOVED:
                     removedRefStrings.add(toRef.getRef());
                     break;
-                    
-                case RESOLVED: 
-                    break;                    
+
+                case RESOLVED:
+                    break;
                 }
             }
 
@@ -1422,9 +1422,9 @@ public class Engine extends Notifier implements Aborter {
             case REMOVED:
                 removedRefStrings.add(fromRefString);
                 break;
-                
-            case UNRESOLVED: 
-                break;                
+
+            case UNRESOLVED:
+                break;
             }
 
             Collection<Reference> toRefs = new ArrayList<Reference>();
@@ -1444,9 +1444,9 @@ public class Engine extends Notifier implements Aborter {
                 case REMOVED:
                     removedRefStrings.add(toRef.getRef());
                     break;
-                    
-                case RESOLVED: 
-                    break;                    
+
+                case RESOLVED:
+                    break;
                 }
             }
 
@@ -1643,9 +1643,9 @@ public class Engine extends Notifier implements Aborter {
             case REMOVED:
                 removed = true;
                 break;
-                
-            case UNRESOLVED: 
-                break;                
+
+            case UNRESOLVED:
+                break;
             }
         }
         if (hit) {
@@ -1693,9 +1693,9 @@ public class Engine extends Notifier implements Aborter {
                 case REMOVED:
                     removed = true;
                     break;
-                    
-                case UNRESOLVED: 
-                    break;                    
+
+                case UNRESOLVED:
+                    break;
                 }
             }
             for (Route route : routes) {
