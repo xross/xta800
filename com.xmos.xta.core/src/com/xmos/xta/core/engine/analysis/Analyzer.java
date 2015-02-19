@@ -55,7 +55,7 @@ public class Analyzer {
                 isResolved = true;
                 CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
                 RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, functionRef);
-                if (!analyzeRoute(src, routeCoreContainer, activeCore))
+                if (!analyzeRoute(RouteMode.FUNCTION, src, routeCoreContainer, activeCore))
                     return Status.ERROR;
                 if (!routeCoreContainer.hasNoRoutes())
                     routeContainer.addRouteCoreContainer(routeCoreContainer);
@@ -93,7 +93,7 @@ public class Analyzer {
             if (fromFound && toFound) {
                 CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
                 RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, fromEndpoint, toEndpoint);
-                if (!analyzeRoute(src, routeCoreContainer, activeCore))
+                if (!analyzeRoute(RouteMode.ENDPOINTS, src, routeCoreContainer, activeCore))
                     return Status.ERROR;
                 if (!routeCoreContainer.hasNoRoutes())
                     routeContainer.addRouteCoreContainer(routeCoreContainer);
@@ -121,7 +121,7 @@ public class Analyzer {
             if ((loopRef != null) && !loopRef.getRef().equals("")) {
                 CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
                 RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, loopRef);
-                if (!analyzeRoute(src, routeCoreContainer, activeCore))
+                if (!analyzeRoute(RouteMode.LOOP, src, routeCoreContainer, activeCore))
                     return Status.ERROR;
                 if (!routeCoreContainer.hasNoRoutes())
                     routeContainer.addRouteCoreContainer(routeCoreContainer);
@@ -137,9 +137,9 @@ public class Analyzer {
         return Status.COMPLETED;
     }
 
-    private boolean analyzeRoute(CommandSource src, RouteCoreContainer routeCoreContainer, CoreId core) {
+    private boolean analyzeRoute(RouteMode mode, CommandSource src, RouteCoreContainer routeCoreContainer, CoreId core) {
         try {
-            RouteConstructor.analyze(routeCoreContainer, m_engine);
+            RouteConstructor.analyze(src, routeCoreContainer, core, m_engine);
         } catch (final java.lang.OutOfMemoryError e) {
             if (development_mode) e.printStackTrace();
             m_engine.notify(src, Notifier.NOTIFY_ERROR, "out of memory (heap)");

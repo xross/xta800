@@ -7,23 +7,15 @@ import java.util.List;
 
 import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.utils.BackTrail;
 
 public class BackTrails implements Comparable<BackTrails>, Iterable<BackTrail> {
     private List<BackTrail> m_backTrails;
     private CfgInstructionNode m_instruction;
 
-
-    public BackTrails(CfgInstructionNode instruction) {
-        m_backTrails = new ArrayList<BackTrail>();
+    public BackTrails(CfgInstructionNode instruction, List<BackTrail> backTrails) {
+        m_backTrails = backTrails;
         m_instruction = instruction;
-    }
-
-    public BackTrails(CfgInstructionNode instruction, BackTrail backTrail) {
-        m_backTrails = new ArrayList<BackTrail>();
-        m_instruction = instruction;
-        add(backTrail);
     }
 
     public BackTrails(CfgInstructionNode instruction, BackTrails backTrails) {
@@ -31,36 +23,21 @@ public class BackTrails implements Comparable<BackTrails>, Iterable<BackTrail> {
         m_instruction = instruction;
     }
 
-    public void add(BackTrail backTrail){
-        m_backTrails.add(backTrail);
-    }
-
     public boolean contains(BackTrail backTrail) {
         return m_backTrails.contains(backTrail);
-    }
-
-    public boolean contains(CfgNode node) {
-        for (BackTrail backTrail : m_backTrails)
-            if (backTrail.contains(node))
-                return true;
-        return false;
-    }
-
-    public boolean isEmpty() {
-        return m_backTrails.isEmpty();
     }
 
     public Iterator<BackTrail> iterator() {
         return m_backTrails.iterator();
     }
 
-   public CfgInstructionNode getInstructionNode() {
+   public CfgInstructionNode getInstruction() {
         return m_instruction;
     }
 
-    public String toString() {
+    public String toString(){
         StringBuffer str = new StringBuffer();
-        for (BackTrail backTrail : m_backTrails) {
+        for(BackTrail backTrail : m_backTrails) {
             str.append("\t");
             str.append(backTrail);
             str.append("\n");

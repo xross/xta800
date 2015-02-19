@@ -3,6 +3,7 @@ package com.xmos.xta.core.engine.analysis.routes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.xmos.libs.core.controlflow.ControlFlow;
 import com.xmos.libs.core.controlflow.FunctionControlFlow;
@@ -33,7 +34,7 @@ public class RouteLoopConversion {
 
     // Given a reference, this function adds the relevant start loop
     // and exclusion BackTrail nodes to the given lists
-    static public List<BackTrails> updateLoopBackTrails(Engine engine, CoreId core, Reference reference, BackTrailsList exclusionBackTrailsList)
+    static public List<BackTrails> updateLoopBackTrails(Engine engine, CoreId core, Reference reference, List<BackTrails> exclusionBackTrailsList)
         throws AbortedException, MemoryMonitorException {
         List<BackTrails> loopStartBackTrailsList = new ArrayList<BackTrails>();
         process(engine, core, reference, loopStartBackTrailsList, exclusionBackTrailsList);
@@ -41,7 +42,7 @@ public class RouteLoopConversion {
     }
 
     static public boolean process(Engine engine, CoreId core, Reference reference,
-                List<BackTrails> loopStartBackTrailsList, BackTrailsList exclusionBackTrailsList) throws AbortedException, MemoryMonitorException {
+                List<BackTrails> loopStartBackTrailsList, List<BackTrails> exclusionBackTrailsList) throws AbortedException, MemoryMonitorException {
         ControlFlow controlFlow = engine.getControlFlow(core);
         CachedFunctionMap cachedFunctionMap = engine.getCachedFunctionMap(core);
 
@@ -51,9 +52,9 @@ public class RouteLoopConversion {
 
             // First we look for a loop in the function that contained the original reference..
             FunctionControlFlow functionControlFlow =
-                    controlFlow.getFunctionControlFlow(backTrails.getInstructionNode());
+                    controlFlow.getFunctionControlFlow(backTrails.getInstruction());
             IssueNode issueNode = getCachedIssueNode(cachedFunctionMap,
-                    functionControlFlow, backTrails.getInstructionNode());
+                    functionControlFlow, backTrails.getInstruction());
 
             Node loopNode = findLoopNode(issueNode);
             if (loopNode != null) {
@@ -80,9 +81,12 @@ public class RouteLoopConversion {
 
                     loopNode = findLoopNode(issueNode);
                     if (loopNode != null) {
-                        if (loopStartBackTrailsList != null)
-                            addLoopBackTrails(loopNode, new BackTrails(null, backTrail),
-                                    functionControlFlow, loopStartBackTrailsList, exclusionBackTrailsList);
+                        if (loopStartBackTrailsList != null) {
+                            List<BackTrail> backTrailList = new ArrayList<BackTrail>();
+                            backTrailList.add(backTrail);
+                            addLoopBackTrails(loopNode, new BackTrails(null, backTrailList), functionControlFlow,
+                                    loopStartBackTrailsList, exclusionBackTrailsList);
+                        }
                         found = true;
                         break;
                     }
@@ -100,7 +104,8 @@ public class RouteLoopConversion {
     }
 
     private static void addLoopBackTrails(Node loopNode, BackTrails backTrails, FunctionControlFlow functionControlFlow,
-            List<BackTrails> loopStartBackTrailsList, BackTrailsList exclusionBackTrailsList) {
+            List<BackTrails> loopStartBackTrailsList,
+            List<BackTrails> exclusionBackTrailsList) {
 
         if (loopStartBackTrailsList == null)
             return;
