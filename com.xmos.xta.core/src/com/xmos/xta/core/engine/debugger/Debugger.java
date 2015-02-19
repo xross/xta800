@@ -169,7 +169,7 @@ public class Debugger {
             if (!exclusionBackTrailsList.isEmpty()) {
                 System.out.println(coreId + ":");
                 for (BackTrails backTrails : exclusionBackTrailsList){
-                    System.out.println(backTrails.getInstruction());
+                    System.out.println(backTrails.getInstructionNode());
                 }
                 System.out.println("");
             }

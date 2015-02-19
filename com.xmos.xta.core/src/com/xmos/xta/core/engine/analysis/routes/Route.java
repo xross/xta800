@@ -2,11 +2,12 @@ package com.xmos.xta.core.engine.analysis.routes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
-import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.IssueNodeAttributes;
@@ -25,42 +26,36 @@ public class Route {
     private Node m_baseOfRouteNode;
     private RouteCoreContainer m_parentRouteCoreContainer;
 
-    private Node m_searchNode;  // Used to return value from traverser.
+    private Node m_searchNode;  // Used to return result from traverser.
 
     public static void resetRouteCount() {
         s_routeCount = 0;
     }
 
-    public Route(CommandSource src, final Architecture arch, Node node, RouteCoreContainer parentRouteCoreContainer) {
+    public Route(final Architecture arch, Node node, RouteCoreContainer parentRouteCoreContainer) {
         m_routeId = s_routeCount++;
-        m_timing = new RouteTiming(src, this,
+        m_timing = new RouteTiming(parentRouteCoreContainer.parentRouteContainer().getCommandSrc(), this,
                 parentRouteCoreContainer.getCoreConfig(),
                 parentRouteCoreContainer.getCoreId());
         m_unknowns = new RouteUnknowns(this);
         m_baseOfRouteNode = node;
         m_parentRouteCoreContainer = parentRouteCoreContainer;
 
-        final CoreConfig coreConfig = parentRouteCoreContainer.getCoreConfig();
-        m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
-            public TraverseStatus foundIssueNode(Node node, Object clientState) {
-                ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, arch);
-                return TraverseStatus.CONTINUE;
-            }
-        },
-        null    // No clientState
-        );
+        // N.B. Creating a new Route has side effects!
+        setCoreConfig(arch);
     }
 
-    public int getRouteId() {
-        return m_routeId;
+    public void setNode(Node node) {
+        m_baseOfRouteNode = node;
+        //setCoreConfig(arch);  // RL-TODO do we need to traverse? Or should this be done by RouteConstructor.setParent()?
     }
 
     public Node getNode() {
         return m_baseOfRouteNode;
     }
 
-    public void setNode(Node node) {
-        m_baseOfRouteNode = node;
+    public int getRouteId() {
+        return m_routeId;
     }
 
     public RouteContainer parentRouteContainer() {
@@ -126,10 +121,8 @@ public class Route {
             } catch (NumberFormatException e) {
                 return null;
             }
-
             if (index >= node.iChildren().size())
                 return null;
-
             node = node.iChildren().get(index);
         }
         return node;
@@ -144,14 +137,50 @@ public class Route {
 
     public Collection<Node> getReferencedFunctionNodes(Reference reference) throws AbortedException {
         RouteReferenceMatcher rrm = new RouteReferenceMatcher();
-
         Collection<Node> referencedNodes = new ArrayList<Node>();
-
-        for (Node function : rrm.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference)) {
+        for (Node function : rrm.getFunctionNodesMatchingReference(m_baseOfRouteNode, reference))
             referencedNodes.add(function);
-        }
-
         return referencedNodes;
+    }
+
+    public boolean sameDescription(Node newNode) {
+        // N.B. We compare a potential Route before creating it as creation has side effects!
+        // RL-TODO Is this inefficient?
+        // If it is we could:
+        //      1. Traverse in parallel, checking at each step.
+        //      2. Cache the result of the traversal, as an SHA.
+        List<String> routeDesc = createRouteDescription(m_baseOfRouteNode);
+        List<String> newRouteDesc = createRouteDescription(newNode);
+        return routeDesc.equals(newRouteDesc);
+    }
+
+    private List<String> createRouteDescription(Node node) {
+        final List<String> nodeList = new LinkedList<String>();
+        node.traverse(new UntypedNodeTraverser() {
+            public TraverseStatus foundNode(Node node, Object clientState) {
+                if(node.isIssueNode())
+                    nodeList.add(node.getTypeName() + node.getStartPc());
+                else
+                    nodeList.add(node.getTypeName());
+                return TraverseStatus.CONTINUE;
+            }
+        },
+        null  // No clientState
+        );
+        return nodeList;
+    }
+
+    private void setCoreConfig(final Architecture arch) {
+        // N.B. Creating a new Route has side effects!
+        final CoreConfig coreConfig = m_parentRouteCoreContainer.getCoreConfig();
+        m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
+            public TraverseStatus foundIssueNode(Node node, Object clientState) {
+                ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, arch);
+                return TraverseStatus.CONTINUE;
+            }
+        },
+        null    // No clientState
+        );
     }
 }
 
