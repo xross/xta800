@@ -208,12 +208,10 @@ public class RouteConstructor {
 
 
     private Node makeEndpoints(BackTrail currentBackTrail, CfgInstructionNode startInst, List<BackTrails> endBackTrailsList) throws AbortedException, MemoryMonitorException {
-        ReachableGraph reachableGraph = new ReachableGraph(RouteMode.ENDPOINTS, endBackTrailsList);
+        ReachableGraph reachableGraph = new ReachableGraph(false, endBackTrailsList);
         reachableGraph.findReachableGraph(true, null, currentBackTrail, startInst);
-        if (reachableGraph.removeExclusionBranches().isEmpty())
-            return null;
-        NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentBackTrail);
-        return reachableGraph.convertGraphToStructure(startNodeDescriptor);
+        Node node = reachableGraph.convertGraphToStructure(currentBackTrail, startInst);
+        return node;
     }
 
     private Pair<FunctionNode, Boolean> makeFunction(boolean firstInstruction, BackTrail currentBackTrail) throws AbortedException, MemoryMonitorException {
@@ -222,15 +220,11 @@ public class RouteConstructor {
             return new Pair<FunctionNode, Boolean>(new FunctionNode(), false);
         CfgInstructionNode startInst = fnRef.getFunctionStartInstruction();
         List<BackTrails> endBackTrailsList = getFunctionEndBackTrails(currentBackTrail);
-
-        ReachableGraph reachableGraph = new ReachableGraph(RouteMode.FUNCTION, endBackTrailsList);
+        ReachableGraph reachableGraph = new ReachableGraph(true, endBackTrailsList);
         reachableGraph.findReachableGraph(firstInstruction, null, currentBackTrail, startInst);
-        Set<CfgNode> workingSet = reachableGraph.removeExclusionBranches();
-        if (workingSet.isEmpty())
+        Node node = reachableGraph.convertGraphToStructure(currentBackTrail, startInst);
+        if (node == null)
             return new Pair<FunctionNode, Boolean>(null, false);
-
-        NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentBackTrail);
-        Node node = reachableGraph.convertGraphToStructure(startNodeDescriptor);
         FunctionNode fn = new FunctionNode(node, fnRef.getFunctionName(), fnRef.getFunctionCallPc());
         return new Pair<FunctionNode, Boolean>(fn, true);
     }
@@ -260,14 +254,14 @@ public class RouteConstructor {
 
 
     class ReachableGraph {
-        private RouteMode m_routeMode;
+        private boolean m_functionMode;
         private List<BackTrails> m_endBackTrailsList;
         private Set<CfgNode> m_workingSet;
         private Set<CfgNode> m_currentExclusionsFound;
-        private Map<NodeDescriptor, CfgNode> m_nodeToWorkingSet;
+        private Map<NodeDescriptor, CfgNode> m_nodeToWorkingSet;  // RL-TODO simplify how this is used.
 
-    ReachableGraph(RouteMode routeMode, List<BackTrails> endBackTrailsList) {
-            m_routeMode = routeMode;
+        ReachableGraph(boolean functionMode, List<BackTrails> endBackTrailsList) {
+            m_functionMode = functionMode;
             m_endBackTrailsList = endBackTrailsList;
             m_workingSet = new IteratableSet<CfgNode>();
             m_currentExclusionsFound = new IteratableSet<CfgNode>();
@@ -275,275 +269,229 @@ public class RouteConstructor {
         }
 
         void findReachableGraph(boolean firstInstruction, CfgNode previous, BackTrail currentBackTrail, CfgNode node) throws AbortedException, MemoryMonitorException {
-        while(true) {
-            CfgNode currentNode;
-            if (node instanceof CfgFunctionReferenceNode == false)
-                currentNode = copyNode(node, currentBackTrail);
-            else {
+            while(true) {
+                CfgNode currentNode = null;
+                if (node instanceof CfgFunctionReferenceNode) {
+                    CfgFunctionReferenceNode frn = ((CfgFunctionReferenceNode)node);
+                    CfgInstructionNode inst = frn.getFunctionStartInstruction();
 
-                CfgFunctionReferenceNode frn = ((CfgFunctionReferenceNode)node);
-
-                if (currentBackTrail.recursivelyContains(frn.getFunctionStartInstruction())) {
-                    previous.setRecursive(true);
-                    return;
-                }
-
-                BackTrail newBackTrail = new BackTrail(currentBackTrail);
-                newBackTrail.push(frn);
-
-                for (BackTrails backTrails : m_endBackTrailsList)
-                    if (backTrails.contains(node)) {
-                        CfgInstructionNode inst = frn.getFunctionStartInstruction();
-                        findReachableGraph(false, previous, newBackTrail, inst);
+                    if (currentBackTrail.recursivelyContains(inst)) {
+                        previous.setRecursive(true);
                         return;
                     }
 
-                if (!frn.isKnownFunction()) {
-                    CfgNode fnNode = new CfgContainerNode(new FunctionNode());
-                    connect(previous, fnNode);
-                    return;
-                }
-                Pair<FunctionNode, Boolean> fnReturn = makeFunction(false, newBackTrail);
-                FunctionNode fn = fnReturn.first;
-                CfgNode fnNode = new CfgContainerNode(fn);
-                boolean continueAnalysis = fnReturn.second;
-                if (!continueAnalysis) {
-                    connect(previous, fnNode);
-                    if (fn == null) // The function never met an endpoint and didn't return.
-                        m_currentExclusionsFound.add(fnNode);
-                    return;
-                }
-                // The exclusions didn't stop the control flow reaching the end of a function.
-                currentNode = fnNode;
-            }
-
-            if (!firstInstruction && m_exclusionBackTrailsList.contains(node, currentBackTrail)) {
-                connect(previous, currentNode);
-                m_currentExclusionsFound.add(currentNode);
-                return;
-            }
-            firstInstruction = false;
-
-            if (currentNode.getUnresolved()) {
-                connect(previous, currentNode);
-                return;
-            }
-
-            // This adds to the loop forming end nodes.
-            // RL-TODO moving earlier changes output of test/ConsoleCommands/list/exclusions
-            if (isCurrentNodeAnEndNode(currentBackTrail, node, previous, currentNode))
-                return;
-
-            connect(previous, currentNode);
-
-            // nextNodes is the set of nodes that follow this currentNode, it should include any user added next nodes.
-            Set<CfgNode> nextNodes = getValidBranches(currentBackTrail, node);
-            switch (nextNodes.size()) {
-            case 0:
-                handelEndOfFunction(previous, currentBackTrail, currentNode);
-                return;
-            case 1:
-                CfgNode next = nextNodes.iterator().next();
-                CfgNode nextWorkingSetNode = m_nodeToWorkingSet.get(new NodeDescriptor(next, currentBackTrail));
-                if (nextWorkingSetNode != null) {
-                    handleNodeAlreadyInWorkingSet(currentBackTrail, currentNode, next, nextWorkingSetNode);
-                    // This is here to allow you to exclude the start instruction.
-                    if (m_exclusionBackTrailsList.contains(next, currentBackTrail))
-                        m_currentExclusionsFound.add(currentNode);
-                    return;
-                }
-                previous = currentNode;
-                node = next;
-                break; // And we will start from the top again!
-            default:
-                handleBranch(currentBackTrail, currentNode, nextNodes);
-                return;
-            }
-        } // while(true)
-    }
-
-    private boolean isCurrentNodeAnEndNode(
-            BackTrail currentBackTrail,
-            CfgNode node,
-            CfgNode previous,
-            CfgNode currentNode) {
-
-        if (endBackTrailsListContainNode(currentBackTrail, node)) {
-            switch (m_routeMode) {
-            case FUNCTION:
-                connect(previous, currentNode);
-                return true;
-            case ENDPOINTS:
-                if(!m_workingSet.isEmpty()){
-                    connectToNullNode(previous);
-                    return true;
-                }
-                break;
-            default:
-                break;
-            }
-        }
-        return false;
-    }
-
-    private void handleBranch(BackTrail currentBackTrail, CfgNode currentNode, Set<CfgNode> nextNodes) throws AbortedException, MemoryMonitorException {
-
-        for (CfgNode next : nextNodes) {
-            CfgNode nextWorkingSetNode = m_nodeToWorkingSet.get(new NodeDescriptor(next, currentBackTrail));
-            if (nextWorkingSetNode == null)
-                findReachableGraph(false, currentNode, currentBackTrail, next);
-            else
-                handleNodeAlreadyInWorkingSet(currentBackTrail, currentNode, next, nextWorkingSetNode);
-        }
-    }
-
-    private void handelEndOfFunction(CfgNode previous, BackTrail currentBackTrail, CfgNode currentNode) throws AbortedException, MemoryMonitorException {
-        if (currentNode instanceof CfgInstructionNode &&
-                m_branchBackTrailsList.contains(((CfgInstructionNode)currentNode).getPc())) {
-            // Here we have no next nodes (i.e. it is unresolved), but isn't marked
-            // as unresolved because there is at least one way we can get to this node
-            // where there is a next node.
-            connect(previous, currentNode);
-            currentNode.setUnresolved(true);
-        } else {
-            if(currentBackTrail.size() == 1){
-                currentNode.setUnresolved(true);
-            } else {
-                CfgFunctionReferenceNode callingFnRef = currentBackTrail.peek();
-                for (CfgNode followingFunction : callingFnRef.getNextNodes()) {
                     BackTrail newBackTrail = new BackTrail(currentBackTrail);
-                    newBackTrail.pop();
-                    findReachableGraph(false, currentNode, newBackTrail, followingFunction);
+                    newBackTrail.push(frn);
+
+                    for (BackTrails backTrails : m_endBackTrailsList)
+                        if (backTrails.contains(frn)) {
+                            findReachableGraph(false, previous, newBackTrail, inst);
+                            return;
+                        }
+
+                    if (!frn.isKnownFunction()) {
+                        currentNode = new CfgContainerNode(new FunctionNode());
+                        connect(previous, currentNode);
+                        return;
+                    }
+                    Pair<FunctionNode, Boolean> fnReturn = makeFunction(false, newBackTrail);
+                    FunctionNode fn = fnReturn.first;
+                    boolean continueAnalysis = fnReturn.second;
+                    if (!continueAnalysis) {
+                        currentNode = new CfgContainerNode(fn);
+                        connect(previous, currentNode);
+                        if (fn == null) // The function never met an endpoint and didn't return.
+                            m_currentExclusionsFound.add(currentNode);
+                        return;
+                    }
+                    assert(!m_exclusionBackTrailsList.contains(frn, currentBackTrail));
+                    assert(!endBackTrailsListContainNode(currentBackTrail, frn));
+                    currentNode = new CfgContainerNode(fn);
+                    connect(previous, currentNode);
+                } else {
+                    if (m_exclusionBackTrailsList.contains(node, currentBackTrail) && !firstInstruction) {
+                        currentNode = copyNode(node, currentBackTrail);
+                        connect(previous, currentNode);
+                        m_currentExclusionsFound.add(currentNode);
+                        return;
+                    }
+                    firstInstruction = false;
+                    if (node.getUnresolved()) {
+                        currentNode = copyNode(node, currentBackTrail);
+                        connect(previous, currentNode);
+                        return;
+                    }
+                    // This adds to the loop forming end nodes.
+                    if (endBackTrailsListContainNode(currentBackTrail, node)) {
+                        if (m_functionMode) {
+                            currentNode = copyNode(node, currentBackTrail);
+                            connect(previous, currentNode);
+                            return;
+                        } else if(!m_workingSet.isEmpty()) {
+                            connect(previous, getNullNode());
+                            return;
+                        }
+                    }
+                    currentNode = copyNode(node, currentBackTrail);
+                    connect(previous, currentNode);
+                }
+                // nextNodes is the set of nodes that follow this currentNode, it should include any user added next nodes.
+                Set<CfgNode> nextNodes = getValidBranches(currentBackTrail, node);
+                switch (nextNodes.size()) {
+                case 0:
+                    if (currentNode instanceof CfgInstructionNode &&
+                            m_branchBackTrailsList.contains(((CfgInstructionNode)currentNode).getPc())) {
+                        // Here we have no next nodes (i.e. it is unresolved), but isn't marked as unresolved
+                        // because there is at least one way we can get to this node where there is a next node.
+                        currentNode.setUnresolved(true);
+                    } else  if (currentBackTrail.size() == 1) {
+                        currentNode.setUnresolved(true);
+                    } else {
+                        BackTrail newBackTrail = new BackTrail(currentBackTrail);
+                        CfgFunctionReferenceNode callingFnRef = newBackTrail.pop();
+                        for (CfgNode followingFunction : callingFnRef.getNextNodes())
+                            findReachableGraph(false, currentNode, newBackTrail, followingFunction);
+                    }
+                    return;
+                case 1:
+                    CfgNode next = nextNodes.iterator().next();
+                    CfgNode nextWorkingSetnode = m_nodeToWorkingSet.get(new NodeDescriptor(next, currentBackTrail));
+                    if (nextWorkingSetnode != null) {
+                        handleNodeAlreadyInWorkingSet(currentBackTrail, currentNode, next, nextWorkingSetnode);
+                        // This is here to allow you to exclude the start instruction.
+                        if (m_exclusionBackTrailsList.contains(next, currentBackTrail))
+                            m_currentExclusionsFound.add(currentNode);
+                        return;
+                    }
+                    // else
+                    //    findReachableGraph(false, currentNode, currentBackTrail, nextNode);
+                    previous = currentNode;
+                    node = next;
+                    break; // And we will start from the top again!
+                default:
+                    // Handle branch
+                    for (CfgNode nextNode : nextNodes) {
+                        CfgNode nextWorkingSetNode = m_nodeToWorkingSet.get(new NodeDescriptor(nextNode, currentBackTrail));
+                        if (nextWorkingSetNode != null)
+                            handleNodeAlreadyInWorkingSet(currentBackTrail, currentNode, nextNode, nextWorkingSetNode);
+                        else
+                            findReachableGraph(false, currentNode, currentBackTrail, nextNode);
+                    }
+                    return;
+                }
+            } // while(true)
+        }
+
+        Node convertGraphToStructure(BackTrail currentBackTrail, CfgInstructionNode startInst) throws AbortedException, MemoryMonitorException {
+            if (removeExclusionBranches().isEmpty())
+                return null;
+            NodeDescriptor startNodeDescriptor = new NodeDescriptor(startInst, currentBackTrail);
+            CfgNode originalStartNode = null;
+            for (NodeDescriptor nd : m_nodeToWorkingSet.keySet()) {
+                if (startNodeDescriptor.equals(nd) && m_workingSet.contains(m_nodeToWorkingSet.get(nd))) {
+                    originalStartNode = m_nodeToWorkingSet.get(nd);
+                    break;
                 }
             }
-        }
-    }
-
-    private void handleNodeAlreadyInWorkingSet(
-            BackTrail currentBackTrail,
-            CfgNode currentNode,
-            CfgNode nextNode,
-            CfgNode nextNodeFromWorkingSet) {
-
-        if (m_routeMode == RouteMode.FUNCTION) {
-            currentNode.connectNext(nextNodeFromWorkingSet);
-            return;
+            assert(originalStartNode != null && originalStartNode instanceof CfgInstructionNode);
+            dumpGraph();
+            return StructuralAnalysisEngine.createStructure(m_engine, m_workingSet, (CfgInstructionNode)originalStartNode, "route");
         }
 
-        boolean nextNodeIsAnEndNode = endBackTrailsListContainNode(currentBackTrail, nextNode);
-        if (nextNodeIsAnEndNode) {
-            connectToNullNode(currentNode);
-            return;
+        private void handleNodeAlreadyInWorkingSet(BackTrail currentBackTrail, CfgNode currentNode, CfgNode nextNode, CfgNode nextNodeFromWorkingSet) {
+            if (m_functionMode)
+                currentNode.connectNext(nextNodeFromWorkingSet);   // BUT what if we use connect() and add it again?
+            else if (endBackTrailsListContainNode(currentBackTrail, nextNode))
+                connect(currentNode, getNullNode());
+            else if ( !m_exclusionBackTrailsList.contains(nextNode, currentBackTrail))
+                // We've formed a loop, so connect the current to the target thats already in the working set..
+                currentNode.connectNext(nextNodeFromWorkingSet);   // BUT what if we use connect() and add it again?
         }
 
-        if ( !m_exclusionBackTrailsList.contains(nextNode, currentBackTrail))
-            // We've formed a loop, so connect the current to the target thats already in the working set..
-            currentNode.connectNext(nextNodeFromWorkingSet);
-    }
-
-    private void connectToNullNode(CfgNode currentNode) {
-        //search the working set for a null node
-        CfgNullNode nullNode = null;
-        for (CfgNode node : m_workingSet)
-            if (node instanceof CfgNullNode) {
-                nullNode = (CfgNullNode)node;
-                break;
-            }
-        if (nullNode == null)
-            nullNode = new CfgNullNode();
-
-        connect(currentNode, nullNode);
-    }
-
-    private Set<CfgNode> getValidBranches(BackTrail currentBackTrail, CfgNode node) {
-        Set<CfgNode> validNextNodes = new IteratableSet<CfgNode>();
-        validNextNodes.addAll(node.getNextNodes());
-        validNextNodes.removeAll(m_branchBackTrailsList.getBranchNodesNotIn(currentBackTrail));
-        return validNextNodes;
-    }
-
-    private Node convertGraphToStructure(NodeDescriptor startNodeDescriptor) throws AbortedException, MemoryMonitorException {
-        CfgNode originalStartNode = null;
-        for (NodeDescriptor nd : m_nodeToWorkingSet.keySet()) {
-            if (startNodeDescriptor.equals(nd) && m_workingSet.contains(m_nodeToWorkingSet.get(nd))) {
-                originalStartNode = m_nodeToWorkingSet.get(nd);
-                break;
-            }
+        private CfgNode getNullNode() {
+            //search the working set for a null node
+            for (CfgNode node : m_workingSet)
+                if (node instanceof CfgNullNode)
+                    return node;
+            return new CfgNullNode();
         }
-        assert(originalStartNode != null && originalStartNode instanceof CfgInstructionNode);
-        dumpGraph();
-        return StructuralAnalysisEngine.createStructure(m_engine, m_workingSet, (CfgInstructionNode)originalStartNode, "route");
-    }
 
-    private Set<CfgNode> removeExclusionBranches() {
-        while (!m_currentExclusionsFound.isEmpty()) {
-            CfgNode current = m_currentExclusionsFound.iterator().next();
-            m_currentExclusionsFound.remove(current);
-            m_workingSet.remove(current);
-            Set<CfgNode> prevNodes = new IteratableSet<CfgNode>(current.getPrevNodes());
-            for (CfgNode prev : prevNodes) {
-                prev.disconnectNext(current);
-                if (prev.getNextNodes().isEmpty())
-                    m_currentExclusionsFound.add(prev);
-            }
+        private Set<CfgNode> getValidBranches(BackTrail currentBackTrail, CfgNode node) {
+            Set<CfgNode> validNextNodes = new IteratableSet<CfgNode>();
+            validNextNodes.addAll(node.getNextNodes());
+            validNextNodes.removeAll(m_branchBackTrailsList.getBranchNodesNotIn(currentBackTrail));
+            return validNextNodes;
         }
-        return m_workingSet;
-    }
 
-    private CfgNode copyNode(CfgNode node, BackTrail currentBackTrail) throws AbortedException {
-        assert(node instanceof CfgInstructionNode || node instanceof CfgFunctionReferenceNode);
-        NodeDescriptor nd = new NodeDescriptor(node, currentBackTrail);
-        if (m_nodeToWorkingSet.containsKey(nd))
-            return m_nodeToWorkingSet.get(nd);
-        CfgNode copy = node.copy();    // RL-TODO Why do we want a copy? Do we want to keep the edges?
-        m_nodeToWorkingSet.put(nd, copy);
-        return copy;
-    }
-
-    private boolean endBackTrailsListContainNode(BackTrail currentBackTrail, CfgNode node) {
-        return backTrailsContainNode(m_endBackTrailsList, currentBackTrail, node);
-    }
-    private boolean backTrailsContainNode(List<BackTrails> backTrailsList, BackTrail currentBackTrail, CfgNode currentNode) {
-        if (currentNode instanceof CfgInstructionNode)
-            for (BackTrails backTrails : backTrailsList)
-                if (backTrails.getInstructionNode().equals(currentNode))
-                    for (BackTrail backTrail : backTrails)
-                        if (backTrail.equals(currentBackTrail))
-                            return true;
-        return false;
-    }
-
-
-   private void connect(CfgNode parent, CfgNode child) {
-        if (parent!= null)
-            parent.connectNext(child);
-        m_workingSet.add(child);
-    }
-
-    private void dumpGraph() {
-        if (!debug_route) return;
-        System.out.print("digraph g {");
-        for (CfgNode node : m_workingSet) {
-            if (node instanceof CfgInstructionNode){
-                System.out.print("node" +node.getId() + " [label=\"" + ((CfgInstructionNode)node).getInstruction() + "\"];");
-            } else {
-                System.out.print("node" +node.getId() + " [label=\"" + node + "\"];");
-            }
-            for(CfgNode next : node.getNextNodes()){
-                System.out.print("node" +node.getId() + " -> node" + next.getId() + ";");
-                if(!m_workingSet.contains(next)){
-                    System.out.print("node" +next.getId() + " [label=\"" + next + "\", style=filled, color=blue];");
+        private Set<CfgNode> removeExclusionBranches() {
+            while (!m_currentExclusionsFound.isEmpty()) {
+                CfgNode current = m_currentExclusionsFound.iterator().next();
+                m_currentExclusionsFound.remove(current);
+                m_workingSet.remove(current);
+                Set<CfgNode> prevNodes = new IteratableSet<CfgNode>(current.getPrevNodes());
+                for (CfgNode prev : prevNodes) {
+                    prev.disconnectNext(current);
+                    if (prev.getNextNodes().isEmpty())
+                        m_currentExclusionsFound.add(prev);
                 }
             }
-            for(CfgNode prev : node.getPrevNodes()){
-                System.out.print("node" +prev.getId() + " -> node" + node.getId() + "[style=dotted];");
-                if(!m_workingSet.contains(prev)){
-                    System.out.print("node" +prev.getId() + " [label=\"" + prev + "\", style=filled, color=red];");
+            return m_workingSet;
+        }
+
+        private CfgNode copyNode(CfgNode node, BackTrail currentBackTrail) throws AbortedException {
+            assert(node instanceof CfgInstructionNode || node instanceof CfgFunctionReferenceNode);
+            NodeDescriptor nd = new NodeDescriptor(node, currentBackTrail);
+            if (m_nodeToWorkingSet.containsKey(nd))
+                return m_nodeToWorkingSet.get(nd);
+            CfgNode copy = node.copy();    // RL-TODO Why do we want a copy? Do we want to keep the edges?
+            m_nodeToWorkingSet.put(nd, copy);
+            return copy;
+        }
+
+        private boolean endBackTrailsListContainNode(BackTrail currentBackTrail, CfgNode node) {
+            return backTrailsContainNode(m_endBackTrailsList, currentBackTrail, node);
+        }
+        private boolean backTrailsContainNode(List<BackTrails> backTrailsList, BackTrail currentBackTrail, CfgNode currentNode) {
+            if (currentNode instanceof CfgInstructionNode)
+                for (BackTrails backTrails : backTrailsList)
+                    if (backTrails.getInstructionNode().equals(currentNode))
+                        for (BackTrail backTrail : backTrails)
+                            if (backTrail.equals(currentBackTrail))
+                                return true;
+            return false;
+        }
+
+
+       private void connect(CfgNode parent, CfgNode child) {
+            if (parent!= null)
+                parent.connectNext(child);
+            m_workingSet.add(child);
+        }
+
+        private void dumpGraph() {
+            if (!debug_route) return;
+            System.out.print("digraph g {");
+            for (CfgNode node : m_workingSet) {
+                if (node instanceof CfgInstructionNode){
+                    System.out.print("node" +node.getId() + " [label=\"" + ((CfgInstructionNode)node).getInstruction() + "\"];");
+                } else {
+                    System.out.print("node" +node.getId() + " [label=\"" + node + "\"];");
+                }
+                for(CfgNode next : node.getNextNodes()){
+                    System.out.print("node" +node.getId() + " -> node" + next.getId() + ";");
+                    if(!m_workingSet.contains(next)){
+                        System.out.print("node" +next.getId() + " [label=\"" + next + "\", style=filled, color=blue];");
+                    }
+                }
+                for(CfgNode prev : node.getPrevNodes()){
+                    System.out.print("node" +prev.getId() + " -> node" + node.getId() + "[style=dotted];");
+                    if(!m_workingSet.contains(prev)){
+                        System.out.print("node" +prev.getId() + " [label=\"" + prev + "\", style=filled, color=red];");
+                    }
                 }
             }
+            System.out.println("}");
         }
-        System.out.println("}");
-    }
     }
 
 
