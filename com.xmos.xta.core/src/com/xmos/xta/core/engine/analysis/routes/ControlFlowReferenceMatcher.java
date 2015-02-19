@@ -27,8 +27,9 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
     static List<BackTrails> getPathBackTrails(ControlFlow controlFlow, CachedFunctionMap cachedFunctionMap, Reference reference)
             throws AbortedException, MemoryMonitorException {
         if (DEBUG) System.out.printf("========== Matching Ref: %s =============\n", reference);
+
         List<BackTrails> refinedBackTrailsList = new LinkedList<BackTrails>();
-        for(long pc : reference.getPcs()){
+        for (long pc : reference.getPcs()) {
             if (DEBUG) System.out.printf("Starting on pc: 0x%x\n", pc);
 
             List<ReferenceType> refList = new LinkedList<ReferenceType>();
@@ -39,46 +40,32 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
             for (FunctionControlFlow fn : containedInFunction) {
                 if (DEBUG) System.out.printf("Function: %s\n", fn.getFunctionName());
 
-                List<BackTrail> backTrails = new LinkedList<BackTrail>();
                 CfgInstructionNode inst = fn.getInstructionNode(pc);
-
-                if (reference.getBase().getType() == Type.FUNCTION && fn.getStartInstructionNode() != inst) {
+                if (reference.getBase().getType() == Type.FUNCTION && fn.getStartInstructionNode() != inst)
                     continue;
-                }
 
-                List<BackTrail> callTrails = controlFlow.getBackTrails(fn);
-
-                for(BackTrail backTrail : callTrails){
-                    BackTrail copy = new BackTrail();
-                    copy.addAll(backTrail);
-                    List<ReferenceType> matchingList = new LinkedList<ReferenceType>(refList);
-
+                BackTrails backTrails = new BackTrails(inst);
+                for (BackTrail backTrail : controlFlow.getBackTrails(fn)) {
                     long currentPc = pc;
-                    CfgFunctionReferenceNode frn = copy.pop();
-                    while(!matchingList.isEmpty()){
-                        Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, matchingList, cachedFunctionMap);
-                        while(res.first){
+                    List<ReferenceType> matchingList = new LinkedList<ReferenceType>(refList);
+                    // We want to iterate over backTrail BUT in stack order not as stored, so we use pop().
+                    BackTrail copy = new BackTrail(backTrail);
+                    while (!copy.isEmpty() && !matchingList.isEmpty()) {
+                        CfgFunctionReferenceNode frn = copy.pop();
+                        while (!matchingList.isEmpty()) {
                             ReferenceType r = matchingList.get(matchingList.size() -1);
-
+                            Pair<Boolean, Long> res = fnRefContainsReference(frn, currentPc, r, cachedFunctionMap);
+                            if (!res.first) break;
                             currentPc = res.second;
                             matchingList.remove(r);
-
-                            res = fnRefContainsReference(frn, currentPc, matchingList, cachedFunctionMap);
                         }
                         currentPc = frn.getFunctionCallPc();
-                        if(copy.isEmpty())
-                            break;
-                        frn = copy.pop();
-
                     }
-
-                    if (matchingList.isEmpty()){
+                    if (matchingList.isEmpty())
                         backTrails.add(backTrail);
-                    }
                 }
-                if (!backTrails.isEmpty()){
-                    refinedBackTrailsList.add(new BackTrails(inst, backTrails));
-                }
+                if (!backTrails.isEmpty())
+                    refinedBackTrailsList.add(backTrails);
             }
         }
         if (DEBUG) System.out.printf("Refining backTrail nodes (End: size: %d)...\n", refinedBackTrailsList.size());
@@ -86,39 +73,27 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
         return refinedBackTrailsList;
     }
 
-    private static Pair<Boolean, Long> fnRefContainsReference(CfgFunctionReferenceNode frn, Long currentPc, List<ReferenceType> refList, CachedFunctionMap cachedFunctionMap)
-        throws AbortedException, MemoryMonitorException {
-
-        if (refList.isEmpty())
-            return new Pair<Boolean, Long>(false, (long)0);
-
-        ReferenceType r = refList.get(refList.size() -1);
-
-        if (r.getType() == ReferenceType.Type.CALL) {
-            if (r.getPcs().contains(frn.getFunctionCallPc())) {
+    private static Pair<Boolean, Long> fnRefContainsReference(CfgFunctionReferenceNode frn, Long currentPc, ReferenceType r, CachedFunctionMap cachedFunctionMap)
+            throws AbortedException, MemoryMonitorException {
+        switch(r.getType()) {
+        case CALL:
+            if (r.getPcs().contains(frn.getFunctionCallPc()))
                 return new Pair<Boolean, Long>(true, (long)0);
-            }
-        } else if (r.getType() == ReferenceType.Type.ENDPOINT) {
+            break;
+        case ENDPOINT:
             return matchRefPc(frn, currentPc, r, cachedFunctionMap);
-
-        } else if (r.getType() == ReferenceType.Type.ERROR) {
-            return new Pair<Boolean, Long>(false, (long)0);
-
-        } else if (r.getType() == ReferenceType.Type.EVERYTHING) {
+        case EVERYTHING:
             return new Pair<Boolean, Long>(true, currentPc);
-
-        } else if (r.getType() == ReferenceType.Type.FUNCTION) {
-            if (r.getPcs().contains(frn.getFunctionStartPc())) {
+        case FUNCTION:
+            if (r.getPcs().contains(frn.getFunctionStartPc()))
                 return new Pair<Boolean, Long>(true, frn.getFunctionStartPc());
-            }
-        } else if (r.getType() == ReferenceType.Type.LABEL) {
+            break;
+        case LABEL:
             return matchRefPc(frn, currentPc, r, cachedFunctionMap);
-
-        } else if (r.getType() == ReferenceType.Type.SRCLABEL) {
+        case SRCLABEL:
             return matchRefPc(frn, currentPc, r, cachedFunctionMap);
-
-        } else {
-            assert(false);
+        default:
+            break;
         }
         return new Pair<Boolean, Long>(false, (long)0);
     }
