@@ -59,6 +59,16 @@ public class IssueNode extends Node {
         return false;
     }
 
+    public boolean isWaitX() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isBranch() &&
+                    (instruction.getMnemonic().contains("waiteu") ||
+                     instruction.getMnemonic().contains("waitet") ||
+                     instruction.getMnemonic().contains("waitef")))
+                return true;
+        return false;
+    }
+
     public int getNextBranchNotTakenId() {
         return m_nextBranchNotTakenId;
     }
