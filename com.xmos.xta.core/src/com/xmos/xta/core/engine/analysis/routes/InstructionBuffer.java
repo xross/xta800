@@ -198,27 +198,28 @@ public class InstructionBuffer {
         }
 
         // remove the instruction from the IBuff.
+        if (traceInstructions && m_ib.trace_pendingMessage != null) System.out.print(m_ib.trace_pendingMessage);
         int numFnopsNeeded =  m_ib.readInstruction(issueNode);
 
         while(numFnopsNeeded > 0 || m_fnopCount > 0) {
             if (numFnopsNeeded < m_fnopCount) {
                 if (!m_ignoreStartingFnops)
-                    if(traceFnopsDiffs) System.out.printf("--- fnop 0x%05x\n", issueNode.getStartPc());
+                    if (traceFnopsDiffs) System.out.printf("--- fnop 0x%05x\n", issueNode.getStartPc());
                 --m_fnopCount;
             } else if (numFnopsNeeded > m_fnopCount) {
                 if (!m_ignoreStartingFnops)
-                    if(traceFnopsDiffs) System.out.printf("+++ fnop 0x%05x\n", issueNode.getStartPc());
+                    if (traceFnopsDiffs) System.out.printf("+++ fnop 0x%05x\n", issueNode.getStartPc());
                 --numFnopsNeeded;
             } else {
-                if(traceInstructions) System.out.printf("    fnop\n");
+                if (traceInstructions) System.out.printf("    fnop\n");
                 --m_fnopCount;
                 --numFnopsNeeded;
             }
         }
         m_ignoreStartingFnops = false;
-        if(traceInstructions) System.out.printf("%d:%d (%d) ", m_ib.offset, m_ib.bytes, issueNode.getNumBytes());
-        if(traceInstructions) System.out.print(issueNode);
-        if(traceInstructions) System.out.printf("      %s\n", issueNode.hasLoadStore()? "load/store" : "ifetch");
+        if (traceInstructions) System.out.printf("%d:%d (%d) ", m_ib.trace_offset, m_ib.trace_bytes, issueNode.getNumBytes());
+        if (traceInstructions) System.out.print(issueNode);
+        if (traceInstructions) System.out.printf("      %s\n", issueNode.hasLoadStore()? "load/store" : "ifetch");
     }
 
 
@@ -245,12 +246,12 @@ public class InstructionBuffer {
         // Carried forward state.
         private boolean m_pendingFetch;   // The last instruction did not do a load/store, so we can.
         private boolean m_pendingBranch;  // We may have branched.
-        private boolean m_pendingWaiteX;  // The pending branch is due to a waiteu/waitet/waitef instruction.
         private int m_branchNotTakenId;   // The node we will end up at if the pending conditional branch was not taken.
 
         // traceTree usage: state of IBuff prior to readInstruction.
-        int offset = 0;
-        int bytes = 0;
+        private int trace_offset;
+        private int trace_bytes;
+        private String trace_pendingMessage;
 
         public IBuff(Architecture arch, long startPc, List<CfgInstructionNode> cfgs) {
             m_arch = arch;
@@ -260,7 +261,6 @@ public class InstructionBuffer {
             m_bytes = IBuff.predictIBuffEntries(startPc, cfgs, m_bytesPerEntry, noFetchOnBranchNotTaken) * m_bytesPerEntry;
             m_pendingFetch = false;
             m_pendingBranch = false;
-            m_pendingWaiteX = false;
             m_branchNotTakenId = 0;
         }
 
@@ -272,8 +272,9 @@ public class InstructionBuffer {
             m_bytes = ib.m_bytes;
             m_pendingFetch = ib.m_pendingFetch;
             m_pendingBranch = ib.m_pendingBranch;
-            m_pendingWaiteX = ib.m_pendingWaiteX;
             m_branchNotTakenId = ib.m_branchNotTakenId;
+            if(traceInstructions)
+                trace_pendingMessage = ib.trace_pendingMessage;
         }
 
         public int readInstruction(IssueNode issueNode) {
@@ -295,8 +296,6 @@ public class InstructionBuffer {
                     if(traceIBuff) System.out.print("<Branch clearing IBuff>\n");
                     m_offset = (int) (issueNode.getStartPc() % m_bytesPerEntry);
                     m_bytes = 0;
-                    if (m_pendingWaiteX)
-                        m_pendingFetch = false;  // We can't do a fetch when arriving via vector.
                 }
             }
 
@@ -311,9 +310,15 @@ public class InstructionBuffer {
                 cycleIBuff(true); // We assume the instruction will fit!
             }
 
+            // Only needed for tracing.
             if(traceInstructions) {
-                offset = m_offset;
-                bytes = m_bytes;
+                trace_offset = m_offset;
+                trace_bytes = m_bytes;
+                trace_pendingMessage = "";
+                if (issueNode.isWaitX())
+                    trace_pendingMessage += "<WaitX>\n";
+                if (issueNode.getUnresolved())
+                    trace_pendingMessage += "<Unresolved>\n";
             }
 
             // Remove the instruction
@@ -322,9 +327,15 @@ public class InstructionBuffer {
             // Carry forward state
             m_pendingFetch = !issueNode.hasLoadStore();
             m_pendingBranch = issueNode.isBranch();
-            m_pendingWaiteX = issueNode.isWaitX();
             m_branchNotTakenId = issueNode.getNextBranchNotTakenId();
-
+            if (issueNode.isWaitX()) {
+                assert(m_pendingBranch);
+                m_pendingFetch = false;  // We can't do a fetch when arriving via vector.
+            }
+            if (issueNode.getUnresolved()) {
+                assert(m_pendingBranch);
+                m_pendingFetch = false; // We don't know how we will return here - probably with a retsp.
+            }
             return numFnops;
         }
 
