@@ -11,6 +11,7 @@ import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.utils.Pair;
 import com.xmos.libs.core.xeloader.XeLoader.Architecture;
+import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
@@ -18,16 +19,14 @@ public class InstructionBuffer {
     private static final boolean traceAll = false;
     private static final boolean traceTree = false || traceAll;
     private static final boolean traceInstructions = false || traceAll;
-    private static final boolean traceFnopsDiffs = false || traceInstructions;
 
     private IBuff m_ib = null;                            // The active IBuff state (null if we need to fetch a m_blockStartState)
     // The following maps are temporal stores. put() & remove() are balanced. They should be empty when the traversal ends!
     private Map<Integer, IBuff> m_blockStartState = null; // Holds starting IBuffs. Key is the first node of a block.
     private Map<Integer, Integer> m_loopheader = null;    // Look up a loop's header-block. Key is the first node of a loop.
     private Map<Integer, IBuff> m_loopsStartState = null; // The state when we first arrive at a loop node. Only used to verify worse case calculations.
+    private Map<Node, Integer> m_fnopsNeeded = null;      // IssueNodes inform their parents the number of FNOPs they need. Key is the child..
 
-    // We will compare our FNOP algorithm with the current algorithm.
-    private int m_fnopCount = 0;
     private boolean m_ignoreStartingFnops;
 
     public InstructionBuffer(Architecture arch, long startPc, List<CfgInstructionNode> cfgs) {
@@ -36,7 +35,7 @@ public class InstructionBuffer {
         m_blockStartState = new TreeMap<Integer, IBuff>();
         m_loopheader = new TreeMap<Integer, Integer>();
         m_loopsStartState = new TreeMap<Integer, IBuff>();
-        m_fnopCount = 0;
+        m_fnopsNeeded = new TreeMap<Node, Integer>();
         m_ignoreStartingFnops = true;
     }
 
@@ -186,40 +185,36 @@ public class InstructionBuffer {
             }
             m_ib = null;
         }
+
+        // Now that we have finished iterating over our children we can add any necessary FNOPs.
+        if (node instanceof BlockNode && !m_fnopsNeeded.isEmpty()) {
+            BlockNode blockNode = (BlockNode)node;
+            for (Node child : blockNode.iChildren()) {
+                if (m_fnopsNeeded.containsKey(child)) {
+                    assert(child instanceof IssueNode);
+                    blockNode.insertFnopsBefore((IssueNode)child, m_fnopsNeeded.get(child));
+                    m_fnopsNeeded.remove(child);
+                }
+            }
+        }
     }
 
     public void handleIssueNode(Node node) {
         assert(m_ib != null);
         IssueNode issueNode = (IssueNode)node;
 
-        if (issueNode.isFnop()) {
-           ++m_fnopCount;
-            return;
-        }
+        if (traceInstructions) System.out.print(m_ib.trace_pendingMessage);
 
-        // remove the instruction from the IBuff.
-        if (traceInstructions && m_ib.trace_pendingMessage != null) System.out.print(m_ib.trace_pendingMessage);
         int numFnopsNeeded =  m_ib.readInstruction(issueNode);
-
-        while(numFnopsNeeded > 0 || m_fnopCount > 0) {
-            if (numFnopsNeeded < m_fnopCount) {
-                if (!m_ignoreStartingFnops)
-                    if (traceFnopsDiffs) System.out.printf("--- fnop 0x%05x\n", issueNode.getStartPc());
-                --m_fnopCount;
-            } else if (numFnopsNeeded > m_fnopCount) {
-                if (!m_ignoreStartingFnops)
-                    if (traceFnopsDiffs) System.out.printf("+++ fnop 0x%05x\n", issueNode.getStartPc());
-                --numFnopsNeeded;
-            } else {
-                if (traceInstructions) System.out.printf("    fnop\n");
-                --m_fnopCount;
-                --numFnopsNeeded;
-            }
-        }
+        if (numFnopsNeeded > 0 && !m_ignoreStartingFnops)
+            m_fnopsNeeded.put(issueNode, numFnopsNeeded);
         m_ignoreStartingFnops = false;
-        if (traceInstructions) System.out.printf("%d:%d (%d) ", m_ib.trace_offset, m_ib.trace_bytes, issueNode.getNumBytes());
-        if (traceInstructions) System.out.print(issueNode);
-        if (traceInstructions) System.out.printf("      %s\n", issueNode.hasLoadStore()? "load/store" : "ifetch");
+
+        if (traceInstructions) {
+            System.out.printf("%d:%d (%d) ", m_ib.trace_offset, m_ib.trace_bytes, issueNode.getNumBytes());
+            System.out.print(issueNode);
+            System.out.printf("      %s\n", issueNode.hasLoadStore()? "load/store" : "ifetch");
+        }
     }
 
 
@@ -262,6 +257,7 @@ public class InstructionBuffer {
             m_pendingFetch = false;
             m_pendingBranch = false;
             m_branchNotTakenId = 0;
+            trace_pendingMessage= "";
         }
 
         public IBuff(IBuff ib) {
@@ -448,7 +444,7 @@ public class InstructionBuffer {
                 if (prevInstr.getNumBytes() <= offset) {
                     // We need to predict the IBuff for this prevInstrNode.
                     int prevEntries = predictIBuffEntries(prevInstrNode, bytesPerEntry, noFetchOnBranchNotTaken);
-                    if (!prevInstr.isLoadStore() && !prevInstr.isFnop() && !(prevInstr.isBranch() && noFetchOnBranchNotTaken))    // Branch not taken.
+                    if (!prevInstr.isLoadStore() && !(prevInstr.isBranch() && noFetchOnBranchNotTaken))    // Branch not taken.
                         prevEntries += 1;  // We did a fetch.
                     minEntries = Math.min(minEntries, prevEntries);
                     continue;
@@ -463,7 +459,7 @@ public class InstructionBuffer {
                 assert (offset == 0);
                 // We need to see if any of the instructions in the previous IBuff were able to fetch the 2nd IBuff.
                 // First check our current branch-not-taken previous instruction.
-                if (!prevInstr.isLoadStore() && !prevInstr.isFnop() && !(prevInstr.isBranch() && noFetchOnBranchNotTaken)) {
+                if (!prevInstr.isLoadStore() && !(prevInstr.isBranch() && noFetchOnBranchNotTaken)) {
                     minEntries = Math.min(minEntries, 1); // We did a fetch.
                     continue;
                 }
@@ -489,7 +485,7 @@ public class InstructionBuffer {
                    (instr.isBranch() && prevInstrNode.getNextBranchNotTakenNode() != nextNode)) {
                     return false;  // prevNode was not in this IBuff.
                 }
-                if (instr.isLoadStore() || instr.isFnop() || (instr.isBranch() && noFetchOnBranchNotTaken))
+                if (instr.isLoadStore() || (instr.isBranch() && noFetchOnBranchNotTaken))
                     if(!iBuffFetchHistory(prevNode, offset - instr.getNumBytes(), noFetchOnBranchNotTaken))
                         // This instruction did not do a fetch nor did one of its predecessors.
                         return false;

@@ -85,6 +85,13 @@ public class BlockNode extends Node {
         return (status == TraverseStatus.ABORT)? TraverseStatus.ABORT : TraverseStatus.CONTINUE;
     }
 
+    public void insertFnopsBefore(IssueNode child, int num) {
+        int i = m_issueNodes.indexOf(child);
+        assert(i != -1);
+        for (; num>0; --num)
+            m_issueNodes.add(i, child.createFnopNode());
+    }
+
     public TimeDistributionBuckets getTimeSpread() {
         TimeUnit fixedTime = m_attributes.getFixedTime();
         if (fixedTime != null) {

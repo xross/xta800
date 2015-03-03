@@ -29,6 +29,12 @@ public class IssueNodeAttributes extends NodeAttributes {
         m_numCycles = calculateCycles(); // accesses m_coreConfig, m_architecture
     }
 
+    public void setCoreConfig(IssueNodeAttributes nodeAttributes) {
+        m_coreConfig = nodeAttributes.m_coreConfig;
+        m_architecture = nodeAttributes.m_architecture;
+        m_numCycles = calculateCycles(); // accesses m_coreConfig, m_architecture
+    }
+
     public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
         if (getNode().getUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);

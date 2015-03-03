@@ -6,16 +6,17 @@ import java.util.Set;
 
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.instructiondecoder.NullInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.IssueNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTraverser;
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class IssueNode extends Node {
-    private boolean m_ownsOwnAttrib;
-    private IssueNodeAttributes m_attributes;
     private LinkedList<Instruction> m_insts;
-    //private boolean m_isFnop;
+    private IssueNodeAttributes m_attributes;
+    private boolean m_ownsOwnAttrib;
+    // BranchNotTakenId fields are used by InstructionBuffer to add FNOPs.
     private int m_nextBranchNotTakenId;
     private int m_branchNotTakenId;
 
@@ -38,6 +39,13 @@ public class IssueNode extends Node {
         m_ownsOwnAttrib = false;
         m_nextBranchNotTakenId = node.m_nextBranchNotTakenId;
         m_branchNotTakenId = node.m_branchNotTakenId;
+    }
+
+    public IssueNode createFnopNode() {
+        NullInstruction instr = new NullInstruction("--FNOP--", 0, getStartPc(), 0, true);
+        IssueNode fnop = new IssueNode(new CfgInstructionNode(instr));
+        fnop.m_attributes.setCoreConfig(m_attributes);   // Copy the core config.
+        return fnop;
     }
 
     public int getNumBytes() {
@@ -81,21 +89,15 @@ public class IssueNode extends Node {
         for (Instruction instruction : m_insts)
             if (instruction.isBranch())
                 return instruction.getBranchPcRelativeTargetPc();
-        assert(false); // isBranch() == false.
+        assert(false); // isBranch() == false, should not have called this function.
         return 0;
     }
 
-// First need to refactor FnopAdder.update().
-// Need to remove isFNop from NullInstruction and set fnop later here instead!
-//    public void setIsFnop(boolean isFnop) {
-//        m_isFnop = isFnop;
-//    }
-
     public boolean isFnop() {
-        //return m_isFnop;
-        for (Instruction instruction : m_insts)
-            if (instruction.isFnop())
-                return true;
+        if (m_insts.getFirst().isFnop()) {
+            assert(m_insts.size() == 1);
+            return true;
+        }
         return false;
     }
 
@@ -105,7 +107,6 @@ public class IssueNode extends Node {
                 return true;
         return false;
     }
-
 
     public Node copyRouteStructure() {
         IssueNode in = new IssueNode(this);
@@ -131,11 +132,7 @@ public class IssueNode extends Node {
     }
 
     public boolean containsPc(Set<Long> Pcs) {
-        if (!isFnop())
-            for (Instruction instruction : m_insts)
-                if (Pcs.contains(instruction.getPc()))
-                    return true;
-        return false;
+        return !isFnop() && Pcs.contains(getStartPc());
     }
 
     public TraverseStatus traverse(NodeTraverser nodeTraverser, Object clientState) {
