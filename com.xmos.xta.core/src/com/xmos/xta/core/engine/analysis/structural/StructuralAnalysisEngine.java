@@ -69,7 +69,7 @@ public class StructuralAnalysisEngine {
         m_patternMatchers.add(new NullRemover(memoryMonitor));
         m_patternMatchers.add(new SequencePatternMatcher(memoryMonitor));    //uses dominators
         m_patternMatchers.add(new ConditionalTransformer(memoryMonitor));    //uses dominators
-        m_patternMatchers.add(new PanicTransformer(memoryMonitor));            //uses dominators
+        m_patternMatchers.add(new PanicTransformer(memoryMonitor));          //uses dominators
     }
 
     private CfgNode basicBlock(Set<CfgNode> workingSet, CfgInstructionNode originalStartNode, String string) {
@@ -123,34 +123,19 @@ public class StructuralAnalysisEngine {
                     seenNodes.add(cnNode);
                     cfgNodeToBlock.put(next, cnNode);
                     nexts.put(cnNode, new IteratableSet<CfgNode>(next.getNextNodes()));
-                    for (CfgNode nextNext : next.getNextNodes()) {
-                        if (!seenNodes.contains(nextNext)) {
-                            assert(nextNext instanceof CfgInstructionNode);
-                            toDo.add((CfgInstructionNode)nextNext);
-                        }
-                    }
+                    addNextNodes(next, seenNodes, cfgNodeToBlock, nexts, toDo);
 
                 } else if (next instanceof CfgContainerNode) {
-                    next.getPrevNodes().clear();
+                    next.getPrevNodes().clear(); // RL-TODO But we are not unhooking prev->next.
                     newWorkingSet.add(next);
                     seenNodes.add(next);
                     cfgNodeToBlock.put(next, (CfgContainerNode)next);
                     nexts.put(next, new IteratableSet<CfgNode>(next.getNextNodes()));
-                    for (CfgNode nextNext : next.getNextNodes()){
-                        if (!seenNodes.contains(nextNext)){
-                            assert(nextNext instanceof CfgInstructionNode);
-                            toDo.add((CfgInstructionNode)nextNext);
-                        }
-                    }
-                    next.getNextNodes().clear();
+                    addNextNodes(next, seenNodes, cfgNodeToBlock, nexts, toDo);
+                    next.getNextNodes().clear(); // RL-TODO But we are not unhooking next->prev.
 
                 } else if (next instanceof CfgNullNode) {
-                    next.getPrevNodes().clear();
-                    newWorkingSet.add(next);
-                    seenNodes.add(next);
-                    cfgNodeToBlock.put(next, next);
-                    nexts.put(next, new IteratableSet<CfgNode>(next.getNextNodes()));
-                    next.getNextNodes().clear();
+                    addNextNullNodes(next, seenNodes, cfgNodeToBlock, nexts);
 
                 } else if (!seenNodes.contains(next)) {
                     assert(next instanceof CfgInstructionNode);
@@ -161,7 +146,8 @@ public class StructuralAnalysisEngine {
 
         for (CfgNode node : nexts.keySet()) {
             for (CfgNode next : nexts.get(node)) {
-                node.connectNext(cfgNodeToBlock.get(next));
+                if (next instanceof CfgNullNode == false)
+                    node.connectNext(cfgNodeToBlock.get(next));
             }
         }
 
@@ -173,7 +159,29 @@ public class StructuralAnalysisEngine {
         return firstNode;
     }
 
-      private void collateTerminals(Set<CfgNode> terminals, Set<CfgNode> newWorkingSet) {
+    private void addNextNodes(CfgNode node, Set<CfgNode> seenNodes, Map<CfgNode, CfgNode> cfgNodeToBlock,
+                                Map<CfgNode, Set<CfgNode>> nexts, Set<CfgInstructionNode> toDo) {
+        for (CfgNode nextNode : node.getNextNodes()) {
+            if (!seenNodes.contains(nextNode)) {
+                assert(nextNode instanceof CfgInstructionNode || nextNode instanceof CfgNullNode);
+                if (nextNode instanceof CfgInstructionNode)
+                    toDo.add((CfgInstructionNode)nextNode);
+                else
+                    addNextNullNodes(nextNode, seenNodes, cfgNodeToBlock, nexts);
+            }
+        }
+    }
+    private void addNextNullNodes(CfgNode nextNode, Set<CfgNode> seenNodes, Map<CfgNode, CfgNode> cfgNodeToBlock,
+                                    Map<CfgNode, Set<CfgNode>> nexts) {
+        nextNode.getPrevNodes().clear();
+        seenNodes.add(nextNode);
+        cfgNodeToBlock.put(nextNode, nextNode);
+        nexts.put(nextNode, new IteratableSet<CfgNode>(nextNode.getNextNodes()));
+        nextNode.getNextNodes().clear();
+
+    }
+
+    private void collateTerminals(Set<CfgNode> terminals, Set<CfgNode> newWorkingSet) {
         if (terminals.isEmpty())
             return;
 
