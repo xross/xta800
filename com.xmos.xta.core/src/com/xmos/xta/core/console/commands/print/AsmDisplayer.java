@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import com.xmos.libs.core.controlflow.functionmapper.Function;
 import com.xmos.libs.core.controlflow.functionmapper.FunctionMapper;
+import com.xmos.libs.core.elfhandler.IssueRegions;
 import com.xmos.libs.core.instructiondecoder.Decoder;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.utils.CoreId;
@@ -64,7 +65,7 @@ public class AsmDisplayer {
                 m_console.display(String.format("<%s>:\n", functionName));
                 Vector<Instruction> disassemblyVector = disassemble(
                         memoryImage, functionAddress, functionSize, m_engine.getXeLoader().getArchitecture(),
-                        m_engine.getConfig());
+                        m_engine.getConfig(), symbolTable);
 
                 NonIteratableMap<Long, String> branchTargetMap = createBranchTargetMap(
                         symbolTable, disassemblyVector);
@@ -159,12 +160,13 @@ public class AsmDisplayer {
     }
 
     public Vector<Instruction> disassemble(
-            MemoryImage memoryImage, long address, long size, XeLoader.Architecture architecture, Config config) {
+            MemoryImage memoryImage, long address, long size, XeLoader.Architecture architecture, Config config, SymbolTable symbolTable) {
 
         Decoder decoder = Decoder.createInstructionDecoder(architecture);
 
-        Vector<Instruction> disassemblyVector = new Vector<Instruction>();
+        IssueRegions issueRegions = new IssueRegions(symbolTable);
 
+        Vector<Instruction> disassemblyVector = new Vector<Instruction>();
         int numBytesRead = 0;
         while (numBytesRead < size) {
             long pc = address + numBytesRead;
@@ -174,7 +176,7 @@ public class AsmDisplayer {
             } catch (Exception e) {
                 return null;
             }
-            Instruction instruction = decoder.decode(opcode, pc);
+            Instruction instruction = decoder.decode(opcode, pc, issueRegions);
             disassemblyVector.add(instruction);
             int instNumBytes = instruction.getNumBytes();
             numBytesRead += instNumBytes;
