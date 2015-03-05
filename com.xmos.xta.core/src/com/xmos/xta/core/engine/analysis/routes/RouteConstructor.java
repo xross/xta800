@@ -11,7 +11,7 @@ import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
-import com.xmos.libs.core.instructiondecoder.InstructionMnemonics;
+import com.xmos.libs.core.instructiondecoder.Mnemonics;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.BackTrail;
 import com.xmos.libs.core.utils.CoreId;
@@ -129,7 +129,7 @@ public class RouteConstructor {
                 Set<CfgNode> branchNodes = new IteratableSet<CfgNode>();
                 for (Reference nextRef : m_engine.getUserBranches().get(ref)) {
                     for (BackTrails nextBackTrails : getPathBackTrails(m_engine, m_core, nextRef)) {
-                        if (backTrails.getInstructionNode().getInstruction().isLink()) {
+                        if (backTrails.getInstructionNode().getInstruction().isBranchLink()) {
                             for (CfgNode nextNode : backTrails.getInstructionNode().getNextNodes()) {
                                 if (nextNode instanceof CfgFunctionReferenceNode) {
                                     CfgFunctionReferenceNode frn = (CfgFunctionReferenceNode)nextNode;
@@ -623,7 +623,6 @@ public class RouteConstructor {
 
     private void checkSupportedInstructions() throws AbortedException {
         m_engine.provideFeedback("Checking for unsupported instructions...");
-        final InstructionMnemonics mnenonics = new InstructionMnemonics(m_engine.getXeLoader().getArchitecture());
         final Engine engine = m_engine;
         final CommandSource src = m_src;
         for (Route route : m_routeCoreContainer) {
@@ -636,21 +635,21 @@ public class RouteConstructor {
                         for (Instruction instruction : ((IssueNode)node).getInstructions()) {
 
                             // Checks for threading instructions...
-                            if (mnenonics.isSsync(instruction))
+                            if (instruction.isA(Mnemonics.SSYNC))
                                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
                                         "ssync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 
-                            if (mnenonics.isMsync(instruction))
+                            if (instruction.isA(Mnemonics.MSYNC))
                                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
                                         "msync (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
 
-                            if (mnenonics.isMjoin(instruction)) {
+                            if (instruction.isA(Mnemonics.MJOIN)) {
                                 engine.notify(src, Notifier.NOTIFY_WARNING, String.format(
                                         "mjoin (multiple threads) not supported. Pc: 0x%08x", instruction.getPc()));
                             }
 
                             // Checks for interrupt enable..
-                            if (mnenonics.isSetSr(instruction)) {
+                            if (instruction.isA(Mnemonics.SETSR)) {
 
                                 long op1Field = instruction.getOperandField("op1");
                                 int shift = SR_IEBLE_SHIFT;

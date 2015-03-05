@@ -12,6 +12,7 @@ import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
+import com.xmos.libs.core.instructiondecoder.Mnemonics;
 import com.xmos.libs.core.memorymonitor.MemoryMonitor;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.IteratableMap;
@@ -426,10 +427,10 @@ public class StructuralAnalysisEngine {
         }
 
         if (current instanceof CfgInstructionNode) {
-            if (((CfgInstructionNode)current).getInstruction().getReturn()) {
+            if (((CfgInstructionNode)current).getInstruction().isA(Mnemonics.RETSP)) {
                 return null;
             }
-            if (((CfgInstructionNode)current).getInstruction().isLink()) {
+            if (((CfgInstructionNode)current).getInstruction().isBranchLink()) {
                 return null;
             }
         }

@@ -74,7 +74,7 @@ public class AsmDisplayer {
                     String disassembly = String.format("%-7s 0x%05x %s %s %s",
                         getBranchDest(branchTargetMap, instruction),
                         instruction.getPc(),
-                        instruction.getMnemonic(),
+                        instruction.mnemonicString(),
                         instruction.getOperandString(),
                         getBranchTarget(branchTargetMap, instruction, symbolTable));
 
@@ -125,8 +125,8 @@ public class AsmDisplayer {
             Instruction instruction, SymbolTable symbolTable) {
 
         String branchTarget = "";
-        if (instruction.getBranchPcRelative()) {
-            long targetPc = instruction.getBranchPcRelativeTargetPc();
+        if (instruction.hasPcRelative()) {
+            long targetPc = instruction.getPcRelativeAddr();
             if (symbolTable.functionExists(targetPc)) {
                 branchTarget = "<" + symbolTable.functionName(targetPc) + ">";
             }
@@ -177,6 +177,9 @@ public class AsmDisplayer {
                 return null;
             }
             Instruction instruction = decoder.decode(opcode, pc, issueRegions);
+            //inst.setFunctionName(null);
+            //inst.setFunctionOffset(0);
+
             disassemblyVector.add(instruction);
             int instNumBytes = instruction.getNumBytes();
             numBytesRead += instNumBytes;
@@ -189,8 +192,8 @@ public class AsmDisplayer {
 
         NonIteratableMap<Long, String> branchTargetMap = new NonIteratableMap<Long, String>();
         for (Instruction instruction : instructions) {
-            if (instruction.getBranchPcRelative() && !symbolTable.functionExists(instruction.getPc())) {
-                long branchTargetPc = instruction.getBranchPcRelativeTargetPc();
+            if (instruction.hasPcRelative() && !symbolTable.functionExists(instruction.getPc())) {
+                long branchTargetPc = instruction.getPcRelativeAddr();
 
                 if (!branchTargetMap.containsKey(branchTargetPc)) {
                     String branchTargetName = ".bt" + branchTargetMap.size();

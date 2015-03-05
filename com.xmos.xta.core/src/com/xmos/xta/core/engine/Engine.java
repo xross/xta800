@@ -18,11 +18,9 @@ import com.xmos.libs.core.controlflow.FunctionControlFlow;
 import com.xmos.libs.core.controlflow.Label;
 import com.xmos.libs.core.controlflow.functionmapper.FunctionMapper;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
-import com.xmos.libs.core.instructiondecoder.BinaryInformation;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.instructiondecoder.InstructionDecoder;
 import com.xmos.libs.core.instructiondecoder.InstructionDecoders;
-import com.xmos.libs.core.instructiondecoder.InstructionMnemonics;
 import com.xmos.libs.core.memorymonitor.MemoryMonitor;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.proginfoloader.ProgInfoEntry;
@@ -120,7 +118,6 @@ public class Engine extends Notifier implements Aborter {
     private LoopPoints m_loopPoints;
     private Debugger m_debugger;
     private MemoryMonitor m_memoryMonitor;
-    private BinaryInformation m_binaryInformation;
     private String m_workspacePath;
 
     public Engine(Config config) {
@@ -149,7 +146,6 @@ public class Engine extends Notifier implements Aborter {
         m_loopPoints = new LoopPoints(this);
         m_debugger = new Debugger(this);
         m_memoryMonitor = new MemoryMonitor();
-        m_binaryInformation = new BinaryInformation(new InstructionMnemonics(m_xeLoader.getArchitecture()));
         ReferenceTypeFactory.setEngine(this);
     }
 
@@ -162,10 +158,6 @@ public class Engine extends Notifier implements Aborter {
         if (level.equals(NOTIFY_ERROR)) {
             m_numErrors++;
         }
-    }
-
-    public StringBuffer printBinaryInformation(){
-        return m_binaryInformation.reportStats();
     }
 
     public Config getConfig() {
@@ -1883,8 +1875,7 @@ public class Engine extends Notifier implements Aborter {
             }
 
             Instruction inst = node.getInstruction();
-            InstructionMnemonics mnenonics = new InstructionMnemonics(m_xeLoader.getArchitecture());
-            if (!inst.isBranch() && !mnenonics.isWait(inst)) {
+            if (!inst.isBranch() && !inst.isWait()) {
                 notify(src, Notifier.NOTIFY_WARNING,
                         String.format("adding branch from instruction which is not a branch: %s",
                         inst.toString()));

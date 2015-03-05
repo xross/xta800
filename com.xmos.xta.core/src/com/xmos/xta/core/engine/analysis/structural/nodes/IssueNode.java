@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.instructiondecoder.Mnemonics;
 import com.xmos.libs.core.instructiondecoder.NullInstruction;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.IssueNodeAttributes;
 import com.xmos.xta.core.engine.analysis.structural.nodes.attributes.NodeAttributes;
@@ -70,9 +71,9 @@ public class IssueNode extends Node {
     public boolean isWaitX() {
         for (Instruction instruction : m_insts)
             if (instruction.isBranch() &&
-                    (instruction.getMnemonic().contains("waiteu") ||
-                     instruction.getMnemonic().contains("waitet") ||
-                     instruction.getMnemonic().contains("waitef")))
+                    (instruction.mnemonicString().contains("waiteu") ||
+                     instruction.mnemonicString().contains("waitet") ||
+                     instruction.mnemonicString().contains("waitef")))
                 return true;
         return false;
     }
@@ -88,13 +89,13 @@ public class IssueNode extends Node {
         // We assume there is only one branch instruction per IssueNode!
         for (Instruction instruction : m_insts)
             if (instruction.isBranch())
-                return instruction.getBranchPcRelativeTargetPc();
+                return instruction.getPcRelativeAddr();
         assert(false); // isBranch() == false, should not have called this function.
         return 0;
     }
 
     public boolean isFnop() {
-        if (m_insts.getFirst().isFnop()) {
+        if (m_insts.getFirst().isA(Mnemonics.FNOP)) {
             assert(m_insts.size() == 1);
             return true;
         }
@@ -103,7 +104,7 @@ public class IssueNode extends Node {
 
     public boolean isIllegal() {
         for (Instruction instruction : m_insts)
-            if (instruction.getIsIllegal())
+            if (instruction.isA(Mnemonics.UNKNOWN))
                 return true;
         return false;
     }
@@ -171,7 +172,7 @@ public class IssueNode extends Node {
             if (addSeperator) str += " ; ";
             addSeperator = true;
             str += String.format("%-12s %-12s",
-                    instruction.getMnemonic(),
+                    instruction.mnemonicString(),
                     instruction.getOperandString());
         }
         if (multiIssue) str += " }";
@@ -186,7 +187,7 @@ public class IssueNode extends Node {
         for (Instruction instruction : m_insts) {
             if (addSeperator) str += " ; ";
             addSeperator = true;
-            str += instruction.getMnemonic();
+            str += instruction.mnemonicString();
         }
         if (multiIssue) str += " }";
         return str;

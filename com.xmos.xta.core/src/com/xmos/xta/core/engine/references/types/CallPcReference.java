@@ -34,7 +34,7 @@ public class CallPcReference extends ReferenceType {
             if (node == null) {
                 return Result.UNRESOLVED;
             }
-            if (!node.getInstruction().isLink()) {
+            if (!node.getInstruction().isBranchLink()) {
                 return Result.UNRESOLVED;
             }
         }
