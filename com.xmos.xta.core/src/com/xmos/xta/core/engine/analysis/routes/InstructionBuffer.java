@@ -311,7 +311,7 @@ public class InstructionBuffer {
                 trace_offset = m_offset;
                 trace_bytes = m_bytes;
                 trace_pendingMessage = "";
-                if (issueNode.isWaitX())
+                if (issueNode.isWait())
                     trace_pendingMessage += "<WaitX>\n";
                 if (issueNode.getUnresolved())
                     trace_pendingMessage += "<Unresolved>\n";
@@ -324,7 +324,7 @@ public class InstructionBuffer {
             m_pendingFetch = !issueNode.hasLoadStore();
             m_pendingBranch = issueNode.isBranch();
             m_branchNotTakenId = issueNode.getNextBranchNotTakenId();
-            if (issueNode.isWaitX()) {
+            if (issueNode.isWait()) {
                 assert(m_pendingBranch);
                 m_pendingFetch = false;  // We can't do a fetch when arriving via vector.
             }
