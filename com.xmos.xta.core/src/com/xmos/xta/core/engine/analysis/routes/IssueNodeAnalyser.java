@@ -1,13 +1,17 @@
 package com.xmos.xta.core.engine.analysis.routes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.TreeMap;
 
 import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
+import com.xmos.libs.core.elfhandler.IssueRegions;
+import com.xmos.libs.core.elfhandler.IssueRegions.IssueMode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.utils.Pair;
 import com.xmos.libs.core.xeloader.XeLoader.Architecture;
@@ -15,10 +19,12 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
 
-public class InstructionBuffer {
+class IssueNodeAnalyser {
     private static final boolean traceAll = false;
     private static final boolean traceTree = false || traceAll;
     private static final boolean traceInstructions = false || traceAll;
+
+    private List<IssueNode> m_toDelete;                   // IssueNodes that are not longer needed as combined into another.
 
     private IBuff m_ib = null;                            // The active IBuff state (null if we need to fetch a m_blockStartState)
     // The following maps are temporal stores. put() & remove() are balanced. They should be empty when the traversal ends!
@@ -29,9 +35,12 @@ public class InstructionBuffer {
 
     private boolean m_ignoreStartingFnops;
 
-    public InstructionBuffer(Architecture arch, long startPc, List<CfgInstructionNode> cfgs) {
-        if(traceTree) System.out.printf("\nInstructionBuffer\n=================\n");
-        m_ib = new IBuff(arch, startPc, cfgs);
+    IssueNodeAnalyser(Architecture arch, IssueRegions issueRegions, long startPc, List<CfgInstructionNode> cfgs) {
+        if(traceTree) System.out.printf("\nIssueNodeAnalyser\n=================\n");
+
+        m_toDelete = new ArrayList<IssueNode>();
+
+        m_ib = new IBuff(arch, issueRegions, startPc, cfgs);
         m_blockStartState = new TreeMap<Integer, IBuff>();
         m_loopheader = new TreeMap<Integer, Integer>();
         m_loopsStartState = new TreeMap<Integer, IBuff>();
@@ -39,7 +48,7 @@ public class InstructionBuffer {
         m_ignoreStartingFnops = true;
     }
 
-    public void createForks(List<Node> nodes) {
+    void createForks(List<Node> nodes) {
         assert(m_ib != null);
         if(traceTree) System.out.printf("Forking:");
         for (Node node : nodes) {
@@ -50,7 +59,7 @@ public class InstructionBuffer {
         m_ib = null;
     }
 
-    public void joinForks(List<Node> nodes) {
+    void joinForks(List<Node> nodes) {
         assert(m_ib == null);
         List<Pair<IBuff,Integer>> ibs = new LinkedList<Pair<IBuff,Integer>>();
         if(traceTree) System.out.printf("\nJoining Fork:");
@@ -64,7 +73,7 @@ public class InstructionBuffer {
         assert(m_ib != null);
     }
 
-    public void createLoops(List<Node> nodes) {
+    void createLoops(List<Node> nodes) {
         assert(m_ib != null);
         if(traceTree) System.out.printf("Looping:");
         m_ib.forcePendingBranch(m_ignoreStartingFnops);  // Make sure we are overly pessimistic when entering loop-header.
@@ -83,7 +92,7 @@ public class InstructionBuffer {
         m_ib = null;
     }
 
-    public void joinLoops(List<Node> nodes) {
+    void joinLoops(List<Node> nodes) {
         assert(m_ib == null);
         List<Pair<IBuff,Integer>> ibs = new LinkedList<Pair<IBuff,Integer>>();
         if(traceTree) System.out.printf("\nJoining Loops:");
@@ -111,7 +120,7 @@ public class InstructionBuffer {
         assert(m_ib != null);
     }
 
-    public void createSelfLoops(List<Node> nodes) {
+    void createSelfLoops(List<Node> nodes) {
         assert(m_ib != null);
         if(traceTree) System.out.printf("SelfLooping:");
         m_ib.forcePendingBranch(m_ignoreStartingFnops);  // Make sure we are overly pessimistic when entering loop-header.
@@ -129,7 +138,7 @@ public class InstructionBuffer {
         m_ib = null;
     }
 
-    public void joinSelfLoops(List<Node> nodes) {
+    void joinSelfLoops(List<Node> nodes) {
         assert(m_ib == null);
         List<Pair<IBuff,Integer>> ibs = new LinkedList<Pair<IBuff,Integer>>();
         if(traceTree) System.out.printf("\nJoining SelfLoops:");
@@ -150,7 +159,7 @@ public class InstructionBuffer {
         assert(m_ib != null);
     }
 
-    public void startNode(Node node) {
+    void startNode(Node node) {
         int nodeId = node.getId();
         if (m_loopheader.containsKey(nodeId)){
             // This is the start of a loop-block with a loop-header.
@@ -171,7 +180,7 @@ public class InstructionBuffer {
         assert(m_ib != null);
     }
 
-    public void endNode(Node node) {
+    void endNode(Node node) {
         assert(m_ib != null);
         int nodeId = node.getId();
         if (m_loopheader.containsKey(nodeId) ||
@@ -187,7 +196,7 @@ public class InstructionBuffer {
         }
 
         // Now that we have finished iterating over our children we can add any necessary FNOPs.
-        if (node instanceof BlockNode && !m_fnopsNeeded.isEmpty()) {
+        if (node instanceof BlockNode && (!m_fnopsNeeded.isEmpty() || !m_toDelete.isEmpty())) {
             BlockNode blockNode = (BlockNode)node;
             for (Node child : blockNode.iChildren()) {
                 if (m_fnopsNeeded.containsKey(child)) {
@@ -195,17 +204,22 @@ public class InstructionBuffer {
                     blockNode.insertFnopsBefore((IssueNode)child, m_fnopsNeeded.get(child));
                     m_fnopsNeeded.remove(child);
                 }
+                if (m_toDelete.contains(child)) {
+                    assert(child instanceof IssueNode);
+                    blockNode.remove(child);
+                    m_toDelete.remove(child);
+                }
             }
         }
     }
 
-    public void handleIssueNode(Node node) {
+    void handleIssueNode(Node node) {
         assert(m_ib != null);
         IssueNode issueNode = (IssueNode)node;
 
         if (traceInstructions) System.out.print(m_ib.trace_pendingMessage);
 
-        int numFnopsNeeded =  m_ib.readInstruction(issueNode);
+        int numFnopsNeeded =  m_ib.readInstruction(issueNode, m_toDelete);
         if (numFnopsNeeded > 0 && !m_ignoreStartingFnops)
             m_fnopsNeeded.put(issueNode, numFnopsNeeded);
         m_ignoreStartingFnops = false;
@@ -213,7 +227,7 @@ public class InstructionBuffer {
         if (traceInstructions) {
             System.out.printf("%d:%d (%d) ", m_ib.trace_offset, m_ib.trace_bytes, issueNode.getNumBytes());
             System.out.print(issueNode);
-            System.out.printf("      %s\n", issueNode.hasLoadStore()? "load/store" : "ifetch");
+            System.out.printf("      %s\n", issueNode.isLoadStore()? "load/store" : "ifetch");
         }
     }
 
@@ -232,13 +246,18 @@ public class InstructionBuffer {
         private static final int XS1_BYTES_PER_ENTRY = 4;
         private static final int XS2_BYTES_PER_ENTRY = 16;
 
-        private final int m_bytesPerEntry;
+        private static final int DUAL_ISSUE_BYTES = 4;
+
         private final Architecture m_arch;
+        private final int m_bytesPerEntry;
         private int m_offset;           // Position of next instruction in tail-entry.
         private int m_bytes;            // Number of bytes in the IBuff (multiple of m_bytesPerEntry).
         // if (m_offset > m_bytes) the next instruction isn't in the IBuff.
 
         // Carried forward state.
+        private IssueMode m_mode;         // The active IssueMode state.
+        private Stack<IssueMode> m_stack; // We stack the issue mode between a BL & RETSP.
+        private IssueNode m_prevInstr;    // The first of a dual issue pair.
         private boolean m_pendingFetch;   // The last instruction did not do a load/store, so we can.
         private boolean m_pendingBranch;  // We may have branched.
         private int m_branchNotTakenId;   // The node we will end up at if the pending conditional branch was not taken.
@@ -248,24 +267,31 @@ public class InstructionBuffer {
         private int trace_bytes;
         private String trace_pendingMessage;
 
-        public IBuff(Architecture arch, long startPc, List<CfgInstructionNode> cfgs) {
+        IBuff(Architecture arch, IssueRegions issueRegions, long startPc, List<CfgInstructionNode> cfgs) {
             m_arch = arch;
             m_bytesPerEntry = (arch == Architecture.XS2A)? XS2_BYTES_PER_ENTRY : XS1_BYTES_PER_ENTRY;
             m_offset = (int) (startPc % m_bytesPerEntry);
-            boolean noFetchOnBranchNotTaken = arch == Architecture.XS2A;
+            boolean noFetchOnBranchNotTaken = (arch == Architecture.XS2A);
             m_bytes = IBuff.predictIBuffEntries(startPc, cfgs, m_bytesPerEntry, noFetchOnBranchNotTaken) * m_bytesPerEntry;
+            m_mode = issueRegions.getIssueMode(startPc);    // RL-TODO we should trace back in a similar way to predictIBuffEntries()
+            m_stack = new Stack<IssueMode>();
+            m_prevInstr = null;
             m_pendingFetch = false;
             m_pendingBranch = false;
             m_branchNotTakenId = 0;
             trace_pendingMessage= "";
         }
 
-        public IBuff(IBuff ib) {
+        IBuff(IBuff ib) {
             assert(ib != null);
             m_arch = ib.m_arch;
             m_bytesPerEntry = ib.m_bytesPerEntry;
             m_offset = ib.m_offset;
             m_bytes = ib.m_bytes;
+            assert(ib.m_prevInstr == null); // We should never fork etc. part way through an issue.
+            m_mode = ib.m_mode;
+            m_stack = ib.m_stack;
+            m_prevInstr = ib.m_prevInstr;
             m_pendingFetch = ib.m_pendingFetch;
             m_pendingBranch = ib.m_pendingBranch;
             m_branchNotTakenId = ib.m_branchNotTakenId;
@@ -273,7 +299,26 @@ public class InstructionBuffer {
                 trace_pendingMessage = ib.trace_pendingMessage;
         }
 
-        public int readInstruction(IssueNode issueNode) {
+        int readInstruction(IssueNode issueNode, List<IssueNode> toDelete) {
+            if (m_mode == IssueMode.DUAL) {
+                if (issueNode.getNumBytes() == DUAL_ISSUE_BYTES) {
+                    // No combining necessary.
+                    assert(m_prevInstr == null);
+                } else {
+                    if (m_prevInstr == null) {
+                        assert(!issueNode.isWait());
+                        assert(!issueNode.isLoadStore());
+                        assert(!issueNode.isBranch());
+                        m_prevInstr = issueNode;
+                        return 0; // Skip this node as it will be combined...
+                    } else {
+                        issueNode.combine(m_prevInstr);
+                        toDelete.add(m_prevInstr);
+                        m_prevInstr = null;
+                    }
+                }
+            }
+
             // Run the IBuff fetch using carried forward state.
             if (m_pendingBranch) {
                 if(traceIBuff) {
@@ -298,8 +343,10 @@ public class InstructionBuffer {
             // Only now the last instruction completed and the decisions made can we update the IBuff.
             cycleIBuff(m_pendingFetch);
 
-           // Do we need any FNOPs to retrieve the next instruction?
             int lenBytes = issueNode.getNumBytes();
+            assert(m_mode == IssueMode.SINGLE || lenBytes == DUAL_ISSUE_BYTES);
+
+            // Do we need any FNOPs to retrieve the next instruction(s)?
             int numFnops = 0;
             while (m_offset + lenBytes > m_bytes) {
                 ++numFnops;
@@ -317,13 +364,12 @@ public class InstructionBuffer {
                     trace_pendingMessage += "<Unresolved>\n";
             }
 
-            // Remove the instruction
+            // Update state.
             m_offset += lenBytes;
-
-            // Carry forward state
-            m_pendingFetch = !issueNode.hasLoadStore();
-            m_pendingBranch = issueNode.isBranch();
+            updateMode(issueNode);
             m_branchNotTakenId = issueNode.getNextBranchNotTakenId();
+            m_pendingFetch = !issueNode.isLoadStore();
+            m_pendingBranch = issueNode.isBranch();
             if (issueNode.isWait()) {
                 assert(m_pendingBranch);
                 m_pendingFetch = false;  // We can't do a fetch when arriving via vector.
@@ -335,13 +381,25 @@ public class InstructionBuffer {
             return numFnops;
         }
 
-        public boolean isShorterThan(IBuff ib) {
+        void updateMode(IssueNode issueNode) {
+            // All instructions use the memory-lane, so mutually exclusive.
+            if (issueNode.isEntsp())
+                m_mode = IssueMode.SINGLE;
+            if (issueNode.isDualsp())
+                m_mode = IssueMode.DUAL;
+            if (issueNode.isRetsp() && !m_stack.isEmpty())
+                m_mode = m_stack.pop();
+            if (issueNode.isBranchLink())
+                m_stack.push(m_mode);
+        }
+
+        boolean isShorterThan(IBuff ib) {
             if (estimateIbuffBytes() == ib.estimateIbuffBytes())
                 return ib.m_branchNotTakenId > 0;  // Pick the one that is most likely to branch.
             return estimateIbuffBytes() < ib.estimateIbuffBytes();
         }
 
-        static public IBuff shortest(List<Pair<IBuff,Integer>> ibs) {
+        static IBuff shortest(List<Pair<IBuff,Integer>> ibs) {
             Pair<IBuff,Integer> shortest = null;
             for (Pair<IBuff,Integer> ib : ibs) {
                 assert(ib != null);
@@ -356,7 +414,7 @@ public class InstructionBuffer {
             return shortest.first;
         }
 
-        public void forcePendingBranch(boolean ignoreStartingFnops) {
+        void forcePendingBranch(boolean ignoreStartingFnops) {
             // **** An alternative approach would be to use predictIBuffEntries() if we can access the cfg.
 
             // This is used by createLoops() and createSelfLoops() to preempt a worse case IBuff when entering loop-head.
@@ -494,7 +552,7 @@ public class InstructionBuffer {
             return true; // All the prevNodes did a fetch into the next IBuff.
         }
 
-        public void dump() {
+        void dump() {
             System.out.printf("        (%d:%d)  pendingFetch:%s  pendingBranch:%s  branchNotTakenId:%s\n",
                     m_offset, m_bytes, m_pendingFetch,  m_pendingBranch, m_branchNotTakenId);
         }

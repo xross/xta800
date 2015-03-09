@@ -92,6 +92,11 @@ public class BlockNode extends Node {
             m_issueNodes.add(i, child.createFnopNode());
     }
 
+    public void remove(Node child) {
+        assert(m_issueNodes.contains(child));
+        m_issueNodes.remove(child);
+    }
+
     public TimeDistributionBuckets getTimeSpread() {
         TimeUnit fixedTime = m_attributes.getFixedTime();
         if (fixedTime != null) {

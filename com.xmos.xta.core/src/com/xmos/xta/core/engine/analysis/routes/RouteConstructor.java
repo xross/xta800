@@ -10,6 +10,7 @@ import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
+import com.xmos.libs.core.elfhandler.IssueRegions;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.instructiondecoder.Mnemonics;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
@@ -19,6 +20,7 @@ import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.libs.core.utils.Pair;
+import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -113,8 +115,7 @@ public class RouteConstructor {
             assert(false);
         }
 
-        InstructionIssueAnayser();
-        FnopAdder();
+        issueNodeAlaysis();
         setUnknowns();
         setSrcLoopCounts();
         checkSupportedInstructions();
@@ -513,14 +514,8 @@ public class RouteConstructor {
 
 
 
-
-    private void InstructionIssueAnayser() throws AbortedException {
-        m_engine.provideFeedback("We only handle single issue routes - skip InstructionIssueAnayser.");
-        m_engine.getAbort();
-    }
-
-    private void FnopAdder() throws AbortedException {
-        m_engine.provideFeedback("Adding fnops to routes...");
+    private void issueNodeAlaysis() throws AbortedException {
+        m_engine.provideFeedback("Packing issueNodes & adding fnops to routes...");
         for (final Route route : m_routeCoreContainer) {
             m_engine.getAbort();
             Node node = route.getNode();
@@ -530,10 +525,12 @@ public class RouteConstructor {
             for (FunctionControlFlow fcf : m_engine.getControlFlow(m_core).getFunctionContaining(startPc))
                 cfgs.add(fcf.getInstructionNode(startPc));
 
-            InstructionBuffer instructionBuffer = new InstructionBuffer(m_engine.getXeLoader().getArchitecture(), startPc, cfgs);
+            Architecture arch = m_engine.getXeLoader().getArchitecture();
+            IssueRegions issueRegions = new IssueRegions(m_engine.getXeLoader().getSymbolTable(m_core));
+            IssueNodeAnalyser instructionBuffer = new IssueNodeAnalyser(arch, issueRegions, startPc, cfgs);
             node.traverse( new UntypedNodeTraverser() {
                 public TraverseStatus foundNode(Node node, Object clientState) {
-                    InstructionBuffer ibuff = (InstructionBuffer)clientState;
+                    IssueNodeAnalyser ibuff = (IssueNodeAnalyser)clientState;
                     // First do any general node handling.
                     ibuff.startNode(node);
                     // Now handle specific nodes types.
@@ -548,7 +545,7 @@ public class RouteConstructor {
                     return TraverseStatus.CONTINUE;
                 }
                 public TraverseStatus foundNodeExit(Node node, Object clientState) {
-                    InstructionBuffer ibuff = (InstructionBuffer)clientState;
+                    IssueNodeAnalyser ibuff = (IssueNodeAnalyser)clientState;
                     // Handle specific nodes types.
                     if (node.isCondNode())
                         ibuff.joinForks(((ConditionalNode)node).iChildren());

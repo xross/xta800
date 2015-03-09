@@ -17,7 +17,7 @@ public class IssueNode extends Node {
     private LinkedList<Instruction> m_insts;
     private IssueNodeAttributes m_attributes;
     private boolean m_ownsOwnAttrib;
-    // BranchNotTakenId fields are used by InstructionBuffer to add FNOPs.
+    // BranchNotTakenId fields are used by IssueNodeAnalyser to add FNOPs.
     private int m_nextBranchNotTakenId;
     private int m_branchNotTakenId;
 
@@ -42,6 +42,16 @@ public class IssueNode extends Node {
         m_branchNotTakenId = node.m_branchNotTakenId;
     }
 
+    public void combine(IssueNode prevNode) {
+        m_insts.addAll(0, prevNode.m_insts);
+        m_attributes = new IssueNodeAttributes(this);
+        m_attributes.setCoreConfig(prevNode.m_attributes);   // Copy the core config.
+        m_ownsOwnAttrib = true;
+        assert(prevNode.m_nextBranchNotTakenId == 0);
+        assert(m_branchNotTakenId == 0);
+        m_branchNotTakenId = prevNode.m_branchNotTakenId;
+    }
+
     public IssueNode createFnopNode() {
         NullInstruction instr = new NullInstruction(m_insts.getFirst().getArch(), "--FNOP--", 0, getStartPc(), 0, true);
         IssueNode fnop = new IssueNode(new CfgInstructionNode(instr));
@@ -56,7 +66,7 @@ public class IssueNode extends Node {
         return numBytes;
     }
 
-    public boolean hasLoadStore() {
+    public boolean isLoadStore() {
         for (Instruction instruction : m_insts)
             if (instruction.isLoadStore()) return true;
         return false;
@@ -68,9 +78,50 @@ public class IssueNode extends Node {
         return false;
     }
 
+    public boolean isBranchLink() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isBranchLink()) return true;
+        return false;
+    }
+
+    public boolean isRetsp() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isA(Mnemonics.RETSP)) return true;
+        return false;
+    }
+
     public boolean isWait() {
         for (Instruction instruction : m_insts)
             if (instruction.isWait())
+                return true;
+        return false;
+    }
+
+    public boolean isEntsp() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isA(Mnemonics.ENTSP))
+                return true;
+        return false;
+    }
+
+    public boolean isDualsp() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isA(Mnemonics.DUALENTSP))
+                return true;
+        return false;
+    }
+
+    public boolean isFnop() {
+        if (m_insts.getFirst().isA(Mnemonics.FNOP)) {
+            assert(m_insts.size() == 1);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isIllegal() {
+        for (Instruction instruction : m_insts)
+            if (instruction.isA(Mnemonics.UNKNOWN))
                 return true;
         return false;
     }
@@ -89,21 +140,6 @@ public class IssueNode extends Node {
                 return instruction.getPcRelativeAddr();
         assert(false); // isBranch() == false, should not have called this function.
         return 0;
-    }
-
-    public boolean isFnop() {
-        if (m_insts.getFirst().isA(Mnemonics.FNOP)) {
-            assert(m_insts.size() == 1);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isIllegal() {
-        for (Instruction instruction : m_insts)
-            if (instruction.isA(Mnemonics.UNKNOWN))
-                return true;
-        return false;
     }
 
     public Node copyRouteStructure() {
@@ -225,5 +261,4 @@ public class IssueNode extends Node {
     public long getStartPc() {
         return m_insts.getFirst().getPc();
     }
-
 }
