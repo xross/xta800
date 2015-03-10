@@ -422,7 +422,7 @@ public class RouteConstructor {
                     newPrev.connectNext(newNode, branchNotTaken);
                 } else {
                     // We cannot have arrived here via a conditional branch instruction.
-                    assert(node.getNextBranchNotTakenNode() == null);
+                    assert(node.getPrevBranchNotTakenNode() == null);
                     previous.connectNext(newNode);
                 }
             }
