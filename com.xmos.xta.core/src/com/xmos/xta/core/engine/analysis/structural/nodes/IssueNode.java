@@ -56,6 +56,7 @@ public class IssueNode extends Node {
         NullInstruction instr = new NullInstruction(m_insts.getFirst().getArch(), "--FNOP--", 0, getStartPc(), 0, true);
         IssueNode fnop = new IssueNode(new CfgInstructionNode(instr));
         fnop.m_attributes.setCoreConfig(m_attributes);   // Copy the core config.
+        fnop.setParent(getParent());
         return fnop;
     }
 
