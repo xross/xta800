@@ -288,7 +288,7 @@ class IssueNodeAnalyser {
             m_bytesPerEntry = ib.m_bytesPerEntry;
             m_offset = ib.m_offset;
             m_bytes = ib.m_bytes;
-            assert(ib.m_prevInstr == null); // We should never fork etc. part way through an issue.
+            assert(ib.m_prevInstr == null || ib.m_prevInstr.isWait()); // We should never fork etc. part way through an issue.
             m_mode = ib.m_mode;
             m_stack = ib.m_stack;
             m_prevInstr = ib.m_prevInstr;
@@ -303,16 +303,17 @@ class IssueNodeAnalyser {
             if (m_mode == IssueMode.DUAL) {
                 if (issueNode.getNumBytes() == DUAL_ISSUE_BYTES) {
                     // No combining necessary.
+                    assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES == 0);
                     assert(m_prevInstr == null);
                 } else {
                     if (m_prevInstr == null) {
-                        assert(!issueNode.isWait());
-                        assert(!issueNode.isLoadStore());
-                        assert(!issueNode.isBranch());
+                        assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES == 0);
                         m_prevInstr = issueNode;
                         return 0; // Skip this node as it will be combined...
                     } else {
+                        assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES != 0);
                         issueNode.combine(m_prevInstr);
+                        assert(issueNode.getNumBytes() == DUAL_ISSUE_BYTES);
                         toDelete.add(m_prevInstr);
                         m_prevInstr = null;
                     }

@@ -1875,7 +1875,7 @@ public class Engine extends Notifier implements Aborter {
             }
 
             Instruction inst = node.getInstruction();
-            if (!inst.isBranch() && !inst.isWait()) {
+            if (!inst.isBranch()) {
                 notify(src, Notifier.NOTIFY_WARNING,
                         String.format("adding branch from instruction which is not a branch: %s",
                         inst.toString()));
