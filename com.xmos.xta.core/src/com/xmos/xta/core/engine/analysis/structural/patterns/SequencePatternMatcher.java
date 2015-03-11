@@ -27,51 +27,40 @@ public class SequencePatternMatcher extends PatternMatcher {
         m_treeStart = treeStart;
         LinkedList<CfgNode> pathList = new LinkedList<CfgNode>();
         pathList.add(currentNode);
-        if (isStart(currentNode)) {
+        if (isSequenceHead(currentNode)) {
             while (continueDown(currentNode, workingSet, pathList)) {
                 currentNode = currentNode.getNextNode();
                 pathList.add(currentNode);
             }
         }
 
-        // Remove CfgNullNode from the end.
+        if (pathList.size() <= 1)
+            return false;
+
+        // Remove CfgNullNode from the end (NullRemover will have removed any multiples).
         CfgNode lastNode = pathList.getLast();
-        if ((lastNode instanceof CfgNullNode) && pathList.size() > 1) {
+        if (lastNode instanceof CfgNullNode) {
             CfgNode prev = pathList.get(pathList.size()-2);
             prev.disconnectNext(lastNode);
             pathList.removeLast();
             workingSet.remove(lastNode);
         }
-
-        if (pathList.size() > 1) {
-            assert(pathSanityCheck(pathList));
+        if (pathList.size() > 1) // If after removing a null we still have a sequence...
             updateGraph(pathList, workingSet, treeStart);
-            return true;
-        } else {
-            return false;
-        }
+        return true;
     }
 
-    private boolean isStart(CfgNode node){
-        if (node == m_treeStart){
-            return true;
-
-        } else if (node.getPrevNodes().size() ==  0) {
-            return true;
-
-        } else if (node.getPrevNodes().size() ==  1) {
-            CfgNode prev = node.getPrevNode();
-            if (prev.getNextNodes().size() > 1) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (node.getPrevNodes().size() > 1) {
-            return true;
-
-        } else {
-            return false;
-        }
+    private boolean isSequenceHead(CfgNode node){
+        if (node == m_treeStart)
+            return true;                    // We are the start node.
+        if (node.getPrevNodes().size() ==  0)
+            return true;                    // We are a starting node.
+        if (node.getPrevNodes().size() ==  1 &&
+                node.getPrevNode().getNextNodes().size() > 1)
+            return true;                    // We fan-out to this node.
+        if (node.getPrevNodes().size() > 1)
+            return true;                    // We fan-in to this node.
+        return false;
     }
 
     private boolean isEnd(CfgNode node, Collection<CfgNode> workingSet, LinkedList<CfgNode> pathList) {
@@ -140,6 +129,7 @@ public class SequencePatternMatcher extends PatternMatcher {
     }
 
     protected void updateGraph(LinkedList<CfgNode> pathList, Collection<CfgNode> workingSet, CfgNode treeStart) {
+        assert(pathSanityCheck(pathList));
         CfgNode path = createStructuralNode(pathList);
         m_treeStart = pathList.contains(treeStart)? path : treeStart;
         CfgNode.replaceRange(pathList.getFirst(), pathList.getLast(), path);

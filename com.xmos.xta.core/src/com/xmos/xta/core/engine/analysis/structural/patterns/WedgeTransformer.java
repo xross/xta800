@@ -8,9 +8,9 @@ import com.xmos.libs.core.memorymonitor.MemoryMonitor;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
 import com.xmos.libs.core.utils.NonIteratableSet;
 
-public class PanicTransformer extends PatternMatcher {
+public class WedgeTransformer extends PatternMatcher {
 
-    public PanicTransformer(MemoryMonitor memoryMonitor) {
+    public WedgeTransformer(MemoryMonitor memoryMonitor) {
         super(memoryMonitor);
     }
 
@@ -18,9 +18,9 @@ public class PanicTransformer extends PatternMatcher {
             Collection<CfgNode> workingSet, CfgNode treeStart) throws MemoryMonitorException {
 
         m_treeStart = treeStart;
-        if (currentNode.getNextNodes().size() < 2) {
+        if (currentNode.getNextNodes().size() < 2)
             return false;
-        }
+
         return explore(currentNode, new NonIteratableSet<CfgNode>(),
                 currentNode.getDominators(), currentNode, workingSet);
     }
@@ -39,14 +39,11 @@ public class PanicTransformer extends PatternMatcher {
                 return true;
             }
         }
-        boolean found = false;
         for (CfgNode next : node.getNextNodes()) {
             checkMemory();
-            if (!seen.contains(next)) {
-                found = explore(next, seen, dominators, start, workingSet);
-            }
-            if(found)
-                return true;
+            if (!seen.contains(next))
+                if (explore(next, seen, dominators, start, workingSet))
+                    return true;
         }
         return false;
     }

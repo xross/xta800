@@ -33,7 +33,8 @@ import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalPatternM
 import com.xmos.xta.core.engine.analysis.structural.patterns.ConditionalTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.LoopPatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.NullRemover;
-import com.xmos.xta.core.engine.analysis.structural.patterns.PanicTransformer;
+import com.xmos.xta.core.engine.analysis.structural.patterns.WedgeStartTransformer;
+import com.xmos.xta.core.engine.analysis.structural.patterns.WedgeTransformer;
 import com.xmos.xta.core.engine.analysis.structural.patterns.PatternMatcher;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SelfLoopPattern;
 import com.xmos.xta.core.engine.analysis.structural.patterns.SequencePatternMatcher;
@@ -52,7 +53,6 @@ public class StructuralAnalysisEngine {
         StructuralAnalysisEngine sae = new StructuralAnalysisEngine(engine);
         CfgNode newStartNode = sae.basicBlock(workingSet, startNode, name);
         Node structuralNode = sae.buildStructure(workingSet, newStartNode, "Converting CFG to structure");
-        assert(workingSet.size() == 1);
         sae.normaliseGraph(structuralNode);
         return structuralNode;
     }
@@ -70,7 +70,8 @@ public class StructuralAnalysisEngine {
         m_patternMatchers.add(new NullRemover(memoryMonitor));
         m_patternMatchers.add(new SequencePatternMatcher(memoryMonitor));    //uses dominators
         m_patternMatchers.add(new ConditionalTransformer(memoryMonitor));    //uses dominators
-        m_patternMatchers.add(new PanicTransformer(memoryMonitor));          //uses dominators
+        m_patternMatchers.add(new WedgeTransformer(memoryMonitor));          //uses dominators
+        m_patternMatchers.add(new WedgeStartTransformer(memoryMonitor));     //uses dominators
     }
 
     private CfgNode basicBlock(Set<CfgNode> workingSet, CfgInstructionNode originalStartNode, String string) {
@@ -212,11 +213,11 @@ public class StructuralAnalysisEngine {
 
         buildDominatorTree(workingSet, treeStart);
 
-        boolean working = true;
         boolean dominatorTreeUpToDate = true;
 
-        while (working) {
-
+        boolean matchMade = true;
+        while (matchMade) {
+            matchMade = false;
             String feedback = jobPrefix + " - nodes left: " + workingSet.size();
             if (m_engine.getVerbosity() >= Config.VERBOSITY_DISPLAY_MEMORY_USAGE) {
                 feedback += String.format("\nMemory Usage [max/total/free]: %d/%d/%d",
@@ -229,7 +230,6 @@ public class StructuralAnalysisEngine {
             List<CfgNode> postOrder = new LinkedList<CfgNode>();
             DFSPostOrder(postOrder, treeStart, new NonIteratableSet<CfgNode>());
 
-            working = false;
             for (PatternMatcher pm : m_patternMatchers) {
                 if (debug_structure) System.out.print("Running " + pm.toString() + " : ");
                 if (!dominatorTreeUpToDate && pm.usesDominatorTree()) {
@@ -251,18 +251,19 @@ public class StructuralAnalysisEngine {
                         assert(workingSet.contains(treeStart));
                         assert(connectivitySanityCheck(workingSet));
                         dominatorTreeUpToDate = false;
-                        working = true;
+                        matchMade = true;
                         break;
                     }
                 }
                 if (debug_structure) System.out.print("\n");
-                if (working) {
+                if (matchMade) {
                     if (debug_structure) dumpTree("PatternMatcher" + pm.toString(), workingSet, false);
                     break;
                 }
             }
         }
 
+        assert(workingSet.size() == 1);
         CfgNode node = workingSet.iterator().next();
         assert(node instanceof CfgContainerNode);
         return ((CfgContainerNode)node).getNode();
@@ -474,6 +475,7 @@ public class StructuralAnalysisEngine {
                 sb.append("}\n");
 
             } else {
+                // Dump the structure instead.
                 sb.append("# graph has only " + workingSet.size() + " nodes - " + text + "\n");
             }
             System.out.println( sb.toString());
