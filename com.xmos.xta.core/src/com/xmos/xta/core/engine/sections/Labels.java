@@ -39,7 +39,7 @@ public class Labels extends Section  {
         SymbolTable symbolTable = xeLoader.getSymbolTable(getCoreId());
         ElfHandler elfHandler = symbolTable.getElfHandler();
 
-        for (Symbol symbol : elfHandler.getSymbolsNameKeyed().values()) {
+        for (Symbol symbol : elfHandler.getAllSymbols()) {
             if (!symbol.isSpecialSection()) {
                 int sectionIndex = symbol.getShndx();
                 if (elfHandler.getSections().get(sectionIndex).isExecutable()) {
