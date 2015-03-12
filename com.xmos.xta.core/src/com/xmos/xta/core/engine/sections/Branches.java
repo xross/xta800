@@ -26,14 +26,9 @@ public class Branches extends Section {
     }
 
     boolean add(CommandSource src, Reference from, Collection<Reference> to, boolean isUser) {
-        Set<BranchInfo> pcs = null;
-        if (!m_branches.containsKey(from)) {
-            pcs = new IteratableSet<BranchInfo>();
-            m_branches.put(from, pcs);
-
-        } else {
-            pcs = m_branches.get(from);
-        }
+        Set<BranchInfo> pcs = m_branches.get(from);
+        if (pcs == null)
+            m_branches.put(from, pcs = new IteratableSet<BranchInfo>());
 
         for (Reference ref : to) {
             for (BranchInfo info : pcs) {
