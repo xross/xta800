@@ -46,6 +46,7 @@ public class StructuralAnalysisEngine {
 
     private Engine m_engine;
     private List<PatternMatcher> m_patternMatchers;
+    private static int m_progressCounter;
 
     public static Node createStructure(Engine engine, Set<CfgNode> workingSet, CfgInstructionNode startNode, String name)
             throws AbortedException, MemoryMonitorException {
@@ -215,17 +216,19 @@ public class StructuralAnalysisEngine {
 
         boolean dominatorTreeUpToDate = true;
 
+        displayProgress(jobPrefix);
+        
         boolean matchMade = true;
         while (matchMade) {
             matchMade = false;
-            String feedback = jobPrefix + " - nodes left: " + workingSet.size();
             if (m_engine.getVerbosity() >= Config.VERBOSITY_DISPLAY_MEMORY_USAGE) {
+                String feedback = jobPrefix + " - nodes left: " + workingSet.size();
                 feedback += String.format("\nMemory Usage [max/total/free]: %d/%d/%d",
                     Runtime.getRuntime().maxMemory(),
                     Runtime.getRuntime().totalMemory(),
                     Runtime.getRuntime().freeMemory());
+                m_engine.provideFeedback(feedback);
             }
-            m_engine.provideFeedback(feedback);
 
             List<CfgNode> postOrder = new LinkedList<CfgNode>();
             DFSPostOrder(postOrder, treeStart, new NonIteratableSet<CfgNode>());
@@ -480,5 +483,14 @@ public class StructuralAnalysisEngine {
             }
             System.out.println( sb.toString());
         }
+    }
+    
+    private void displayProgress(String feedback) throws AbortedException {
+        ++m_progressCounter;
+        if (m_progressCounter == 100) {            
+            m_engine.provideFeedback(feedback);
+            m_engine.provideWorkDone(1);
+            m_progressCounter = 0;
+        }        
     }
 }

@@ -121,7 +121,7 @@ public class RouteConstructor {
         checkSupportedInstructions();
         applyDefines();
 
-        m_engine.provideFeedback("Analysis complete");
+        m_engine.provideFeedback("Analysis completing...");
     }
 
     private void buildbranchBackTrailsList() throws AbortedException, MemoryMonitorException {

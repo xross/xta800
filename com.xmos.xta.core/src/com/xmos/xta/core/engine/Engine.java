@@ -82,6 +82,8 @@ import com.xmos.xta.core.engine.utils.TimeUnit;
 
 public class Engine extends Notifier implements Aborter {
 
+    private static final int WORK_UNITS_PER_ANALYSIS = 100;
+    
     public static final String ROUTE_ID_LAST_STR = "-";
     public static final String ROUTE_ID_ALL_STR = "*";
 
@@ -327,16 +329,19 @@ public class Engine extends Notifier implements Aborter {
     }
 
     public void analyzeFunction(CommandSource src, String functionName) {
+        startAnalysis("Analyzing Function: " + functionName, WORK_UNITS_PER_ANALYSIS);
         Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
         m_lastAnalysisStatus = analyzer.analyzeFunction(src, functionName);
     }
 
     public void analyzeEndpoints(CommandSource src) {
+        startAnalysis("Analyzing Endpoints", WORK_UNITS_PER_ANALYSIS);
         Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
         m_lastAnalysisStatus = analyzer.analyzeEndpoints(src, m_pathPoints);
     }
 
     public void analyzeLoop(CommandSource src) {
+        startAnalysis("Analyzing Loop", WORK_UNITS_PER_ANALYSIS);
         Analyzer analyzer = new Analyzer(this, m_routes, m_routeContainers);
         m_lastAnalysisStatus = analyzer.analyzeLoop(src, m_loopPoints);
     }
@@ -483,9 +488,12 @@ public class Engine extends Notifier implements Aborter {
         m_progressMonitor = monitor;
     }
 
-    public void provideFeedback(String feedback) {
+    public void provideFeedback(String feedback) throws AbortedException {
         if (m_progressMonitor != null) {
-            m_progressMonitor.subTask(feedback);
+            m_progressMonitor.subTask(feedback);            
+            if (m_progressMonitor.isCanceled()) {
+                throw new AbortedException();
+            }
         }
     }
 
