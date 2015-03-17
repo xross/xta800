@@ -39,6 +39,7 @@ import com.xmos.libs.core.xeloader.SymbolTable;
 import com.xmos.libs.core.xeloader.XeLoader;
 import com.xmos.libs.core.xnloader.XmlHandler;
 import com.xmos.libs.core.xnloader.XnLoader;
+import com.xmos.xta.core.engine.Config.ConfigStartMode;
 import com.xmos.xta.core.engine.analysis.Analyzer;
 import com.xmos.xta.core.engine.analysis.Analyzer.Status;
 import com.xmos.xta.core.engine.analysis.routes.Route;
@@ -83,7 +84,7 @@ import com.xmos.xta.core.engine.utils.TimeUnit;
 public class Engine extends Notifier implements Aborter {
 
     private static final int WORK_UNITS_PER_ANALYSIS = 100;
-    
+
     public static final String ROUTE_ID_LAST_STR = "-";
     public static final String ROUTE_ID_ALL_STR = "*";
 
@@ -398,6 +399,14 @@ public class Engine extends Notifier implements Aborter {
         m_config.setTimingFailuresAsErrors(errorsOn);
     }
 
+    public void setStartMode(ConfigStartMode mode) {
+        m_config.setStartMode(mode);
+    }
+
+    public ConfigStartMode getStartMode() {
+        return m_config.getStartMode();
+    }
+
     public boolean canInstructionPause(int routeId, String refString) {
         try {
             for (Route route : getRoute(routeId)) {
@@ -490,7 +499,7 @@ public class Engine extends Notifier implements Aborter {
 
     public void provideFeedback(String feedback) throws AbortedException {
         if (m_progressMonitor != null) {
-            m_progressMonitor.subTask(feedback);            
+            m_progressMonitor.subTask(feedback);
             if (m_progressMonitor.isCanceled()) {
                 throw new AbortedException();
             }

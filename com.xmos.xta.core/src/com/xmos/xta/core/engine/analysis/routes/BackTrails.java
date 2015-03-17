@@ -77,7 +77,7 @@ public class BackTrails implements Comparable<BackTrails>, Iterable<BackTrail> {
         for (BackTrail backTrail : m_backTrails) {
             String str = "";
             for (CfgFunctionReferenceNode node : backTrail) {
-                long callPc = node.getFunctionCallPc();
+                long callPc = node.getFunctionCallerPc();
                 if (callPc != 0)
                     str += String.format("CALL:0x%x,", callPc);
             }

@@ -14,6 +14,7 @@
       option: Werror <on/off>: treat warnings as errors or not \(currently: off\)
       option: warn <removed>: Enable the given warning
       option: nowarn <removed>: Disable the given warning
+      option: startmode <auto/single/dual>: Sets the issue mode the analysis starts in \(currently: auto\)
 TimingFailAsError: false
 WarnAsError: false
 ErrorAsWarn: true

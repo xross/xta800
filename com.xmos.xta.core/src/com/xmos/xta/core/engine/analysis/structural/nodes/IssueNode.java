@@ -1,6 +1,6 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +14,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.NodeTravers
 import com.xmos.xta.core.engine.analysis.structural.nodes.traversers.TraverseStatus;
 
 public class IssueNode extends Node {
-    private LinkedList<Instruction> m_insts;
+    private List<Instruction> m_insts;
     private IssueNodeAttributes m_attributes;
     private boolean m_ownsOwnAttrib;
     // BranchNotTakenId fields are used by IssueNodeAnalyser to add FNOPs.
@@ -23,7 +23,7 @@ public class IssueNode extends Node {
 
     public IssueNode(CfgInstructionNode node) {
         super(node);
-        m_insts = new LinkedList<Instruction>();
+        m_insts = new ArrayList<Instruction>();
         m_insts.add(node.getInstruction());
         m_attributes = new IssueNodeAttributes(this);
         m_ownsOwnAttrib = true;
@@ -33,9 +33,7 @@ public class IssueNode extends Node {
 
     private IssueNode(IssueNode node) {
         super(node);
-        m_insts = new LinkedList<Instruction>();
-        for (Instruction instruction : node.m_insts)
-            m_insts.add(instruction);
+        m_insts = new ArrayList<Instruction>(node.m_insts);
         m_attributes = node.m_attributes;
         m_ownsOwnAttrib = false;
         m_nextBranchNotTakenId = node.m_nextBranchNotTakenId;
@@ -53,7 +51,8 @@ public class IssueNode extends Node {
     }
 
     public IssueNode createFnopNode() {
-        NullInstruction instr = new NullInstruction(m_insts.getFirst().getArch(), "--FNOP--", 0, getStartPc(), 0, true);
+        assert(!m_insts.isEmpty());
+        NullInstruction instr = new NullInstruction(m_insts.get(0).getArch(), "--FNOP--", 0, getStartPc(), 0, true);
         IssueNode fnop = new IssueNode(new CfgInstructionNode(instr));
         fnop.m_attributes.setCoreConfig(m_attributes);   // Copy the core config.
         fnop.setParent(getParent());
@@ -113,7 +112,8 @@ public class IssueNode extends Node {
     }
 
     public boolean isFnop() {
-        if (m_insts.getFirst().isA(Mnemonics.FNOP)) {
+        assert(!m_insts.isEmpty());
+        if (m_insts.get(0).isA(Mnemonics.FNOP)) {
             assert(m_insts.size() == 1);
             return true;
         }
@@ -162,7 +162,7 @@ public class IssueNode extends Node {
         return m_attributes;
     }
 
-    public LinkedList<Instruction> getInstructions() {
+    public List<Instruction> getInstructions() {
         return m_insts;
     }
 
@@ -194,7 +194,8 @@ public class IssueNode extends Node {
 
     private String functionOffsetString() {
         String functionName = getFunctionName();
-        return functionName != null? functionName + " + " + m_insts.getFirst().getFunctionOffset() : "";
+        assert(!m_insts.isEmpty());
+        return functionName != null? functionName + " + " + m_insts.get(0).getFunctionOffset() : "";
     }
 
     private String getMnemonicOperandString() {
@@ -239,7 +240,7 @@ public class IssueNode extends Node {
     }
 
     public List<Node> iChildren() {
-        List<Node> children = new LinkedList<Node>();
+        List<Node> children = new ArrayList<Node>();
         return children;
     }
 
@@ -256,10 +257,12 @@ public class IssueNode extends Node {
     }
 
     public String getFunctionName() {
-        return m_insts.getFirst().getFunctionName();
+        assert(!m_insts.isEmpty());
+        return m_insts.get(0).getFunctionName();
     }
 
     public long getStartPc() {
-        return m_insts.getFirst().getPc();
+        assert(!m_insts.isEmpty());
+        return m_insts.get(0).getPc();
     }
 }

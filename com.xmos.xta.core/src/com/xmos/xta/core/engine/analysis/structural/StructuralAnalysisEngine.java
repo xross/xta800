@@ -217,7 +217,7 @@ public class StructuralAnalysisEngine {
         boolean dominatorTreeUpToDate = true;
 
         displayProgress(jobPrefix);
-        
+
         boolean matchMade = true;
         while (matchMade) {
             matchMade = false;
@@ -484,13 +484,13 @@ public class StructuralAnalysisEngine {
             System.out.println( sb.toString());
         }
     }
-    
+
     private void displayProgress(String feedback) throws AbortedException {
         ++m_progressCounter;
-        if (m_progressCounter == 100) {            
+        if (m_progressCounter == 100) {
             m_engine.provideFeedback(feedback);
             m_engine.provideWorkDone(1);
             m_progressCounter = 0;
-        }        
+        }
     }
 }

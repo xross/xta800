@@ -5,12 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.xmos.libs.core.controlflow.FunctionControlFlow;
 import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNullNode;
-import com.xmos.libs.core.elfhandler.IssueRegions;
 import com.xmos.libs.core.instructiondecoder.Instruction;
 import com.xmos.libs.core.instructiondecoder.Mnemonics;
 import com.xmos.libs.core.memorymonitor.MemoryMonitorException;
@@ -20,7 +18,6 @@ import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.libs.core.utils.Pair;
-import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
@@ -225,7 +222,7 @@ public class RouteConstructor {
         Node node = reachableGraph.convertGraphToStructure(startInst, backTrail);
         if (node == null)
             return new Pair<FunctionNode, Boolean>(null, false);
-        FunctionNode fn = new FunctionNode(node, fnRef.getFunctionName(), fnRef.getFunctionCallPc());
+        FunctionNode fn = new FunctionNode(node, fnRef.getFunctionName(), fnRef.getFunctionCallerPc());
         return new Pair<FunctionNode, Boolean>(fn, true);
     }
 
@@ -519,15 +516,7 @@ public class RouteConstructor {
         for (final Route route : m_routeCoreContainer) {
             m_engine.getAbort();
             Node node = route.getNode();
-            long startPc = node.getStartPc();
-
-            List<CfgInstructionNode> cfgs = new LinkedList<CfgInstructionNode>();
-            for (FunctionControlFlow fcf : m_engine.getControlFlow(m_core).getFunctionContaining(startPc))
-                cfgs.add(fcf.getInstructionNode(startPc));
-
-            Architecture arch = m_engine.getXeLoader().getArchitecture();
-            IssueRegions issueRegions = new IssueRegions(m_engine.getXeLoader().getSymbolTable(m_core));
-            IssueNodeAnalyser instructionBuffer = new IssueNodeAnalyser(arch, issueRegions, startPc, cfgs);
+            IssueNodeAnalyser instructionBuffer = new IssueNodeAnalyser(m_engine, m_core, node.getStartPc());
             node.traverse( new UntypedNodeTraverser() {
                 public TraverseStatus foundNode(Node node, Object clientState) {
                     IssueNodeAnalyser ibuff = (IssueNodeAnalyser)clientState;

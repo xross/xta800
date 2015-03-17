@@ -6,12 +6,15 @@ import com.xmos.libs.core.utils.IteratableMap;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 
 public class Config {
+    public enum ConfigStartMode {AUTO, SINGLE, DUAL};
+
     private int m_verbosity;
     private Case m_case;
     private boolean m_timingFailuresAsErrors;
     private boolean m_warningsAsErrors;
     private boolean m_errorsAsWarnings;
     private Map<String, Boolean> m_warnings;
+    private ConfigStartMode m_startMode;
 
     static final public int VERBOSITY_DISPLAY_INSTRUCTION_NODES = 1;
     static final public int VERBOSITY_DISPLAY_NULL_NODE = 50;
@@ -32,6 +35,7 @@ public class Config {
         m_errorsAsWarnings = false;
         m_warnings = new IteratableMap<String, Boolean>();
         m_warnings.put(WARNING_REMOVED, false);
+        m_startMode = ConfigStartMode.AUTO;
     }
 
     public void setVerbosity(int verbosity) {
@@ -95,5 +99,13 @@ public class Config {
 
     public boolean getWarningEnabled(String key) {
         return m_warnings.get(key);
+    }
+
+    public void setStartMode(ConfigStartMode mode) {
+        m_startMode = mode;
+    }
+
+    public ConfigStartMode getStartMode() {
+        return m_startMode;
     }
 }

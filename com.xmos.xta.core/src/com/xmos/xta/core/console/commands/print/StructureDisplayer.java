@@ -103,7 +103,7 @@ public class StructureDisplayer {
         if (m_verbosity >= Config.VERBOSITY_DISPLAY_ATTRIBUTES) {
             NodeAttributes nodeAttributes = node.getAttributes(false);
 
-            if (node.getUnresolved())
+            if (node.isUnresolved())
                 sb.append(" UNRESOLVED");
 
             if (node.isLoopNode() || node.isSelfLoopNode()) {

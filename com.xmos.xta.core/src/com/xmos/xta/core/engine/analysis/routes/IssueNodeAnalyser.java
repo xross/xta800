@@ -4,17 +4,25 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+import com.xmos.libs.core.controlflow.ControlFlow;
+import com.xmos.libs.core.controlflow.FunctionControlFlow;
 import com.xmos.libs.core.controlflow.nodes.CfgFunctionReferenceNode;
 import com.xmos.libs.core.controlflow.nodes.CfgInstructionNode;
 import com.xmos.libs.core.controlflow.nodes.CfgNode;
 import com.xmos.libs.core.elfhandler.IssueRegions;
 import com.xmos.libs.core.elfhandler.IssueRegions.IssueMode;
 import com.xmos.libs.core.instructiondecoder.Instruction;
+import com.xmos.libs.core.instructiondecoder.Mnemonics;
+import com.xmos.libs.core.utils.CoreId;
+import com.xmos.libs.core.utils.IteratableSet;
 import com.xmos.libs.core.utils.Pair;
 import com.xmos.libs.core.xeloader.XeLoader.Architecture;
+import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.BlockNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.IssueNode;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -35,12 +43,12 @@ class IssueNodeAnalyser {
 
     private boolean m_ignoreStartingFnops;
 
-    IssueNodeAnalyser(Architecture arch, IssueRegions issueRegions, long startPc, List<CfgInstructionNode> cfgs) {
+    IssueNodeAnalyser(Engine engine, CoreId core, long startPc) {
         if(traceTree) System.out.printf("\nIssueNodeAnalyser\n=================\n");
 
         m_toDelete = new ArrayList<IssueNode>();
 
-        m_ib = new IBuff(arch, issueRegions, startPc, cfgs);
+        m_ib = new IBuff(engine, core, startPc);
         m_blockStartState = new TreeMap<Integer, IBuff>();
         m_loopheader = new TreeMap<Integer, Integer>();
         m_loopsStartState = new TreeMap<Integer, IBuff>();
@@ -267,13 +275,30 @@ class IssueNodeAnalyser {
         private int trace_bytes;
         private String trace_pendingMessage;
 
-        IBuff(Architecture arch, IssueRegions issueRegions, long startPc, List<CfgInstructionNode> cfgs) {
-            m_arch = arch;
-            m_bytesPerEntry = (arch == Architecture.XS2A)? XS2_BYTES_PER_ENTRY : XS1_BYTES_PER_ENTRY;
+        IBuff(Engine engine, CoreId core, long startPc) {
+            m_arch = engine.getXeLoader().getArchitecture();
+            m_bytesPerEntry = (m_arch == Architecture.XS2A)? XS2_BYTES_PER_ENTRY : XS1_BYTES_PER_ENTRY;
             m_offset = (int) (startPc % m_bytesPerEntry);
-            boolean noFetchOnBranchNotTaken = (arch == Architecture.XS2A);
-            m_bytes = IBuff.predictIBuffEntries(startPc, cfgs, m_bytesPerEntry, noFetchOnBranchNotTaken) * m_bytesPerEntry;
-            m_mode = issueRegions.getIssueMode(startPc);    // RL-TODO we should trace back in a similar way to predictIBuffEntries()
+
+            ControlFlow controlFlow = engine.getControlFlow(core);
+            Map<CfgNode,List<CfgNode>> calleeToCallers = controlFlow.getCalleeToCallersMap();
+            List<CfgInstructionNode> instNodes = new LinkedList<CfgInstructionNode>();
+            for (FunctionControlFlow fcf : controlFlow.getFunctionContaining(startPc)) {
+                CfgInstructionNode instNode = fcf.getInstructionNode(startPc);
+                assert(startPc == instNode.getPc());
+                instNodes.add(instNode);
+            }
+            boolean noFetchOnBranchNotTaken = (m_arch == Architecture.XS2A);
+            m_bytes = predictIBuffEntries(instNodes, calleeToCallers, m_bytesPerEntry, noFetchOnBranchNotTaken) * m_bytesPerEntry;
+            switch (engine.getStartMode()) {
+            case SINGLE: m_mode = IssueMode.SINGLE; break;
+            case DUAL:   m_mode = IssueMode.DUAL;   break;
+            case AUTO:
+                IssueRegions issueRegions = new IssueRegions(engine.getXeLoader().getSymbolTable(core));
+                IssueMode compiledMode = issueRegions.getIssueMode(startPc);
+                m_mode = predictIssueMode(instNodes, calleeToCallers, compiledMode);
+                break;
+            }
             m_stack = new Stack<IssueMode>();
             m_prevInstr = null;
             m_pendingFetch = false;
@@ -288,9 +313,9 @@ class IssueNodeAnalyser {
             m_bytesPerEntry = ib.m_bytesPerEntry;
             m_offset = ib.m_offset;
             m_bytes = ib.m_bytes;
-            assert(ib.m_prevInstr == null || ib.m_prevInstr.isWait()); // We should never fork etc. part way through an issue.
             m_mode = ib.m_mode;
             m_stack = ib.m_stack;
+            assert(ib.m_prevInstr == null); // We should never fork etc. part way through an issue.
             m_prevInstr = ib.m_prevInstr;
             m_pendingFetch = ib.m_pendingFetch;
             m_pendingBranch = ib.m_pendingBranch;
@@ -300,48 +325,15 @@ class IssueNodeAnalyser {
         }
 
         int readInstruction(IssueNode issueNode, List<IssueNode> toDelete) {
-            if (m_mode == IssueMode.DUAL) {
-                if (issueNode.getNumBytes() == DUAL_ISSUE_BYTES) {
-                    // No combining necessary.
-                    assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES == 0);
-                    assert(m_prevInstr == null);
-                } else {
-                    if (m_prevInstr == null) {
-                        assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES == 0);
-                        m_prevInstr = issueNode;
-                        return 0; // Skip this node as it will be combined...
-                    } else {
-                        assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES != 0);
-                        issueNode.combine(m_prevInstr);
-                        assert(issueNode.getNumBytes() == DUAL_ISSUE_BYTES);
-                        toDelete.add(m_prevInstr);
-                        m_prevInstr = null;
-                    }
-                }
-            }
+            if (m_mode == IssueMode.DUAL)
+                if (!packDualIssue(issueNode, toDelete))
+                    return 0;  // Skip this node as it will be combined...
 
-            // Run the IBuff fetch using carried forward state.
-            if (m_pendingBranch) {
-                if(traceIBuff) {
-                    System.out.print("<m_pendingBranch>");
-                    if (m_branchNotTakenId != 0 || issueNode.getBranchNotTakenId() != 0)
-                        System.out.printf("      branchNotTakenId %d %d", m_branchNotTakenId, issueNode.getBranchNotTakenId());
-                    System.out.print("\n");
-                }
-                if (m_branchNotTakenId != 0 && m_branchNotTakenId == issueNode.getBranchNotTakenId()) {
-                    // The branch was not taken
-                    assert(m_offset % m_bytesPerEntry == (int) (issueNode.getStartPc() % m_bytesPerEntry));
-                    if(traceIBuff) System.out.print("<branch not taken>\n");
-                    if (m_arch == Architecture.XS2A)
-                        m_pendingFetch = false; // XS2A fetches the branch PC & throws it away.
-                } else {
-                    if(traceIBuff) System.out.print("<Branch clearing IBuff>\n");
-                    m_offset = (int) (issueNode.getStartPc() % m_bytesPerEntry);
-                    m_bytes = 0;
-                }
-            }
+            // Update the carried forward state, now we know where we have arrived.
+            if (m_pendingBranch)
+                handlePendingBranch(issueNode);
 
-            // Only now the last instruction completed and the decisions made can we update the IBuff.
+            // Only now the last instruction has completed and decisions made can we update the IBuff.
             cycleIBuff(m_pendingFetch);
 
             int lenBytes = issueNode.getNumBytes();
@@ -360,30 +352,87 @@ class IssueNodeAnalyser {
                 trace_bytes = m_bytes;
                 trace_pendingMessage = "";
                 if (issueNode.isWait())
-                    trace_pendingMessage += "<WaitX>\n";
-                if (issueNode.getUnresolved())
+                    trace_pendingMessage += "<WAITEx>\n";
+                if (issueNode.isUnresolved())
                     trace_pendingMessage += "<Unresolved>\n";
             }
 
             // Update state.
             m_offset += lenBytes;
             updateMode(issueNode);
-            m_branchNotTakenId = issueNode.getNextBranchNotTakenId();
-            m_pendingFetch = !issueNode.isLoadStore();
             m_pendingBranch = issueNode.isBranch();
-            if (issueNode.isWait()) {
+            m_branchNotTakenId = issueNode.getNextBranchNotTakenId();
+            if (issueNode.isUnresolved() || issueNode.isWait()) {
                 assert(m_pendingBranch);
-                m_pendingFetch = false;  // We can't do a fetch when arriving via vector.
+                assert(m_branchNotTakenId == 0);
+                m_pendingFetch = false; // We don't know how we will get there.
             }
-            if (issueNode.getUnresolved()) {
-                assert(m_pendingBranch);
-                m_pendingFetch = false; // We don't know how we will return here - probably with a retsp.
-            }
+            else
+                m_pendingFetch = !issueNode.isLoadStore();
             return numFnops;
         }
 
+        private boolean packDualIssue(IssueNode issueNode, List<IssueNode> toDelete) {
+            assert(m_mode == IssueMode.DUAL);
+            if (issueNode.getNumBytes() == DUAL_ISSUE_BYTES) {
+                assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES == 0);
+                assert(m_prevInstr == null);
+                // No combining necessary.
+            } else {
+                if (m_prevInstr == null) {
+                    assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES == 0);
+                    if (!issueNode.isWait()) {
+                        m_prevInstr = issueNode;
+                        return false; // Skip this node as it will be combined & deleted.
+                    }
+                    // We are in the resource lane.
+                    // We need to grab our 'lost' memory-lane instruction and combine it here and now!
+                    // We ignore any links or attributes this 'lost' instruction may have had.
+                    List<Instruction> issue = issueNode.getInstructions();
+                    assert(issue.size() == 1);
+                    Instruction nextInst = issue.get(0).getNextInst();
+                    issue.add(nextInst); // We ignore any edges nextInst may have.
+                    assert(issueNode.getNumBytes() == DUAL_ISSUE_BYTES);
+                } else {
+                    assert(issueNode.getStartPc() % DUAL_ISSUE_BYTES != 0);
+                    issueNode.combine(m_prevInstr);
+                    assert(issueNode.getNumBytes() == DUAL_ISSUE_BYTES);
+                    toDelete.add(m_prevInstr);
+                    m_prevInstr = null;
+                }
+            }
+            return true;
+        }
+
+        private void handlePendingBranch(IssueNode issueNode) {
+            if(traceIBuff) {
+                System.out.print("<m_pendingBranch>");
+                if (m_branchNotTakenId != 0 || issueNode.getBranchNotTakenId() != 0)
+                    System.out.printf("      branchNotTakenId %d %d", m_branchNotTakenId, issueNode.getBranchNotTakenId());
+                System.out.print("\n");
+            }
+            if (m_branchNotTakenId != 0 && m_branchNotTakenId == issueNode.getBranchNotTakenId()) {
+                // The branch was not taken
+                assert(m_offset % m_bytesPerEntry == (int) (issueNode.getStartPc() % m_bytesPerEntry));
+                if(traceIBuff) System.out.print("<branch not taken>\n");
+                if (m_arch == Architecture.XS2A)
+                    m_pendingFetch = false; // XS2A fetches the branch PC & throws it away.
+            } else {
+                if(traceIBuff) System.out.print("<Branch clearing IBuff>\n");
+                m_offset = (int) (issueNode.getStartPc() % m_bytesPerEntry);
+                m_bytes = 0;
+            }
+        }
+
         void updateMode(IssueNode issueNode) {
-            // All instructions use the memory-lane, so mutually exclusive.
+            // The WAITx is in the resource-lane and will assume the memory-lane instruction is not run.
+            if (issueNode.isWait()) {
+                if (issueNode.isUnresolved() && !m_stack.isEmpty())
+                    m_mode = m_stack.pop();  // End of this function's analysis.
+                // else the user has given an xtabranch destination.
+                return;
+            }
+            // Instructions that use the memory-lane are mutually exclusive.
             if (issueNode.isEntsp())
                 m_mode = IssueMode.SINGLE;
             if (issueNode.isDualsp())
@@ -465,24 +514,73 @@ class IssueNodeAnalyser {
             return estimate.m_bytes;
         }
 
-        static private int predictIBuffEntries(long startPc, List<CfgInstructionNode> cfgs, int bytesPerEntry, boolean noFetchOnBranchNotTaken) {
+
+        static private Set<CfgNode> traceBack(CfgNode node, Map<CfgNode,List<CfgNode>> calleeToCallers) {
+            Set<CfgNode> prev = new IteratableSet<CfgNode>();
+            prev.addAll(node.getPrevNodes());
+            // Find and add the callers to this function too.
+            List<CfgNode> callers = calleeToCallers.get(node);
+             if (callers != null)
+                prev.addAll(callers);
+            return prev;
+        }
+
+        static private IssueMode predictIssueMode(List<CfgInstructionNode> instNodes, Map<CfgNode,List<CfgNode>> calleeToCallers, IssueMode compiledMode) {
+            List<CfgNode> toCheck = new ArrayList<CfgNode>();
+            Set<CfgNode> seen = new TreeSet<CfgNode>();
+            for(CfgInstructionNode instNode : instNodes) {
+                Set<CfgNode> prev = traceBack(instNode, calleeToCallers);
+                toCheck.addAll(prev);
+                seen.addAll(prev);
+            }
+            boolean single = false;
+            boolean dual = false;
+            while (!toCheck.isEmpty()) {
+                CfgNode node = toCheck.remove(toCheck.size()-1);
+                if (node instanceof CfgInstructionNode) {
+                    Instruction instr = ((CfgInstructionNode)node).getInstruction();
+                    if (instr.isA(Mnemonics.ENTSP)) {
+                        single = true;
+                        continue;
+                    }
+                    if (instr.isA(Mnemonics.DUALENTSP)) {
+                        dual = true;
+                        continue;
+                    }
+                }
+                for (CfgNode prev : traceBack(node, calleeToCallers))
+                    if (!seen.contains(prev)) {
+                        toCheck.add(prev);
+                        seen.add(prev);
+                    }
+            }
+            if (dual) {
+                if (single)
+                    return compiledMode;
+                return IssueMode.DUAL;
+            }
+            return IssueMode.SINGLE; // The hardware starts in SINGLE, no need for an ENTSP.
+        }
+
+        static private int predictIBuffEntries(List<CfgInstructionNode> instNodes, Map<CfgNode,List<CfgNode>> calleeToCallers,
+                                               int bytesPerEntry, boolean noFetchOnBranchNotTaken) {
             final int INVALID = IBUFFER_NUM_ENTRIES + 1;
             int minEntries = INVALID;
-            for(CfgInstructionNode cfg : cfgs) {
-                assert(startPc == cfg.getPc());
-                int entries = predictIBuffEntries(cfg, bytesPerEntry, noFetchOnBranchNotTaken);
+            for(CfgInstructionNode instNode : instNodes) {
+                int entries = predictIBuffEntries(instNode, calleeToCallers, bytesPerEntry, noFetchOnBranchNotTaken);
                 if (minEntries > entries)
                     minEntries = entries;
             }
             return (minEntries == INVALID)? 0 : minEntries;
         }
 
-        static private int predictIBuffEntries(CfgInstructionNode nextInstrNode, int bytesPerEntry, boolean noFetchOnBranchNotTaken) {
+        static private int predictIBuffEntries(CfgInstructionNode nextInstrNode, Map<CfgNode,List<CfgNode>> calleeToCallers,
+                                               int bytesPerEntry, boolean noFetchOnBranchNotTaken) {
             final int INVALID = IBUFFER_NUM_ENTRIES + 1;
             final int offset = (int) (nextInstrNode.getPc() % bytesPerEntry);
             int minEntries = INVALID;
 
-            for (CfgNode prevNode : nextInstrNode.getPrevNodes()) {
+            for (CfgNode prevNode : traceBack(nextInstrNode, calleeToCallers)) {
                 // Have we reached minimum?
                 if (minEntries == 0)
                     break;
@@ -502,7 +600,7 @@ class IssueNodeAnalyser {
                 // Did the previous instruction fit in the same IBuff entry?
                 if (prevInstr.getNumBytes() <= offset) {
                     // We need to predict the IBuff for this prevInstrNode.
-                    int prevEntries = predictIBuffEntries(prevInstrNode, bytesPerEntry, noFetchOnBranchNotTaken);
+                    int prevEntries = predictIBuffEntries(prevInstrNode, calleeToCallers, bytesPerEntry, noFetchOnBranchNotTaken);
                     if (!prevInstr.isLoadStore() && !(prevInstr.isBranch() && noFetchOnBranchNotTaken))    // Branch not taken.
                         prevEntries += 1;  // We did a fetch.
                     minEntries = Math.min(minEntries, prevEntries);
@@ -532,6 +630,7 @@ class IssueNodeAnalyser {
         }
 
         static private boolean iBuffFetchHistory(CfgNode nextNode, int offset, boolean noFetchOnBranchNotTaken) {
+            // We are not interested if the instruction is not in this function viz getPrevNodes is empty or a CfgFunctionReferenceNode.
             if (offset <= 0 || nextNode.getPrevNodes().isEmpty())
                 return false;
             for (CfgNode prevNode : nextNode.getPrevNodes()) {

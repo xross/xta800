@@ -140,15 +140,15 @@ public class TraceDisplayer {
                 m_currentTime,
                 issueNode.getAttributes(false).getFixedTime().getNs(),
                 issueNode.getDescription(),
-                issueNode.getUnresolved() ? " [UNRESOLVED]" : "",
-                issueNode.getRecursion() ? " [RECURSION]" : "",
+                issueNode.isUnresolved() ? " [UNRESOLVED]" : "",
+                issueNode.isRecursion() ? " [RECURSION]" : "",
                 issueNode.isIllegal() ? " [ILLEGAL]" : "",
                 issueNode.canPause()? " (P)" : ""));
         m_currentTime += issueNode.getAttributes(false).getFixedTime().getNs();
-        if (issueNode.getRecursion()) {
+        if (issueNode.isRecursion()) {
             throw new RecursionDetctedException();
         }
-        if (issueNode.getUnresolved()) {
+        if (issueNode.isUnresolved()) {
             throw new UnresolvedDetctedException();
         }
         if (m_console.hasEscaped()) {

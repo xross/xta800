@@ -1,6 +1,5 @@
 package com.xmos.xta.core.engine.analysis.structural.nodes;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +28,7 @@ public abstract class Node implements Comparable<Node> {
     public abstract NodeAttributes          getAttributes(boolean modifyer);
     public abstract Node                    copyRouteStructure(); // must call Node.copy()
     public abstract TraverseStatus          traverse(NodeTraverser nodeTraverser, Object clientState);
-    public abstract LinkedList<Instruction> getInstructions();
+    public abstract List<Instruction>       getInstructions();
     public abstract TimeDistributionBuckets getTimeSpread();
 
     //need to take a look at this one
@@ -87,7 +86,7 @@ public abstract class Node implements Comparable<Node> {
         m_unresolved = unresolved;
     }
 
-    public boolean getUnresolved() {
+    public boolean isUnresolved() {
         return m_unresolved;
     }
 
@@ -95,7 +94,7 @@ public abstract class Node implements Comparable<Node> {
         m_recursion = recursion;
     }
 
-    public boolean getRecursion() {
+    public boolean isRecursion() {
         return m_recursion;
     }
 

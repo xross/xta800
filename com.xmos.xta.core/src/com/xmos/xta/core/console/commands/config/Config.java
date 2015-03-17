@@ -22,6 +22,7 @@ public class Config extends CommandContainer {
         new WarnAsErrors(),
         new Warn(),
         new NoWarn(),
+        new StartMode(),
     };
 
     public Config() { super(COMMAND_NAMES); }

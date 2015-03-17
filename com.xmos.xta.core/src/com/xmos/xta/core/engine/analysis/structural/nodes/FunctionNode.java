@@ -66,7 +66,7 @@ public class FunctionNode extends Node {
         FunctionNode fn = new FunctionNode();
         fn.copyBase(this);
         fn.m_functionName = m_functionName;
-        fn.setUnresolved(getUnresolved());
+        fn.setUnresolved(isUnresolved());
         if (m_functionSequence != null) {
             List<Node> nodes = new LinkedList<Node>();
             for (Node node : m_functionSequence){

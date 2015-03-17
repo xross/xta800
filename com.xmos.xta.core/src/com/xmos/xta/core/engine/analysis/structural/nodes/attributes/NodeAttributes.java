@@ -203,7 +203,7 @@ public class NodeAttributes {
             status.mergeStatus(childStatus.getStatus());
         }
 
-        if (m_node.getUnresolved()) {
+        if (m_node.isUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
 

@@ -36,10 +36,10 @@ public class IssueNodeAttributes extends NodeAttributes {
     }
 
     public double getTimeTaken(Case c, Status status, Node ignoreIterationsAboveCond) {
-        if (getNode().getUnresolved()) {
+        if (getNode().isUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
-        if (getNode().getRecursion()) {
+        if (getNode().isRecursion()) {
             status.mergeStatus(S.RECURSION);
         }
         if (((IssueNode)getNode()).isIllegal()) {
@@ -49,7 +49,7 @@ public class IssueNodeAttributes extends NodeAttributes {
     }
 
     public long getNumCycles(Case c, Status status, Node ignoreIterationsAboveCond) {
-        if (getNode().getUnresolved()) {
+        if (getNode().isUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
         return m_numCycles;
@@ -57,7 +57,7 @@ public class IssueNodeAttributes extends NodeAttributes {
 
     public long getNumInstructions(Case c, Status status, Node ignoreIterationsAboveCond) {
         IssueNode issueNode = (IssueNode)getNode();
-        if (issueNode.getUnresolved()) {
+        if (issueNode.isUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
         return issueNode.isFnop()? 0 : issueNode.getInstructions().size();
@@ -65,7 +65,7 @@ public class IssueNodeAttributes extends NodeAttributes {
 
     public long getNumFNops(Case c, Status status, Node ignoreIterationsAboveCond) {
         IssueNode issueNode = (IssueNode)getNode();
-        if (issueNode.getUnresolved()) {
+        if (issueNode.isUnresolved()) {
             status.mergeStatus(S.UNRESOLVED);
         }
         return issueNode.isFnop() ? 1 : 0;

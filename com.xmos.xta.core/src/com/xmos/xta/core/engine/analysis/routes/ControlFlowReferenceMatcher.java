@@ -59,7 +59,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
                             currentPc = res.second;
                             matchingList.remove(r);
                         }
-                        currentPc = frn.getFunctionCallPc();
+                        currentPc = frn.getFunctionCallerPc();
                     }
                     if (matchingList.isEmpty())
                         backTrails.add(backTrail);
@@ -77,7 +77,7 @@ class ControlFlowReferenceMatcher extends ReferenceMatcher {
             throws AbortedException, MemoryMonitorException {
         switch(r.getType()) {
         case CALL:
-            if (r.getPcs().contains(frn.getFunctionCallPc()))
+            if (r.getPcs().contains(frn.getFunctionCallerPc()))
                 return new Pair<Boolean, Long>(true, (long)0);
             break;
         case ENDPOINT:
