@@ -1,3 +1,40 @@
-.*
-[^^^]
+Route\(0\) endpoints:.*
+    Pass with 1 unknown, Num Paths: 1,.*
+
+Route\(1\) endpoints:.*
+    Pass with 1 unknown, Num Paths: 1,.*
+
+Route\(2\) endpoints:.*
+    Pass with 1 unknown, Num Paths: 1,.*
+
+Route\(3\) endpoints:.*
+    Pass with 2 unknowns, Num Paths: 1,.*
+
+Route\(4\) endpoints:.*
+    Pass with 2 unknowns, Num Paths: 1,.*
+
+Route\(5\) endpoints:.*
+    Pass with 2 unknowns, Num Paths: 1,.*
+
+Route\(6\) endpoints:.*
+    Pass with 3 unknowns, Num Paths: 1,.*
+
+Route\(7\) endpoints:.*
+    Pass with 2 unknowns, Num Paths: 1,.*
+
+Route\(8\) endpoints:.*
+    Pass with 2 unknowns, Num Paths: 1,.*
+
+Route\(9\) endpoints:.*
+    Pass with 2 unknowns, Num Paths: 1,.*
+
+Route\(10\) endpoints:.*
+    Pass with 3 unknowns, Num Paths: 1,.*
+
+Route\(11\) endpoints:.*
+    Pass with 11 unknowns, Num Paths: 2,.*
+
+Route\(12\) endpoints:.*
+    Pass with 1 unknown, Num Paths: 1,.*
+
 Pass, Min Core Frequency: \d+ MHz
