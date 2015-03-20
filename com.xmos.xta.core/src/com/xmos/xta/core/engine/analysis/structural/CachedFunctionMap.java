@@ -20,16 +20,14 @@ public class CachedFunctionMap {
 
     public Node getCachedFunction(FunctionControlFlow functionControlFlow)
         throws AbortedException, MemoryMonitorException {
-
-        Node cachedFunction = m_cachedFunctions.get(functionControlFlow);
-        if (cachedFunction == null){
-            cachedFunction = StructuralAnalysisEngine.createStructure(m_engine,
-                    functionControlFlow.getControlFlow(),
-                    functionControlFlow.getStartInstructionNode(),
-                    functionControlFlow.getFunctionName());
-
-            m_cachedFunctions.put(functionControlFlow, cachedFunction);
-        }
-        return cachedFunction;
+        if (m_cachedFunctions.containsKey(functionControlFlow))
+            return m_cachedFunctions.get(functionControlFlow);
+        Node functionNode = StructuralAnalysisEngine.createStructure(m_engine,
+                functionControlFlow.getControlFlow(),
+                functionControlFlow.getStartInstructionNode(),
+                functionControlFlow.getFunctionName());
+        // N.B. functionNode will be null if the startNode is not in the control flow (on the exclusion list).
+        m_cachedFunctions.put(functionControlFlow, functionNode);
+        return functionNode;
     }
 }

@@ -50,6 +50,10 @@ public class StructuralAnalysisEngine {
 
     public static Node createStructure(Engine engine, Set<CfgNode> workingSet, CfgInstructionNode startNode, String name)
             throws AbortedException, MemoryMonitorException {
+        if (workingSet.iterator().next() instanceof CfgNullNode) {
+            assert(workingSet.size() == 1);
+            return null;
+        }
         assert(workingSet.contains(startNode));
         StructuralAnalysisEngine sae = new StructuralAnalysisEngine(engine);
         CfgNode newStartNode = sae.basicBlock(workingSet, startNode, name);
