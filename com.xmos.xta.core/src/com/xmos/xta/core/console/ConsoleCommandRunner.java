@@ -31,7 +31,7 @@ public class ConsoleCommandRunner implements CommandRunner {
 
         if (command == null) {
               command = new Invalid(commandStr,
-                     String.format("invalid command in source file '%s'", commandStr), src);
+                     String.format("invalid command '%s'", commandStr), src);
         }
 
         command.execute(m_shell, m_engine, m_console);

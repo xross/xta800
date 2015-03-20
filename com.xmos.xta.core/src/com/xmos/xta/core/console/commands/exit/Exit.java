@@ -34,7 +34,7 @@ public class Exit extends Command {
 
     public void execute(Shell shell, Engine engine, Console console) {
         if (getSrc().getType() == Type.SRC_LEVEL_COMMAND) {
-            engine.notify(getSrc(), Notifier.NOTIFY_WARNING, "exit ignored in source level commands");
+            engine.notify(getSrc(), Notifier.NOTIFY_WARNING, "exit ignored (command not allowed in source file)");
             return;
         }
 
