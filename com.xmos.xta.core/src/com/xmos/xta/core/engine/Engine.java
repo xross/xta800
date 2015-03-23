@@ -103,6 +103,7 @@ public class Engine extends Notifier implements Aborter {
     private Route m_selectedRoute;
     private Config m_config;
     private File m_executableFile;
+    private boolean m_suggestEnableWarnings;
     private long m_loadedFileLastModifiedTime;
     private Notifier m_notifier;
     private ProgressMonitor m_progressMonitor;
@@ -137,6 +138,7 @@ public class Engine extends Notifier implements Aborter {
         m_activeCores = new ArrayList<CoreId>();
         m_config = config;
         m_executableFile = null;
+        m_suggestEnableWarnings = false;
         m_loadedFileLastModifiedTime = 0;
         m_srcPaths = ".";
         m_progressMonitor = null;
@@ -154,6 +156,11 @@ public class Engine extends Notifier implements Aborter {
 
     public void notify(CommandSource src, String message, String argument) {
         if (m_notifier != null){
+            if (m_suggestEnableWarnings &&
+                    !m_config.getWarningEnabled(Config.WARNING_REMOVED)) {
+                argument += " (hint: try enabling warnings with 'config warn removed')";
+                m_suggestEnableWarnings = false;
+            }
             m_notifier.notify(src, message, argument);
         }
 
@@ -302,6 +309,7 @@ public class Engine extends Notifier implements Aborter {
             initialiseCachedFunctions(xeLoader);
 
             m_executableFile = executableFile;
+            m_suggestEnableWarnings = true;
             m_loadedFileLastModifiedTime = executableFile.lastModified();
             m_xeLoader = xeLoader;
             m_sections = sections;
