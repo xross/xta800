@@ -235,7 +235,7 @@ class IssueNodeAnalyser {
         if (traceInstructions) {
             System.out.printf("%d:%d (%d) ", m_ib.trace_offset, m_ib.trace_bytes, issueNode.getNumBytes());
             System.out.print(issueNode);
-            System.out.printf("      %s\n", issueNode.isLoadStore()? "load/store" : "ifetch");
+            if (!issueNode.isWait()) System.out.printf("      %s\n", issueNode.isLoadStore()? "load/store" : "ifetch");
         }
     }
 
