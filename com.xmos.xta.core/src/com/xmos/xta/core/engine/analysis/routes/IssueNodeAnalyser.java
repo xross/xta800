@@ -594,7 +594,11 @@ class IssueNodeAnalyser {
                 // Was it a taken branch?
                 if (prevInstr.isBranch() && prevInstrNode.getNextBranchNotTakenNode() != nextInstrNode) {
                     // The branch will clear the IBuff, but did we do a fetch?
-                    minEntries = Math.min(minEntries, prevInstr.isLoadStore()?0:1);
+                    assert(minEntries != 0);
+                    if (prevInstr.isWait() || prevInstr.isLoadStore())
+                        minEntries = 0;
+                    else
+                        minEntries = 1;
                     continue;
                 }
                 // Did the previous instruction fit in the same IBuff entry?
