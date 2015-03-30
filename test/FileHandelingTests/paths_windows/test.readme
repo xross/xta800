@@ -1,0 +1,9 @@
+This test is disabled.
+The handling of path separators on windows & linux is problematic.
+Under windows, forward & back slashes are acceptable, and the comiler emits back-slashes.
+Under linux, only forward slashes are acceptable, and the compiler emits forward-slashes.
+
+Either:
+ a) the windows tools must emit only forward-slashes.
+ b) the linux tools must accept forward & back slashes - and escape characters!
+
