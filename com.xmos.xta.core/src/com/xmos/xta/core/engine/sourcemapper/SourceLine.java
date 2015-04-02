@@ -20,7 +20,6 @@ public class SourceLine {
     private XeLoader   m_xeLoader;
     private InstructionDecoders m_instructionDecoders;
     private CoreCollection<Collection<Long>> m_pcs;
-    private CoreCollection<Collection<Long>> m_statementPcs;
 
     public SourceLine(String text, long lineNumber, SourceFile sourceFile,
             XeLoader xeLoader, InstructionDecoders instructionDecoders) {
@@ -30,7 +29,6 @@ public class SourceLine {
         m_xeLoader = xeLoader;
         m_instructionDecoders = instructionDecoders;
         m_pcs = new CoreCollection<Collection<Long>>();
-        m_statementPcs = new CoreCollection<Collection<Long>>();
     }
 
     public Collection<Long> getPcs(CoreId coreId) {
@@ -38,13 +36,6 @@ public class SourceLine {
             initialisePcsMap(coreId);
         }
         return m_pcs.get(coreId);
-    }
-
-    public Collection<Long> getStatementPcs(CoreId coreId) {
-        if (m_statementPcs.get(coreId) == null) {
-            initialiseStatementPcsMap(coreId);
-        }
-        return m_statementPcs.get(coreId);
     }
 
     public String getText() {
@@ -64,16 +55,6 @@ public class SourceLine {
         Collection<Long> pcs = rangesToAddresses(coreId, addressRanges);
 
         m_pcs.add(coreId, pcs);
-    }
-
-    private void initialiseStatementPcsMap(CoreId coreId) {
-        DebugInfo debugInfo = m_xeLoader.getDebugInfo(coreId);
-        assert(debugInfo != null);
-
-        Collection<Long> statementPcs = debugInfo.getDebugEngine().getStatementPcsMatchingPath(
-                m_sourceFile.getFullFileName(), m_lineNumber);
-
-           m_statementPcs.add(coreId, statementPcs);
     }
 
     private Collection<Long> rangesToAddresses(CoreId coreId, Collection<Pair<Long, Long>> addressRanges) {

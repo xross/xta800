@@ -105,8 +105,8 @@ public class SourceFile implements Comparable<SourceFile> {
         Map<Long, SourceLine> pcToLine = new NonIteratableMap<Long, SourceLine>();
 
         for (SourceLine sourceLine : m_sourceLines) {
-            for (long statementPc : sourceLine.getStatementPcs(coreId)) {
-                pcToLine.put(statementPc, sourceLine);
+            for (long pc : sourceLine.getPcs(coreId)) {
+                pcToLine.put(pc, sourceLine);
             }
         }
         m_pcToLine.add(coreId, pcToLine);
