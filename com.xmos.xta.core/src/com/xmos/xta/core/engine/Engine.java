@@ -40,6 +40,7 @@ import com.xmos.libs.core.xeloader.XeLoader;
 import com.xmos.libs.core.xnloader.XmlHandler;
 import com.xmos.libs.core.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Config.ConfigStartMode;
+import com.xmos.xta.core.engine.Config.ConfigTaskPriority;
 import com.xmos.xta.core.engine.analysis.Analyzer;
 import com.xmos.xta.core.engine.analysis.Analyzer.Status;
 import com.xmos.xta.core.engine.analysis.routes.Route;
@@ -415,6 +416,14 @@ public class Engine extends Notifier implements Aborter {
         return m_config.getStartMode();
     }
 
+    public void setTaskPriority(ConfigTaskPriority priority) {
+        m_config.setTaskPriority(priority);
+    }
+
+    public ConfigTaskPriority getTaskPriority() {
+        return m_config.getTaskPriority();
+    }
+
     public boolean canInstructionPause(int routeId, String refString) {
         try {
             for (Route route : getRoute(routeId)) {
@@ -540,6 +549,10 @@ public class Engine extends Notifier implements Aborter {
         return m_numErrors;
     }
 
+    public CoreConfig getCoreConfig(CoreId activeCore) {
+        return new CoreConfig(getNumThreads(activeCore), getNumHighPriorityTasks(activeCore), getFrequency(activeCore.getNodeId()), getXeLoader().getArchitecture(), getTaskPriority());
+    }
+
     // ===================================================================== //
     // Get/Set Frequency.
     // ===================================================================== //
@@ -572,7 +585,7 @@ public class Engine extends Notifier implements Aborter {
     // ===================================================================== //
     public void setNumThreads(CommandSource src, CoreId coreId, int numThreads) {
         if (checkNumThreads(src, numThreads)) {
-               m_coreThreads.add(coreId, numThreads);
+            m_coreThreads.add(coreId, numThreads);
             notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
         }
     }
@@ -591,6 +604,32 @@ public class Engine extends Notifier implements Aborter {
             threads.put(coreId, m_coreThreads.get(coreId));
         }
         return threads;
+    }
+
+    // ===================================================================== //
+    // Get/Set Num high priority tasks.
+    // ===================================================================== //
+    public void setNumHighPriorityTasks(CommandSource src, CoreId coreId, int numHighTasks) {
+        if (checkNumThreads(src, numHighTasks)) {
+            m_coreThreads.add(coreId, numHighTasks);
+            notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+        }
+    }
+
+    public int getNumHighPriorityTasks(CoreId coreId) {
+        Integer threads = m_coreThreads.get(coreId);
+        if (threads == null) {
+            return CoreConfig.DEFAULT_HIGHPRIORITYTASKS;
+        }
+        return threads;
+    }
+
+    public Map<CoreId, Integer> getNumHighPriorityTasksMap() {
+        Map<CoreId, Integer> numHighTasks = new NonIteratableMap<CoreId, Integer>();
+        for (CoreId coreId : m_coreThreads.getEntries()) {
+            numHighTasks.put(coreId, m_coreThreads.get(coreId));
+        }
+        return numHighTasks;
     }
 
     // ===================================================================== //

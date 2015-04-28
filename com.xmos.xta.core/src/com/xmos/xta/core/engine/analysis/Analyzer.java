@@ -53,7 +53,7 @@ public class Analyzer {
 
             if (functionRef.resolve(m_engine) == Result.RESOLVED) {
                 isResolved = true;
-                CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
+                CoreConfig coreConfig = m_engine.getCoreConfig(activeCore);
                 RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, functionRef);
                 if (!analyzeRoute(src, routeCoreContainer, activeCore))
                     return Status.ERROR;
@@ -91,7 +91,7 @@ public class Analyzer {
             }
 
             if (fromFound && toFound) {
-                CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
+                CoreConfig coreConfig = m_engine.getCoreConfig(activeCore);
                 RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, fromEndpoint, toEndpoint);
                 if (!analyzeRoute(src, routeCoreContainer, activeCore))
                     return Status.ERROR;
@@ -119,7 +119,7 @@ public class Analyzer {
 
             Reference loopRef = loopPoints.getLoop(activeCore);
             if ((loopRef != null) && !loopRef.getRef().equals("")) {
-                CoreConfig coreConfig = new CoreConfig(m_engine.getNumThreads(activeCore), m_engine.getFrequency(activeCore.getNodeId()));
+                CoreConfig coreConfig = m_engine.getCoreConfig(activeCore);
                 RouteCoreContainer routeCoreContainer = new RouteCoreContainer(routeContainer, coreConfig, activeCore, loopRef);
                 if (!analyzeRoute(src, routeCoreContainer, activeCore))
                     return Status.ERROR;

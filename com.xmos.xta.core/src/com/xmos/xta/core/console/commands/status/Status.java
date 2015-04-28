@@ -48,6 +48,8 @@ public class Status extends Command {
         console.display(String.format("SrcPaths: %s\n", engine.getSrcPaths()));
         console.display(String.format("Case: %s\n", engine.getCase().toString().toLowerCase()));
         console.display(String.format("Verbosity: %d\n", engine.getVerbosity()));
+        console.display(String.format("StartMode: %s\n", engine.getStartMode().toString().toLowerCase()));
+        console.display(String.format("TaskPriority: %s\n", engine.getTaskPriority().toString().toLowerCase()));
 
         File executable = engine.getExecutable();
         if (executable != null) {
@@ -71,6 +73,9 @@ public class Status extends Command {
         for (CoreId coreId : xeLoader.getCoreIds()) {
             int threads = engine.getNumThreads(coreId);
             console.display(String.format("%s, Tasks: %d ", coreId.getCoreReference(), threads));
+
+            int numHighTasks = engine.getNumHighPriorityTasks(coreId);
+            console.display(String.format("%s, HighPriorityTasks: %d ", coreId.getCoreReference(), numHighTasks));
 
             DebugInfo debugInfo = xeLoader.getDebugInfo(coreId);
             if (debugInfo.getDebugEngine().hasDebugInfo()) {

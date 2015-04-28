@@ -23,6 +23,8 @@ public class Config extends CommandContainer {
         new Warn(),
         new NoWarn(),
         new StartMode(),
+        new HighPriorityTasks(),
+        new TaskPriority(),
     };
 
     public Config() { super(COMMAND_NAMES); }

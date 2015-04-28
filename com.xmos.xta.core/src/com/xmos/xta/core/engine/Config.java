@@ -7,6 +7,7 @@ import com.xmos.xta.core.engine.analysis.structural.nodes.Node.Case;
 
 public class Config {
     public enum ConfigStartMode {AUTO, SINGLE, DUAL};
+    public enum ConfigTaskPriority {LOW, HIGH};
 
     private int m_verbosity;
     private Case m_case;
@@ -15,6 +16,7 @@ public class Config {
     private boolean m_errorsAsWarnings;
     private Map<String, Boolean> m_warnings;
     private ConfigStartMode m_startMode;
+    private ConfigTaskPriority m_taskPriority;
 
     static final public int VERBOSITY_DISPLAY_INSTRUCTION_NODES = 1;
     static final public int VERBOSITY_DISPLAY_NULL_NODE = 50;
@@ -36,6 +38,7 @@ public class Config {
         m_warnings = new IteratableMap<String, Boolean>();
         m_warnings.put(WARNING_REMOVED, false);
         m_startMode = ConfigStartMode.AUTO;
+        m_taskPriority = ConfigTaskPriority.LOW;
     }
 
     public void setVerbosity(int verbosity) {
@@ -107,5 +110,13 @@ public class Config {
 
     public ConfigStartMode getStartMode() {
         return m_startMode;
+    }
+
+    public void setTaskPriority(ConfigTaskPriority priority) {
+        m_taskPriority = priority;
+    }
+
+    public ConfigTaskPriority getTaskPriority() {
+        return m_taskPriority;
     }
 }
