@@ -589,6 +589,9 @@ public class Engine extends Notifier implements Aborter {
         if (checkNumThreads(src, numThreads)) {
             m_coreThreads.add(coreId, numThreads);
             notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
+            int numHighTasks = getNumHighPriorityTasks(coreId);
+            if (numHighTasks > numThreads)
+                setNumHighPriorityTasks(src, coreId, numThreads);
         }
     }
 
@@ -612,7 +615,7 @@ public class Engine extends Notifier implements Aborter {
     // Get/Set Num high priority tasks.
     // ===================================================================== //
     public void setNumHighPriorityTasks(CommandSource src, CoreId coreId, int numHighTasks) {
-        if (checkNumThreads(src, numHighTasks)) {
+        if (checkNumHighPriorityTasks(src, getNumThreads(coreId), numHighTasks)) {
             m_coreHighPriorityTasks.add(coreId, numHighTasks);
             notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
         }
@@ -1900,7 +1903,15 @@ public class Engine extends Notifier implements Aborter {
 
     private boolean checkNumThreads(CommandSource src, int numThreads) {
         if ((numThreads <= 0) || (numThreads > CoreConfig.MAX_THREADS)) {
-            notify(src, Notifier.NOTIFY_ERROR, String.format("Num threads '%d' invalid", numThreads));
+            notify(src, Notifier.NOTIFY_ERROR, String.format("Num tasks '%d' invalid", numThreads));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkNumHighPriorityTasks(CommandSource src, int numThreads, int numHighPriorityTasks) {
+        if (numHighPriorityTasks > numThreads) {
+            notify(src, Notifier.NOTIFY_ERROR, String.format("Num highprioritytasks '%d' invalid (must be less than Num tasks)", numHighPriorityTasks));
             return false;
         }
         return true;

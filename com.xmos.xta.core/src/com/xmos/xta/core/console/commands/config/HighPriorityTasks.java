@@ -49,7 +49,7 @@ public class HighPriorityTasks extends Command {
         } catch (NumberFormatException e) {
             return null;
         }
-        return new Threads(args[index + 1], numHighTasks);
+        return new HighPriorityTasks(args[index + 1], numHighTasks);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
