@@ -37,6 +37,7 @@ import com.xmos.libs.core.utils.WarningNotifier;
 import com.xmos.libs.core.xeloader.MemoryImage;
 import com.xmos.libs.core.xeloader.SymbolTable;
 import com.xmos.libs.core.xeloader.XeLoader;
+import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.libs.core.xnloader.XmlHandler;
 import com.xmos.libs.core.xnloader.XnLoader;
 import com.xmos.xta.core.engine.Config.ConfigStartMode;
@@ -1910,7 +1911,11 @@ public class Engine extends Notifier implements Aborter {
     }
 
     private boolean checkNumHighPriorityTasks(CommandSource src, int numThreads, int numHighPriorityTasks) {
-        if (numHighPriorityTasks > numThreads) {
+        if (m_xeLoader.getArchitecture() != Architecture.XS2A) {
+            notify(src, Notifier.NOTIFY_ERROR, String.format("target does not support highprioritytasks"));
+            return false;
+        }
+        if (numHighPriorityTasks < 0 || numHighPriorityTasks > numThreads) {
             notify(src, Notifier.NOTIFY_ERROR, String.format("Num highprioritytasks '%d' invalid (must be less than Num tasks)", numHighPriorityTasks));
             return false;
         }
