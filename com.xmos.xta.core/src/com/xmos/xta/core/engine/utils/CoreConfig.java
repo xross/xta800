@@ -8,7 +8,7 @@ public class CoreConfig {
     public int m_numThreads;
     public int m_numHighPriorityTasks;
     public double m_frequency;
-    public Architecture m_architecture;
+    public int m_pipeLine;
     public ConfigTaskPriority m_taskPriority;
 
     public static final int MAX_THREADS = 8;
@@ -21,7 +21,7 @@ public class CoreConfig {
         m_numThreads = numThreads;
         m_numHighPriorityTasks = numHighPriorityTasks;
         m_frequency = frequency;
-        m_architecture = arch;
+        m_pipeLine = (arch == Architecture.XS2A)? 5 : 4;
         m_taskPriority = taskPriority;
     }
 }

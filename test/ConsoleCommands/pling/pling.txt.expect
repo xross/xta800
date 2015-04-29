@@ -4,6 +4,8 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 No executable loaded
 TimingFailAsError: true
 WarnAsError: false
@@ -11,6 +13,8 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 No executable loaded
 1: status
 2: source "cmds.txt"

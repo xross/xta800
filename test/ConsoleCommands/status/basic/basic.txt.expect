@@ -4,4 +4,6 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 No executable loaded

@@ -195,7 +195,7 @@ public class RouteConstructor {
         for (Route route : m_routeCoreContainer)
             if (route.sameDescription(node))
                 return;  // Already contains route.
-        Route newRoute = new Route(m_engine.getXeLoader().getArchitecture(), node, m_routeCoreContainer);
+        Route newRoute = new Route(node, m_routeCoreContainer);
         m_routeCoreContainer.add(newRoute);
     }
 

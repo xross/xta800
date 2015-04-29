@@ -15,15 +15,19 @@
       option: warn <removed>: Enable the given warning
       option: nowarn <removed>: Disable the given warning
       option: startmode <auto/single/dual>: Sets the issue mode the analysis starts in \(currently: auto\)
+      option: highprioritytasks <tile id> <num tasks>: Sets number of high priority tasks currently executing on the given tile
+      option: taskpriority <low/high>: Sets the task priority the analysis is run in \(currently: low\)
 TimingFailAsError: false
 WarnAsError: false
 ErrorAsWarn: true
 SrcPaths: \.
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 Loaded executable: test.xe
 Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
-tile\[0\], Tasks: 1 \(No debug information found\)
+tile\[0\], Tasks: 1, HighPriorityTasks: 0 \(No debug information found\)
 No routes analyzed
 TimingFailAsError: false
 WarnAsError: false
@@ -31,9 +35,11 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 Loaded executable: test.xe
 Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
-tile\[0\], Tasks: 1 \(No debug information found\)
+tile\[0\], Tasks: 1, HighPriorityTasks: 0 \(No debug information found\)
 No routes analyzed
 xta: warning: Reference: nonexistant not resolved on any active tile
 RETURN CODE OK

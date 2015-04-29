@@ -4,5 +4,7 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 No executable loaded
 xta: cmds.txt:5: error: invalid command

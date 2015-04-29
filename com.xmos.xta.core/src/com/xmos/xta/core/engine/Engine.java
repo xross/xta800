@@ -116,6 +116,7 @@ public class Engine extends Notifier implements Aborter {
     private long m_loadStartTime;
     private Map<String, Integer> m_nodeHz;
     private CoreCollection<Integer> m_coreThreads;
+    private CoreCollection<Integer> m_coreHighPriorityTasks;
     private CoreCollection<CachedFunctionMap> m_cachedFunctions;
     private Scripter m_scripter;
     private Collection<CoreId> m_activeCores;
@@ -129,6 +130,7 @@ public class Engine extends Notifier implements Aborter {
         super(config);
         m_nodeHz = new IteratableMap<String, Integer>();
         m_coreThreads = new CoreCollection<Integer>();
+        m_coreHighPriorityTasks = new CoreCollection<Integer>();
         m_cachedFunctions = new CoreCollection<CachedFunctionMap>();
         m_xeLoader = new XeLoader();
         m_sourceMapper = null;
@@ -611,13 +613,13 @@ public class Engine extends Notifier implements Aborter {
     // ===================================================================== //
     public void setNumHighPriorityTasks(CommandSource src, CoreId coreId, int numHighTasks) {
         if (checkNumThreads(src, numHighTasks)) {
-            m_coreThreads.add(coreId, numHighTasks);
+            m_coreHighPriorityTasks.add(coreId, numHighTasks);
             notify(src, Notifier.NOTIFY_UPDATE_STATE, "");
         }
     }
 
     public int getNumHighPriorityTasks(CoreId coreId) {
-        Integer threads = m_coreThreads.get(coreId);
+        Integer threads = m_coreHighPriorityTasks.get(coreId);
         if (threads == null) {
             return CoreConfig.DEFAULT_HIGHPRIORITYTASKS;
         }
@@ -626,8 +628,8 @@ public class Engine extends Notifier implements Aborter {
 
     public Map<CoreId, Integer> getNumHighPriorityTasksMap() {
         Map<CoreId, Integer> numHighTasks = new NonIteratableMap<CoreId, Integer>();
-        for (CoreId coreId : m_coreThreads.getEntries()) {
-            numHighTasks.put(coreId, m_coreThreads.get(coreId));
+        for (CoreId coreId : m_coreHighPriorityTasks.getEntries()) {
+            numHighTasks.put(coreId, m_coreHighPriorityTasks.get(coreId));
         }
         return numHighTasks;
     }
@@ -1818,6 +1820,7 @@ public class Engine extends Notifier implements Aborter {
     private void initialiseCoreStates(XeLoader xeLoader) {
         m_nodeHz = new IteratableMap<String, Integer>();
         m_coreThreads = new CoreCollection<Integer>();
+        m_coreHighPriorityTasks = new CoreCollection<Integer>();
 
         XnLoader xnLoader = xeLoader.getXnLoader();
         ProgInfoLoader progInfoLoader = xeLoader.getProgInfoLoader();
@@ -1828,6 +1831,7 @@ public class Engine extends Notifier implements Aborter {
         for (CoreId coreId : xeLoader.getCoreIds()) {
             int coreThreads = getCoreThreads(progInfoLoader, coreId);
             m_coreThreads.add(coreId, coreThreads);
+            m_coreHighPriorityTasks.add(coreId, 0);
         }
 
         // Initialise the frequencies with the default for each node..

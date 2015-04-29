@@ -72,10 +72,8 @@ public class Status extends Command {
 
         for (CoreId coreId : xeLoader.getCoreIds()) {
             int threads = engine.getNumThreads(coreId);
-            console.display(String.format("%s, Tasks: %d ", coreId.getCoreReference(), threads));
-
             int numHighTasks = engine.getNumHighPriorityTasks(coreId);
-            console.display(String.format("%s, HighPriorityTasks: %d ", coreId.getCoreReference(), numHighTasks));
+            console.display(String.format("%s, Tasks: %d, HighPriorityTasks: %d ", coreId.getCoreReference(), threads, numHighTasks));
 
             DebugInfo debugInfo = xeLoader.getDebugInfo(coreId);
             if (debugInfo.getDebugEngine().hasDebugInfo()) {

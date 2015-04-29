@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.xmos.libs.core.xeloader.XeLoader.Architecture;
 import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.analysis.structural.nodes.Node;
@@ -32,7 +31,7 @@ public class Route {
         s_routeCount = 0;
     }
 
-    public Route(final Architecture arch, Node node, RouteCoreContainer parentRouteCoreContainer) {
+    public Route(Node node, RouteCoreContainer parentRouteCoreContainer) {
         m_routeId = s_routeCount++;
         m_timing = new RouteTiming(parentRouteCoreContainer.parentRouteContainer().getCommandSrc(), this,
                 parentRouteCoreContainer.getCoreConfig(),
@@ -42,12 +41,12 @@ public class Route {
         m_parentRouteCoreContainer = parentRouteCoreContainer;
 
         // N.B. Creating a new Route has side effects!
-        setCoreConfig(arch);
+        setCoreConfig();
     }
 
     public void setNode(Node node) {
         m_baseOfRouteNode = node;
-        //setCoreConfig(arch);  // RL-TODO do we need to traverse? Or should this be done by RouteConstructor.setParent()?
+        //setCoreConfig();  // RL-TODO do we need to traverse? Or should this be done by RouteConstructor.setParent()?
     }
 
     public Node getNode() {
@@ -170,12 +169,12 @@ public class Route {
         return nodeList;
     }
 
-    private void setCoreConfig(final Architecture arch) {
+    private void setCoreConfig() {
         // N.B. Creating a new Route has side effects!
         final CoreConfig coreConfig = m_parentRouteCoreContainer.getCoreConfig();
         m_baseOfRouteNode.traverse( new DefaultNodeTraverser() {
             public TraverseStatus foundIssueNode(Node node, Object clientState) {
-                ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig, arch);
+                ((IssueNodeAttributes)node.getAttributes(true)).setCoreConfig(coreConfig);
                 return TraverseStatus.CONTINUE;
             }
         },

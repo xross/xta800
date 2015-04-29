@@ -5,6 +5,8 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 No executable loaded
 TimingFailAsError: true
 WarnAsError: false
@@ -12,9 +14,11 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
-tile[0], Tasks: 4 (No debug information found)
+tile[0], Tasks: 4, HighPriorityTasks: 0 (No debug information found)
 No routes analyzed
 xta: error: Num threads '-1' invalid
 TimingFailAsError: true
@@ -23,9 +27,11 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
-tile[0], Tasks: 4 (No debug information found)
+tile[0], Tasks: 4, HighPriorityTasks: 0 (No debug information found)
 No routes analyzed
 xta: error: Num threads '10' invalid
 TimingFailAsError: true
@@ -34,7 +40,9 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 Loaded executable: test.xe
 Frequency: NodeId 0 (JTAG chain index 0, routing id 0), 400.0 MHz
-tile[0], Tasks: 4 (No debug information found)
+tile[0], Tasks: 4, HighPriorityTasks: 0 (No debug information found)
 No routes analyzed

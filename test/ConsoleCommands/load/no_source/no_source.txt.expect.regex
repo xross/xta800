@@ -4,8 +4,10 @@ ErrorAsWarn: false
 SrcPaths: .
 Case: worst
 Verbosity: 0
+StartMode: auto
+TaskPriority: low
 Loaded executable: test.xe
 Frequency: NodeId 0 \(JTAG chain index 0, routing id 0\), 400.0 MHz
-tile\[0\], Tasks: 1 \(Debug information avaliable\)
+tile\[0\], Tasks: 1, HighPriorityTasks: 0 \(Debug information avaliable\)
 No routes analyzed
 compilation dir: .*asm, filename: test.xc \(File not found\)

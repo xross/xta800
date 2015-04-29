@@ -49,6 +49,8 @@
       option: warn <removed>: Enable the given warning
       option: nowarn <removed>: Disable the given warning
       option: startmode <auto/single/dual>: Sets the issue mode the analysis starts in (currently: auto)
+      option: highprioritytasks <tile id> <num tasks>: Sets number of high priority tasks currently executing on the given tile
+      option: taskpriority <low/high>: Sets the task priority the analysis is run in (currently: low)
   [-]echo "text": Prints the text to the console
   [-]exit: Quits the application (Command line version only)
   [-]help [command|command subcommand|option]: Displays help message for the given arguments
