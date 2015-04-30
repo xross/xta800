@@ -6,24 +6,24 @@ import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
 import com.xmos.xta.core.engine.Engine;
 
-public class HighPriorityTasks extends Command {
+public class HighPriorityThreads extends Command {
 
 
-    private static final String[] COMMAND_NAMES = { "highprioritytasks", "hightasks" };
+    private static final String[] COMMAND_NAMES = { "highprioritytasks", "hightasks", "highprioritythreads", "highthreads" };
 
     private String m_coreReference;
-    private int m_numHighTasks;
+    private int m_numHighThreads;
 
-    public HighPriorityTasks() {
+    public HighPriorityThreads() {
         super(COMMAND_NAMES);
         m_coreReference = "";
-        m_numHighTasks = 0;
+        m_numHighThreads = 0;
     }
 
-    public HighPriorityTasks(String coreReference, int numHighTasks) {
+    public HighPriorityThreads(String coreReference, int numHighThreads) {
         super(COMMAND_NAMES);
         m_coreReference = coreReference;
-        m_numHighTasks = numHighTasks;
+        m_numHighThreads = numHighThreads;
     }
 
     public int numArgs() {
@@ -31,7 +31,7 @@ public class HighPriorityTasks extends Command {
     }
 
     public String commandLine() {
-        return name() + String.format(" %s %d", m_coreReference, m_numHighTasks);
+        return name() + String.format(" %s %d", m_coreReference, m_numHighThreads);
     }
 
     public String description(Engine engine, boolean detailed) {
@@ -42,14 +42,14 @@ public class HighPriorityTasks extends Command {
         if ((index + numArgs()) >= args.length)
             return null;
 
-        int numHighTasks;
+        int numHighThreads;
         try {
-            numHighTasks = Integer.parseInt(args[index + 2]);
+            numHighThreads = Integer.parseInt(args[index + 2]);
 
         } catch (NumberFormatException e) {
             return null;
         }
-        return new HighPriorityTasks(args[index + 1], numHighTasks);
+        return new HighPriorityThreads(args[index + 1], numHighThreads);
     }
 
     public void execute(Shell shell, Engine engine, Console console) {
@@ -58,7 +58,7 @@ public class HighPriorityTasks extends Command {
 
         CoreId coreId = getCoreId(engine, m_coreReference);
         if (coreId != null) {
-            engine.setNumHighPriorityTasks(getSrc(), coreId, m_numHighTasks);
+            engine.setNumHighPriorityThreads(getSrc(), coreId, m_numHighThreads);
         }
     }
 }

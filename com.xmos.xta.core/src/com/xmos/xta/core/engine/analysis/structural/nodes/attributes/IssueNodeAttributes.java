@@ -91,7 +91,7 @@ public class IssueNodeAttributes extends NodeAttributes {
 
     static private long calculateCycles(CoreConfig coreConfig, IssueNode node) {
         // We are working out how many scheduling slots this bundle of instruction will be active for.
-        // Most bundles will complete before the task is next scheduled viz hwCycles == 1.
+        // Most bundles will complete before the thread is next scheduled viz hwCycles == 1.
         long hwCycles = 0;
         for (Instruction instruction : node.getInstructions()) {
             long cycles = instruction.getNumCycles();
@@ -99,13 +99,13 @@ public class IssueNodeAttributes extends NodeAttributes {
             if (hwCycles < cycles)
                 hwCycles = cycles;
         }
-        // If other tasks are using the hardware unit, we will have to wait for them to finish as well as for us to finish.
-        // This is a round-robin by task ID - so the worse case unit busy time will be...
+        // If other threads are using the hardware unit, we will have to wait for them to finish as well as for us to finish.
+        // This is a round-robin by logicalCore ID - so the worse case unit busy time will be...
         if (hwCycles > 1 && coreConfig != null)
-            hwCycles *= coreConfig.m_numThreads;   // N.B. Should be 'cycles * TasksThatCouldHoldResource'.
+            hwCycles *= coreConfig.m_numThreads;   // N.B. Should be 'cycles * ThreadsThatCouldHoldResource'.
         // However there are additional delays whilst:
-        //      the completing task is scheduled to pick up the result;
-        //      the next task is scheduled to run the instruction.
+        //      the completing thread is scheduled to pick up the result;
+        //      the next thread is scheduled to run the instruction.
         // The length of these scheduling delays could be several pipeline cycles viz longer than the hardware cycles!
         // **** Currently we do not include the scheduling delays hence our calculations are not the worse case ****
 

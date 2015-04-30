@@ -24,7 +24,7 @@ import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
 import com.xmos.xta.core.engine.CommandSource.Type;
 import com.xmos.xta.core.engine.Config.ConfigStartMode;
-import com.xmos.xta.core.engine.Config.ConfigTaskPriority;
+import com.xmos.xta.core.engine.Config.ConfigThreadPriority;
 import com.xmos.xta.core.engine.analysis.routes.Route;
 import com.xmos.xta.core.engine.analysis.routes.RouteContainer;
 import com.xmos.xta.core.engine.analysis.routes.RouteCoreContainer;
@@ -52,18 +52,18 @@ public class Scripter {
     private Defines m_initialDefines;
     private Map<String, Double> m_initialFrequencies;
     private ConfigStartMode m_initialStartMode;
-    private ConfigTaskPriority m_initialTaskPriority;
+    private ConfigThreadPriority m_initialThreadPriority;
     private Map<CoreId, Integer> m_initialNumThreads;
-    private Map<CoreId, Integer> m_initialNumHighPriorityTasks;
+    private Map<CoreId, Integer> m_initialNumHighPriorityThreads;
 
     private Collection<CoreId> m_currentActiveCores;
     private Map<Reference, List<Reference>> m_currentBranches;
     private Defines m_currentDefines;
     private Map<String, Double> m_currentFrequencies;
     private ConfigStartMode m_currentStartMode;
-    private ConfigTaskPriority m_currentTaskPriority;
+    private ConfigThreadPriority m_currentThreadPriority;
     private Map<CoreId, Integer> m_currentNumThreads;
-    private Map<CoreId, Integer> m_currentNumHighPriorityTasks;
+    private Map<CoreId, Integer> m_currentNumHighPriorityThreads;
 
     // Can't use a Set because the compareTo won't do what we
     // need for matching references
@@ -85,18 +85,18 @@ public class Scripter {
         m_initialDefines = new Defines();
         m_initialFrequencies = new NonIteratableMap<String, Double>();
         m_initialStartMode = ConfigStartMode.AUTO;
-        m_initialTaskPriority = ConfigTaskPriority.LOW;
+        m_initialThreadPriority = ConfigThreadPriority.LOW;
         m_initialNumThreads = new NonIteratableMap<CoreId, Integer>();
-        m_initialNumHighPriorityTasks = new NonIteratableMap<CoreId, Integer>();
+        m_initialNumHighPriorityThreads = new NonIteratableMap<CoreId, Integer>();
 
         m_currentActiveCores = new ArrayList<CoreId>();
         m_currentBranches = new NonIteratableMap<Reference, List<Reference>>();
         m_currentDefines = new Defines();
         m_currentFrequencies = new NonIteratableMap<String, Double>();
         m_currentStartMode = ConfigStartMode.AUTO;
-        m_currentTaskPriority = ConfigTaskPriority.LOW;
+        m_currentThreadPriority = ConfigThreadPriority.LOW;
         m_currentNumThreads = new NonIteratableMap<CoreId, Integer>();
-        m_currentNumHighPriorityTasks = new NonIteratableMap<CoreId, Integer>();
+        m_currentNumHighPriorityThreads = new NonIteratableMap<CoreId, Integer>();
 
         m_autoLabels = new NonIteratableSet<String>();
         m_disables = new IteratableSet<String>();
@@ -114,9 +114,9 @@ public class Scripter {
         m_initialDefines = new Defines(m_engine.getDefines());
         m_initialFrequencies = new NonIteratableMap<String, Double>(m_engine.getFrequencyMap());
         m_initialStartMode = m_engine.getStartMode();
-        m_initialTaskPriority = m_engine.getTaskPriority();
+        m_initialThreadPriority = m_engine.getThreadPriority();
         m_initialNumThreads = new NonIteratableMap<CoreId, Integer>(m_engine.getNumThreadMap());
-        m_initialNumHighPriorityTasks = new NonIteratableMap<CoreId, Integer>(m_engine.getNumHighPriorityTasksMap());
+        m_initialNumHighPriorityThreads = new NonIteratableMap<CoreId, Integer>(m_engine.getNumHighPriorityThreadsMap());
 
         m_disables.clear();
         m_autoLabels.clear();
@@ -378,7 +378,7 @@ public class Scripter {
             routeComment(routeContainer, script);
             updateFrequencies(routeContainer, script);
             updateStartMode(routeContainer, script);
-            updateTaskPriority(routeContainer, script);
+            updateThreadPriority(routeContainer, script);
             updateNumThreads(routeContainer, script);
             addBranches(routeContainer, script);
             addDefines(routeContainer, script);
@@ -451,17 +451,17 @@ public class Scripter {
         }
     }
 
-    private void updateTaskPriority(RouteContainer routeContainer, StringBuffer script) {
-        ConfigTaskPriority taskPriority = routeContainer.getTaskPriority();
-        if (taskPriority != m_currentTaskPriority) {
-            addScriptCommand(script, String.format("config taskpriority %s", taskPriority.toString().toLowerCase()));
-            m_currentTaskPriority = taskPriority;
+    private void updateThreadPriority(RouteContainer routeContainer, StringBuffer script) {
+        ConfigThreadPriority threadPriority = routeContainer.getThreadPriority();
+        if (threadPriority != m_currentThreadPriority) {
+            addScriptCommand(script, String.format("config taskpriority %s", threadPriority.toString().toLowerCase()));
+            m_currentThreadPriority = threadPriority;
         }
     }
 
     private void updateNumThreads(RouteContainer routeContainer, StringBuffer script) {
         Map<CoreId, Integer> numThreadsMap = routeContainer.getNumThreads();
-        Map<CoreId, Integer> numHighPriorityTasksMap = routeContainer.getNumHighPriorityTasks();
+        Map<CoreId, Integer> numHighPriorityThreadsMap = routeContainer.getNumHighPriorityThreads();
 
         Collection<CoreId> activeCores = routeContainer.getActiveCores();
         for (CoreId activeCore : activeCores) {
@@ -473,11 +473,11 @@ public class Scripter {
                 m_currentNumThreads.put(activeCore, numThreads);
             }
 
-            int numHighPriorityTasks = numHighPriorityTasksMap.get(activeCore);
-            int currentNumHighPriorityTasks = m_currentNumHighPriorityTasks.get(activeCore);
-            if (currentNumHighPriorityTasks != numHighPriorityTasks) {
-                addScriptCommand(script, String.format("config highprioritytasks %s %d", activeCore.getCoreReference(), numHighPriorityTasks));
-                m_currentNumHighPriorityTasks.put(activeCore, numHighPriorityTasks);
+            int numHighPriorityThreads = numHighPriorityThreadsMap.get(activeCore);
+            int currentNumHighPriorityThreads = m_currentNumHighPriorityThreads.get(activeCore);
+            if (currentNumHighPriorityThreads != numHighPriorityThreads) {
+                addScriptCommand(script, String.format("config highprioritytasks %s %d", activeCore.getCoreReference(), numHighPriorityThreads));
+                m_currentNumHighPriorityThreads.put(activeCore, numHighPriorityThreads);
             }
         }
     }
@@ -887,8 +887,8 @@ public class Scripter {
         m_currentDefines = new Defines(m_initialDefines);
         m_currentFrequencies = new NonIteratableMap<String, Double>(m_initialFrequencies);
         m_currentStartMode = m_initialStartMode;
-        m_currentTaskPriority = m_initialTaskPriority;
+        m_currentThreadPriority = m_initialThreadPriority;
         m_currentNumThreads = new NonIteratableMap<CoreId, Integer>(m_initialNumThreads);
-        m_currentNumHighPriorityTasks = new NonIteratableMap<CoreId, Integer>(m_initialNumHighPriorityTasks);
+        m_currentNumHighPriorityThreads = new NonIteratableMap<CoreId, Integer>(m_initialNumHighPriorityThreads);
     }
 }

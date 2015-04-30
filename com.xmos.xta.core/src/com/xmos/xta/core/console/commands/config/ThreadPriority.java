@@ -3,20 +3,20 @@ package com.xmos.xta.core.console.commands.config;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
-import com.xmos.xta.core.engine.Config.ConfigTaskPriority;
+import com.xmos.xta.core.engine.Config.ConfigThreadPriority;
 import com.xmos.xta.core.engine.Engine;
 
-public class TaskPriority  extends Command {
-    private static final String[] COMMAND_NAMES = { "taskpriority" };
+public class ThreadPriority  extends Command {
+    private static final String[] COMMAND_NAMES = { "taskpriority", "threadpriority" };
 
-    private ConfigTaskPriority m_priority;
+    private ConfigThreadPriority m_priority;
 
-    public TaskPriority() {
+    public ThreadPriority() {
         super(COMMAND_NAMES);
-        m_priority = ConfigTaskPriority.LOW;
+        m_priority = ConfigThreadPriority.LOW;
     }
 
-    public TaskPriority(ConfigTaskPriority priority) {
+    public ThreadPriority(ConfigThreadPriority priority) {
         super(COMMAND_NAMES);
         m_priority = priority;
     }
@@ -39,17 +39,17 @@ public class TaskPriority  extends Command {
     @Override
     public String description(Engine engine, boolean detailed) {
         return name() + String.format(" <low/high>: Sets the task priority the analysis is run in (currently: %s)",
-                engine.getTaskPriority().toString().toLowerCase());
+                engine.getThreadPriority().toString().toLowerCase());
     }
 
     @Override
     public Command clone(String[] args, int index) {
         if ((index + numArgs()) >= args.length)
             return null;
-        if (args[index + 1].equals(ConfigTaskPriority.LOW.toString().toLowerCase()))
-            return new TaskPriority(ConfigTaskPriority.LOW);
-        if (args[index + 1].equals(ConfigTaskPriority.HIGH.toString().toLowerCase()))
-            return new TaskPriority(ConfigTaskPriority.HIGH);
+        if (args[index + 1].equals(ConfigThreadPriority.LOW.toString().toLowerCase()))
+            return new ThreadPriority(ConfigThreadPriority.LOW);
+        if (args[index + 1].equals(ConfigThreadPriority.HIGH.toString().toLowerCase()))
+            return new ThreadPriority(ConfigThreadPriority.HIGH);
         return null;
     }
 
@@ -57,7 +57,7 @@ public class TaskPriority  extends Command {
     public void execute(Shell shell, Engine engine, Console console) {
         if (!isExecutableLoaded(engine, console))
             return;
-        engine.setTaskPriority(m_priority);
+        engine.setThreadPriority(m_priority);
     }
 
 }

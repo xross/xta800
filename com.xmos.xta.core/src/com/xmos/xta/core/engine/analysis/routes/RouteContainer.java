@@ -9,7 +9,7 @@ import com.xmos.libs.core.utils.CoreId;
 import com.xmos.libs.core.utils.NonIteratableMap;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Config.ConfigStartMode;
-import com.xmos.xta.core.engine.Config.ConfigTaskPriority;
+import com.xmos.xta.core.engine.Config.ConfigThreadPriority;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.defines.Defines;
 import com.xmos.xta.core.engine.references.Reference;
@@ -26,12 +26,12 @@ public class RouteContainer {
     private String m_toName;
     private CommandSource m_src;
     private ConfigStartMode m_startMode;
-    private ConfigTaskPriority m_taskPriority;
+    private ConfigThreadPriority m_threadPriority;
     private Collection<RouteCoreContainer> m_routeCoreContainers;
     private Collection<CoreId> m_activeCores;
     private Map<String, Double> m_frequencies;
     private Map<CoreId, Integer> m_numThreads;
-    private Map<CoreId, Integer> m_numHighPriorityTasks;
+    private Map<CoreId, Integer> m_numHighPriorityThreads;
     private Map<Reference, List<Reference>> m_branches;
     private Defines m_defines;
 
@@ -54,12 +54,12 @@ public class RouteContainer {
         m_toName = toName;
         m_src = src;
         m_startMode = engine.getStartMode();
-        m_taskPriority = engine.getTaskPriority();
+        m_threadPriority = engine.getThreadPriority();
         m_routeCoreContainers = new ArrayList<RouteCoreContainer>();
         m_activeCores = new ArrayList<CoreId>(engine.getActiveCores());
         m_frequencies = new NonIteratableMap<String, Double>(engine.getFrequencyMap());
         m_numThreads = new NonIteratableMap<CoreId, Integer>(engine.getNumThreadMap());
-        m_numHighPriorityTasks = new NonIteratableMap<CoreId, Integer>(engine.getNumHighPriorityTasksMap());
+        m_numHighPriorityThreads = new NonIteratableMap<CoreId, Integer>(engine.getNumHighPriorityThreadsMap());
         m_branches = engine.getUserBranches();
         m_defines = new Defines(engine.getDefines());
     }
@@ -91,8 +91,8 @@ public class RouteContainer {
         return m_startMode;
     }
 
-    public ConfigTaskPriority getTaskPriority() {
-        return m_taskPriority;
+    public ConfigThreadPriority getThreadPriority() {
+        return m_threadPriority;
     }
 
     public Collection<CoreId> getActiveCores() {
@@ -107,8 +107,8 @@ public class RouteContainer {
         return m_numThreads;
     }
 
-    public Map<CoreId, Integer> getNumHighPriorityTasks() {
-        return m_numHighPriorityTasks;
+    public Map<CoreId, Integer> getNumHighPriorityThreads() {
+        return m_numHighPriorityThreads;
     }
 
     public void addRouteCoreContainer(RouteCoreContainer routeCoreContainer) {

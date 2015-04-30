@@ -1,7 +1,7 @@
 package com.xmos.xta.core.engine.utils;
 
 import com.xmos.libs.core.utils.Conversion;
-import com.xmos.xta.core.engine.Config.ConfigTaskPriority;
+import com.xmos.xta.core.engine.Config.ConfigThreadPriority;
 
 public class TimeUnit {
     public enum Units {
@@ -275,12 +275,12 @@ public class TimeUnit {
     }
 
     static public double getScheduleLen(CoreConfig coreConfig) {
-        // When there are both high & low priority tasks running
-        // and there are more tasks than the pipeline length:
-        //     a) If the number of high priority tasks is greater or equal to the
+        // When there are both high & low priority threads running
+        // and there are more threads than the pipeline length:
+        //     a) If the number of high priority threads is greater or equal to the
         //        pipeline length, the high priority schedule length will dither.
         //     b) If (pipeline length - min(number of high priority,(pipeline length -1)))
-        //        is not a multiple of the number of low priority tasks,
+        //        is not a multiple of the number of low priority threads,
         //        the low priority schedule length will dither.
         //
         // When the schedule length does not dither we return the absolute schedule
@@ -296,19 +296,19 @@ public class TimeUnit {
             pipeLine = 4;   // XS1C device.
         } else {
             pipeLine = coreConfig.m_pipeLine;
-            if (coreConfig.m_numHighPriorityTasks == 0 ||
-                coreConfig.m_numHighPriorityTasks == coreConfig.m_numThreads ||
+            if (coreConfig.m_numHighPriorityThreads == 0 ||
+                coreConfig.m_numHighPriorityThreads == coreConfig.m_numThreads ||
                 coreConfig.m_numThreads <= coreConfig.m_pipeLine)
                 scheduleLen = coreConfig.m_numThreads;
             else {
-                int numHPT = coreConfig.m_numHighPriorityTasks;
+                int numHPT = coreConfig.m_numHighPriorityThreads;
                 int hPSlots = (numHPT >= pipeLine) ? pipeLine - 1 : numHPT;
-                int numLPT = coreConfig.m_numThreads - coreConfig.m_numHighPriorityTasks;
+                int numLPT = coreConfig.m_numThreads - coreConfig.m_numHighPriorityThreads;
                 int lPSlots = pipeLine - hPSlots;
                 assert(numHPT > 0 && hPSlots < pipeLine);
                 assert(numLPT > 0 && lPSlots <= numLPT);
                 assert(hPSlots+lPSlots == pipeLine);
-                if (coreConfig.m_taskPriority == ConfigTaskPriority.HIGH)
+                if (coreConfig.m_threadPriority == ConfigThreadPriority.HIGH)
                     scheduleLen = (numHPT * pipeLine) / hPSlots;
                 else
                     scheduleLen = (numLPT * pipeLine) / lPSlots;
