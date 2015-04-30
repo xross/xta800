@@ -1911,7 +1911,7 @@ public class Engine extends Notifier implements Aborter {
     }
 
     private boolean checkNumHighPriorityTasks(CommandSource src, int numThreads, int numHighPriorityTasks) {
-        if (m_xeLoader.getArchitecture() != Architecture.XS2A) {
+        if (m_xeLoader.getArchitecture() != Architecture.XS2A && numHighPriorityTasks > 0) {
             notify(src, Notifier.NOTIFY_ERROR, String.format("target does not support highprioritytasks"));
             return false;
         }
