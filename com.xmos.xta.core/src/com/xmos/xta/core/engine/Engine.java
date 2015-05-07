@@ -34,6 +34,7 @@ import com.xmos.libs.core.utils.NonIteratableSet;
 import com.xmos.libs.core.utils.Pair;
 import com.xmos.libs.core.utils.ProgressMonitor;
 import com.xmos.libs.core.utils.WarningNotifier;
+import com.xmos.libs.core.xeloader.CppDemangler;
 import com.xmos.libs.core.xeloader.MemoryImage;
 import com.xmos.libs.core.xeloader.SymbolTable;
 import com.xmos.libs.core.xeloader.XeLoader;
@@ -1666,7 +1667,8 @@ public class Engine extends Notifier implements Aborter {
         if (functionName.length() == 0) {
             return false;
 
-        } else if (functionName.charAt(0) == '_') {
+        } else if (functionName.charAt(0) == '_'
+                && !CppDemangler.isMangledSymbol(functionName)) {
             return true;
 
         } else if (systems.contains(functionName)) {

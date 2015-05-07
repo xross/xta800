@@ -2,6 +2,7 @@ package com.xmos.xta.core.console.commands.list;
 
 import java.util.Collection;
 
+import com.xmos.libs.core.xeloader.CppDemangler;
 import com.xmos.xta.core.console.Console;
 import com.xmos.xta.core.console.Shell;
 import com.xmos.xta.core.console.commands.Command;
@@ -37,7 +38,10 @@ public class Functions extends Command {
         Collection<String> functionNames = engine.getNonSystemFunctionNames();
         if (functionNames.size() > 0) {
             for (String functionName : functionNames) {
-                console.display(String.format("- %s\n", functionName));
+                String demangled = (CppDemangler.isMangledSymbol(functionName))?
+                        " (" + CppDemangler.demangleSymbol(functionName) + ")" :
+                        "";
+                console.display(String.format("- %s%s\n", functionName, demangled));
             }
             console.display("\n");
         }
