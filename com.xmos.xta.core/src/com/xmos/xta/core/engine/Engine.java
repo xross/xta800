@@ -1667,8 +1667,7 @@ public class Engine extends Notifier implements Aborter {
         if (functionName.length() == 0) {
             return false;
 
-        } else if (functionName.charAt(0) == '_'
-                && !CppDemangler.isMangledSymbol(functionName)) {
+        } else if (CppDemangler.demangleSymbol(functionName).charAt(0) == '_') {
             return true;
 
         } else if (systems.contains(functionName)) {
