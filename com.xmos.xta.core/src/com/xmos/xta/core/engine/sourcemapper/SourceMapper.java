@@ -17,7 +17,10 @@ import com.xmos.xta.core.engine.AbortedException;
 import com.xmos.xta.core.engine.CommandSource;
 import com.xmos.xta.core.engine.Engine;
 import com.xmos.xta.core.engine.Notifier;
+import com.xmos.xta.core.engine.sections.CodePointTableInfo;
 import com.xmos.xta.core.engine.sections.Sections;
+import com.xmos.xta.core.engine.sections.SrcLabelTableInfo;
+import com.xmos.xta.core.engine.utils.FileNameMatcher;
 
 public class SourceMapper {
     private long m_xeLastModified;
@@ -106,6 +109,36 @@ public class SourceMapper {
 
     public List<SourceFile> getSourceFiles() {
         return m_sourceFiles;
+    }
+
+    public List<SourceFile> getSourceFiles(CoreId coreId, long address, Engine s_engine) {
+        List<SourceFile> srcFiles = new ArrayList<SourceFile>();
+        for (SourceFile srcFile : m_sourceFiles) {
+
+            if (srcFile.getLineForPc(coreId, address) != null)
+                srcFiles.add(srcFile);
+
+            // xcc does not emit all the necessary dwarf information, so check the xta info too.
+            for (SrcLabelTableInfo info : s_engine.getSrcLabelTable(coreId))
+                if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(),
+                        srcFile.getFullFileName(), s_engine.getWorkspacePath(), this))
+                    if (address == info.getPc())
+                        srcFiles.add(srcFile);
+
+            for (CodePointTableInfo info : s_engine.getEndpointTable(coreId))
+                if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(),
+                        srcFile.getFullFileName(), s_engine.getWorkspacePath(), this))
+                    if (address == info.getPc())
+                        srcFiles.add(srcFile);
+
+            for (CodePointTableInfo info : s_engine.getCallTable(coreId))
+                if (FileNameMatcher.isMatch(info.getCompilationDir(), info.getFileName(),
+                        srcFile.getFullFileName(), s_engine.getWorkspacePath(), this))
+                    if (address == info.getPc())
+                        srcFiles.add(srcFile);
+
+        }
+        return srcFiles;
     }
 
     public SourceFile getSourceFile(String fileName) {
