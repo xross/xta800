@@ -1,10 +1,11 @@
 #include <stdio.h>
 
+__attribute__((fptrgroup("fptr")))
 int g() {
     printf("Hello there\n");
 }
 
-int f(int (*fptr)()) {
+int f(__attribute__((fptrgroup("fptr"))) int (*fptr)()) {
     (*fptr)();
 }
 
