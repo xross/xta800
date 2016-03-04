@@ -5,7 +5,7 @@ int g() {
     printf("Hello there\n");
 }
 
-int f(__attribute__((fptrgroup("fptr"))) int (*fptr)()) {
+int f(__attribute__((fptrgroup("fptr",0))) int (*fptr)()) {
     (*fptr)();
 }
 
