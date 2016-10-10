@@ -1,9 +1,9 @@
-top.xc:164:18: warning: unused variable `c_pdm'
+top.xc:164:18: warning: unused variable `c_pdm' [-Wunused-variable]
   streaming chan c_pdm;
                  ^~~~~
-mic.xc:49:5: warning: unused variable `s2_buf'
+mic.xc:49:5: warning: unused variable `s2_buf' [-Wunused-variable]
 int s2_buf[BUF_SIZE] = {
     ^~~~~~~~~~~~~~~~
-mic.xc:55:5: warning: unused variable `s2_buf_ptr'
+mic.xc:55:5: warning: unused variable `s2_buf_ptr' [-Wunused-variable]
 int s2_buf_ptr=0;
     ^~~~~~~~~~

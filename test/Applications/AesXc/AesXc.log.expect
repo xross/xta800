@@ -1,12 +1,12 @@
-source/AES.xc:50:8: warning: unused variable `t'
+source/AES.xc:50:8: warning: unused variable `t' [-Wunused-variable]
         timer t;
               ^
-source/AES.xc:51:6: warning: unused variable `start'
+source/AES.xc:51:6: warning: unused variable `start' [-Wunused-variable]
         int start, end;
             ^~~~~
-source/AES.xc:51:13: warning: unused variable `end'
+source/AES.xc:51:13: warning: unused variable `end' [-Wunused-variable]
         int start, end;
                    ^~~
-source/KeyExpansion.xc:25:15: warning: unused variable `i'
+source/KeyExpansion.xc:25:15: warning: unused variable `i' [-Wunused-variable]
         unsigned int i;
                      ^

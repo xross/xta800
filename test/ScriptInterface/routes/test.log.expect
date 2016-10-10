@@ -1,9 +1,9 @@
-test.xc:2:9: warning: unused variable `i'
+test.xc:2:9: warning: unused variable `i' [-Wunused-variable]
     int i = 0;
         ^
-test.xc:7:9: warning: unused variable `i'
+test.xc:7:9: warning: unused variable `i' [-Wunused-variable]
     int i = 0;
         ^
-test.xc:12:9: warning: unused variable `i'
+test.xc:12:9: warning: unused variable `i' [-Wunused-variable]
     int i = 0;
         ^

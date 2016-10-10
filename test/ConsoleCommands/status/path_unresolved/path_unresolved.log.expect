@@ -1,6 +1,6 @@
-test.xc:3:7: warning: unused variable `fromHere'
+test.xc:3:7: warning: unused variable `fromHere' [-Wunused-variable]
   int fromHere = 0;
       ^~~~~~~~
-test.xc:4:7: warning: unused variable `toHere'
+test.xc:4:7: warning: unused variable `toHere' [-Wunused-variable]
   int toHere = 0;
       ^~~~~~

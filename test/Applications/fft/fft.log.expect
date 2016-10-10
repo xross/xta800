@@ -1,45 +1,45 @@
-fft.xc:5:19: warning: unused variable `i'
+fft.xc:5:19: warning: unused variable `i' [-Wunused-variable]
         int mr,nn,i,j,l,k,m;
                   ^
-fft.xc:5:21: warning: unused variable `j'
+fft.xc:5:21: warning: unused variable `j' [-Wunused-variable]
         int mr,nn,i,j,l,k,m;
                     ^
-fft.xc:6:13: warning: unused variable `qr'
+fft.xc:6:13: warning: unused variable `qr' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
             ^~
-fft.xc:6:16: warning: unused variable `qi'
+fft.xc:6:16: warning: unused variable `qi' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                ^~
-fft.xc:6:25: warning: unused variable `wr'
+fft.xc:6:25: warning: unused variable `wr' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                         ^~
-fft.xc:6:28: warning: unused variable `wi'
+fft.xc:6:28: warning: unused variable `wi' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                            ^~
-fft.xc:6:31: warning: unused variable `t'
+fft.xc:6:31: warning: unused variable `t' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                               ^
-fft.xc:60:13: warning: unused variable `qr'
+fft.xc:60:13: warning: unused variable `qr' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
             ^~
-fft.xc:60:16: warning: unused variable `qi'
+fft.xc:60:16: warning: unused variable `qi' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                ^~
-fft.xc:60:25: warning: unused variable `wr'
+fft.xc:60:25: warning: unused variable `wr' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                         ^~
-fft.xc:60:28: warning: unused variable `wi'
+fft.xc:60:28: warning: unused variable `wi' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                            ^~
-fft.xc:60:31: warning: unused variable `t'
+fft.xc:60:31: warning: unused variable `t' [-Wunused-variable]
         int qr,qi,tr,ti,wr,wi,t;
                               ^
-fft.xc:152:1: warning: control reaches end of non-void function
+fft.xc:152:1: warning: control reaches end of non-void function [-Wreturn-type]
 }
 ^
-fft.xc:137:26: warning: unused variable `undefined'
+fft.xc:137:26: warning: unused variable `undefined' [-Wunused-variable]
   int fi[64], fr[64], i, undefined=~0, sum = 0, sumi = 0,t3,t2,t1,t0; timer t;
                          ^~~~~~~~~
-fft.xc:138:7: warning: unused variable `t4'
+fft.xc:138:7: warning: unused variable `t4' [-Wunused-variable]
   int t4; int k;
       ^~

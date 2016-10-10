@@ -1,15 +1,15 @@
-iic.xc:347:8: warning: unused variable `time'
+iic.xc:347:8: warning: unused variable `time' [-Wunused-variable]
   uint time;
        ^~~~
-main.xc:60:8: warning: unused variable `ack'
+main.xc:60:8: warning: unused variable `ack' [-Wunused-variable]
   uint ack;
        ^~~
-main.xc:61:8: warning: unused variable `tmp'
+main.xc:61:8: warning: unused variable `tmp' [-Wunused-variable]
   uint tmp;
        ^~~
-main.xc:62:8: warning: unused variable `wrData'
+main.xc:62:8: warning: unused variable `wrData' [-Wunused-variable]
   char wrData[testPageSize];
        ^~~~~~~~~~~~~~~~~~~~
-main.xc:63:8: warning: unused variable `rdData'
+main.xc:63:8: warning: unused variable `rdData' [-Wunused-variable]
   char rdData[testPageSize];
        ^~~~~~~~~~~~~~~~~~~~
