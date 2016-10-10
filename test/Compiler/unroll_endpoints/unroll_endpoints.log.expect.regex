@@ -1,4 +1,4 @@
-functions.xc:4:7: warning: unused variable `x' [-Wunused-variable]
+functions.xc:4:7: warning: unused variable `x' \[-Wunused-variable\]
   int x = 1;
       \^
 Route\(\d+\) endpoints: producer to producer
